@@ -4,7 +4,7 @@ import scipy.ndimage as spim
 import scipy.spatial as sptl
 import tifffile
 
-class TPCF(object):
+class TwoPointCorrelation(object):
     def __init__(self,img,**kwargs):
         pass
     
@@ -40,15 +40,12 @@ class TPCF(object):
         temp = sp.digitize(dist_map.flatten(),bin_array)
         bin_count = sp.bincount(temp)
         return bin_count
-        
 
-class CLD(object):
-    def __init__(self,img,**kwargs):
-        r'''
-        '''
-        super(CLD,self).__init__(**kwargs)
-        self._img = img
-        
+class AutoCorrelation(object):
+    pass
+
+class ChordLengthDistribution(object):
+       
     def xdir(self,img,spacing=10,trim_edges=True):
         r'''
         '''
@@ -100,7 +97,7 @@ class CLD(object):
             tempX[sp.where(tempX==tempX[0,0,0])] = 0
         return sp.array(sp.array(tempX,dtype=bool),dtype=int)
         
-    def _dist(self,chord_img):
+    def _distribution(self,img):
         r'''
         '''
         # Find spacing
@@ -139,9 +136,9 @@ if __name__ == '__main__':
 #    temp = sp.load('img.npz')
     temp = sp.load('img_med.npz')
     img = temp['arr_0']
-    C = CLD(img)
-    chords = C._apply_chords(C._img)
-#    dist = C._dist(chords)
+    C = ChordLengthDistribution()
+    chords = C._apply_chords(img,trim_edges=False)
+#    dist = C._distribution(chords)
 #    plt.plot(sp.log10(dist))
     
     
