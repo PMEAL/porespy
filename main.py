@@ -117,6 +117,11 @@ class ChordLengthDistribution(object):
         a['start'] = start_pts
         a['end'] = end_pts
         a['length'] = seg_len
+        if ignore_edges:
+            if a['start'][0] == 0:
+                [a.update({item:a[item][1:]}) for item in a]
+            if a['end'][-1] == sp.size(array):
+                [a.update({item:a[item][:-1]}) for item in a]
         return a
         
 if __name__ == '__main__':
