@@ -75,42 +75,38 @@ class ChordLengthDistribution(object):
         img = sp.atleast_3d(img)
         # Extract size metrics from input image
         [Lx, Ly, Lz] = sp.shape(img)
-        Y = sp.arange(1,Ly,spacing)
-        Z = sp.arange(0,Lz,spacing)
+        start = sp.array(sp.floor(spacing/2),dtype=int)
+        Y = sp.arange(start,Ly,spacing)
+        Z = sp.arange(start,Lz,spacing)
+        temp = sp.zeros([Lx,Ly,Lz],dtype=int)
         # Generate 2D mask of chords in X-dir
-        maskX = sp.zeros([Lx,Ly],dtype=int)
-        maskX[:,Y] = 1
-        if trim_edges:
-            # Set image boundaries to 1 so the mask remains fully connected, 
-            # This is more efficient than padding entire image with 1's
-            img[[0,-1],:,:] = 1
-            img[:,[0,-1],:] = 1
-            # Add boundary to mask
-            maskX[[0,-1],:] = 1
-            maskX[:,[0,-1]] = 1
+        maskX = sp.zeros([Lx,Ly,1],dtype=bool)
+        maskX[:,Y,:] = 1
         # Apply chord mask to specified layers (Z-dir) of input image
-        tempX = sp.zeros_like(img,dtype=int)
-        for i in Z:
-            tempX[:,:,i] = spim.label(img[:,:,i]*maskX)[0]
-        # Remove chords connected to boundary cluster
+        temp[:,:,Z] = img[:,:,Z]*maskX
         if trim_edges:
-            tempX[sp.where(tempX==tempX[0,0,0])] = 0
-        return sp.array(sp.array(tempX,dtype=bool),dtype=int)
+            temp[[0,-1],:,:] = 1
+            temp[:,[0,-1],:] = 1
+            spim.label(temp)
+            ind = sp.where(temp==temp[0,0,0])
+            temp[ind] = 0
+            
+        return sp.array(temp,dtype=int)
         
     def _distribution(self,img):
         r'''
         '''
         # Find spacing
-        proj = sp.sum(chord_img,axis=1)
+        proj = sp.sum(img,axis=1)
         [yi,zi] = sp.where(proj)
-        bins = sp.zeros((sp.size(chord_img)),dtype=int)
+        bins = sp.zeros((sp.size(img)),dtype=int)
         for y,z in zip(yi,zi):
-            a = self._find_blocks(chord_img[:,y,z])
+            a = self._find_blocks(img[:,y,z])
             bins[a['length']] += 1
         big_bin = sp.where(bins)[0][-1] + 1
         return bins[:big_bin]
         
-    def _find_blocks(self,array):
+    def _find_blocks(self,array,ignore_edges=False):
         temp = sp.pad(array,pad_width=1,mode='constant',constant_values=0)
         end_pts = sp.where(sp.ediff1d(temp)==-1)[0] # Find 1->0 transitions
         end_pts -= 1  # To adjust for 0 padding
