@@ -46,26 +46,31 @@ class AutoCorrelation(object):
 
 class ChordLengthDistribution(object):
        
-    def xdir(self,img,spacing=10,trim_edges=True):
+    def xdir(self,image,spacing=10,trim_edges=True):
         r'''
         '''
-        temp = self._apply_chords(img=img,spacing=spacing,trim_edges=trim_edges)
+        temp = self._distribution(image=image,spacing=spacing,trim_edges=trim_edges)
         return temp
 
-    def ydir(self,img,spacing=10,trim_edges=True):
+    def ydir(self,image,spacing=10,trim_edges=True):
         r'''
         '''
-        temp = sp.transpose(img,[1,0,2])
-        temp = self._apply_chords(img=temp,spacing=spacing,trim_edges=trim_edges)
-        temp = sp.transpose(img,[1,0,2])
+        image = sp.transpose(image,[1,0,2])
+        temp = self._distribution(image=image,spacing=spacing,trim_edges=trim_edges)
         return temp
         
-    def zdir(self,img,spacing=10,trim_edges=True):
+    def zdir(self,image,spacing=10,trim_edges=True):
         r'''
         '''
-        temp = sp.transpose(img,[2,1,0])
-        temp = self._apply_chords(img=temp,spacing=spacing,trim_edges=trim_edges)
-        temp = sp.transpose(img,[2,1,0])
+        image = sp.transpose(image,[2,1,0])
+        temp = self._distribution(image=image,spacing=spacing,trim_edges=trim_edges)
+        return temp
+        
+    def ndir(self,image,spacing=10,rotation=0,trim_edges=True):
+        r'''
+        '''
+        image = spim.rotate(image,axes=[1,2],angle=rotation)
+        temp = self._distribution(image=image,spacing=spacing,trim_edges=trim_edges)
         return temp
         
     def _apply_chords(self,img,spacing=10,trim_edges=True):
@@ -85,7 +90,7 @@ class ChordLengthDistribution(object):
         # Apply chord mask to specified layers (Z-dir) of input image
         temp[:,:,Z] = img[:,:,Z]*maskX
         if trim_edges:
-            temp[[0,-1],:,:] = 1
+            temp[[0,-1],:,:] = 1 
             temp[:,[0,-1],:] = 1
             spim.label(temp)
             ind = sp.where(temp==temp[0,0,0])
@@ -93,20 +98,27 @@ class ChordLengthDistribution(object):
             
         return sp.array(temp,dtype=int)
         
-    def _distribution(self,img):
+    def _distribution(self,image,spacing,rotation=0,trim_edges=True):
         r'''
         '''
-        # Find spacing
-        proj = sp.sum(img,axis=1)
-        [yi,zi] = sp.where(proj)
-        bins = sp.zeros((sp.size(img)),dtype=int)
-        for y,z in zip(yi,zi):
-            a = self._find_blocks(img[:,y,z])
+        # Clean up input image
+        img = sp.array(image,ndmin=3,dtype=int)
+        # Extract size metrics from input image
+        [Lx, Ly, Lz] = sp.shape(img)
+        start = sp.array(sp.floor(spacing/2),dtype=int)
+        Y = sp.arange(start,Ly,spacing)
+        Z = sp.arange(start,Lz,spacing)
+        [y,z] = sp.meshgrid(Y,Z,indexing='ij')
+        y = y.flatten()
+        z = z.flatten()
+        bins = sp.zeros(sp.amax(sp.shape(img))+1,dtype=int)
+        for yi,zi in zip(y,z):
+            a = self._find_blocks(img[:,yi,zi],trim_edges=trim_edges)
             bins[a['length']] += 1
-        big_bin = sp.where(bins)[0][-1] + 1
-        return bins[:big_bin]
+        return bins
         
-    def _find_blocks(self,array,ignore_edges=False):
+    def _find_blocks(self,array,trim_edges=False):
+        array = sp.clip(array,a_min=0,a_max=1)
         temp = sp.pad(array,pad_width=1,mode='constant',constant_values=0)
         end_pts = sp.where(sp.ediff1d(temp)==-1)[0] # Find 1->0 transitions
         end_pts -= 1  # To adjust for 0 padding
@@ -117,10 +129,10 @@ class ChordLengthDistribution(object):
         a['start'] = start_pts
         a['end'] = end_pts
         a['length'] = seg_len
-        if ignore_edges:
-            if a['start'][0] == 0:
+        if trim_edges:
+            if (a['start'].size > 0) and (a['start'][0] == 0):
                 [a.update({item:a[item][1:]}) for item in a]
-            if a['end'][-1] == sp.size(array):
+            if (a['end'].size > 0) and (a['end'][-1] == sp.size(array)-1):
                 [a.update({item:a[item][:-1]}) for item in a]
         return a
         
@@ -129,18 +141,24 @@ if __name__ == '__main__':
 #    file = 'Xray-trinary(800-1000-1200)'
 #    ext = 'tif'
 #    img = tifffile.imread(path+file+'.'+ext)
-#    img = img[:,:,1200:1800,1200:1800]
+#    img = img[:,:,1000:2000,1000:2000]
 #    img = img.swapaxes(2,0)
 #    img = img.swapaxes(3,1)
 #    img = img[:,:,:,0] < sp.amax(img[:,:,:,0])
-#    sp.savez('img_med',img)
+#    sp.savez('img_lrg',img)
 #    temp = sp.load('img.npz')
-    temp = sp.load('img_med.npz')
+    temp = sp.load('img_lrg.npz')
     img = temp['arr_0']
     C = ChordLengthDistribution()
-    chords = C._apply_chords(img,trim_edges=False)
-#    dist = C._distribution(chords)
-#    plt.plot(sp.log10(dist))
+#    plt.subplot(131)
+#    chords = C.xdir(image=img)
+#    plt.plot(sp.log10(chords),'bo')
+#    plt.subplot(132)
+#    chords = C.ydir(image=img)
+#    plt.plot(sp.log10(chords),'ro')
+#    plt.subplot(133)
+#    chords = C.zdir(image=img)
+#    plt.plot(sp.log10(chords),'go')
     
     
     
