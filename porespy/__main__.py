@@ -1,8 +1,6 @@
-
 import scipy as sp
 import scipy.ndimage as spim
 import scipy.spatial as sptl
-import tifffile
 
 class TwoPointCorrelation(object):
     def __init__(self,img,**kwargs):
@@ -26,7 +24,6 @@ class TwoPointCorrelation(object):
         kdt_void = sptl.cKDTree(ind[void])
         hits_all = kdt_void.count_neighbors(kdt_all,r=radii)
         hits_void = kdt_void.count_neighbors(kdt_void,r=radii)
-        
     
     def _dist(self,pts):
         from scipy.spatial.distance import cdist
@@ -136,7 +133,7 @@ class ChordLengthDistribution(object):
                 [a.update({item:a[item][:-1]}) for item in a]
         return a
         
-if __name__ == '__main__':
+#if __name__ == '__main__':
 #    path = 'C:\\Users\\Jeff\\Dropbox\\Public\\'
 #    file = 'Xray-trinary(800-1000-1200)'
 #    ext = 'tif'
@@ -147,9 +144,9 @@ if __name__ == '__main__':
 #    img = img[:,:,:,0] < sp.amax(img[:,:,:,0])
 #    sp.savez('img_lrg',img)
 #    temp = sp.load('img.npz')
-    temp = sp.load('img_lrg.npz')
-    img = temp['arr_0']
-    C = ChordLengthDistribution()
+#    temp = sp.load('img_lrg.npz')
+#    img = temp['arr_0']
+#    C = ChordLengthDistribution()
 #    plt.subplot(131)
 #    chords = C.xdir(image=img)
 #    plt.plot(sp.log10(chords),'bo')
