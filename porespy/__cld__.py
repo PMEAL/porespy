@@ -1,33 +1,6 @@
 import scipy as sp
 import scipy.ndimage as spim
 
-class TwoPointCorrelation(object):
-    @staticmethod
-    def run(img,npoints=1000,nbins=100):
-        r'''
-        '''
-        from scipy.spatial.distance import cdist
-        img = sp.atleast_3d(img)
-        # Extract size metrics from input image
-        [Lx, Ly, Lz] = sp.shape(img)
-        ind = sp.vstack((sp.random.randint(0,Lx,npoints),
-                         sp.random.randint(0,Ly,npoints),
-                         sp.random.randint(0,Lz,npoints))).T
-        phase = img[ind[:,0],ind[:,1],ind[:,2]].flatten()
-        ind = ind[phase.astype(bool)]
-        # Get distance map of points
-        dmap = cdist(ind,ind,'euclidean')
-        bin_max = sp.ceil(sp.amax(dmap))
-        bin_min = sp.floor(sp.amin(dmap))
-        bin_array = sp.linspace(bin_min,bin_max,nbins)
-        temp = sp.digitize(dmap.flatten(),bin_array)
-        count = sp.bincount(temp)
-        distance = sp.arange(bin_min,bin_max,(bin_max-bin_min)/nbins)
-        return [distance,count]
-        
-class AutoCorrelation(object):
-    pass
-
 class ChordLengthDistribution(object):
        
     def xdir(self,image,spacing=10,trim_edges=True):
@@ -119,40 +92,3 @@ class ChordLengthDistribution(object):
             if (a['end'].size > 0) and (a['end'][-1] == sp.size(array)-1):
                 [a.update({item:a[item][:-1]}) for item in a]
         return a
-        
-#if __name__ == '__main__':
-#    path = 'C:\\Users\\Jeff\\Dropbox\\Public\\'
-#    file = 'Xray-trinary(800-1000-1200)'
-#    ext = 'tif'
-#    img = tifffile.imread(path+file+'.'+ext)
-#    img = img[:,:,1000:2000,1000:2000]
-#    img = img.swapaxes(2,0)
-#    img = img.swapaxes(3,1)
-#    img = img[:,:,:,0] < sp.amax(img[:,:,:,0])
-#    sp.savez('img_lrg',img)
-#    temp = sp.load('img.npz')
-#    temp = sp.load('img_lrg.npz')
-#    img = temp['arr_0']
-#    C = ChordLengthDistribution()
-#    plt.subplot(131)
-#    chords = C.xdir(image=img)
-#    plt.plot(sp.log10(chords),'bo')
-#    plt.subplot(132)
-#    chords = C.ydir(image=img)
-#    plt.plot(sp.log10(chords),'ro')
-#    plt.subplot(133)
-#    chords = C.zdir(image=img)
-#    plt.plot(sp.log10(chords),'go')
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    

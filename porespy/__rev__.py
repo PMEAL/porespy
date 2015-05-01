@@ -1,7 +1,6 @@
 import scipy as sp
-__all__ =['REV']
 
-class REV(object):
+class RepresentativeElementaryVolume(object):
     r'''
     '''
     @staticmethod

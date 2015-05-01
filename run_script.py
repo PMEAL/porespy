@@ -9,10 +9,10 @@ ext  = 'tif'
 
 im = 1 - ps.imopen(filename=path+file+'.'+ext)
 
-#[distance, count] = ps.TPC.run(img=im,npoints=5000)
-#plt.plot(distance,count)
+[distance, count] = ps.tpc.run(img=im,npoints=5000)
+plt.plot(distance,count)
 
-[porosity,size] = ps.REV.run(im,N=100)
-plt.plot(size,porosity,'b.')
+#[porosity,size] = ps.rev.run(im,N=100)
+#plt.plot(size,porosity,'b.')
 
 #sp.savetxt('rev.csv',sp.vstack((size,porosity)).T)
