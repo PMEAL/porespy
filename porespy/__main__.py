@@ -1,43 +1,30 @@
 import scipy as sp
 import scipy.ndimage as spim
-import scipy.spatial as sptl
 
 class TwoPointCorrelation(object):
-    def __init__(self,img,**kwargs):
-        pass
-    
-    def radial(self,img,spacing):
+    @staticmethod
+    def run(img,npoints=1000,nbins=100):
         r'''
         '''
+        from scipy.spatial.distance import cdist
         img = sp.atleast_3d(img)
         # Extract size metrics from input image
         [Lx, Ly, Lz] = sp.shape(img)
-        X = sp.arange(0,Lx,spacing)
-        Y = sp.arange(0,Ly,spacing)
-        Z = sp.arange(0,Lz,spacing)
-        pts = sp.meshgrid(X,Y,Z)
-        ind = sp.vstack((pts[0].flatten(),pts[1].flatten(),pts[2].flatten())).T  # Add 0.5 here?
+        ind = sp.vstack((sp.random.randint(0,Lx,npoints),
+                         sp.random.randint(0,Ly,npoints),
+                         sp.random.randint(0,Lz,npoints))).T
+        phase = img[ind[:,0],ind[:,1],ind[:,2]].flatten()
+        ind = ind[phase.astype(bool)]
+        # Get distance map of points
+        dmap = cdist(ind,ind,'euclidean')
+        bin_max = sp.ceil(sp.amax(dmap))
+        bin_min = sp.floor(sp.amin(dmap))
+        bin_array = sp.linspace(bin_min,bin_max,nbins)
+        temp = sp.digitize(dmap.flatten(),bin_array)
+        count = sp.bincount(temp)
+        distance = sp.arange(bin_min,bin_max,(bin_max-bin_min)/nbins)
+        return [distance,count]
         
-        radii = sp.linspace(spacing,(Lx**2 + Ly**2 + Lz**2)**0.5,spacing)
-        void = sp.reshape(img[pts],(sp.size(img[pts]),))
-        kdt_all = sptl.cKDTree(ind)       
-        kdt_void = sptl.cKDTree(ind[void])
-        hits_all = kdt_void.count_neighbors(kdt_all,r=radii)
-        hits_void = kdt_void.count_neighbors(kdt_void,r=radii)
-    
-    def _dist(self,pts):
-        from scipy.spatial.distance import cdist
-        dmap = cdist(pts,pts,'euclidean')
-        return dmap
-        
-    def _hist(self,dist_map,bins=100):
-        bin_max = sp.ceil(sp.amax(dist_map))
-        bin_min = sp.floor(sp.amin(dist_map))
-        bin_array = sp.linspace(bin_min,bin_max,bins)
-        temp = sp.digitize(dist_map.flatten(),bin_array)
-        bin_count = sp.bincount(temp)
-        return bin_count
-
 class AutoCorrelation(object):
     pass
 
