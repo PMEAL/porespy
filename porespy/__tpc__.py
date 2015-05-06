@@ -24,6 +24,33 @@ class TwoPointCorrelation(object):
         distance = sp.arange(bin_min,bin_max,(bin_max-bin_min)/nbins)
         return [distance,count]
         
-  
-    
-    
+        
+        
+class AutoCorrelation():
+    @staticmethod
+    def run(img):
+        from scipy.ndimage.filters import correlate as corr
+        import scipy.ndimage as spim
+        import scipy as sp
+        import numpy as np
+        
+        space = sp.rand(200,200)>0.99
+        space = spim.distance_transform_bf(~space)>=5
+        space = space.astype(int)
+        
+#        result = corr(space, space)
+#        result = result[result.size/2:]
+        
+        space_ps = sp.absolute(np.fft.fftn(space))
+        space_ps *= space_ps
+
+        space_ac = np.fft.ifftn(space_ps).real.round()
+        space_ac /= space_ac[0, 0]
+        
+        
+        
+
+
+
+
+
