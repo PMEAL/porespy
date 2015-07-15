@@ -15,8 +15,8 @@ import timeit
 
 start_time = timeit.default_timer()
 
- Generate an image of spheres
-im = sp.rand(80, 80, 80) < 0.997
+# Generate an image of spheres
+im = sp.rand(50, 50, 50) < 0.997
 im = spim.distance_transform_bf(im) >= 4
 print(timeit.default_timer() - start_time)
 
@@ -39,8 +39,13 @@ print(timeit.default_timer() - start_time)
 # plt.plot(sp.log10(cx))
 #==============================================================================
 
-# Perform REV calculation
-b = ps.rev(image=im)
-vals = b.run(N=500)
-# Plot results
-plt.plot(vals.size, vals.porosity, 'bo')
+#==============================================================================
+# # Perform REV calculation
+# b = ps.rev(image=im)
+# vals = b.run(N=500)
+# # Plot results
+# plt.plot(vals.size, vals.porosity, 'bo')
+#==============================================================================
+
+# Perform MIO simulation
+c = ps.mio(image=im)

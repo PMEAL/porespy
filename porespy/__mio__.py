@@ -15,7 +15,7 @@ class MorphologicalImageOpenning(object):
         self.image = sp.pad(self.image,
                             pad_width=1,
                             mode='constant',
-                            constant_values=1)
+                            constant_values=0)
 
     def run(self):
-        imdt = spim.distance_transport_bf(self.image)
+        imdt = spim.distance_transform_bf(self.image)
