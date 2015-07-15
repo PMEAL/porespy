@@ -13,6 +13,7 @@ Examples
 One typical use of PoreSpy is to product a chord length distribution which gives an indication of the sizes of the void spaces in the materials {ref Torquato's book}.  This can be accomplished failry easily with PoreSpy using:
 
 .. code-block:: python
+
     # Generate a test image of a sphere pack:
     import scipy as sp
     import scipy.image as spim
