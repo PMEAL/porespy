@@ -3,6 +3,41 @@ import scipy.ndimage as spim
 
 
 class ChordLengthDistribution(object):
+    r"""
+    Performs Chord-length distribution analyses
+
+    Examples
+    --------
+    Generate a test image of a sphere pack:
+
+    >>> import scipy as sp
+    >>> import scipy.image as spim
+    >>> im = sp.rand(40, 40, 40) < 0.997
+    >>> im = spim.distance_transform_bf(im) >= 4
+
+    Import porespy and use it:
+
+    >>> import porespy
+    >>> a = porespy.cld(im)
+    >>> cx = a.xdir(spacing=5, trim_edges=True)
+    >>> cim = a.get_chords(direction='x', spacing=5, trim_edges=True)
+
+    Visualize with Matplotlib
+
+    .. code-block:: python
+
+
+        import matplotlib as plt
+        plt.subplot(2, 2, 1)
+        plt.imshow(im[:, :, 7])
+        plt.subplot(2, 2, 3)
+        plt.imshow(im[:, :, 7]*1.0 - cim[:, :, 7]*0.5)
+        plt.subplot(2, 2, 2)
+        plt.plot(cx)
+        plt.subplot(2, 2, 4)
+        plt.plot(sp.log10(cx))
+
+    """
 
     def __init__(self, image):
         super().__init__()
