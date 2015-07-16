@@ -16,7 +16,7 @@ import timeit
 start_time = timeit.default_timer()
 
 # Generate an image of spheres
-im = sp.rand(50, 50, 50) < 0.997
+im = sp.rand(200, 200, 1) < 0.997
 im = spim.distance_transform_bf(im) >= 4
 print(timeit.default_timer() - start_time)
 
@@ -48,4 +48,4 @@ print(timeit.default_timer() - start_time)
 #==============================================================================
 
 # Perform MIO simulation
-c = ps.mio(image=im)
+self = ps.mio(image=im)
