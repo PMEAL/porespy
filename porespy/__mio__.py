@@ -1,3 +1,4 @@
+import sys
 import scipy as sp
 import scipy.ndimage as spim
 from collections import namedtuple
@@ -23,14 +24,19 @@ class MorphologicalImageOpenning(object):
             sizes = sp.logspace(sp.log10(sp.amax(self._imdt)), 0.1, npts)
         self._make_seeds(sizes=sizes)
         imresults = sp.zeros(sp.shape(self.image))
+        print('Dilating seeds')
+        print('0%|'+'-'*len(sizes)+'|100%')
+        print('  |', end='')
         for r in sizes:
+            print('.', end='')
+            sys.stdout.flush()
             strel = self._make_strel(r)
-            strel = sp.atleast_3d(strel[:, :, sp.around(r)])
             im = spim.binary_dilation(self._imseeds >= r, structure=strel)
             imresults[(imresults == 0) * im] = r
+        print('')
         self._iminv = imresults
 
-    def get_drainage_curve(self):
+    def drainage_curve(self):
         pts = sp.unique(self._iminv)[1:]
         vol = []
         for r in pts:
@@ -40,6 +46,32 @@ class MorphologicalImageOpenning(object):
         vals.volume = sp.array(vol)
 
         return vals
+
+    def get_fluid_image(self, size=None, saturation=None):
+        r"""
+        Returns a binary image of the invading fluid configuration
+
+        Parameters
+        ----------
+        size : scalar
+            The size of invaded pores, so these and all larger pores will be
+            filled, if they are accessible.
+
+        saturation : scalar
+            The fractional filling of the pore space to return.  The size of
+            the invaded pores are adjusted by trial and error until this
+            value is reached. If size is sent then saturation is ignored.
+
+        """
+        if size is not None:
+            im = self._iminv >= size
+        else:
+            Vp = sp.sum(self.image)
+            for r in sp.unique(self._iminv):
+                im = self._iminv >= size
+                if sp.sum(im)/Vp >= saturation:
+                    break
+        return im
 
     def _make_strel(self, r):
         r = sp.around(r)
@@ -52,13 +84,19 @@ class MorphologicalImageOpenning(object):
         return strel
 
     def _make_dt(self):
-        print('Calculating distance transform, this can take some time')
-        self._imdt = spim.distance_transform_bf(self.image)
+        print('Calculating distance transform...', end='')
+        sys.stdout.flush()
+        self._imdt = spim.distance_transform_edt(self.image)
         print('Distance transform complete')
 
     def _make_seeds(self, sizes):
         imresults = sp.zeros(sp.shape(self.image))
+        print('Making seed array')
+        print('0%|'+'-'*len(sizes)+'|100%')
+        print('  |', end='')
         for r in sizes:
+            print('.', end='')
+            sys.stdout.flush()
             imseed = self._imdt > r
             # Trim clusters not connected in invading face(s)
             imlabels = spim.label(imseed)[0]
@@ -73,4 +111,5 @@ class MorphologicalImageOpenning(object):
             imseed = sp.in1d(imlabels, inlets)
             imseed = sp.reshape(imseed, sp.shape(self.image))
             imresults[(imresults == 0) * (imseed)] = r
+        print('')
         self._imseeds = imresults

@@ -16,8 +16,8 @@ import timeit
 start_time = timeit.default_timer()
 
 # Generate an image of spheres
-im = sp.rand(330, 330, 1) < 0.997
-im = spim.distance_transform_bf(im) >= 4
+im = sp.rand(110, 110, 110) < 0.997
+im = spim.distance_transform_edt(im) >= 4
 print(timeit.default_timer() - start_time)
 
 #==============================================================================
