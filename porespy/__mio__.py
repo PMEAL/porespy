@@ -30,8 +30,7 @@ class MorphologicalImageOpenning(object):
         for r in sizes:
             print('.', end='')
             sys.stdout.flush()
-            strel = self._make_strel(r)
-            im = spim.binary_dilation(self._imseeds >= r, structure=strel)
+            im = self._dilate_seeds(im_seeds=self._imseeds, radius=r)
             imresults[(imresults == 0) * im] = r
         print('')
         self._iminv = imresults
@@ -68,26 +67,16 @@ class MorphologicalImageOpenning(object):
         else:
             Vp = sp.sum(self.image)
             for r in sp.unique(self._iminv):
-                im = self._iminv >= size
+                im = self._iminv >= r
                 if sp.sum(im)/Vp >= saturation:
                     break
         return im
-
-    def _make_strel(self, r):
-        r = sp.around(r)
-        D = 2*r
-        if sp.mod(D, 2) == 0:
-            D += 1
-        strel = sp.ones((D, D, D))
-        strel[r, r, r] = 0
-        strel = spim.distance_transform_bf(strel) <= r
-        return strel
 
     def _make_dt(self):
         print('Calculating distance transform...', end='')
         sys.stdout.flush()
         self._imdt = spim.distance_transform_edt(self.image)
-        print('Distance transform complete')
+        print('complete')
 
     def _make_seeds(self, sizes):
         imresults = sp.zeros(sp.shape(self.image))
@@ -113,3 +102,21 @@ class MorphologicalImageOpenning(object):
             imresults[(imresults == 0) * (imseed)] = r
         print('')
         self._imseeds = imresults
+
+    def _dilate_seeds(self, im_seeds, radius):
+        im = spim.distance_transform_edt(~(im_seeds >= radius)) <= radius
+        return im
+
+    def _make_strel(self, r):
+        D = 2*sp.ceil(r)
+        if sp.mod(D, 2) == 0:
+            D += 1
+        strel = sp.ones((D, D, D))
+        strel[D/2, D/2, D/2] = 0
+        strel = spim.distance_transform_bf(strel) <= r
+        return strel
+
+    def _dilate_seeds2(self, im_seeds, radius):
+        strel = self._make_strel(r=radius)
+        im = spim.binary_dilation(im_seeds >= radius, structure=strel)
+        return im

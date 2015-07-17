@@ -16,7 +16,7 @@ import timeit
 start_time = timeit.default_timer()
 
 # Generate an image of spheres
-im = sp.rand(110, 110, 110) < 0.997
+im = sp.rand(310, 310, 310) < 0.999
 im = spim.distance_transform_edt(im) >= 4
 print(timeit.default_timer() - start_time)
 
@@ -50,3 +50,6 @@ print(timeit.default_timer() - start_time)
 # Perform MIO simulation
 self = ps.mio(image=im)
 self.run()
+pcsnwp = self.drainage_curve()
+im = self.get_fluid_image(size=3)
+plt.imshow(im[:, :, 50]*0.2 + ~self.image[:, :, 50], interpolation='none')
