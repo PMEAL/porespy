@@ -16,7 +16,7 @@ import timeit
 start_time = timeit.default_timer()
 
 # Generate an image of spheres
-im = sp.rand(310, 310, 310) < 0.999
+im = sp.rand(200, 200, 200) < 0.999
 im = spim.distance_transform_edt(im) >= 4
 print(timeit.default_timer() - start_time)
 
@@ -47,9 +47,17 @@ print(timeit.default_timer() - start_time)
 # plt.plot(vals.size, vals.porosity, 'bo')
 #==============================================================================
 
-# Perform MIO simulation
-self = ps.mio(image=im)
-self.run()
-pcsnwp = self.drainage_curve()
-im = self.get_fluid_image(size=3)
-plt.imshow(im[:, :, 50]*0.2 + ~self.image[:, :, 50], interpolation='none')
+
+#==============================================================================
+# # Perform MIO simulation
+# self = ps.mio(image=im)
+# self.run()
+# pcsnwp = self.drainage_curve()
+# im = self.get_fluid_image(size=3)
+# plt.imshow(im[:, :, 50]*0.2 + ~self.image[:, :, 50], interpolation='none')
+#==============================================================================
+
+# Perform TPC calculation
+self = ps.tpc(image=im)
+a = self.run(npts=50, spacing=2, rmax=20)
+plt.plot(a.distance, a.probability, 'b-o')

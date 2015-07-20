@@ -1,5 +1,6 @@
 import scipy as sp
 from collections import namedtuple
+from scipy.spatial import cKDTree as kdt
 
 
 class TwoPointCorrelation(object):
@@ -9,27 +10,42 @@ class TwoPointCorrelation(object):
         image = sp.atleast_3d(image)
         self.image = sp.array(image, dtype=bool)
 
-    def run(self, npoints=1000, nbins=100):
-        r'''
-        '''
-        from scipy.spatial.distance import cdist
+    def run(self, npts=25, spacing=2, rmax=20):
         img = self.image
         # Extract size metrics from input image
         [Lx, Ly, Lz] = sp.shape(img)
-        ind = sp.vstack((sp.random.randint(0, Lx, npoints),
-                         sp.random.randint(0, Ly, npoints),
-                         sp.random.randint(0, Lz, npoints))).T
-        phase = img[ind[:, 0], ind[:, 1], ind[:, 2]].flatten()
-        ind = ind[phase.astype(bool)]
-        # Get distance map of points
-        dmap = cdist(ind, ind, 'euclidean')
-        bin_max = sp.ceil(sp.amax(dmap))
-        bin_min = sp.floor(sp.amin(dmap))
-        bin_array = sp.linspace(bin_min, bin_max, nbins)
-        temp = sp.digitize(dmap.flatten(), bin_array)
-        count = sp.bincount(temp)
-        distance = sp.arange(bin_min, bin_max, (bin_max-bin_min)/nbins)
+
+        # Generate kdtree for void and solid space
+        i = sp.meshgrid(sp.arange(0, Lx, spacing),
+                        sp.arange(0, Ly, spacing),
+                        sp.arange(0, Lz, spacing))
+        # Convert matrix into index notation
+        i_void = sp.where(img[i] == 1)
+        ind_void = sp.vstack((i_void[0].flatten(),
+                              i_void[1].flatten(),
+                              i_void[2].flatten())).T
+        i_solid = sp.where(img[i] == 0)
+        ind_solid = sp.vstack((i_solid[0].flatten(),
+                               i_solid[1].flatten(),
+                               i_solid[2].flatten())).T
+        # Generate kdtrees
+        dtree_void = kdt(ind_void)
+        dtree_solid = kdt(ind_solid)
+
+        # Choose npts random base points from ind_void
+        ind = ind_void[sp.random.randint(0, sp.shape(ind_void)[0], npts)]
+        # Generate kd-tree of base points
+        dtree_pts = kdt(ind)
+
+        # Perform 2-point correlation calculation for range of radii
+        hits = []
+        for r in sp.arange(1, rmax):
+            hits_void = dtree_pts.count_neighbors(other=dtree_void, r=r)
+            hits_solid = dtree_pts.count_neighbors(other=dtree_solid, r=r)
+            hits.append(hits_void/(hits_solid + hits_void))
+
+        # Store results in namedtuple
         vals = namedtuple('TwoPointCorrelation', ('distance', 'probability'))
-        vals.distance = distance
-        vals.count = count
+        vals.distance = sp.arange(1, rmax, 1)
+        vals.probability = hits
         return vals
