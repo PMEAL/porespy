@@ -26,7 +26,6 @@ class ChordLengthDistribution(object):
 
     .. code-block:: python
 
-
         import matplotlib as plt
         plt.subplot(2, 2, 1)
         plt.imshow(im[:, :, 7])

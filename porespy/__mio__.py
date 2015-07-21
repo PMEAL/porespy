@@ -100,7 +100,7 @@ class MorphologicalImageOpenning(object):
             imseed = sp.in1d(imlabels, inlets)
             imseed = sp.reshape(imseed, sp.shape(self.image))
             imresults[(imresults == 0) * (imseed)] = r
-        print('')
+        print('|')
         self._imseeds = imresults
 
     def _dilate_seeds(self, im_seeds, radius):

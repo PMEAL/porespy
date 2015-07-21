@@ -16,7 +16,7 @@ import timeit
 start_time = timeit.default_timer()
 
 # Generate an image of spheres
-im = sp.rand(200, 200, 200) < 0.999
+im = sp.rand(300, 300, 300) < 0.999
 im = spim.distance_transform_edt(im) >= 4
 print(timeit.default_timer() - start_time)
 
@@ -59,5 +59,6 @@ print(timeit.default_timer() - start_time)
 
 # Perform TPC calculation
 self = ps.tpc(image=im)
-a = self.run(npts=50, spacing=2, rmax=20)
-plt.plot(a.distance, a.probability, 'b-o')
+a = self.run(npts=200, r=sp.arange(1, 30, 3))
+plt.plot(a.distance, a.probability, 'b-x')
+print(timeit.default_timer() - start_time)
