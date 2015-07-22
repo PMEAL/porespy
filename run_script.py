@@ -3,6 +3,8 @@ import scipy.ndimage as spim
 import porespy as ps
 import matplotlib.pyplot as plt
 import timeit
+start_time = timeit.default_timer()
+
 
 #==============================================================================
 # import imageio
@@ -13,17 +15,16 @@ import timeit
 # im = imageio.mimread(path+'\\'+file+'.'+ext)
 #==============================================================================
 
-start_time = timeit.default_timer()
-
-# Generate an image of spheres
-im = sp.rand(300, 300, 300) < 0.999
-im = spim.distance_transform_edt(im) >= 4
+# Generate an image of spheres using the imgen class
+im = ps.imgen.spheres(shape=100, radius=4, porosity=0.9)
 print(timeit.default_timer() - start_time)
 
-# Perform PoreSizeFunction calculation
-self = ps.psf(image=im)
-a = self.run()
-plt.loglog(a.distance, a.frequency, 'bo')
+#==============================================================================
+# # Perform PoreSizeFunction calculation
+# self = ps.psf(image=im)
+# a = self.run()
+# plt.loglog(a.distance, a.frequency, 'bo')
+#==============================================================================
 
 #==============================================================================
 # # Perform CLD calculation and get image for illustration
@@ -51,7 +52,6 @@ plt.loglog(a.distance, a.frequency, 'bo')
 # # Plot results
 # plt.plot(vals.size, vals.porosity, 'bo')
 #==============================================================================
-
 
 #==============================================================================
 # # Perform MIO simulation
