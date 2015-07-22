@@ -5,6 +5,10 @@ import matplotlib.pyplot as plt
 import timeit
 start_time = timeit.default_timer()
 
+# Generate an image of spheres using the imgen class
+#im = ps.imgen.spheres(shape=100, radius=4, porosity=0.9)
+im = ps.imgen.blobs(shape=100, porosity=0.7, blobiness=8)
+print(timeit.default_timer() - start_time)
 
 #==============================================================================
 # import imageio
@@ -15,9 +19,9 @@ start_time = timeit.default_timer()
 # im = imageio.mimread(path+'\\'+file+'.'+ext)
 #==============================================================================
 
-# Generate an image of spheres using the imgen class
-im = ps.imgen.spheres(shape=100, radius=4, porosity=0.9)
-print(timeit.default_timer() - start_time)
+
+
+
 
 #==============================================================================
 # # Perform PoreSizeFunction calculation
