@@ -20,6 +20,11 @@ im = sp.rand(300, 300, 300) < 0.999
 im = spim.distance_transform_edt(im) >= 4
 print(timeit.default_timer() - start_time)
 
+# Perform PoreSizeFunction calculation
+self = ps.psf(image=im)
+a = self.run()
+plt.loglog(a.distance, a.frequency, 'bo')
+
 #==============================================================================
 # # Perform CLD calculation and get image for illustration
 # a = ps.cld(image=im)
@@ -57,8 +62,10 @@ print(timeit.default_timer() - start_time)
 # plt.imshow(im[:, :, 50]*0.2 + ~self.image[:, :, 50], interpolation='none')
 #==============================================================================
 
-# Perform TPC calculation
-self = ps.tpc(image=im)
-a = self.run(npts=200, r=sp.arange(1, 30, 3))
-plt.plot(a.distance, a.probability, 'b-x')
-print(timeit.default_timer() - start_time)
+#==============================================================================
+# # Perform TPC calculation
+# self = ps.tpc(image=im)
+# a = self.run(npts=200, r=sp.arange(1, 30, 3))
+# plt.plot(a.distance, a.probability, 'b-x')
+# print(timeit.default_timer() - start_time)
+#==============================================================================
