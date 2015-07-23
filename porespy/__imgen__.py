@@ -29,8 +29,8 @@ class ImageGenerator():
         Notes
         -----
         This method can also be used to generate a dispersion of hollows by
-        treating porosity as solid volume fraction and inverting the returned
-        image.
+        treating ``porosity`` as solid volume fraction and inverting the
+        returned image.
         """
         if sp.size(shape) == 1:
             shape = sp.full((3, ), int(shape))
@@ -64,12 +64,11 @@ class ImageGenerator():
         if sp.size(shape) == 1:
             shape = sp.full((3, ), int(shape))
         [Nx, Ny, Nz] = shape
-        l = sp.mean(shape)
-        n = blobiness
+        sigma = sp.mean(shape)/(4*blobiness)
         mask = sp.rand(Nx, Ny, Nz)
-        mask = spim.gaussian_filter(mask, sigma=l/(4.*n))
-        mask = (mask - mask.min())/(mask.max() - mask.min())
-        thresh = 0
-        while (sp.sum(mask < thresh)/sp.size(mask)) < porosity:
-            thresh += 0.05
-        return mask < thresh
+        mask = spim.gaussian_filter(mask, sigma=sigma)
+        hist = sp.histogram(mask, bins=1000)
+        cdf = sp.cumsum(hist[0])/sp.size(mask)
+        xN = sp.where(cdf >= porosity)[0][0]
+        im = mask <= hist[1][xN]
+        return im
