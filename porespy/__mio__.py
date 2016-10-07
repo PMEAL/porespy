@@ -2,6 +2,7 @@ import sys
 import scipy as sp
 import scipy.ndimage as spim
 from collections import namedtuple
+import matplotlib.pyplot as plt
 
 
 class MorphologicalImageOpenning(object):
@@ -35,7 +36,11 @@ class MorphologicalImageOpenning(object):
         print('')
         self._iminv = imresults
 
-    def drainage_curve(self):
+    def get_drainage_data(self):
+        r'''
+        '''
+        if hasattr(self, '_iminv') is False:
+            raise Exception('The \'run\' method has not been called yet')
         pts = sp.unique(self._iminv)[1:]
         vol = []
         for r in pts:
@@ -45,6 +50,13 @@ class MorphologicalImageOpenning(object):
         vals.volume = sp.array(vol)
 
         return vals
+        
+    def plot_drainage_curve(self):
+        r'''
+        '''
+        plt.figure()
+        data = self.get_drainage_data()
+        plt.plot(data.size, data.volume, 'b-o')
 
     def get_fluid_image(self, size=None, saturation=None):
         r"""
