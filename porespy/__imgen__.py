@@ -72,3 +72,74 @@ class ImageGenerator():
         xN = sp.where(cdf >= porosity)[0][0]
         im = mask <= hist[1][xN]
         return im
+
+    @staticmethod
+    def fibers(shape, radius, nfibers, phi_max=0, theta_max=180):
+        r"""
+        Generates a binary image of overlapping fibers.
+        
+        Parameters
+        ----------
+        phi_max : scalar
+            A value between 0 and 90 that controls the amount that the fibers
+            lie out of the XY plane, with 0 meaning all fibers lie in the XY
+            plane, and 90 meaning that fibers are randomly oriented out of the 
+            plane by as much as +/- 90 degrees.
+        theta_max : scalar
+            A value between 0 and 90 that controls the amount rotation in the
+            XY plane, with 0 meaning all fibers point in the X-direction, and 
+            90 meaning they are randomly rotated about the Z axis by as much 
+            as +/- 90 degrees.
+            
+        Returns
+        -------
+        im : binary image
+            The fibers are labelled as 1's.
+        """
+        shape = sp.array(shape)
+        im = sp.zeros(shape)
+        R = sp.sqrt(sp.sum(sp.square(shape)))
+        n = 0
+        while n < nfibers:
+            x = sp.rand(3)*shape
+            phi = sp.deg2rad(90 + 90*(0.5 - sp.rand())*phi_max/90)
+            theta = sp.deg2rad(180 - 90*(0.5 - sp.rand())*theta_max/90)
+            X0 = R*sp.array([sp.sin(theta)*sp.cos(phi),
+                             sp.sin(theta)*sp.sin(phi),
+                             sp.cos(theta)])
+            [X0, X1] = [X0 + x, -X0 + x]
+            crds = bresenham(X0, X1)
+            lower = ~sp.any(sp.vstack(crds).T < [0, 0, 0], axis=1)
+            upper = ~sp.any(sp.vstack(crds).T >= shape, axis=1)
+            valid = upper*lower
+            if sp.any(valid):
+                im[crds[0][valid], crds[1][valid], crds[2][valid]] = 1
+                n += 1
+        im = sp.array(im, dtype=bool)
+        dt = spim.distance_transform_edt(~im) < radius
+        return dt
+
+        
+def bresenham(X0, X1):
+    r"""
+    Calculate the voxel coordinates of a straight line between the two given
+    end points
+    
+    Parameters
+    ----------
+    X0 and X1 : array_like
+        The [x, y, z] coordinates of the start and end points of the line.
+        
+    Returns
+    -------
+        A list of lists containing the X, Y, and Z coordinates of all voxels
+        that should be drawn between the start and end points to create a solid
+        line.
+    """
+    X0 = sp.around(X0)
+    X1 = sp.around(X1)
+    L = sp.amax(sp.absolute([[X1[0]-X0[0]], [X1[1]-X0[1]], [X1[2]-X0[2]]])) + 1
+    x = sp.rint(sp.linspace(X0[0], X1[0], L)).astype(int)
+    y = sp.rint(sp.linspace(X0[1], X1[1], L)).astype(int)
+    z = sp.rint(sp.linspace(X0[2], X1[2], L)).astype(int)
+    return [x, y, z]
