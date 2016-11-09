@@ -94,7 +94,7 @@ class ImageGenerator():
         Returns
         -------
         im : binary image
-            The fibers are labelled as 1's.
+            The void space is labels as 1, and the fibers are labelled as 0.
         """
         shape = sp.array(shape)
         im = sp.zeros(shape)
@@ -108,7 +108,7 @@ class ImageGenerator():
                              sp.sin(theta)*sp.sin(phi),
                              sp.cos(theta)])
             [X0, X1] = [X0 + x, -X0 + x]
-            crds = bresenham(X0, X1)
+            crds = line_segment(X0, X1)
             lower = ~sp.any(sp.vstack(crds).T < [0, 0, 0], axis=1)
             upper = ~sp.any(sp.vstack(crds).T >= shape, axis=1)
             valid = upper*lower
@@ -117,10 +117,10 @@ class ImageGenerator():
                 n += 1
         im = sp.array(im, dtype=bool)
         dt = spim.distance_transform_edt(~im) < radius
-        return dt
+        return ~dt
 
         
-def bresenham(X0, X1):
+def line_segment(X0, X1):
     r"""
     Calculate the voxel coordinates of a straight line between the two given
     end points
