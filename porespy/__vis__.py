@@ -22,3 +22,13 @@ class Visualizations(object):
         im = im*depth
         im = sp.amax(im, axis=0)
         return im
+
+    @staticmethod
+    def xray(im, direction='X'):
+        im = sp.array(~im, dtype=int)
+        if direction in ['Y', 'y']:
+            im = sp.transpose(im, axes=[1,0,2])
+        if direction in ['Z', 'z']:
+            im = sp.transpose(im, axes=[2,1,0])
+        im = sp.sum(im, axis=0)
+        return im
