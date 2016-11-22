@@ -251,7 +251,7 @@ class ImageGenerator():
         while n < nfibers:
             x = sp.rand(3)*shape
             phi = sp.deg2rad(90 + 90*(0.5 - sp.rand())*phi_max/90)
-            theta = sp.deg2rad(180 - 90*(0.5 - sp.rand())*theta_max/90)
+            theta = sp.deg2rad(180 - 90*(0.5 - sp.rand())*2*theta_max/90)
             X0 = R*sp.array([sp.sin(theta)*sp.cos(phi),
                              sp.sin(theta)*sp.sin(phi),
                              sp.cos(theta)])
