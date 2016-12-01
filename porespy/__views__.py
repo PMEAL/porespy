@@ -5,7 +5,7 @@ import skimage as skim
 from skimage import morphology
 
 
-class Visualizations(object):
+class Views(object):
     r"""
 
     """
