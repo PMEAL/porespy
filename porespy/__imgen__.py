@@ -21,10 +21,10 @@ class ImageGenerators():
             number of voxels in each direction
 
         radius : scalar
-            The radius of spheres in the packing
+            The radius of circles in the packing (in pixels)
 
         offset : scalar
-            The amount offset (+ or -) to add between pore centers.
+            The amount offset (+ or -) to add between pore centers (in pixels).
 
         packing : string
             Specifies the type of cubic packing to create.  Options are
@@ -182,9 +182,10 @@ class ImageGenerators():
             The size of the image to generate in [Nx, Ny, Nz] where N is the
             number of voxels
 
-        blobiness : scalar
+        blobiness : array_like
             Controls the morphology of the image.  A higher number results in
-            a larger number of smaller blobs.
+            a larger number of blobs.  If a vector is supplied then the blobs
+            are anisotropic.
 
         porosity : scalar
             The porosity of the final image.  This number is approximated by
@@ -196,77 +197,17 @@ class ImageGenerators():
         A boolean array with True values denoting the pore space
 
         """
+        blobiness = sp.array(blobiness)
+        shape = sp.array(shape)
         if sp.size(shape) == 1:
             shape = sp.full((3, ), int(shape))
-        [Nx, Ny, Nz] = shape
         sigma = sp.mean(shape)/(4*blobiness)
-        mask = sp.rand(Nx, Ny, Nz)
+        mask = sp.random.random(shape)
         mask = spim.gaussian_filter(mask, sigma=sigma)
         hist = sp.histogram(mask, bins=1000)
         cdf = sp.cumsum(hist[0])/sp.size(mask)
         xN = sp.where(cdf >= porosity)[0][0]
         im = mask <= hist[1][xN]
-        return im
-
-    @staticmethod
-    def spatially_correlated(shape, porosity, weights=None, strel=None):
-        r"""
-        Generates pore seeds that are spatailly correlated with their neighbors.
-
-        Parameters
-        ----------
-        shape : list
-            The size of the image to generate in [Nx, Ny, Nz] where N is the
-            number of voxels
-
-        porosity : scalar
-            The final porosity of the image (fraction of 1's).  The image is
-            thresholded then denoised using the same structuring element that
-            was used to generate the image.  The final porosity will only be
-            approximate.
-
-        weights : list of ints, optional
-            The [Nx,Ny,Nz] distances (in number of pores) in each direction that
-            should be correlated.
-
-        strel : array_like, optional (in place of weights)
-            The option allows full control over the spatial correlation pattern by
-            specifying the structuring element to be used in the convolution.
-
-            The array should be a 3D array containing the strength of correlations
-            in each direction.  Nonzero values indicate the strength, direction
-            and extent of correlations.  The following would achieve a basic
-            correlation in the z-direction:
-
-            strel = sp.array([[[0, 0, 0], [0, 0, 0], [0, 0, 0]], \
-                              [[0, 0, 0], [1, 1, 1], [0, 0, 0]], \
-                              [[0, 0, 0], [0, 0, 0], [0, 0, 0]]])
-
-        Returns
-        -------
-        A boolean array with True values denoting the pore space
-
-        """
-        import scipy.ndimage as spim
-        # The following will only work on Cubic networks
-        x, y, z = shape
-        im = sp.rand(x, y, z)
-        if strel is None:  # Then generate a strel
-            if sum(weights) == 0:
-                # If weights of 0 are sent, then skip everything and return rands.
-                return im.flatten()
-            w = sp.array(weights)
-            strel = sp.zeros(w*2+1)
-            strel[:, w[1], w[2]] = 1
-            strel[w[0], :, w[2]] = 1
-            strel[w[0], w[1], :] = 1
-        im = spim.convolve(im, strel)
-        # Convolution is no longer randomly distributed, so fit a gaussian
-        # and find it's seeds
-        im = (im - sp.mean(im))/sp.std(im)
-        im = 1/2*sp.special.erfc(-im/sp.sqrt(2))
-        im = im < 0.9*porosity
-        im = spim.median_filter(input=im, size=3)
         return im
 
     @staticmethod
