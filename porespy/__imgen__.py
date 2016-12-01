@@ -1,14 +1,66 @@
 import scipy as sp
 import scipy.ndimage as spim
+from skimage.morphology import ball, disk, square, rectangle
 
 
-class ImageGenerator():
+class ImageGenerators():
     r"""
     This class contains various methods for generating test images
     """
 
     @staticmethod
-    def sphere_pack(shape, radius, spacing=None, packing='sc'):
+    @staticmethod
+    def circle_pack(shape, radius, offset=0, packing='square'):
+        r"""
+        Generates a 2D packing of circles
+
+        Parameters
+        ----------
+        shape : list
+            The size of the image to generate in [Nx, Ny] where N is the
+            number of voxels in each direction
+
+        radius : scalar
+            The radius of spheres in the packing
+
+        offset : scalar
+            The amount offset (+ or -) to add between pore centers.
+
+        packing : string
+            Specifies the type of cubic packing to create.  Options are
+            'square' (default) and 'triangular'.
+
+        Returns
+        -------
+        A boolean array with True values denoting the pore space
+        """
+        r = radius
+        if sp.size(shape) == 1:
+            shape = sp.full((2, ), int(shape))
+        elif (sp.size(shape) == 3) or (1 in shape):
+            raise Exception("This function only produces 2D images, " +
+                             "try \'sphere_pack\'")
+        im = sp.zeros(shape, dtype=bool)
+        if packing.startswith('s'):
+            spacing = 2*r
+            s = int(spacing/2) + sp.array(offset)
+            coords = sp.mgrid[r:im.shape[0]-r:2*s,
+                          r:im.shape[1]-r:2*s]
+            im[coords[0], coords[1]] = 1
+        if packing.startswith('t'):
+            spacing = 2*sp.floor(sp.sqrt(2*(r**2))).astype(int)
+            s = int(spacing/2) + offset
+            coords = sp.mgrid[r:im.shape[0]-r:2*s,
+                              r:im.shape[1]-r:2*s]
+            im[coords[0], coords[1]] = 1
+            coords = sp.mgrid[s+r:im.shape[0]-r:2*s,
+                              s+r:im.shape[1]-r:2*s]
+            im[coords[0], coords[1]] = 1
+        im = spim.distance_transform_edt(~im) >= r
+        return im
+
+    @staticmethod
+    def sphere_pack(shape, radius, offset=0, packing='sc'):
         r"""
         Generates a cubic packing of spheres
 
@@ -16,16 +68,13 @@ class ImageGenerator():
         ----------
         shape : list
             The size of the image to generate in [Nx, Ny, Nz] where N is the
-            number of voxels.
+            number of voxels in each direction.
 
         radius : scalar
             The radius of spheres in the packing
 
-        spacing : scalar
-            The spacing between pore centers.  If none is supplied then the
-            spheres will be packed to the maximum solid fraction.  If a
-            spacing is specified that is closer than the maximum, then the
-            spheres will overlap.
+        offset : scalar
+            The amount offset (+ or -) to add between pore centers.
 
         packing : string
             Specifies the type of cubic packing to create.  Options are:
@@ -41,21 +90,20 @@ class ImageGenerator():
         r = radius
         if sp.size(shape) == 1:
             shape = sp.full((3, ), int(shape))
-        if sp.size(shape) == 2:
-            raise Exception('This method can only produce 3D images')
+        elif (sp.size(shape) == 2) or (1 in shape):
+            raise Exception("This function only produces 3D images, " +
+                             "try \'circle_pack\'")
         im = sp.zeros(shape, dtype=bool)
         if packing.startswith('s'):
-            if spacing == None:
-                spacing = 2*r
-            s = int(spacing/2)
+            spacing = 2*r
+            s = int(spacing/2) + sp.array(offset)
             coords = sp.mgrid[r:im.shape[0]-r:2*s,
-                              r:im.shape[1]-r:2*s,
-                              r:im.shape[2]-r:2*s]
+                          r:im.shape[1]-r:2*s,
+                          r:im.shape[2]-r:2*s]
             im[coords[0], coords[1], coords[2]] = 1
         elif packing.startswith('b'):
-            if spacing == None:
-                spacing = 2*sp.floor(sp.sqrt(4/3*(r**2))).astype(int)
-            s = int(spacing/2)
+            spacing = 2*sp.floor(sp.sqrt(4/3*(r**2))).astype(int)
+            s = int(spacing/2) + offset
             coords = sp.mgrid[r:im.shape[0]-r:2*s,
                               r:im.shape[1]-r:2*s,
                               r:im.shape[2]-r:2*s]
@@ -65,9 +113,8 @@ class ImageGenerator():
                               s+r:im.shape[2]-r:2*s]
             im[coords[0], coords[1], coords[2]] = 1
         elif packing.startswith('f'):
-            if spacing == None:
-                spacing = 2*sp.floor(sp.sqrt(2*(r**2))).astype(int)
-            s = int(spacing/2)
+            spacing = 2*sp.floor(sp.sqrt(2*(r**2))).astype(int)
+            s = int(spacing/2) + offset
             coords = sp.mgrid[r:im.shape[0]-r:2*s,
                               r:im.shape[1]-r:2*s,
                               r:im.shape[2]-r:2*s]
