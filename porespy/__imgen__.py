@@ -1,6 +1,8 @@
 import scipy as sp
+import scipy.spatial as sptl
 import scipy.ndimage as spim
-from skimage.morphology import ball, disk, square, rectangle
+from skimage.segmentation import find_boundaries
+from skimage.morphology import ball, disk, square, rectangle, watershed
 
 
 class ImageGenerators():
@@ -36,7 +38,7 @@ class ImageGenerators():
         """
         r = radius
         if sp.size(shape) == 1:
-            shape = sp.full((2, ), int(shape))
+            shape = sp.full((3, ), int(shape))
         elif (sp.size(shape) == 3) or (1 in shape):
             raise Exception("This function only produces 2D images, " +
                              "try \'sphere_pack\'")
@@ -135,7 +137,7 @@ class ImageGenerators():
         return im
 
     @staticmethod
-    def spheres(shape, radius, porosity):
+    def overlapping_spheres(shape, radius, porosity):
         r"""
         Generate a packing of overlapping mono-disperse spheres
 
@@ -201,7 +203,7 @@ class ImageGenerators():
         shape = sp.array(shape)
         if sp.size(shape) == 1:
             shape = sp.full((3, ), int(shape))
-        sigma = sp.mean(shape)/(4*blobiness)
+        sigma = sp.mean(shape)/(40*blobiness)
         mask = sp.random.random(shape)
         mask = spim.gaussian_filter(mask, sigma=sigma)
         hist = sp.histogram(mask, bins=1000)
