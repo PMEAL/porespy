@@ -61,7 +61,7 @@ def voronoi_cage(shape, strut_radius, ncells):
         else:
             print("Failed: ", X.flatten())
         if sp.all(X >= 0) and sp.all(sp.all(X < shape, axis=0)):
-            line_pts = _line_segment(X[0], X[1])
+            line_pts = line_segment(X[0], X[1])
             im[line_pts] = True
     im = spim.distance_transform_edt(~im) > strut_radius
     return im
@@ -267,7 +267,7 @@ def overlapping_disks(shape, radius, porosity):
     return ~im
 
 
-def blobs(shape, porosity, blobiness=8):
+def blobs(shape, porosity=0.5, blobiness=1):
     """
     Generates an image containing amorphous blobs
 
@@ -277,15 +277,15 @@ def blobs(shape, porosity, blobiness=8):
         The size of the image to generate in [Nx, Ny, Nz] where N is the
         number of voxels
 
-    blobiness : array_like
-        Controls the morphology of the image.  A higher number results in
-        a larger number of blobs.  If a vector is supplied then the blobs
-        are anisotropic.
-
-    porosity : scalar
+    porosity : scalar (default = 0.5)
         The porosity of the final image.  This number is approximated by
-        the method so the returned result may not have exactly the
+        the function so the returned result may not have exactly the
         specified value.
+
+    blobiness : array_like (default = 1)
+        Controls the morphology of the blobs.  A higher number results in
+        a larger number of small blobs.  If a vector is supplied then the blobs
+        are anisotropic.
 
     Returns
     -------
@@ -339,7 +339,7 @@ def fibers(shape, radius, nfibers, phi_max=0, theta_max=90):
                          sp.sin(theta)*sp.sin(phi),
                          sp.cos(theta)])
         [X0, X1] = [X0 + x, -X0 + x]
-        crds = _line_segment(X0, X1)
+        crds = line_segment(X0, X1)
         lower = ~sp.any(sp.vstack(crds).T < [0, 0, 0], axis=1)
         upper = ~sp.any(sp.vstack(crds).T >= shape, axis=1)
         valid = upper*lower
@@ -351,7 +351,7 @@ def fibers(shape, radius, nfibers, phi_max=0, theta_max=90):
     return ~dt
 
 
-def _line_segment(X0, X1):
+def line_segment(X0, X1):
     r"""
     Calculate the voxel coordinates of a straight line between the two given
     end points
