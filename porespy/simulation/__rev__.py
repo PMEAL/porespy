@@ -2,7 +2,7 @@ import scipy as sp
 from collections import namedtuple
 
 
-class RepresentativeElementaryVolume(object):
+class representative_elementary_volume(object):
     r'''
     Perform a Representative Elementary Volume calculation on porosity
 

@@ -2,9 +2,9 @@ import scipy as sp
 import scipy.ndimage as spim
 
 
-class ChordLengthDistribution(object):
+class chord_length_distribution(object):
     r"""
-    Performs Chord-length distribution analyses
+    Performs chord-length distribution analyses
 
     Examples
     --------
@@ -18,7 +18,7 @@ class ChordLengthDistribution(object):
     Import porespy and use it:
 
     >>> import porespy
-    >>> a = porespy.cld(im)
+    >>> a = porespy.chord_length_distribution(im)
     >>> cx = a.xdir(spacing=5, trim_edges=True)
     >>> cim = a.get_chords(direction='x', spacing=5, trim_edges=True)
 

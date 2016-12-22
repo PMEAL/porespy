@@ -3,7 +3,7 @@ from collections import namedtuple
 import scipy.ndimage as spim
 
 
-class PoreSizeFunction(object):
+class pore_size_function(object):
     r"""
     Computes the 'pore-size distribution function' as defined by Torquato.
     This is not to be confused with the pore-size distribution in the pore

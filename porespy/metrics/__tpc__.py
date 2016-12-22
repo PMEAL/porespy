@@ -5,7 +5,7 @@ from scipy.spatial import cKDTree as kdt
 import scipy.ndimage as spim
 
 
-class TwoPointCorrelation(object):
+class two_point_correlation(object):
     r"""
     Computes the 2-point correlation function of an image
 

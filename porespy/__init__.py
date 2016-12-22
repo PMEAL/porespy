@@ -3,10 +3,9 @@ The pore space image should be 1's for void and 0's for solid
 '''
 __version__ = 0.1
 
-from .__imgen__ import ImageGenerators as imgen
-from .__cld__ import ChordLengthDistribution as cld
-from .__tpc__ import TwoPointCorrelation as tpc
-from .__rev__ import RepresentativeElementaryVolume as rev
-from .__mio__ import MorphologicalImageOpenning as mio
-from .__psf__ import PoreSizeFunction as psf
-from .__views__ import Views as views
+from . import tools
+from . import network_extraction
+from . import visualization
+from . import simulation
+from . import metrics
+from . import generators

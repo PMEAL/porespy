@@ -5,7 +5,7 @@ from collections import namedtuple
 import matplotlib.pyplot as plt
 
 
-class MorphologicalImageOpenning(object):
+class porosimetry(object):
     r"""
     """
     def __init__(self, image):
@@ -50,7 +50,7 @@ class MorphologicalImageOpenning(object):
         vals.volume = sp.array(vol)
 
         return vals
-        
+
     def plot_drainage_curve(self):
         r'''
         '''
