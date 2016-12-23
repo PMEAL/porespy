@@ -5,6 +5,22 @@ from skimage.morphology import reconstruction, watershed
 from skimage.segmentation import find_boundaries
 from skimage.morphology import disk, square, ball, cube
 
+def all_peaks(dt, r=3):
+    r"""
+    """
+    dt = dt.squeeze()
+    im = dt > 0
+    if im.ndim == 2:
+        ball = disk
+        cube = square
+    elif im.ndim == 3:
+        ball = ball
+        cube = cube
+    else:
+        raise Exception("only 2-d and 3-d images are supported")
+    mx = spim.maximum_filter(dt + 2*(~im), footprint=ball(r))
+    peaks = (dt == mx)*im
+    return peaks
 
 def partition_pore_space(dt, peaks):
     r"""

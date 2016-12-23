@@ -2,7 +2,8 @@ import scipy as sp
 import scipy.ndimage as spim
 import scipy.spatial as sptl
 from skimage.segmentation import find_boundaries
-from skimage.morphology import disk, square, ball, cube, watershed
+from skimage.morphology import watershed
+
 
 def SNOW_peaks(dt, min_spacing=None):
     r"""
@@ -56,7 +57,7 @@ def SNOW_peaks(dt, min_spacing=None):
                cmap=plt.cm.spectral)
 
     """
-    from skimage.morphology import disk, square, ball, cube, watershed
+    from skimage.morphology import disk, square, ball, cube
     dt = dt.squeeze()
     im = dt > 0
     if im.ndim == 2:

@@ -6,6 +6,6 @@ __version__ = 0.1
 from . import tools
 from . import network_extraction
 from . import visualization
-from . import simulation
+from . import simulations
 from . import metrics
 from . import generators
