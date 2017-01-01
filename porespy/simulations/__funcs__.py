@@ -38,9 +38,9 @@ def porosimetry(im, npts=25, sizes=None, inlets=None):
 
     Notes
     -----
-    Although this method is equivalent to morphological image opening, it is
+    Although this function is equivalent to morphological image opening, it is
     done using distance transforms instead of convolution filters.  This
-    approach is much faster for than using dilations and erosions when the
+    approach is much faster than using dilations and erosions when the
     structuring element is large.
 
     """
@@ -54,7 +54,12 @@ def porosimetry(im, npts=25, sizes=None, inlets=None):
     if npts is not None:
         sizes = sp.logspace(sp.log10(sp.amax(dt)), 0.1, npts)
     imresults = sp.zeros(sp.shape(im))
+    print('Porosimetry Running')
+    print('0%|'+'-'*len(sizes)+'|100%')
+    print('  |', end='')
     for r in sizes:
+        print('|', end='')
+        sys.stdout.flush()
         imtemp = dt >= r
         labels = spim.label(imtemp + inlets)[0]
         inlet_labels = sp.unique(labels[inlets])
@@ -62,4 +67,5 @@ def porosimetry(im, npts=25, sizes=None, inlets=None):
         imtemp = sp.reshape(imtemp, im.shape)
         im = spim.distance_transform_edt(~(imtemp^inlets)) <= r
         imresults[(imresults == 0)*im] = r
+    print('|')
     return imresults
