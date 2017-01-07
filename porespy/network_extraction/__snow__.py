@@ -3,9 +3,10 @@ import scipy.ndimage as spim
 import scipy.spatial as sptl
 from skimage.segmentation import find_boundaries
 from skimage.morphology import watershed
+from porespy.tools import get_border
 
 
-def SNOW_peaks(dt, min_spacing=None):
+def SNOW_peaks(dt, min_spacing=None, do_steps=[1, 2, 3, 4]):
     r"""
     The SNOW network extraction algorithm (Sub-Network of an Over-segmented
     Watershed) is specifically designed for high porosity materials.
@@ -69,7 +70,7 @@ def SNOW_peaks(dt, min_spacing=None):
     else:
         raise Exception("only 2-d and 3-d images are supported")
 
-    # Step 1: Find ALL local maxima peaks in watershed
+    # Step 0: Find ALL local maxima peaks in watershed
     mx = spim.maximum_filter(dt + 2*(~im), footprint=ball(3))
     peaks = (dt == mx)*im
 
@@ -77,57 +78,65 @@ def SNOW_peaks(dt, min_spacing=None):
     markers, N = spim.label(peaks, structure=cube(3))
     regions = watershed(-dt, markers=markers)
 
-    # Step 2: Remove peaks that are in regions too small for an R=3 ball
-    # Keep peaks that are in small pores by eroding the solid before opening
-    im_temp = spim.binary_erosion(~im, structure=ball(2), iterations=1)
-    edges = find_boundaries(regions)
-    regions2 = spim.binary_opening((1-edges)*(~im_temp), structure=ball(3))
-    peaks = peaks*((regions > 0)*regions2)
+    if 1 in do_steps:
+        print("Step 1: Remove peaks that are in regions that are too small")
+        # Keep peaks that are in small pores by eroding the solid first
+        temp_peaks = sp.copy(peaks)
+        im_temp = spim.binary_erosion(~im, structure=ball(2), iterations=1)
+        edges = find_boundaries(regions)
+        regions2 = spim.binary_opening((1-edges)*(~im_temp), structure=ball(3))
+        peaks = peaks*((regions > 0)*regions2)
+        borders = get_border(im.shape, mode='edges')
+        peaks += temp_peaks*borders
 
-    # Step 3: Remove peaks on plateaus in the distance transform
-    iters = 0
-    while iters < 10:
-        iters += 1
-        mx = spim.maximum_filter(dt*(1 - peaks) + 2*(~im), footprint=cube(3))
-        bad_peaks = (dt == (mx*peaks))*im
-        peaks = peaks^bad_peaks
-        if sp.sum(bad_peaks) == 0:
-            break
+    if 2 in do_steps:
+        print("Step 2: Remove peaks on plateaus in the distance transform")
+        iters = 0
+        while iters < 10:
+            iters += 1
+            mx = spim.maximum_filter(dt*(1 - peaks) + 2*(~im),
+                                     footprint=cube(3))
+            bad_peaks = (dt == (mx*peaks))*im
+            peaks = peaks^bad_peaks
+            if sp.sum(bad_peaks) == 0:
+                break
 
-    # Step 4: Thin broad or elongated peaks to single pixel
-    markers, N = spim.label(input=peaks, structure=cube(3))
-    inds = spim.measurements.center_of_mass(input=peaks,
-                                            labels=markers,
-                                            index=sp.unique(markers)[1:])
-    inds = sp.floor(inds).astype(int)
-    # Centroid may not be on old pixel, so just create a new peaks image
-    peaks = sp.zeros_like(peaks, dtype=bool)
-    peaks[tuple(inds.T)] = True
+    if 3 in do_steps:
+        print("Step 3: Thin broad or elongated peaks to single pixel")
+        markers, N = spim.label(input=peaks, structure=cube(3))
+        inds = spim.measurements.center_of_mass(input=peaks,
+                                                labels=markers,
+                                                index=range(1, N))
+        inds = sp.floor(inds).astype(int)
+        # Centroid may not be on old pixel, so just create a new peaks image
+        peaks = sp.zeros_like(peaks, dtype=bool)
+        peaks[tuple(inds.T)] = True
 
-    # Step 5: Remove peaks that are nearer to another peak than to solid
-    if min_spacing is None:
-        min_spacing = dt.max()*0.8
-    iters = 0
-    while iters < 10:
-        iters += 1
-        crds = sp.where(peaks)  # Find locations of all peaks
-        dist_to_solid = dt[crds]  # Get distance to solid for each peak
-        dist_to_solid += sp.rand(dist_to_solid.size)*1e-5  # Perturb distances
-        crds = sp.vstack(crds).T  # Convert peak locations to ND-array
-        dist = sptl.distance.cdist(XA=crds, XB=crds)  # Get distance between peaks
-        sp.fill_diagonal(a=dist, val=sp.inf)  # Remove 0's in diagonal
-        dist[dist > min_spacing] = sp.inf  # Keep peaks that are far apart
-        dist_to_nearest_neighbor = sp.amin(dist, axis=0)
-        nearby_neighbors = sp.where(dist_to_nearest_neighbor < dist_to_solid)[0]
-        for peak in nearby_neighbors:
-            nearest_neighbor = sp.amin(sp.where(dist[peak, :] == sp.amin(dist[peak, :]))[0])
-            if dist_to_solid[peak] < dist_to_solid[nearest_neighbor]:
-                peaks[tuple(crds[peak])] = 0
-            else:
-                peaks[tuple(crds[nearest_neighbor])] = 0
-        if len(nearby_neighbors) == 0:
-            break
+    if 4 in do_steps:
+        print("Step 4: Remove peaks that are nearer to another peak than to solid")
+        if min_spacing is None:
+            min_spacing = dt.max()*0.8
+        iters = 0
+        while iters < 10:
+            iters += 1
+            crds = sp.where(peaks)  # Find locations of all peaks
+            dist_to_solid = dt[crds]  # Get distance to solid for each peak
+            dist_to_solid += sp.rand(dist_to_solid.size)*1e-5  # Perturb distances
+            crds = sp.vstack(crds).T  # Convert peak locations to ND-array
+            dist = sptl.distance.cdist(XA=crds, XB=crds)  # Get distance between peaks
+            sp.fill_diagonal(a=dist, val=sp.inf)  # Remove 0's in diagonal
+            dist[dist > min_spacing] = sp.inf  # Keep peaks that are far apart
+            dist_to_nearest_neighbor = sp.amin(dist, axis=0)
+            nearby_neighbors = sp.where(dist_to_nearest_neighbor < dist_to_solid)[0]
+            for peak in nearby_neighbors:
+                nearest_neighbor = sp.amin(sp.where(dist[peak, :] == sp.amin(dist[peak, :]))[0])
+                if dist_to_solid[peak] < dist_to_solid[nearest_neighbor]:
+                    peaks[tuple(crds[peak])] = 0
+                else:
+                    peaks[tuple(crds[nearest_neighbor])] = 0
+            if len(nearby_neighbors) == 0:
+                break
 
-    # Step 6: Label the peaks and return
+    # Step 5: Label the peaks and return
     markers = spim.label(peaks, structure=cube(3))[0]
     return markers

@@ -7,7 +7,7 @@ from skimage.segmentation import find_boundaries
 def extract_pore_network(im):
     r"""
     Analyzes an image that has been partitioned into pore regions and extracts
-    the pore geometry and network connectivity.
+    the pore and throat geometry as well as network connectivity.
 
     Returns
     -------

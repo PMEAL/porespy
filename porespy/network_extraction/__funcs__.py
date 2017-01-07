@@ -3,7 +3,6 @@ import scipy.ndimage as spim
 import scipy.spatial as sptl
 from skimage.morphology import reconstruction, watershed
 from skimage.segmentation import find_boundaries
-from skimage.morphology import disk, square, ball, cube
 
 
 def maxima_filt(im, strel):
@@ -35,6 +34,7 @@ def all_peaks(dt, r=3):
     An ND-array of booleans with True values at the location of any local
     maxima.
     """
+    from skimage.morphology import disk, square, ball, cube
     dt = dt.squeeze()
     im = dt > 0
     if im.ndim == 2:
