@@ -99,14 +99,67 @@ def find_edges(im, strel=None):
     temp = im != temp
     return temp
 
-def get_border(im, thickness=1):
-    ndims = get_dims(im)
+def get_border(shape, thickness=1, mode='edges'):
+    r"""
+    Creates an array of specified size with corners, edges or faces labelled as
+    True.  This can be used as mask to manipulate values laying on the
+    perimeter of an image.
+
+    Parameters
+    ----------
+    shape : array_like
+        The shape of the array to return.  Can be either 2D or 3D.
+
+    thickness : scalar (default is 1)
+        The number of pixels/voxels to place along perimeter.
+
+    mode : string
+        The type of border to create.  Options are 'faces', 'edges' (default)
+        and 'corners'.  In 2D 'faces' and 'edges' give the same result.
+
+    Returns
+    -------
+    An ND-array of specified shape with True values at the perimeter and False
+    elsewhere.
+
+    Examples
+    --------
+    >>> import scipy as sp
+    >>> import porespy as ps
+    >>> mask = ps.tools.get_border(shape=[3, 3], mode='corners')
+    >>> print(mask)
+    [[ True False  True]
+     [False False False]
+     [ True False  True]]
+    >>> mask = ps.tools.get_border(shape=[3, 3], mode='edges')
+    >>> print(mask)
+    [[ True  True  True]
+     [ True False  True]
+     [ True  True  True]]
+    """
+    ndims = len(shape)
     t = thickness
-    border = sp.ones_like(im, dtype=bool)
-    if ndims == 2:
-        border[t:-t, t:-t] = False
-    if ndims == 3:
-        border[t:-t, t:-t, t:-t] = False
+    border = sp.ones(shape, dtype=bool)
+    if mode == 'faces':
+        if ndims == 2:
+             border[t:-t, t:-t] = False
+        if ndims == 3:
+            border[t:-t, t:-t, t:-t] = False
+    elif mode == 'edges':
+        if ndims == 2:
+            border[t:-t, t:-t] = False
+        if ndims == 3:
+            border[0::, t:-t, t:-t] = False
+            border[t:-t, 0::, t:-t] = False
+            border[t:-t, t:-t, 0::] = False
+    elif mode == 'corners':
+        if ndims == 2:
+            border[t:-t, 0::] = False
+            border[0::, t:-t] = False
+        if ndims == 3:
+            border[t:-t, 0::, 0::] = False
+            border[0::, t:-t, 0::] = False
+            border[0::, 0::, t:-t] = False
     return border
 
 def fill_border(im, thickness=1, value=1):
