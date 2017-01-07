@@ -260,6 +260,8 @@ def overlapping_disks(shape, radius, porosity):
     """
     if sp.size(shape) == 1:
         shape = sp.full((2, ), int(shape))
+    elif sp.size(shape) == 3:
+        raise Exception("For 3D images use \'overlapping_spheres\'")
     im = sp.zeros(shape, dtype=bool)
     while sp.sum(im)/sp.size(im) < (1 - porosity):
         temp = sp.rand(shape[0], shape[1]) < 0.9995
