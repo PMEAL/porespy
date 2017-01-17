@@ -8,7 +8,8 @@ import matplotlib.pyplot as plt
 def porosimetry(im, npts=25, sizes=None, inlets=None):
     r"""
     Simulates a porosimetry experiment on a binary image.  This function is
-    equivalent to morphological image opening or the full morphology approach.
+    equivalent to the morphological image opening and/or the full morphology
+    approaches.
 
     Parameters
     ----------
@@ -51,8 +52,9 @@ def porosimetry(im, npts=25, sizes=None, inlets=None):
             inlets[1:-2, 1:-2] = False
         elif im.ndim == 3:
             inlets[1:-2, 1:-2,1:-2] = False
-    if npts is not None:
+    if sizes is None:
         sizes = sp.logspace(sp.log10(sp.amax(dt)), 0.1, npts)
+
     imresults = sp.zeros(sp.shape(im))
     print('Porosimetry Running')
     print('0%|'+'-'*len(sizes)+'|100%')
