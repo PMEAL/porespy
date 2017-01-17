@@ -1,7 +1,5 @@
 import scipy as sp
 import scipy.ndimage as spim
-import scipy.sparse as sprs
-from skimage.segmentation import find_boundaries
 
 
 def extract_pore_network(im):
@@ -49,18 +47,18 @@ def extract_pore_network(im):
         # Get pore info
         p_coords[pore, :] = sp.mean(p_vxls[pore], axis=1)
         p_volume[pore] = sp.size(p_vxls[pore][0])
-        p_diameter[pore] = sp.amax(dt[p_vxls[pore]])
+        p_diameter[pore] = 2*sp.amax(dt[p_vxls[pore]])
         # Get throat info
         Pn = sp.unique(im_w_throats[p_vxls[pore]]) - 1
         for j in Pn:
             if j > pore:
                 t_conns.append([pore, j])
                 temp = im_w_throats[p_vxls[pore]] == (j + 1)
-                inds = tuple((p_vxls[pore][0][temp], p_vxls[pore][1][temp]))
+                inds = tuple((p_vxls[pore][0][temp], p_vxls[pore][1][temp], p_vxls[pore][2][temp]))
                 t_vxls.append(inds)
-                t_diameter.append(sp.amax(dt[inds]))
+                t_diameter.append(2*sp.amax(dt[inds]))
                 temp = sp.where(dt[inds] == sp.amax(dt[inds]))[0][0]
-                t_coords.append(tuple((inds[0][temp], inds[1][temp])))
+                t_coords.append(tuple((inds[0][temp], inds[1][temp], inds[2][temp])))
     # Clean up values
     Nt = len(t_vxls)  # Get number of throats
     if im.ndim == 2:  # If 2D, add 0's in 3rd dimension
@@ -79,8 +77,10 @@ def extract_pore_network(im):
     net['throat.diameter'] = sp.array(t_diameter)
     net['throat.coords'] = sp.array(t_coords)
     P12 = net['throat.conns']
-    P1 = net['pore.coords'][P12][:, 0]
-    P2 = net['pore.coords'][P12][:, 1]
-    net['throat.length'] = sp.sqrt(sp.sum((P1 - P2)**2, axis=1))
+    PT1 = sp.sqrt(sp.sum((p_coords[P12[:, 0]] - t_coords)**2, axis=1))
+    PT2 = sp.sqrt(sp.sum((p_coords[P12[:, 1]] - t_coords)**2, axis=1))
+    net['throat.length'] = PT1 + PT2
+    PP = sp.sqrt(sp.sum((p_coords[P12[:, 0]] - p_coords[P12[:, 1]])**2, axis=1))
+    net['throat.length1'] = PP
 
     return net
