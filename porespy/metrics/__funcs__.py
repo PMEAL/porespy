@@ -4,9 +4,9 @@ import scipy.ndimage as spim
 
 def size_distribution(im, bins=None):
     r"""
-    Calculates the size distribution by determining for each voxel the largest
-    sphere which it could join that fits entirely within the foreground.  This
-    is not the same as a straight distance transform, which finds the largest
+    For each voxel, this functions calculates the radius of the largest sphere
+    that both engulfs the voxel and fits entirely within the foreground. This
+    is not the same as a simple distance transform, which finds the largest
     sphere that could be *centered* on each voxel.
 
     Parameters
@@ -21,13 +21,13 @@ def size_distribution(im, bins=None):
 
     Returns
     -------
-    values, counts
+    radii, counts
         Two arrays containing the radii of the largest spheres, and the number
         of voxels that are encompassed by spheres of each radii.
 
     Notes
     -----
-    The term foreground is used since this function can be applied to both
+    The term *foreground* is used since this function can be applied to both
     pore space or the solid, whichever is set to True.
 
     """
@@ -49,11 +49,11 @@ def size_distribution(im, bins=None):
     # Trim outer edge of features to remove noise
     im_new = spim.binary_erosion(input=im, structure=cube(1))*im_new
     inds = sp.where(im_new > 0)
-    if bins == None:
+    if bins is None:
         bins = 10
     else:
         bins = sp.unique(im_new)[1:]
     hist = sp.histogram(a=im_new[inds], bins=bins)
-    values = hist[1][0:-1]
+    radii = hist[1][0:-1]
     counts = hist[0]
-    return values, counts
+    return radii, counts
