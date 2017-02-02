@@ -3,11 +3,70 @@ import scipy.ndimage as spim
 from skimage.morphology import ball, disk, square, cube
 import OpenPNM as op
 
-def randomize_colors(im):
-    new_colors = sp.random.randint(1, im.max(), im.max()+1)
-    new_colors[0] = 0
-    new_im = new_colors[im]
-    return new_im
+def randomize_colors(im, keep_vals=[0]):
+    r'''
+    Takes a greyscale image and randomly shuffles the greyscale values, so that
+    all voxels labeled X will be labelled Y, and all voxels labeled Y will be
+    labeled Z, where X, Y, Z and so on are randomly selected from the values
+    in the input image.
+
+    This function is useful for improving the visibility of images with
+    neighboring regions that are only incrementally different from each other,
+    such as that returned by `scipy.ndimage.label`.
+
+    Parameters
+    ----------
+    im : array_like
+        An ND image of greyscale values.
+
+    keep_vals : array_like
+        Indicate which voxel values should NOT be altered.  The default is
+        `[0]` which is useful for leaving the background of the image
+        untouched.
+
+    Returns
+    -------
+    An image the same size and type as `im` but with the greyscale values
+    reassigned.  The unique values in both the input and output images will
+    be identical.
+
+    Notes
+    -----
+    If the greyscale values in the input image are not contiguous then the
+    neither will they be in the output.
+
+    Example
+    -------
+    >>> import porespy as ps
+    >>> import scipy as sp
+    >>> sp.random.seed(0)
+    >>> im = sp.random.randint(low=0, high=5, size=[4, 4])
+    >>> print(im)
+    [[4 0 3 3]
+     [3 1 3 2]
+     [4 0 0 4]
+     [2 1 0 1]]
+    >>> im = ps.tools.randomize_colors(im)
+    [[2 0 4 4]
+     [4 1 4 3]
+     [2 0 0 2]
+     [3 1 0 1]]
+
+    As can be seen, the 2's have become 3, 3's have become 4, and 4's have
+    become 1.  0's remain zeros by default, but this can be controlled using
+    the `keep_vals` argument.
+
+    '''
+    im_flat = im.flatten()
+    keep_vals = sp.array(keep_vals)
+    swap_vals = ~sp.in1d(im_flat, keep_vals)
+    im_vals = sp.unique(im_flat[swap_vals])
+    new_vals = sp.random.permutation(im_vals)
+    im_map = sp.zeros(shape=[sp.amax(im_vals) + 1, ], dtype=int)
+    im_map[im_vals] = new_vals
+    im_new = im_map[im_flat]
+    im_new = sp.reshape(im_new, newshape=sp.shape(im))
+    return im_new
 
 def feature_size(labeled_image, N=None):
     if N == None:
