@@ -36,6 +36,7 @@ def extract_pore_network(im):
     p_coords = sp.zeros((Np, im.ndim), dtype=int)
     p_volume = sp.zeros((Np, ), dtype=int)
     p_diameter = sp.zeros((Np, ), dtype=int)
+    p_label = sp.zeros((Np, ), dtype=int)
     p_vxls = sp.empty((Np, ), dtype=object)
     t_conns = []
     t_diameter = []
@@ -45,6 +46,7 @@ def extract_pore_network(im):
         pore = i - 1
         p_vxls[pore] = sp.where(im == i)
         # Get pore info
+        p_label[pore] = i
         p_coords[pore, :] = sp.mean(p_vxls[pore], axis=1)
         p_volume[pore] = sp.size(p_vxls[pore][0])
         p_diameter[pore] = 2*sp.amax(dt[p_vxls[pore]])
@@ -71,6 +73,7 @@ def extract_pore_network(im):
     net['throat.all'] = sp.ones((Nt, ), dtype=bool)
     net['pore.coords'] = p_coords
     net['throat.conns'] = sp.array(t_conns)
+    net['pore.label'] = sp.array(p_label)
     net['pore.volume'] = p_volume
     net['throat.volume'] = sp.zeros((Nt, ), dtype=float)
     net['pore.diameter'] = p_diameter
