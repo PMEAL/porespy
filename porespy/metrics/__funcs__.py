@@ -2,6 +2,14 @@ import scipy as sp
 import scipy.ndimage as spim
 
 
+def porosity(im):
+    r'''
+    '''
+    sv = sp.sum(im == 0)
+    pv = sp.sum(im > 0)
+    e = pv/(pv+sv)
+    return e
+
 def size_distribution(im, bins=None):
     r"""
     For each voxel, this functions calculates the radius of the largest sphere

@@ -35,8 +35,8 @@ def randomize_colors(im, keep_vals=[0]):
     If the greyscale values in the input image are not contiguous then the
     neither will they be in the output.
 
-    Example
-    -------
+    Examples
+    --------
     >>> import porespy as ps
     >>> import scipy as sp
     >>> sp.random.seed(0)
@@ -46,15 +46,16 @@ def randomize_colors(im, keep_vals=[0]):
      [3 1 3 2]
      [4 0 0 4]
      [2 1 0 1]]
-    >>> im = ps.tools.randomize_colors(im)
+    >>> im_rand = ps.tools.randomize_colors(im)
+    >>> print(im_rand)
     [[2 0 4 4]
      [4 1 4 3]
      [2 0 0 2]
      [3 1 0 1]]
 
     As can be seen, the 2's have become 3, 3's have become 4, and 4's have
-    become 1.  0's remain zeros by default, but this can be controlled using
-    the `keep_vals` argument.
+    become 2.  1's remained 1 by random accident.  0's remain zeros by default,
+    but this can be controlled using the `keep_vals` argument.
 
     '''
     im_flat = im.flatten()
