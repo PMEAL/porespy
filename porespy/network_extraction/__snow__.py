@@ -79,7 +79,7 @@ def SNOW_peaks(dt, min_spacing=None, do_steps=[1, 2, 3, 4]):
     regions = watershed(-dt, markers=markers)
 
     if 1 in do_steps:
-        print("Step 1: Remove peaks that are in regions that are too small")
+        print("Step 1: Remove peaks in regions that are too small")
         # Keep peaks that are in small pores by eroding the solid first
         temp_peaks = sp.copy(peaks)
         im_temp = spim.binary_erosion(~im, structure=ball(2), iterations=1)
@@ -113,7 +113,7 @@ def SNOW_peaks(dt, min_spacing=None, do_steps=[1, 2, 3, 4]):
         peaks[tuple(inds.T)] = True
 
     if 4 in do_steps:
-        print("Step 4: Remove peaks that are nearer to another peak than to solid")
+        print("Step 4: Remove peaks nearer to another peak than to solid")
         if min_spacing is None:
             min_spacing = dt.max()*0.8
         iters = 0
@@ -139,4 +139,5 @@ def SNOW_peaks(dt, min_spacing=None, do_steps=[1, 2, 3, 4]):
 
     # Step 5: Label the peaks and return
     markers = spim.label(peaks, structure=cube(3))[0]
+    print("Complete: All spurious peaks have been removed")
     return markers

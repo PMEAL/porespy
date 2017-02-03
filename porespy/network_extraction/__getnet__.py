@@ -1,5 +1,6 @@
 import scipy as sp
 import scipy.ndimage as spim
+import sys
 
 
 def extract_pore_network(im):
@@ -56,11 +57,17 @@ def extract_pore_network(im):
             if j > pore:
                 t_conns.append([pore, j])
                 temp = im_w_throats[p_vxls[pore]] == (j + 1)
-                inds = tuple((p_vxls[pore][0][temp], p_vxls[pore][1][temp], p_vxls[pore][2][temp]))
+                if im.ndim == 2:
+                    inds = tuple((p_vxls[pore][0][temp], p_vxls[pore][1][temp]))
+                else:
+                    inds = tuple((p_vxls[pore][0][temp], p_vxls[pore][1][temp], p_vxls[pore][2][temp]))
                 t_vxls.append(inds)
                 t_diameter.append(2*sp.amax(dt[inds]))
                 temp = sp.where(dt[inds] == sp.amax(dt[inds]))[0][0]
-                t_coords.append(tuple((inds[0][temp], inds[1][temp], inds[2][temp])))
+                if im.ndim == 2:
+                    t_coords.append(tuple((inds[0][temp], inds[1][temp])))
+                else:
+                    t_coords.append(tuple((inds[0][temp], inds[1][temp], inds[2][temp])))
     # Clean up values
     Nt = len(t_vxls)  # Get number of throats
     if im.ndim == 2:  # If 2D, add 0's in 3rd dimension
@@ -77,6 +84,7 @@ def extract_pore_network(im):
     net['pore.volume'] = p_volume
     net['throat.volume'] = sp.zeros((Nt, ), dtype=float)
     net['pore.diameter'] = p_diameter
+    net['pore.equivalent_diameter'] = (3/4*p_volume)**(1/3)*2
     net['throat.diameter'] = sp.array(t_diameter)
     net['throat.coords'] = sp.array(t_coords)
     P12 = net['throat.conns']
