@@ -149,7 +149,39 @@ def get_weighted_markers(im, Rs):
         weighted_markers[pts[0], pts[1]] = markers[pts[0], pts[1]]*r
     return weighted_markers
 
+def make_contiguous(im):
+    r"""
+    Take an image with arbitrary greyscale values and adjust them to ensure
+    all values fall in a contiguous range starting at 0.
+
+    Parameters
+    ----------
+    im : array_like
+        An ND array containing greyscale values
+    """
+    im_flat = im.flatten()
+    im_vals = sp.unique(im_flat)
+    im_map = sp.zeros(shape=sp.amax(im_flat)+1)
+    im_map[im_vals] = sp.arange(0, sp.size(sp.unique(im_flat)))
+    im_new = im_map[im_flat]
+    im_new = sp.reshape(im_new, newshape=sp.shape(im))
+    im_new = sp.array(im_new, dtype=im_flat.dtype)
+    return im_new
+
 def find_edges(im, strel=None):
+    r"""
+    Find the edges between labelled regions in an image
+
+    Parameters
+    ----------
+    im : array_like
+        A 2D or 3D image containing regions with different labels
+
+    strel : array_like
+        The structuring element used to find the edges.  If ```None``` is
+        provided (the default) the a round structure is used with a radius of
+        1 voxel.
+    """
     if strel == None:
         if im.ndim == 2:
             strel = disk(1)

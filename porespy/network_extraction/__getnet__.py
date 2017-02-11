@@ -1,4 +1,5 @@
 import scipy as sp
+import porespy as ps
 import scipy.ndimage as spim
 import sys
 
@@ -21,6 +22,7 @@ def extract_pore_network(im):
         ball = disk
 
     # Process input image for determination of sizes
+    im = ps.tools.make_contiguous(im)
     dt = spim.distance_transform_edt(im > 0)
     mn = spim.minimum_filter(im + (im == 0)*2*sp.amax(im), footprint=ball(1))
     mx = spim.maximum_filter(im, footprint=ball(1))
