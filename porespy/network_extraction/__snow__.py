@@ -82,15 +82,19 @@ def SNOW_peaks(dt, min_spacing=None, do_steps=[1, 2, 3, 4]):
         print("Step 1: Remove peaks in regions that are too small")
         # Keep peaks that are in small pores by eroding the solid first
         temp_peaks = sp.copy(peaks)
+        start_peaks = spim.label(peaks, structure=cube(3))[1]
         im_temp = spim.binary_erosion(~im, structure=ball(2), iterations=1)
         edges = find_boundaries(regions)
         regions2 = spim.binary_opening((1-edges)*(~im_temp), structure=ball(3))
         peaks = peaks*((regions > 0)*regions2)
         borders = get_border(im.shape, mode='edges')
         peaks += temp_peaks*borders
+        end_peaks = spim.label(peaks, structure=cube(3))[1]
+        print("--> Number of peaks removed:", str(start_peaks - end_peaks))
 
     if 2 in do_steps:
-        print("Step 2: Remove peaks on plateaus in the distance transform")
+        print("Step 2: Remove peaks on saddles in the distance transform")
+        start_peaks = spim.label(peaks, structure=cube(3))[1]
         iters = 0
         while iters < 10:
             iters += 1
@@ -100,9 +104,12 @@ def SNOW_peaks(dt, min_spacing=None, do_steps=[1, 2, 3, 4]):
             peaks = peaks^bad_peaks
             if sp.sum(bad_peaks) == 0:
                 break
+        end_peaks = spim.label(peaks, structure=cube(3))[1]
+        print("--> Number of peaks removed:", str(start_peaks - end_peaks))
 
     if 3 in do_steps:
         print("Step 3: Thin broad or elongated peaks to single pixel")
+        start_peaks = spim.label(peaks, structure=cube(3))[1]
         markers, N = spim.label(input=peaks, structure=cube(3))
         inds = spim.measurements.center_of_mass(input=peaks,
                                                 labels=markers,
@@ -111,9 +118,12 @@ def SNOW_peaks(dt, min_spacing=None, do_steps=[1, 2, 3, 4]):
         # Centroid may not be on old pixel, so just create a new peaks image
         peaks = sp.zeros_like(peaks, dtype=bool)
         peaks[tuple(inds.T)] = True
+        end_peaks = spim.label(peaks, structure=cube(3))[1]
+        print("--> Number of peaks removed:", str(start_peaks - end_peaks))
 
     if 4 in do_steps:
         print("Step 4: Remove peaks nearer to another peak than to solid")
+        start_peaks = spim.label(peaks, structure=cube(3))[1]
         if min_spacing is None:
             min_spacing = dt.max()*0.8
         iters = 0
@@ -136,6 +146,8 @@ def SNOW_peaks(dt, min_spacing=None, do_steps=[1, 2, 3, 4]):
                     peaks[tuple(crds[nearest_neighbor])] = 0
             if len(nearby_neighbors) == 0:
                 break
+        end_peaks = spim.label(peaks, structure=cube(3))[1]
+        print("--> Number of peaks removed:", str(start_peaks - end_peaks))
 
     # Step 5: Label the peaks and return
     markers = spim.label(peaks, structure=cube(3))[0]
