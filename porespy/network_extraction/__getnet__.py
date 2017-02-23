@@ -40,7 +40,7 @@ def extract_pore_network(im):
     p_volume = sp.zeros((Np, ), dtype=int)
     p_diameter = sp.zeros((Np, ), dtype=int)
     p_label = sp.zeros((Np, ), dtype=int)
-    p_vxls = sp.empty((Np, ), dtype=object)
+    p_vxls = sp.ndarray((Np, ), dtype=object)
     t_conns = []
     t_diameter = []
     t_vxls = []
@@ -81,14 +81,16 @@ def extract_pore_network(im):
     net['pore.all'] = sp.ones((Np, ), dtype=bool)
     net['throat.all'] = sp.ones((Nt, ), dtype=bool)
     net['pore.coords'] = p_coords
+    net['throat.coords'] = sp.array(t_coords)
     net['throat.conns'] = sp.array(t_conns)
+#    net['pore.voxels'] = sp.array(p_vxls)
+#    net['throat.voxels'] = sp.array(t_vxls)
     net['pore.label'] = sp.array(p_label)
     net['pore.volume'] = p_volume
     net['throat.volume'] = sp.zeros((Nt, ), dtype=float)
     net['pore.diameter'] = p_diameter
     net['pore.equivalent_diameter'] = (3/4*p_volume)**(1/3)*2
     net['throat.diameter'] = sp.array(t_diameter)
-    net['throat.coords'] = sp.array(t_coords)
     P12 = net['throat.conns']
     PT1 = sp.sqrt(sp.sum((p_coords[P12[:, 0]] - t_coords)**2, axis=1))
     PT2 = sp.sqrt(sp.sum((p_coords[P12[:, 1]] - t_coords)**2, axis=1))

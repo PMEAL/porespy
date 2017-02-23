@@ -10,7 +10,7 @@ def porosity(im):
     e = pv/(pv+sv)
     return e
 
-def size_distribution(im, bins=None):
+def size_distribution(im, bins=None, return_im=False):
     r"""
     For each voxel, this functions calculates the radius of the largest sphere
     that both engulfs the voxel and fits entirely within the foreground. This
@@ -27,11 +27,16 @@ def size_distribution(im, bins=None):
         specific values to use.  The default is to use 1 bin for each
         unique value found in the size distribution.
 
+    return_im : boolean
+        If true, the image with the radius in each voxel will be return as
+        well.
+
     Returns
     -------
-    radii, counts
+    Tuple containing radii, counts, and optionally psd_image
         Two arrays containing the radii of the largest spheres, and the number
-        of voxels that are encompassed by spheres of each radii.
+        of voxels that are encompassed by spheres of each radii. Optionally,
+        returns the image with the pore size values in each voxel.
 
     Notes
     -----
@@ -64,4 +69,7 @@ def size_distribution(im, bins=None):
     hist = sp.histogram(a=im_new[inds], bins=bins)
     radii = hist[1][0:-1]
     counts = hist[0]
-    return radii, counts
+    if return_im:
+        return radii, counts, im_new
+    else:
+        return radii, counts
