@@ -5,34 +5,20 @@ from skimage.segmentation import find_boundaries
 from skimage.morphology import ball, disk, square, watershed
 
 
-def polydisperse(shape, n_solids):
-    if sp.size(shape) == 1:
-        shape = sp.full((3, ), int(shape))
-
-    pts = sp.rand(n_solids, 2)
-    dmap = sptl.distance.cdist(pts, pts)
-    I = sp.eye(n_solids).astype(bool)
-    dmap[I] = 1
-    r_max = sp.amin(dmap, axis=0)/2
-    im = sp.zeros(shape, dtype=int)
-    i = 0
-    for center in pts:
-        coords = sp.floor(center*shape).astype(int)
-        im[list(sp.atleast_2d(coords).T)] = r_max[i]*100
-        i += 1
-    im_final = sp.ones_like(im)
-    for r in sp.unique(im)[1:]:
-        im_temp = spim.binary_dilation(input=(im == r), structure=square(2*r))
-        im_final += im_temp
-
-    im = sp.zeros(shape=shape, dtype=bool)
-    coords = sp.floor(pts*shape).astype(int)
-    im[coords[:, 0], coords[:, 1]] = 1
-    dt = spim.distance_transform_edt(~im)
-    markers = spim.label(im)[0]
-    regions = watershed(dt, markers=markers)
-    edges = find_boundaries(regions)
-    dt = spim.distance_transform_edt(~edges)
+def polydisperse_disks(shape, porosity, dist, bins=5):
+    r"""
+    """
+    shape = sp.array(shape)
+    Rs = dist.interval(sp.linspace(1/bins, 0.95, bins))
+    Rs = sp.vstack(Rs).T
+    Rs = (Rs[:-1] + Rs[1:])/2
+    Rs = Rs.flatten()
+    phi = 1 - (1 - porosity)/(len(Rs))
+    im = sp.ones(shape, dtype=bool)
+    for r in Rs:
+        temp = overlapping_disks(shape=shape, radius=r, porosity=phi)
+        im = im*temp
+    return im
 
 
 def voronoi_cage(shape, strut_radius, ncells):
@@ -222,10 +208,11 @@ def overlapping_spheres(shape, radius, porosity):
     """
     if sp.size(shape) == 1:
         shape = sp.full((3, ), int(shape))
-    im = sp.zeros(shape, dtype=bool)
-    while sp.sum(im)/sp.size(im) < (1 - porosity):
-        temp = sp.rand(shape[0], shape[1], shape[2]) < 0.9995
-        im = im + (spim.distance_transform_edt(temp) < radius)
+    s_vol = 4/3*sp.pi*radius**3
+    bulk_vol = sp.prod(shape)
+    N = (1 - porosity)*bulk_vol/s_vol
+    im = sp.random.random(size=shape) > (N/bulk_vol)
+    im = spim.distance_transform_edt(im) < radius
     return ~im
 
 
@@ -262,10 +249,11 @@ def overlapping_disks(shape, radius, porosity):
         shape = sp.full((2, ), int(shape))
     elif sp.size(shape) == 3:
         raise Exception("For 3D images use \'overlapping_spheres\'")
-    im = sp.zeros(shape, dtype=bool)
-    while sp.sum(im)/sp.size(im) < (1 - porosity):
-        temp = sp.rand(shape[0], shape[1]) < 0.9995
-        im = im + (spim.distance_transform_edt(temp) < radius)
+    s_vol = sp.pi*radius**2
+    bulk_vol = sp.prod(shape)
+    N = (1 - porosity)*bulk_vol/s_vol
+    im = sp.random.random(size=shape) > (N/bulk_vol)
+    im = spim.distance_transform_edt(im) < radius
     return ~im
 
 
