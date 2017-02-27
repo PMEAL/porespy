@@ -14,7 +14,8 @@ def polydisperse_spheres(shape, porosity, dist, nbins=5):
     ----------
     shape : list
         The size of the image to generate in [Nx, Ny, Nz] where Ni is the
-        number of voxels in each direction
+        number of voxels in each direction.  If shape is only 2D, then an
+        image of polydisperse disks is returns
 
     porosity : scalar
         The porosity of the image, defined as the number of void voxels
@@ -33,6 +34,10 @@ def polydisperse_spheres(shape, porosity, dist, nbins=5):
         image.  This function generates  ```nbins``` images of monodisperse
         spheres that span 0.05 and 0.95 of the possible values produced by the
         provided distribution, then overlays them to get polydispersivity.
+
+    Returns
+    -------
+    A boolean array with True values denoting the pore space
     """
     shape = sp.array(shape)
     Rs = dist.interval(sp.linspace(0.05, 0.95, nbins))
@@ -107,14 +112,15 @@ def _get_Voronoi_edges(vor):
         # Create a closed cycle of vertices that define the facet
         coords[0].extend(facet[:-1]+[facet[-1]])
         coords[1].extend(facet[1:]+[facet[0]])
-    conns = sp.vstack(coords).T  # Convert to scipy friendly format
+    conns = sp.vstack(coords).T  # Convert to scipy-friendly format
     conns = sp.sort(conns, axis=1)  # Move all points to upper triangle
-    mask = sp.any(conns == -1, axis=1)
+    mask = sp.any(conns == -1, axis=1)  # Remove edges at infinity
     conns = conns[~mask]
+    # Convert to COO matrix
     adjmat = sprs.coo_matrix((sp.ones_like(conns[:, 0]),
                              (conns[:, 0], conns[:, 1])))
     adjmat = adjmat.tocsr().tocoo()  # Remove duplicates by casting to csr
-    edges = sp.vstack((adjmat.row, adjmat.col)).T
+    edges = sp.vstack((adjmat.row, adjmat.col)).T  # Extract only edges
     return edges
 
 
@@ -153,7 +159,7 @@ def circle_pack(shape, radius, offset=0, packing='square'):
         spacing = 2*r
         s = int(spacing/2) + sp.array(offset)
         coords = sp.mgrid[r:im.shape[0]-r:2*s,
-                      r:im.shape[1]-r:2*s]
+                          r:im.shape[1]-r:2*s]
         im[coords[0], coords[1]] = 1
     if packing.startswith('t'):
         spacing = 2*sp.floor(sp.sqrt(2*(r**2))).astype(int)
@@ -206,8 +212,8 @@ def sphere_pack(shape, radius, offset=0, packing='sc'):
         spacing = 2*r
         s = int(spacing/2) + sp.array(offset)
         coords = sp.mgrid[r:im.shape[0]-r:2*s,
-                      r:im.shape[1]-r:2*s,
-                      r:im.shape[2]-r:2*s]
+                          r:im.shape[1]-r:2*s,
+                          r:im.shape[2]-r:2*s]
         im[coords[0], coords[1], coords[2]] = 1
     elif packing.startswith('b'):
         spacing = 2*sp.floor(sp.sqrt(4/3*(r**2))).astype(int)
