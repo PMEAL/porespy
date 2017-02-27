@@ -6,18 +6,43 @@ from skimage.segmentation import find_boundaries
 from skimage.morphology import ball, disk, square, watershed
 
 
-def polydisperse_disks(shape, porosity, dist, bins=5):
+def polydisperse_spheres(shape, porosity, dist, nbins=5):
     r"""
+    Create an image of spheres with a distribution of radii.
+
+    Parameters
+    ----------
+    shape : list
+        The size of the image to generate in [Nx, Ny, Nz] where Ni is the
+        number of voxels in each direction
+
+    porosity : scalar
+        The porosity of the image, defined as the number of void voxels
+        divided by the number of voxels in the image. The specified value
+        is only matched approximately, so it's suggested to check this value
+        after the image is generated.
+
+    dist : scipy.stats distribution object
+        This should be an initialized distribution the large number of options
+        in the scipy.stats submodule.  For instance, a normal distribution with
+        a mean of 20 and a standard deviation of 10 can be obtain with
+        ```dist = scipy.stats.norm(loc=20, scale=10)```
+
+    nbins : scalar
+        The number of discrete sphere sizes that will be used to generate the
+        image.  This function generates  ```nbins``` images of monodisperse
+        spheres that span 0.05 and 0.95 of the possible values produced by the
+        provided distribution, then overlays them to get polydispersivity.
     """
     shape = sp.array(shape)
-    Rs = dist.interval(sp.linspace(1/bins, 0.95, bins))
+    Rs = dist.interval(sp.linspace(0.05, 0.95, nbins))
     Rs = sp.vstack(Rs).T
     Rs = (Rs[:-1] + Rs[1:])/2
     Rs = Rs.flatten()
     phi = 1 - (1 - porosity)/(len(Rs))
     im = sp.ones(shape, dtype=bool)
     for r in Rs:
-        temp = overlapping_disks(shape=shape, radius=r, porosity=phi)
+        temp = overlapping_spheres(shape=shape, radius=r, porosity=phi)
         im = im*temp
     return im
 
@@ -119,7 +144,7 @@ def circle_pack(shape, radius, offset=0, packing='square'):
     """
     r = radius
     if sp.size(shape) == 1:
-        shape = sp.full((3, ), int(shape))
+        shape = sp.full((2, ), int(shape))
     elif (sp.size(shape) == 3) or (1 in shape):
         raise Exception("This function only produces 2D images, " +
                          "try \'sphere_pack\'")
@@ -225,11 +250,11 @@ def overlapping_spheres(shape, radius, porosity):
     Parameters
     ----------
     shape : list
-        The size of the image to generate in [Nx, Ny, Nz] where N is the
-        number of voxels.
+        The size of the image to generate in [Nx, Ny, Nz] where Ni is the
+        number of voxels in the *i*th direction.
 
     radius : scalar
-        The radius of spheres in the packing
+        The radius of spheres in the packing.
 
     porosity : scalar
         The porosity of the final image.  This number is approximated by
@@ -247,49 +272,12 @@ def overlapping_spheres(shape, radius, porosity):
     returned image.
     """
     if sp.size(shape) == 1:
+        print('Scalar shape received, expanding to 3D cube')
         shape = sp.full((3, ), int(shape))
-    s_vol = 4/3*sp.pi*radius**3
-    bulk_vol = sp.prod(shape)
-    N = (1 - porosity)*bulk_vol/s_vol
-    im = sp.random.random(size=shape) > (N/bulk_vol)
-    im = spim.distance_transform_edt(im) < radius
-    return ~im
-
-
-def overlapping_disks(shape, radius, porosity):
-    r"""
-    Generate a packing of overlapping mono-disperse disk/circles
-
-    Parameters
-    ----------
-    shape : list
-        The size of the image to generate in [Nx, Ny] where N is the
-        number of voxels.
-
-    radius : scalar
-        The radius of spheres in the packing
-
-    porosity : scalar
-        The porosity of the final image.  This number is approximated by
-        the method so the returned result may not have exactly the
-        specified value.
-
-    Returns
-    -------
-    A boolean array with True values denoting the pore space
-
-    Notes
-    -----
-    1. This method can also be used to generate a dispersion of hollows by
-    treating ``porosity`` as solid volume fraction and inverting the
-    returned image.
-
-    """
-    if sp.size(shape) == 1:
-        shape = sp.full((2, ), int(shape))
-    elif sp.size(shape) == 3:
-        raise Exception("For 3D images use \'overlapping_spheres\'")
-    s_vol = sp.pi*radius**2
+    if sp.size(shape) == 2:
+        s_vol = sp.pi*radius**2
+    if sp.size(shape) == 3:
+        s_vol = 4/3*sp.pi*radius**3
     bulk_vol = sp.prod(shape)
     N = (1 - porosity)*bulk_vol/s_vol
     im = sp.random.random(size=shape) > (N/bulk_vol)
