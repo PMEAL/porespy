@@ -1,6 +1,7 @@
 import scipy as sp
 import scipy.spatial as sptl
 import scipy.ndimage as spim
+import scipy.sparse as sprs
 from skimage.segmentation import find_boundaries
 from skimage.morphology import ball, disk, square, watershed
 
@@ -21,36 +22,75 @@ def polydisperse_disks(shape, porosity, dist, bins=5):
     return im
 
 
-def voronoi_cage(shape, strut_radius, ncells):
+def voronoi_edges(shape, edge_radius, ncells, flat_faces=True):
+    r"""
+    Create an image of the edges in a Voronoi tessellation
+
+    Parameters
+    ----------
+    shape : array_like
+        The size of the image to generate in [Nx, Ny, Nz] where Ni is the
+        number of voxels in each direction.
+
+    edge_radius : scalar
+        The radius to which Voronoi edges should be dilated in the final image.
+
+    ncells : scalar
+        The number of Voronoi cells to include in the tesselation.
+
+    flat_faces : Boolean
+        Whether the Voronoi edges should lie on the boundary of the
+        image (True), or if edges outside the image should be removed (False).
+
+    Returns
+    -------
+    A boolean array with True values denoting the pore space
+
+    """
     shape = sp.array(shape)
     im = sp.zeros(shape, dtype=bool)
     base_pts = sp.rand(ncells, 3)*shape
-    # Reflect base points
-    Nx, Ny, Nz = shape
-    orig_pts = base_pts
-    base_pts = sp.vstack((base_pts, [-1, 1, 1]*orig_pts +
-                                    [2.0*Nx, 0, 0]))
-    base_pts = sp.vstack((base_pts, [1, -1, 1]*orig_pts +
-                                    [0, 2.0*Ny, 0]))
-    base_pts = sp.vstack((base_pts, [1, 1, -1]*orig_pts +
-                                    [0, 0, 2.0*Nz]))
-    base_pts = sp.vstack((base_pts, [-1, 1, 1]*orig_pts))
-    base_pts = sp.vstack((base_pts, [1, -1, 1]*orig_pts))
-    base_pts = sp.vstack((base_pts, [1, 1, -1]*orig_pts))
+    if flat_faces:
+        # Reflect base points
+        Nx, Ny, Nz = shape
+        orig_pts = base_pts
+        base_pts = sp.vstack((base_pts, [-1, 1, 1]*orig_pts +
+                                        [2.0*Nx, 0, 0]))
+        base_pts = sp.vstack((base_pts, [1, -1, 1]*orig_pts +
+                                        [0, 2.0*Ny, 0]))
+        base_pts = sp.vstack((base_pts, [1, 1, -1]*orig_pts +
+                                        [0, 0, 2.0*Nz]))
+        base_pts = sp.vstack((base_pts, [-1, 1, 1]*orig_pts))
+        base_pts = sp.vstack((base_pts, [1, -1, 1]*orig_pts))
+        base_pts = sp.vstack((base_pts, [1, 1, -1]*orig_pts))
     vor = sptl.Voronoi(points=base_pts)
-    for pt in vor.ridge_points:
-        X = sp.floor(vor.points[pt]).astype(int)
-        if sp.all(X >= 0) and sp.all(sp.all(X < shape, axis=0)):
-            print("-"*50)
-            print("Passed: ", X.flatten())
-            print("-"*50)
-        else:
-            print("Failed: ", X.flatten())
-        if sp.all(X >= 0) and sp.all(sp.all(X < shape, axis=0)):
-            line_pts = line_segment(X[0], X[1])
+    vor.vertices = sp.around(vor.vertices)
+    vor.vertices *= (sp.array(im.shape)-1)/sp.array(im.shape)
+    vor.edges = _get_Voronoi_edges(vor)
+    for row in vor.edges:
+        pts = vor.vertices[row].astype(int)
+        if sp.all(pts >= 0) and sp.all(pts < im.shape):
+            line_pts = line_segment(pts[0], pts[1])
             im[line_pts] = True
-    im = spim.distance_transform_edt(~im) > strut_radius
+    im = spim.distance_transform_edt(~im) > edge_radius
     return im
+
+
+def _get_Voronoi_edges(vor):
+    coords = [[], []]
+    for facet in vor.ridge_vertices:
+        # Create a closed cycle of vertices that define the facet
+        coords[0].extend(facet[:-1]+[facet[-1]])
+        coords[1].extend(facet[1:]+[facet[0]])
+    conns = sp.vstack(coords).T  # Convert to scipy friendly format
+    conns = sp.sort(conns, axis=1)  # Move all points to upper triangle
+    mask = sp.any(conns == -1, axis=1)
+    conns = conns[~mask]
+    adjmat = sprs.coo_matrix((sp.ones_like(conns[:, 0]),
+                             (conns[:, 0], conns[:, 1])))
+    adjmat = adjmat.tocsr().tocoo()  # Remove duplicates by casting to csr
+    edges = sp.vstack((adjmat.row, adjmat.col)).T
+    return edges
 
 
 def circle_pack(shape, radius, offset=0, packing='square'):
