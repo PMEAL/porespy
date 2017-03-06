@@ -36,9 +36,9 @@ def extract_pore_network(im):
     # Start extracting size information for pores and throats
     Ps = sp.unique(im)[1:]
     Np = sp.size(Ps)
-    p_coords = sp.zeros((Np, im.ndim), dtype=int)
-    p_volume = sp.zeros((Np, ), dtype=int)
-    p_diameter = sp.zeros((Np, ), dtype=int)
+    p_coords = sp.zeros((Np, im.ndim), dtype=float)
+    p_volume = sp.zeros((Np, ), dtype=float)
+    p_diameter = sp.zeros((Np, ), dtype=float)
     p_label = sp.zeros((Np, ), dtype=int)
     p_vxls = sp.ndarray((Np, ), dtype=object)
     t_conns = []
