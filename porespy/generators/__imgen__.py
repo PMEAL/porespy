@@ -107,20 +107,20 @@ def voronoi_edges(shape, edge_radius, ncells, flat_faces=True):
 
 
 def _get_Voronoi_edges(vor):
-    coords = [[], []]
+    edges = [[], []]
     for facet in vor.ridge_vertices:
         # Create a closed cycle of vertices that define the facet
-        coords[0].extend(facet[:-1]+[facet[-1]])
-        coords[1].extend(facet[1:]+[facet[0]])
-    conns = sp.vstack(coords).T  # Convert to scipy-friendly format
-    conns = sp.sort(conns, axis=1)  # Move all points to upper triangle
-    mask = sp.any(conns == -1, axis=1)  # Remove edges at infinity
-    conns = conns[~mask]
-    # Convert to COO matrix
-    adjmat = sprs.coo_matrix((sp.ones_like(conns[:, 0]),
-                             (conns[:, 0], conns[:, 1])))
-    adjmat = adjmat.tocsr().tocoo()  # Remove duplicates by casting to csr
-    edges = sp.vstack((adjmat.row, adjmat.col)).T  # Extract only edges
+        edges[0].extend(facet[:-1]+[facet[-1]])
+        edges[1].extend(facet[1:]+[facet[0]])
+    edges = sp.vstack(edges).T  # Convert to scipy-friendly format
+    mask = sp.any(edges == -1, axis=1)  # Identify edges at infinity
+    edges = edges[~mask]  # Remove edges at infinity
+    edges = sp.sort(edges, axis=1)  # Move all points to upper triangle
+    # Remove duplicate pairs
+    edges = edges[:, 0] + 1j*edges[:, 1]  # Convert to imaginary
+    edges = sp.unique(edges)  # Remove duplicates
+    edges = sp.vstack((sp.real(edges), sp.imag(edges))).T  # Back to real
+    edges = sp.array(edges, dtype=int)
     return edges
 
 
