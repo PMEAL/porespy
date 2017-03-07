@@ -1,1 +1,1 @@
-from .__funcs__ import porosimetry
+from .__funcs__ import porosimetry, feature_size

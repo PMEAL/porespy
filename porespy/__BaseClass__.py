@@ -1,6 +1,7 @@
 import scipy.ndimage as spim
+from collections import namedtuple
 from porespy.metrics import porosity, size_distribution
-from porespy.simulations import porosimetry
+from porespy.simulations import porosimetry, feature_size
 from porespy.visualization import drainage_curve
 
 
@@ -21,7 +22,7 @@ class Bundle(dict):
     - *dt* : Returns the distance transform of the image.  It also stores the
     distance transform image in the dict for later access.
 
-    - *psd* : Pore size distribution
+    - *psd* : Pore size distribution function
 
     - *mip* : Mercury intrusion porosimetry
     """
@@ -33,29 +34,41 @@ class Bundle(dict):
 
     def _get_im(self):
         return self['im']
-    im = property(fget=_get_im)
+
+    def _set_im(self, im):
+        self.clear()
+        self['im'] = im
+
+    im = property(fget=_get_im, fset=_set_im)
 
     def _get_dt(self):
         if 'dt' not in self.keys():
             self['dt'] = spim.distance_transform_edt(self.im)
         return self['dt']
+
     dt = property(fget=_get_dt)
 
     def _get_phi(self):
         if 'phi' not in self.keys():
             self['phi'] = porosity(self.im)
         return self['phi']
+
     phi = property(fget=_get_phi)
 
     def _get_psd(self):
         if 'psd' not in self.keys():
-            self['psd'] = size_distribution(self.im)
-        return self['psd']
+            self['psd'] = feature_size(self.im)
+            data = namedtuple('data', ('radii', 'number'))
+            data.radii, data.number = size_distribution(self['psd'])
+        return data
+
     psd = property(fget=_get_psd)
 
     def _get_mip(self):
         if 'mip' not in self.keys():
-            pc_image = porosimetry(self.im)
-            self['mip'] = drainage_curve(pc_image)
-        return self['mip']
+            self['mip'] = porosimetry(self.im)
+            data = namedtuple('data', ('radii', 'number'))
+            data.radii, data.number = drainage_curve(self['mip'])
+        return data
+
     mip = property(fget=_get_mip)
