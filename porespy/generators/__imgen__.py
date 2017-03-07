@@ -291,6 +291,73 @@ def overlapping_spheres(shape, radius, porosity):
     return ~im
 
 
+def noise(shape, octaves=3, frequency=32, mode='simplex'):
+    r"""
+    Generate a field of spatially correlated random noise using the Perlin
+    noise algorithm, or the updated Simplex noise algorithm.
+
+    Parameters
+    ----------
+    shape : array_like
+        The size of the image to generate in [Nx, Ny, Nz] where N is the
+        number of voxels.
+
+    octaves : int
+        Controls the *texture* of the noise, with higher octaves giving more
+        complex features over larger length scales.
+
+    frequency : array_like
+        Controls the relative sizes of the features, with higher frequencies
+        giving larger features.  A scalar value will apply the same frequency
+        in all directions, given an isotropic field; a vector value will
+        apply the specified values along each axis to create anisotropy.`
+
+    mode : string
+        Which noise algorithm to use, either \'simplex\' (default) or
+        \'perlin\'.
+
+    Returns
+    -------
+    A float array with values between -1 and +1.  This image can be easily
+    thresholded to create a binary image, or the values can be used for other
+    purposes.
+
+    Notes
+    -----
+    This method depends the a package called 'noise' which must be
+    compiled. It can be installed from PyPI on machines with a C-compiler
+    present, or a platform specific binary can be downloaded.
+
+    """
+    try:
+        import noise
+    except:
+        raise Exception("The noise package must be installed")
+    if len(shape) == 2:
+        Lx, Ly = shape
+        Lz = 1
+    elif len(shape) == 3:
+        Lx, Ly, Lz = shape
+    if mode == 'simplex':
+        f = noise.snoise3
+    else:
+        f = noise.pnoise3
+    if len(frequency) == 1:
+        freq = sp.full(shape=[3, ], fill_values=frequency)
+    elif len(frequency) == 2:
+        freq = sp.concatenate((frequency, [1]))
+    else:
+        freq = sp.array(frequency)
+    seed = sp.random.randint(0, 10000)
+    im = sp.zeros(shape=[Lx, Ly, Lz], dtype=float)
+    for x in range(Lx):
+        for y in range(Ly):
+            for z in range(Lz):
+                im[x, y, z] = f(x=x/freq[0], y=y/freq[1], z=z/freq[2],
+                                octaves=octaves)
+    return im
+
+
 def blobs(shape, porosity=0.5, blobiness=1):
     """
     Generates an image containing amorphous blobs
