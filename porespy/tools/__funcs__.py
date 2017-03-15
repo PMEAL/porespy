@@ -69,51 +69,61 @@ def randomize_colors(im, keep_vals=[0]):
     im_new = sp.reshape(im_new, newshape=sp.shape(im))
     return im_new
 
-def feature_size(labeled_image, N=None):
-    if N == None:
-        N = sp.amax(labeled_image)
-    sizes = sp.zeros_like(labeled_image, dtype=int)
-    for i in range(1, N+1):
-        crds = sp.where(labeled_image == i)
-        sizes[crds] = crds[0].size
-    return sizes
 
-def flood_max(im, max_iter=100):
-    if get_dims(im) == 2:
-        strel = square(3)
-    else:
-        strel = cube(3)
-    mask = im != 0
-    im_new = sp.copy(im)
-    im_old = sp.zeros_like(im,dtype=int)
-    i = 0
-    while sp.any(im_new - im_old) and (i < max_iter):
-        im_old = im_new
-        im_new = spim.maximum_filter(im_new, footprint=strel)
-        im_new[~mask] = 0
-        i += 1
-    return im_new
+def flood(im, mode='max', func=None):
+    r"""
+    Floods/fills each region in an image with a single value based on the
+    specific values in the region.  The ```mode``` argument is used to
+    determine how the value is calculated.
 
-def flood_min(im, max_iter=100):
-    if get_dims(im) == 2:
-        strel = square(3)
-    else:
-        strel = cube(3)
-    immax = sp.amax(im)*2
-    mask = im != 0
-    im_new = sp.copy(im)
-    im_new[~mask] = immax
-    im_old = sp.zeros_like(im,dtype=int)
-    i = 0
-    while sp.any(im_new - im_old) and (i < max_iter):
-        im_old = im_new
-        im_new = spim.minimum_filter(im_new, footprint=strel)
-        im_new[~mask] = immax
-        i += 1
-    im_new[~mask] = 0
-    return im_new
+    Parameters
+    ----------
+    im : array_like
+        An ND image with isolated regions containing 0's elsewhere.
+
+    mode : string
+        Specifies how to determine which value should be used to flood each
+        region.  Options are:
+
+    *'max'* : Floods each region with the local maximum in that region
+
+    *'min'* : Floods each region the local minimum in that region
+
+    *'mean'* : Floods each region with the mean value in that region
+
+    *'size'* : Floods each region with the size of that region
+
+    func : function handle
+        Can be used to pass in a special function that is used to evaluate
+        some property for each region.  For instance, passing  ```scipy.amax```
+        is equivalent to specifying ```mode``` of 'max'.
+
+    Returns
+    -------
+    An ND-array the same size as ```im``` with new values placed in each
+    forground voxel based on the ```mode``` (or ```func```)
+
+    """
+    labels, N = spim.label(im)
+    flooded_im = sp.zeros_like(im, dtype=float)
+    if func is None:
+        if mode.startswith('max'):
+            func = sp.amax
+        elif mode.startswith('min'):
+            func = sp.amin
+        elif mode.startswith('mean'):
+            func = sp.mean
+        elif mode.startswith('size'):
+            func = sp.size
+    for L in range(1, N):
+        inds = sp.where(labels == L)
+        val = func(im[inds])
+        flooded_im[inds] = val
+    return flooded_im
+
 
 def concentration_transform(im):
+    import pyamg
     net = op.Network.Cubic(shape=im.shape)
     net.fromarray(im, propname='pore.void')
     net.fromarray(~im, propname='pore.solid')
@@ -130,24 +140,12 @@ def concentration_transform(im):
     alg.set_boundary_conditions(bctype='Neumann', bcvalue=-1, pores=net.pores('void'))
     alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0, pores=net.pores('solid'))
 #    alg.set_source_term(source_name='pore.sink', pores=net.pores('solid'))
-    alg.run()
-    ct = net.asarray(alg['pore.mole_fraction']).squeeze()
+    alg.setup()
+    ml = pyamg.ruge_stuben_solver(alg.A)
+    X = ml.solve(alg.b)
+    ct = net.asarray(X).squeeze()
     return ct
 
-def get_weighted_markers(im, Rs):
-    if im.ndim == 2:
-        strel = disk
-    elif im.ndim == 3:
-        strel = ball
-    Rs = sp.sort(Rs)
-    dt = spim.distance_transform_edt(im)
-    weighted_markers = sp.zeros_like(im, dtype=float)
-    for r in Rs:
-        mx = spim.maximum_filter(input=dt, footprint=strel(r))
-        markers = (mx==dt)*im
-        pts = sp.where(markers)
-        weighted_markers[pts[0], pts[1]] = markers[pts[0], pts[1]]*r
-    return weighted_markers
 
 def make_contiguous(im):
     r"""
