@@ -2,6 +2,8 @@ import scipy as sp
 import scipy.ndimage as spim
 from skimage.morphology import ball, disk, square, cube
 import OpenPNM as op
+from numba import jit
+
 
 def randomize_colors(im, keep_vals=[0]):
     r'''
@@ -70,7 +72,8 @@ def randomize_colors(im, keep_vals=[0]):
     return im_new
 
 
-def flood(im, mode='max', func=None):
+@jit
+def flood(im, mode='max'):
     r"""
     Floods/fills each region in an image with a single value based on the
     specific values in the region.  The ```mode``` argument is used to
@@ -89,37 +92,35 @@ def flood(im, mode='max', func=None):
 
     *'min'* : Floods each region the local minimum in that region
 
-    *'mean'* : Floods each region with the mean value in that region
-
     *'size'* : Floods each region with the size of that region
-
-    func : function handle
-        Can be used to pass in a special function that is used to evaluate
-        some property for each region.  For instance, passing  ```scipy.amax```
-        is equivalent to specifying ```mode``` of 'max'.
 
     Returns
     -------
     An ND-array the same size as ```im``` with new values placed in each
-    forground voxel based on the ```mode``` (or ```func```)
+    forground voxel based on the ```mode```.
 
     """
     labels, N = spim.label(im)
-    flooded_im = sp.zeros_like(im, dtype=float)
-    if func is None:
-        if mode.startswith('max'):
-            func = sp.amax
-        elif mode.startswith('min'):
-            func = sp.amin
-        elif mode.startswith('mean'):
-            func = sp.mean
-        elif mode.startswith('size'):
-            func = sp.size
-    for L in range(1, N):
-        inds = sp.where(labels == L)
-        val = func(im[inds])
-        flooded_im[inds] = val
-    return flooded_im
+    I = im.flatten()
+    L = labels.flatten()
+    if mode.startswith('max'):
+        V = sp.zeros(shape=N+1, dtype=float)
+        for i in range(len(L)):
+            if V[L[i]] < I[i]:
+                V[L[i]] = I[i]
+    elif mode.startswith('min'):
+        V = sp.ones(shape=N+1, dtype=float)*sp.inf
+        for i in range(len(L)):
+            if V[L[i]] > I[i]:
+                V[L[i]] = I[i]
+    elif mode.startswith('size'):
+        V = sp.zeros(shape=N+1, dtype=float)
+        for i in range(len(L)):
+            V[L[i]] += 1
+    V = sp.array(V)
+    im_flooded = sp.zeros_like(im)
+    im_flooded = V[labels]
+    return(im_flooded)
 
 
 def concentration_transform(im):
