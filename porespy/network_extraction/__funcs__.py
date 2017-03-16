@@ -3,14 +3,50 @@ import scipy.ndimage as spim
 import scipy.spatial as sptl
 from skimage.morphology import reconstruction, watershed
 from skimage.segmentation import find_boundaries
+from porespy.tools import randomize_colors
 
 
-def maxima_filt(im, strel):
-    def f(vals):
-        vals[24] *= 0.9999
-        return sp.amax(vals)
-    a = spim.filters.generic_filter(input=im, function=f, footprint=disk(3))
-    return a
+def get_indices_from_slices(slices, shape, pad=1):
+    r"""
+    Given a list slices (one slice for each dimension), this function returns
+    an set of coordinate matrices suitable for direct indexing into a Numpy
+    array.
+
+    Parameters
+    ----------
+    slices : a list or tuple contain slice objects
+        There should be one slice object for each dimension.  This function can
+        handle arbitrary dimensionality
+
+    shape : array_like
+        The shape of the image into which the slices point.  This is used
+        to ensure that the ```pad``` does not extend outside the domain.
+
+    pad : scalar
+        Specify a large region than indicated by the slices (See Notes)
+
+    Returns
+    -------
+    A set of coordiante matrices that can be used to extract a subset of a
+    Numpy array directly.
+
+    Notes
+    -----
+    This function is redundant if ```pad``` is not needed since the slices
+    can just be used directly to extract a subset of the image.  The main
+    motivation of this function is allow extraction of an extended subset
+    which includes bits of the neighboring regions.
+    """
+    pad = [pad]*len(shape)
+    inds = []
+    for s in slices:
+        if s.start == 0:
+            pad[0] = 0
+        if s.stop == shape[dim]:
+            pad[dim] = 0
+        inds.append(range(s.start-pad, s.stop+pad))
+    inds = sp.meshgrid(*inds)
+    return inds
 
 
 def all_peaks(dt, r=3):
@@ -70,7 +106,8 @@ def partition_pore_space(dt, peaks):
     Returns
     -------
     A ND-array the same size as ``dt`` with regions belonging to each peak
-    labelled.
+    labelled.  The region number is randomized so that neighboring regions
+    are contrasting colors for easier visualization.
 
     Notes
     -----
@@ -82,15 +119,13 @@ def partition_pore_space(dt, peaks):
 
     See Also
     --------
-    SNOW_peaks
+    snow
 
-    Examples
-    --------
-    >>> import porespy as ps
     """
     if peaks.dtype == bool:
         peaks = spim.label(input=peaks)[0]
     regions = watershed(-dt, markers=peaks)
+    regions = randomize_colors(regions)
     return regions
 
 

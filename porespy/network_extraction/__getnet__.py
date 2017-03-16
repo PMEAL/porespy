@@ -16,11 +16,14 @@ def extract_pore_network(im):
     convention (i.e. 'pore.coords', 'throat.conns') so it may be converted
     directly to an OpenPNM network object using the ``update`` command.
     """
+    print('_'*60)
+    print('Extracting pore and throat information from image')
     from skimage.morphology import disk, square, ball, cube
     if im.ndim == 2:
         cube = square
         ball = disk
-
+    if ~sp.any(im == 0):
+        raise Exception('The received image has no solid phase (0\'s)')
     # Process input image for determination of sizes
     im = ps.tools.make_contiguous(im)
     dt = spim.distance_transform_edt(im > 0)
@@ -45,7 +48,11 @@ def extract_pore_network(im):
     t_diameter = []
     t_vxls = []
     t_coords = []
+    print('0% |'+'-'*50+'| 100%')
+    print('   |', end='')
     for i in Ps:
+        if sp.mod(i, sp.floor(len(Ps)/50)) == 0:
+            print('|', end='')
         pore = i - 1
         p_vxls[pore] = sp.where(im == i)
         # Get pore info
@@ -70,6 +77,7 @@ def extract_pore_network(im):
                     t_coords.append(tuple((inds[0][temp], inds[1][temp])))
                 else:
                     t_coords.append(tuple((inds[0][temp], inds[1][temp], inds[2][temp])))
+    print('|', end='')
     # Clean up values
     Nt = len(t_vxls)  # Get number of throats
     if im.ndim == 2:  # If 2D, add 0's in 3rd dimension
@@ -86,9 +94,9 @@ def extract_pore_network(im):
 #    net['pore.voxels'] = sp.array(p_vxls)
 #    net['throat.voxels'] = sp.array(t_vxls)
     net['pore.label'] = sp.array(p_label)
-    net['pore.volume'] = p_volume
+    net['pore.volume'] = sp.copy(p_volume)
     net['throat.volume'] = sp.zeros((Nt, ), dtype=float)
-    net['pore.diameter'] = p_diameter
+    net['pore.diameter'] = sp.copy(p_diameter)
     net['pore.equivalent_diameter'] = (3/4*p_volume)**(1/3)*2
     net['throat.diameter'] = sp.array(t_diameter)
     P12 = net['throat.conns']

@@ -58,8 +58,8 @@ class Bundle(dict):
     def _get_psd(self):
         if 'psd' not in self.keys():
             self['psd'] = feature_size(self.im)
-            data = namedtuple('data', ('radii', 'number'))
-            data.radii, data.number = size_distribution(self['psd'])
+        data = namedtuple('data', ('radii', 'number'))
+        data.radii, data.number = size_distribution(self['psd'])
         return data
 
     psd = property(fget=_get_psd)
@@ -67,8 +67,8 @@ class Bundle(dict):
     def _get_mip(self):
         if 'mip' not in self.keys():
             self['mip'] = porosimetry(self.im)
-            data = namedtuple('data', ('radii', 'number'))
-            data.radii, data.number = drainage_curve(self['mip'])
+        data = namedtuple('data', ('radii', 'number'))
+        data.radii, data.number = drainage_curve(self['mip'])
         return data
 
     mip = property(fget=_get_mip)
