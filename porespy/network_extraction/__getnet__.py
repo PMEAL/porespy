@@ -1,7 +1,5 @@
 import scipy as sp
-import porespy as ps
 import scipy.ndimage as spim
-import sys
 
 
 def extract_pore_network(im, dt=None):

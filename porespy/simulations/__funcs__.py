@@ -38,6 +38,7 @@ def feature_size(im, bins=None):
     dt = spim.distance_transform_edt(im)
     sizes = sp.unique(sp.around(dt))
     im_new = sp.zeros_like(im, dtype=int)
+    print('_'*60)
     print("Performing Image Opening")
     print('0%|'+'-'*len(sizes)+'|100%')
     print('  |', end='')
@@ -103,6 +104,7 @@ def porosimetry(im, npts=25, sizes=None, inlets=None):
         sizes = sp.logspace(sp.log10(sp.amax(dt)), 0.1, npts)
 
     imresults = sp.zeros(sp.shape(im))
+    print('_'*60)
     print('Porosimetry Running')
     print('0%|'+'-'*len(sizes)+'|100%')
     print('  |', end='')
