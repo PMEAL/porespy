@@ -27,10 +27,10 @@ def get_indices_from_slices(slices, shape, pad=1):
 
     Returns
     -------
-    A set of coordiante matrices that can be used to extract a subset of a
+    A set of coordinate matrices that can be used to extract a subset of a
     Numpy array directly.
 
-    Notes
+    Note
     -----
     This function is redundant if ```pad``` is not needed since the slices
     can just be used directly to extract a subset of the image.  The main
