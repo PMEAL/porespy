@@ -1,8 +1,7 @@
 import sys
 import scipy as sp
 import scipy.ndimage as spim
-from collections import namedtuple
-import matplotlib.pyplot as plt
+from porespy.tools import get_border
 
 
 def feature_size(im, bins=None):
@@ -34,7 +33,7 @@ def feature_size(im, bins=None):
     """
     from skimage.morphology import cube
     if im.ndim == 2:
-        from  skimage.morphology import square as cube
+        from skimage.morphology import square as cube
     dt = spim.distance_transform_edt(im)
     sizes = sp.unique(sp.around(dt))
     im_new = sp.zeros_like(im, dtype=int)
@@ -95,11 +94,7 @@ def porosimetry(im, npts=25, sizes=None, inlets=None):
     """
     dt = spim.distance_transform_edt(im)
     if inlets is None:
-        inlets = sp.ones_like(im, dtype=bool)
-        if im.ndim == 2:
-            inlets[1:-2, 1:-2] = False
-        elif im.ndim == 3:
-            inlets[1:-2, 1:-2,1:-2] = False
+        inlets = get_border(im.shape)
     if sizes is None:
         sizes = sp.logspace(sp.log10(sp.amax(dt)), 0.1, npts)
 
@@ -116,7 +111,7 @@ def porosimetry(im, npts=25, sizes=None, inlets=None):
         inlet_labels = sp.unique(labels[inlets])
         imtemp = sp.in1d(labels.ravel(), inlet_labels)
         imtemp = sp.reshape(imtemp, im.shape)
-        im = spim.distance_transform_edt(~(imtemp^inlets)) <= r
+        im = spim.distance_transform_edt(~(imtemp ^ inlets)) <= r
         imresults[(imresults == 0)*im] = r
     print('|')
     return imresults

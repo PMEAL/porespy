@@ -123,6 +123,35 @@ def flood(im, mode='max'):
     return(im_flooded)
 
 
+def flood2(regions, vals, mode='max', func=None):
+    r"""
+
+    """
+    im_new = sp.ones_like(vals)
+    slices = spim.find_objects(regions)
+    labels = sp.unique(regions)
+    if labels[0] == 0:
+        labels = labels[1:]
+    count = 0
+    if func is None:
+        if mode == 'max':
+            func = sp.amax
+        elif mode == 'min':
+            func = sp.amin
+        elif mode == 'mean':
+            func = sp.mean
+        elif mode == 'size':
+            func = sp.count_nonzero
+        else:
+            raise Exception('Supplied mode is not supported')
+    for i in labels:
+        sub_mask = regions[slices[count]] == i
+        sub_vals = vals[slices[count]]
+        im_new[slices[count]] += func(sub_vals*sub_mask)*sub_mask
+        count += 1
+    return im_new
+
+
 def concentration_transform(im):
     import pyamg
     net = op.Network.Cubic(shape=im.shape)

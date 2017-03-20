@@ -27,11 +27,11 @@ def polydisperse_spheres(shape, porosity, dist, nbins=5):
         This should be an initialized distribution the large number of options
         in the scipy.stats submodule.  For instance, a normal distribution with
         a mean of 20 and a standard deviation of 10 can be obtain with
-        ```dist = scipy.stats.norm(loc=20, scale=10)```
+        ``dist = scipy.stats.norm(loc=20, scale=10)``
 
     nbins : scalar
         The number of discrete sphere sizes that will be used to generate the
-        image.  This function generates  ```nbins``` images of monodisperse
+        image.  This function generates  ``nbins`` images of monodisperse
         spheres that span 0.05 and 0.95 of the possible values produced by the
         provided distribution, then overlays them to get polydispersivity.
 
