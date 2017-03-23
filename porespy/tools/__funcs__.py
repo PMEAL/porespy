@@ -5,6 +5,68 @@ import OpenPNM as op
 from numba import jit
 
 
+def extend_slices(slices, shape):
+    r"""
+    Adjust slice indices to include additional voxles around the slices.
+
+    Parameters
+    ----------
+    slices : list of slice objects
+         A list (or tuple) of N slice objects, where N is the number of
+         dimensions in the image.
+
+    shape: array_like
+        The shape of the image into which the slice objects apply.  This is
+        used to check the bounds to prevent indexing beyond the image.
+
+    Returns
+    -------
+    A list slice objects with the start and stop attributes respectively
+    incremented and decremented by 1, without extending beyond the image
+    boundaries.
+    """
+    a = []
+    for s, dim in zip(slices, shape):
+        start = 0
+        stop = dim
+        if s.start > 0:
+            start = s.start - 1
+        if s.stop < dim:
+            stop = s.stop + 1
+        a.append(slice(start, stop, None))
+    return a
+
+
+def binary_opening_fast(dt, r):
+    r"""
+    This function uses a shortcut to perform a morphological opening that does
+    not slow down with larger structuring elements.  Because of the shortcut
+    it only applies to spherical structuring elements.
+
+    Parameters
+    ----------
+    dt : ND-image
+        The distance transform of the pore space.
+
+    r : scalar, int
+        The radius of the spherical structuring element to apply
+
+    Returns
+    -------
+    A binary image with True values in all locations where a sphere of size
+    ``r`` could fit entirely within the pore space.
+
+    Notes
+    -----
+    This method requires performing the distance transform twice, but the first
+    time is only on the pores space.  Since this is likely available it must be
+    passed in as an argument.
+    """
+    seeds = dt > r
+    im_opened = spim.distance_transform_edt(~seeds) < r
+    return im_opened
+
+
 def randomize_colors(im, keep_vals=[0]):
     r'''
     Takes a greyscale image and randomly shuffles the greyscale values, so that
@@ -196,6 +258,7 @@ def make_contiguous(im):
     im_new = sp.array(im_new, dtype=im_flat.dtype)
     return im_new
 
+
 def find_edges(im, strel=None):
     r"""
     Find the edges between labelled regions in an image
@@ -218,6 +281,7 @@ def find_edges(im, strel=None):
     temp = spim.convolve(input=im, weights=strel)/sp.sum(strel)
     temp = im != temp
     return temp
+
 
 def get_border(shape, thickness=1, mode='edges'):
     r"""
@@ -282,11 +346,13 @@ def get_border(shape, thickness=1, mode='edges'):
             border[0::, 0::, t:-t] = False
     return border
 
+
 def fill_border(im, thickness=1, value=1):
     border = get_border(im, thickness=thickness)
     coords = sp.where(border)
     im[coords] = value
     return im
+
 
 def get_dims(im):
     if im.ndim == 2:
@@ -295,6 +361,7 @@ def get_dims(im):
         return 2
     if im.ndim == 3:
         return 3
+
 
 def rotate_image_and_repeat(im):
     # Find all markers in distance transform
@@ -307,6 +374,7 @@ def rotate_image_and_repeat(im):
         X_hi = sp.floor(temp.shape[0]/2+im.shape[0]/2).astype(int)
         weighted_markers += temp[X_lo:X_hi, X_lo:X_hi]
     return weighted_markers
+
 
 def remove_isolated_voxels(im, conn=None):
     if im.ndim == 2:
@@ -325,3 +393,4 @@ def remove_isolated_voxels(im, conn=None):
     area_mask = (id_sizes == 1)
     filtered_im[area_mask[id_regions]] = 0
     return filtered_im
+

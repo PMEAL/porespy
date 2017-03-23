@@ -1,8 +1,9 @@
 import scipy as sp
 import scipy.ndimage as spim
+from porespy.tools import extend_slices
 
 
-def extract_pore_network(im, dt=None):
+def extract_pore_network(im, dt=None, voxel_size=1):
     r"""
     Analyzes an image that has been partitioned into pore regions and extracts
     the pore and throat geometry as well as network connectivity.
@@ -16,6 +17,12 @@ def extract_pore_network(im, dt=None):
     dt : ND-array
         The distance transform of the pore space.  If not given it will be
         calculated, but it can save time to provide one if available.
+
+    voxel_size : scalar
+        The resolution of the image, expressed as the length of one side of a
+        voxel, so the volume of a voxel would be **voxel_size**-cubed.  The
+        default is 1, which is useful when overlaying the PNM on the original
+        image since the scale of the image is alway 1 unit lenth per voxel.
 
     Returns
     -------
@@ -92,35 +99,23 @@ def extract_pore_network(im, dt=None):
     net = {}
     net['pore.all'] = sp.ones((Np, ), dtype=bool)
     net['throat.all'] = sp.ones((Nt, ), dtype=bool)
-    net['pore.coords'] = p_coords
-    net['throat.coords'] = sp.array(t_coords)
+    net['pore.coords'] = sp.copy(p_coords)*voxel_size
+    net['pore.centroid'] = sp.copy(p_coords)*voxel_size
+    net['throat.centroid'] = sp.array(t_coords)*voxel_size
     net['throat.conns'] = sp.array(t_conns)
 #    net['pore.voxels'] = sp.array(p_vxls)
 #    net['throat.voxels'] = sp.array(t_vxls)
     net['pore.label'] = sp.array(p_label)
-    net['pore.volume'] = sp.copy(p_volume)
+    net['pore.volume'] = sp.copy(p_volume)*(voxel_size**3)
     net['throat.volume'] = sp.zeros((Nt, ), dtype=float)
-    net['pore.diameter'] = sp.copy(p_diameter)
-    net['pore.equivalent_diameter'] = (3/4*p_volume)**(1/3)*2
-    net['throat.diameter'] = sp.array(t_diameter)
+    net['pore.diameter'] = sp.copy(p_diameter)*voxel_size
+    net['pore.equivalent_diameter'] = (((3/4*net['pore.volume'])**(1/3))*2)
+    net['throat.diameter'] = sp.array(t_diameter)*voxel_size
     P12 = net['throat.conns']
     PT1 = sp.sqrt(sp.sum((p_coords[P12[:, 0]] - t_coords)**2, axis=1))
     PT2 = sp.sqrt(sp.sum((p_coords[P12[:, 1]] - t_coords)**2, axis=1))
-    net['throat.length'] = PT1 + PT2
-    PP = sp.sqrt(sp.sum((p_coords[P12[:, 0]] - p_coords[P12[:, 1]])**2, axis=1))
-    net['throat.length1'] = PP
+    net['throat.length'] = (PT1 + PT2)*voxel_size
+    PP = sp.sqrt(sp.sum(a=(p_coords[P12[:, 0]] - p_coords[P12[:, 1]])**2, axis=1))
+    net['throat.length1'] = PP*voxel_size
 
     return net
-
-
-def extend_slices(slices, shape):
-    a = []
-    for s, dim in zip(slices, shape):
-        start = 0
-        stop = dim
-        if s.start > 0:
-            start = s.start - 1
-        if s.stop < dim:
-            stop = s.stop + 1
-        a.append(slice(start, stop, None))
-    return a
