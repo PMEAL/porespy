@@ -5,7 +5,7 @@ import OpenPNM as op
 from numba import jit
 
 
-def extend_slices(slices, shape):
+def extend_slices(slices, shape, pad=1):
     r"""
     Adjust slice indices to include additional voxles around the slices.
 
@@ -29,10 +29,10 @@ def extend_slices(slices, shape):
     for s, dim in zip(slices, shape):
         start = 0
         stop = dim
-        if s.start > 0:
-            start = s.start - 1
-        if s.stop < dim:
-            stop = s.stop + 1
+        if s.start - pad >= 0:
+            start = s.start - pad
+        if s.stop + pad < dim:
+            stop = s.stop + pad
         a.append(slice(start, stop, None))
     return a
 
