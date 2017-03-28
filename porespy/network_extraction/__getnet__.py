@@ -65,30 +65,35 @@ def extract_pore_network(im, dt=None, voxel_size=1):
         pore = i - 1
         s = extend_slices(slices[pore], im.shape)
         sub_im = im[s]
+        sub_dt = dt[s]
+        pore_im = sub_im == i
+        pore_dt = spim.distance_transform_edt(sp.pad(pore_im, 1, mode='constant'))
         s_offset = sp.array([i.start for i in s])
-        vx = sp.where(sub_im == i)
-        p_inds = tuple([i+j for i, j in zip(vx, s_offset)])
-        p_vxls.append(p_inds)
+        # vx = sp.where(pore_im)
+        # p_inds = tuple([i+j for i, j in zip(vx, s_offset)])
+        # p_vxls.append(p_inds)
         p_label[pore] = i
-        p_coords[pore, :] = sp.mean(p_vxls[pore], axis=1)
-        p_volume[pore] = sp.size(p_vxls[pore][0])
-        p_diameter[pore] = 2*sp.amax(dt[p_vxls[pore]])
-        im_w_throats = spim.binary_dilation(input=sub_im == i,
-                                            structure=ball(1))
+        p_coords[pore, :] = spim.center_of_mass(pore_im) + s_offset
+        p_volume[pore] = sp.sum(pore_im)
+        p_diameter[pore] = 2*sp.amax(pore_dt)
+        im_w_throats = spim.binary_dilation(input=pore_im, structure=ball(1))
         im_w_throats = im_w_throats*sub_im
         Pn = sp.unique(im_w_throats)[1:] - 1
         for j in Pn:
             if j > pore:
                 t_conns.append([pore, j])
                 vx = sp.where(im_w_throats == (j + 1))
-                t_inds = p_inds = tuple([i+j for i, j in zip(vx, s_offset)])
+                t_inds = tuple([i+j for i, j in zip(vx, s_offset)])
                 t_vxls.append(t_inds)
                 t_diameter.append(2*sp.amax(dt[t_inds]))
                 temp = sp.where(dt[t_inds] == sp.amax(dt[t_inds]))[0][0]
                 if im.ndim == 2:
-                    t_coords.append(tuple((t_inds[0][temp], t_inds[1][temp])))
+                    t_coords.append(tuple((t_inds[0][temp],
+                                           t_inds[1][temp])))
                 else:
-                    t_coords.append(tuple((t_inds[0][temp], t_inds[1][temp], t_inds[2][temp])))
+                    t_coords.append(tuple((t_inds[0][temp],
+                                           t_inds[1][temp],
+                                           t_inds[2][temp])))
     # Clean up values
     Nt = len(t_vxls)  # Get number of throats
     if im.ndim == 2:  # If 2D, add 0's in 3rd dimension
@@ -113,7 +118,9 @@ def extract_pore_network(im, dt=None, voxel_size=1):
     net['throat.diameter'] = sp.array(t_diameter)*voxel_size
     P12 = net['throat.conns']
     PT1 = sp.sqrt(sp.sum((p_coords[P12[:, 0]] - t_coords)**2, axis=1))
+    PT1 = PT1 - p_diameter[P12[:, 0]]/2
     PT2 = sp.sqrt(sp.sum((p_coords[P12[:, 1]] - t_coords)**2, axis=1))
+    PT2 = PT2 - p_diameter[P12[:, 1]]/2
     net['throat.length'] = (PT1 + PT2)*voxel_size
     PP = sp.sqrt(sp.sum(a=(p_coords[P12[:, 0]] - p_coords[P12[:, 1]])**2, axis=1))
     net['throat.length1'] = PP*voxel_size
