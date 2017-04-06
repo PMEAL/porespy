@@ -1,17 +1,53 @@
 import scipy as sp
 import scipy.ndimage as spim
 from skimage.morphology import ball, disk, square, cube
+from skimage.segmentation import clear_border
 import OpenPNM as op
 from numba import jit
 
 
-def extend_slices(slices, shape, pad=1):
+def fill_blind_pores(im):
+    r"""
+    Removes all pore voxels from the image if they are not connected to the
+    surface.
+
+    Parameters
+    ----------
+    im : ND-array
+        The image of the pore space, with ones indicating the phase to be
+        trimmed
+    """
+    temp_im = sp.pad(im > 0, 1, 'constant', constant_values=1)
+    labels, N = spim.label(input=temp_im)
+    connected_pores = (labels == 1)
+    s = [slice(1, -1) for _ in im.shape]
+    connected_pores = connected_pores[s]
+    return connected_pores
+
+
+def reduce_peaks_to_points(peaks):
+    if peaks.ndim == 2:
+        from skimage.morphology import square as cube
+    else:
+        from skimage.morphology import cube
+    markers, N = spim.label(input=peaks, structure=cube(3))
+    inds = spim.measurements.center_of_mass(input=peaks,
+                                            labels=markers,
+                                            index=sp.arange(1, N))
+    inds = sp.floor(inds).astype(int)
+    # Centroid may not be on old pixel, so create a new peaks image
+    peaks = sp.zeros_like(peaks, dtype=bool)
+    peaks[tuple(inds.T)] = True
+    return peaks
+
+
+def extend_slice(s, shape, pad=1):
     r"""
     Adjust slice indices to include additional voxles around the slices.
 
     Parameters
     ----------
-    slices : list of slice objects
+    s : list of slice objects
          A list (or tuple) of N slice objects, where N is the number of
          dimensions in the image.
 
@@ -26,13 +62,13 @@ def extend_slices(slices, shape, pad=1):
     boundaries.
     """
     a = []
-    for s, dim in zip(slices, shape):
+    for i, dim in zip(s, shape):
         start = 0
         stop = dim
-        if s.start - pad >= 0:
-            start = s.start - pad
-        if s.stop + pad < dim:
-            stop = s.stop + pad
+        if i.start - pad >= 0:
+            start = i.start - pad
+        if i.stop + pad < dim:
+            stop = i.stop + pad
         a.append(slice(start, stop, None))
     return a
 
@@ -376,7 +412,25 @@ def rotate_image_and_repeat(im):
     return weighted_markers
 
 
-def remove_isolated_voxels(im, conn=None):
+def remove_disconnected_voxels(im, conn=None):
+    r"""
+
+    Parameters
+    ----------
+    im : ND-image
+        A Boolean image, with True values indicating the foreground from which
+        the offending voxels will be trimmed.
+
+    conn : int
+        For 2D the options are 4 and 8 for square and diagonal neighbors, while
+        for the 3D the options are 6 and 26, similarily for square and diagonal
+        neighbors.
+
+    See Also
+    --------
+    remove_blind_pores
+
+    """
     if im.ndim == 2:
         if conn == 4:
             strel = disk(1)
@@ -393,4 +447,3 @@ def remove_isolated_voxels(im, conn=None):
     area_mask = (id_sizes == 1)
     filtered_im[area_mask[id_regions]] = 0
     return filtered_im
-
