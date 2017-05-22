@@ -4,6 +4,15 @@ from skimage.morphology import reconstruction, watershed
 from porespy.tools import randomize_colors
 
 
+def align_images_with_openpnm(im):
+    if im.ndim == 2:
+        pass
+    elif im.ndim == 3:
+        im = (sp.swapaxes(im, 2, 0))
+        im = im[:, -1::-1, :]
+    return im
+
+
 def all_peaks(dt, r=3):
     r"""
     Returns all local maxima in the distance transform.
@@ -41,17 +50,17 @@ def all_peaks(dt, r=3):
     return peaks
 
 
-def partition_pore_space(dt, peaks):
+def partition_pore_space(im, peaks):
     r"""
     Applies a watershed segmentation to partition the distance transform into
     discrete pores.
 
     Parameters
     ----------
-    dt : ND-array
-        The distance transform of the pore space with maximum values located
-        at the pore centers.  The function inverts this array to convert peaks
-        to valleys for the sake of the watersheding.
+    im : ND-array
+        Either the Boolean array of the pore space or a distance tranform.
+        Passing in a pre-exisint distance transform saves time, since one is
+        is by the function if a Boolean array is passed.
 
     peaks : ND-array
         An array the same size as ``dt`` indicating where the pore centers are.
@@ -79,10 +88,11 @@ def partition_pore_space(dt, peaks):
     """
     print('_'*60)
     print('Partitioning Pore Space using Marker Based Watershed')
+    if im.dtype == bool:
+        im = spim.distance_transform_edt(im)
     if peaks.dtype == bool:
         peaks = spim.label(input=peaks)[0]
-    regions = watershed(-dt, markers=peaks)
-    regions = randomize_colors(regions)
+    regions = watershed(-im, markers=peaks)
     return regions
 
 
