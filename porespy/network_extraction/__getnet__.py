@@ -1,6 +1,7 @@
 import scipy as sp
 import scipy.ndimage as spim
-from porespy.tools import extend_slices
+from scipy.spatial.distance import cdist
+from porespy.tools import extend_slice
 
 
 def extract_pore_network(im, dt=None, voxel_size=1):
@@ -43,6 +44,7 @@ def extract_pore_network(im, dt=None, voxel_size=1):
 
     if dt is None:
         dt = spim.distance_transform_edt(im > 0)
+        dt = spim.gaussian_filter(input=dt, sigma=0.5)
 
     # Get 'slices' into im for each pore region
     slices = spim.find_objects(im)
@@ -52,30 +54,43 @@ def extract_pore_network(im, dt=None, voxel_size=1):
     Np = sp.size(Ps)
     p_coords = sp.zeros((Np, im.ndim), dtype=float)
     p_volume = sp.zeros((Np, ), dtype=float)
-    p_diameter = sp.zeros((Np, ), dtype=float)
+    p_dia_local = sp.zeros((Np, ), dtype=float)
+    p_dia_global = sp.zeros((Np, ), dtype=float)
     p_label = sp.zeros((Np, ), dtype=int)
-    p_vxls = []
+    p_area_surf = sp.zeros((Np, ), dtype=int)
+    p_area_solid = sp.zeros((Np, ), dtype=int)
     t_conns = []
-    t_diameter = []
-    t_vxls = []
+    t_dia_inscribed = []
+    t_area = []
+    t_perimeter = []
     t_coords = []
 
     # Start extracting size information for pores and throats
+    print('0%|'+'-'*52+'|100%')
+    print('  |', end='')
+    denom = int(len(Ps)/52+1)
+    count = 0
     for i in Ps:
+        if sp.mod(i, denom) == 0:
+            count += 1
+            print('|', end='')
         pore = i - 1
-        s = extend_slices(slices[pore], im.shape)
+#        if slices[pore] is None:
+#            continue
+        s = extend_slice(slices[pore], im.shape)
         sub_im = im[s]
         sub_dt = dt[s]
         pore_im = sub_im == i
-        pore_dt = spim.distance_transform_edt(sp.pad(pore_im, 1, mode='constant'))
+        pore_dt = spim.distance_transform_edt(sp.pad(pore_im, pad_width=1,
+                                                     mode='constant'))
         s_offset = sp.array([i.start for i in s])
-        # vx = sp.where(pore_im)
-        # p_inds = tuple([i+j for i, j in zip(vx, s_offset)])
-        # p_vxls.append(p_inds)
         p_label[pore] = i
         p_coords[pore, :] = spim.center_of_mass(pore_im) + s_offset
         p_volume[pore] = sp.sum(pore_im)
-        p_diameter[pore] = 2*sp.amax(pore_dt)
+        p_dia_local[pore] = 2*sp.amax(pore_dt)
+        p_dia_global[pore] = 2*sp.amax(sub_dt)
+        p_area_surf[pore] = sp.sum(pore_dt == 1)
+        p_area_solid[pore] = sp.sum(sub_dt == 1)
         im_w_throats = spim.binary_dilation(input=pore_im, structure=ball(1))
         im_w_throats = im_w_throats*sub_im
         Pn = sp.unique(im_w_throats)[1:] - 1
@@ -83,9 +98,10 @@ def extract_pore_network(im, dt=None, voxel_size=1):
             if j > pore:
                 t_conns.append([pore, j])
                 vx = sp.where(im_w_throats == (j + 1))
+                t_dia_inscribed.append(2*sp.amax(sub_dt[vx]))
+                t_perimeter.append(sp.sum(sub_dt[vx] < 2))
+                t_area.append(sp.size(vx[0]))
                 t_inds = tuple([i+j for i, j in zip(vx, s_offset)])
-                t_vxls.append(t_inds)
-                t_diameter.append(2*sp.amax(dt[t_inds]))
                 temp = sp.where(dt[t_inds] == sp.amax(dt[t_inds]))[0][0]
                 if im.ndim == 2:
                     t_coords.append(tuple((t_inds[0][temp],
@@ -94,8 +110,10 @@ def extract_pore_network(im, dt=None, voxel_size=1):
                     t_coords.append(tuple((t_inds[0][temp],
                                            t_inds[1][temp],
                                            t_inds[2][temp])))
+    print('|'*(52-count+1))
+    print('\n')
     # Clean up values
-    Nt = len(t_vxls)  # Get number of throats
+    Nt = len(t_dia_inscribed)  # Get number of throats
     if im.ndim == 2:  # If 2D, add 0's in 3rd dimension
         p_coords = sp.vstack((p_coords.T, sp.zeros((Np, )))).T
         t_coords = sp.vstack((sp.array(t_coords).T, sp.zeros((Nt, )))).T
@@ -108,21 +126,28 @@ def extract_pore_network(im, dt=None, voxel_size=1):
     net['pore.centroid'] = sp.copy(p_coords)*voxel_size
     net['throat.centroid'] = sp.array(t_coords)*voxel_size
     net['throat.conns'] = sp.array(t_conns)
-#    net['pore.voxels'] = sp.array(p_vxls)
-#    net['throat.voxels'] = sp.array(t_vxls)
     net['pore.label'] = sp.array(p_label)
     net['pore.volume'] = sp.copy(p_volume)*(voxel_size**3)
     net['throat.volume'] = sp.zeros((Nt, ), dtype=float)
-    net['pore.diameter'] = sp.copy(p_diameter)*voxel_size
-    net['pore.equivalent_diameter'] = (((3/4*net['pore.volume'])**(1/3))*2)
-    net['throat.diameter'] = sp.array(t_diameter)*voxel_size
+    net['pore.diameter'] = sp.copy(p_dia_local)*voxel_size
+    net['pore.inscribed_diameter'] = sp.copy(p_dia_local)*voxel_size
+    net['pore.equivalent_diameter'] = 2*((3/4*net['pore.volume']/sp.pi)**(1/3))
+    net['pore.extended_diameter'] = sp.copy(p_dia_global)*voxel_size
+    net['pore.surface_area'] = sp.copy(p_area_surf)*(voxel_size)**2
+    net['pore.solid_area'] = sp.copy(p_area_solid)*(voxel_size)**2
+    net['throat.diameter'] = sp.array(t_dia_inscribed)*voxel_size
+    net['throat.inscribed_diameter'] = sp.array(t_dia_inscribed)*voxel_size
+    net['throat.area'] = sp.array(t_area)*(voxel_size**2)
+    net['throat.perimeter'] = sp.array(t_perimeter)*voxel_size
+    net['throat.equivalent_diameter'] = (sp.array(t_area)*(voxel_size**2))**(0.5)
     P12 = net['throat.conns']
-    PT1 = sp.sqrt(sp.sum((p_coords[P12[:, 0]] - t_coords)**2, axis=1))
-    PT1 = PT1 - p_diameter[P12[:, 0]]/2
-    PT2 = sp.sqrt(sp.sum((p_coords[P12[:, 1]] - t_coords)**2, axis=1))
-    PT2 = PT2 - p_diameter[P12[:, 1]]/2
-    net['throat.length'] = (PT1 + PT2)*voxel_size
-    PP = sp.sqrt(sp.sum(a=(p_coords[P12[:, 0]] - p_coords[P12[:, 1]])**2, axis=1))
-    net['throat.length1'] = PP*voxel_size
+    PT1 = sp.sqrt(sp.sum(((p_coords[P12[:, 0]]-t_coords)*voxel_size)**2, axis=1))
+    PT2 = sp.sqrt(sp.sum(((p_coords[P12[:, 1]]-t_coords)*voxel_size)**2, axis=1))
+    net['throat.total_length'] = PT1 + PT2
+    PT1 = PT1-p_dia_local[P12[:, 0]]/2*voxel_size
+    PT2 = PT2-p_dia_local[P12[:, 1]]/2*voxel_size
+    net['throat.length'] = PT1 + PT2
+    dist = (p_coords[P12[:, 0]]-p_coords[P12[:, 1]])*voxel_size
+    net['throat.direct_length'] = sp.sqrt(sp.sum(dist**2, axis=1))
 
     return net
