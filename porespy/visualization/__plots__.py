@@ -19,15 +19,16 @@ def drainage_curve(im):
 
     Notes
     -----
-    This function normalizes the invading phase saturation by the empty pore
-    volume at the first invasion step.
+    This function normalizes the invading phase saturation by total pore volume
+    of the dry image.
 
     """
     sizes = sp.unique(im)
     Rp = []
     Snwp = []
+    Vp = sp.sum(im > 0)
     for r in sizes[1:]:
         Rp.append(r)
         Snwp.append(sp.sum(im >= r))
-    Snwp = [(s-Snwp[-1])/(Snwp[0]-Snwp[-1]) for s in Snwp]
+    Snwp = [s/Vp for s in Snwp]
     return Rp, Snwp
