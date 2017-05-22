@@ -1,10 +1,9 @@
-import sys
 import scipy as sp
 import scipy.ndimage as spim
 from porespy.tools import get_border
 
 
-def feature_size(im, bins=None):
+def feature_size(im):
     r"""
     For each voxel, this functions calculates the radius of the largest sphere
     that both engulfs the voxel and fits entirely within the foreground. This
@@ -15,11 +14,6 @@ def feature_size(im, bins=None):
     ----------
     im : array_like
         A binary image with the phase of interest set to True
-
-    bins : scalar or array_like
-        The number of bins to use when creating the histogram, or the
-        specific values to use.  The default is to use 1 bin for each
-        unique value found in the size distribution.
 
     Returns
     -------
@@ -36,13 +30,18 @@ def feature_size(im, bins=None):
         from skimage.morphology import square as cube
     dt = spim.distance_transform_edt(im)
     sizes = sp.unique(sp.around(dt))
-    im_new = sp.zeros_like(im, dtype=int)
+    im_new = sp.zeros_like(im, dtype=float)
     print('_'*60)
     print("Performing Image Opening")
-    print('0%|'+'-'*len(sizes)+'|100%')
+    print('0%|'+'-'*52+'|100%')
     print('  |', end='')
-    for r in sizes:
-        print('|', end='')
+    denom = int(len(sizes)/52+1)
+    count = 0
+    for i in len(sizes):
+        if sp.mod(i, denom) == 0:
+            count += 1
+            print('|', end='')
+        r = sizes[i]
         im_temp = dt >= r
         im_temp = spim.distance_transform_edt(~im_temp) <= r
         im_new[im_temp] = r
@@ -61,7 +60,8 @@ def porosimetry(im, npts=25, sizes=None, inlets=None):
     Parameters
     ----------
     im : ND-array
-        The binary image of the pore space.
+        The Boolean image of the porous material, with True values indicating
+        the pore space
 
     npts : scalar
         The number of invasion points to simulate.  Points will be generated
@@ -92,26 +92,34 @@ def porosimetry(im, npts=25, sizes=None, inlets=None):
     structuring element is large.
 
     """
-    dt = spim.distance_transform_edt(im)
+    dt = spim.distance_transform_edt(im > 0)
     if inlets is None:
-        inlets = get_border(im.shape)
+        inlets = get_border(im.shape, mode='faces')
+    inlets = sp.where(inlets)
     if sizes is None:
-        sizes = sp.logspace(sp.log10(sp.amax(dt)), 0.1, npts)
-
+        sizes = sp.logspace(start=sp.log10(sp.amax(dt)), stop=0, num=npts)
+    else:
+        sizes = sp.sort(a=sizes)[-1::-1]
     imresults = sp.zeros(sp.shape(im))
     print('_'*60)
-    print('Porosimetry Running')
-    print('0%|'+'-'*len(sizes)+'|100%')
+    print("Performing Image Opening")
+    print('0%|'+'-'*52+'|100%')
     print('  |', end='')
-    for r in sizes:
-        print('|', end='')
-        sys.stdout.flush()
+    denom = int(len(sizes)/52+1)
+    count = 0
+    for i in range(len(sizes)):
+        r = sizes[i]
+        if sp.mod(i, denom) == 0:
+            count += 1
+            print('|', end='')
         imtemp = dt >= r
-        labels = spim.label(imtemp + inlets)[0]
+        imtemp[inlets] = True  # Add inlets before labeling
+        labels, N = spim.label(imtemp)
         inlet_labels = sp.unique(labels[inlets])
-        imtemp = sp.in1d(labels.ravel(), inlet_labels)
+        imtemp = sp.in1d(labels.flatten(), inlet_labels)
         imtemp = sp.reshape(imtemp, im.shape)
-        im = spim.distance_transform_edt(~(imtemp ^ inlets)) <= r
-        imresults[(imresults == 0)*im] = r
+        imtemp[inlets] = False  # Remove inlets
+        imtemp = spim.distance_transform_edt(~imtemp) < r
+        imresults[(imresults == 0)*imtemp] = r
     print('|')
     return imresults
