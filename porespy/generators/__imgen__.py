@@ -6,6 +6,38 @@ from skimage.segmentation import find_boundaries
 from skimage.morphology import ball, disk, square, watershed
 
 
+def bundle_of_tubes(shape, spacing):
+    r"""
+    Create a 3D image of a bundle of tubes, in the form of a rectangular
+    plate with randomly sized holes thorugh it.
+
+    Parameters
+    ----------
+    shape : list
+        The size the image, with the 3rd dimension indicating the plate
+        thickness
+
+    spacing : scalar
+        The center to center distance of the holes.  The hole sizes will be
+        randomly distributed between this values down to 3 voxels.
+
+    Returns
+    -------
+    A boolean array with True values denoting the pore space
+    """
+    temp = sp.zeros(shape=shape[:2])
+    Xi = sp.linspace(spacing/2, shape[0]-spacing/2, shape[0]/spacing).astype(int)
+    Yi = sp.linspace(spacing/2, shape[1]-spacing/2, shape[1]/spacing).astype(int)
+    temp[sp.meshgrid(Xi, Yi)] = 1
+    inds = sp.where(temp)
+    for i in range(len(inds[0])):
+        r = int(sp.rand()*(spacing/2 - 4)) + 3
+        temp[slice(inds[0][i]-r, inds[0][i]+r+1), slice(inds[1][i]-r, inds[1][i]+r+1)] = disk(r)
+    temp = spim.binary_opening(temp, structure=square(3))
+    im = sp.broadcast_to(array=sp.atleast_3d(temp), shape=shape)
+    return im
+
+
 def polydisperse_spheres(shape, porosity, dist, nbins=5):
     r"""
     Create an image of spheres with a distribution of radii.
