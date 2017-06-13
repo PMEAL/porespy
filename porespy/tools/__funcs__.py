@@ -6,7 +6,34 @@ import OpenPNM as op
 from numba import jit
 
 
-def fill_blind_pores(im):
+def extract_subsection(im, shape):
+    r"""
+    Extracts the middle section of a image
+
+    Parameters
+    ----------
+    im : ND-array
+        Image from which to extract the subsection
+    shape : array_like
+        Can either specify the size of the extracted section or the fractonal
+        size of the image to extact.
+
+    """
+    if shape[0] < 1:
+        shape = sp.array(im.shape)*shape
+    sp.amax(sp.vstack([shape, im.shape]), axis=0)
+    center = sp.array(im.shape)/2
+    s_im = []
+    for dim in range(im.ndim):
+        r = shape[dim]/2
+        lower_im = sp.amax((center[dim]-r, 0))
+        upper_im = sp.amin((center[dim]+r, im.shape[dim]))
+        s_im.append(slice(int(lower_im), int(upper_im)))
+    im = im[s_im]
+    return im
+
+
+def remove_blind_pores(im):
     r"""
     Removes all pore voxels from the image if they are not connected to the
     surface.
@@ -17,12 +44,30 @@ def fill_blind_pores(im):
         The image of the pore space, with ones indicating the phase to be
         trimmed
     """
+    im = sp.array(im, dtype=int)
+    # Pad image to ensure all void is connected
     temp_im = sp.pad(im > 0, 1, 'constant', constant_values=1)
     labels, N = spim.label(input=temp_im)
     connected_pores = (labels == 1)
     s = [slice(1, -1) for _ in im.shape]
     connected_pores = connected_pores[s]
     return connected_pores
+
+
+def remove_floating_solid(im):
+    r"""
+    Removes all solid phase voxels (False or 0) that are not connected to the
+    main body of the image, meaning they are floating in space.
+
+    Parameters
+    ----------
+    im : ND-array
+        The image of the pore space, with zeros (or False) indicating the phase
+        to be trimmed
+    """
+    im = sp.array(im, dtype=bool)
+    im = remove_blind_pores(~im)
+    return im
 
 
 def reduce_peaks_to_points(peaks):
