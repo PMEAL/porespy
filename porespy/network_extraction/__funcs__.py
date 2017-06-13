@@ -59,8 +59,8 @@ def partition_pore_space(im, peaks):
     ----------
     im : ND-array
         Either the Boolean array of the pore space or a distance tranform.
-        Passing in a pre-exisint distance transform saves time, since one is
-        is by the function if a Boolean array is passed.
+        Passing in a pre-existing distance transform saves time, since one is
+        calculated by the function if a Boolean array is passed.
 
     peaks : ND-array
         An array the same size as ``dt`` indicating where the pore centers are.
@@ -89,8 +89,10 @@ def partition_pore_space(im, peaks):
     print('_'*60)
     print('Partitioning Pore Space using Marker Based Watershed')
     if im.dtype == bool:
+        print('Boolean image received, applying distance transform')
         im = spim.distance_transform_edt(im)
     if peaks.dtype == bool:
+        print('Boolean peaks received, applying labeling')
         peaks = spim.label(input=peaks)[0]
     regions = watershed(-im, markers=peaks)
     return regions
@@ -120,13 +122,11 @@ def trim_extrema(im, h, mode='maxima'):
     -----
     This function is referred to as **imhmax** or **imhmin** in Mablab.
     """
-    if mode == 'maxima':
+    result = im
+    if mode in ['maxima', 'extrema']:
         result = reconstruction(seed=im - h, mask=im, method='dilation')
-    elif mode == 'minima':
+    elif mode in ['minima', 'extrema']:
         result = reconstruction(seed=im + h, mask=im, method='erosion')
-    elif mode == 'extrema':
-        result = reconstruction(seed=im - h, mask=im, method='dilation')
-        result = reconstruction(seed=result + h, mask=result, method='erosion')
     return result
 
 
