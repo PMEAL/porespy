@@ -29,17 +29,16 @@ def feature_size(im):
     if im.ndim == 2:
         from skimage.morphology import square as cube
     dt = spim.distance_transform_edt(im)
-    sizes = sp.unique(sp.around(dt))
+    sizes = sp.unique(sp.around(dt, decimals=0))
     im_new = sp.zeros_like(im, dtype=float)
+    denom = int(len(sizes)/52+1)
     print('_'*60)
     print("Performing Image Opening")
-    print('0%|'+'-'*52+'|100%')
+    n = min(len(sizes), 52)
+    print('0%|'+'-'*n+'|100%')
     print('  |', end='')
-    denom = int(len(sizes)/52+1)
-    count = 0
-    for i in len(sizes):
+    for i in range(len(sizes)):
         if sp.mod(i, denom) == 0:
-            count += 1
             print('|', end='')
         r = sizes[i]
         im_temp = dt >= r
