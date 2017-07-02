@@ -1,13 +1,21 @@
 import scipy as sp
 from skimage.segmentation import clear_border
-from scipy.ndimage import label
+import scipy.ndimage as spim
+from numba import jit
 
 
 def porosity(im):
-    r'''
-    '''
+    r"""
+    Calculates the porosity of an image as the number of non-zeros (assumed to
+    be void space) divided by the total number of voxels in the image.
+    """
     e = sp.sum(im > 0)/im.size
     return e
+
+
+def two_point_correlation(im, seeds):
+    r"""
+    """
 
 
 def apply_chords(im, spacing=0, axis=0, trim_edges=True):
@@ -55,7 +63,7 @@ def apply_chords(im, spacing=0, axis=0, trim_edges=True):
     chords = im*ch
     chords = sp.squeeze(chords)
     if trim_edges:
-        temp = clear_border(label(chords == 1)[0]) > 0
+        temp = clear_border(spim.label(chords == 1)[0]) > 0
         chords = temp*chords
     chords = sp.moveaxis(a=chords, source=dims1, destination=dims2)
     return chords
@@ -98,12 +106,12 @@ def apply_chords_3D(im, spacing=0, trim_edges=True):
     ch[2::4+2*spacing, 2::4+2*spacing, :] = 3  # Z-direction
     chords = ch*im
     if trim_edges:
-        temp = clear_border(label(chords > 0)[0]) > 0
+        temp = clear_border(spim.label(chords > 0)[0]) > 0
         chords = temp*chords
     return chords
 
 
-def size_distribution(im, bins=None, return_im=False):
+def size_distribution(im, bins=None):
     r"""
     Given an image containing the size of the feature to which each voxel
     belongs (as produced by ```simulations.feature_size```), this determines
@@ -133,3 +141,33 @@ def size_distribution(im, bins=None, return_im=False):
     radii = hist[1][0:-1]
     counts = hist[0]
     return radii, counts
+
+
+def chord_length_distribution(im):
+    r"""
+    Determines the length of each chord in the supplied image by looking at
+    its size.
+
+    Parameters
+    ----------
+    im : ND-array
+        An image containing chords drawn in the void space.
+
+    Returns
+    -------
+    A 1D array with one element for each chord, containing the length.
+
+    Notes
+    ----
+    The returned array can be passed to ```plt.hist``` as is to plot the
+    histogram, or to ```sp.histogram``` to get the histogram data directly.
+    Another useful function is ```sp.bincount``` which gives the number of
+    chords of each length in a format suitable for ```plt.plot```.
+    """
+    labels, N = spim.label(im)
+    slices = spim.find_objects(labels)
+    chord_lens = sp.zeros(N, dtype=int)
+    for i in range(len(slices)):
+        s = slices[i]
+        chord_lens[i] = sp.amax([item.stop-item.start for item in s])
+    return chord_lens
