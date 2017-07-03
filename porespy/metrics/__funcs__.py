@@ -1,7 +1,7 @@
 import scipy as sp
 from skimage.segmentation import clear_border
 import scipy.ndimage as spim
-from numba import jit
+import scipy.spatial as sptl
 
 
 def porosity(im):
@@ -13,9 +13,54 @@ def porosity(im):
     return e
 
 
-def two_point_correlation(im, seeds):
+def two_point_correlation_bf(im, spacing=10):
     r"""
+    Calculates the two-point correlation function using brute-force (see Notes)
+
+    Parameters
+    ----------
+    im : ND-array
+        The image of the void space on which the 2-point correlation is desired
+
+    spacing : int
+        The space between points on the regular grid that is used to generate
+        the correlation (see Notes)
+
+    Returns
+    -------
+    A tuple containing the x and y data for plotting the two-point correlation
+    function.  The x array is the distances between points and the y array is
+    corresponding probabilities that points of a given distance both lie in the
+    void space.  The distance values are binned as follows:
+
+        bins = range(start=0, stop=sp.amin(im.shape)/2, stride=spacing)
+
+    Notes
+    -----
+    The brute-force approach means overlaying a grid of equally spaced points
+    onto the image, calculating the distance between each and every pair of
+    points, then counting the instances where both pairs lie in the void space.
     """
+    if im.ndim == 2:
+        pts = sp.meshgrid(range(0, im.shape[0], spacing),
+                          range(0, im.shape[1], spacing))
+        crds = sp.vstack([pts[0].flatten(),
+                          pts[1].flatten()]).T
+    elif im.ndim == 3:
+        pts = sp.meshgrid(range(0, im.shape[0], spacing),
+                          range(0, im.shape[1], spacing),
+                          range(0, im.shape[2], spacing))
+        crds = sp.vstack([pts[0].flatten(),
+                          pts[1].flatten(),
+                          pts[2].flatten()]).T
+    dmat = sptl.distance.cdist(XA=crds, XB=crds)
+    hits = im[pts].flatten()
+    dmat = dmat[hits, :]
+    h1 = sp.histogram(dmat, bins=range(0, int(sp.amin(im.shape)/2), spacing))
+    dmat = dmat[:, hits]
+    h2 = sp.histogram(dmat, bins=h1[1])
+    h2 = (h2[1][:-1], h2[0]/h1[0])
+    return h2
 
 
 def apply_chords(im, spacing=0, axis=0, trim_edges=True):
@@ -29,7 +74,8 @@ def apply_chords(im, spacing=0, axis=0, trim_edges=True):
         A 2D image of the porous material with void marked as True.
 
     spacing : int (default = 0)
-        Chords are automatically separed by 1 voxel and this argument increases
+        Chords are automatically separated by 1 voxel and this argument
+        increases
         the separation.
 
     axis : int (default = 0)
