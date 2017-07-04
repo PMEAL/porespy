@@ -6,6 +6,48 @@ import OpenPNM as op
 from numba import jit
 
 
+def find_outer_regions(im, r=0):
+    r"""
+    Finds regions of the image that are outside of the solid matrix.  This
+    function uses the rolling ball method to define where the outer region
+    ends and the void space begins.
+
+    This function is particularly useful for samples that do not fill the
+    entire rectangular image, such as cylindrical cores or samples with non-
+    parallel faces.
+
+    Parameters
+    ----------
+    im : ND-array
+        Image of the porous material with 1's for void and 0's for solid
+
+    r : scalar
+        The radius of the rolling ball to apply.  If not specified the a value
+        is calculated as twice maximum of the distance transform.  The image
+        size is padded by this amount in all directions, so the image can
+        become quite large and unwieldy it too large a value is given.
+
+    Returns
+    -------
+    A boolean mask the same shape as ```im```, containing True in all voxels
+    identified as *outside* the sample.
+    """
+    if r == 0:
+        dt = spim.distance_transform_edt(input=im)
+        r = int(sp.amax(dt))*2
+    im_padded = sp.pad(array=im, pad_width=r, mode='constant',
+                       constant_values=True)
+    dt = spim.distance_transform_edt(input=im_padded)
+    seeds = (dt >= r) + get_border(shape=im_padded.shape)
+    # Remove seeds not connected to edges
+    labels = spim.label(seeds)[0]
+    mask = labels == 1  # Assume label of 1 on edges, assured by adding border
+    dt = spim.distance_transform_edt(~mask)
+    outer_region = dt < r
+    outer_region = extract_subsection(im=outer_region, shape=im.shape)
+    return outer_region
+
+
 def extract_subsection(im, shape):
     r"""
     Extracts the middle section of a image

@@ -1,16 +1,44 @@
 import scipy as sp
 from skimage.segmentation import clear_border
+from skimage.feature import peak_local_max
 import scipy.ndimage as spim
 import scipy.spatial as sptl
+from porespy.tools import get_border, extract_subsection
 
 
 def porosity(im):
     r"""
-    Calculates the porosity of an image as the number of non-zeros (assumed to
-    be void space) divided by the total number of voxels in the image.
+    Calculates the porosity of an assuming 1's are void space and 0's are solid
+    phase.  All other values are ignored.
+
+    Parameters
+    ----------
+    im : ND-array
+        Image of the void space with 1's indicating void space (or True) and
+        0's indicating the solid phase (or False).
+
+    Returns
+    -------
+    porosity : float
+        Calculated as the sum of all 1's divided by the sum of all 1's and 0's.
+
+    Notes
+    -----
+    This function assumes void is represented by 1 and solid by 0, and all
+    other values are ignored.  This is useful, for example, for images of
+    cylindrical cores, where all voxels outside the core are labelled with 2.
     """
-    e = sp.sum(im > 0)/im.size
+    im = sp.array(im, dtype=int)
+    Vp = sp.sum(im == 1)
+    Vs = sp.sum(im == 0)
+    e = Vp/(Vs + Vp)
     return e
+
+
+def two_point_correlation_bf_3D(im, spacing=10):
+    r"""
+    """
+    pass
 
 
 def two_point_correlation_bf(im, spacing=10):
@@ -29,9 +57,11 @@ def two_point_correlation_bf(im, spacing=10):
     Returns
     -------
     A tuple containing the x and y data for plotting the two-point correlation
-    function.  The x array is the distances between points and the y array is
-    corresponding probabilities that points of a given distance both lie in the
-    void space.  The distance values are binned as follows:
+    function, using the *args feature of matplotlib's plot function.  The x
+    array is the distances between points and the y array is corresponding
+    probabilities that points of a given distance both lie in the void space.
+
+    The distance values are binned as follows:
 
         bins = range(start=0, stop=sp.amin(im.shape)/2, stride=spacing)
 
@@ -40,6 +70,9 @@ def two_point_correlation_bf(im, spacing=10):
     The brute-force approach means overlaying a grid of equally spaced points
     onto the image, calculating the distance between each and every pair of
     points, then counting the instances where both pairs lie in the void space.
+
+    This approach uses a distance matrix so can consume memory very quickly for
+    large 3D image and/or close spacing.
     """
     if im.ndim == 2:
         pts = sp.meshgrid(range(0, im.shape[0], spacing),
@@ -205,10 +238,10 @@ def chord_length_distribution(im):
 
     Notes
     ----
-    The returned array can be passed to ```plt.hist``` as is to plot the
-    histogram, or to ```sp.histogram``` to get the histogram data directly.
-    Another useful function is ```sp.bincount``` which gives the number of
-    chords of each length in a format suitable for ```plt.plot```.
+    The returned array can be passed to ```plt.hist``` to plot the histogram,
+    or to ```sp.histogram``` to get the histogram data directly. Another useful
+    function is ```sp.bincount``` which gives the number of chords of each
+    length in a format suitable for ```plt.plot```.
     """
     labels, N = spim.label(im)
     slices = spim.find_objects(labels)
