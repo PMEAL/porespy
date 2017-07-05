@@ -1,9 +1,52 @@
+import sys
 import scipy as sp
 from skimage.segmentation import clear_border
 from skimage.feature import peak_local_max
 import scipy.ndimage as spim
 import scipy.spatial as sptl
 from porespy.tools import get_border, extract_subsection
+
+
+def slice_safe(start, stop, step=None, lower=0, upper=None):
+    if upper is None:
+        upper = sys.maxsize
+    start = sp.amax([lower, start])
+    stop = sp.amin([stop, upper])
+    s = slice(start, stop, step)
+    return s
+
+
+def representative_elementary_volume(im, npoints=None):
+    r"""
+    """
+    if npoints is None:
+        npoints = im.size/1000
+    crds = sp.array(sp.rand(int(npoints), im.ndim)*im.shape, dtype=int)
+
+def radial_distribution_function(im):
+    r"""
+
+    References
+    ----------
+    [1] Torquato, S. Random Heterogeneous Materials: Mircostructure and
+    Macroscopic Properties. From Interdisciplinary Applied Mathematics, Vol 16.
+    Springer, New York (2002)
+    """
+
+    pass
+
+
+def pore_size_density(im):
+    r"""
+
+    References
+    ----------
+    [1] Torquato, S. Random Heterogeneous Materials: Mircostructure and
+    Macroscopic Properties. From Interdisciplinary Applied Mathematics, Vol 16.
+    Springer, New York (2002)
+    """
+    dt = spim.distance_transform_edt(im)
+
 
 
 def porosity(im):
@@ -33,12 +76,6 @@ def porosity(im):
     Vs = sp.sum(im == 0)
     e = Vp/(Vs + Vp)
     return e
-
-
-def two_point_correlation_bf_3D(im, spacing=10):
-    r"""
-    """
-    pass
 
 
 def two_point_correlation_bf(im, spacing=10):
