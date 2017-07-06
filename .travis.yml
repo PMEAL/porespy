@@ -1,0 +1,39 @@
+sudo: false
+
+language: python
+
+python:
+  - "3.4"
+  - "3.5"
+  - "3.6"
+
+before_install:
+  - export DISPLAY=:99.0
+  - sh -e /etc/init.d/xvfb start
+  - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - export PATH="$HOME/miniconda/bin:$PATH"
+
+install:
+  - conda install --yes python=$TRAVIS_PYTHON_VERSION --file requirements.txt
+  - pip install -r test_requirements.txt
+  - python setup.py install
+
+script:
+  - ./bin/test pep8 cov
+
+after_success:
+  - codecov
+
+notifications:
+  email: false
+
+deploy:
+  provider: pypi
+  distribution: sdist
+  user: jgostick
+  password:
+    secure: SInoWqd5ayXQAXWr4tbXJNIaNl8Im0vOTGWNiLLlaQZYL/RZCQ5NqUyoi87lIJyjiKApMExOm/RwKKe/bHoSRHLXX/6U0u+4otSC6ZyeAJAhEXqohNmJhGUHhADlqYAhg2vlfjh7CxwNSObvr0SdlTUA5l5ivcofBXiYfxk3i/o=
+  on:
+    tags: true
+    branch: master
