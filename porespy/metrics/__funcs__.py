@@ -4,55 +4,133 @@ from skimage.segmentation import clear_border
 from skimage.feature import peak_local_max
 import scipy.ndimage as spim
 import scipy.spatial as sptl
-from porespy.tools import get_border, extract_subsection
+from porespy.tools import get_border, extract_subsection, extend_slice
 
 
-def slice_safe(start, stop, step=None, lower=0, upper=None):
-    if upper is None:
-        upper = sys.maxsize
-    start = sp.amax([lower, start])
-    stop = sp.amin([stop, upper])
-    s = slice(start, stop, step)
-    return s
-
-
-def representative_elementary_volume(im, npoints=None):
+def representative_elementary_volume(im, npoints=1000):
     r"""
-    """
-    if npoints is None:
-        npoints = im.size/1000
-    crds = sp.array(sp.rand(int(npoints), im.ndim)*im.shape, dtype=int)
+    Calculates the porosity of the image as a function subdomain size.  This
+    function extracts a specified number of subdomains of random size, then
+    finds their porosity.
 
-def radial_distribution_function(im):
+    Parameters
+    ----------
+    im : ND-array
+        The image of the porous material
+
+    npoints : int
+        The number of randomly located and sized boxes to sample.  The default
+        is 1000.
+
+    Returns
+    -------
+    A tuple containing the ND-arrays: The  subdomain *volume* and its
+    *porosity*.  Each of these arrays is ``npoints`` long.  They can be
+    conveniently plotted by passing the tuple to matplotlib's ``plot`` function
+    using the \* notation: ``plt.plot(*the_tuple, 'b.')``.
+
+    Notes
+    -----
+    This function is frustratingly slow.  Profiling indicates that all the time
+    is spent on scipy's ``sum`` function which is needed to sum the number of
+    void voxels (1's) in each subdomain.
+
+    Also, this function if primed for parallelization since the ``npoints`` are
+    calculated independenlty.
+
+    """
+    im_temp = sp.zeros_like(im)
+    crds = sp.array(sp.rand(npoints, im.ndim)*im.shape, dtype=int)
+    pads = sp.array(sp.rand(npoints)*sp.amin(im.shape)/2+10, dtype=int)
+    im_temp[tuple(crds.T)] = True
+    labels, N = spim.label(input=im_temp)
+    slices = spim.find_objects(input=labels)
+    porosity = sp.zeros(shape=(N,), dtype=float)
+    volume = sp.zeros(shape=(N,), dtype=int)
+    for i in sp.arange(0, N):
+        s = slices[i]
+        p = pads[i]
+        new_s = extend_slice(s, shape=im.shape, pad=p)
+        temp = im[new_s]
+        Vp = sp.sum(temp)
+        Vt = sp.size(temp)
+        porosity[i] = Vp/Vt
+        volume[i] = Vt
+    profile = tuple((volume, porosity))
+    return profile
+
+
+def radial_distribution(im, bins=10):
     r"""
 
     References
     ----------
     [1] Torquato, S. Random Heterogeneous Materials: Mircostructure and
-    Macroscopic Properties. From Interdisciplinary Applied Mathematics, Vol 16.
-    Springer, New York (2002)
+    Macroscopic Properties. Springer, New York (2002)
     """
 
+
+def lineal_path(im):
+    r"""
+    """
     pass
 
 
-def pore_size_density(im):
+def pore_size_density(im, bins=10, voxel_size=1):
     r"""
+    Computes the histogram of the distance transform as an estimator of the
+    pore sizes in the image.
+
+    Parameters
+    ----------
+    im : ND-array
+        Either a binary image of the pore space with ``True`` indicating the
+        pore phase (or phase of interest), or a pre-calculated distance
+        transform which can save time.
+
+    bins : int or array_like
+        This number of bins (if int) or the location of the bins (if array).
+        This argument is passed directly to Scipy's ``histogram`` function so
+        see that docstring for more information.  The default is 10 bins, which
+        reduces produces a relatively smooth distribution.
+
+    voxel_size : scalar
+        The size of a voxel side in preferred units.  The default is 1, so the
+        user can apply the scaling to the returned results after the fact.
+
+    Returns
+    -------
+    A list containing two 1D arrays: ``r`` is the radius of the voxels, and
+    ``n`` is the number of voxels that are within ``r`` of the solid.
+
+    Notes
+    -----
+    This function should not be taken as a pore size distribution in the
+    explict sense, but rather an indicator of the sizes in the image.
+
+    See Also
+    --------
+    simulations.feature_size
+    simulaitons.porosimetry
 
     References
     ----------
     [1] Torquato, S. Random Heterogeneous Materials: Mircostructure and
-    Macroscopic Properties. From Interdisciplinary Applied Mathematics, Vol 16.
-    Springer, New York (2002)
+    Macroscopic Properties. Springer, New York (2002) - See page 292
     """
-    dt = spim.distance_transform_edt(im)
-
+    if im.dtype == bool:
+        im = spim.distance_transform_edt(im)
+    rdf = sp.histogram(a=im[im > 0], bins=bins)
+    n = rdf[0]/sp.sum(im > 0)
+    r = rdf[1][:-1]*voxel_size
+    rdf = [r, n]
+    return rdf
 
 
 def porosity(im):
     r"""
-    Calculates the porosity of an assuming 1's are void space and 0's are solid
-    phase.  All other values are ignored.
+    Calculates the porosity of an image assuming 1's are void space and 0's are
+    solid phase.  All other values are ignored.
 
     Parameters
     ----------
@@ -211,6 +289,16 @@ def apply_chords_3D(im, spacing=0, trim_edges=True):
     x-direction chords, 2 indicating y-direction chords, and 3 indicating
     z-direction chords.
 
+    Notes
+    -----
+    The chords are separated by a spacing of at least 1 voxel so that tools
+    that search for connected components, such as ``scipy.ndimage.label`` can
+    detect individual chords.
+
+    See Also
+    --------
+    apply_chords
+
     """
     if im.ndim < 3:
         raise Exception('Must be a 3D image to use this function')
@@ -227,7 +315,7 @@ def apply_chords_3D(im, spacing=0, trim_edges=True):
     return chords
 
 
-def size_distribution(im, bins=None):
+def feature_size_distribution(im, bins=None):
     r"""
     Given an image containing the size of the feature to which each voxel
     belongs (as produced by ```simulations.feature_size```), this determines

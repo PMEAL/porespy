@@ -8,4 +8,5 @@ A suite of tools for determine key metrics about an image, including:
 of the image.
 """
 from .__funcs__ import size_distribution, porosity
+from .__funcs__ import representative_elementary_volume
 from .__funcs__ import apply_chords, apply_chords_3D

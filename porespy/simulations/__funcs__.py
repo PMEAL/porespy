@@ -122,3 +122,7 @@ def porosimetry(im, npts=25, sizes=None, inlets=None):
         imresults[(imresults == 0)*imtemp] = r
     print('|')
     return imresults
+
+
+def counter(i, max_count, msg=None):
+    pass

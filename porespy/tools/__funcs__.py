@@ -138,9 +138,12 @@ def extend_slice(s, shape, pad=1):
          A list (or tuple) of N slice objects, where N is the number of
          dimensions in the image.
 
-    shape: array_like
+    shape : array_like
         The shape of the image into which the slice objects apply.  This is
         used to check the bounds to prevent indexing beyond the image.
+
+    pad : int
+        The number of voxels to expand in each direction.
 
     Returns
     -------
