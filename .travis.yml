@@ -21,10 +21,7 @@ install:
   - python setup.py install
 
 script:
-  - ./bin/test
-
-after_success:
-  - codecov
+  - bin/test
 
 notifications:
   email: false
