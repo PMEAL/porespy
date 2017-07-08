@@ -45,23 +45,6 @@ def SNOW_peaks(dt, min_spacing=None, r_max=3, r_min=3, do_steps=[1, 2, 3, 4]):
     city-block distance transform for instance.  Users may also wish to apply
     some image smoothing, such as a median or gausssian filter.
 
-    Examples
-    --------
-    >>> import porespy as ps
-    >>> import scipy.ndimage as spim
-    >>> im = ps.generators.blobs(shape=[500, 500])
-    >>> dt = spim.distance_transform_edt(im)
-    >>> peaks = ps.network_extraction.SNOW_peaks(dt=dt)
-    >>> regions = ps.network_extraction.partition_pore_space(dt=dt,
-    ...                                                      peaks=peaks)
-    >>> edges = ps.tools.find_edges(regions)
-
-    To visualize the results, use Matplotlib's ``imshow`` function:
-
-    plt.imshow(regions*im*(peaks == 0)*(1 - edges),
-               interpolation='none',
-               cmap=plt.cm.spectral)
-
     """
     from skimage.morphology import disk, square, ball, cube
     dt = dt.squeeze()
