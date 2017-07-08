@@ -1,6 +1,6 @@
 import scipy.ndimage as spim
 from collections import namedtuple
-from porespy.metrics import porosity, size_distribution
+from porespy.metrics import porosity, feature_size_distribution
 from porespy.simulations import porosimetry, feature_size
 from porespy.visualization import drainage_curve
 
@@ -59,7 +59,7 @@ class Bundle(dict):
         if 'psd' not in self.keys():
             self['psd'] = feature_size(self.im)
         data = namedtuple('data', ('radii', 'number'))
-        data.radii, data.number = size_distribution(self['psd'])
+        data.radii, data.number = feature_size_distribution(self['psd'])
         return data
 
     psd = property(fget=_get_psd)
