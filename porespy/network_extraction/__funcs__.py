@@ -13,9 +13,21 @@ def align_images_with_openpnm(im):
     return im
 
 
-def all_peaks(dt, r=3):
+def find_peaks2(dt, r, minpeak=0):
+    if dt.ndim == 2:
+        from skimage.morphology import disk as ball
+        from skimage.morphology import square as cube
+    else:
+        from skimage.morphology import ball, cube
+    dt_temp = dt + (dt == 0)*minpeak
+    mx = spim.maximum_filter(input=dt_temp, size=2*r+1)
+    peaks = (dt == mx)*(dt > 0)
+    return peaks
+
+
+def find_peaks(dt, r=3):
     r"""
-    Returns all local maxima in the distance transform.
+    Returns all local maxima in the distance transform
 
     Parameters
     ----------
@@ -31,7 +43,7 @@ def all_peaks(dt, r=3):
 
     Returns
     -------
-    An ND-array of booleans with True values at the location of any local
+    An ND-array of booleans with ``True`` values at the location of any local
     maxima.
     """
     from skimage.morphology import disk, square, ball, cube
@@ -96,51 +108,3 @@ def partition_pore_space(im, peaks):
         peaks = spim.label(input=peaks)[0]
     regions = watershed(-im, markers=peaks)
     return regions
-
-
-def trim_extrema(im, h, mode='maxima'):
-    r"""
-    This trims local extrema by a specified amount, essentially decapitating
-    peaks or flooding valleys, or both.
-
-    Parameters
-    ----------
-    im : ND-array
-        The image whose extrema are to be removed
-
-    h : scalar
-        The height to remove from each peak or fill in each valley
-
-    mode : string {'maxima' | 'minima' | 'extrema'}
-        Specifies whether to remove maxima or minima or both
-
-    Returns
-    -------
-    A copy of the input image with all the peaks and/or valleys removed.
-
-    Notes
-    -----
-    This function is referred to as **imhmax** or **imhmin** in Mablab.
-    """
-    result = im
-    if mode in ['maxima', 'extrema']:
-        result = reconstruction(seed=im - h, mask=im, method='dilation')
-    elif mode in ['minima', 'extrema']:
-        result = reconstruction(seed=im + h, mask=im, method='erosion')
-    return result
-
-
-def bounding_box_indices(roi):
-    r"""
-    Given the ND-coordinates of voxels defining the region of interest, the
-    indices of a bounding box are returned.
-    """
-    maxs = sp.amax(roi, axis=1)
-    mins = sp.amin(roi, axis=1)
-    x = []
-    x.append(slice(mins[0], maxs[0]))
-    x.append(slice(mins[1], maxs[1]))
-    if sp.shape(roi)[0] == 3:  # If image if 3D, add third coordinate
-        x.append(slice(mins[2], maxs[2]))
-    inds = tuple(x)
-    return inds

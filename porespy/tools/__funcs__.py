@@ -75,43 +75,6 @@ def extract_subsection(im, shape):
     return im
 
 
-def remove_blind_pores(im):
-    r"""
-    Removes all pore voxels from the image if they are not connected to the
-    surface.
-
-    Parameters
-    ----------
-    im : ND-array
-        The image of the pore space, with ones indicating the phase to be
-        trimmed
-    """
-    im = sp.array(im, dtype=int)
-    # Pad image to ensure all void is connected
-    temp_im = sp.pad(im > 0, 1, 'constant', constant_values=1)
-    labels, N = spim.label(input=temp_im)
-    connected_pores = (labels == 1)
-    s = [slice(1, -1) for _ in im.shape]
-    connected_pores = connected_pores[s]
-    return connected_pores
-
-
-def remove_floating_solid(im):
-    r"""
-    Removes all solid phase voxels (False or 0) that are not connected to the
-    main body of the image, meaning they are floating in space.
-
-    Parameters
-    ----------
-    im : ND-array
-        The image of the pore space, with 0's (or False) indicating the phase
-        to be trimmed
-    """
-    im = sp.array(im, dtype=bool)
-    im = remove_blind_pores(~im)
-    return im
-
-
 def reduce_peaks_to_points(peaks):
     if peaks.ndim == 2:
         from skimage.morphology import square as cube
@@ -537,3 +500,88 @@ def remove_disconnected_voxels(im, conn=None):
     area_mask = (id_sizes == 1)
     filtered_im[area_mask[id_regions]] = 0
     return filtered_im
+
+
+def remove_blind_pores(im):
+    r"""
+    Removes all pore voxels from the image if they are not connected to the
+    surface.
+
+    Parameters
+    ----------
+    im : ND-array
+        The image of the pore space, with ones indicating the phase to be
+        trimmed
+    """
+    im = sp.array(im, dtype=int)
+    # Pad image to ensure all void is connected
+    temp_im = sp.pad(im > 0, 1, 'constant', constant_values=1)
+    labels, N = spim.label(input=temp_im)
+    connected_pores = (labels == 1)
+    s = [slice(1, -1) for _ in im.shape]
+    connected_pores = connected_pores[s]
+    return connected_pores
+
+
+def remove_floating_solid(im):
+    r"""
+    Removes all solid phase voxels (False or 0) that are not connected to the
+    main body of the image, meaning they are floating in space.
+
+    Parameters
+    ----------
+    im : ND-array
+        The image of the pore space, with 0's (or False) indicating the phase
+        to be trimmed
+    """
+    im = sp.array(im, dtype=bool)
+    im = remove_blind_pores(~im)
+    return im
+
+
+def bounding_box_indices(roi):
+    r"""
+    Given the ND-coordinates of voxels defining the region of interest, the
+    indices of a bounding box are returned.
+    """
+    maxs = sp.amax(roi, axis=1)
+    mins = sp.amin(roi, axis=1)
+    x = []
+    x.append(slice(mins[0], maxs[0]))
+    x.append(slice(mins[1], maxs[1]))
+    if sp.shape(roi)[0] == 3:  # If image if 3D, add third coordinate
+        x.append(slice(mins[2], maxs[2]))
+    inds = tuple(x)
+    return inds
+
+
+def trim_extrema(im, h, mode='maxima'):
+    r"""
+    This trims local extrema by a specified amount, essentially decapitating
+    peaks or flooding valleys, or both.
+
+    Parameters
+    ----------
+    im : ND-array
+        The image whose extrema are to be removed
+
+    h : scalar
+        The height to remove from each peak or fill in each valley
+
+    mode : string {'maxima' | 'minima' | 'extrema'}
+        Specifies whether to remove maxima or minima or both
+
+    Returns
+    -------
+    A copy of the input image with all the peaks and/or valleys removed.
+
+    Notes
+    -----
+    This function is referred to as **imhmax** or **imhmin** in Mablab.
+    """
+    result = im
+    if mode in ['maxima', 'extrema']:
+        result = reconstruction(seed=im - h, mask=im, method='dilation')
+    elif mode in ['minima', 'extrema']:
+        result = reconstruction(seed=im + h, mask=im, method='erosion')
+    return result
