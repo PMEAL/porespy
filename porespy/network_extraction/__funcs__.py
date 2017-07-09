@@ -13,19 +13,7 @@ def align_images_with_openpnm(im):
     return im
 
 
-def find_peaks2(dt, r, minpeak=0):
-    if dt.ndim == 2:
-        from skimage.morphology import disk as ball
-        from skimage.morphology import square as cube
-    else:
-        from skimage.morphology import ball, cube
-    dt_temp = dt + (dt == 0)*minpeak
-    mx = spim.maximum_filter(input=dt_temp, size=2*r+1)
-    peaks = (dt == mx)*(dt > 0)
-    return peaks
-
-
-def find_peaks(dt, r=3):
+def find_peaks(dt, r=3, footprint=None):
     r"""
     Returns all local maxima in the distance transform
 
@@ -36,28 +24,30 @@ def find_peaks(dt, r=3):
         filtered using any means desired.
 
     r : scalar
-        The radius of the structuring element used in the maximum filter.  This
-        controls the localness of any maxima. The default is 3 voxels, which
-        means that a voxel is considered maximal if no other voxel within
-        a radius of 3 voxels has a higher number.
+        The size of the structuring element used in the maximum filter.  This
+        controls the localness of any maxima. The default is 3 voxels.
+
+    footprint : ND-array
+        Specifies the shape of the structuring element used to define the
+        neighborhood when looking for peaks.  If none is specified then a
+        spherical shape is used (or circular in 2D).
 
     Returns
     -------
     An ND-array of booleans with ``True`` values at the location of any local
     maxima.
     """
-    from skimage.morphology import disk, square, ball, cube
+    from skimage.morphology import disk, ball
     dt = dt.squeeze()
     im = dt > 0
-    if im.ndim == 2:
-        ball = disk
-        cube = square
-    elif im.ndim == 3:
-        ball = ball
-        cube = cube
-    else:
-        raise Exception("only 2-d and 3-d images are supported")
-    mx = spim.maximum_filter(dt + 2*(~im), footprint=ball(r))
+    if footprint is None:
+        if im.ndim == 2:
+            footprint = disk
+        elif im.ndim == 3:
+            footprint = ball
+        else:
+            raise Exception("only 2-d and 3-d images are supported")
+    mx = spim.maximum_filter(dt + 2*(~im), footprint=footprint(r))
     peaks = (dt == mx)*im
     return peaks
 
