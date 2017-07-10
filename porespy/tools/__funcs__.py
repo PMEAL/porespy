@@ -2,7 +2,6 @@ import scipy as sp
 import scipy.ndimage as spim
 from skimage.morphology import ball, disk, square, cube
 from skimage.segmentation import clear_border
-import OpenPNM as op
 from numba import jit
 
 
@@ -301,31 +300,6 @@ def flood2(regions, vals, mode='max', func=None):
         im_new[slices[count]] += func(sub_vals*sub_mask)*sub_mask
         count += 1
     return im_new
-
-
-def concentration_transform(im):
-    import pyamg
-    net = op.Network.Cubic(shape=im.shape)
-    net.fromarray(im, propname='pore.void')
-    net.fromarray(~im, propname='pore.solid')
-    geom = op.Geometry.GenericGeometry(network=net, pores=net.Ps, throats=net.Ts)
-    phase = op.Phases.GenericPhase(network=net)
-    phys = op.Physics.GenericPhysics(network=net, phase=phase, geometry=geom)
-    phys['throat.diffusive_conductance'] = 1
-    phys['pore.A1'] = 1
-    phys['pore.A2'] = 2
-    phys.models.add(propname='pore.sink',
-                    model=op.Physics.models.generic_source_term.linear,
-                    A1='pore.A1', A2='pore.A2')
-    alg = op.Algorithms.FickianDiffusion(network=net, phase=phase)
-    alg.set_boundary_conditions(bctype='Neumann', bcvalue=-1, pores=net.pores('void'))
-    alg.set_boundary_conditions(bctype='Dirichlet', bcvalue=0, pores=net.pores('solid'))
-#    alg.set_source_term(source_name='pore.sink', pores=net.pores('solid'))
-    alg.setup()
-    ml = pyamg.ruge_stuben_solver(alg.A)
-    X = ml.solve(alg.b)
-    ct = net.asarray(X).squeeze()
-    return ct
 
 
 def make_contiguous(im):
