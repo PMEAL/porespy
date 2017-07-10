@@ -138,6 +138,11 @@ def trim_saddle_points(peaks, dt, max_iters=10):
 
 
     max_iters : int
+
+
+    Returns
+    -------
+    An image with fewer peaks than was received.
     """
     if dt.ndim == 2:
         from skimage.morphology import square as cube
@@ -168,6 +173,9 @@ def trim_saddle_points(peaks, dt, max_iters=10):
 
 
 def trim_nearby_peaks(peaks, dt):
+    r"""
+    Removes peaks that are nearer to another peak than t
+    """
     if dt.ndim == 2:
         from skimage.morphology import square as cube
     else:
