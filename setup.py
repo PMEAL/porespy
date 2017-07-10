@@ -20,7 +20,12 @@ setup(
         'Topic :: Scientific/Engineering :: Physics'
     ],
     packages = [
-        'porespy'
+        'porespy',
+        'porespy.tools',
+        'porespy.generators',
+        'porespy.metrics',
+        'porespy.network_extraction',
+        'porespy.visualization'
     ],
     install_requires = [
         'numpy',
