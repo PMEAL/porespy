@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import os
 import sys
 
@@ -28,8 +26,9 @@ setup(
         'numpy',
         'scipy',
         'matplotlib',
+        'scikit-image',
         'imageio'
     ],
     author = 'Jeff Gostick',
-    author_email = 'jeff.gostick@mcgill.ca',
+    author_email = 'jgostick@uwaterloo.ca',
 )
