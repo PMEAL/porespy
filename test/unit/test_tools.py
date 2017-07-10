@@ -2,7 +2,7 @@ import porespy as ps
 import scipy as sp
 
 
-class TestTools():
+class ToolsTest():
     def setup_class(self):
         pass
 

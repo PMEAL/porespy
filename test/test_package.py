@@ -2,7 +2,7 @@ import porespy as ps
 import scipy as sp
 import git
 
-class TestPackage():
+class PackageTest():
     def setup_class(self):
         pass
 
