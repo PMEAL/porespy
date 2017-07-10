@@ -4,52 +4,28 @@ from skimage.morphology import reconstruction, watershed
 from porespy.tools import randomize_colors
 
 
-def align_images_with_openpnm(im):
+def align_image_with_openpnm(im):
+    r"""
+    Rotates an image to agree with the coordinates used in OpenPNM.  It is
+    unclear why they are not in agreement to start with.  This is necessary
+    for overlaying the image and the network in Paraview.
+
+    Parameters
+    ----------
+    im : ND-array
+        The image to be rotated.  Can the Boolean image of the pore space or
+        any other image of interest.
+
+    Returns
+    -------
+    Returns the image rotated accordingly.
+    """
     if im.ndim == 2:
         pass
     elif im.ndim == 3:
         im = (sp.swapaxes(im, 2, 0))
         im = im[:, -1::-1, :]
     return im
-
-
-def find_peaks(dt, r=3, footprint=None):
-    r"""
-    Returns all local maxima in the distance transform
-
-    Parameters
-    ----------
-    dt : ND-array
-        The distance transform of the pore space.  This may be calculated and
-        filtered using any means desired.
-
-    r : scalar
-        The size of the structuring element used in the maximum filter.  This
-        controls the localness of any maxima. The default is 3 voxels.
-
-    footprint : ND-array
-        Specifies the shape of the structuring element used to define the
-        neighborhood when looking for peaks.  If none is specified then a
-        spherical shape is used (or circular in 2D).
-
-    Returns
-    -------
-    An ND-array of booleans with ``True`` values at the location of any local
-    maxima.
-    """
-    from skimage.morphology import disk, ball
-    dt = dt.squeeze()
-    im = dt > 0
-    if footprint is None:
-        if im.ndim == 2:
-            footprint = disk
-        elif im.ndim == 3:
-            footprint = ball
-        else:
-            raise Exception("only 2-d and 3-d images are supported")
-    mx = spim.maximum_filter(dt + 2*(~im), footprint=footprint(r))
-    peaks = (dt == mx)*im
-    return peaks
 
 
 def partition_pore_space(im, peaks):

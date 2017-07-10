@@ -1,16 +1,14 @@
 import scipy as sp
 import scipy.ndimage as spim
 import scipy.spatial as sptl
-from skimage.segmentation import find_boundaries
-from skimage.morphology import watershed, reconstruction
-from porespy.tools import get_border, flood
+from skimage.morphology import disk, ball, square, cube
 
 
-def snow(im, r_max=4, sigma=0):
+def snow(im, r_max=4, sigma=0.4):
     r"""
     This function extracts the true local maximum of the distance transform of
     a pore space image.  These local maxima can then be used as markers in a
-    marker based watershed segmentation such as that included in Scikit-Image
+    marker-based watershed segmentation such as that included in Scikit-Image
     or through the MorphoJ plugin in ImageJ.
 
     The SNOW network extraction algorithm (Sub-Network of an Over-segmented
@@ -21,8 +19,9 @@ def snow(im, r_max=4, sigma=0):
     ----------
     im : array_like
         Can be either (a) a boolean image of the domain, with ``True``
-        indicating the pore space and ``False`` elsewhere, of (b) a distance
-        transform of the domain calculated externally by the user.
+        indicating the pore space and ``False`` elsewhere, or (b) a distance
+        transform of the domain calculated externally by the user.  Option (b)
+        is faster if a distance transform is already available.
 
     r_max : scalar
         The radius of there spherical structuring element to use in the Maximum
@@ -30,7 +29,9 @@ def snow(im, r_max=4, sigma=0):
 
     sigma : scalar
         The standard deviation of the Gaussian filter used in step 1.  The
-        default is 0.4.
+        default is 0.4.  If 0 is given then the filter is not applied, which is
+        useful if a distance transform is supplied as the ``im`` argument that
+        has already been processed.
 
     Returns
     -------
@@ -53,8 +54,7 @@ def snow(im, r_max=4, sigma=0):
     if sigma > 0:
         dt = spim.gaussian_filter(input=dt, sigma=sigma)
 
-    peaks = peak_local_max(image=-dt, min_distance=r_max/2, exclude_border=0,
-                           indices=False)
+    peaks = find_peaks(dt=dt)
     print('Initial number of peaks: ', spim.label(peaks)[1])
     peaks = trim_saddle_points(peaks=peaks, dt=dt)
     peaks = trim_nearby_peaks(peaks=peaks, dt=dt)
@@ -63,9 +63,55 @@ def snow(im, r_max=4, sigma=0):
     return peaks
 
 
-def reduce_peaks_to_points():
-    print("Thin broad or elongated peaks to single pixel")
-    start_peaks = sp.sum(peaks)
+def find_peaks(dt, r=4, footprint=None):
+    r"""
+    Returns all local maxima in the distance transform
+
+    Parameters
+    ----------
+    dt : ND-array
+        The distance transform of the pore space.  This may be calculated and
+        filtered using any means desired.
+
+    r : scalar
+        The size of the structuring element used in the maximum filter.  This
+        controls the localness of any maxima. The default is 3 voxels.
+
+    footprint : ND-array
+        Specifies the shape of the structuring element used to define the
+        neighborhood when looking for peaks.  If none is specified then a
+        spherical shape is used (or circular in 2D).
+
+    Returns
+    -------
+    An ND-array of booleans with ``True`` values at the location of any local
+    maxima.
+
+    Notes
+    -----
+    It is also possible ot the ``peak_local_max`` function from the
+    ``skimage.feature`` module as follows:
+
+    ``peaks = peak_local_max(image=dt, min_distance=r, exclude_border=0, indices=False)``
+
+    This automatically uses a square structuring element which is significantly
+    faster than using a circular or spherical element.
+    """
+    dt = dt.squeeze()
+    im = dt > 0
+    if footprint is None:
+        if im.ndim == 2:
+            footprint = disk
+        elif im.ndim == 3:
+            footprint = ball
+        else:
+            raise Exception("only 2-d and 3-d images are supported")
+    mx = spim.maximum_filter(dt + 2*(~im), footprint=footprint(r))
+    peaks = (dt == mx)*im
+    return peaks
+
+
+def reduce_peaks_to_points(peaks):
     markers, N = spim.label(input=peaks, structure=cube(3))
     inds = spim.measurements.center_of_mass(input=peaks,
                                             labels=markers,
@@ -74,11 +120,25 @@ def reduce_peaks_to_points():
     # Centroid may not be on old pixel, so create a new peaks image
     peaks = sp.zeros_like(peaks, dtype=bool)
     peaks[tuple(inds.T)] = True
-    end_peaks = sp.sum(peaks)
-    print("--> Number of peaks removed:", str(start_peaks - end_peaks))
+    return peaks
 
 
 def trim_saddle_points(peaks, dt, max_iters=10):
+    r"""
+    Removes peaks that were mistakenly identified because they lied on a
+    saddle or ridge in the distance transform that was not actually a true
+    local peak.
+
+    Parameters
+    ----------
+    peaks : ND-array
+
+
+    dt : ND-array
+
+
+    max_iters : int
+    """
     if dt.ndim == 2:
         from skimage.morphology import square as cube
     else:
@@ -105,18 +165,6 @@ def trim_saddle_points(peaks, dt, max_iters=10):
                 break  # Found a saddle point
         peaks[s] = peaks_i
     return peaks
-
-
-def trim_saddle_points_orig():
-    print("Remove peaks on saddles in the distance transform")
-    start_peaks = spim.label(peaks, structure=cube(3))[1]
-    # R is +1 higher than R in maximum_filter step
-    peaks_dil = spim.binary_dilation(input=peaks,
-                                     structure=ball(r_max+1))
-    peaks_max = flood(im=dt*peaks_dil, mode='max')
-    peaks = (peaks_max == dt)*peaks
-    end_peaks = spim.label(peaks, structure=cube(3))[1]
-    print("--> Number of peaks removed:", str(start_peaks - end_peaks))
 
 
 def trim_nearby_peaks(peaks, dt):
@@ -151,9 +199,7 @@ def trim_nearby_peaks(peaks, dt):
     return (peaks > 0)
 
 
-def trim_nearby_peaks_orig(peaks, dt):
-    print("Remove peaks nearer to another peak than to solid")
-    start_peaks = spim.label(peaks, structure=cube(3))[1]
+def trim_nearby_peaks_orig(peaks, dt, min_spacing=None):
     if min_spacing is None:
         min_spacing = dt.max()*0.8
     iters = 0
@@ -176,5 +222,4 @@ def trim_nearby_peaks_orig(peaks, dt):
                 peaks[tuple(crds[nearest_neighbor])] = 0
         if len(nearby_neighbors) == 0:
             break
-    end_peaks = spim.label(peaks, structure=cube(3))[1]
-    print("--> Number of peaks removed:", str(start_peaks - end_peaks))
+    return peaks
