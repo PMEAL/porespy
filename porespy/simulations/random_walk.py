@@ -29,18 +29,18 @@ def find_start_point(img, st_frac):
     elif ndim == 2:
         x_dim, y_dim = np.shape(img)
         z_dim = 1
-    x_m = np.floor(x_dim*st_frac)
-    y_m = np.floor(y_dim*st_frac)
-    z_m = np.floor(z_dim*st_frac)
+    x_r = x_dim*st_frac
+    y_r = y_dim*st_frac
+    z_r = z_dim*st_frac
     i = 0
     while True:
         i += 1
         if i > 10000:
             print("failed to find starting point")
             return None
-        x = int(x_dim/2 - x_m/2 + np.random.randint(0, x_m))
-        y = int(y_dim/2 - y_m/2 + np.random.randint(0, y_m))
-        z = int(z_dim/2 - z_m/2 + np.random.randint(0, z_m))
+        x = int(x_dim/2 - x_r/2 + np.random.randint(0, x_r))
+        y = int(y_dim/2 - y_r/2 + np.random.randint(0, y_r))
+        z = int(z_dim/2 - z_r/2 + np.random.randint(0, z_r))
         if ndim == 3:
             if img[x, y, z]:
                 break
@@ -76,21 +76,21 @@ def walk(img, st_point, maxsteps=None):
         the walker's path through the image, and paths[1] contains the
         coords of the walker's path through free space
     """
-
-    if maxsteps is None:
-        maxsteps = int(np.cbrt(img.size))*5
-    if not img[st_point]:
-        raise ValueError('invalid starting point: not a pore')
     ndim = np.ndim(img)
     if ndim == 3:
         x, y, z = st_point
         directions = 6
     elif ndim == 2:
-        x, y = st_point[0:2]
-        z = 0
+        y, z = st_point[0:2]
+        x = 0
         directions = 4
+        img = np.array([img])
     else:
         raise ValueError('img needs to be 2 or 3 dimensions')
+    if maxsteps is None:
+        maxsteps = int(np.cbrt(img.size))*5
+    if not img[x, y, z]:
+        raise ValueError('invalid starting point: not a pore')
     x_free, y_free, z_free = x, y, z
     coords = np.ones((maxsteps+1, 3), dtype=int) * (-1)
     free_coords = np.ones((maxsteps+1, 3), dtype=int) * (-1)
@@ -101,17 +101,17 @@ def walk(img, st_point, maxsteps=None):
         x_step, y_step, z_step = 0, 0, 0
         direction = np.random.randint(0, directions)
         if direction == 0:
-            x_step += 1
+            z_step += 1
         elif direction == 1:
-            x_step -= 1
+            z_step -= 1
         elif direction == 2:
             y_step += 1
         elif direction == 3:
             y_step -= 1
         elif direction == 4:
-            z_step += 1
+            x_step += 1
         elif direction == 5:
-            z_step -= 1
+            x_step -= 1
         # try block makes sure image does not go out of bounds
         try:
             if x_free+x_step < 0 or y_free+y_step < 0 or z_free+z_step < 0:
@@ -171,12 +171,13 @@ def msd(img, direct=None, walks=500, st_frac=0.2, maxsteps=None):
     for w in range(walks):
         st_point = find_start_point(img, st_frac)
         path, free_path = walk(img, st_point, maxsteps)
-        d = path[maxsteps] - path[0]
-        d_free = free_path[maxsteps] - free_path[0]
-        sd[w] = d**2
-        sd_free[w] = d_free**2
-    msd = np.average(sd, 0)
-    msd_free = np.average(sd_free, 0)
+        steps = np.size(path, 0) - 1
+        d = path[steps] - path[0]
+        d_free = free_path[steps] - free_path[0]
+        sd[w] = d
+        sd_free[w] = d_free
+    msd = np.average(sd**2, 0)
+    msd_free = np.average(sd_free**2, 0)
     if direct is None:
         return (msd, msd_free)
     else:
