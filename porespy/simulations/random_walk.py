@@ -16,9 +16,11 @@ def find_start_point(img, st_frac):
         A value between 0 and 1. Determines how much of the image is
         randomly searched for a starting point
 
-    Notes
-    -----
-    Tuple size returned depends on dimension of image
+    Returns
+    --------
+    st_point: tuple
+        A tuple containing the coordinates (x, y, z) of a valid start point.
+        If img is 2D, st_point will have z = 0
     """
 
     ndim = np.ndim(img)
@@ -46,8 +48,8 @@ def find_start_point(img, st_frac):
             if img[x, y]:
                 z = 0
                 break
-    point = (x, y, z)
-    return point
+    st_point = (x, y, z)
+    return st_point
 
 
 def walk(img, st_point, maxsteps=None):
@@ -66,6 +68,13 @@ def walk(img, st_point, maxsteps=None):
     maxsteps: int
         The number of steps to attempt per walk. If none is given, a default
         value is calculated
+
+    Returns
+    --------
+    paths: tuple
+        A tuple containing 2 arrays: paths[0] contains the coordinates of
+        the walker's path through the image, and paths[1] contains the
+        coords of the walker's path through free space
     """
 
     if maxsteps is None:
@@ -89,9 +98,7 @@ def walk(img, st_point, maxsteps=None):
     free_coords[0, :] = [x_free, y_free, z_free]
     # begin walk
     for step in range(1, maxsteps+1):
-        x_step = 0
-        y_step = 0
-        z_step = 0
+        x_step, y_step, z_step = 0, 0, 0
         direction = np.random.randint(0, directions)
         if direction == 0:
             x_step += 1
@@ -143,10 +150,20 @@ def msd(img, direct=None, walks=500, st_frac=0.2, maxsteps=None):
     img: array_like
         A binary image on which to perform the walk
     direct: int
-        The direction to calculate mean squared displacement in(0:x, 1:y, 2:z).
-        If no argument is given, total msd values are calculated
+        The direction to calculate mean squared displacement in
+        (0:x, 1:y, 2:z).I f no argument is given, all msd values are given,
+        and can be summed to find total msd
+    walks: int
+        The number of walks to perform
     maxsteps: int
-        The number of steps to attempt per walk
+        The number of steps to attempt per walk. If no argument is given, the
+        walks will use a default value calculated in the walk function
+
+    Returns
+    --------
+    out: tuple
+        A tuple containing the msd values for the image walks in index 0 and
+        for the free space walks in index 1
     """
 
     sd = np.zeros((walks, 3))
@@ -176,7 +193,8 @@ def show_path(img, maxsteps=None):
     img: array_like
         A binary image on which to perform the walk
     maxsteps: int
-        The number of steps to attempt per walk
+        The number of steps to attempt in a walk. If no argument is given, the
+        walk will use a default value calculated in the walk function.
     """
 
     (path, free_path) = walk(img, maxsteps)
