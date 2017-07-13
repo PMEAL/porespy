@@ -19,15 +19,15 @@ def find_start_point(img, st_frac):
     Returns
     --------
     st_point: tuple
-        A tuple containing the coordinates (x, y, z) of a valid start point.
+        A tuple containing the index of a valid start point.
         If img is 2D, st_point will have z = 0
     """
 
     ndim = np.ndim(img)
     if ndim == 3:
-        x_dim, y_dim, z_dim = np.shape(img)
+        z_dim, y_dim, x_dim = np.shape(img)
     elif ndim == 2:
-        x_dim, y_dim = np.shape(img)
+        y_dim, x_dim = np.shape(img)
         z_dim = 1
     x_r = x_dim*st_frac
     y_r = y_dim*st_frac
@@ -42,13 +42,13 @@ def find_start_point(img, st_frac):
         y = int(y_dim/2 - y_r/2 + np.random.randint(0, y_r))
         z = int(z_dim/2 - z_r/2 + np.random.randint(0, z_r))
         if ndim == 3:
-            if img[x, y, z]:
+            if img[z, y, x]:
                 break
         elif ndim == 2:
-            if img[x, y]:
+            if img[y, x]:
                 z = 0
                 break
-    st_point = (x, y, z)
+    st_point = (z, y, x)
     return st_point
 
 
@@ -63,7 +63,7 @@ def walk(img, st_point, maxsteps=None):
     img: array_like
         A 2D or 3D binary image on which to perform the walk
     st_point: array_like
-        A tuple, list, or array with the x, y, (z) coordinates of a valid
+        A tuple, list, or array with index of a valid
         start point.
     maxsteps: int
         The number of steps to attempt per walk. If none is given, a default
@@ -78,40 +78,40 @@ def walk(img, st_point, maxsteps=None):
     """
     ndim = np.ndim(img)
     if ndim == 3:
-        x, y, z = st_point
+        z, y, x = st_point
         directions = 6
     elif ndim == 2:
-        y, z = st_point[0:2]
-        x = 0
+        y, x = st_point[0:2]
+        z = 0
         directions = 4
         img = np.array([img])
     else:
         raise ValueError('img needs to be 2 or 3 dimensions')
     if maxsteps is None:
         maxsteps = int(np.cbrt(img.size))*5
-    if not img[x, y, z]:
+    if not img[z, y, x]:
         raise ValueError('invalid starting point: not a pore')
     x_free, y_free, z_free = x, y, z
     coords = np.ones((maxsteps+1, 3), dtype=int) * (-1)
     free_coords = np.ones((maxsteps+1, 3), dtype=int) * (-1)
-    coords[0, :] = [x, y, z]
-    free_coords[0, :] = [x_free, y_free, z_free]
+    coords[0, :] = [z, y, x]
+    free_coords[0, :] = [z_free, y_free, x_free]
     # begin walk
     for step in range(1, maxsteps+1):
         x_step, y_step, z_step = 0, 0, 0
         direction = np.random.randint(0, directions)
         if direction == 0:
-            z_step += 1
+            x_step += 1
         elif direction == 1:
-            z_step -= 1
+            x_step -= 1
         elif direction == 2:
             y_step += 1
         elif direction == 3:
             y_step -= 1
         elif direction == 4:
-            x_step += 1
+            z_step += 1
         elif direction == 5:
-            x_step -= 1
+            z_step -= 1
         # try block makes sure image does not go out of bounds
         try:
             if x_free+x_step < 0 or y_free+y_step < 0 or z_free+z_step < 0:
@@ -120,14 +120,14 @@ def walk(img, st_point, maxsteps=None):
             y_free += y_step
             z_free += z_step
             # if statement checks if the step leads to a pore in image
-            if img[x+x_step, y+y_step, z+z_step]:
+            if img[z+z_step, y+y_step, x+x_step]:
                 if x < 0 or y < 0 or z < 0:
                     raise IndexError
                 x += x_step
                 y += y_step
                 z += z_step
-            coords[step] = [x, y, z]
-            free_coords[step] = [x_free, y_free, z_free]
+            coords[step] = [z, y, x]
+            free_coords[step] = [z_free, y_free, x_free]
         except IndexError:
             # if the walker goes out of bounds, set the last element in array
             # to last valid coordinate and break out of loop
@@ -139,7 +139,7 @@ def walk(img, st_point, maxsteps=None):
     return paths
 
 
-def msd(img, direct=None, walks=500, st_frac=0.2, maxsteps=None):
+def msd(img, direct=None, walks=800, st_frac=0.2, maxsteps=None):
     r"""
     Function for performing many random walks on an image and determining the
     mean squared displacement values the walker travels in both the image
@@ -151,7 +151,7 @@ def msd(img, direct=None, walks=500, st_frac=0.2, maxsteps=None):
         A binary image on which to perform the walk
     direct: int
         The direction to calculate mean squared displacement in
-        (0:x, 1:y, 2:z).I f no argument is given, all msd values are given,
+        (0, 1 or 2). If no argument is given, all msd values are given,
         and can be summed to find total msd
     walks: int
         The number of walks to perform
@@ -184,7 +184,7 @@ def msd(img, direct=None, walks=500, st_frac=0.2, maxsteps=None):
         return (msd[direct], msd_free[direct])
 
 
-def show_path(img, maxsteps=None):
+def show_path_3d(img, st_point, maxsteps=None):
     r"""
     This function performs a walk on an image and shows the path taken
     by the walker in free space and in the porous image.
@@ -198,7 +198,7 @@ def show_path(img, maxsteps=None):
         walk will use a default value calculated in the walk function.
     """
 
-    (path, free_path) = walk(img, maxsteps)
+    (path, free_path) = walk(img, st_point, maxsteps)
     max_index = np.size(path, 0) - 1
     fig = plt.figure()
     ax = Axes3D(fig)
