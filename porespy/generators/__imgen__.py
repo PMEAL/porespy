@@ -1,9 +1,7 @@
 import scipy as sp
 import scipy.spatial as sptl
 import scipy.ndimage as spim
-import scipy.sparse as sprs
-from skimage.segmentation import find_boundaries
-from skimage.morphology import ball, disk, square, watershed
+from skimage.morphology import ball, disk, square, cube
 
 
 def bundle_of_tubes(shape, spacing):
@@ -26,13 +24,17 @@ def bundle_of_tubes(shape, spacing):
     A boolean array with True values denoting the pore space
     """
     temp = sp.zeros(shape=shape[:2])
-    Xi = sp.linspace(spacing/2, shape[0]-spacing/2, shape[0]/spacing).astype(int)
-    Yi = sp.linspace(spacing/2, shape[1]-spacing/2, shape[1]/spacing).astype(int)
+    Xi = sp.linspace(spacing/2, shape[0]-spacing/2, shape[0]/spacing)
+    Xi = sp.array(Xi, dtype=int)
+    Yi = sp.linspace(spacing/2, shape[1]-spacing/2, shape[1]/spacing)
+    Yi = sp.array(Yi, dtype=int)
     temp[sp.meshgrid(Xi, Yi)] = 1
     inds = sp.where(temp)
     for i in range(len(inds[0])):
         r = int(sp.rand()*(spacing/2 - 4)) + 3
-        temp[slice(inds[0][i]-r, inds[0][i]+r+1), slice(inds[1][i]-r, inds[1][i]+r+1)] = disk(r)
+        s1 = slice(inds[0][i]-r, inds[0][i]+r+1)
+        s2 = slice(inds[1][i]-r, inds[1][i]+r+1)
+        temp[s1, s2] = disk(r)
     temp = spim.binary_opening(temp, structure=square(3))
     im = sp.broadcast_to(array=sp.atleast_3d(temp), shape=shape)
     return im
@@ -185,7 +187,7 @@ def circle_pack(shape, radius, offset=0, packing='square'):
         shape = sp.full((2, ), int(shape))
     elif (sp.size(shape) == 3) or (1 in shape):
         raise Exception("This function only produces 2D images, " +
-                         "try \'sphere_pack\'")
+                        "try \'sphere_pack\'")
     im = sp.zeros(shape, dtype=bool)
     if packing.startswith('s'):
         spacing = 2*r
@@ -238,7 +240,7 @@ def sphere_pack(shape, radius, offset=0, packing='sc'):
         shape = sp.full((3, ), int(shape))
     elif (sp.size(shape) == 2) or (1 in shape):
         raise Exception("This function only produces 3D images, " +
-                         "try \'circle_pack\'")
+                        "try \'circle_pack\'")
     im = sp.zeros(shape, dtype=bool)
     if packing.startswith('s'):
         spacing = 2*r
