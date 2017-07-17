@@ -148,6 +148,11 @@ def porosity(im):
     This function assumes void is represented by 1 and solid by 0, and all
     other values are ignored.  This is useful, for example, for images of
     cylindrical cores, where all voxels outside the core are labelled with 2.
+
+    Alternatively, images can be processed with ``find_disconnected_voxels``
+    to get an image of only blind pores.  This can then be added to the orignal
+    image such that blind pores have a value of 2, thus allowing the
+    calculation of accessible porosity, rather than overall porosity.
     """
     im = sp.array(im, dtype=int)
     Vp = sp.sum(im == 1)

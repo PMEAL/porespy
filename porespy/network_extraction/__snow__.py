@@ -2,6 +2,7 @@ import scipy as sp
 import scipy.ndimage as spim
 import scipy.spatial as sptl
 from skimage.morphology import disk, ball, square, cube
+from porespy.tools import extend_slice
 
 
 def snow(im, r_max=4, sigma=0.4):
@@ -112,10 +113,12 @@ def find_peaks(dt, r=4, footprint=None):
 
 
 def reduce_peaks_to_points(peaks):
-    markers, N = spim.label(input=peaks, structure=cube(3))
+    if peaks.ndim == 2:
+        strel = square
+    markers, N = spim.label(input=peaks, structure=strel(3))
     inds = spim.measurements.center_of_mass(input=peaks,
                                             labels=markers,
-                                            index=range(1, N))
+                                            index=sp.arange(1, N))
     inds = sp.floor(inds).astype(int)
     # Centroid may not be on old pixel, so create a new peaks image
     peaks = sp.zeros_like(peaks, dtype=bool)

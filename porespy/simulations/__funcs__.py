@@ -1,6 +1,7 @@
 import scipy as sp
 import scipy.ndimage as spim
 from porespy.tools import get_border
+from skimage.segmentation import clear_border
 
 
 def feature_size(im):
@@ -114,9 +115,10 @@ def porosimetry(im, npts=25, sizes=None, inlets=None):
         imtemp = dt >= r
         imtemp[inlets] = True  # Add inlets before labeling
         labels, N = spim.label(imtemp)
-        inlet_labels = sp.unique(labels[inlets])
-        imtemp = sp.in1d(labels.flatten(), inlet_labels)
-        imtemp = sp.reshape(imtemp, im.shape)
+        imtemp = im*(clear_border(labels=labels) > 0)
+        # inlet_labels = sp.unique(labels[inlets])
+        # imtemp = sp.in1d(labels.flatten(), inlet_labels)
+        # imtemp = sp.reshape(imtemp, im.shape)
         imtemp[inlets] = False  # Remove inlets
         imtemp = spim.distance_transform_edt(~imtemp) < r
         imresults[(imresults == 0)*imtemp] = r

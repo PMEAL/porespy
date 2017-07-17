@@ -1,6 +1,7 @@
 import scipy as sp
 import scipy.ndimage as spim
 from skimage.morphology import ball, disk, square, cube
+from skimage.morphology import reconstruction
 from skimage.segmentation import clear_border
 from numba import jit
 
@@ -74,22 +75,6 @@ def extract_subsection(im, shape):
     return im
 
 
-def reduce_peaks_to_points(peaks):
-    if peaks.ndim == 2:
-        from skimage.morphology import square as cube
-    else:
-        from skimage.morphology import cube
-    markers, N = spim.label(input=peaks, structure=cube(3))
-    inds = spim.measurements.center_of_mass(input=peaks,
-                                            labels=markers,
-                                            index=sp.arange(1, N))
-    inds = sp.floor(inds).astype(int)
-    # Centroid may not be on old pixel, so create a new peaks image
-    peaks = sp.zeros_like(peaks, dtype=bool)
-    peaks[tuple(inds.T)] = True
-    return peaks
-
-
 def extend_slice(s, shape, pad=1):
     r"""
     Adjust slice indices to include additional voxles around the slices.
@@ -125,16 +110,22 @@ def extend_slice(s, shape, pad=1):
     return a
 
 
-def binary_opening_fast(dt, r):
+def binary_opening_fast(im, r, dt=None):
     r"""
     This function uses a shortcut to perform a morphological opening that does
-    not slow down with larger structuring elements.  Because of the shortcut
+    not slow down with larger structuring elements.  Because of the shortcut,
     it only applies to spherical structuring elements.
 
     Parameters
     ----------
-    dt : ND-image
-        The distance transform of the pore space.
+    im : ND-array
+        The image of the porous material with True values (or 1's) indicating
+        the pore phase.
+
+    dt : ND-array
+        The distance transform of the pore space.  If none is provided, it will
+        be calculated; however, providing one is a good idea since it will cut
+        the processing time in half.
 
     r : scalar, int
         The radius of the spherical structuring element to apply
@@ -144,12 +135,9 @@ def binary_opening_fast(dt, r):
     A binary image with True values in all locations where a sphere of size
     ``r`` could fit entirely within the pore space.
 
-    Notes
-    -----
-    This method requires performing the distance transform twice, but the first
-    time is only on the pores space.  Since this is likely available it must be
-    passed in as an argument.
     """
+    if dt is None:
+        dt = spim.distance_transform_edt(im)
     seeds = dt > r
     im_opened = spim.distance_transform_edt(~seeds) < r
     return im_opened
@@ -336,7 +324,7 @@ def find_edges(im, strel=None):
         provided (the default) the a round structure is used with a radius of
         1 voxel.
     """
-    if strel == None:
+    if strel is None:
         if im.ndim == 2:
             strel = disk(1)
         elif im.ndim == 3:
@@ -389,7 +377,7 @@ def get_border(shape, thickness=1, mode='edges'):
     border = sp.ones(shape, dtype=bool)
     if mode == 'faces':
         if ndims == 2:
-             border[t:-t, t:-t] = False
+            border[t:-t, t:-t] = False
         if ndims == 3:
             border[t:-t, t:-t, t:-t] = False
     elif mode == 'edges':
@@ -410,52 +398,33 @@ def get_border(shape, thickness=1, mode='edges'):
     return border
 
 
-def fill_border(im, thickness=1, value=1):
-    border = get_border(im, thickness=thickness)
-    coords = sp.where(border)
-    im[coords] = value
-    return im
-
-
-def get_dims(im):
-    if im.ndim == 2:
-        return 2
-    if (im.ndim == 3) and (im.shape[2] == 1):
-        return 2
-    if im.ndim == 3:
-        return 3
-
-
-def rotate_image_and_repeat(im):
-    # Find all markers in distance transform
-    weighted_markers = sp.zeros_like(im, dtype=float)
-    for phi in sp.arange(0, 45, 2):
-        temp = spim.rotate(im.astype(int), angle=phi, order=5, mode='constant', cval=1)
-        temp = get_weighted_markers(temp, Rs)
-        temp = spim.rotate(temp.astype(int), angle=-phi, order=0, mode='constant', cval=0)
-        X_lo = sp.floor(temp.shape[0]/2-im.shape[0]/2).astype(int)
-        X_hi = sp.floor(temp.shape[0]/2+im.shape[0]/2).astype(int)
-        weighted_markers += temp[X_lo:X_hi, X_lo:X_hi]
-    return weighted_markers
-
-
-def remove_disconnected_voxels(im, conn=None):
+def find_disconnected_voxels(im, conn=None):
     r"""
+    This identifies all pore (or solid) voxels that are not connected to the
+    edge of the image.  This can be used to find blind pores, or remove
+    artifacts such as solid phase voxels that are floating in space.
 
     Parameters
     ----------
     im : ND-image
-        A Boolean image, with True values indicating the foreground from which
-        the offending voxels will be trimmed.
+        A Boolean image, with True values indicating the phase for which
+        disconnected voxels are sought.
 
     conn : int
         For 2D the options are 4 and 8 for square and diagonal neighbors, while
         for the 3D the options are 6 and 26, similarily for square and diagonal
-        neighbors.
+        neighbors.  The default is max
 
-    See Also
-    --------
-    remove_blind_pores
+    Returns
+    -------
+    An ND-image the same size as ``im``, with True values indicating voxels of
+    the phase of interest (i.e. True values in the original image) that are
+    not connected to the outer edges.
+
+    Notes
+    -----
+    The returned array (e.g. ``holes``) be used to trim blind pores from
+    ``im`` using: ``im[holes] = False``
 
     """
     if im.ndim == 2:
@@ -468,49 +437,9 @@ def remove_disconnected_voxels(im, conn=None):
             strel = ball(1)
         elif conn in [None, 26]:
             strel = cube(3)
-    filtered_im = sp.copy(im)
-    id_regions, num_ids = spim.label(filtered_im, structure=strel)
-    id_sizes = sp.array(spim.sum(im, id_regions, range(num_ids + 1)))
-    area_mask = (id_sizes == 1)
-    filtered_im[area_mask[id_regions]] = 0
-    return filtered_im
-
-
-def remove_blind_pores(im):
-    r"""
-    Removes all pore voxels from the image if they are not connected to the
-    surface.
-
-    Parameters
-    ----------
-    im : ND-array
-        The image of the pore space, with ones indicating the phase to be
-        trimmed
-    """
-    im = sp.array(im, dtype=int)
-    # Pad image to ensure all void is connected
-    temp_im = sp.pad(im > 0, 1, 'constant', constant_values=1)
-    labels, N = spim.label(input=temp_im)
-    connected_pores = (labels == 1)
-    s = [slice(1, -1) for _ in im.shape]
-    connected_pores = connected_pores[s]
-    return connected_pores
-
-
-def remove_floating_solid(im):
-    r"""
-    Removes all solid phase voxels (False or 0) that are not connected to the
-    main body of the image, meaning they are floating in space.
-
-    Parameters
-    ----------
-    im : ND-array
-        The image of the pore space, with 0's (or False) indicating the phase
-        to be trimmed
-    """
-    im = sp.array(im, dtype=bool)
-    im = remove_blind_pores(~im)
-    return im
+    labels, N = spim.label(input=im, structure=strel)
+    holes = clear_border(labels=labels) > 0
+    return holes
 
 
 def bounding_box_indices(roi):
