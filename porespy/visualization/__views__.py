@@ -100,7 +100,7 @@ def local_thickness(im):
     """
     from skimage.morphology import cube
     if im.ndim == 2:
-        from  skimage.morphology import square as cube
+        from skimage.morphology import square as cube
     dt = spim.distance_transform_edt(im)
     sizes = sp.unique(sp.around(dt))
     im_new = sp.zeros_like(im, dtype=int)
