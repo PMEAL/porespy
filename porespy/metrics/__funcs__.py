@@ -24,7 +24,7 @@ def representative_elementary_volume(im, npoints=1000):
 
     Returns
     -------
-    A tuple containing the ND-arrays: The  subdomain *volume* and its
+    A tuple containing the ND-arrays: The subdomain *volume* and its
     *porosity*.  Each of these arrays is ``npoints`` long.  They can be
     conveniently plotted by passing the tuple to matplotlib's ``plot`` function
     using the \* notation: ``plt.plot(*the_tuple, 'b.')``.
@@ -35,7 +35,7 @@ def representative_elementary_volume(im, npoints=1000):
     is spent on scipy's ``sum`` function which is needed to sum the number of
     void voxels (1's) in each subdomain.
 
-    Also, this function if primed for parallelization since the ``npoints`` are
+    Also, this function is primed for parallelization since the ``npoints`` are
     calculated independenlty.
 
     """
@@ -219,17 +219,16 @@ def two_point_correlation_bf(im, spacing=10):
 def apply_chords(im, spacing=0, axis=0, trim_edges=True):
     r"""
     Adds chords to the void space in the specified direction.  The chords are
-    separated by 1 voxels plus the provided spacing.
+    separated by 1 voxel plus the provided spacing.
 
     Parameters
     ----------
     im : ND-array
-        A 2D image of the porous material with void marked as True.
+        An image of the porous material with void marked as True.
 
     spacing : int (default = 0)
         Chords are automatically separated by 1 voxel and this argument
-        increases
-        the separation.
+        increases the separation.
 
     axis : int (default = 0)
         The axis along which the chords are drawn.
