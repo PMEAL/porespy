@@ -141,6 +141,22 @@ def voronoi_edges(shape, edge_radius, ncells, flat_faces=True):
 
 
 def _get_Voronoi_edges(vor):
+    r"""
+    Given a Voronoi object as produced by the scipy.spatial.Voronoi class,
+    this function calculates the start and end points of eeach edge in the
+    Voronoi diagram, in terms of the vertex indices used by the received
+    Voronoi object.
+
+    Parameters
+    ----------
+    vor : scipy.spatial.Voronoi object
+
+    Returns
+    -------
+    A 2-by-N array of vertex indices, indicating the start and end points of
+    each vertex in the Voronoi diagram.  These vertex indices can be used to
+    index straight into the ``vor.vertices`` array to get spatial positions.
+    """
     edges = [[], []]
     for facet in vor.ridge_vertices:
         # Create a closed cycle of vertices that define the facet
@@ -376,20 +392,20 @@ def noise(shape, octaves=3, frequency=32, mode='simplex'):
         f = noise.snoise3
     else:
         f = noise.pnoise3
+    frequency = sp.atleast_1d(frequency)
     if len(frequency) == 1:
-        freq = sp.full(shape=[3, ], fill_values=frequency)
+        freq = sp.full(shape=[3, ], fill_value=frequency[0])
     elif len(frequency) == 2:
         freq = sp.concatenate((frequency, [1]))
     else:
         freq = sp.array(frequency)
-    seed = sp.random.randint(0, 10000)
     im = sp.zeros(shape=[Lx, Ly, Lz], dtype=float)
     for x in range(Lx):
         for y in range(Ly):
             for z in range(Lz):
                 im[x, y, z] = f(x=x/freq[0], y=y/freq[1], z=z/freq[2],
                                 octaves=octaves)
-    return im
+    return im.squeeze()
 
 
 def blobs(shape, porosity=0.5, blobiness=1):
