@@ -138,13 +138,18 @@ def drainage_curve(im):
 
     Returns
     -------
-    Rp, Snwp
-    Two arrays
+    Rp, Snwp: Two arrays containing the radius of the penetrating sphere (in
+    voxels) and the volume fraction of pore phase voxels that are accessible
+    from the specfied inlets.
 
     Notes
     -----
     This function normalizes the invading phase saturation by total pore volume
-    of the dry image.
+    of the dry image, which is assumed to be all voxels with a value greater
+    than 0.  To do porosimetry on images with large outer regions, use the
+    ```find_outer_region``` function then set these regions to 0 in the
+    input image.  In future, this function could be adapted to apply this check
+    by default.
 
     """
     sizes = sp.unique(im)
