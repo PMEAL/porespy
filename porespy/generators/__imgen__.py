@@ -408,7 +408,7 @@ def noise(shape, octaves=3, frequency=32, mode='simplex'):
     return im.squeeze()
 
 
-def blobs(shape, porosity=0.5, blobiness=1):
+def blobs(shape, porosity, blobiness=1):
     """
     Generates an image containing amorphous blobs
 
@@ -418,7 +418,7 @@ def blobs(shape, porosity=0.5, blobiness=1):
         The size of the image to generate in [Nx, Ny, Nz] where N is the
         number of voxels
 
-    porosity : scalar (default = 0.5)
+    porosity : scalar
         The porosity of the final image.  This number is approximated by
         the function so the returned result may not have exactly the
         specified value.
@@ -458,6 +458,7 @@ def fibers(shape, radius, nfibers, phi_max=0, theta_max=90):
         lie out of the XY plane, with 0 meaning all fibers lie in the XY
         plane, and 90 meaning that fibers are randomly oriented out of the
         plane by as much as +/- 90 degrees.
+
     theta_max : scalar
         A value between 0 and 90 that controls the amount rotation in the
         XY plane, with 0 meaning all fibers point in the X-direction, and

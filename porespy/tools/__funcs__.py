@@ -214,8 +214,9 @@ def randomize_colors(im, keep_vals=[0]):
 def flood(im, mode='max'):
     r"""
     Floods/fills each region in an image with a single value based on the
-    specific values in the region.  The ```mode``` argument is used to
-    determine how the value is calculated.
+    specific values in that region.  The ```mode``` argument is used to
+    determine how the value is calculated.  A region is defined as a connected
+    cluster of voxels surrounded by 0's for False's.
 
     Parameters
     ----------
@@ -252,42 +253,12 @@ def flood(im, mode='max'):
             if V[L[i]] > I[i]:
                 V[L[i]] = I[i]
     elif mode.startswith('size'):
-        V = sp.zeros(shape=N+1, dtype=float)
+        V = sp.zeros(shape=N+1, dtype=int)
         for i in range(len(L)):
             V[L[i]] += 1
-    V = sp.array(V)
-    im_flooded = sp.zeros_like(im)
-    im_flooded = V[labels]
-    return(im_flooded)
-
-
-def flood2(regions, vals, mode='max', func=None):
-    r"""
-
-    """
-    im_new = sp.ones_like(vals)
-    slices = spim.find_objects(regions)
-    labels = sp.unique(regions)
-    if labels[0] == 0:
-        labels = labels[1:]
-    count = 0
-    if func is None:
-        if mode == 'max':
-            func = sp.amax
-        elif mode == 'min':
-            func = sp.amin
-        elif mode == 'mean':
-            func = sp.mean
-        elif mode == 'size':
-            func = sp.count_nonzero
-        else:
-            raise Exception('Supplied mode is not supported')
-    for i in labels:
-        sub_mask = regions[slices[count]] == i
-        sub_vals = vals[slices[count]]
-        im_new[slices[count]] += func(sub_vals*sub_mask)*sub_mask
-        count += 1
-    return im_new
+    im_flooded = sp.reshape(V[labels], newshape=im.shape)
+    im_flooded = im_flooded*im
+    return im_flooded
 
 
 def make_contiguous(im):

@@ -27,7 +27,8 @@ def representative_elementary_volume(im, npoints=1000):
     A tuple containing the ND-arrays: The subdomain *volume* and its
     *porosity*.  Each of these arrays is ``npoints`` long.  They can be
     conveniently plotted by passing the tuple to matplotlib's ``plot`` function
-    using the \* notation: ``plt.plot(*the_tuple, 'b.')``.
+    using the \* notation: ``plt.plot(*the_tuple, 'b.')``.  The resulting plot
+    is similar to the sketch given by Bachmat and Bear [1]
 
     Notes
     -----
@@ -37,6 +38,12 @@ def representative_elementary_volume(im, npoints=1000):
 
     Also, this function is primed for parallelization since the ``npoints`` are
     calculated independenlty.
+
+    References
+    ----------
+    [1] Bachmat and Bear. On the Concept and Size of a Representative
+    Elementary Volume (Rev), Advances in Transport Phenomena in Porous Media
+    (1987)
 
     """
     im_temp = sp.zeros_like(im)
@@ -68,12 +75,18 @@ def radial_distribution(im, bins=10):
     [1] Torquato, S. Random Heterogeneous Materials: Mircostructure and
     Macroscopic Properties. Springer, New York (2002)
     """
+    print("Sorry, but this function is not implemented yet")
 
 
 def lineal_path(im):
     r"""
+
+    References
+    ----------
+    [1] Torquato, S. Random Heterogeneous Materials: Mircostructure and
+    Macroscopic Properties. Springer, New York (2002)
     """
-    pass
+    print("Sorry, but this function is not implemented yet")
 
 
 def pore_size_density(im, bins=10, voxel_size=1):
@@ -110,8 +123,8 @@ def pore_size_density(im, bins=10, voxel_size=1):
 
     See Also
     --------
-    simulations.feature_size
-    simulaitons.porosimetry
+    feature_size
+    porosimetry
 
     References
     ----------
@@ -153,6 +166,11 @@ def porosity(im):
     to get an image of only blind pores.  This can then be added to the orignal
     image such that blind pores have a value of 2, thus allowing the
     calculation of accessible porosity, rather than overall porosity.
+
+    References
+    ----------
+    [1] Torquato, S. Random Heterogeneous Materials: Mircostructure and
+    Macroscopic Properties. Springer, New York (2002)
     """
     im = sp.array(im, dtype=int)
     Vp = sp.sum(im == 1)
