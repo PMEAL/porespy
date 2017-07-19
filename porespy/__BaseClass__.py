@@ -1,8 +1,7 @@
 import scipy.ndimage as spim
 from collections import namedtuple
 from porespy.metrics import porosity, feature_size_distribution
-from porespy.simulations import porosimetry, feature_size
-from porespy.visualization import drainage_curve
+from porespy.simulations import porosimetry, feature_size, drainage_curve
 
 
 class Bundle(dict):
