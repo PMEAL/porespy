@@ -52,7 +52,7 @@ def find_start_point(img, st_frac):
     return st_point
 
 
-def walk(img, st_point, maxsteps=None):
+def walk(img, st_point, stride=1, maxsteps=None):
     r"""
     This function performs a single random walk through porous image. It
     returns an array containing the walker path in the image, and the walker
@@ -64,7 +64,10 @@ def walk(img, st_point, maxsteps=None):
         A 2D or 3D binary image on which to perform the walk
     st_point: array_like
         A tuple, list, or array with index of a valid
-        start point.
+        start point
+    stride: int
+        A number greater than zero, determining how many steps are taken
+        between each returned coordinate
     maxsteps: int
         The number of steps to attempt per walk. If none is given, a default
         value is calculated
@@ -96,6 +99,7 @@ def walk(img, st_point, maxsteps=None):
     free_coords = np.ones((maxsteps+1, 3), dtype=int) * (-1)
     coords[0, :] = [z, y, x]
     free_coords[0, :] = [z_free, y_free, x_free]
+    steps = 0
     # begin walk
     for step in range(1, maxsteps+1):
         x_step, y_step, z_step = 0, 0, 0
@@ -129,17 +133,15 @@ def walk(img, st_point, maxsteps=None):
             coords[step] = [z, y, x]
             free_coords[step] = [z_free, y_free, x_free]
         except IndexError:
-            # if the walker goes out of bounds, set the last element in array
-            # to last valid coordinate and break out of loop
-            coords[maxsteps] = coords[step-1]
-            free_coords[maxsteps] = free_coords[step-1]
+            # if the walker goes out of bounds, stop walking
             break
+        steps += 1
 
-    paths = (coords, free_coords)
+    paths = (coords[:steps+1:stride, :], free_coords[:steps+1:stride, :])
     return paths
 
 
-def msd(img, direct=None, walks=800, st_frac=0.2, maxsteps=None):
+def msd(img, direct=None, walks=800, st_frac=0.2, stride=1, maxsteps=None):
     r"""
     Function for performing many random walks on an image and determining the
     mean squared displacement values the walker travels in both the image
@@ -148,13 +150,17 @@ def msd(img, direct=None, walks=800, st_frac=0.2, maxsteps=None):
     Parameters
     ----------
     img: array_like
-        A binary image on which to perform the walk
+        A binary image on which to perform the walks
     direct: int
         The direction to calculate mean squared displacement in
         (0, 1 or 2). If no argument is given, all msd values are given,
         and can be summed to find total msd
     walks: int
         The number of walks to perform
+    st_frac: int
+        Value used in find_start_point function
+    stride: int
+        Value used in walk function
     maxsteps: int
         The number of steps to attempt per walk. If no argument is given, the
         walks will use a default value calculated in the walk function
@@ -170,18 +176,102 @@ def msd(img, direct=None, walks=800, st_frac=0.2, maxsteps=None):
     sd_free = np.zeros((walks, 3))
     for w in range(walks):
         st_point = find_start_point(img, st_frac)
-        path, free_path = walk(img, st_point, maxsteps)
+        path, free_path = walk(img, st_point, stride, maxsteps)
         steps = np.size(path, 0) - 1
         d = path[steps] - path[0]
         d_free = free_path[steps] - free_path[0]
-        sd[w] = d
-        sd_free[w] = d_free
-    msd = np.average(sd**2, 0)
-    msd_free = np.average(sd_free**2, 0)
+        sd[w] = d**2
+        sd_free[w] = d_free**2
+    msd = np.average(sd, 0)
+    msd_free = np.average(sd_free, 0)
     if direct is None:
         return (msd, msd_free)
     else:
         return (msd[direct], msd_free[direct])
+
+
+def sd_array(img, walks=100, st_frac=0.2, stride=100, maxsteps=3000,
+             previous_sds=None):
+    r"""
+    Function for outputing sd values for individual walkers at every given
+    interval.
+
+    Parameters
+    ----------
+    img: array_like
+        A binary image on which to perform the walks
+    walks: int
+        The number of walks to perform
+    st_frac: int
+        Value used in find_start_point function
+    stride: int
+        Value used in walk function
+    maxsteps: int
+        The number of steps to attempt per walk. If no argument is given, the
+        walks will use a default value calculated in the walk function
+    previous_sds: tuple
+        A tuple containing previous squared distance arrays. Should contain
+        squared distance array for image in index 0, and sd array for free
+        space in index 1. If this entry is given, the function will
+        concatenate the previous arrays with more walker data, and then
+        return them.
+
+    Returns
+    --------
+    out: tuple
+        A tuple containing squared distance arrays for image walks and free
+        space walks. Each row in the arrays represents a different walker.
+        Each column represents a different step length, with intervals
+        determined by stride
+    """
+
+    sd = np.zeros((walks, maxsteps//stride+1))
+    sd_free = np.zeros((walks, maxsteps//stride+1))
+    for w in range(walks):
+        st_point = find_start_point(img, st_frac)
+        path, free_path = walk(img, st_point, stride, maxsteps)
+        steps = np.size(path, 0)
+        for i in range(steps):
+            sd[w, i] = np.sum((path[i]-path[0])**2)
+            sd_free[w, i] = np.sum((free_path[i]-free_path[0])**2)
+    if previous_sds is not None:
+        sd_prev, sd_free_prev = previous_sds
+        sd = np.concatenate((sd_prev, sd))
+    return (sd, sd_free)
+
+
+def error_analysis(img, walks):
+    r"""
+    Returns an estimation for standard error, as a percentage of the
+    mean squared distance calculated
+
+    Parameters
+    -----------
+    img: array_like
+        A binary image
+    walks: int
+        The number of walks to perform
+
+    Returns
+    --------
+    out: float
+        Estimation of standard error as a percentage of the mean squared
+        displacement, if a random walk simulation is performed on the given
+        image with the specified number of walks
+    """
+    steps = 2000
+    std = np.zeros(21)
+    mean = np.zeros(21)
+    sd, sd_free = sd_array(img, 1000, stride=100, maxsteps=steps)
+    for col in range(np.size(sd, 1)):
+        stdi = np.std(sd[np.where(sd[:, col] > 0), col])
+        meani = np.mean(sd[np.where(sd[:, col] > 0), col])
+        std[col] = stdi
+        mean[col] = meani
+
+    ste = std/np.sqrt(walks)
+    stepct = 100*ste/mean
+    return np.mean(stepct[1:12])
 
 
 def show_path_3d(img, st_point, maxsteps=None):
