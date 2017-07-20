@@ -237,6 +237,7 @@ def sd_array(img, walks=100, st_frac=0.2, stride=100, maxsteps=3000,
     if previous_sds is not None:
         sd_prev, sd_free_prev = previous_sds
         sd = np.concatenate((sd_prev, sd))
+        sd_free = np.concatenate((sd_free_prev, sd_free))
     return (sd, sd_free)
 
 
