@@ -140,8 +140,6 @@ def walk(img, st_point, stride=1, maxsteps=None):
         steps += 1
         coords[step] = [z, y, x]
         free_coords[step] = [z_free, y_free, x_free]
-        
-
     paths = (coords[:steps+1:stride, :], free_coords[:steps+1:stride, :])
     return paths
 
