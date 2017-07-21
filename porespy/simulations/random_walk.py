@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+from numba import jit
 
 
 def find_start_point(img, st_frac):
@@ -52,6 +53,7 @@ def find_start_point(img, st_frac):
     return st_point
 
 
+@jit
 def walk(img, st_point, stride=1, maxsteps=None):
     r"""
     This function performs a single random walk through porous image. It
@@ -94,6 +96,7 @@ def walk(img, st_point, stride=1, maxsteps=None):
         maxsteps = int(np.cbrt(img.size))*5
     if not img[z, y, x]:
         raise ValueError('invalid starting point: not a pore')
+    z_max, y_max, x_max = np.shape(img)
     x_free, y_free, z_free = x, y, z
     coords = np.ones((maxsteps+1, 3), dtype=int) * (-1)
     free_coords = np.ones((maxsteps+1, 3), dtype=int) * (-1)
@@ -116,26 +119,28 @@ def walk(img, st_point, stride=1, maxsteps=None):
             z_step += 1
         elif direction == 5:
             z_step -= 1
-        # try block makes sure image does not go out of bounds
-        try:
-            if x_free+x_step < 0 or y_free+y_step < 0 or z_free+z_step < 0:
-                raise IndexError
-            x_free += x_step
-            y_free += y_step
-            z_free += z_step
-            # if statement checks if the step leads to a pore in image
-            if img[z+z_step, y+y_step, x+x_step]:
-                if x < 0 or y < 0 or z < 0:
-                    raise IndexError
-                x += x_step
-                y += y_step
-                z += z_step
-            coords[step] = [z, y, x]
-            free_coords[step] = [z_free, y_free, x_free]
-        except IndexError:
-            # if the walker goes out of bounds, stop walking
+        # checks to make sure image does not go out of bounds
+        if x_free+x_step < 0 or y_free+y_step < 0 or z_free+z_step < 0:
             break
+        if (x_free+x_step >= x_max or y_free+y_step >= y_max or
+                z_free+z_step >= z_max):
+            break
+        if x+x_step < 0 or y+y_step < 0 or z+z_step < 0:
+            break
+        if x+x_step >= x_max or y+y_step >= y_max or z+z_step >= z_max:
+            break
+        x_free += x_step
+        y_free += y_step
+        z_free += z_step
+        # checks if the step leads to a pore in image
+        if img[z+z_step, y+y_step, x+x_step]:
+            x += x_step
+            y += y_step
+            z += z_step
         steps += 1
+        coords[step] = [z, y, x]
+        free_coords[step] = [z_free, y_free, x_free]
+        
 
     paths = (coords[:steps+1:stride, :], free_coords[:steps+1:stride, :])
     return paths
@@ -145,7 +150,7 @@ def msd(img, direct=None, walks=800, st_frac=0.2, stride=1, maxsteps=None):
     r"""
     Function for performing many random walks on an image and determining the
     mean squared displacement values the walker travels in both the image
-    and free space.
+    and free space
 
     Parameters
     ----------
@@ -193,8 +198,8 @@ def msd(img, direct=None, walks=800, st_frac=0.2, stride=1, maxsteps=None):
 def sd_array(img, walks=100, st_frac=0.2, stride=100, maxsteps=3000,
              previous_sds=None):
     r"""
-    Function for outputing sd values for individual walkers at every given
-    interval.
+    Function for outputing squared displacement values for individual walkers
+    at every given interval, in array format
 
     Parameters
     ----------
@@ -214,7 +219,7 @@ def sd_array(img, walks=100, st_frac=0.2, stride=100, maxsteps=3000,
         squared distance array for image in index 0, and sd array for free
         space in index 1. If this entry is given, the function will
         concatenate the previous arrays with more walker data, and then
-        return them.
+        return them
 
     Returns
     --------
@@ -278,7 +283,7 @@ def error_analysis(img, walks):
 def show_path_3d(img, st_point, maxsteps=None):
     r"""
     This function performs a walk on an image and shows the path taken
-    by the walker in free space and in the porous image.
+    by the walker in free space and in the porous image
 
     Parameters
     ----------
@@ -286,7 +291,7 @@ def show_path_3d(img, st_point, maxsteps=None):
         A binary image on which to perform the walk
     maxsteps: int
         The number of steps to attempt in a walk. If no argument is given, the
-        walk will use a default value calculated in the walk function.
+        walk will use a default value calculated in the walk function
     """
 
     (path, free_path) = walk(img, st_point, maxsteps)
