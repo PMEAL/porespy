@@ -1,9 +1,45 @@
 import scipy as sp
 import scipy.spatial as sptl
 import scipy.ndimage as spim
-import scipy.sparse as sprs
 from skimage.segmentation import find_boundaries
-from skimage.morphology import ball, disk, square, watershed
+from skimage.morphology import ball, disk, square
+
+
+def add_noise(im, u_void=0.8, u_solid=0.2, s_void=0.15, s_solid=0.5):
+    r"""
+    Add some normally distributed noise values to the image.  This is useful
+    for testing binarization routines.
+
+    Parameters
+    ----------
+    im : ND-array
+        The image of the porous media, with 1's or True's denote voids
+
+    u_solid : float
+        The mean greyscale value in the solid space (default is 0.2)
+
+    s_solid : float
+        The standard deviation of the greyscale values in the solid phase (the
+        default is 0.15)
+
+    u_void: float
+        The mean greyscale value in the void space (default is 0.8)
+
+    s_void: float
+        The standard deviation of the greyscale values in the void phase (the
+        default is 0.15)
+
+    Returns
+    -------
+    A greyscale image with the same shape as ``im``, but normally distributed
+    noise values in the void and solid phase.  A histogram of the default image
+    should reveal to distinguishable but overlapping peaks.  This can be
+    adjusted using the mean and standard deviation arguments.
+
+    """
+    im = im*sp.random.normal(loc=u_void, scale=s_void, size=im.shape) + \
+        ~im*sp.random.normal(loc=u_solid, scale=s_solid, size=im.shape)
+    return im
 
 
 def bundle_of_tubes(shape, spacing):
@@ -26,13 +62,18 @@ def bundle_of_tubes(shape, spacing):
     A boolean array with True values denoting the pore space
     """
     temp = sp.zeros(shape=shape[:2])
-    Xi = sp.linspace(spacing/2, shape[0]-spacing/2, shape[0]/spacing).astype(int)
-    Yi = sp.linspace(spacing/2, shape[1]-spacing/2, shape[1]/spacing).astype(int)
+    Xi = sp.linspace(spacing/2,
+                     shape[0]-spacing/2,
+                     shape[0]/spacing).astype(int)
+    Yi = sp.linspace(spacing/2,
+                     shape[1]-spacing/2,
+                     shape[1]/spacing).astype(int)
     temp[sp.meshgrid(Xi, Yi)] = 1
     inds = sp.where(temp)
     for i in range(len(inds[0])):
         r = int(sp.rand()*(spacing/2 - 4)) + 3
-        temp[slice(inds[0][i]-r, inds[0][i]+r+1), slice(inds[1][i]-r, inds[1][i]+r+1)] = disk(r)
+        temp[slice(inds[0][i]-r, inds[0][i]+r+1),
+             slice(inds[1][i]-r, inds[1][i]+r+1)] = disk(r)
     temp = spim.binary_opening(temp, structure=square(3))
     im = sp.broadcast_to(array=sp.atleast_3d(temp), shape=shape)
     return im
