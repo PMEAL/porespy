@@ -86,7 +86,7 @@ def walk(img, st_point, maxsteps, stride=1):
         z, y, x = st_point
         directions = 6
     elif ndim == 2:
-        y, x = st_point[0:2]
+        y, x = st_point[1:3]
         z = 0
         directions = 4
         img = np.array([img])
@@ -192,7 +192,7 @@ def msd(img, direct=None, walks=800, st_frac=0.2, maxsteps=None, stride=1):
         return (msd[direct], msd_free[direct])
 
 
-def sd_array(img, walks=100, st_frac=0.2, maxsteps=3000, stride=100, 
+def sd_array(img, walks=100, st_frac=0.2, maxsteps=3000, stride=100,
              previous_sds=None):
     r"""
     Function for outputing squared displacement values for individual walkers
