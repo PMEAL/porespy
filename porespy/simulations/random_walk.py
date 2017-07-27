@@ -7,7 +7,7 @@ from numba import jit
 def find_start_point(img, st_frac):
     r"""
     Finds a random valid start point in a porous image, searching in the
-    given fraction of the image
+    given of the image
 
     Parameters
     ----------
@@ -54,7 +54,7 @@ def find_start_point(img, st_frac):
 
 
 @jit
-def walk(img, st_point, maxsteps, stride=1):
+def walk(img, st_point, stride=1, maxsteps=None):
     r"""
     This function performs a single random walk through porous image. It
     returns an array containing the walker path in the image, and the walker
@@ -92,6 +92,8 @@ def walk(img, st_point, maxsteps, stride=1):
         img = np.array([img])
     else:
         raise ValueError('img needs to be 2 or 3 dimensions')
+    if maxsteps is None:
+        maxsteps = int(np.cbrt(img.size))*5
     if not img[z, y, x]:
         raise ValueError('invalid starting point: not a pore')
     z_max, y_max, x_max = np.shape(img)
@@ -142,7 +144,7 @@ def walk(img, st_point, maxsteps, stride=1):
     return paths
 
 
-def msd(img, direct=None, walks=800, st_frac=0.2, maxsteps=None, stride=1):
+def msd(img, direct=None, walks=800, st_frac=0.2, stride=1, maxsteps=None):
     r"""
     Function for performing many random walks on an image and determining the
     mean squared displacement values the walker travels in both the image
@@ -164,7 +166,7 @@ def msd(img, direct=None, walks=800, st_frac=0.2, maxsteps=None, stride=1):
         Value used in walk function
     maxsteps: int
         The number of steps to attempt per walk. If no argument is given, the
-        walks will use a default value calculated
+        walks will use a default value calculated in the walk function
 
     Returns
     --------
@@ -172,13 +174,12 @@ def msd(img, direct=None, walks=800, st_frac=0.2, maxsteps=None, stride=1):
         A tuple containing the msd values for the image walks in index 0 and
         for the free space walks in index 1
     """
-    if maxsteps is None:
-        maxsteps = np.cbrt(np.size(img))*5
+
     sd = np.zeros((walks, 3))
     sd_free = np.zeros((walks, 3))
     for w in range(walks):
         st_point = find_start_point(img, st_frac)
-        path, free_path = walk(img, st_point, maxsteps, stride)
+        path, free_path = walk(img, st_point, stride, maxsteps)
         steps = np.size(path, 0) - 1
         d = path[steps] - path[0]
         d_free = free_path[steps] - free_path[0]
@@ -192,7 +193,7 @@ def msd(img, direct=None, walks=800, st_frac=0.2, maxsteps=None, stride=1):
         return (msd[direct], msd_free[direct])
 
 
-def sd_array(img, walks=100, st_frac=0.2, maxsteps=3000, stride=100, 
+def sd_array(img, walks=100, st_frac=0.2, stride=100, maxsteps=3000,
              previous_sds=None):
     r"""
     Function for outputing squared displacement values for individual walkers
@@ -231,7 +232,7 @@ def sd_array(img, walks=100, st_frac=0.2, maxsteps=3000, stride=100,
     sd_free = np.zeros((walks, maxsteps//stride+1))
     for w in range(walks):
         st_point = find_start_point(img, st_frac)
-        path, free_path = walk(img, st_point, maxsteps, stride)
+        path, free_path = walk(img, st_point, stride, maxsteps)
         steps = np.size(path, 0)
         for i in range(steps):
             sd[w, i] = np.sum((path[i]-path[0])**2)
@@ -265,7 +266,7 @@ def error_analysis(img, walks):
     steps = 2000
     std = np.zeros(21)
     mean = np.zeros(21)
-    sd, sd_free = sd_array(img, 3000, steps, stride=100)
+    sd, sd_free = sd_array(img, 1000, stride=100, maxsteps=steps)
     for col in range(np.size(sd, 1)):
         stdi = np.std(sd[np.where(sd[:, col] > 0), col])
         meani = np.mean(sd[np.where(sd[:, col] > 0), col])
@@ -277,7 +278,7 @@ def error_analysis(img, walks):
     return np.mean(stepct[1:12])
 
 
-def show_path_3d(img, st_point, maxsteps=3000):
+def show_path_3d(img, st_point, maxsteps=None):
     r"""
     This function performs a walk on an image and shows the path taken
     by the walker in free space and in the porous image
