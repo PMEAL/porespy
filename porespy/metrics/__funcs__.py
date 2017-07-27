@@ -275,7 +275,10 @@ def apply_chords(im, spacing=0, axis=0, trim_edges=True):
     im = sp.moveaxis(a=im, source=dims1, destination=dims2)
     im = sp.atleast_3d(im)
     ch = sp.zeros_like(im, dtype=bool)
-    ch[:, ::4+2*spacing, ::4+2*spacing] = 1
+    if im.ndim == 2:
+        ch[:, ::2+spacing, ::2+spacing] = 1
+    if im.ndim == 3:
+        ch[:, ::4+2*spacing, ::4+2*spacing] = 1
     chords = im*ch
     chords = sp.squeeze(chords)
     if trim_edges:
