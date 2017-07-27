@@ -16,5 +16,5 @@ class GeneratorTest():
         im = ps.generators.fibers(shape=[1, 100, 100], radius=1, nfibers=20)
         assert im.dtype == bool
         assert sp.shape(im.squeeze()) == (100, 100)
-        im = ps.generators.fibers(shape=[5, 50, 50], radius=1, nfibers=20)
+        im = ps.generators.fibers(shape=[50, 50, 50], radius=1, nfibers=20)
         assert sp.shape(im.squeeze()) == (50, 50, 50)
