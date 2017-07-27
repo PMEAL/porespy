@@ -5,7 +5,7 @@ from skimage.segmentation import find_boundaries
 from skimage.morphology import ball, disk, square
 
 
-def add_noise(im, u_void=0.8, u_solid=0.2, s_void=0.15, s_solid=0.5):
+def add_noise(im, u_void=0.8, u_solid=0.2, s_void=0.15, s_solid=0.15):
     r"""
     Add some normally distributed noise values to the image.  This is useful
     for testing binarization routines.
@@ -13,7 +13,7 @@ def add_noise(im, u_void=0.8, u_solid=0.2, s_void=0.15, s_solid=0.5):
     Parameters
     ----------
     im : ND-array
-        The image of the porous media, with 1's or True's denote voids
+        The image of the porous media, with 1's or True's denoting voids
 
     u_solid : float
         The mean greyscale value in the solid space (default is 0.2)
@@ -470,9 +470,10 @@ def blobs(shape, porosity=0.5, blobiness=1):
     return im
 
 
-def fibers(shape, radius, nfibers, phi_max=0, theta_max=90):
+def cylinders(shape, radius, nfibers, phi_max=0, theta_max=90):
     r"""
-    Generates a binary image of overlapping fibers.
+    Generates a binary image of overlapping cylinders.  This is a good
+    approximation of a fibrous mat.
 
     Parameters
     ----------
@@ -481,6 +482,7 @@ def fibers(shape, radius, nfibers, phi_max=0, theta_max=90):
         lie out of the XY plane, with 0 meaning all fibers lie in the XY
         plane, and 90 meaning that fibers are randomly oriented out of the
         plane by as much as +/- 90 degrees.
+
     theta_max : scalar
         A value between 0 and 90 that controls the amount rotation in the
         XY plane, with 0 meaning all fibers point in the X-direction, and
