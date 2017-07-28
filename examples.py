@@ -32,4 +32,4 @@ plt.hist(hist, bins=25)
 tpf = ps.metrics.two_point_correlation_bf(im=im)
 
 plt.figure(4)
-plt.plot(*tpf, 'b-o')
+plt.plot(*tpf, marker='b-o')
