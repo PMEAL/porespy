@@ -23,13 +23,3 @@ plt.subplot(1, 2, 1)
 plt.imshow(chords)
 plt.subplot(1, 2, 2)
 plt.imshow(colored_chords)
-
-plt.figure(3)
-hist = ps.metrics.chord_length_distribution(chords)
-plt.hist(hist, bins=25)
-
-# Two-point correlations function
-tpf = ps.metrics.two_point_correlation_bf(im=im)
-
-plt.figure(4)
-plt.plot(*tpf, marker='b-o')
