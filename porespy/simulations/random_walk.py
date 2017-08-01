@@ -290,7 +290,7 @@ def show_path_3d(img, st_point, maxsteps=3000):
         The number of steps to attempt in a walk. If no argument is given, the
         walk will use a default value calculated in the walk function
     """
-
+    z, y, x = np.shape(img)
     (path, free_path) = walk(img, st_point, maxsteps)
     max_index = np.size(path, 0) - 1
     fig = plt.figure()
@@ -298,7 +298,9 @@ def show_path_3d(img, st_point, maxsteps=3000):
     ax.plot(path[:, 0], path[:, 1], path[:, 2])
     ax.plot([path[0, 0], path[max_index, 0]], [path[0, 1], path[max_index, 1]],
             [path[0, 2], path[max_index, 2]], 'r+')
-    ax.autoscale()
+    ax.set_xlim3d(0, x)
+    ax.set_ylim3d(0, y)
+    ax.set_zlim3d(0, z)
     plt.title('Path in Porous Image')
     plt.show()
     fig2 = plt.figure()
@@ -306,6 +308,40 @@ def show_path_3d(img, st_point, maxsteps=3000):
     ax2.plot(free_path[:, 0], free_path[:, 1], free_path[:, 2])
     ax2.plot([free_path[0, 0], free_path[max_index, 0]], [free_path[0, 1],
              free_path[max_index, 1]], [path[0, 2], path[max_index, 2]], 'r+')
-    ax2.autoscale()
+    ax2.set_xlim3d(0, x)
+    ax2.set_ylim3d(0, y)
+    ax2.set_zlim3d(0, z)
+    plt.title('Path in Free Space')
+    plt.show()
+
+
+def show_path_2d(img, st_point, maxsteps=3000):
+    r"""
+    This function performs a walk on an image and shows the path taken
+    by the walker in free space and in the porous image
+
+    Parameters
+    ----------
+    img: array_like
+        A binary image on which to perform the walk
+    maxsteps: int
+        The number of steps to attempt in a walk. If no argument is given, the
+        walk will use a default value calculated in the walk function
+    """
+    y, x = np.shape(img)
+    path, free_path = walk(img, st_point, maxsteps)
+    max_index = np.size(path, 0) - 1
+    plt.plot(path[:, 1], path[:, 2])
+    plt.plot([path[0, 1], path[max_index, 1]],
+             [path[0, 2], path[max_index, 2]], 'r+')
+    plt.xlim((0, x))
+    plt.ylim((0, y))
+    plt.title('Path in Porous Image')
+    plt.show()
+    plt.plot(free_path[:, 1], free_path[:, 2])
+    plt.plot([free_path[0, 1], free_path[max_index, 1]],
+             [free_path[0, 2], free_path[max_index, 2]], 'r+')
+    plt.xlim((0, x))
+    plt.ylim((0, y))
     plt.title('Path in Free Space')
     plt.show()
