@@ -292,30 +292,33 @@ def show_path_3d(img, st_point, maxsteps=3000):
     """
     z, y, x = np.shape(img)
     (path, free_path) = walk(img, st_point, maxsteps)
-    max_index = np.size(path, 0) - 1
+    max_i = np.size(path, 0) - 1
     fig = plt.figure()
     ax = Axes3D(fig)
-    ax.plot(path[:, 0], path[:, 1], path[:, 2])
-    ax.plot([path[0, 0], path[max_index, 0]], [path[0, 1], path[max_index, 1]],
-            [path[0, 2], path[max_index, 2]], 'r+')
+    ax.plot(path[:, 2], path[:, 1], path[:, 0], 'c')
+    ax.plot([path[0, 2]], [path[0, 1]], [path[0, 0]], 'g.')
+    ax.plot([path[max_i, 2]], [path[max_i, 1]], [path[max_i, 0]], 'r.')
     ax.set_xlim3d(0, x)
     ax.set_ylim3d(0, y)
     ax.set_zlim3d(0, z)
+    ax.invert_yaxis()
     plt.title('Path in Porous Image')
     plt.show()
     fig2 = plt.figure()
     ax2 = Axes3D(fig2)
-    ax2.plot(free_path[:, 0], free_path[:, 1], free_path[:, 2])
-    ax2.plot([free_path[0, 0], free_path[max_index, 0]], [free_path[0, 1],
-             free_path[max_index, 1]], [path[0, 2], path[max_index, 2]], 'r+')
+    ax2.plot(free_path[:, 2], free_path[:, 1], free_path[:, 0], 'c')
+    ax2.plot([free_path[0, 2]], [free_path[0, 1]], [free_path[0, 0]], 'g.')
+    ax2.plot([free_path[max_i, 2]], [free_path[max_i, 1]],
+             [free_path[max_i, 0]], 'r.')
     ax2.set_xlim3d(0, x)
     ax2.set_ylim3d(0, y)
     ax2.set_zlim3d(0, z)
+    ax2.invert_yaxis()
     plt.title('Path in Free Space')
     plt.show()
 
 
-def show_path_2d(img, st_point, maxsteps=3000):
+def show_path_2d(img, st_point, maxsteps=3000, size=(5, 5)):
     r"""
     This function performs a walk on an image and shows the path taken
     by the walker in free space and in the porous image
@@ -327,21 +330,29 @@ def show_path_2d(img, st_point, maxsteps=3000):
     maxsteps: int
         The number of steps to attempt in a walk. If no argument is given, the
         walk will use a default value calculated in the walk function
+    size: tuple
+        Width, height, in inches.
     """
     y, x = np.shape(img)
     path, free_path = walk(img, st_point, maxsteps)
-    max_index = np.size(path, 0) - 1
-    plt.plot(path[:, 1], path[:, 2])
-    plt.plot([path[0, 1], path[max_index, 1]],
-             [path[0, 2], path[max_index, 2]], 'r+')
+    max_i = np.size(path, 0) - 1
+    fig = plt.figure(figsize=size)
+    plt.plot(path[:, 2], path[:, 1], 'c')
+    plt.plot(path[0, 2], path[0, 1], 'g.')
+    plt.plot(path[max_i, 2], path[max_i, 1], 'r.')
     plt.xlim((0, x))
     plt.ylim((0, y))
+    plt.gca().invert_yaxis()
     plt.title('Path in Porous Image')
     plt.show()
-    plt.plot(free_path[:, 1], free_path[:, 2])
-    plt.plot([free_path[0, 1], free_path[max_index, 1]],
-             [free_path[0, 2], free_path[max_index, 2]], 'r+')
+    fig.clear()
+    fig2 = plt.figure(figsize=size)
+    plt.plot(free_path[:, 2], free_path[:, 1], 'c')
+    plt.plot(free_path[0, 2], free_path[0, 1], 'g.')
+    plt.plot(free_path[max_i, 2], free_path[max_i, 1], 'r.')
     plt.xlim((0, x))
     plt.ylim((0, y))
+    plt.gca().invert_yaxis()
     plt.title('Path in Free Space')
     plt.show()
+    fig2.clear()
