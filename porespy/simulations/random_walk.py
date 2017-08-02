@@ -277,7 +277,7 @@ def error_analysis(img, walks):
     return np.mean(stepct[1:12])
 
 
-def show_path_3d(img, st_point, maxsteps=3000):
+def show_path_3d(img, st_point=None, maxsteps=3000):
     r"""
     This function performs a walk on an image and shows the path taken
     by the walker in free space and in the porous image
@@ -290,10 +290,12 @@ def show_path_3d(img, st_point, maxsteps=3000):
         The number of steps to attempt in a walk. If no argument is given, the
         walk will use a default value calculated in the walk function
     """
+    if st_point is None:
+        st_point = find_start_point(img, 0.2)
     z, y, x = np.shape(img)
     (path, free_path) = walk(img, st_point, maxsteps)
     max_i = np.size(path, 0) - 1
-    fig = plt.figure()
+    fig = plt.figure(figsize=(7*x/y, 7*z/y))
     ax = Axes3D(fig)
     ax.plot(path[:, 2], path[:, 1], path[:, 0], 'c')
     ax.plot([path[0, 2]], [path[0, 1]], [path[0, 0]], 'g.')
@@ -304,7 +306,7 @@ def show_path_3d(img, st_point, maxsteps=3000):
     ax.invert_yaxis()
     plt.title('Path in Porous Image')
     plt.show()
-    fig2 = plt.figure()
+    fig2 = plt.figure(figsize=(7*x/y, 7*z/y))
     ax2 = Axes3D(fig2)
     ax2.plot(free_path[:, 2], free_path[:, 1], free_path[:, 0], 'c')
     ax2.plot([free_path[0, 2]], [free_path[0, 1]], [free_path[0, 0]], 'g.')
@@ -318,7 +320,7 @@ def show_path_3d(img, st_point, maxsteps=3000):
     plt.show()
 
 
-def show_path_2d(img, st_point, maxsteps=3000, size=(5, 5)):
+def show_path_2d(img, st_point=None, maxsteps=3000, size=(5, 5)):
     r"""
     This function performs a walk on an image and shows the path taken
     by the walker in free space and in the porous image
@@ -333,6 +335,8 @@ def show_path_2d(img, st_point, maxsteps=3000, size=(5, 5)):
     size: tuple
         Width, height, in inches.
     """
+    if st_point is None:
+        st_point = find_start_point(img, 0.2)
     y, x = np.shape(img)
     path, free_path = walk(img, st_point, maxsteps)
     max_i = np.size(path, 0) - 1
