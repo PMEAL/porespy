@@ -10,13 +10,13 @@ from porespy.network_extraction import partition_pore_space
 def snow(im, r_max=4, sigma=0.4):
     r"""
     This function partitions the void space into pore regions using a
-    marker-based watershed algorithm.  The key this function is that true local
-    maximum of the distance transform are found by trimming various types of
-    extraneous peaks.
+    marker-based watershed algorithm.  The key to this function is that true
+    local maximum of the distance transform are found by trimming various
+    types of extraneous peaks.
 
     The SNOW network extraction algorithm (Sub-Network of an Over-segmented
     Watershed) was designed to handle to perculiarities of high porosity
-    materials, but it applies equally well to other materials as well.
+    materials, but it applies well to other materials as well.
 
     Parameters
     ----------
@@ -48,11 +48,16 @@ def snow(im, r_max=4, sigma=0.4):
         * ``regions``: The void space partitioned into pores using a marker
         based watershed with the peaks found by the SNOW algorithm
 
+    References
+    ----------
+    [1] Gostick, J. "A versatile and efficient network extraction algorithm
+    using marker-based watershed segmenation".  Physical Review E.
+
     """
     tup = namedtuple('results', field_names=['im', 'dt', 'peaks', 'regions'])
     im = im.squeeze()
     print('_'*60)
-    print("Beginning SNOW Algorithm to remove spurious peaks")
+    print("Beginning SNOW Algorithm")
 
     if im.dtype == 'bool':
         print('Peforming Distance Transform')
