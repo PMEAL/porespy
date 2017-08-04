@@ -1,17 +1,18 @@
+from collections import namedtuple
 import scipy as sp
 import scipy.ndimage as spim
 import scipy.spatial as sptl
 from skimage.morphology import disk, ball, square, cube
-from porespy.tools import extend_slice
+from porespy.tools import extend_slice, randomize_colors
 from porespy.network_extraction import partition_pore_space
 
 
 def snow(im, r_max=4, sigma=0.4):
     r"""
-    This function extracts the true local maximum of the distance transform of
-    a pore space image.  These local maxima can then be used as markers in a
-    marker-based watershed segmentation such as that included in Scikit-Image
-    or through the MorphoJ plugin in ImageJ.
+    This function partitions the void space into pore regions using a
+    marker-based watershed algorithm.  The key this function is that true local
+    maximum of the distance transform are found by trimming various types of
+    extraneous peaks.
 
     The SNOW network extraction algorithm (Sub-Network of an Over-segmented
     Watershed) was designed to handle to perculiarities of high porosity
@@ -37,25 +38,34 @@ def snow(im, r_max=4, sigma=0.4):
 
     Returns
     -------
-    An array the same shape as the input image, with non-zero values indicating
-    the subset of peaks found by the algorithm.  The peaks are returned as a
-    label array that can be directly used as markers in a watershed
-    segmentation.
+    A tuple containing several arrays.  This is a **named tuple** meaning that
+    each array can accessed using the following attribute names:
+
+        * ``im``: The binary image of the void space
+        * ``dt``: The distance transform of the image
+        * ``peaks``: The peaks of the distance transform after applying the
+        steps of the SNOW algorithm
+        * ``regions``: The void space partitioned into pores using a marker
+        based watershed with the peaks found by the SNOW algorithm
 
     """
+    tup = namedtuple('results', field_names=['im', 'dt', 'peaks', 'regions'])
     im = im.squeeze()
     print('_'*60)
     print("Beginning SNOW Algorithm to remove spurious peaks")
 
     if im.dtype == 'bool':
-        print('Peforming distance transport')
+        print('Peforming Distance Transform')
         dt = spim.distance_transform_edt(input=im)
     else:
         dt = im
         im = dt > 0
 
+    tup.im = im
+    tup.dt = dt
+
     if sigma > 0:
-        print('Applying Gaussian blur with sigma = ', str(sigma))
+        print('Applying Gaussian blur with sigma =', str(sigma))
         dt = spim.gaussian_filter(input=dt, sigma=sigma)
 
     peaks = find_peaks(dt=dt)
@@ -65,8 +75,11 @@ def snow(im, r_max=4, sigma=0.4):
     peaks = trim_nearby_peaks(peaks=peaks, dt=dt)
     peaks, N = spim.label(peaks)
     print('Peaks after trimming nearby peaks: ', N)
+    tup.peaks = peaks
     regions = partition_pore_space(im=dt, peaks=peaks)
-    return regions
+    regions = randomize_colors(regions)
+    tup.regions = regions
+    return tup
 
 
 def find_peaks(dt, r=4, footprint=None):
