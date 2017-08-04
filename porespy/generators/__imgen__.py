@@ -4,6 +4,28 @@ import scipy.ndimage as spim
 from skimage.morphology import ball, disk, square, cube
 
 
+def insert_shape(im, center, element):
+    r"""
+    """
+    im = sp.array(im, dtype=int)
+    if im.ndim != element.ndim:
+        raise Exception('Image shape ' + str(im.shape) +
+                        ' and element shape ' + str(element.shape) +
+                        ' do not match')
+    s_im = []
+    s_el = []
+    for dim in range(im.ndim):
+        r = int(element.shape[dim]/2)
+        lower_im = sp.amax((center[dim] - r, 0))
+        upper_im = sp.amin((center[dim] + r + 1, im.shape[dim]))
+        s_im.append(slice(lower_im, upper_im))
+        lower_el = sp.amax((lower_im - center[dim] + r, 0))
+        upper_el = sp.amin((upper_im - center[dim] + r, element.shape[dim]))
+        s_el.append(slice(lower_el, upper_el))
+    im[s_im] = im[s_im] + element[s_el]
+    return im
+
+
 def bundle_of_tubes(shape, spacing):
     r"""
     Create a 3D image of a bundle of tubes, in the form of a rectangular
