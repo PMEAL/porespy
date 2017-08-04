@@ -3,6 +3,7 @@ import scipy.ndimage as spim
 import scipy.spatial as sptl
 from skimage.morphology import disk, ball, square, cube
 from porespy.tools import extend_slice
+from porespy.network_extraction import partition_pore_space
 
 
 def snow(im, r_max=4, sigma=0.4):
@@ -47,21 +48,25 @@ def snow(im, r_max=4, sigma=0.4):
     print("Beginning SNOW Algorithm to remove spurious peaks")
 
     if im.dtype == 'bool':
+        print('Peforming distance transport')
         dt = spim.distance_transform_edt(input=im)
     else:
         dt = im
         im = dt > 0
 
     if sigma > 0:
+        print('Applying Gaussian blur with sigma = ', str(sigma))
         dt = spim.gaussian_filter(input=dt, sigma=sigma)
 
     peaks = find_peaks(dt=dt)
     print('Initial number of peaks: ', spim.label(peaks)[1])
-    peaks = trim_saddle_points(peaks=peaks, dt=dt)
+    peaks = trim_saddle_points(peaks=peaks, dt=dt, max_iters=200)
+    print('Peaks after trimming saddle points: ', spim.label(peaks)[1])
     peaks = trim_nearby_peaks(peaks=peaks, dt=dt)
     peaks, N = spim.label(peaks)
-    print('Final number of peaks: ', N)
-    return peaks
+    print('Peaks after trimming nearby peaks: ', N)
+    regions = partition_pore_space(im=dt, peaks=peaks)
+    return regions
 
 
 def find_peaks(dt, r=4, footprint=None):
