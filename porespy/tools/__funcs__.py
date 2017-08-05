@@ -281,6 +281,51 @@ def make_contiguous(im):
     return im_new
 
 
+def bin_image(im, binsize=2):
+    r"""
+    Reduces the resolution of an image by combining information from several
+    voxels (specified by ``binsize``) into a single voxel.
+
+    Parameters
+    ----------
+    im : ND-array
+        The image of the porous material, with void represented by True.
+
+    binsize : scalar
+        The size of the neighborhood to reduce into a size voxel.  A value of
+        2 means that a 2x2x2 cube (or 2x2 square in 2D) is compressed into a
+        single voxel.
+
+    Returns
+    -------
+    An ND-image that is smaller than the original image by a factor of
+    ``binsize``.
+
+    Notes
+    -----
+    This function uses image convolution find the median value of the
+    neighborhood (specified by ``binsize``).
+
+    See Also
+    --------
+    The ``zoom`` function in scipy.ndimage can be used to perform binning by
+    specifying a zoom factor less than zero.  Be sure to convert the Boolean
+    image to floats before apply the zoom, then converting back to Boolean.
+
+    """
+    binsize -= 1
+    if im.ndim == 2:
+        strel = square(binsize*2 + 1)*0
+        strel[binsize:, binsize:] = 1
+    if im.ndim == 3:
+        strel = cube(binsize*2 + 1)*0
+        strel[binsize:, binsize:, binsize:] = 1
+    temp = spim.convolve(input=im.astype(float), weights=strel)
+    reslice = [slice(0, im.shape[i], binsize+1) for i in range(im.ndim)]
+    temp = temp[reslice] > 0.5
+    return temp
+
+
 def find_edges(im, strel=None):
     r"""
     Find the edges between labelled regions in an image
