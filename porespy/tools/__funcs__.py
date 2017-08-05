@@ -281,7 +281,7 @@ def make_contiguous(im):
     return im_new
 
 
-def bin_image(im, binsize=2):
+def downsample(im, binsize=2):
     r"""
     Reduces the resolution of an image by combining information from several
     voxels (specified by ``binsize``) into a single voxel.
@@ -300,11 +300,6 @@ def bin_image(im, binsize=2):
     -------
     An ND-image that is smaller than the original image by a factor of
     ``binsize``.
-
-    Notes
-    -----
-    This function uses image convolution find the median value of the
-    neighborhood (specified by ``binsize``).
 
     See Also
     --------
