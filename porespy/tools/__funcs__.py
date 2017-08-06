@@ -283,8 +283,11 @@ def make_contiguous(im):
 
 def downsample(im, binsize=2):
     r"""
-    Reduces the resolution of an image by combining information from several
-    voxels (specified by ``binsize``) into a single voxel.
+    Reduces the resolution (and thus the size) of an image by finding the
+    average value of the voxels in the neighborhood (specified by ``binsize``)
+    around each voxel, and creating a new image where each voxel represents
+    the bin of voxel in the original image.  If the average is neighborhood is
+    less than 1, the new voxel in the downsampled image is 0, and vice versa.
 
     Parameters
     ----------
@@ -304,8 +307,10 @@ def downsample(im, binsize=2):
     See Also
     --------
     The ``zoom`` function in scipy.ndimage can be used to perform binning by
-    specifying a zoom factor less than zero.  Be sure to convert the Boolean
-    image to floats before apply the zoom, then converting back to Boolean.
+    specifying a zoom factor less than 1.  It uses interpolation so is slow,
+    but can reduce image size by any arbitrary amount.  Be sure to convert
+    the Boolean image to floats before applying the zoom, then converting back
+    to Boolean.
 
     """
     binsize -= 1
@@ -334,6 +339,10 @@ def find_edges(im, strel=None):
         The structuring element used to find the edges.  If ```None``` is
         provided (the default) the a round structure is used with a radius of
         1 voxel.
+
+    See Also
+    --------
+    skimage.segmentation.find_boundaries
     """
     if strel is None:
         if im.ndim == 2:

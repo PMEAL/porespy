@@ -363,7 +363,7 @@ def overlapping_spheres(shape, radius, porosity):
     return ~im
 
 
-def noise(shape, octaves=3, frequency=32, mode='simplex'):
+def noise(shape, porosity=None, octaves=3, frequency=32, mode='simplex'):
     r"""
     Generate a field of spatially correlated random noise using the Perlin
     noise algorithm, or the updated Simplex noise algorithm.
@@ -374,6 +374,11 @@ def noise(shape, octaves=3, frequency=32, mode='simplex'):
         The size of the image to generate in [Nx, Ny, Nz] where N is the
         number of voxels.
 
+    porosity : float
+        If specified, this will threshold the image to the specified value
+        prior to returning.  If no value is given (the default), then the
+        scalar noise field is returned.
+
     octaves : int
         Controls the *texture* of the noise, with higher octaves giving more
         complex features over larger length scales.
@@ -382,7 +387,7 @@ def noise(shape, octaves=3, frequency=32, mode='simplex'):
         Controls the relative sizes of the features, with higher frequencies
         giving larger features.  A scalar value will apply the same frequency
         in all directions, given an isotropic field; a vector value will
-        apply the specified values along each axis to create anisotropy.`
+        apply the specified values along each axis to create anisotropy.
 
     mode : string
         Which noise algorithm to use, either \'simplex\' (default) or
@@ -415,9 +420,9 @@ def noise(shape, octaves=3, frequency=32, mode='simplex'):
     else:
         f = noise.pnoise3
     frequency = sp.atleast_1d(frequency)
-    if len(frequency) == 1:
+    if frequency.size == 1:
         freq = sp.full(shape=[3, ], fill_value=frequency[0])
-    elif len(frequency) == 2:
+    elif frequency.size == 2:
         freq = sp.concatenate((frequency, [1]))
     else:
         freq = sp.array(frequency)
@@ -427,10 +432,14 @@ def noise(shape, octaves=3, frequency=32, mode='simplex'):
             for z in range(Lz):
                 im[x, y, z] = f(x=x/freq[0], y=y/freq[1], z=z/freq[2],
                                 octaves=octaves)
-    return im.squeeze()
+    im = im.squeeze()
+    if porosity:
+        im = norm_to_uniform(im, scale=[0, 1])
+        im = im < porosity
+    return im
 
 
-def blobs(shape, porosity, blobiness=1):
+def blobs(shape, porosity=None, blobiness=1):
     """
     Generates an image containing amorphous blobs
 
@@ -440,10 +449,10 @@ def blobs(shape, porosity, blobiness=1):
         The size of the image to generate in [Nx, Ny, Nz] where N is the
         number of voxels
 
-    porosity : scalar
-        The porosity of the final image.  This number is approximated by
-        the function so the returned result may not have exactly the
-        specified value.
+    porosity : float
+        If specified, this will threshold the image to the specified value
+        prior to returning.  If no value is given (the default), then the
+        scalar noise field is returned.
 
     blobiness : array_like (default = 1)
         Controls the morphology of the blobs.  A higher number results in
@@ -460,12 +469,42 @@ def blobs(shape, porosity, blobiness=1):
     if sp.size(shape) == 1:
         shape = sp.full((3, ), int(shape))
     sigma = sp.mean(shape)/(40*blobiness)
-    mask = sp.random.random(shape)
-    mask = spim.gaussian_filter(mask, sigma=sigma)
-    hist = sp.histogram(mask, bins=1000)
-    cdf = sp.cumsum(hist[0])/sp.size(mask)
-    xN = sp.where(cdf >= porosity)[0][0]
-    im = mask <= hist[1][xN]
+    im = sp.random.random(shape)
+    im = spim.gaussian_filter(im, sigma=sigma)
+    if porosity:
+        im = norm_to_uniform(im, scale=[0, 1])
+        im = im < porosity
+    return im
+
+
+def norm_to_uniform(im, scale=None):
+    r"""
+    Take an image with normally distributed greyscale values and converts it to
+    a uniform (i.e. flat) distribution.  It's also possible to specify the
+    lower and upper limits of the uniform distribution.
+
+    Parameters
+    ----------
+    im : ND-image
+        The image containing the normally distributed scalar field
+
+    scale : [low, high]
+        A list or array indicating the lower and upper bounds for the new
+        randomly distributed data.  The default is ``None``, which uses the
+        ``max`` and ``min`` of the original image as the the lower and upper
+        bounds.
+
+    Returns
+    -------
+    An ND-image the same size as ``im`` with uniformly distributed greyscale
+    values spanning the specified range, if given.
+    """
+    if scale is None:
+        scale = [im.min(), im.max()]
+    im = (im - sp.mean(im))/sp.std(im)
+    im = 1/2*sp.special.erfc(-im/sp.sqrt(2))
+    im = (im - im.min()) / (im.max() - im.min())
+    im = im*(scale[1] - scale[0]) + scale[0]
     return im
 
 
