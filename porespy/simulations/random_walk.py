@@ -142,7 +142,7 @@ def walk(img, st_point, maxsteps, stride=1):
     return paths
 
 
-def msd(img, direct=None, walks=800, st_frac=0.2, maxsteps=None, stride=1):
+def msd(img, direct=None, walks=800, st_frac=0.2, maxsteps=3000, stride=1):
     r"""
     Function for performing many random walks on an image and determining the
     mean squared displacement values the walker travels in both the image
@@ -172,8 +172,6 @@ def msd(img, direct=None, walks=800, st_frac=0.2, maxsteps=None, stride=1):
         A tuple containing the msd values for the image walks in index 0 and
         for the free space walks in index 1
     """
-    if maxsteps is None:
-        maxsteps = np.cbrt(np.size(img))*5
     sd = np.zeros((walks, 3))
     sd_free = np.zeros((walks, 3))
     for w in range(walks):
