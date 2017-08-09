@@ -18,6 +18,7 @@ class RandomWalk:
     Example
     --------
     >>>import porespy as ps
+
     >>>im = ps.generators.blobs(100, porosity=0.3)
     >>>rw = ps.simulations.RandomWalk(im)
     >>>msd, msd_free = rw.msd()
