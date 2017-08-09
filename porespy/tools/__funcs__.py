@@ -77,7 +77,9 @@ def extract_subsection(im, shape):
 
 def extend_slice(s, shape, pad=1):
     r"""
-    Adjust slice indices to include additional voxles around the slices.
+    Adjust slice indices to include additional voxles around the slice.  The
+    key to this function is that is does bounds checking to ensure the indices
+    don't extend outside the image.
 
     Parameters
     ----------
@@ -132,14 +134,14 @@ def binary_opening_fast(im, r, dt=None):
 
     Returns
     -------
-    A binary image with True values in all locations where a sphere of size
+    A binary image with ``True`` values in all locations where a sphere of size
     ``r`` could fit entirely within the pore space.
 
     """
     if dt is None:
         dt = spim.distance_transform_edt(im)
     seeds = dt > r
-    im_opened = spim.distance_transform_edt(~seeds) < r
+    im_opened = spim.distance_transform_edt(~seeds) <= r
     return im_opened
 
 
@@ -326,34 +328,6 @@ def downsample(im, binsize=2):
     return temp
 
 
-def find_edges(im, strel=None):
-    r"""
-    Find the edges between labelled regions in an image
-
-    Parameters
-    ----------
-    im : array_like
-        A 2D or 3D image containing regions with different labels
-
-    strel : array_like
-        The structuring element used to find the edges.  If ```None``` is
-        provided (the default) the a round structure is used with a radius of
-        1 voxel.
-
-    See Also
-    --------
-    skimage.segmentation.find_boundaries
-    """
-    if strel is None:
-        if im.ndim == 2:
-            strel = disk(1)
-        elif im.ndim == 3:
-            strel = ball(1)
-    temp = spim.convolve(input=im, weights=strel)/sp.sum(strel)
-    temp = im != temp
-    return temp
-
-
 def add_walls(im, faces=[1, 1, 1]):
     r"""
     Add walls of solid material to specified faces of an image.
@@ -368,8 +342,8 @@ def add_walls(im, faces=[1, 1, 1]):
 
     Returns
     -------
-    An ND-image the same size as ``im`` with solid (False) values added to the
-    specified faces.
+    An ND-array the same size as ``im`` with solid (``False``) values added to
+    the specified faces.
 
     """
     if im.ndim == 2:
@@ -487,22 +461,6 @@ def find_disconnected_voxels(im, conn=None):
     labels, N = spim.label(input=im, structure=strel)
     holes = clear_border(labels=labels) > 0
     return holes
-
-
-def bounding_box_indices(roi):
-    r"""
-    Given the ND-coordinates of voxels defining the region of interest, the
-    indices of a bounding box are returned.
-    """
-    maxs = sp.amax(roi, axis=1)
-    mins = sp.amin(roi, axis=1)
-    x = []
-    x.append(slice(mins[0], maxs[0]))
-    x.append(slice(mins[1], maxs[1]))
-    if sp.shape(roi)[0] == 3:  # If image if 3D, add third coordinate
-        x.append(slice(mins[2], maxs[2]))
-    inds = tuple(x)
-    return inds
 
 
 def trim_extrema(im, h, mode='maxima'):

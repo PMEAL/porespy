@@ -39,7 +39,7 @@ def snow(im, r_max=4, sigma=0.4):
     Returns
     -------
     A tuple containing several arrays.  This is a **named tuple** meaning that
-    each array can accessed using the following attribute names:
+    each array can be accessed using the following attribute names:
 
         * ``im``: The binary image of the void space
         * ``dt``: The distance transform of the image
@@ -51,7 +51,7 @@ def snow(im, r_max=4, sigma=0.4):
     References
     ----------
     [1] Gostick, J. "A versatile and efficient network extraction algorithm
-    using marker-based watershed segmenation".  Physical Review E.
+    using marker-based watershed segmenation".  Physical Review E. (2017)
 
     """
     tup = namedtuple('results', field_names=['im', 'dt', 'peaks', 'regions'])
