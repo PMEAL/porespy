@@ -14,14 +14,6 @@ class RandomWalk:
     ----------
     im: array of bool
         2D or 3D image
-
-    Example
-    --------
-    >>>import porespy as ps
-
-    >>>im = ps.generators.blobs(100, porosity=0.3)
-    >>>rw = ps.simulations.RandomWalk(im)
-    >>>msd, msd_free = rw.msd()
     """
 
     def __init__(self, im):
