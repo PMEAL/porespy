@@ -395,15 +395,15 @@ def noise(shape, porosity=None, octaves=3, frequency=32, mode='simplex'):
 
     Returns
     -------
-    A float array with values between -1 and +1.  This image can be easily
-    thresholded to create a binary image, or the values can be used for other
-    purposes.
+    If porosity is given, then a boolean array with ``True`` values denoting
+    the pore space is returned.  If not, then normally distributed and
+    spatially correlated randomly noise is return.
 
     Notes
     -----
     This method depends the a package called 'noise' which must be
-    compiled. It can be installed from PyPI on machines with a C-compiler
-    present, or a platform specific binary can be downloaded.
+    compiled. It is included in the Anaconda distribution, or a platform
+    specific binary can be downloaded.
 
     """
     try:
@@ -461,7 +461,9 @@ def blobs(shape, porosity=None, blobiness=1):
 
     Returns
     -------
-    A boolean array with True values denoting the pore space
+    If porosity is given, then a boolean array with ``True`` values denoting
+    the pore space is returned.  If not, then normally distributed and
+    spatially correlated randomly noise is return.
 
     """
     blobiness = sp.array(blobiness)
