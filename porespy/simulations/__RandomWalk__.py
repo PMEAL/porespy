@@ -5,7 +5,7 @@ from numba import jit
 from mpl_toolkits.mplot3d import Axes3D
 
 
-class RandomWalk():
+class RandomWalk:
     r"""
     This class generates objects for performing random walk simulations
     on.
@@ -17,7 +17,6 @@ class RandomWalk():
 
     Example
     --------
-
     >>>import porespy as ps
     >>>im = ps.generators.blobs(100, porosity=0.3)
     >>>rw = ps.simulations.RandomWalk(im)
