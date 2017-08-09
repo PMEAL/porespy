@@ -4,6 +4,7 @@ from skimage.feature import peak_local_max
 import scipy.ndimage as spim
 import scipy.spatial as sptl
 from porespy.tools import get_border, extract_subsection, extend_slice
+from collections import namedtuple
 
 
 def representative_elementary_volume(im, npoints=1000):
@@ -62,7 +63,9 @@ def representative_elementary_volume(im, npoints=1000):
         Vt = sp.size(temp)
         porosity[i] = Vp/Vt
         volume[i] = Vt
-    profile = tuple((volume, porosity))
+    profile = namedtuple('profile', ('volume', 'porosity'))
+    profile.volume = volume
+    profile.porosity = porosity
     return profile
 
 
@@ -112,8 +115,8 @@ def pore_size_density(im, bins=10, voxel_size=1):
 
     Returns
     -------
-    A list containing two 1D arrays: ``r`` is the radius of the voxels, and
-    ``n`` is the number of voxels that are within ``r`` of the solid.
+    A tuple containing two 1D arrays: ``radius `` is the radius of the voxels,
+    and ``count`` is the number of voxels that are within R of the solid.
 
     Notes
     -----
@@ -132,11 +135,11 @@ def pore_size_density(im, bins=10, voxel_size=1):
     """
     if im.dtype == bool:
         im = spim.distance_transform_edt(im)
-    rdf = sp.histogram(a=im[im > 0], bins=bins)
-    n = rdf[0]/sp.sum(im > 0)
-    r = rdf[1][:-1]*voxel_size
-    rdf = [r, n]
-    return rdf
+    hist = sp.histogram(a=im[im > 0], bins=bins)
+    n = hist[0]/sp.sum(im > 0)
+    r = hist[1][:-1]*voxel_size
+    rdf = namedtuple('rdf', ('radius', 'count'))
+    return rdf(r, n)
 
 
 def porosity(im):
@@ -229,8 +232,9 @@ def two_point_correlation_bf(im, spacing=10):
     h1 = sp.histogram(dmat, bins=range(0, int(sp.amin(im.shape)/2), spacing))
     dmat = dmat[:, hits]
     h2 = sp.histogram(dmat, bins=h1[1])
-    h2 = (h2[1][:-1], h2[0]/h1[0])
-    return h2
+    tpcf = namedtuple('two_point_correlation_function',
+                      ('distance', 'probability'))
+    return tpcf(h2[1][:-1], h2[0]/h1[0])
 
 
 def apply_chords(im, spacing=0, axis=0, trim_edges=True):

@@ -2,6 +2,8 @@ import scipy as sp
 import scipy.ndimage as spim
 from porespy.tools import get_border
 from skimage.segmentation import clear_border
+import matplotlib.pyplot as plt
+from collections import namedtuple
 
 
 class Porosimetry(object):
@@ -24,7 +26,7 @@ class Porosimetry(object):
         self.sigma = sigma
         self.theta = theta
         self.voxel_size = voxel_size
-        self._results = None
+        self._result = None
 
         super().__init__()
 
@@ -92,9 +94,6 @@ class Porosimetry(object):
             imtemp[inlets] = True  # Add inlets before labeling
             labels, N = spim.label(imtemp)
             imtemp = im*(clear_border(labels=labels) > 0)
-            # inlet_labels = sp.unique(labels[inlets])
-            # imtemp = sp.in1d(labels.flatten(), inlet_labels)
-            # imtemp = sp.reshape(imtemp, im.shape)
             imtemp[inlets] = False  # Remove inlets
             imtemp = spim.distance_transform_edt(~imtemp) < r
             imresults[(imresults == 0)*imtemp] = r
@@ -102,12 +101,18 @@ class Porosimetry(object):
         self._result = imresults
         return imresults
 
-    def plot_drainage_curve(self, Rp, Snwp, fig=None):
+    def plot_drainage_curve(self, x, y, fig=None, **kwargs):
         r"""
         """
+        if fig is None:
+            fig = plt.figure()
+            ax = fig.add_subplot(111)
+        else:
+            ax = fig.get_axes()[0]
+        ax.plot(x, y, **kwargs)
+        return fig
 
-
-    def get_drainage_datade(im):
+    def get_drainage_data(self):
         r"""
         Calculate drainage curve based on the image produced by the
         ``porosimetry`` function.
@@ -119,9 +124,9 @@ class Porosimetry(object):
 
         Returns
         -------
-        Rp, Snwp: Two arrays containing the radius of the penetrating sphere
-        (in voxels) and the volume fraction of pore phase voxels that are
-        accessible from the specfied inlets.
+        Rp, Snwp: Two arrays containing (a) the radius of the penetrating
+        sphere (in voxels) and (b) the volume fraction of pore phase voxels
+        that are accessible from the specfied inlets.
 
         Notes
         -----
@@ -133,12 +138,16 @@ class Porosimetry(object):
         this check by default.
 
         """
+        im = self.result
         sizes = sp.unique(im)
-        Rp = []
+        R = []
         Snwp = []
         Vp = sp.sum(im > 0)
         for r in sizes[1:]:
-            Rp.append(r)
+            R.append(r)
             Snwp.append(sp.sum(im >= r))
         Snwp = [s/Vp for s in Snwp]
-        return Rp, Snwp
+        data = namedtuple('data', ('radius', 'saturation'))
+        data.radius = R
+        data.saturation = Snwp
+        return data
