@@ -1,4 +1,3 @@
-import sys
 import scipy as sp
 from skimage.segmentation import clear_border
 from skimage.feature import peak_local_max
@@ -400,3 +399,50 @@ def chord_length_distribution(im):
         s = slices[i]
         chord_lens[i] = sp.amax([item.stop-item.start for item in s])
     return chord_lens
+
+
+def local_thickness(im):
+    r"""
+    For each voxel, this functions calculates the radius of the largest sphere
+    that both engulfs the voxel and fits entirely within the foreground. This
+    is not the same as a simple distance transform, which finds the largest
+    sphere that could be *centered* on each voxel.
+
+    Parameters
+    ----------
+    im : array_like
+        A binary image with the phase of interest set to True
+
+    Returns
+    -------
+    An image with the pore size values in each voxel
+
+    Notes
+    -----
+    The term *foreground* is used since this function can be applied to both
+    pore space or the solid, whichever is set to True.
+
+    """
+    from skimage.morphology import cube
+    if im.ndim == 2:
+        from skimage.morphology import square as cube
+    dt = spim.distance_transform_edt(im)
+    sizes = sp.unique(sp.around(dt, decimals=0))
+    im_new = sp.zeros_like(im, dtype=float)
+    denom = int(len(sizes)/52+1)
+    print('_'*60)
+    print("Performing Image Opening")
+    n = min(len(sizes), 52)
+    print('0%|'+'-'*n+'|100%')
+    print('  |', end='')
+    for i in range(len(sizes)):
+        if sp.mod(i, denom) == 0:
+            print('|', end='')
+        r = sizes[i]
+        im_temp = dt >= r
+        im_temp = spim.distance_transform_edt(~im_temp) <= r
+        im_new[im_temp] = r
+    print('|')
+    # Trim outer edge of features to remove noise
+    im_new = spim.binary_erosion(input=im, structure=cube(1))*im_new
+    return im_new
