@@ -39,7 +39,7 @@ class RandomWalk:
         Parameters
         ----------
         st_frac: float
-            A value between 0 and 1. Determines how much of the image is
+            A value between 0 and 1. Determines what fraction of the image is
             randomly searched for a starting point
 
         Returns
@@ -161,7 +161,8 @@ class RandomWalk:
         walks: int
             The number of walks to perform
         st_frac: int
-            Value used in find_start_point function
+            A value between 0 and 1. Determines what fraction of the image is
+            randomly searched for a starting point
         stride: int
             Value used in walk function
         maxsteps: int
@@ -198,7 +199,8 @@ class RandomWalk:
         walks: int
             The number of walks to perform
         st_frac: int
-            Value used in find_start_point function
+            A value between 0 and 1. Determines what fraction of the image is
+            randomly searched for a starting point
         maxsteps: int
             The number of steps to attempt per walk
         stride: int
@@ -229,6 +231,33 @@ class RandomWalk:
             sd_free = np.concatenate((sd_free_prev, sd_free))
         self.sds = (sd, sd_free)
         return (sd, sd_free)
+
+    def msd_graph(self, st_frac=0.2, maxsteps=5000, stride=5):
+        r"""
+        Performs one walk for each step length from 1 to maxsteps. Graphs
+        MSD in free space and MSD in image vs. step length
+
+        Parameters
+        ----------
+        st_frac: int
+            A value between 0 and 1. Determines what fraction of the image is
+            randomly searched for a starting point
+        maxsteps: int
+            Maximum number of steps to attempt
+        """
+
+        steps = np.arange(0, maxsteps+1, stride)
+        sd, sd_f = self.sd_array(1000, st_frac, maxsteps, stride)
+        msd = np.zeros(np.size(steps))
+        msd_f = np.zeros(np.size(steps))
+        for col in range(np.size(sd, 1)):
+            msd[col] = np.mean(sd[np.where(sd[:, col] >= 0), col])
+            msd_f[col] = np.mean(sd_f[np.where(sd_f[:, col] >= 0), col])
+        p = np.polyfit(steps, msd, 1)
+        p_f = np.polyfit(steps, msd_f, 1)
+        plt.plot(steps, msd, 'r.', steps, msd_f, 'b.')
+        plt.text(maxsteps*0.75, maxsteps*0.9, p_f[0])
+        plt.text(maxsteps*0.5, maxsteps*0.1, p[0])
 
     def error_analysis(self, walks):
         r"""
