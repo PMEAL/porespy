@@ -283,51 +283,6 @@ def make_contiguous(im):
     return im_new
 
 
-def downsample(im, binsize=2):
-    r"""
-    Reduces the resolution (and thus the size) of an image by finding the
-    average value of the voxels in the neighborhood (specified by ``binsize``)
-    around each voxel, and creating a new image where each voxel represents
-    the bin of voxel in the original image.  If the average is neighborhood is
-    less than 1, the new voxel in the downsampled image is 0, and vice versa.
-
-    Parameters
-    ----------
-    im : ND-array
-        The image of the porous material, with void represented by True.
-
-    binsize : scalar
-        The size of the neighborhood to reduce into a size voxel.  A value of
-        2 means that a 2x2x2 cube (or 2x2 square in 2D) is compressed into a
-        single voxel.
-
-    Returns
-    -------
-    An ND-image that is smaller than the original image by a factor of
-    ``binsize``.
-
-    See Also
-    --------
-    The ``zoom`` function in scipy.ndimage can be used to perform binning by
-    specifying a zoom factor less than 1.  It uses interpolation so is slow,
-    but can reduce image size by any arbitrary amount.  Be sure to convert
-    the Boolean image to floats before applying the zoom, then converting back
-    to Boolean.
-
-    """
-    binsize -= 1
-    if im.ndim == 2:
-        strel = square(binsize*2 + 1)*0
-        strel[binsize:, binsize:] = 1
-    if im.ndim == 3:
-        strel = cube(binsize*2 + 1)*0
-        strel[binsize:, binsize:, binsize:] = 1
-    temp = spim.convolve(input=im.astype(float), weights=strel)
-    reslice = [slice(0, im.shape[i], binsize+1) for i in range(im.ndim)]
-    temp = temp[reslice] > 0.5
-    return temp
-
-
 def add_walls(im, faces=[1, 1, 1]):
     r"""
     Add walls of solid material to specified faces of an image.
