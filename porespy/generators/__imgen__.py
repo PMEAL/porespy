@@ -397,13 +397,17 @@ def noise(shape, porosity=None, octaves=3, frequency=32, mode='simplex'):
     -------
     If porosity is given, then a boolean array with ``True`` values denoting
     the pore space is returned.  If not, then normally distributed and
-    spatially correlated randomly noise is return.
+    spatially correlated randomly noise is returned.
 
     Notes
     -----
     This method depends the a package called 'noise' which must be
     compiled. It is included in the Anaconda distribution, or a platform
     specific binary can be downloaded.
+
+    See Also
+    --------
+    norm_to_uniform
 
     """
     try:
@@ -463,7 +467,11 @@ def blobs(shape, porosity=None, blobiness=1):
     -------
     If porosity is given, then a boolean array with ``True`` values denoting
     the pore space is returned.  If not, then normally distributed and
-    spatially correlated randomly noise is return.
+    spatially correlated randomly noise is returned.
+
+    See Also
+    --------
+    norm_to_uniform
 
     """
     blobiness = sp.array(blobiness)
