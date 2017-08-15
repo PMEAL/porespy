@@ -1,5 +1,6 @@
 import os
 import sys
+from distutils.util import convert_path
 
 sys.path.append(os.getcwd())
 
@@ -8,32 +9,33 @@ try:
 except ImportError:
     from distutils.core import setup
 
+main_ = {}
+ver_path = convert_path('OpenPNM/__init__.py')
+with open(ver_path) as f:
+    for line in f:
+        if line.startswith('__version__'):
+            exec(line, main_)
+
 setup(
-    name = 'porespy',
-    description = 'A set of tools for analyzing features in 3D images of porous materials',
-    version = 0.1,
-    classifiers = [
-        'Development Status :: 3 - Alpha',
-        'License :: OSI Approved :: MIT License',
-        'Programming Language :: Python',
-        'Topic :: Scientific/Engineering',
-        'Topic :: Scientific/Engineering :: Physics'
-    ],
-    packages = [
-        'porespy',
-        'porespy.tools',
-        'porespy.generators',
-        'porespy.metrics',
-        'porespy.network_extraction',
-        'porespy.visualization'
-    ],
-    install_requires = [
-        'numpy',
-        'scipy',
-        'matplotlib',
-        'scikit-image',
-        'imageio'
-    ],
-    author = 'Jeff Gostick',
-    author_email = 'jgostick@uwaterloo.ca',
+    name='porespy',
+    description='A set of tools for analyzing 3D images of porous materials',
+    version=main_['__version__'],
+    classifiers=['Development Status :: 3 - Alpha',
+                 'License :: OSI Approved :: MIT License',
+                 'Programming Language :: Python',
+                 'Topic :: Scientific/Engineering',
+                 'Topic :: Scientific/Engineering :: Physics'],
+    packages=['porespy',
+              'porespy.tools',
+              'porespy.generators',
+              'porespy.metrics',
+              'porespy.network_extraction',
+              'porespy.visualization'],
+    install_requires=['numpy',
+                      'scipy',
+                      'matplotlib',
+                      'scikit-image',
+                      'imageio'],
+    author='Jeff Gostick',
+    author_email='jgostick@uwaterloo.ca',
 )
