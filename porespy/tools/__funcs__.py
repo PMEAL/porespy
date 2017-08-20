@@ -6,6 +6,44 @@ from skimage.segmentation import clear_border
 from numba import jit
 
 
+def get_slice(im, center, size, pad=0):
+    r"""
+    Given a ``center`` location and ``radius`` of a feature, returns the slice
+    object into the ``im`` that bounds the feature but does not extend beyond
+    the image boundaries.
+
+    Parameters
+    ----------
+    im : ND-image
+        The image of the porous media
+
+    center : array_like
+        The coordinates of the center of the feature of interest
+
+    size : array_like or scalar
+        The size of the feature in each direction.  If a scalar is supplied,
+        this implies the same size in all directions.
+
+    pad : scalar or array_like
+        The amount to pad onto each side of the slice.  The default is 0.  A
+        scalar value will increase the slice size equally in all directions,
+        while an array the same shape as ``im.shape`` can be passed to pad
+        a specified amount in each direction.
+
+    Returns
+    -------
+    A list of slice objects, each indexing into one dimension of the image.
+    """
+    p = sp.ones(shape=im.ndim, dtype=int)*sp.array(pad)
+    s = sp.ones(shape=im.ndim, dtype=int)*sp.array(size)
+    slc = []
+    for dim in range(im.ndim):
+        lower_im = sp.amax((center[dim] - s[dim] - p[dim], 0))
+        upper_im = sp.amin((center[dim] + s[dim] + 1 + p[dim], im.shape[dim]))
+        slc.append(slice(lower_im, upper_im))
+    return slc
+
+
 def find_outer_region(im, r=0):
     r"""
     Finds regions of the image that are outside of the solid matrix.  This

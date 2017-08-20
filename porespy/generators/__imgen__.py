@@ -4,10 +4,10 @@ import scipy.ndimage as spim
 from skimage.morphology import ball, disk, square, cube
 
 
-def insert_shape(im, center, element):
+def insert_shape(im, center, element, value=1):
     r"""
     """
-    im = sp.array(im, dtype=int)
+#    im = sp.array(im, dtype=int)
     if im.ndim != element.ndim:
         raise Exception('Image shape ' + str(im.shape) +
                         ' and element shape ' + str(element.shape) +
@@ -22,7 +22,7 @@ def insert_shape(im, center, element):
         lower_el = sp.amax((lower_im - center[dim] + r, 0))
         upper_el = sp.amin((upper_im - center[dim] + r, element.shape[dim]))
         s_el.append(slice(lower_el, upper_el))
-    im[s_im] = im[s_im] + element[s_el]
+    im[s_im] = im[s_im] + element[s_el]*value
     return im
 
 
