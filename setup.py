@@ -10,7 +10,7 @@ except ImportError:
     from distutils.core import setup
 
 main_ = {}
-ver_path = convert_path('OpenPNM/__init__.py')
+ver_path = convert_path('porespy/__init__.py')
 with open(ver_path) as f:
     for line in f:
         if line.startswith('__version__'):
