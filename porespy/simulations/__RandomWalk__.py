@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from porespy.metrics import porosity
 from numba import jit
 from mpl_toolkits.mplot3d import Axes3D
+from collections import namedtuple
 
 
 class RandomWalk:
@@ -104,10 +105,9 @@ class RandomWalk:
 
         Returns
         --------
-        paths: tuple
-            A tuple containing 2 arrays: paths[0] contains the coordinates of
-            the walker's path through the image, and paths[1] contains the
-            coords of the walker's path through free space
+        paths: namedtuple
+            A tuple containing 2 arrays showing the paths taken by the walker:
+            path.pore_space and path.free_space
         """
 
         ndim = self._ndim
@@ -165,7 +165,7 @@ class RandomWalk:
             steps += 1
             coords[step] = [z, y, x]
             free_coords[step] = [z_free, y_free, x_free]
-
+        paths = namedtuple('path', ('pore_space', 'open_space'))
         paths = (coords[:steps+1:stride, :], free_coords[:steps+1:stride, :])
         return paths
 
@@ -198,8 +198,8 @@ class RandomWalk:
             right one column means taking 20 steps
         """
 
-        sd = np.ones((3, walkers, max_steps//stride+1))*-1
-        sd_free = np.ones((3, walkers, max_steps//stride+1))*-1
+        sd = np.ones((3, walkers, int(max_steps//stride+1)))*-1
+        sd_free = np.ones((3, walkers, int(max_steps//stride+1)))*-1
         for w in range(walkers):
             start_point = self.find_start_point(start_frac)
             path, free_path = self.walk(start_point, max_steps, stride)
@@ -216,6 +216,9 @@ class RandomWalk:
             except ValueError:
                 self.clear_walk_data()
                 print("Warning: walk_data could not be concatenated")
+                self._walk_data = (sd, sd_free)
+        else:
+            self._walk_data = (sd, sd_free)
         return (sd, sd_free)
 
     def mean_squared_displacement(self, walkers=800, start_frac=0.2,
@@ -256,7 +259,8 @@ class RandomWalk:
         msd_free = np.average(sd_free, 0)
         return (msd, msd_free)
 
-    def run(self, direction=None, start_frac=0.2, max_steps=5000, stride=5):
+    def run(self, direction=None, walkers=1000, start_frac=0.2,
+            max_steps=5000, stride=10):
         r"""
         Performs one walk for each step length from 1 to max_steps. Graphs
         MSD in free space and MSD in image vs. step length
@@ -266,6 +270,8 @@ class RandomWalk:
         direction: int
             0, 1, or 2. Determines direction to graph mean square displacement
             in. If direction is None, the total displacement is used.
+        walkers: int
+            The number of walks to perform
         start_frac: int
             A value between 0 and 1. Determines what fraction of the image is
             randomly searched for a starting point
@@ -281,31 +287,43 @@ class RandomWalk:
         """
 
         steps = np.arange(0, max_steps+1, stride)
-        sd, sd_f = self.get_walk_data(1000, start_frac, max_steps, stride)
+        sd, sd_f = self.get_walk_data(walkers, start_frac, max_steps, stride)
         msd = np.zeros(np.size(steps))
+        ste = np.zeros(np.size(steps))
         msd_f = np.zeros(np.size(steps))
+        ste_f = np.zeros(np.size(steps))
         if direction is None:
             for col in range(np.size(sd, 2)):
                 msd[col] = np.mean(np.sum(sd[:, np.where(sd[0, :, col] >= 0),
                                    col], 0))
+                ste[col] = np.std(np.sum(sd[:, np.where(sd[0, :, col] >= 0),
+                                  col], 0))
                 msd_f[col] = np.mean(np.sum(sd_f[:,
                                      np.where(sd_f[0, :, col] >= 0), col], 0))
+                ste_f[col] = np.std(np.sum(sd_f[:,
+                                    np.where(sd_f[0, :, col] >= 0), col], 0))
+                ste[col] /= np.sqrt(np.size(np.where(sd[0, :, col] >= 0)))
+                ste_f[col] /= np.sqrt(np.size(np.where(sd[0, :, col] >= 0)))
         else:
             d = direction
             for col in range(np.size(sd, 2)):
                 msd[col] = np.mean(sd[d, np.where(sd[0, :, col] >= 0), col])
+                ste[col] = np.std(sd[d, np.where(sd[0, :, col] >= 0), col])
                 msd_f[col] = np.mean(sd_f[d, np.where(sd_f[0, :, col] >= 0),
                                      col])
+                ste_f[col] = np.std(sd_f[d, np.where(sd_f[0, :, col] >= 0),
+                                    col])
+                ste[col] /= np.sqrt(np.size(np.where(sd[0, :, col] >= 0)))
+                ste_f[col] /= np.sqrt(np.size(np.where(sd[0, :, col] >= 0)))
+
         p = np.polyfit(steps, msd, 1)
         p_f = np.polyfit(steps, msd_f, 1)
-        plt.plot(steps, msd, 'r.', steps, msd_f, 'b.')
-        axes = plt.gca()
-        plt.text(max_steps*0.75, axes.get_ylim()*0.9, p_f[0])
-        plt.text(max_steps*0.5, max_steps*0.1, p[0])
+        plt.errorbar(steps, msd, yerr=ste)
+        plt.errorbar(steps, msd_f, yerr=ste_f)
         return(p[0], p_f[0])
 
-    def tortuosity(self, direction=None, start_frac=0.2, max_steps=5000,
-                   stride=5):
+    def tortuosity(self, direction=None, walkers=1000, start_frac=0.2,
+                   max_steps=5000, stride=5):
         r"""
         Calculates tortuosity of the image
 
@@ -315,7 +333,7 @@ class RandomWalk:
             A value between 0 and 1. Determines what fraction of the image is
             randomly searched for a starting point
         max_steps: int
-            Maximum number of steps to attempt during walks
+            Maximum number of steps to attempt
         stride: int
             Number of steps taken between each point plotted in run function
 
@@ -325,40 +343,9 @@ class RandomWalk:
             Estimation of tortuosity of the image in each direction
         """
 
-        m, m_f = self.run(direction, start_frac, max_steps, stride)
+        m, m_f = self.run(direction, walkers, start_frac, max_steps, stride)
         tortuosity = m_f/m
         return tortuosity
-
-    def error_analysis(self, walkers):
-        r"""
-        Returns an estimation for standard error, as a percentage of the
-        mean squared distance calculated
-
-        Parameters
-        -----------
-        walkers: int
-            The number of walks to perform
-
-        Returns
-        --------
-        out: float
-            Estimation of standard error as a percentage of the mean squared
-            displacement, if a random walk simulation is performed on the given
-            image with the specified number of walkers
-        """
-        steps = 2000
-        std = np.zeros(21)
-        mean = np.zeros(21)
-        sd, sd_free = self.get_walk_data(walkers=1000, max_steps=steps,
-                                         stride=100)
-        for col in range(np.size(sd, 1)):
-            stdi = np.std(sd[np.where(sd[:, col] > 0), col])
-            meani = np.mean(sd[np.where(sd[:, col] > 0), col])
-            std[col] = stdi
-            mean[col] = meani
-        ste = std/np.sqrt(walkers)
-        stepct = 100*ste/mean
-        return np.mean(stepct[1:12])
 
     def _get_path(self, start_point=None, max_steps=10000, size=None):
         r"""
