@@ -13,8 +13,42 @@ class RandomWalk:
 
     Parameters
     ----------
-    im: array of bool
+    im: ndarray of bool
         2D or 3D image
+
+    Attributes
+    -----------
+    im: ndarray of bool
+        2D or 3D pore space image
+    porosity: float
+        porosity of the image
+    ndim: int
+        number of dimensions the image has. Either 2 or 3
+    shape: tuple of ints
+        dimensions of the image, consistent with np.shape(im)
+    walk_data: namedtuple
+        walk data is saved here when get_walk_data or run functions are called
+
+    Examples
+    ---------
+
+    Creating a RandomWalk object:
+
+    >>> import porespy as ps
+    >>> import numpy as np
+    >>> im = ps.generators.blobs(shape=500, porosity=0.4)
+    >>> rw = ps.simulations.RandomWalk(im)
+    >>> rw.porosity
+    0.39988462700000001
+
+    Generating and accessing walk data:
+
+    >>> print(rw.walk_data)
+    None
+    >>> sd, sd_free = rw.get_walk_data(walkers=500, max_steps=7000, stride=250)
+    >>> sd_i = rw.walk_data.pore_space
+    >>> np.all(sd==sd_i)
+    True
     """
 
     def __init__(self, im):
@@ -29,6 +63,8 @@ class RandomWalk:
             self._z_len = 1
             self._y_len = np.size(im, 0)
             self._x_len = np.size(im, 1)
+        else:
+            raise ValueError('image needs to be 2 or 3 dimensional')
         self._shape = (self._z_len, self._y_len, self._x_len)
         self._walk_data = None
 
@@ -66,7 +102,7 @@ class RandomWalk:
         --------
         start_point: tuple
             A tuple containing the index of a valid start point.
-            If img is 2D, start_point will have z = 0
+            If the image is 2D, start_point will have 0 as the first coord
         """
 
         x_r = self._x_len*start_frac
@@ -96,7 +132,8 @@ class RandomWalk:
         Parameters
         ----------
         start_point: array_like
-           A tuple, list, or array with index of a valid start point
+           A sequence containing the indices of a valid starting point. If
+           the image is 2D, the first coordinate needs to be zero
         max_steps: int
             The number of steps to attempt per walk
         stride: int
@@ -108,6 +145,16 @@ class RandomWalk:
         paths: namedtuple
             A tuple containing 2 arrays showing the paths taken by the walker:
             path.pore_space and path.free_space
+
+        Notes
+        ------
+        This function only performs a single walk through the image. Use
+        RandomWalk.run() or RandomWalk.get_walk_data() to make multiple walks
+        through the image
+
+        start_point must have three indices. In the case of a 2D image, the
+        first coord should be 0. Use RandomWalk.find_start_point() to easily
+        find a valid point
         """
 
         ndim = self._ndim
@@ -116,8 +163,6 @@ class RandomWalk:
             directions = 6
         elif ndim == 2:
             directions = 4
-        else:
-            raise ValueError('im needs to be 2 or 3 dimensions')
         (z, y, x) = start_point
         if not im[z, y, x]:
             raise ValueError('invalid starting point: not a pore')
@@ -165,12 +210,13 @@ class RandomWalk:
             steps += 1
             coords[step] = [z, y, x]
             free_coords[step] = [z_free, y_free, x_free]
-        paths = namedtuple('path', ('pore_space', 'open_space'))
-        paths = (coords[:steps+1:stride, :], free_coords[:steps+1:stride, :])
+        path = namedtuple('path', ('pore_space', 'open_space'))
+        paths = path(coords[:steps+1:stride, :],
+                     free_coords[:steps+1:stride, :])
         return paths
 
-    def get_walk_data(self, walkers=100, start_frac=0.2, max_steps=3000,
-                      stride=20):
+    def get_walk_data(self, walkers=1000, start_frac=0.2, max_steps=3000,
+                      stride=10):
         r"""
         Function for calculating squared displacement values for individual
         walkers at specified intervals, in array format
@@ -190,16 +236,38 @@ class RandomWalk:
 
         Returns
         --------
-        out: tuple
-            A tuple containing squared distance arrays for image walks and free
-            space walks. Each row in the arrays represents a different walker.
-            Each column represents a different step length, with intervals
-            determined by stride. If stride is 20, for example, then moving
-            right one column means taking 20 steps
+        squared_displacement: namedtuple
+            A namedtuple containing squared displacement arrays for image walks
+            and free space walks: squared_displacement.pore_space and
+            squared_displacement.free_space. The 0 axis of each array separates
+            each direction. Walkers are placed along the 1 axis, and
+            the 2 axis represents the amount of steps taken. See examples
+
+        Examples
+        ---------
+
+        Walk data is also saved to the random walk object:
+
+        >>> import numpy as np
+        >>> sd, sd_free = rw.get_walk_data(max_steps=1000, stride=10)
+        >>> sd_x = rw.walk_data.pore_space
+        >>> sd_f = rw.walk_data.free_space
+        >>> np.all(sd==sd_x)
+        True
+
+        To access the 0 direction squared displacement in free space
+        for the 105th walker after 500 steps (with a stride length of 10):
+
+        >>> d = 0
+        >>> w = 104
+        >>> s = 500/10
+        >>> s_displacement = sd_f[d, w, s]
         """
 
         sd = np.ones((3, walkers, int(max_steps//stride+1)))*-1
         sd_free = np.ones((3, walkers, int(max_steps//stride+1)))*-1
+        squared_displacement = namedtuple('square_displacement',
+                                          ('pore_space', 'free_space'))
         for w in range(walkers):
             start_point = self.find_start_point(start_frac)
             path, free_path = self.walk(start_point, max_steps, stride)
@@ -212,17 +280,17 @@ class RandomWalk:
             try:
                 sd_c = np.concatenate((sd_prev, sd), 1)
                 sd_free_c = np.concatenate((sd_free_prev, sd_free), 1)
-                self._walk_data = (sd_c, sd_free_c)
+                self._walk_data = squared_displacement(sd_c, sd_free_c)
             except ValueError:
                 self.clear_walk_data()
                 print("Warning: walk_data could not be concatenated")
-                self._walk_data = (sd, sd_free)
+                self._walk_data = squared_displacement(sd, sd_free)
         else:
-            self._walk_data = (sd, sd_free)
-        return (sd, sd_free)
+            self._walk_data = squared_displacement(sd, sd_free)
+        return squared_displacement(sd, sd_free)
 
-    def mean_squared_displacement(self, walkers=800, start_frac=0.2,
-                                  max_steps=5000):
+    def mean_squared_displacement(self, walkers=1000, start_frac=0.2,
+                                  max_steps=3000):
         r"""
         Function for performing many random walks on an image and
         determining the mean squared displacement values the walker
@@ -240,13 +308,16 @@ class RandomWalk:
 
         Returns
         --------
-        out: tuple
-            A tuple containing the msd values for the image walkers in index
-            0 and for the free space walkers in index 1
+        out: namedtuple
+            A tuple containing the msd values for the pore space walkers and
+            free space walkers: mean_squared_displacement.pore_space and
+            mean_squared_displacement.free_space
         """
 
         sd = np.zeros((walkers, 3))
         sd_free = np.zeros((walkers, 3))
+        mean_squared_displacement = namedtuple('squared_displacement',
+                                               ('pore_space', 'free_space'))
         for w in range(walkers):
             start_point = self.find_start_point(start_frac)
             path, free_path = self.walk(start_point, max_steps)
@@ -257,10 +328,10 @@ class RandomWalk:
             sd_free[w] = d_free**2
         msd = np.average(sd, 0)
         msd_free = np.average(sd_free, 0)
-        return (msd, msd_free)
+        return mean_squared_displacement(msd, msd_free)
 
     def run(self, direction=None, walkers=1000, start_frac=0.2,
-            max_steps=5000, stride=10):
+            max_steps=3000, stride=10):
         r"""
         Performs one walk for each step length from 1 to max_steps. Graphs
         MSD in free space and MSD in image vs. step length
@@ -282,8 +353,9 @@ class RandomWalk:
 
         Returns
         --------
-        out: tuple
-            A tuple containing the slopes of the msd vs step length graphs
+        slopes: namedtuple
+            A tuple containing the slopes of the msd vs step length graphs:
+            slopes.pore_space and slopes.free_space
         """
 
         steps = np.arange(0, max_steps+1, stride)
@@ -320,10 +392,11 @@ class RandomWalk:
         p_f = np.polyfit(steps, msd_f, 1)
         plt.errorbar(steps, msd, yerr=ste)
         plt.errorbar(steps, msd_f, yerr=ste_f)
-        return(p[0], p_f[0])
+        slopes = namedtuple('slope', ('pore_space', 'free_space'))
+        return slopes(p[0], p_f[0])
 
     def tortuosity(self, direction=None, walkers=1000, start_frac=0.2,
-                   max_steps=5000, stride=5):
+                   max_steps=3000, stride=10):
         r"""
         Calculates tortuosity of the image
 
@@ -339,7 +412,7 @@ class RandomWalk:
 
         Returns
         --------
-        out: array_like
+        out: float
             Estimation of tortuosity of the image in each direction
         """
 
