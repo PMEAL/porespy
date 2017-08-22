@@ -1,1 +1,1 @@
-from .__funcs__ import goto
+from .__funcs__ import simple_otsu
