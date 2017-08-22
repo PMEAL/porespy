@@ -29,7 +29,7 @@ def insert_shape(im, center, element, value=1):
 def bundle_of_tubes(shape, spacing):
     r"""
     Create a 3D image of a bundle of tubes, in the form of a rectangular
-    plate with randomly sized holes thorugh it.
+    plate with randomly sized holes through it.
 
     Parameters
     ----------
@@ -45,6 +45,9 @@ def bundle_of_tubes(shape, spacing):
     -------
     A boolean array with True values denoting the pore space
     """
+    shape = sp.array(shape)
+    if sp.size(shape) == 1:
+        shape = sp.full((3, ), int(shape))
     temp = sp.zeros(shape=shape[:2])
     Xi = sp.linspace(spacing/2, shape[0]-spacing/2, shape[0]/spacing)
     Xi = sp.array(Xi, dtype=int)
@@ -96,6 +99,8 @@ def polydisperse_spheres(shape, porosity, dist, nbins=5):
     A boolean array with True values denoting the pore space
     """
     shape = sp.array(shape)
+    if sp.size(shape) == 1:
+        shape = sp.full((3, ), int(shape))
     Rs = dist.interval(sp.linspace(0.05, 0.95, nbins))
     Rs = sp.vstack(Rs).T
     Rs = (Rs[:-1] + Rs[1:])/2
@@ -134,6 +139,8 @@ def voronoi_edges(shape, edge_radius, ncells, flat_faces=True):
 
     """
     shape = sp.array(shape)
+    if sp.size(shape) == 1:
+        shape = sp.full((3, ), int(shape))
     im = sp.zeros(shape, dtype=bool)
     base_pts = sp.rand(ncells, 3)*shape
     if flat_faces:
@@ -221,6 +228,7 @@ def circle_pack(shape, radius, offset=0, packing='square'):
     A boolean array with True values denoting the pore space
     """
     r = radius
+    shape = sp.array(shape)
     if sp.size(shape) == 1:
         shape = sp.full((2, ), int(shape))
     elif (sp.size(shape) == 3) or (1 in shape):
@@ -274,6 +282,7 @@ def sphere_pack(shape, radius, offset=0, packing='sc'):
     A boolean array with True values denoting the pore space
     """
     r = radius
+    shape = sp.array(shape)
     if sp.size(shape) == 1:
         shape = sp.full((3, ), int(shape))
     elif (sp.size(shape) == 2) or (1 in shape):
@@ -349,8 +358,8 @@ def overlapping_spheres(shape, radius, porosity):
     treating ``porosity`` as solid volume fraction and inverting the
     returned image.
     """
+    shape = sp.array(shape)
     if sp.size(shape) == 1:
-        print('Scalar shape received, expanding to 3D cube')
         shape = sp.full((3, ), int(shape))
     if sp.size(shape) == 2:
         s_vol = sp.pi*radius**2
@@ -414,7 +423,10 @@ def noise(shape, porosity=None, octaves=3, frequency=32, mode='simplex'):
         import noise
     except:
         raise Exception("The noise package must be installed")
-    if len(shape) == 2:
+    shape = sp.array(shape)
+    if sp.size(shape) == 1:
+        Lx, Ly, Lz = sp.full((3, ), int(shape))
+    elif len(shape) == 2:
         Lx, Ly = shape
         Lz = 1
     elif len(shape) == 3:
@@ -443,7 +455,7 @@ def noise(shape, porosity=None, octaves=3, frequency=32, mode='simplex'):
     return im
 
 
-def blobs(shape, porosity=None, blobiness=1):
+def blobs(shape, porosity=0.5, blobiness=1):
     """
     Generates an image containing amorphous blobs
 
@@ -541,6 +553,10 @@ def fibers(shape, radius, nfibers, phi_max=0, theta_max=90):
     A boolean array with True values denoting the pore space
     """
     shape = sp.array(shape)
+    if sp.size(shape) == 1:
+        shape = sp.full((3, ), int(shape))
+    elif sp.size(shape) == 2:
+        raise Exception("2D fibers don't make sense")
     im = sp.zeros(shape)
     R = sp.sqrt(sp.sum(sp.square(shape)))
     n = 0
