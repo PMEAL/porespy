@@ -1,15 +1,35 @@
 import scipy as sp
 import scipy.spatial as sptl
 import scipy.ndimage as spim
-import scipy.sparse as sprs
-from skimage.segmentation import find_boundaries
-from skimage.morphology import ball, disk, square, watershed
+from skimage.morphology import ball, disk, square, cube
+
+
+def insert_shape(im, center, element, value=1):
+    r"""
+    """
+#    im = sp.array(im, dtype=int)
+    if im.ndim != element.ndim:
+        raise Exception('Image shape ' + str(im.shape) +
+                        ' and element shape ' + str(element.shape) +
+                        ' do not match')
+    s_im = []
+    s_el = []
+    for dim in range(im.ndim):
+        r = int(element.shape[dim]/2)
+        lower_im = sp.amax((center[dim] - r, 0))
+        upper_im = sp.amin((center[dim] + r + 1, im.shape[dim]))
+        s_im.append(slice(lower_im, upper_im))
+        lower_el = sp.amax((lower_im - center[dim] + r, 0))
+        upper_el = sp.amin((upper_im - center[dim] + r, element.shape[dim]))
+        s_el.append(slice(lower_el, upper_el))
+    im[s_im] = im[s_im] + element[s_el]*value
+    return im
 
 
 def bundle_of_tubes(shape, spacing):
     r"""
     Create a 3D image of a bundle of tubes, in the form of a rectangular
-    plate with randomly sized holes thorugh it.
+    plate with randomly sized holes through it.
 
     Parameters
     ----------
@@ -25,14 +45,21 @@ def bundle_of_tubes(shape, spacing):
     -------
     A boolean array with True values denoting the pore space
     """
+    shape = sp.array(shape)
+    if sp.size(shape) == 1:
+        shape = sp.full((3, ), int(shape))
     temp = sp.zeros(shape=shape[:2])
-    Xi = sp.linspace(spacing/2, shape[0]-spacing/2, shape[0]/spacing).astype(int)
-    Yi = sp.linspace(spacing/2, shape[1]-spacing/2, shape[1]/spacing).astype(int)
+    Xi = sp.linspace(spacing/2, shape[0]-spacing/2, shape[0]/spacing)
+    Xi = sp.array(Xi, dtype=int)
+    Yi = sp.linspace(spacing/2, shape[1]-spacing/2, shape[1]/spacing)
+    Yi = sp.array(Yi, dtype=int)
     temp[sp.meshgrid(Xi, Yi)] = 1
     inds = sp.where(temp)
     for i in range(len(inds[0])):
         r = int(sp.rand()*(spacing/2 - 4)) + 3
-        temp[slice(inds[0][i]-r, inds[0][i]+r+1), slice(inds[1][i]-r, inds[1][i]+r+1)] = disk(r)
+        s1 = slice(inds[0][i]-r, inds[0][i]+r+1)
+        s2 = slice(inds[1][i]-r, inds[1][i]+r+1)
+        temp[s1, s2] = disk(r)
     temp = spim.binary_opening(temp, structure=square(3))
     im = sp.broadcast_to(array=sp.atleast_3d(temp), shape=shape)
     return im
@@ -72,6 +99,8 @@ def polydisperse_spheres(shape, porosity, dist, nbins=5):
     A boolean array with True values denoting the pore space
     """
     shape = sp.array(shape)
+    if sp.size(shape) == 1:
+        shape = sp.full((3, ), int(shape))
     Rs = dist.interval(sp.linspace(0.05, 0.95, nbins))
     Rs = sp.vstack(Rs).T
     Rs = (Rs[:-1] + Rs[1:])/2
@@ -110,6 +139,8 @@ def voronoi_edges(shape, edge_radius, ncells, flat_faces=True):
 
     """
     shape = sp.array(shape)
+    if sp.size(shape) == 1:
+        shape = sp.full((3, ), int(shape))
     im = sp.zeros(shape, dtype=bool)
     base_pts = sp.rand(ncells, 3)*shape
     if flat_faces:
@@ -139,6 +170,22 @@ def voronoi_edges(shape, edge_radius, ncells, flat_faces=True):
 
 
 def _get_Voronoi_edges(vor):
+    r"""
+    Given a Voronoi object as produced by the scipy.spatial.Voronoi class,
+    this function calculates the start and end points of eeach edge in the
+    Voronoi diagram, in terms of the vertex indices used by the received
+    Voronoi object.
+
+    Parameters
+    ----------
+    vor : scipy.spatial.Voronoi object
+
+    Returns
+    -------
+    A 2-by-N array of vertex indices, indicating the start and end points of
+    each vertex in the Voronoi diagram.  These vertex indices can be used to
+    index straight into the ``vor.vertices`` array to get spatial positions.
+    """
     edges = [[], []]
     for facet in vor.ridge_vertices:
         # Create a closed cycle of vertices that define the facet
@@ -181,11 +228,12 @@ def circle_pack(shape, radius, offset=0, packing='square'):
     A boolean array with True values denoting the pore space
     """
     r = radius
+    shape = sp.array(shape)
     if sp.size(shape) == 1:
         shape = sp.full((2, ), int(shape))
     elif (sp.size(shape) == 3) or (1 in shape):
         raise Exception("This function only produces 2D images, " +
-                         "try \'sphere_pack\'")
+                        "try \'sphere_pack\'")
     im = sp.zeros(shape, dtype=bool)
     if packing.startswith('s'):
         spacing = 2*r
@@ -234,11 +282,12 @@ def sphere_pack(shape, radius, offset=0, packing='sc'):
     A boolean array with True values denoting the pore space
     """
     r = radius
+    shape = sp.array(shape)
     if sp.size(shape) == 1:
         shape = sp.full((3, ), int(shape))
     elif (sp.size(shape) == 2) or (1 in shape):
         raise Exception("This function only produces 3D images, " +
-                         "try \'circle_pack\'")
+                        "try \'circle_pack\'")
     im = sp.zeros(shape, dtype=bool)
     if packing.startswith('s'):
         spacing = 2*r
@@ -309,8 +358,8 @@ def overlapping_spheres(shape, radius, porosity):
     treating ``porosity`` as solid volume fraction and inverting the
     returned image.
     """
+    shape = sp.array(shape)
     if sp.size(shape) == 1:
-        print('Scalar shape received, expanding to 3D cube')
         shape = sp.full((3, ), int(shape))
     if sp.size(shape) == 2:
         s_vol = sp.pi*radius**2
@@ -323,7 +372,7 @@ def overlapping_spheres(shape, radius, porosity):
     return ~im
 
 
-def noise(shape, octaves=3, frequency=32, mode='simplex'):
+def noise(shape, porosity=None, octaves=3, frequency=32, mode='simplex'):
     r"""
     Generate a field of spatially correlated random noise using the Perlin
     noise algorithm, or the updated Simplex noise algorithm.
@@ -334,6 +383,11 @@ def noise(shape, octaves=3, frequency=32, mode='simplex'):
         The size of the image to generate in [Nx, Ny, Nz] where N is the
         number of voxels.
 
+    porosity : float
+        If specified, this will threshold the image to the specified value
+        prior to returning.  If no value is given (the default), then the
+        scalar noise field is returned.
+
     octaves : int
         Controls the *texture* of the noise, with higher octaves giving more
         complex features over larger length scales.
@@ -342,7 +396,7 @@ def noise(shape, octaves=3, frequency=32, mode='simplex'):
         Controls the relative sizes of the features, with higher frequencies
         giving larger features.  A scalar value will apply the same frequency
         in all directions, given an isotropic field; a vector value will
-        apply the specified values along each axis to create anisotropy.`
+        apply the specified values along each axis to create anisotropy.
 
     mode : string
         Which noise algorithm to use, either \'simplex\' (default) or
@@ -350,22 +404,29 @@ def noise(shape, octaves=3, frequency=32, mode='simplex'):
 
     Returns
     -------
-    A float array with values between -1 and +1.  This image can be easily
-    thresholded to create a binary image, or the values can be used for other
-    purposes.
+    If porosity is given, then a boolean array with ``True`` values denoting
+    the pore space is returned.  If not, then normally distributed and
+    spatially correlated randomly noise is returned.
 
     Notes
     -----
     This method depends the a package called 'noise' which must be
-    compiled. It can be installed from PyPI on machines with a C-compiler
-    present, or a platform specific binary can be downloaded.
+    compiled. It is included in the Anaconda distribution, or a platform
+    specific binary can be downloaded.
+
+    See Also
+    --------
+    norm_to_uniform
 
     """
     try:
         import noise
     except:
         raise Exception("The noise package must be installed")
-    if len(shape) == 2:
+    shape = sp.array(shape)
+    if sp.size(shape) == 1:
+        Lx, Ly, Lz = sp.full((3, ), int(shape))
+    elif len(shape) == 2:
         Lx, Ly = shape
         Lz = 1
     elif len(shape) == 3:
@@ -374,19 +435,23 @@ def noise(shape, octaves=3, frequency=32, mode='simplex'):
         f = noise.snoise3
     else:
         f = noise.pnoise3
-    if len(frequency) == 1:
-        freq = sp.full(shape=[3, ], fill_values=frequency)
-    elif len(frequency) == 2:
+    frequency = sp.atleast_1d(frequency)
+    if frequency.size == 1:
+        freq = sp.full(shape=[3, ], fill_value=frequency[0])
+    elif frequency.size == 2:
         freq = sp.concatenate((frequency, [1]))
     else:
         freq = sp.array(frequency)
-    seed = sp.random.randint(0, 10000)
     im = sp.zeros(shape=[Lx, Ly, Lz], dtype=float)
     for x in range(Lx):
         for y in range(Ly):
             for z in range(Lz):
                 im[x, y, z] = f(x=x/freq[0], y=y/freq[1], z=z/freq[2],
                                 octaves=octaves)
+    im = im.squeeze()
+    if porosity:
+        im = norm_to_uniform(im, scale=[0, 1])
+        im = im < porosity
     return im
 
 
@@ -400,10 +465,10 @@ def blobs(shape, porosity=0.5, blobiness=1):
         The size of the image to generate in [Nx, Ny, Nz] where N is the
         number of voxels
 
-    porosity : scalar (default = 0.5)
-        The porosity of the final image.  This number is approximated by
-        the function so the returned result may not have exactly the
-        specified value.
+    porosity : float
+        If specified, this will threshold the image to the specified value
+        prior to returning.  If no value is given (the default), then the
+        scalar noise field is returned.
 
     blobiness : array_like (default = 1)
         Controls the morphology of the blobs.  A higher number results in
@@ -412,7 +477,13 @@ def blobs(shape, porosity=0.5, blobiness=1):
 
     Returns
     -------
-    A boolean array with True values denoting the pore space
+    If porosity is given, then a boolean array with ``True`` values denoting
+    the pore space is returned.  If not, then normally distributed and
+    spatially correlated randomly noise is returned.
+
+    See Also
+    --------
+    norm_to_uniform
 
     """
     blobiness = sp.array(blobiness)
@@ -420,12 +491,42 @@ def blobs(shape, porosity=0.5, blobiness=1):
     if sp.size(shape) == 1:
         shape = sp.full((3, ), int(shape))
     sigma = sp.mean(shape)/(40*blobiness)
-    mask = sp.random.random(shape)
-    mask = spim.gaussian_filter(mask, sigma=sigma)
-    hist = sp.histogram(mask, bins=1000)
-    cdf = sp.cumsum(hist[0])/sp.size(mask)
-    xN = sp.where(cdf >= porosity)[0][0]
-    im = mask <= hist[1][xN]
+    im = sp.random.random(shape)
+    im = spim.gaussian_filter(im, sigma=sigma)
+    if porosity:
+        im = norm_to_uniform(im, scale=[0, 1])
+        im = im < porosity
+    return im
+
+
+def norm_to_uniform(im, scale=None):
+    r"""
+    Take an image with normally distributed greyscale values and converts it to
+    a uniform (i.e. flat) distribution.  It's also possible to specify the
+    lower and upper limits of the uniform distribution.
+
+    Parameters
+    ----------
+    im : ND-image
+        The image containing the normally distributed scalar field
+
+    scale : [low, high]
+        A list or array indicating the lower and upper bounds for the new
+        randomly distributed data.  The default is ``None``, which uses the
+        ``max`` and ``min`` of the original image as the the lower and upper
+        bounds.
+
+    Returns
+    -------
+    An ND-image the same size as ``im`` with uniformly distributed greyscale
+    values spanning the specified range, if given.
+    """
+    if scale is None:
+        scale = [im.min(), im.max()]
+    im = (im - sp.mean(im))/sp.std(im)
+    im = 1/2*sp.special.erfc(-im/sp.sqrt(2))
+    im = (im - im.min()) / (im.max() - im.min())
+    im = im*(scale[1] - scale[0]) + scale[0]
     return im
 
 
@@ -440,6 +541,7 @@ def fibers(shape, radius, nfibers, phi_max=0, theta_max=90):
         lie out of the XY plane, with 0 meaning all fibers lie in the XY
         plane, and 90 meaning that fibers are randomly oriented out of the
         plane by as much as +/- 90 degrees.
+
     theta_max : scalar
         A value between 0 and 90 that controls the amount rotation in the
         XY plane, with 0 meaning all fibers point in the X-direction, and
@@ -451,6 +553,10 @@ def fibers(shape, radius, nfibers, phi_max=0, theta_max=90):
     A boolean array with True values denoting the pore space
     """
     shape = sp.array(shape)
+    if sp.size(shape) == 1:
+        shape = sp.full((3, ), int(shape))
+    elif sp.size(shape) == 2:
+        raise Exception("2D fibers don't make sense")
     im = sp.zeros(shape)
     R = sp.sqrt(sp.sum(sp.square(shape)))
     n = 0
