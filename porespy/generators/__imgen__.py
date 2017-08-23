@@ -1,13 +1,13 @@
 import scipy as sp
 import scipy.spatial as sptl
 import scipy.ndimage as spim
+from skimage.segmentation import find_boundaries
 from skimage.morphology import ball, disk, square, cube
 
 
 def insert_shape(im, center, element, value=1):
     r"""
     """
-#    im = sp.array(im, dtype=int)
     if im.ndim != element.ndim:
         raise Exception('Image shape ' + str(im.shape) +
                         ' and element shape ' + str(element.shape) +
@@ -23,6 +23,43 @@ def insert_shape(im, center, element, value=1):
         upper_el = sp.amin((upper_im - center[dim] + r, element.shape[dim]))
         s_el.append(slice(lower_el, upper_el))
     im[s_im] = im[s_im] + element[s_el]*value
+    return im
+
+
+def add_noise(im, u_void=0.8, u_solid=0.2, s_void=0.15, s_solid=0.15):
+    r"""
+    Add some normally distributed noise values to the image.  This is useful
+    for testing binarization routines.
+
+    Parameters
+    ----------
+    im : ND-array
+        The image of the porous media, with 1's or True's denoting voids
+
+    u_solid : float
+        The mean greyscale value in the solid space (default is 0.2)
+
+    s_solid : float
+        The standard deviation of the greyscale values in the solid phase (the
+        default is 0.15)
+
+    u_void: float
+        The mean greyscale value in the void space (default is 0.8)
+
+    s_void: float
+        The standard deviation of the greyscale values in the void phase (the
+        default is 0.15)
+
+    Returns
+    -------
+    A greyscale image with the same shape as ``im``, but normally distributed
+    noise values in the void and solid phase.  A histogram of the default image
+    should reveal to distinguishable but overlapping peaks.  This can be
+    adjusted using the mean and standard deviation arguments.
+
+    """
+    im = im*sp.random.normal(loc=u_void, scale=s_void, size=im.shape) + \
+        ~im*sp.random.normal(loc=u_solid, scale=s_solid, size=im.shape)
     return im
 
 
@@ -49,6 +86,12 @@ def bundle_of_tubes(shape, spacing):
     if sp.size(shape) == 1:
         shape = sp.full((3, ), int(shape))
     temp = sp.zeros(shape=shape[:2])
+    Xi = sp.linspace(spacing/2,
+                     shape[0]-spacing/2,
+                     shape[0]/spacing).astype(int)
+    Yi = sp.linspace(spacing/2,
+                     shape[1]-spacing/2,
+                     shape[1]/spacing).astype(int)
     Xi = sp.linspace(spacing/2, shape[0]-spacing/2, shape[0]/spacing)
     Xi = sp.array(Xi, dtype=int)
     Yi = sp.linspace(spacing/2, shape[1]-spacing/2, shape[1]/spacing)
@@ -57,6 +100,8 @@ def bundle_of_tubes(shape, spacing):
     inds = sp.where(temp)
     for i in range(len(inds[0])):
         r = int(sp.rand()*(spacing/2 - 4)) + 3
+        temp[slice(inds[0][i]-r, inds[0][i]+r+1),
+             slice(inds[1][i]-r, inds[1][i]+r+1)] = disk(r)
         s1 = slice(inds[0][i]-r, inds[0][i]+r+1)
         s2 = slice(inds[1][i]-r, inds[1][i]+r+1)
         temp[s1, s2] = disk(r)
@@ -530,9 +575,10 @@ def norm_to_uniform(im, scale=None):
     return im
 
 
-def fibers(shape, radius, nfibers, phi_max=0, theta_max=90):
+def cylinders(shape, radius, nfibers, phi_max=0, theta_max=90):
     r"""
-    Generates a binary image of overlapping fibers.
+    Generates a binary image of overlapping cylinders.  This is a good
+    approximation of a fibrous mat.
 
     Parameters
     ----------
