@@ -9,4 +9,3 @@ from . import visualization
 from . import simulations
 from . import metrics
 from . import generators
-from .__BaseClass__ import Bundle

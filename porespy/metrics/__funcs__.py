@@ -1,10 +1,10 @@
-import sys
 import scipy as sp
 from skimage.segmentation import clear_border
 from skimage.feature import peak_local_max
 import scipy.ndimage as spim
 import scipy.spatial as sptl
 from porespy.tools import get_border, extract_subsection, extend_slice
+from collections import namedtuple
 
 
 def representative_elementary_volume(im, npoints=1000):
@@ -24,10 +24,11 @@ def representative_elementary_volume(im, npoints=1000):
 
     Returns
     -------
-    A tuple containing the ND-arrays: The  subdomain *volume* and its
+    A tuple containing the ND-arrays: The subdomain *volume* and its
     *porosity*.  Each of these arrays is ``npoints`` long.  They can be
     conveniently plotted by passing the tuple to matplotlib's ``plot`` function
-    using the \* notation: ``plt.plot(*the_tuple, 'b.')``.
+    using the \* notation: ``plt.plot(*the_tuple, 'b.')``.  The resulting plot
+    is similar to the sketch given by Bachmat and Bear [1]
 
     Notes
     -----
@@ -35,8 +36,14 @@ def representative_elementary_volume(im, npoints=1000):
     is spent on scipy's ``sum`` function which is needed to sum the number of
     void voxels (1's) in each subdomain.
 
-    Also, this function if primed for parallelization since the ``npoints`` are
+    Also, this function is primed for parallelization since the ``npoints`` are
     calculated independenlty.
+
+    References
+    ----------
+    [1] Bachmat and Bear. On the Concept and Size of a Representative
+    Elementary Volume (Rev), Advances in Transport Phenomena in Porous Media
+    (1987)
 
     """
     im_temp = sp.zeros_like(im)
@@ -56,7 +63,9 @@ def representative_elementary_volume(im, npoints=1000):
         Vt = sp.size(temp)
         porosity[i] = Vp/Vt
         volume[i] = Vt
-    profile = tuple((volume, porosity))
+    profile = namedtuple('profile', ('volume', 'porosity'))
+    profile.volume = volume
+    profile.porosity = porosity
     return profile
 
 
@@ -68,12 +77,18 @@ def radial_distribution(im, bins=10):
     [1] Torquato, S. Random Heterogeneous Materials: Mircostructure and
     Macroscopic Properties. Springer, New York (2002)
     """
+    print("Sorry, but this function is not implemented yet")
 
 
 def lineal_path(im):
     r"""
+
+    References
+    ----------
+    [1] Torquato, S. Random Heterogeneous Materials: Mircostructure and
+    Macroscopic Properties. Springer, New York (2002)
     """
-    pass
+    print("Sorry, but this function is not implemented yet")
 
 
 def pore_size_density(im, bins=10, voxel_size=1):
@@ -100,8 +115,8 @@ def pore_size_density(im, bins=10, voxel_size=1):
 
     Returns
     -------
-    A list containing two 1D arrays: ``r`` is the radius of the voxels, and
-    ``n`` is the number of voxels that are within ``r`` of the solid.
+    A tuple containing two 1D arrays: ``radius `` is the radius of the voxels,
+    and ``count`` is the number of voxels that are within R of the solid.
 
     Notes
     -----
@@ -110,8 +125,8 @@ def pore_size_density(im, bins=10, voxel_size=1):
 
     See Also
     --------
-    simulations.feature_size
-    simulaitons.porosimetry
+    feature_size
+    porosimetry
 
     References
     ----------
@@ -120,11 +135,11 @@ def pore_size_density(im, bins=10, voxel_size=1):
     """
     if im.dtype == bool:
         im = spim.distance_transform_edt(im)
-    rdf = sp.histogram(a=im[im > 0], bins=bins)
-    n = rdf[0]/sp.sum(im > 0)
-    r = rdf[1][:-1]*voxel_size
-    rdf = [r, n]
-    return rdf
+    hist = sp.histogram(a=im[im > 0], bins=bins)
+    n = hist[0]/sp.sum(im > 0)
+    r = hist[1][:-1]*voxel_size
+    rdf = namedtuple('rdf', ('radius', 'count'))
+    return rdf(r, n)
 
 
 def porosity(im):
@@ -148,6 +163,16 @@ def porosity(im):
     This function assumes void is represented by 1 and solid by 0, and all
     other values are ignored.  This is useful, for example, for images of
     cylindrical cores, where all voxels outside the core are labelled with 2.
+
+    Alternatively, images can be processed with ``find_disconnected_voxels``
+    to get an image of only blind pores.  This can then be added to the orignal
+    image such that blind pores have a value of 2, thus allowing the
+    calculation of accessible porosity, rather than overall porosity.
+
+    References
+    ----------
+    [1] Torquato, S. Random Heterogeneous Materials: Mircostructure and
+    Macroscopic Properties. Springer, New York (2002)
     """
     im = sp.array(im, dtype=int)
     Vp = sp.sum(im == 1)
@@ -207,24 +232,24 @@ def two_point_correlation_bf(im, spacing=10):
     h1 = sp.histogram(dmat, bins=range(0, int(sp.amin(im.shape)/2), spacing))
     dmat = dmat[:, hits]
     h2 = sp.histogram(dmat, bins=h1[1])
-    h2 = (h2[1][:-1], h2[0]/h1[0])
-    return h2
+    tpcf = namedtuple('two_point_correlation_function',
+                      ('distance', 'probability'))
+    return tpcf(h2[1][:-1], h2[0]/h1[0])
 
 
 def apply_chords(im, spacing=0, axis=0, trim_edges=True):
     r"""
     Adds chords to the void space in the specified direction.  The chords are
-    separated by 1 voxels plus the provided spacing.
+    separated by 1 voxel plus the provided spacing.
 
     Parameters
     ----------
     im : ND-array
-        A 2D image of the porous material with void marked as True.
+        An image of the porous material with void marked as True.
 
     spacing : int (default = 0)
         Chords are automatically separated by 1 voxel and this argument
-        increases
-        the separation.
+        increases the separation.
 
     axis : int (default = 0)
         The axis along which the chords are drawn.
@@ -253,7 +278,10 @@ def apply_chords(im, spacing=0, axis=0, trim_edges=True):
     im = sp.moveaxis(a=im, source=dims1, destination=dims2)
     im = sp.atleast_3d(im)
     ch = sp.zeros_like(im, dtype=bool)
-    ch[:, ::4+2*spacing, ::4+2*spacing] = 1
+    if im.ndim == 2:
+        ch[:, ::2+spacing, ::2+spacing] = 1
+    if im.ndim == 3:
+        ch[:, ::4+2*spacing, ::4+2*spacing] = 1
     chords = im*ch
     chords = sp.squeeze(chords)
     if trim_edges:
@@ -375,3 +403,50 @@ def chord_length_distribution(im):
         s = slices[i]
         chord_lens[i] = sp.amax([item.stop-item.start for item in s])
     return chord_lens
+
+
+def local_thickness(im):
+    r"""
+    For each voxel, this functions calculates the radius of the largest sphere
+    that both engulfs the voxel and fits entirely within the foreground. This
+    is not the same as a simple distance transform, which finds the largest
+    sphere that could be *centered* on each voxel.
+
+    Parameters
+    ----------
+    im : array_like
+        A binary image with the phase of interest set to True
+
+    Returns
+    -------
+    An image with the pore size values in each voxel
+
+    Notes
+    -----
+    The term *foreground* is used since this function can be applied to both
+    pore space or the solid, whichever is set to True.
+
+    """
+    from skimage.morphology import cube
+    if im.ndim == 2:
+        from skimage.morphology import square as cube
+    dt = spim.distance_transform_edt(im)
+    sizes = sp.unique(sp.around(dt, decimals=0))
+    im_new = sp.zeros_like(im, dtype=float)
+    denom = int(len(sizes)/52+1)
+    print('_'*60)
+    print("Performing Image Opening")
+    n = min(len(sizes), 52)
+    print('0%|'+'-'*n+'|100%')
+    print('  |', end='')
+    for i in range(len(sizes)):
+        if sp.mod(i, denom) == 0:
+            print('|', end='')
+        r = sizes[i]
+        im_temp = dt >= r
+        im_temp = spim.distance_transform_edt(~im_temp) <= r
+        im_new[im_temp] = r
+    print('|')
+    # Trim outer edge of features to remove noise
+    im_new = spim.binary_erosion(input=im, structure=cube(1))*im_new
+    return im_new
