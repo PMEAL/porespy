@@ -7,6 +7,6 @@ class VisualizationTest():
         pass
 
     def test_sem(self):
-        im = ps.generators.blobs(shape=200)
+        im = ps.generators.blobs(shape=100)
         sem = ps.visualization.sem(im)
         assert sem.ndim == 2

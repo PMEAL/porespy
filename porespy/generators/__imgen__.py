@@ -25,6 +25,7 @@ def insert_shape(im, center, element, value=1):
     im[s_im] = im[s_im] + element[s_el]*value
     return im
 
+
 def add_noise(im, u_void=0.8, u_solid=0.2, s_void=0.15, s_solid=0.15):
     r"""
     Add some normally distributed noise values to the image.  This is useful
@@ -60,7 +61,7 @@ def add_noise(im, u_void=0.8, u_solid=0.2, s_void=0.15, s_solid=0.15):
     im = im*sp.random.normal(loc=u_void, scale=s_void, size=im.shape) + \
         ~im*sp.random.normal(loc=u_solid, scale=s_solid, size=im.shape)
     return im
-  
+
 
 def bundle_of_tubes(shape, spacing):
     r"""
