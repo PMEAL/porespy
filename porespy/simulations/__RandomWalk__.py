@@ -183,7 +183,6 @@ class RandomWalk:
             path, free_path = self.walk(p, self._max_steps, self._stride)
             path_data[:, w, :] = np.swapaxes(path, 0, 1)
             free_path_data[:, w, :] = np.swapaxes(free_path, 0, 1)
-        self._total_walkers += walkers
         if self._path_data is None:
             self._path_data = paths(path_data, free_path_data)
         else:
@@ -192,11 +191,12 @@ class RandomWalk:
             new_free_data = np.concatenate((self._path_data.free_space,
                                             free_path_data), 1)
             self._path_data = paths(new_data, new_free_data)
+        self._sd_updated = False
+        self._sterr_updated = False
 
     def __init__(self, im, walkers=1000, max_steps=5000, stride=10,
                  start_frac=0.2):
         self.im = np.array(im, ndmin=3)
-        self._total_walkers = 0
         self._max_steps = max_steps
         self._stride = stride
         self._start_frac = start_frac
@@ -214,11 +214,31 @@ class RandomWalk:
             raise ValueError('image needs to be 2 or 3 dimensional')
         self._shape = (self._z_len, self._y_len, self._x_len)
         self._path_data = None
+        self._sd_data = None
+        self._sd_updated = False
+        self._sterr_data = None
+        self._sterr_updated = False
         self.perform_walks(walkers)
+
+    @property
+    def steps(self):
+        return np.arange(0, self.max_steps+1, self.stride)
 
     @property
     def path_data(self):
         return self._path_data
+
+    @property
+    def sd_data(self):
+        if not self._sd_updated:
+            self._get_sq_displacement()
+        return self._sd_data
+
+    @property
+    def sterr_data(self):
+        if not self._sterr_updated:
+            self._get_sterr()
+        return self._sterr_data
 
     @property
     def ndim(self):
@@ -234,7 +254,7 @@ class RandomWalk:
 
     @property
     def total_walkers(self):
-        return self._total_walkers
+        return np.size(self._path_data.pore_space, 1)
 
     @property
     def stride(self):
@@ -244,7 +264,7 @@ class RandomWalk:
     def start_frac(self):
         return self._start_frac
 
-    def _get_squared_displacement(self):
+    def _get_sq_displacement(self):
         r"""
         Generates squared displacement arrays for pore_space and free_space
         """
@@ -262,7 +282,55 @@ class RandomWalk:
             for i in range(np.size(path, 1)):
                 sd[:, w, i] = (path[:, i]-path[:, 0])**2
                 sd_free[:, w, i] = (free_path[:, i] - free_path[:, 0])**2
-        return squared_displacement(sd, sd_free)
+        self._sd_data = squared_displacement(sd, sd_free)
+        self._sd_updated = True
+
+    def _get_sterr(self):
+        r"""
+        """
+        standard_error = namedtuple('standard_error',
+                                    ('pore_space', 'free_space'))
+        sd, sd_f = self.sd_data
+        ste = np.zeros((4, np.size(self.steps)))
+        ste_f = np.zeros((4, np.size(self.steps)))
+        for col in range(np.size(sd, 2)):
+            ste[3, col] = np.std(np.sum(sd[:, np.where(sd[0, :, col] >= 0),
+                                 col], 0))
+            ste_f[3, col] = np.std(np.sum(sd_f[:,
+                                   np.where(sd_f[0, :, col] >= 0), col], 0))
+            ste[3, col] /= np.sqrt(np.size(np.where(sd[0, :, col] >= 0)))
+            ste_f[3, col] /= np.sqrt(np.size(np.where(sd[0, :, col] >= 0)))
+        for d in range(3):
+            for col in range(np.size(sd, 2)):
+                ste[d, col] = np.std(sd[d, np.where(sd[d, :, col] >= 0), col])
+                ste_f[d, col] = np.std(sd_f[d, np.where(sd_f[d, :, col] >= 0),
+                                       col])
+                ste[d, col] /= np.sqrt(np.size(np.where(sd[0, :, col] >= 0)))
+                ste_f[d, col] /= np.sqrt(np.size(np.where(sd[0, :, col] >= 0)))
+        self._sterr_data = standard_error(ste, ste_f)
+        self._sterr_updated = True
+
+    def get_msd(self, direction=None):
+        r"""
+        """
+        d = direction
+        sd, sd_f = self.sd_data
+        msd = np.zeros(np.size(self.steps))
+        msd_f = np.zeros(np.size(self.steps))
+        mean_sd = namedtuple('mean_squared_displacement',
+                             ('pore_space', 'free_space'))
+        if d is None:
+            for col in range(np.size(sd, 2)):
+                msd[col] = np.mean(np.sum(sd[:, np.where(sd[0, :, col] >= 0),
+                                   col], 0))
+                msd_f[col] = np.mean(np.sum(sd_f[:,
+                                     np.where(sd_f[0, :, col] >= 0), col], 0))
+        else:
+            for col in range(np.size(sd, 2)):
+                msd[col] = np.mean(sd[d, np.where(sd[0, :, col] >= 0), col])
+                msd_f[col] = np.mean(sd_f[d, np.where(sd_f[0, :, col] >= 0),
+                                     col])
+        return mean_sd(msd, msd_f)
 
     def show_msd(self, step_range=None, direction=None, showstderr=True):
         r"""
@@ -279,44 +347,28 @@ class RandomWalk:
             argument is given, total msd is shown
         showstderr: bool (optional)
             If set to True, the graph will show error bars
+
+        Returns
+        --------
+        out: namedtuple
         """
         if step_range is None:
             step_range = (0, self.max_steps)
         start, stop = step_range
+        d = direction
         start = start//self.stride
         stop = stop//self.stride
-        squared_displacement = self._get_squared_displacement()
-        sd = squared_displacement.pore_space
-        sd_f = squared_displacement.free_space
-        steps = np.arange(0, self.max_steps+1, self.stride)
-        msd = np.zeros(np.size(steps))
-        ste = np.zeros(np.size(steps))
-        msd_f = np.zeros(np.size(steps))
-        ste_f = np.zeros(np.size(steps))
-        if direction is None:
-            for col in range(np.size(sd, 2)):
-                msd[col] = np.mean(np.sum(sd[:, np.where(sd[0, :, col] >= 0),
-                                   col], 0))
-                ste[col] = np.std(np.sum(sd[:, np.where(sd[0, :, col] >= 0),
-                                  col], 0))
-                msd_f[col] = np.mean(np.sum(sd_f[:,
-                                     np.where(sd_f[0, :, col] >= 0), col], 0))
-                ste_f[col] = np.std(np.sum(sd_f[:,
-                                    np.where(sd_f[0, :, col] >= 0), col], 0))
-                ste[col] /= np.sqrt(np.size(np.where(sd[0, :, col] >= 0)))
-                ste_f[col] /= np.sqrt(np.size(np.where(sd[0, :, col] >= 0)))
+        sd, sd_f = self.sd_data
+        ste, ste_f = self.sterr_data
+        steps = self.steps
+        msd, msd_f = self.get_msd(direction)
+        slopes = namedtuple('slope', ('pore_space', 'free_space'))
+        if d is None:
+            ste = ste[3, :]
+            ste_f = ste_f[3, :]
         else:
-            d = direction
-            for col in range(np.size(sd, 2)):
-                msd[col] = np.mean(sd[d, np.where(sd[0, :, col] >= 0), col])
-                ste[col] = np.std(sd[d, np.where(sd[0, :, col] >= 0), col])
-                msd_f[col] = np.mean(sd_f[d, np.where(sd_f[0, :, col] >= 0),
-                                     col])
-                ste_f[col] = np.std(sd_f[d, np.where(sd_f[0, :, col] >= 0),
-                                    col])
-                ste[col] /= np.sqrt(np.size(np.where(sd[0, :, col] >= 0)))
-                ste_f[col] /= np.sqrt(np.size(np.where(sd[0, :, col] >= 0)))
-
+            ste = ste[d, :]
+            ste_f = ste_f[d, :]
         p = np.polyfit(steps[start:stop], msd[start:stop], 1)
         p_f = np.polyfit(steps[start:stop], msd_f[start:stop], 1)
         if showstderr:
@@ -327,7 +379,6 @@ class RandomWalk:
         else:
             plt.plot(steps[start:stop], msd[start:stop])
             plt.plot(steps[start:stop], msd_f[start:stop])
-        slopes = namedtuple('slope', ('pore_space', 'free_space'))
         return slopes(p[0], p_f[0])
 
     def _get_path(self, walker):
