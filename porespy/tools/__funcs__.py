@@ -1,8 +1,47 @@
 import scipy as sp
 import scipy.ndimage as spim
 from skimage.morphology import ball, disk, square, cube
+from skimage.morphology import reconstruction
 from skimage.segmentation import clear_border
 from numba import jit
+
+
+def get_slice(im, center, size, pad=0):
+    r"""
+    Given a ``center`` location and ``radius`` of a feature, returns the slice
+    object into the ``im`` that bounds the feature but does not extend beyond
+    the image boundaries.
+
+    Parameters
+    ----------
+    im : ND-image
+        The image of the porous media
+
+    center : array_like
+        The coordinates of the center of the feature of interest
+
+    size : array_like or scalar
+        The size of the feature in each direction.  If a scalar is supplied,
+        this implies the same size in all directions.
+
+    pad : scalar or array_like
+        The amount to pad onto each side of the slice.  The default is 0.  A
+        scalar value will increase the slice size equally in all directions,
+        while an array the same shape as ``im.shape`` can be passed to pad
+        a specified amount in each direction.
+
+    Returns
+    -------
+    A list of slice objects, each indexing into one dimension of the image.
+    """
+    p = sp.ones(shape=im.ndim, dtype=int)*sp.array(pad)
+    s = sp.ones(shape=im.ndim, dtype=int)*sp.array(size)
+    slc = []
+    for dim in range(im.ndim):
+        lower_im = sp.amax((center[dim] - s[dim] - p[dim], 0))
+        upper_im = sp.amin((center[dim] + s[dim] + 1 + p[dim], im.shape[dim]))
+        slc.append(slice(lower_im, upper_im))
+    return slc
 
 
 def find_outer_region(im, r=0):
@@ -74,25 +113,11 @@ def extract_subsection(im, shape):
     return im
 
 
-def reduce_peaks_to_points(peaks):
-    if peaks.ndim == 2:
-        from skimage.morphology import square as cube
-    else:
-        from skimage.morphology import cube
-    markers, N = spim.label(input=peaks, structure=cube(3))
-    inds = spim.measurements.center_of_mass(input=peaks,
-                                            labels=markers,
-                                            index=sp.arange(1, N))
-    inds = sp.floor(inds).astype(int)
-    # Centroid may not be on old pixel, so create a new peaks image
-    peaks = sp.zeros_like(peaks, dtype=bool)
-    peaks[tuple(inds.T)] = True
-    return peaks
-
-
 def extend_slice(s, shape, pad=1):
     r"""
-    Adjust slice indices to include additional voxles around the slices.
+    Adjust slice indices to include additional voxles around the slice.  The
+    key to this function is that is does bounds checking to ensure the indices
+    don't extend outside the image.
 
     Parameters
     ----------
@@ -125,33 +150,36 @@ def extend_slice(s, shape, pad=1):
     return a
 
 
-def binary_opening_fast(dt, r):
+def binary_opening_fast(im, r, dt=None):
     r"""
     This function uses a shortcut to perform a morphological opening that does
-    not slow down with larger structuring elements.  Because of the shortcut
+    not slow down with larger structuring elements.  Because of the shortcut,
     it only applies to spherical structuring elements.
 
     Parameters
     ----------
-    dt : ND-image
-        The distance transform of the pore space.
+    im : ND-array
+        The image of the porous material with True values (or 1's) indicating
+        the pore phase.
+
+    dt : ND-array
+        The distance transform of the pore space.  If none is provided, it will
+        be calculated; however, providing one is a good idea since it will cut
+        the processing time in half.
 
     r : scalar, int
         The radius of the spherical structuring element to apply
 
     Returns
     -------
-    A binary image with True values in all locations where a sphere of size
+    A binary image with ``True`` values in all locations where a sphere of size
     ``r`` could fit entirely within the pore space.
 
-    Notes
-    -----
-    This method requires performing the distance transform twice, but the first
-    time is only on the pores space.  Since this is likely available it must be
-    passed in as an argument.
     """
+    if dt is None:
+        dt = spim.distance_transform_edt(im)
     seeds = dt > r
-    im_opened = spim.distance_transform_edt(~seeds) < r
+    im_opened = spim.distance_transform_edt(~seeds) <= r
     return im_opened
 
 
@@ -226,8 +254,9 @@ def randomize_colors(im, keep_vals=[0]):
 def flood(im, mode='max'):
     r"""
     Floods/fills each region in an image with a single value based on the
-    specific values in the region.  The ```mode``` argument is used to
-    determine how the value is calculated.
+    specific values in that region.  The ```mode``` argument is used to
+    determine how the value is calculated.  A region is defined as a connected
+    cluster of voxels surrounded by 0's for False's.
 
     Parameters
     ----------
@@ -264,42 +293,12 @@ def flood(im, mode='max'):
             if V[L[i]] > I[i]:
                 V[L[i]] = I[i]
     elif mode.startswith('size'):
-        V = sp.zeros(shape=N+1, dtype=float)
+        V = sp.zeros(shape=N+1, dtype=int)
         for i in range(len(L)):
             V[L[i]] += 1
-    V = sp.array(V)
-    im_flooded = sp.zeros_like(im)
-    im_flooded = V[labels]
-    return(im_flooded)
-
-
-def flood2(regions, vals, mode='max', func=None):
-    r"""
-
-    """
-    im_new = sp.ones_like(vals)
-    slices = spim.find_objects(regions)
-    labels = sp.unique(regions)
-    if labels[0] == 0:
-        labels = labels[1:]
-    count = 0
-    if func is None:
-        if mode == 'max':
-            func = sp.amax
-        elif mode == 'min':
-            func = sp.amin
-        elif mode == 'mean':
-            func = sp.mean
-        elif mode == 'size':
-            func = sp.count_nonzero
-        else:
-            raise Exception('Supplied mode is not supported')
-    for i in labels:
-        sub_mask = regions[slices[count]] == i
-        sub_vals = vals[slices[count]]
-        im_new[slices[count]] += func(sub_vals*sub_mask)*sub_mask
-        count += 1
-    return im_new
+    im_flooded = sp.reshape(V[labels], newshape=im.shape)
+    im_flooded = im_flooded*im
+    return im_flooded
 
 
 def make_contiguous(im):
@@ -322,27 +321,30 @@ def make_contiguous(im):
     return im_new
 
 
-def find_edges(im, strel=None):
+def add_walls(im, faces=[1, 1, 1]):
     r"""
-    Find the edges between labelled regions in an image
+    Add walls of solid material to specified faces of an image.
 
     Parameters
     ----------
-    im : array_like
-        A 2D or 3D image containing regions with different labels
+    im : ND-array
+        The image of the porous material
 
-    strel : array_like
-        The structuring element used to find the edges.  If ```None``` is
-        provided (the default) the a round structure is used with a radius of
-        1 voxel.
+    faces : N-dim by 1 array
+        Specifies which faces of the image to add walls.
+
+    Returns
+    -------
+    An ND-array the same size as ``im`` with solid (``False``) values added to
+    the specified faces.
+
     """
-    if strel == None:
-        if im.ndim == 2:
-            strel = disk(1)
-        elif im.ndim == 3:
-            strel = ball(1)
-    temp = spim.convolve(input=im, weights=strel)/sp.sum(strel)
-    temp = im != temp
+    if im.ndim == 2:
+        im = im[1:-1, 1:-1]
+    elif im.ndim == 3:
+        im = im[1:-1, 1:-1, 1:-1]
+    pad = [sp.array([1, 1])*faces[dim] for dim in range(im.ndim)]
+    temp = sp.pad(array=im, pad_width=pad, mode='constant', constant_values=0)
     return temp
 
 
@@ -389,7 +391,7 @@ def get_border(shape, thickness=1, mode='edges'):
     border = sp.ones(shape, dtype=bool)
     if mode == 'faces':
         if ndims == 2:
-             border[t:-t, t:-t] = False
+            border[t:-t, t:-t] = False
         if ndims == 3:
             border[t:-t, t:-t, t:-t] = False
     elif mode == 'edges':
@@ -410,52 +412,33 @@ def get_border(shape, thickness=1, mode='edges'):
     return border
 
 
-def fill_border(im, thickness=1, value=1):
-    border = get_border(im, thickness=thickness)
-    coords = sp.where(border)
-    im[coords] = value
-    return im
-
-
-def get_dims(im):
-    if im.ndim == 2:
-        return 2
-    if (im.ndim == 3) and (im.shape[2] == 1):
-        return 2
-    if im.ndim == 3:
-        return 3
-
-
-def rotate_image_and_repeat(im):
-    # Find all markers in distance transform
-    weighted_markers = sp.zeros_like(im, dtype=float)
-    for phi in sp.arange(0, 45, 2):
-        temp = spim.rotate(im.astype(int), angle=phi, order=5, mode='constant', cval=1)
-        temp = get_weighted_markers(temp, Rs)
-        temp = spim.rotate(temp.astype(int), angle=-phi, order=0, mode='constant', cval=0)
-        X_lo = sp.floor(temp.shape[0]/2-im.shape[0]/2).astype(int)
-        X_hi = sp.floor(temp.shape[0]/2+im.shape[0]/2).astype(int)
-        weighted_markers += temp[X_lo:X_hi, X_lo:X_hi]
-    return weighted_markers
-
-
-def remove_disconnected_voxels(im, conn=None):
+def find_disconnected_voxels(im, conn=None):
     r"""
+    This identifies all pore (or solid) voxels that are not connected to the
+    edge of the image.  This can be used to find blind pores, or remove
+    artifacts such as solid phase voxels that are floating in space.
 
     Parameters
     ----------
     im : ND-image
-        A Boolean image, with True values indicating the foreground from which
-        the offending voxels will be trimmed.
+        A Boolean image, with True values indicating the phase for which
+        disconnected voxels are sought.
 
     conn : int
         For 2D the options are 4 and 8 for square and diagonal neighbors, while
         for the 3D the options are 6 and 26, similarily for square and diagonal
-        neighbors.
+        neighbors.  The default is max
 
-    See Also
-    --------
-    remove_blind_pores
+    Returns
+    -------
+    An ND-image the same size as ``im``, with True values indicating voxels of
+    the phase of interest (i.e. True values in the original image) that are
+    not connected to the outer edges.
+
+    Notes
+    -----
+    The returned array (e.g. ``holes``) be used to trim blind pores from
+    ``im`` using: ``im[holes] = False``
 
     """
     if im.ndim == 2:
@@ -468,71 +451,15 @@ def remove_disconnected_voxels(im, conn=None):
             strel = ball(1)
         elif conn in [None, 26]:
             strel = cube(3)
-    filtered_im = sp.copy(im)
-    id_regions, num_ids = spim.label(filtered_im, structure=strel)
-    id_sizes = sp.array(spim.sum(im, id_regions, range(num_ids + 1)))
-    area_mask = (id_sizes == 1)
-    filtered_im[area_mask[id_regions]] = 0
-    return filtered_im
-
-
-def remove_blind_pores(im):
-    r"""
-    Removes all pore voxels from the image if they are not connected to the
-    surface.
-
-    Parameters
-    ----------
-    im : ND-array
-        The image of the pore space, with ones indicating the phase to be
-        trimmed
-    """
-    im = sp.array(im, dtype=int)
-    # Pad image to ensure all void is connected
-    temp_im = sp.pad(im > 0, 1, 'constant', constant_values=1)
-    labels, N = spim.label(input=temp_im)
-    connected_pores = (labels == 1)
-    s = [slice(1, -1) for _ in im.shape]
-    connected_pores = connected_pores[s]
-    return connected_pores
-
-
-def remove_floating_solid(im):
-    r"""
-    Removes all solid phase voxels (False or 0) that are not connected to the
-    main body of the image, meaning they are floating in space.
-
-    Parameters
-    ----------
-    im : ND-array
-        The image of the pore space, with 0's (or False) indicating the phase
-        to be trimmed
-    """
-    im = sp.array(im, dtype=bool)
-    im = remove_blind_pores(~im)
-    return im
-
-
-def bounding_box_indices(roi):
-    r"""
-    Given the ND-coordinates of voxels defining the region of interest, the
-    indices of a bounding box are returned.
-    """
-    maxs = sp.amax(roi, axis=1)
-    mins = sp.amin(roi, axis=1)
-    x = []
-    x.append(slice(mins[0], maxs[0]))
-    x.append(slice(mins[1], maxs[1]))
-    if sp.shape(roi)[0] == 3:  # If image if 3D, add third coordinate
-        x.append(slice(mins[2], maxs[2]))
-    inds = tuple(x)
-    return inds
+    labels, N = spim.label(input=im, structure=strel)
+    holes = clear_border(labels=labels) > 0
+    return holes
 
 
 def trim_extrema(im, h, mode='maxima'):
     r"""
-    This trims local extrema by a specified amount, essentially decapitating
-    peaks or flooding valleys, or both.
+    This trims local extrema in greyscale values by a specified amount,
+    essentially decapitating peaks or flooding valleys, or both.
 
     Parameters
     ----------

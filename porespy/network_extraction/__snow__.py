@@ -1,19 +1,22 @@
+from collections import namedtuple
 import scipy as sp
 import scipy.ndimage as spim
 import scipy.spatial as sptl
 from skimage.morphology import disk, ball, square, cube
+from porespy.tools import extend_slice, randomize_colors
+from porespy.network_extraction import partition_pore_space
 
 
 def snow(im, r_max=4, sigma=0.4):
     r"""
-    This function extracts the true local maximum of the distance transform of
-    a pore space image.  These local maxima can then be used as markers in a
-    marker-based watershed segmentation such as that included in Scikit-Image
-    or through the MorphoJ plugin in ImageJ.
+    This function partitions the void space into pore regions using a
+    marker-based watershed algorithm.  The key to this function is that true
+    local maximum of the distance transform are found by trimming various
+    types of extraneous peaks.
 
     The SNOW network extraction algorithm (Sub-Network of an Over-segmented
     Watershed) was designed to handle to perculiarities of high porosity
-    materials, but it applies equally well to other materials as well.
+    materials, but it applies well to other materials as well.
 
     Parameters
     ----------
@@ -35,32 +38,53 @@ def snow(im, r_max=4, sigma=0.4):
 
     Returns
     -------
-    An array the same shape as the input image, with non-zero values indicating
-    the subset of peaks found by the algorithm.  The peaks are returned as a
-    label array that can be directly used as markers in a watershed
-    segmentation.
+    A tuple containing several arrays.  This is a **named tuple** meaning that
+    each array can be accessed using the following attribute names:
+
+        * ``im``: The binary image of the void space
+        * ``dt``: The distance transform of the image
+        * ``peaks``: The peaks of the distance transform after applying the
+        steps of the SNOW algorithm
+        * ``regions``: The void space partitioned into pores using a marker
+        based watershed with the peaks found by the SNOW algorithm
+
+    References
+    ----------
+    [1] Gostick, J. "A versatile and efficient network extraction algorithm
+    using marker-based watershed segmenation".  Physical Review E. (2017)
 
     """
+    tup = namedtuple('results', field_names=['im', 'dt', 'peaks', 'regions'])
     im = im.squeeze()
     print('_'*60)
-    print("Beginning SNOW Algorithm to remove spurious peaks")
+    print("Beginning SNOW Algorithm")
 
     if im.dtype == 'bool':
+        print('Peforming Distance Transform')
         dt = spim.distance_transform_edt(input=im)
     else:
         dt = im
         im = dt > 0
 
+    tup.im = im
+    tup.dt = dt
+
     if sigma > 0:
+        print('Applying Gaussian blur with sigma =', str(sigma))
         dt = spim.gaussian_filter(input=dt, sigma=sigma)
 
     peaks = find_peaks(dt=dt)
     print('Initial number of peaks: ', spim.label(peaks)[1])
-    peaks = trim_saddle_points(peaks=peaks, dt=dt)
+    peaks = trim_saddle_points(peaks=peaks, dt=dt, max_iters=200)
+    print('Peaks after trimming saddle points: ', spim.label(peaks)[1])
     peaks = trim_nearby_peaks(peaks=peaks, dt=dt)
     peaks, N = spim.label(peaks)
-    print('Final number of peaks: ', N)
-    return peaks
+    print('Peaks after trimming nearby peaks: ', N)
+    tup.peaks = peaks
+    regions = partition_pore_space(im=dt, peaks=peaks)
+    regions = randomize_colors(regions)
+    tup.regions = regions
+    return tup
 
 
 def find_peaks(dt, r=4, footprint=None):
@@ -92,7 +116,8 @@ def find_peaks(dt, r=4, footprint=None):
     It is also possible ot the ``peak_local_max`` function from the
     ``skimage.feature`` module as follows:
 
-    ``peaks = peak_local_max(image=dt, min_distance=r, exclude_border=0, indices=False)``
+    ``peaks = peak_local_max(image=dt, min_distance=r, exclude_border=0,
+    indices=False)``
 
     This automatically uses a square structuring element which is significantly
     faster than using a circular or spherical element.
@@ -112,10 +137,33 @@ def find_peaks(dt, r=4, footprint=None):
 
 
 def reduce_peaks_to_points(peaks):
-    markers, N = spim.label(input=peaks, structure=cube(3))
+    r"""
+    Any peaks that are broad or elongated are replaced with a single voxel
+    that is located at the center of mass of the original voxels.
+
+    Parameters
+    ----------
+    peaks : ND-image
+        An image containing True values indicating peaks in the distance
+        transform
+
+    Returns
+    -------
+    An array with the same number of isolated peaks as the original image, but
+    fewer total voxels.
+
+    Notes
+    -----
+    The center of mass of a group of voxels is used as the new single voxel, so
+    if the group has an odd shape (like a horse shoe), the new voxel may *not*
+    lie on top of the original set.
+    """
+    if peaks.ndim == 2:
+        strel = square
+    markers, N = spim.label(input=peaks, structure=strel(3))
     inds = spim.measurements.center_of_mass(input=peaks,
                                             labels=markers,
-                                            index=range(1, N))
+                                            index=sp.arange(1, N))
     inds = sp.floor(inds).astype(int)
     # Centroid may not be on old pixel, so create a new peaks image
     peaks = sp.zeros_like(peaks, dtype=bool)
@@ -132,13 +180,18 @@ def trim_saddle_points(peaks, dt, max_iters=10):
     Parameters
     ----------
     peaks : ND-array
-
+        A boolean image containing True values to mark peaks in the distance
+        transform (``dt``)
 
     dt : ND-array
-
+        The distance transform of the pore space for which the true peaks are
+        sought.
 
     max_iters : int
-
+        The maximum number of iterations to run while eroding the saddle
+        points.  The default is 10, which is usually not reached; however,
+        a warning is issued if the loop ends prior to removing all saddle
+        points.
 
     Returns
     -------
@@ -169,12 +222,37 @@ def trim_saddle_points(peaks, dt, max_iters=10):
                 peaks_i = False
                 break  # Found a saddle point
         peaks[s] = peaks_i
+        if iters >= max_iters:
+            print('Maximum number of iterations reached, consider' +
+                  'running again with a larger value of max_iters')
     return peaks
 
 
 def trim_nearby_peaks(peaks, dt):
     r"""
-    Removes peaks that are nearer to another peak than t
+    Finds pairs of peaks that are nearer to each other than to the solid phase,
+    and removes the peak that is closer to the solid.
+
+    Parameters
+    ----------
+    peaks : ND-array
+        A boolean image containing True values to mark peaks in the distance
+        transform (``dt``)
+
+    dt : ND-array
+        The distance transform of the pore space for which the true peaks are
+        sought.
+
+    Returns
+    -------
+    An array the same size as ``peaks`` containing a subset of the peaks in
+    the original image.
+
+    Notes
+    -----
+    Each pair of peaks is considered simultaneously, so for a triplet of peaks
+    each pair is considered.  This ensures that only the single peak that is
+    furthest from the solid is kept.  No iteration is required.
     """
     if dt.ndim == 2:
         from skimage.morphology import square as cube
@@ -205,29 +283,3 @@ def trim_nearby_peaks(peaks, dt):
     for s in drop_peaks:
         peaks[slices[s]] = 0
     return (peaks > 0)
-
-
-def trim_nearby_peaks_orig(peaks, dt, min_spacing=None):
-    if min_spacing is None:
-        min_spacing = dt.max()*0.8
-    iters = 0
-    while iters < 10:
-        iters += 1
-        crds = sp.where(peaks)  # Find locations of all peaks
-        dist_to_solid = dt[crds]  # Get distance to solid for each peak
-        dist_to_solid += sp.rand(dist_to_solid.size)*1e-5  # Perturb distances
-        crds = sp.vstack(crds).T  # Convert peak locations to ND-array
-        dist = sptl.distance.cdist(XA=crds, XB=crds)  # Get distance between peaks
-        sp.fill_diagonal(a=dist, val=sp.inf)  # Remove 0's in diagonal
-        dist[dist > min_spacing] = sp.inf  # Keep peaks that are far apart
-        dist_to_nearest_neighbor = sp.amin(dist, axis=0)
-        nearby_neighbors = sp.where(dist_to_nearest_neighbor < dist_to_solid)[0]
-        for peak in nearby_neighbors:
-            nearest_neighbor = sp.amin(sp.where(dist[peak, :] == sp.amin(dist[peak, :]))[0])
-            if dist_to_solid[peak] < dist_to_solid[nearest_neighbor]:
-                peaks[tuple(crds[peak])] = 0
-            else:
-                peaks[tuple(crds[nearest_neighbor])] = 0
-        if len(nearby_neighbors) == 0:
-            break
-    return peaks

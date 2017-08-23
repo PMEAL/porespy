@@ -10,4 +10,3 @@ from . import simulations
 from . import metrics
 from . import generators
 from . import binarization
-from .__BaseClass__ import Bundle

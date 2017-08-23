@@ -21,7 +21,8 @@ def align_image_with_openpnm(im):
     Returns the image rotated accordingly.
     """
     if im.ndim == 2:
-        pass
+        im = (sp.swapaxes(im, 1, 0))
+        im = im[-1::-1, :]
     elif im.ndim == 3:
         im = (sp.swapaxes(im, 2, 0))
         im = im[:, -1::-1, :]
