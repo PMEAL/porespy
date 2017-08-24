@@ -465,7 +465,7 @@ class RandomWalk:
             pore_space and free_space to differentiate between paths
         """
 
-        self._get_path(walker)
+        fig_im, fig_free = self._get_path(walker)
         plt.savefig(f_name+'free_space.png')
         plt.figure(num=1)
         plt.savefig(f_name+'pore_space.png')
