@@ -160,6 +160,8 @@ def reduce_peaks_to_points(peaks):
     """
     if peaks.ndim == 2:
         strel = square
+    else:
+        strel = cube
     markers, N = spim.label(input=peaks, structure=strel(3))
     inds = spim.measurements.center_of_mass(input=peaks,
                                             labels=markers,
