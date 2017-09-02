@@ -15,8 +15,8 @@ plt.imshow(im)
 
 
 # Chord length distributions
-chords = ps.metrics.apply_chords(im=im, trim_edges=False)
-colored_chords = ps.tools.flood(im=chords, mode='size')
+chords = ps.filters.apply_chords(im=im, trim_edges=False)
+colored_chords = ps.filters.flood(im=chords, mode='size')
 
 plt.figure(2)
 plt.subplot(1, 2, 1)

@@ -72,7 +72,8 @@ def bundle_of_tubes(shape, spacing):
     ----------
     shape : list
         The size the image, with the 3rd dimension indicating the plate
-        thickness
+        thickness.  If the 3rd dimension is not given then a thickness of
+        1 voxel is assumed.
 
     spacing : scalar
         The center to center distance of the holes.  The hole sizes will be
@@ -85,6 +86,8 @@ def bundle_of_tubes(shape, spacing):
     shape = sp.array(shape)
     if sp.size(shape) == 1:
         shape = sp.full((3, ), int(shape))
+    if sp.size(shape) == 2:
+        shape = sp.hstack((shape, [1]))
     temp = sp.zeros(shape=shape[:2])
     Xi = sp.linspace(spacing/2,
                      shape[0]-spacing/2,
