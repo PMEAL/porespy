@@ -124,11 +124,6 @@ def pore_size_density(im, bins=10, voxel_size=1):
     This function should not be taken as a pore size distribution in the
     explict sense, but rather an indicator of the sizes in the image.
 
-    See Also
-    --------
-    feature_size
-    porosimetry
-
     References
     ----------
     [1] Torquato, S. Random Heterogeneous Materials: Mircostructure and
@@ -238,112 +233,6 @@ def two_point_correlation_bf(im, spacing=10):
     return tpcf(h2[1][:-1], h2[0]/h1[0])
 
 
-def apply_chords(im, spacing=0, axis=0, trim_edges=True):
-    r"""
-    Adds chords to the void space in the specified direction.  The chords are
-    separated by 1 voxel plus the provided spacing.
-
-    Parameters
-    ----------
-    im : ND-array
-        An image of the porous material with void marked as True.
-
-    spacing : int (default = 0)
-        Chords are automatically separated by 1 voxel and this argument
-        increases the separation.
-
-    axis : int (default = 0)
-        The axis along which the chords are drawn.
-
-    trim_edges : bool (default = True)
-        Whether or not to remove chords that touch the edges of the image.
-        These chords are artifically shortened, so skew the chord length
-        distribution
-
-    Returns
-    -------
-    An ND-array of the same size as ```im``` with True values indicating the
-    chords.
-
-    See Also
-    --------
-    apply_chords_3D
-
-    """
-    if spacing < 0:
-        raise Exception('Spacing cannot be less than 0')
-    dims1 = sp.arange(0, im.ndim)
-    dims2 = sp.copy(dims1)
-    dims2[axis] = 0
-    dims2[0] = axis
-    im = sp.moveaxis(a=im, source=dims1, destination=dims2)
-    im = sp.atleast_3d(im)
-    ch = sp.zeros_like(im, dtype=bool)
-    if im.ndim == 2:
-        ch[:, ::2+spacing, ::2+spacing] = 1
-    if im.ndim == 3:
-        ch[:, ::4+2*spacing, ::4+2*spacing] = 1
-    chords = im*ch
-    chords = sp.squeeze(chords)
-    if trim_edges:
-        temp = clear_border(spim.label(chords == 1)[0]) > 0
-        chords = temp*chords
-    chords = sp.moveaxis(a=chords, source=dims1, destination=dims2)
-    return chords
-
-
-def apply_chords_3D(im, spacing=0, trim_edges=True):
-    r"""
-    Adds chords to the void space in all three principle directions.  The
-    chords are seprated by 1 voxel plus the provided spacing.  Chords in the X,
-    Y and Z directions are labelled 1, 2 and 3 resepctively.
-
-    Parameters
-    ----------
-    im : ND-array
-        A 3D image of the porous material with void space marked as True.
-
-    spacing : int (default = 0)
-        Chords are automatically separed by 1 voxel on all sides, and this
-        argument increases the separation.
-
-    trim_edges : bool (default = True)
-        Whether or not to remove chords that touch the edges of the image.
-        These chords are artifically shortened, so skew the chord length
-        distribution
-
-    Returns
-    -------
-    An ND-array of the same size as ```im``` with values of 1 indicating
-    x-direction chords, 2 indicating y-direction chords, and 3 indicating
-    z-direction chords.
-
-    Notes
-    -----
-    The chords are separated by a spacing of at least 1 voxel so that tools
-    that search for connected components, such as ``scipy.ndimage.label`` can
-    detect individual chords.
-
-    See Also
-    --------
-    apply_chords
-
-    """
-    if im.ndim < 3:
-        raise Exception('Must be a 3D image to use this function')
-    if spacing < 0:
-        raise Exception('Spacing cannot be less than 0')
-    ch = sp.zeros_like(im, dtype=int)
-    ch[:, ::4+2*spacing, ::4+2*spacing] = 1  # X-direction
-    ch[::4+2*spacing, :, 2::4+2*spacing] = 2  # Y-direction
-    ch[2::4+2*spacing, 2::4+2*spacing, :] = 3  # Z-direction
-    chords = ch*im
-    if trim_edges:
-        temp = clear_border(spim.label(chords > 0)[0]) > 0
-        chords = temp*chords
-    return chords
-
-
 def chord_length_distribution(im):
     r"""
     Determines the length of each chord in the supplied image by looking at
@@ -372,40 +261,3 @@ def chord_length_distribution(im):
         s = slices[i]
         chord_lens[i] = sp.amax([item.stop-item.start for item in s])
     return chord_lens
-
-
-def local_thickness(im):
-    r"""
-    For each voxel, this functions calculates the radius of the largest sphere
-    that both engulfs the voxel and fits entirely within the foreground. This
-    is not the same as a simple distance transform, which finds the largest
-    sphere that could be *centered* on each voxel.
-
-    Parameters
-    ----------
-    im : array_like
-        A binary image with the phase of interest set to True
-
-    Returns
-    -------
-    An image with the pore size values in each voxel
-
-    Notes
-    -----
-    The term *foreground* is used since this function can be applied to both
-    pore space or the solid, whichever is set to True.
-
-    """
-    from skimage.morphology import cube
-    if im.ndim == 2:
-        from skimage.morphology import square as cube
-    dt = spim.distance_transform_edt(im)
-    sizes = sp.unique(sp.around(dt, decimals=0))
-    im_new = sp.zeros_like(im, dtype=float)
-    for r in tqdm(sizes):
-        im_temp = dt >= r
-        im_temp = spim.distance_transform_edt(~im_temp) <= r
-        im_new[im_temp] = r
-    # Trim outer edge of features to remove noise
-    im_new = spim.binary_erosion(input=im, structure=cube(1))*im_new
-    return im_new

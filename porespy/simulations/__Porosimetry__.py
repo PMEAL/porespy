@@ -27,7 +27,7 @@ class Porosimetry(object):
 
     def _get_result(self):
         if not hasattr(self, '_result'):
-            print('Simulation has not been run yet, wait while result is computed')
+            print('Simulation has not been run, wait while result is computed')
             self.run()
         return self._result
 
@@ -84,7 +84,8 @@ class Porosimetry(object):
             inlets = get_border(im.shape, mode='faces')
         inlets = sp.where(inlets)
         if sizes is None:
-            self.sizes = sp.logspace(start=sp.log10(sp.amax(dt)), stop=0, num=npts)
+            self.sizes = sp.logspace(start=sp.log10(sp.amax(dt)),
+                                     stop=0, num=npts)
         else:
             self.sizes = sp.sort(a=sizes)[-1::-1]
         imresults = sp.zeros(sp.shape(im))
