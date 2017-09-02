@@ -5,6 +5,7 @@ import scipy.ndimage as spim
 import scipy.spatial as sptl
 from porespy.tools import get_border, extract_subsection, extend_slice
 from collections import namedtuple
+from tqdm import tqdm
 
 
 def representative_elementary_volume(im, npoints=1000):
@@ -54,7 +55,7 @@ def representative_elementary_volume(im, npoints=1000):
     slices = spim.find_objects(input=labels)
     porosity = sp.zeros(shape=(N,), dtype=float)
     volume = sp.zeros(shape=(N,), dtype=int)
-    for i in sp.arange(0, N):
+    for i in tqdm(sp.arange(0, N)):
         s = slices[i]
         p = pads[i]
         new_s = extend_slice(s, shape=im.shape, pad=p)
@@ -212,7 +213,7 @@ def two_point_correlation_bf(im, spacing=10):
     points, then counting the instances where both pairs lie in the void space.
 
     This approach uses a distance matrix so can consume memory very quickly for
-    large 3D image and/or close spacing.
+    large 3D images and/or close spacing.
     """
     if im.ndim == 2:
         pts = sp.meshgrid(range(0, im.shape[0], spacing),
@@ -343,38 +344,6 @@ def apply_chords_3D(im, spacing=0, trim_edges=True):
     return chords
 
 
-def feature_size_distribution(im, bins=None):
-    r"""
-    Given an image containing the size of the feature to which each voxel
-    belongs (as produced by ```simulations.feature_size```), this determines
-    the total volume of each feature and returns a tuple containing *radii* and
-    *counts* suitable for plotting.
-
-    Parameters
-    ----------
-    im : array_like
-        An array containing the local feature size
-
-    Returns
-    -------
-    Tuple containing radii, counts
-        Two arrays containing the radii of the largest spheres, and the number
-        of voxels that are encompassed by spheres of each radii.
-
-    Notes
-    -----
-    The term *foreground* is used since this function can be applied to both
-    pore space or the solid, whichever is set to True.
-
-    """
-    inds = sp.where(im > 0)
-    bins = sp.unique(im)[1:]
-    hist = sp.histogram(a=im[inds], bins=bins)
-    radii = hist[1][0:-1]
-    counts = hist[0]
-    return radii, counts
-
-
 def chord_length_distribution(im):
     r"""
     Determines the length of each chord in the supplied image by looking at
@@ -433,20 +402,10 @@ def local_thickness(im):
     dt = spim.distance_transform_edt(im)
     sizes = sp.unique(sp.around(dt, decimals=0))
     im_new = sp.zeros_like(im, dtype=float)
-    denom = int(len(sizes)/52+1)
-    print('_'*60)
-    print("Performing Image Opening")
-    n = min(len(sizes), 52)
-    print('0%|'+'-'*n+'|100%')
-    print('  |', end='')
-    for i in range(len(sizes)):
-        if sp.mod(i, denom) == 0:
-            print('|', end='')
-        r = sizes[i]
+    for r in tqdm(sizes):
         im_temp = dt >= r
         im_temp = spim.distance_transform_edt(~im_temp) <= r
         im_new[im_temp] = r
-    print('|')
     # Trim outer edge of features to remove noise
     im_new = spim.binary_erosion(input=im, structure=cube(1))*im_new
     return im_new
