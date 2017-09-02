@@ -10,4 +10,3 @@ of the image.
 from .__funcs__ import representative_elementary_volume, porosity
 from .__funcs__ import chord_length_distribution, pore_size_density
 from .__funcs__ import two_point_correlation_bf, two_point_correlation_fft
-from .__funcs__ import local_thickness
