@@ -5,7 +5,7 @@ import scipy.spatial as sptl
 from porespy.tools import get_border, extract_subsection, extend_slice
 from collections import namedtuple
 from tqdm import tqdm
-from numbe import jit
+from numba import jit
 from skimage.morphology import ball, disk, square, cube
 from skimage.morphology import reconstruction
 
