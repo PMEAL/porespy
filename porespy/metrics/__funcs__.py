@@ -237,6 +237,91 @@ def two_point_correlation_bf(im, spacing=10):
     return tpcf(h2[1][:-1], h2[0]/h1[0])
 
 
+def _radial_profile(autocorr, r_max, nbins=100):
+    r"""
+    Helper function to calculate the radial profile of the autocorrelation.
+
+    Masks the image in radial segments from the center and averages the values
+    The distance values are normalized and 100 bins are used as default.
+
+    Parameters
+    ----------
+    autocorr : ND-array
+        The image of autocorrelation produced by FFT
+
+    r_max : int or float
+        The maximum radius in pixels to sum the image over
+    """
+    # Find reference for the central bright spot, should be in center
+    bright_spot = autocorr != np.max(autocorr)
+    # Distance transform of a central spot produces radial spheres
+    # Calculating this manually from indices is not much quicker
+    dt = spim.distance_transform_edt(bright_spot)
+    bin_size = np.int(np.ceil(r_max/nbins))
+    bins = np.arange(bin_size, r_max, step=bin_size)
+    radial_sum = np.zeros_like(bins)
+    for i, r in enumerate(bins):
+        # Generate Radial Mask from dt using bins
+        mask = (dt <= r) * (dt > (r-bin_size))
+        radial_sum[i] = np.sum(autocorr[mask])/np.sum(mask)
+    # Return normalized bin and radially summed autoc
+    norm_bins = bins/np.max(bins)
+    norm_autoc_radial = radial_sum/np.max(radial_sum)
+    tpcf = namedtuple('two_point_correlation_function',
+                      ('distance', 'probability'))
+    return tpcf(norm_bins, norm_autoc_radial)
+
+
+def two_point_correlation_fft(image, pad=False):
+    r"""
+    Calculates the two-point correlation function using fourier transforms
+
+    Parameters
+    ----------
+    im : ND-array
+        The image of the void space on which the 2-point correlation is desired
+
+    pad : bool
+        The image is padded with Trues or 1's depending on dtype around border
+
+    Returns
+    -------
+    A tuple containing the x and y data for plotting the two-point correlation
+    function, using the *args feature of matplotlib's plot function.  The x
+    array is the distances between points and the y array is corresponding
+    probabilities that points of a given distance both lie in the void space.
+
+    Notes
+    -----
+    The fourier transform approach utilizes the fact that the autocorrelation
+    function is the inverse FT of the power spectrum density.
+    For background read the Scipy fftpack docs and for a good explanation see:
+    http://www.ucl.ac.uk/~ucapikr/projects/KamilaSuankulova_BSc_Project.pdf
+    """
+    # Calculate half lengths of the image
+    hls = (np.ceil(np.shape(image))/2).astype(int)
+    if pad:
+        # Pad image boundaries with ones
+        dtype = image.dtype
+        ish = np.shape(image)
+        off = hls + ish
+        if len(ish) == 2:
+            pad_im = np.ones(shape=[2*ish[0], 2*ish[1]], dtype=dtype)
+            pad_im[hls[0]:off[0], hls[1]:off[1]] = image
+        elif len(ish) == 3:
+            pad_im = np.ones(shape=[2*ish[0], 2*ish[1], 2*ish[2]], dtype=dtype)
+            pad_im[hls[0]:off[0], hls[1]:off[1], hls[2]:off[2]] = image
+        image = pad_im
+    # Fourier Transform and shift image
+    F = sp_ft.ifftshift(sp_ft.fftn(sp_ft.fftshift(image)))
+    # Compute Power Spectrum
+    P = sp.absolute(F**2)
+    # Auto-correlation is inverse of Power Spectrum
+    autoc = sp.absolute(sp_ft.ifftshift(sp_ft.ifftn(sp_ft.fftshift(P))))
+    tpcf = _radial_profile(autoc, r_max=np.min(hls))
+    return tpcf
+
+
 def apply_chords(im, spacing=0, axis=0, trim_edges=True):
     r"""
     Adds chords to the void space in the specified direction.  The chords are
