@@ -156,6 +156,4 @@ class Porosimetry(object):
             Snwp.append(sp.sum(im >= r))
         Snwp = [s/Vp for s in Snwp]
         data = namedtuple('xy_data', ('radius', 'saturation'))
-        data.radius = R
-        data.saturation = Snwp
-        return data
+        return data(R, Snwp)
