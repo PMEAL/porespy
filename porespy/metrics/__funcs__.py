@@ -5,8 +5,6 @@ import scipy.ndimage as spim
 import scipy.spatial as sptl
 from porespy.tools import get_border, extract_subsection, extend_slice
 from collections import namedtuple
-import numpy as np
-from scipy import fftpack as sp_ft
 
 
 def representative_elementary_volume(im, npoints=1000):
