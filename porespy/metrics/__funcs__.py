@@ -1,4 +1,5 @@
 import scipy as sp
+import numpy as np
 from skimage.segmentation import clear_border
 from skimage.feature import peak_local_max
 import scipy.ndimage as spim
@@ -6,6 +7,7 @@ import scipy.spatial as sptl
 from porespy.tools import get_border, extract_subsection, extend_slice
 from collections import namedtuple
 from tqdm import tqdm
+from scipy import fftpack as sp_ft
 
 
 def representative_elementary_volume(im, npoints=1000):
@@ -231,6 +233,228 @@ def two_point_correlation_bf(im, spacing=10):
     tpcf = namedtuple('two_point_correlation_function',
                       ('distance', 'probability'))
     return tpcf(h2[1][:-1], h2[0]/h1[0])
+
+
+def _radial_profile(autoc, r_max, nbins=100):
+    r"""
+    Helper functions to calculate the radial profile of the autocorrelation
+    Masks the image in radial segments from the center and averages the values
+    The distance values are normalized and 100 bins are used as default.
+
+    Parameters
+    ----------
+    autoc : ND-array
+        The image of autocorrelation produced by FFT
+
+    r_max : int or float
+        The maximum radius in pixels to sum the image over
+    """
+    # Find reference for the central bright spot, should be in center
+    bright_spot = autoc != np.max(autoc)
+    # Distance transform of a central spot produces radial spheres
+    # Calculating this manually from indices is not much quicker
+    dt = spim.distance_transform_edt(bright_spot)
+    bin_size = np.int(np.ceil(r_max/nbins))
+    bins = np.arange(bin_size, r_max, step=bin_size)
+    radial_sum = np.zeros_like(bins)
+    for i, r in enumerate(bins):
+        # Generate Radial Mask from dt using bins
+        mask = (dt <= r) * (dt > (r-bin_size))
+        radial_sum[i] = np.sum(autoc[mask])/np.sum(mask)
+    # Return normalized bin and radially summed autoc
+    norm_bins = bins/np.max(bins)
+    norm_autoc_radial = radial_sum/np.max(radial_sum)
+    tpcf = namedtuple('two_point_correlation_function',
+                      ('distance', 'probability'))
+    return tpcf(norm_bins, norm_autoc_radial)
+
+
+def two_point_correlation_fft(image, pad=False):
+    r"""
+    Calculates the two-point correlation function using fourier transforms
+
+    Parameters
+    ----------
+    im : ND-array
+        The image of the void space on which the 2-point correlation is desired
+
+    pad : bool
+        The image is padded with Trues or 1's depending on dtype around border
+
+    Returns
+    -------
+    A tuple containing the x and y data for plotting the two-point correlation
+    function, using the *args feature of matplotlib's plot function.  The x
+    array is the distances between points and the y array is corresponding
+    probabilities that points of a given distance both lie in the void space.
+
+    Notes
+    -----
+    The fourier transform approach utilizes the fact that the autocorrelation
+    function is the inverse FT of the power spectrum density.
+    For background read the Scipy fftpack docs and for a good explanation see:
+    http://www.ucl.ac.uk/~ucapikr/projects/KamilaSuankulova_BSc_Project.pdf
+    """
+    # Calculate half lengths of the image
+    hls = (np.ceil(np.shape(image))/2).astype(int)
+    if pad:
+        # Pad image boundaries with ones
+        dtype = image.dtype
+        ish = np.shape(image)
+        off = hls + ish
+        if len(ish) == 2:
+            pad_im = np.ones(shape=[2*ish[0], 2*ish[1]], dtype=dtype)
+            pad_im[hls[0]:off[0], hls[1]:off[1]] = image
+        elif len(ish) == 3:
+            pad_im = np.ones(shape=[2*ish[0], 2*ish[1], 2*ish[2]], dtype=dtype)
+            pad_im[hls[0]:off[0], hls[1]:off[1], hls[2]:off[2]] = image
+        image = pad_im
+    # Fourier Transform and shift image
+    F = sp_ft.ifftshift(sp_ft.fftn(sp_ft.fftshift(image)))
+    # Compute Power Spectrum
+    P = sp.absolute(F**2)
+    # Auto-correlation is inverse of Power Spectrum
+    autoc = sp.absolute(sp_ft.ifftshift(sp_ft.ifftn(sp_ft.fftshift(P))))
+    tpcf = _radial_profile(autoc, r_max=np.min(hls))
+    return tpcf
+
+
+def apply_chords(im, spacing=0, axis=0, trim_edges=True):
+    r"""
+    Adds chords to the void space in the specified direction.  The chords are
+    separated by 1 voxel plus the provided spacing.
+
+    Parameters
+    ----------
+    im : ND-array
+        An image of the porous material with void marked as True.
+
+    spacing : int (default = 0)
+        Chords are automatically separated by 1 voxel and this argument
+        increases the separation.
+
+    axis : int (default = 0)
+        The axis along which the chords are drawn.
+
+    trim_edges : bool (default = True)
+        Whether or not to remove chords that touch the edges of the image.
+        These chords are artifically shortened, so skew the chord length
+        distribution
+
+    Returns
+    -------
+    An ND-array of the same size as ```im``` with True values indicating the
+    chords.
+
+    See Also
+    --------
+    apply_chords_3D
+
+    """
+    if spacing < 0:
+        raise Exception('Spacing cannot be less than 0')
+    dims1 = sp.arange(0, im.ndim)
+    dims2 = sp.copy(dims1)
+    dims2[axis] = 0
+    dims2[0] = axis
+    im = sp.moveaxis(a=im, source=dims1, destination=dims2)
+    im = sp.atleast_3d(im)
+    ch = sp.zeros_like(im, dtype=bool)
+    if im.ndim == 2:
+        ch[:, ::2+spacing, ::2+spacing] = 1
+    if im.ndim == 3:
+        ch[:, ::4+2*spacing, ::4+2*spacing] = 1
+    chords = im*ch
+    chords = sp.squeeze(chords)
+    if trim_edges:
+        temp = clear_border(spim.label(chords == 1)[0]) > 0
+        chords = temp*chords
+    chords = sp.moveaxis(a=chords, source=dims1, destination=dims2)
+    return chords
+
+
+def apply_chords_3D(im, spacing=0, trim_edges=True):
+    r"""
+    Adds chords to the void space in all three principle directions.  The
+    chords are seprated by 1 voxel plus the provided spacing.  Chords in the X,
+    Y and Z directions are labelled 1, 2 and 3 resepctively.
+
+    Parameters
+    ----------
+    im : ND-array
+        A 3D image of the porous material with void space marked as True.
+
+    spacing : int (default = 0)
+        Chords are automatically separed by 1 voxel on all sides, and this
+        argument increases the separation.
+
+    trim_edges : bool (default = True)
+        Whether or not to remove chords that touch the edges of the image.
+        These chords are artifically shortened, so skew the chord length
+        distribution
+
+    Returns
+    -------
+    An ND-array of the same size as ```im``` with values of 1 indicating
+    x-direction chords, 2 indicating y-direction chords, and 3 indicating
+    z-direction chords.
+
+    Notes
+    -----
+    The chords are separated by a spacing of at least 1 voxel so that tools
+    that search for connected components, such as ``scipy.ndimage.label`` can
+    detect individual chords.
+
+    See Also
+    --------
+    apply_chords
+
+    """
+    if im.ndim < 3:
+        raise Exception('Must be a 3D image to use this function')
+    if spacing < 0:
+        raise Exception('Spacing cannot be less than 0')
+    ch = sp.zeros_like(im, dtype=int)
+    ch[:, ::4+2*spacing, ::4+2*spacing] = 1  # X-direction
+    ch[::4+2*spacing, :, 2::4+2*spacing] = 2  # Y-direction
+    ch[2::4+2*spacing, 2::4+2*spacing, :] = 3  # Z-direction
+    chords = ch*im
+    if trim_edges:
+        temp = clear_border(spim.label(chords > 0)[0]) > 0
+        chords = temp*chords
+    return chords
+
+
+def feature_size_distribution(im, bins=None):
+    r"""
+    Given an image containing the size of the feature to which each voxel
+    belongs (as produced by ```simulations.feature_size```), this determines
+    the total volume of each feature and returns a tuple containing *radii* and
+    *counts* suitable for plotting.
+
+    Parameters
+    ----------
+    im : array_like
+        An array containing the local feature size
+
+    Returns
+    -------
+    Tuple containing radii, counts
+        Two arrays containing the radii of the largest spheres, and the number
+        of voxels that are encompassed by spheres of each radii.
+
+    Notes
+    -----
+    The term *foreground* is used since this function can be applied to both
+    pore space or the solid, whichever is set to True.
+
+    """
+    inds = sp.where(im > 0)
+    bins = sp.unique(im)[1:]
+    hist = sp.histogram(a=im[inds], bins=bins)
+    radii = hist[1][0:-1]
+    counts = hist[0]
+    return radii, counts
 
 
 def chord_length_distribution(im):
