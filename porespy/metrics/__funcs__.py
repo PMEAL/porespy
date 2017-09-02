@@ -239,22 +239,23 @@ def two_point_correlation_bf(im, spacing=10):
     return tpcf(h2[1][:-1], h2[0]/h1[0])
 
 
-def _radial_profile(autoc, r_max, nbins=100):
+def _radial_profile(autocorr, r_max, nbins=100):
     r"""
-    Helper functions to calculate the radial profile of the autocorrelation
+    Helper function to calculate the radial profile of the autocorrelation.
+
     Masks the image in radial segments from the center and averages the values
     The distance values are normalized and 100 bins are used as default.
 
     Parameters
     ----------
-    autoc : ND-array
+    autocorr : ND-array
         The image of autocorrelation produced by FFT
 
     r_max : int or float
         The maximum radius in pixels to sum the image over
     """
     # Find reference for the central bright spot, should be in center
-    bright_spot = autoc != np.max(autoc)
+    bright_spot = autocorr != np.max(autocorr)
     # Distance transform of a central spot produces radial spheres
     # Calculating this manually from indices is not much quicker
     dt = spim.distance_transform_edt(bright_spot)
@@ -264,7 +265,7 @@ def _radial_profile(autoc, r_max, nbins=100):
     for i, r in enumerate(bins):
         # Generate Radial Mask from dt using bins
         mask = (dt <= r) * (dt > (r-bin_size))
-        radial_sum[i] = np.sum(autoc[mask])/np.sum(mask)
+        radial_sum[i] = np.sum(autocorr[mask])/np.sum(mask)
     # Return normalized bin and radially summed autoc
     norm_bins = bins/np.max(bins)
     norm_autoc_radial = radial_sum/np.max(radial_sum)
