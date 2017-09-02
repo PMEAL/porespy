@@ -11,4 +11,5 @@ from .__funcs__ import feature_size_distribution, porosity
 from .__funcs__ import representative_elementary_volume
 from .__funcs__ import apply_chords, apply_chords_3D, chord_length_distribution
 from .__funcs__ import two_point_correlation_bf, pore_size_density
+from .__funcs__ import two_point_correlation_fft
 from .__funcs__ import local_thickness
