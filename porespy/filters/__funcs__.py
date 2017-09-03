@@ -69,7 +69,7 @@ def fill_blind_pores(im):
 
     See Also
     --------
-    ``find_disconnected_voxels``
+    find_disconnected_voxels
 
     """
     holes = find_disconnected_voxels(im)
@@ -92,7 +92,7 @@ def trim_floating_solid(im):
 
     See Also
     --------
-    ``find_disconnected_voxels``
+    find_disconnected_voxels
 
     """
     holes = find_disconnected_voxels(~im)
@@ -136,7 +136,7 @@ def trim_extrema(im, h, mode='maxima'):
 def flood(im, mode='max'):
     r"""
     Floods/fills each region in an image with a single value based on the
-    specific values in that region.  The ```mode``` argument is used to
+    specific values in that region.  The ``mode`` argument is used to
     determine how the value is calculated.  A region is defined as a connected
     cluster of voxels surrounded by 0's for False's.
 
@@ -157,8 +157,8 @@ def flood(im, mode='max'):
 
     Returns
     -------
-    An ND-array the same size as ```im``` with new values placed in each
-    forground voxel based on the ```mode```.
+    An ND-array the same size as ``im`` with new values placed in each
+    forground voxel based on the ``mode``.
 
     """
     labels, N = spim.label(im)
@@ -334,12 +334,12 @@ def porosimetry(im, npts=25, sizes=None, inlets=None, access_limited=True):
     ----------
     im : ND-array
         An ND image of the porous material containing True values in the
-        pore space
+        pore space.
 
     npts : scalar
         The number of invasion points to simulate.  Points will be
         generated spanning the range of sizes in the distance transform.
-        The default is 25 points
+        The default is 25 points.
 
     sizes : array_like
         The sizes to invade.  Use this argument instead of ``npts`` for
@@ -358,18 +358,16 @@ def porosimetry(im, npts=25, sizes=None, inlets=None, access_limited=True):
         if the invading phase should be allowed to appear in the core of
         the image.  The former simulates experimental tools like mercury
         intrusion porosimetry, while the latter is useful for comparison
-        to gauge the extent of shielding effects in the sample. [1]
+        to gauge the extent of shielding effects in the sample.
 
-    Notes
-    -----
-    Although this function is equivalent to morphological image opening, it
-    is done using distance transforms instead of convolution filters.  This
-    approach is much faster than using dilations and erosions when the
-    structuring element is large.
-
-    References
-    ----------
-    [1] Stenzel et al, 2016. (doi: 10.1002/aic.15160)
+    Returns
+    -------
+    An ND-image with voxel values indicating the sphere radius at which it
+    becomes accessible from the inlets.  This image can be used to find
+    invading fluid configurations as a function of applied capillary pressure
+    by applying a boolean comparison: ``inv_phase = im > r`` where ``r`` is
+    the radius (in voxels) of the invading sphere.  Of course, ``r`` can be
+    converted to capillary pressure using your favorite model.
 
     """
     print('_'*60)
