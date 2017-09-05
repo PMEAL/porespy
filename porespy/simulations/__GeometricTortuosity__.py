@@ -12,20 +12,32 @@ import multiprocessing
 
 
 class GeometricTortuosity():
-    def __init__(self, im, dmin=None):
+    def __init__(self, im):
         self.im = im
-        self.dmin = dmin
+        self._dt = spim.distance_transform_edt(self.im)
+        self._make_skeleton()
+        self._find_peaks_on_skel()
+
+    def run(self, mode='group'):
+        r"""
+        """
+        if mode == 'group':
+            pass
+        elif mode == 'individual':
+            pass
+        else:
+            raise Exception('Unsupported mode:'+mode)
 
     @property
     def skeleton(self):
         if not hasattr(self, '_skel'):
-            self.make_skeleton()
+            self._make_skeleton()
         return self._skel
 
     @property
     def peaks(self):
         if not hasattr(self, '_peaks'):
-            self.find_peaks_on_skel()
+            self._find_peaks_on_skel()
         return self._peaks
 
     @property
@@ -35,7 +47,7 @@ class GeometricTortuosity():
             self._dt = spim.distance_transform_edt(self.im)
         return self._dt
 
-    def make_skeleton(self):
+    def _make_skeleton(self):
         print('Obtaining skeleton...')
         from skimage.morphology import disk, square, ball, cube
         if self.im.ndim == 2:
@@ -46,7 +58,7 @@ class GeometricTortuosity():
         skel = spim.binary_erosion(input=skel, structure=ball(1))
         self._skel = skel
 
-    def find_peaks_on_skel(self):
+    def _find_peaks_on_skel(self):
         print('Finding peaks...')
         from skimage.morphology import disk, square, ball, cube
         if self.im.ndim == 2:
@@ -92,56 +104,56 @@ class GeometricTortuosity():
 
     end_points = property(fget=_get_end_points, fset=_set_end_points)
 
-    def set_start_points(self, mode='random', npoints=100):
+    def set_start_points(self, mode='random', npoints=100, axis=0):
         if mode == 'random':
             labels, N = spim.label(self.peaks)
             labels = ps.tools.randomize_colors(labels)
-            self._start_points = (labels <= npoints)*self.peaks
+            points = (labels <= npoints)*self.peaks
+            self._start_points = sp.where(points)
         if mode == 'maxima':
             d = sp.sort(self.dt[self.peaks > 0])
             if d.size > npoints:
                 dmin = d[-npoints]
             else:
                 dmin = d[0]
-            self._start_points = (self.dt > dmin)*self.peaks
+            points = (self.dt > dmin)*self.peaks
+            self._start_points = sp.where(points)
         if mode == 'face':
             coords = sp.vstack(sp.where(self.peaks)).T
-            ind = sp.argsort(coords[:, 0])
+            ind = sp.argsort(coords[:, axis])
             coords = coords[ind[:npoints]]
             points = sp.zeros_like(self.peaks)
             points[tuple(coords.T)] = True
-            self._start_points = points
+            self._start_points = sp.where(points)
 
-    def set_end_points(self, mode='face', npoints=100):
+    def set_end_points(self, mode='face', npoints=100, axis=0):
         if mode == 'face':
             coords = sp.vstack(sp.where(self.peaks)).T
-            ind = sp.argsort(coords[:, 0])
+            ind = sp.argsort(coords[:, axis])
             coords = coords[ind[-npoints:]]
             points = sp.zeros_like(self.peaks)
             points[tuple(coords.T)] = True
-            self._end_points = points
+            self._end_points = sp.where(points)
 
     @property
     def euclidean_distance_matrix(self):
         if not hasattr(self, '_dmap'):
-            if self.dmin is None:
-                dmin = im.shape[0]/3
-            coords_in = sp.vstack(sp.where(self.start_points)).T
-            coords_out = sp.vstack(sp.where(self.end_points)).T
+            coords_in = sp.vstack(self.start_points).T
+            coords_out = sp.vstack(self.end_points).T
             dmap = sptl.distance_matrix(coords_in, coords_out)
             N = dmap.shape[0]
             dmap[range(N), range(N)] = sp.inf  # Distance to self = infinity
-            dmap[dmap < dmin] = sp.inf
             self._dmap = dmap
         return self._dmap
 
     @property
     def geometric_distance_matrix(self):
         if not hasattr(self, '_gmap'):
-            gmap = self.fmm_on_skeleton()
+            gmap = self._fmm_single_start()
             self._gmap = gmap
         return self._gmap
 
+    @property
     def tortuosity_matrix(self):
         dmap = self.euclidean_distance_matrix
         gmap = self.geometric_distance_matrix
@@ -149,24 +161,24 @@ class GeometricTortuosity():
         self.tau = tau
         return tau
 
-    def fmm_across_image(self):
-        coords_in = sp.where(self.start_points)
-        coords_out = sp.where(self.end_points)
+    def _fmm_group_start(self):
+        coords_in = self.start_points
+        coords_out = self.end_points
         speed = self.skeleton*1.0
         phi = self.skeleton*1
         phi[coords_in] = 0  # Set start point of FMM walk
         ma = sp.ma.MaskedArray(phi, self.skeleton == 0)
         td = skfmm.travel_time(ma, speed)
         td = sp.array(td)
-        D = sp.mean(td[coords_out])
-        L = sp.mean(coords_out[0]) - sp.mean(coords_in[0])
-        return D/L
+        self._gmap = td[coords_out]
 
-    def fmm_on_skeleton(self):
-        coords_in = sp.where(self.start_points)
-        coords_out = sp.where(self.end_points)
+    def _fmm_single_start(self):
+        coords_in = self.start_points
+        coords_out = self.end_points
         npoints = sp.size(coords_in[0])
-        slices = spim.find_objects(input=spim.label(self.start_points)[0])
+        peaks = sp.zeros_like(self.peaks)
+        peaks[coords_in] = True
+        slices = spim.find_objects(input=spim.label(peaks)[0])
         tau = sp.zeros(shape=[npoints, npoints])
         speed = self.skeleton*1.0
         phi = self.skeleton*1
@@ -179,13 +191,15 @@ class GeometricTortuosity():
             td = sp.array(td)
             phi[s] = 1  # Remove start point for next iteration
             tau[i, :] = td[coords_out]
-        return tau
+        self._gmap = tau
 
-    def fmm_on_void_space(self):
-        coords_in = sp.where(self.start_points)
-        coords_out = sp.where(self.end_points)
+    def _fmm_on_void_space(self):
+        coords_in = self.start_points
+        coords_out = self.end_points
         npoints = sp.size(coords_in[0])
-        slices = spim.find_objects(input=spim.label(self.start_points)[0])
+        peaks = sp.zeros_like(self.peaks)
+        peaks[coords_in] = True
+        slices = spim.find_objects(input=spim.label(peaks)[0])
         tau = sp.zeros(shape=[npoints, npoints])
         speed = self.im*1.0
         phi = self.im*1
@@ -198,7 +212,7 @@ class GeometricTortuosity():
             td = sp.array(td)
             phi[s] = 1  # Remove start point for next iteration
             tau[i, :] = td[coords_out]
-        return tau
+        self._gmap = tau
 
     def plot_tau_distribution(self, fig=None, bins=26, normed=True, **kwargs):
         if fig is None:
@@ -227,30 +241,21 @@ class GeometricTortuosity():
 
 
 if __name__ == '__main__':
-    # sp.random.seed(1)
-    im = ps.generators.cylinders([200, 400, 400], radius=5, nfibers=400, phi_max=15)
-#    im = sp.swapaxes(im, 2, 1)
-    im = spim.rotate(input=im, angle=90, order=0)
-
+#    im = ps.generators.cylinders([150, 300, 300], radius=5, nfibers=300, phi_max=15)
+    im = ps.generators.overlapping_spheres(shape=[400, 400], radius=8, porosity=0.7)
     gt = GeometricTortuosity(im)
-#    gt.set_start_points(mode='random', npoints=100)
-    gt.set_start_points(mode='face', npoints=20)
-    gt.set_end_points(mode='face', npoints=20)
-    tau = gt.tortuosity_matrix()
-    print(sp.median(tau[tau > 0]))
-    print(gt.fmm_across_image())
-    gt.plot_tau_distribution()
-    fig = gt.plot_geometric_v_euclidean(marker='.', color='r', linestyle='')
-    plt.figure(2)
-    plt.imshow(ps.visualization.sem(im))
 
+    gt.set_start_points(mode='face', axis=0, npoints=20)
+    gt.set_end_points(mode='face', axis=0, npoints=20)
+    gt._fmm_group_start()
+    print(gt._gmap.mean())
 
-    #plt.subplot(1, 3, 1)
-    #plt.imshow(skel/(im*1.0))
-    #plt.subplot(1, 3, 2)
-    #plt.imshow(tau)
+    gt.set_start_points(mode='face', axis=1, npoints=20)
+    gt.set_end_points(mode='face', axis=1, npoints=20)
+    gt._fmm_group_start()
+    print(gt._gmap.mean())
 
-    #plt.subplot(1, 3, 3)
-    #temp = sp.linalg.triu(tau, k=1).flatten()
-    #temp = temp[temp > 0]
-    #plt.hist(temp, bins=30, alpha=0.5, normed=True)
+#    gt.set_start_points(mode='face', axis=2, npoints=20)
+#    gt.set_end_points(mode='face', axis=2, npoints=20)
+#    gt._fmm_group_start()
+#    print(gt._gmap.mean())
