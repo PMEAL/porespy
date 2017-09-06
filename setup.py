@@ -35,7 +35,9 @@ setup(
                       'scipy',
                       'matplotlib',
                       'scikit-image',
-                      'imageio'],
+                      'imageio',
+                      'tqdm'],
     author='Jeff Gostick',
-    author_email='jgostick@uwaterloo.ca',
+    author_email='jgostick@gmail.com',
+    url='http://porespy.org'
 )

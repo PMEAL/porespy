@@ -11,5 +11,5 @@ class SimulationTest():
                                                radius=5,
                                                porosity=0.5)
         mip = ps.simulations.Porosimetry(im)
-        pc_snwp = mip.run()
-        assert pc_snwp.dtype == float
+        mip.run()
+        assert mip.result.dtype == float
