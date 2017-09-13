@@ -75,7 +75,7 @@ def snow(im, r_max=4, sigma=0.4):
 
     peaks = find_peaks(dt=dt)
     print('Initial number of peaks: ', spim.label(peaks)[1])
-    peaks = trim_saddle_points(peaks=peaks, dt=dt, max_iters=200)
+    peaks = trim_saddle_points(peaks=peaks, dt=dt, max_iters=500)
     print('Peaks after trimming saddle points: ', spim.label(peaks)[1])
     peaks = trim_nearby_peaks(peaks=peaks, dt=dt)
     peaks, N = spim.label(peaks)
