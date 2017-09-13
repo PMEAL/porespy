@@ -370,8 +370,6 @@ def porosimetry(im, npts=25, sizes=None, inlets=None, access_limited=True):
     converted to capillary pressure using your favorite model.
 
     """
-    print('_'*60)
-    print('Performing simulation, please wait...')
     dt = spim.distance_transform_edt(im > 0)
     if inlets is None:
         inlets = get_border(im.shape, mode='faces')
@@ -381,13 +379,14 @@ def porosimetry(im, npts=25, sizes=None, inlets=None, access_limited=True):
     else:
         sizes = sp.sort(a=sizes)[-1::-1]
     imresults = sp.zeros(sp.shape(im))
-    for r in tqdm(sizes):
+    for r in tqdm(sizes[1:]):
         imtemp = dt >= r
         if access_limited:
             imtemp[inlets] = True  # Add inlets before labeling
             labels, N = spim.label(imtemp)
             imtemp = imtemp ^ (clear_border(labels=labels) > 0)
             imtemp[inlets] = False  # Remove inlets
-        imtemp = spim.distance_transform_edt(~imtemp) < r
+        if sp.any(imtemp):
+            imtemp = spim.distance_transform_edt(~imtemp) < r
         imresults[(imresults == 0)*imtemp] = r
     return imresults

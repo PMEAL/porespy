@@ -37,7 +37,7 @@ C:\> pip install -e "C:\path\to\the\local\files\"
 
 ## Examples
 
-The following code snippets illustrate generating a 2D image, applying several filters, and calculating some common metrics.
+A Github repository of examples is [available here](https://github.com/PMEAL/porespy-examples).  The following code snippets illustrate generating a 2D image, applying several filters, and calculating some common metrics.
 
 ### Generating an image
 ``` python

@@ -2,6 +2,7 @@ import scipy as sp
 import scipy.ndimage as spim
 from scipy.spatial.distance import cdist
 from porespy.tools import extend_slice
+from tqdm import tqdm
 
 
 def extract_pore_network(im, dt=None, voxel_size=1):
@@ -66,14 +67,7 @@ def extract_pore_network(im, dt=None, voxel_size=1):
     t_coords = []
 
     # Start extracting size information for pores and throats
-    print('0%|'+'-'*52+'|100%')
-    print('  |', end='')
-    denom = int(len(Ps)/52+1)
-    count = 0
-    for i in Ps:
-        if sp.mod(i, denom) == 0:
-            count += 1
-            print('|', end='')
+    for i in tqdm(Ps):
         pore = i - 1
 #        if slices[pore] is None:
 #            continue
@@ -110,8 +104,6 @@ def extract_pore_network(im, dt=None, voxel_size=1):
                     t_coords.append(tuple((t_inds[0][temp],
                                            t_inds[1][temp],
                                            t_inds[2][temp])))
-    print('|'*(52-count+1))
-    print('\n')
     # Clean up values
     Nt = len(t_dia_inscribed)  # Get number of throats
     if im.ndim == 2:  # If 2D, add 0's in 3rd dimension

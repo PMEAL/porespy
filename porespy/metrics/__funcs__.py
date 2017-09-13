@@ -259,14 +259,13 @@ def _radial_profile(autocorr, r_max, nbins=100):
         mask = (dt <= r) * (dt > (r-bin_size))
         radial_sum[i] = np.sum(autocorr[mask])/np.sum(mask)
     # Return normalized bin and radially summed autoc
-    norm_bins = bins/np.max(bins)
-    norm_autoc_radial = radial_sum/np.max(radial_sum)
+    norm_autoc_radial = radial_sum/np.max(autocorr)
     tpcf = namedtuple('two_point_correlation_function',
                       ('distance', 'probability'))
-    return tpcf(norm_bins, norm_autoc_radial)
+    return tpcf(bins, norm_autoc_radial)
 
 
-def two_point_correlation_fft(image, pad=False):
+def two_point_correlation_fft(im, pad=False):
     r"""
     Calculates the two-point correlation function using fourier transforms
 
@@ -293,21 +292,21 @@ def two_point_correlation_fft(image, pad=False):
     http://www.ucl.ac.uk/~ucapikr/projects/KamilaSuankulova_BSc_Project.pdf
     """
     # Calculate half lengths of the image
-    hls = (np.ceil(np.shape(image))/2).astype(int)
+    hls = (np.ceil(np.shape(im))/2).astype(int)
     if pad:
         # Pad image boundaries with ones
-        dtype = image.dtype
-        ish = np.shape(image)
+        dtype = im.dtype
+        ish = np.shape(im)
         off = hls + ish
         if len(ish) == 2:
             pad_im = np.ones(shape=[2*ish[0], 2*ish[1]], dtype=dtype)
-            pad_im[hls[0]:off[0], hls[1]:off[1]] = image
+            pad_im[hls[0]:off[0], hls[1]:off[1]] = im
         elif len(ish) == 3:
             pad_im = np.ones(shape=[2*ish[0], 2*ish[1], 2*ish[2]], dtype=dtype)
-            pad_im[hls[0]:off[0], hls[1]:off[1], hls[2]:off[2]] = image
-        image = pad_im
+            pad_im[hls[0]:off[0], hls[1]:off[1], hls[2]:off[2]] = im
+        im = pad_im
     # Fourier Transform and shift image
-    F = sp_ft.ifftshift(sp_ft.fftn(sp_ft.fftshift(image)))
+    F = sp_ft.ifftshift(sp_ft.fftn(sp_ft.fftshift(im)))
     # Compute Power Spectrum
     P = sp.absolute(F**2)
     # Auto-correlation is inverse of Power Spectrum
