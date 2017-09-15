@@ -270,33 +270,6 @@ def make_contiguous(im):
     return im_new
 
 
-def add_walls(im, faces=[1, 1, 1]):
-    r"""
-    Add walls of solid material to specified faces of an image.
-
-    Parameters
-    ----------
-    im : ND-array
-        The image of the porous material
-
-    faces : N-dim by 1 array
-        Specifies which faces of the image to add walls.
-
-    Returns
-    -------
-    An ND-array the same size as ``im`` with solid (``False``) values added to
-    the specified faces.
-
-    """
-    if im.ndim == 2:
-        im = im[1:-1, 1:-1]
-    elif im.ndim == 3:
-        im = im[1:-1, 1:-1, 1:-1]
-    pad = [sp.array([1, 1])*faces[dim] for dim in range(im.ndim)]
-    temp = sp.pad(array=im, pad_width=pad, mode='constant', constant_values=0)
-    return temp
-
-
 def get_border(shape, thickness=1, mode='edges'):
     r"""
     Creates an array of specified size with corners, edges or faces labelled as
