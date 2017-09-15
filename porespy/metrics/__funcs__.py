@@ -353,7 +353,7 @@ def pore_size_distribution(im):
     return data(R, Snwp)
 
 
-def chord_length_distribution(im):
+def chord_length_counts(im):
     r"""
     Determines the length of each chord in the supplied image by looking at
     its size.
@@ -365,19 +365,59 @@ def chord_length_distribution(im):
 
     Returns
     -------
-    A 1D array with one element for each chord, containing the length.
+    A 1D array with one element for each chord, containing its length.
 
     Notes
     ----
-    The returned array can be passed to ```plt.hist``` to plot the histogram,
-    or to ```sp.histogram``` to get the histogram data directly. Another useful
-    function is ```sp.bincount``` which gives the number of chords of each
-    length in a format suitable for ```plt.plot```.
+    The returned array can be passed to ``plt.hist`` to plot the histogram,
+    or to ``sp.histogram`` to get the histogram data directly. Another useful
+    function is ``sp.bincount`` which gives the number of chords of each
+    length in a format suitable for ``plt.plot``.
     """
-    labels, N = spim.label(im)
+    labels, N = spim.label(im > 0)
     slices = spim.find_objects(labels)
     chord_lens = sp.zeros(N, dtype=int)
     for i in range(len(slices)):
         s = slices[i]
         chord_lens[i] = sp.amax([item.stop-item.start for item in s])
     return chord_lens
+
+
+def chord_length_distribution(im, bins=25, log=False):
+    r"""
+    Determines the distribution of chord lengths in a image containing chords.
+
+    Parameters
+    ----------
+    im : ND-image
+        An image with chords drawn in the pore space, as produced by
+        ``apply_chords`` or ``apply_chords_3d``.
+
+    bins : scalar or array_like
+        If a scalar is given it is interpreted as the number of bins to use,
+        and if an array is given they are used as the bins directly.
+
+    log : Boolean
+        If true, the logarithm of the chord lengths will be used, which can
+        make the data more clear.
+
+    Returns
+    -------
+    A tuple containing the ``chord_length_bins``, and four separate pieces of
+    information: ``cumulative_chord_count`` and ``cumulative_chord_length``,
+    as well as the ``differenial_chord_count`` and
+    ``differential_chord_length``.
+    """
+    h = chord_length_counts(im)
+    if log:
+        h = sp.log10(h)
+    y_num, x = sp.histogram(h, bins=bins, density=True)
+    y_len, x = sp.histogram(h, bins=bins, weights=h, density=True)
+    y_num_cum = sp.cumsum((y_num*(x[1:]-x[:-1]))[::-1])[::-1]
+    y_len_cum = sp.cumsum((y_len*(x[1:]-x[:-1]))[::-1])[::-1]
+    data = namedtuple('chord_distribution', ('chord_length_bins',
+                                             'cumulative_chord_count',
+                                             'cumulative_chord_length',
+                                             'differential_chord_count',
+                                             'differential_chord_length'))
+    return data(x[:-1], y_num_cum, y_len_cum, y_num, y_len)
