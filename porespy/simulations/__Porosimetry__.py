@@ -31,8 +31,10 @@ class Porosimetry(object):
     result = property(fget=_get_result)
 
     def run(self, npts=25, sizes=None, inlets=None, access_limited=True):
-        return porosimetry(im=self.im, npts=npts, sizes=sizes, inlets=inlets,
+        temp = porosimetry(im=self.im, npts=npts, sizes=sizes, inlets=inlets,
                            access_limited=access_limited)
+        self._result = temp
+        return temp
 
     run.__doc__ = porosimetry.__doc__
 
