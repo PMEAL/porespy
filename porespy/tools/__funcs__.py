@@ -86,6 +86,30 @@ def find_outer_region(im, r=0):
     return outer_region
 
 
+def extract_cylinder(im, r=None):
+    r"""
+    Returns a cylinderical section of the image of specified radius. Ths may be
+    useful for making square images look like cylindrical cores such as those
+    used to perform X-ray tomography.
+
+    Parameters
+    ----------
+    im : ND-array
+        The image of the porous material
+
+    r : scalr
+        The radius of the cylinder to extract.  If none if given then the
+        default is the largest cylinder that can fit inside the x-y plane.
+    """
+    if r is None:
+        r = sp.amin(im.shape[:2])/2
+    dim = [range(int(-im.shape[i]/2), int(im.shape[i]/2)) for i in range(im.ndim)]
+    inds = sp.meshgrid(*dim)
+    d = sp.sqrt(sp.sum(sp.square(inds), axis=0))
+    mask = d <= r
+    return im*mask
+
+
 def extract_subsection(im, shape):
     r"""
     Extracts the middle section of a image
