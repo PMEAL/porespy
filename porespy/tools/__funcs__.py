@@ -86,11 +86,11 @@ def find_outer_region(im, r=0):
     return outer_region
 
 
-def extract_cylinder(im, r=None):
+def extract_cylinder(im, r=None, axis=0):
     r"""
-    Returns a cylinderical section of the image of specified radius. Ths may be
+    Returns a cylindrical section of the image of specified radius. This is
     useful for making square images look like cylindrical cores such as those
-    used to perform X-ray tomography.
+    obtained from X-ray tomography.
 
     Parameters
     ----------
@@ -100,14 +100,28 @@ def extract_cylinder(im, r=None):
     r : scalr
         The radius of the cylinder to extract.  If none if given then the
         default is the largest cylinder that can fit inside the x-y plane.
+
+    axis : scalar
+        The axis along with the cylinder will be oriented.
+
+    Returns
+    -------
+    An ND-image the same size ``im`` with True values indicating the void space
+    but with the sample trimmed to a cylindrical section in the center of the
+    image.  The region outside the cylindrical section is labeled with True
+    values since it is open space.
     """
     if r is None:
-        r = sp.amin(im.shape[:2])/2
-    dim = [range(int(-im.shape[i]/2), int(im.shape[i]/2)) for i in range(im.ndim)]
-    inds = sp.meshgrid(*dim)
+        a = list(im.shape)
+        a.pop(axis)
+        r = sp.amin(a)/2
+    dim = [range(int(-s/2), int(s/2)) for s in im.shape]
+    inds = sp.meshgrid(*dim, indexing='ij')
+    inds[axis] = inds[axis]*0
     d = sp.sqrt(sp.sum(sp.square(inds), axis=0))
     mask = d <= r
-    return im*mask
+    im[~mask] = True
+    return im
 
 
 def extract_subsection(im, shape):
