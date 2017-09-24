@@ -54,10 +54,10 @@ def to_vtk(im, path='./voxvtk', divide=False, downsample=False, voxel_size=1, vo
     elif downsample == True:
         im = spim.interpolation.zoom(im, zoom=0.5, order=0)
         bp.imageToVTK(path, cellData={'im': np.ascontiguousarray(im)},
-                      spacing=(vs, vs, vs))
+                      spacing=(2*vs, 2*vs, 2*vs))
     else:
         bp.imageToVTK(path, cellData={'im': np.ascontiguousarray(im)},
-                      spacing=(2*vs, 2*vs, 2*vs))
+                      spacing=(vs, vs, vs))
             
 def to_palabos(im, filename, solid=0):
     r"""
