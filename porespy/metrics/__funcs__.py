@@ -167,10 +167,6 @@ def porosity(im):
     image such that blind pores have a value of 2, thus allowing the
     calculation of accessible porosity, rather than overall porosity.
 
-    References
-    ----------
-    [1] Torquato, S. Random Heterogeneous Materials: Mircostructure and
-    Macroscopic Properties. Springer, New York (2002)
     """
     im = sp.array(im, dtype=int)
     Vp = sp.sum(im == 1)
