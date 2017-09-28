@@ -59,7 +59,6 @@ class FilterTest():
         s = sp.unique(m)
 
 
-
 if __name__ == '__main__':
     t = FilterTest()
     t.setup_class()
