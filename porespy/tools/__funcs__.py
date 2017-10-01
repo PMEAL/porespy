@@ -4,6 +4,37 @@ from skimage.morphology import ball, disk, square, cube
 from skimage.morphology import reconstruction
 from skimage.segmentation import clear_border
 from numba import jit
+from array_split import array_split, shape_split
+
+
+def subdivide(im, divs=2):
+    r"""
+    Returns slices into an image describing the specified number of sub-arrays
+
+    Parameters
+    ----------
+    im : ND-array
+        The image of the porous media
+
+    divs : scalar or array_like
+        The number of sub-divisions to create in each axis of the image.  If a
+        scalar is given it is assume this value applies in all dimensions.
+
+    Returns
+    -------
+    An ND-array containing slice objects for indexing into ``im`` that extract
+    the sub-divided array.
+
+    Notes
+    -----
+    This method uses the
+    `array_split package <https://github.com/array-split/array_split>`_
+    """
+    # Expand scalar divs
+    if sp.array(divs, ndmin=1).size == 1:
+        divs = [divs for i in range(im.ndim)]
+    s = shape_split(im.shape, axis=divs)
+    return s
 
 
 def get_slice(im, center, size, pad=0):
