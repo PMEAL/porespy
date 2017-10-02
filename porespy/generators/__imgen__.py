@@ -3,6 +3,7 @@ import scipy.spatial as sptl
 import scipy.ndimage as spim
 from skimage.segmentation import find_boundaries
 from skimage.morphology import ball, disk, square, cube
+from tqdm import tqdm
 
 
 def insert_shape(im, center, element, value=1):
@@ -161,7 +162,7 @@ def polydisperse_spheres(shape, porosity, dist, nbins=5):
     return im
 
 
-def voronoi_edges(shape, edge_radius, ncells, flat_faces=True):
+def voronoi_edges(shape, radius, ncells, flat_faces=True):
     r"""
     Create an image of the edges in a Voronoi tessellation
 
@@ -171,7 +172,7 @@ def voronoi_edges(shape, edge_radius, ncells, flat_faces=True):
         The size of the image to generate in [Nx, Ny, Nz] where Ni is the
         number of voxels in each direction.
 
-    edge_radius : scalar
+    radius : scalar
         The radius to which Voronoi edges should be dilated in the final image.
 
     ncells : scalar
@@ -213,7 +214,7 @@ def voronoi_edges(shape, edge_radius, ncells, flat_faces=True):
         if sp.all(pts >= 0) and sp.all(pts < im.shape):
             line_pts = line_segment(pts[0], pts[1])
             im[line_pts] = True
-    im = spim.distance_transform_edt(~im) > edge_radius
+    im = spim.distance_transform_edt(~im) > radius
     return im
 
 

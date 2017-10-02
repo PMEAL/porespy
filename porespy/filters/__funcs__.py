@@ -388,5 +388,5 @@ def porosimetry(im, npts=25, sizes=None, inlets=None, access_limited=True):
             imtemp[inlets] = False  # Remove inlets
         if sp.any(imtemp):
             imtemp = spim.distance_transform_edt(~imtemp) < r
-        imresults[(imresults == 0)*imtemp] = r
+            imresults[(imresults == 0)*imtemp] = r
     return imresults
