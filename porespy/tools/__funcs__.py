@@ -41,16 +41,20 @@ def subdivide(im, divs=2):
 
     ``s`` contains an array with the shape given by ``divs``.  To access the
     first and last quadrants of ``im`` use:
-    >>> quad_1 = im[s[0, 0]]
-    >>> quad_4 = im[s[1, 1]]
+    >>> print(im[s[0, 0]])
+    (100, 100)
+    >>> print(im[s[1, 1]])
+    (100, 100)
 
     It can be easier to index the array with the slices by applying ``flatten``
     first:
     >>> s_flat = s.flatten()
-    >>> for i in range(len(s_flat)):
-    ...     plt.subplot(2, 2, i+1)
-    ...     plt.imshow(im[s_flat[i]])
-
+    >>> for i in s_flat:
+    ...     print(im[i].shape)
+    (100, 100)
+    (100, 100)
+    (100, 100)
+    (100, 100)
     """
     # Expand scalar divs
     if sp.array(divs, ndmin=1).size == 1:
@@ -216,6 +220,7 @@ def extend_slice(s, shape, pad=1):
     Examples
     --------
     >>> from scipy.ndimage import label, find_objects
+    >>> from porespy.tools import extend_slice
     >>> im = sp.array([[1, 0, 0], [1, 0, 0], [0, 0, 1]])
     >>> labels = label(im)[0]
     >>> s = find_objects(labels)
@@ -228,7 +233,7 @@ def extend_slice(s, shape, pad=1):
      [0 0 2]]
 
     Next extend the slice, and use it to set the values to 4:
-    >>> s_ext = ps.tools.extend_slice(s[0], shape=im.shape, pad=1)
+    >>> s_ext = extend_slice(s[0], shape=im.shape, pad=1)
     >>> labels[s_ext] = 4
     >>> print(labels)
     [[4 4 0]
