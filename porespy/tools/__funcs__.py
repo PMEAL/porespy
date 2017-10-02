@@ -41,9 +41,9 @@ def subdivide(im, divs=2):
 
     ``s`` contains an array with the shape given by ``divs``.  To access the
     first and last quadrants of ``im`` use:
-    >>> print(im[s[0, 0]])
+    >>> print(im[s[0, 0]].shape)
     (100, 100)
-    >>> print(im[s[1, 1]])
+    >>> print(im[s[1, 1]].shape)
     (100, 100)
 
     It can be easier to index the array with the slices by applying ``flatten``
