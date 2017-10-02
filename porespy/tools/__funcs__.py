@@ -1,15 +1,15 @@
 import scipy as sp
 import scipy.ndimage as spim
 from skimage.morphology import ball, disk, square, cube
-from skimage.morphology import reconstruction
-from skimage.segmentation import clear_border
-from numba import jit
-from array_split import array_split, shape_split
+from array_split import shape_split
 
 
 def subdivide(im, divs=2):
     r"""
-    Returns slices into an image describing the specified number of sub-arrays
+    Returns slices into an image describing the specified number of sub-arrays.
+    This function is useful for performing operations on smaller images for
+    memory or speed.  Note that most typical operations this will NOT work,
+    since the image borders would cause artifacts (e.g. ``distance_transform``)
 
     Parameters
     ----------
@@ -23,12 +23,34 @@ def subdivide(im, divs=2):
     Returns
     -------
     An ND-array containing slice objects for indexing into ``im`` that extract
-    the sub-divided array.
+    the sub-divided arrays.
 
     Notes
     -----
     This method uses the
-    `array_split package <https://github.com/array-split/array_split>`_
+    `array_split package <https://github.com/array-split/array_split>`_ which
+    offers the same functionality as the ``split`` method of Numpy's ND-array,
+    but supports the splitting multidimensional arrays in all dimensions.
+
+    Examples
+    --------
+    >>> import porespy as ps
+    >>> import matplotlib.pyplot as plt
+    >>> im = ps.generators.blobs(shape=[200, 200])
+    >>> s = ps.tools.subdivide(im, divs=[2, 2])
+
+    ``s`` contains an array with the shape given by ``divs``.  To access the
+    first and last quadrants of ``im`` use:
+    >>> quad_1 = im[s[0, 0]]
+    >>> quad_4 = im[s[1, 1]]
+
+    It can be easier to index the array with the slices by applying ``flatten``
+    first:
+    >>> s_flat = s.flatten()
+    >>> for i in range(len(s_flat)):
+    ...     plt.subplot(2, 2, i+1)
+    ...     plt.imshow(im[s_flat[i]])
+
     """
     # Expand scalar divs
     if sp.array(divs, ndmin=1).size == 1:
@@ -91,15 +113,16 @@ def find_outer_region(im, r=0):
         Image of the porous material with 1's for void and 0's for solid
 
     r : scalar
-        The radius of the rolling ball to use.  If not specified the a value
+        The radius of the rolling ball to use.  If not specified then a value
         is calculated as twice maximum of the distance transform.  The image
         size is padded by this amount in all directions, so the image can
-        become quite large and unwieldy it too large a value is given.
+        become quite large and unwieldy if too large a value is given.
 
     Returns
     -------
     A boolean mask the same shape as ``im``, containing True in all voxels
     identified as *outside* the sample.
+
     """
     if r == 0:
         dt = spim.distance_transform_edt(input=im)
@@ -125,14 +148,35 @@ def extract_subsection(im, shape):
     ----------
     im : ND-array
         Image from which to extract the subsection
+
     shape : array_like
-        Can either specify the size of the extracted section or the fractonal
+        Can either specify the size of the extracted section or the fractional
         size of the image to extact.
 
+    Returns
+    -------
+    An ND-array of size given by the ``shape`` argument, taken from the center
+    of the image.
+
+    Examples
+    --------
+    >>> from scipy.tools import extract_subsection
+    >>> im = sp.array([[1, 1, 1, 1], [1, 2, 2, 2], [1, 2, 3, 3], [1, 2, 3, 4]])
+    >>> print(im)
+    [[1 1 1 1]
+     [1 2 2 2]
+     [1 2 3 3]
+     [1 2 3 4]]
+    >>> im = extract_subsection(im=im, shape=[2, 2])
+    >>> print(im)
+    [[2 2]
+     [2 3]]
+
     """
+    # Check if shape was given as a fraction
+    shape = sp.array(shape)
     if shape[0] < 1:
         shape = sp.array(im.shape)*shape
-    sp.amax(sp.vstack([shape, im.shape]), axis=0)
     center = sp.array(im.shape)/2
     s_im = []
     for dim in range(im.ndim):
@@ -140,8 +184,7 @@ def extract_subsection(im, shape):
         lower_im = sp.amax((center[dim]-r, 0))
         upper_im = sp.amin((center[dim]+r, im.shape[dim]))
         s_im.append(slice(int(lower_im), int(upper_im)))
-    im = im[s_im]
-    return im
+    return im[s_im]
 
 
 def extend_slice(s, shape, pad=1):
@@ -168,6 +211,28 @@ def extend_slice(s, shape, pad=1):
     A list slice objects with the start and stop attributes respectively
     incremented and decremented by 1, without extending beyond the image
     boundaries.
+
+    Examples
+    --------
+    >>> from scipy.ndimage import label, find_objects
+    >>> im = sp.array([[1, 0, 0], [1, 0, 0], [0, 0, 1]])
+    >>> labels = label(im)[0]
+    >>> s = find_objects(labels)
+
+    Using the slices returned by ``find_objects``, set the first label to 3
+    >>> labels[s[0]] = 3
+    [[3 0 0]
+     [3 0 0]
+     [0 0 2]]
+
+    Next extend the slice, and use it to set the values to 4:
+    >>> s_ext = ps.tools.extend_slice(s[0], shape=im.shape, pad=1)
+    >>> labels[s_ext] = 4
+    >>> print(labels)
+    [[4 4 0]
+     [4 4 0]
+     [4 4 2]]
+
     """
     a = []
     for i, dim in zip(s, shape):
@@ -290,6 +355,21 @@ def make_contiguous(im):
     ----------
     im : array_like
         An ND array containing greyscale values
+
+    Returns
+    -------
+    An ND-array the same size as ``im`` but with all values in contiguous
+    orders.
+
+    Example
+    -------
+    >>> import porespy as ps
+    >>> im = sp.array([[0, 2, 9], [6, 8, 3]])
+    >>> im = ps.tools.make_contiguous(im)
+    >>> print(im)
+    [[0 1 5]
+     [3 4 2]]
+
     """
     im_flat = im.flatten()
     im_vals = sp.unique(im_flat)
