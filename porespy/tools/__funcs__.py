@@ -221,6 +221,7 @@ def extend_slice(s, shape, pad=1):
 
     Using the slices returned by ``find_objects``, set the first label to 3
     >>> labels[s[0]] = 3
+    >>> print(labels)
     [[3 0 0]
      [3 0 0]
      [0 0 2]]
@@ -233,6 +234,8 @@ def extend_slice(s, shape, pad=1):
      [4 4 0]
      [4 4 2]]
 
+    As can be seen by the location of the 4s, the slice was extended by 1, and
+    also handled the extension beyond the boundary correctly.
     """
     a = []
     for i, dim in zip(s, shape):
