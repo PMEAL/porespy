@@ -160,7 +160,8 @@ def extract_subsection(im, shape):
 
     Examples
     --------
-    >>> from scipy.tools import extract_subsection
+    >>> import scipy as sp
+    >>> from porespy.tools import extract_subsection
     >>> im = sp.array([[1, 1, 1, 1], [1, 2, 2, 2], [1, 2, 3, 3], [1, 2, 3, 4]])
     >>> print(im)
     [[1 1 1 1]
@@ -367,6 +368,7 @@ def make_contiguous(im):
     Example
     -------
     >>> import porespy as ps
+    >>> import scipy as sp
     >>> im = sp.array([[0, 2, 9], [6, 8, 3]])
     >>> im = ps.tools.make_contiguous(im)
     >>> print(im)
@@ -409,8 +411,8 @@ def get_border(shape, thickness=1, mode='edges'):
 
     Examples
     --------
-    >>> import scipy as sp
     >>> import porespy as ps
+    >>> import scipy as sp
     >>> mask = ps.tools.get_border(shape=[3, 3], mode='corners')
     >>> print(mask)
     [[ True False  True]
