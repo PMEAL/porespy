@@ -19,18 +19,10 @@ install:
   - pip install -r test_requirements.txt
   - python setup.py install
 
-script: pytest --pep8
+script: pytest --pep8 --cov=./
 
 notifications:
   email: false
 
-deploy:
-  provider: pypi
-  distribution: sdist
-  user: jgostick
-  password:
-    secure: jyfYCujNkaa1bW6P7VqO0YAh4nrXDdYi9V4xOzCUgp4ldiS5r2+vVj96v1Zxft25VBK2Olqt8COd79PIjconMREAr77TWi/AgIg5jxbx4v7YWaJ7cjPmP0pNrHlF2uV59XPDEumDs0SPtc/6ZnQZmxeMHQtbzKx2AYvw7jE2E6z6jWeSNbdk2wVFoUvXGfv/XWXr+OB/GpGLnDj8iN1XaaKUr7BorabahWckgp9PsmJt/OxpPIZHDzjkKp9rAdf6lDYWQNuc9Mc7BDaXl66wX6BbPzBuHd0it7LxienMpoERqipVsvwKHv7h4WSD/m1XjydPeBjYwmucnmF7UI9SlHx+L8YMTeiaU0D7EbUT25dSW1OKku6CCC+EejKoxWMN7JjnQqZOOzTyeOnxhCGpLwI8OMswPNw8IRt1bPHsNjm8CC0PycgtwKytbVK9C+mw1nQEx/R+DBFJXrqBKn6BbXr6ujNoV/MzzHHgesvUQbAk7dlkM2gvRUjGnfphG0rK1oDCKd3eKEfpSjgd3fs588UMq61iszYg3w5Nq5XwfELhyn652gO5c+tXZxk8i6tlo+Xya8eg1HXyHtMR1USelekzvEtdPh5/8t3Z+G0NTAWqc7fybanmPhX8q6Jla89fy7U2RPj3UPCycsTOhjRhi27svJWAS5PN8QjT6wWbr2w=
-  server: https://upload.pypi.org/
-  on:
-    tags: true
-    branch: master
+after_success:
+  - codecov
