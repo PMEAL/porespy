@@ -7,3 +7,4 @@ from .__funcs__ import get_border
 from .__funcs__ import get_slice
 from .__funcs__ import make_contiguous
 from .__funcs__ import randomize_colors
+from .__funcs__ import subdivide
