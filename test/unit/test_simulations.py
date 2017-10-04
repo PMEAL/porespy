@@ -1,6 +1,5 @@
 import porespy as ps
 import scipy as sp
-import matplotlib.pyplot as plt
 
 
 class SimulationTest():
