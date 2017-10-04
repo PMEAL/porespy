@@ -273,7 +273,7 @@ def _radial_profile(autocorr, r_max, nbins=100):
     return tpcf(bins, norm_autoc_radial)
 
 
-def two_point_correlation_fft(im, pad=False):
+def two_point_correlation_fft(im):
     r"""
     Calculates the two-point correlation function using fourier transforms
 
@@ -281,9 +281,6 @@ def two_point_correlation_fft(im, pad=False):
     ----------
     im : ND-array
         The image of the void space on which the 2-point correlation is desired
-
-    pad : bool
-        The image is padded with Trues or 1's depending on dtype around border
 
     Returns
     -------
@@ -301,18 +298,6 @@ def two_point_correlation_fft(im, pad=False):
     """
     # Calculate half lengths of the image
     hls = (np.ceil(np.shape(im))/2).astype(int)
-    if pad:
-        # Pad image boundaries with ones
-        dtype = im.dtype
-        ish = np.shape(im)
-        off = hls + ish
-        if len(ish) == 2:
-            pad_im = np.ones(shape=[2*ish[0], 2*ish[1]], dtype=dtype)
-            pad_im[hls[0]:off[0], hls[1]:off[1]] = im
-        elif len(ish) == 3:
-            pad_im = np.ones(shape=[2*ish[0], 2*ish[1], 2*ish[2]], dtype=dtype)
-            pad_im[hls[0]:off[0], hls[1]:off[1], hls[2]:off[2]] = im
-        im = pad_im
     # Fourier Transform and shift image
     F = sp_ft.ifftshift(sp_ft.fftn(sp_ft.fftshift(im)))
     # Compute Power Spectrum

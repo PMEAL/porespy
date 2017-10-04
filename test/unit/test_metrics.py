@@ -1,6 +1,5 @@
 import porespy as ps
 import scipy as sp
-import matplotlib.pyplot as plt
 
 
 class MetricsTest():
@@ -17,6 +16,8 @@ class MetricsTest():
         self.im3D = ps.generators.sphere_pack(shape=[51, 51, 51],
                                               radius=4,
                                               offset=2)
+        self.blobs = ps.generators.blobs(shape=[101, 101, 101], porosity=0.5,
+                                         blobiness=[1, 2, 3])
 
     def test_porosity(self):
         phi = ps.metrics.porosity(im=self.im2D)
@@ -51,6 +52,13 @@ class MetricsTest():
         phi1 = ps.metrics.porosity(im=self.im2D)
         assert sp.sqrt((sp.mean(tpcf_bf.probability[-5:]) - phi1)**2) < t
 
+    def test_rev(self):
+        rev = ps.metrics.representative_elementary_volume(self.blobs)
+        assert (sp.mean(rev.porosity) - 0.5)**2 < 0.05
+
+    def test_pore_size_density(self):
+        den = ps.metrics.pore_size_density(self.blobs)
+        assert sp.around(sp.sum(den.count), 6) == 1.0
 
 if __name__ == '__main__':
     t = MetricsTest()
@@ -60,3 +68,5 @@ if __name__ == '__main__':
     t.test_tpcf_fft_3d()
     t.test_pore_size_distribution()
     t.test_two_point_correlation_bf()
+    t.test_rev()
+    t.test_pore_size_density()
