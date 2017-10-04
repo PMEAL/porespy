@@ -249,8 +249,16 @@ def _radial_profile(autocorr, r_max, nbins=100):
     r_max : int or float
         The maximum radius in pixels to sum the image over
     """
-    inds = sp.indices(autocorr.shape) - sp.reshape(autocorr.shape, [2, 1, 1])/2
-    dt = sp.sqrt(inds[0]**2 + inds[1]**2)
+    if len(autocorr.shape) == 2:
+        adj = sp.reshape(autocorr.shape, [2, 1, 1])
+        inds = sp.indices(autocorr.shape) - adj/2
+        dt = sp.sqrt(inds[0]**2 + inds[1]**2)
+    elif len(autocorr.shape) == 3:
+        adj = sp.reshape(autocorr.shape, [3, 1, 1, 1])
+        inds = sp.indices(autocorr.shape) - adj/2
+        dt = sp.sqrt(inds[0]**2 + inds[1]**2 + inds[2]**2)
+    else:
+        raise Exception('Image dimensions must be 2 or 3')
     bin_size = np.int(np.ceil(r_max/nbins))
     bins = np.arange(bin_size, r_max, step=bin_size)
     radial_sum = np.zeros_like(bins)
