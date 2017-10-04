@@ -10,6 +10,18 @@ class FilterTest():
         self.im = ps.generators.blobs(shape=[100, 100, 100], blobiness=2)
         self.im_dt = spim.distance_transform_edt(self.im)
 
+    def test_porosimetry_npts_10(self):
+        mip = ps.filters.porosimetry(im=self.im, npts=10)
+        ans = sp.array([0.00000000, 1.00000000, 1.37871571, 1.61887041,
+                        1.90085700, 2.23196205, 2.62074139, 3.07724114,
+                        3.61325732])
+        assert sp.allclose(sp.unique(mip), ans)
+
+    def test_porosimetry_with_sizes(self):
+        s = sp.logspace(0.01, 0.6, 5)
+        mip = ps.filters.porosimetry(im=self.im, sizes=s)
+        assert sp.allclose(sp.unique(mip)[1:], s)
+
     def test_apply_chords_axis0(self):
         c = ps.filters.apply_chords(im=self.im, spacing=0, axis=0)
         assert c.sum() == 25879
@@ -70,4 +82,6 @@ if __name__ == '__main__':
     t.test_apply_chords3D()
     t.test_apply_chords3D_with_spacing()
     t.test_flood_size()
+    t.test_porosimetry_npts_10()
+    t.test_porosimetry_with_sizes()
     self = t

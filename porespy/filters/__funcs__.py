@@ -379,7 +379,7 @@ def porosimetry(im, npts=25, sizes=None, inlets=None, access_limited=True):
     else:
         sizes = sp.sort(a=sizes)[-1::-1]
     imresults = sp.zeros(sp.shape(im))
-    for r in tqdm(sizes[1:]):
+    for r in tqdm(sizes):
         imtemp = dt >= r
         if access_limited:
             imtemp[inlets] = True  # Add inlets before labeling
