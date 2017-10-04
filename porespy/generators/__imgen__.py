@@ -90,26 +90,26 @@ def bundle_of_tubes(shape, spacing):
     if sp.size(shape) == 2:
         shape = sp.hstack((shape, [1]))
     temp = sp.zeros(shape=shape[:2])
-    Xi = sp.linspace(spacing/2,
-                     shape[0]-spacing/2,
-                     shape[0]/spacing).astype(int)
-    Yi = sp.linspace(spacing/2,
-                     shape[1]-spacing/2,
-                     shape[1]/spacing).astype(int)
-    Xi = sp.linspace(spacing/2, shape[0]-spacing/2, shape[0]/spacing)
+    Xi = sp.ceil(sp.linspace(spacing/2,
+                             shape[0]-(spacing/2)-1,
+                             shape[0]/spacing))
     Xi = sp.array(Xi, dtype=int)
-    Yi = sp.linspace(spacing/2, shape[1]-spacing/2, shape[1]/spacing)
+    Yi = sp.ceil(sp.linspace(spacing/2,
+                             shape[1]-(spacing/2)-1,
+                             shape[1]/spacing))
     Yi = sp.array(Yi, dtype=int)
     temp[sp.meshgrid(Xi, Yi)] = 1
     inds = sp.where(temp)
     for i in range(len(inds[0])):
-        r = int(sp.rand()*(spacing/2 - 4)) + 3
-        temp[slice(inds[0][i]-r, inds[0][i]+r+1),
-             slice(inds[1][i]-r, inds[1][i]+r+1)] = disk(r)
-        s1 = slice(inds[0][i]-r, inds[0][i]+r+1)
-        s2 = slice(inds[1][i]-r, inds[1][i]+r+1)
-        temp[s1, s2] = disk(r)
-    temp = spim.binary_opening(temp, structure=square(3))
+        r = sp.random.randint(1, (spacing/2))
+        try:
+            s1 = slice(inds[0][i]-r, inds[0][i]+r+1)
+            s2 = slice(inds[1][i]-r, inds[1][i]+r+1)
+            temp[s1, s2] = disk(r)
+        except ValueError:
+            odd_shape = sp.shape(temp[s1, s2])
+            temp[s1, s2] = disk(r)[:odd_shape[0], :odd_shape[1]]
+    #temp = spim.binary_opening(temp, structure=square(3))
     im = sp.broadcast_to(array=sp.atleast_3d(temp), shape=shape)
     return im
 

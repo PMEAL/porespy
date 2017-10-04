@@ -3,8 +3,6 @@ import pytest
 import scipy as sp
 import numpy as np
 import scipy.ndimage as spim
-import matplotlib.pyplot as plt
-plt.close('all')
 
 
 class FilterTest():
