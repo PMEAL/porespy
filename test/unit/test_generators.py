@@ -33,11 +33,33 @@ class GeneratorTest():
     def test_bundle_of_tubes(self):
         im = ps.generators.bundle_of_tubes(shape=[101, 101, 1], spacing=10)
         labels, N = spim.label(input=im)
-        print(N)
-        assert N == 101
+        assert N == 100
+
+    def test_overlapping_spheres_2d(self):
+        im = ps.generators.overlapping_spheres(shape=[101, 101], radius=5,
+                                               porosity=0.5)
+        poro = sp.sum(im)/sp.size(im)
+        print(poro)
+        plt.figure()
+        plt.imshow(im[:, :])
+        assert (poro-0.5)**2 < 0.1
+    
+    def test_overlapping_spheres_3d(self):
+        target = 0.5
+        im = ps.generators.overlapping_spheres(shape=[50, 50, 50], radius=5,
+                                               porosity=target)
+        poro = sp.sum(im)/sp.size(im)
+        assert (poro-target)**2 < 0.15
 
     def test_polydisperse_spheres(self):
-        pass
+        target = 0.5
+        dist = sp.stats.norm(loc=5, scale=1)
+        im = ps.generators.polydisperse_spheres(shape=[50, 50, 50],
+                                                porosity=target,
+                                                dist=dist,
+                                                nbins=10)
+        poro = sp.sum(im)/sp.size(im)
+        assert (poro-target)**2 < 0.15
 
     def test_voronoi_edges(self):
         pass
@@ -65,3 +87,5 @@ if __name__ == '__main__':
     t.setup_class()
     t.test_insert_shape()
     t.test_bundle_of_tubes()
+    t.test_overlapping_spheres_3d()
+    t.test_polydisperse_spheres()

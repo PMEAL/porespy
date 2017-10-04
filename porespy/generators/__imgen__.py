@@ -109,7 +109,6 @@ def bundle_of_tubes(shape, spacing):
         except ValueError:
             odd_shape = sp.shape(temp[s1, s2])
             temp[s1, s2] = disk(r)[:odd_shape[0], :odd_shape[1]]
-    #temp = spim.binary_opening(temp, structure=square(3))
     im = sp.broadcast_to(array=sp.atleast_3d(temp), shape=shape)
     return im
 
@@ -411,11 +410,11 @@ def overlapping_spheres(shape, radius, porosity):
     if sp.size(shape) == 1:
         shape = sp.full((3, ), int(shape))
     if sp.size(shape) == 2:
-        s_vol = sp.pi*radius**2
+        s_vol = sp.sum(disk(radius))
     if sp.size(shape) == 3:
-        s_vol = 4/3*sp.pi*radius**3
+        s_vol = sp.sum(ball(radius))
     bulk_vol = sp.prod(shape)
-    N = (1 - porosity)*bulk_vol/s_vol
+    N = int(sp.ceil((1 - porosity)*bulk_vol/s_vol))
     im = sp.random.random(size=shape) > (N/bulk_vol)
     im = spim.distance_transform_edt(im) < radius
     return ~im
