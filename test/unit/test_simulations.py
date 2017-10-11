@@ -12,6 +12,10 @@ class SimulationTest():
         self.rw = ps.simulations.RandomWalk(self.blobs,
                                             walkers=500,
                                             max_steps=3000)
+        self.blobs_2d = ps.generators.blobs([300, 300])
+        self.rw_2d = ps.simulations.RandomWalk(self.blobs_2d,
+                                               walkers=500,
+                                               max_steps=3000)
 
     def test_porosimetry(self):
         self.mip.run()
@@ -37,6 +41,17 @@ class SimulationTest():
     def test_get_path(self):
         figs = self.rw._get_path(walker=0)
         assert len(figs) == 2
+                  
+    def test_random_walk_2d(self):
+        assert sp.shape(self.rw_2d.path_data)[2] == 500
+
+    def test_show_msd_2d(self):
+        slopes = self.rw_2d.show_msd()
+        assert slopes.pore_space is not None
+
+    def test_get_path_2d(self):
+        # This appears to be broken in 2d
+        pass
 
 if __name__ == '__main__':
     t = SimulationTest()
@@ -47,3 +62,6 @@ if __name__ == '__main__':
     t.test_random_walk()
     t.test_show_msd()
     t.test_get_path()
+    t.test_random_walk_2d()
+    t.test_show_msd_2d()
+    t.test_get_path_2d()
