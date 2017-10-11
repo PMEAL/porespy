@@ -41,7 +41,7 @@ class SimulationTest():
     def test_get_path(self):
         figs = self.rw._get_path(walker=0)
         assert len(figs) == 2
-                  
+
     def test_random_walk_2d(self):
         assert sp.shape(self.rw_2d.path_data)[2] == 500
 
@@ -50,8 +50,8 @@ class SimulationTest():
         assert slopes.pore_space is not None
 
     def test_get_path_2d(self):
-        # This appears to be broken in 2d
-        pass
+        figs = self.rw._get_path(walker=0)
+        assert len(figs) == 2
 
 if __name__ == '__main__':
     t = SimulationTest()
