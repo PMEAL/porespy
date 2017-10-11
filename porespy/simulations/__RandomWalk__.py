@@ -78,6 +78,8 @@ class RandomWalk:
         z_free, y_free, x_free = z, y, x
         coords = np.ones((max_steps+1, 3), dtype=int) * (-1)
         free_coords = np.ones((max_steps+1, 3), dtype=int) * (-1)
+        bounds = np.zeros((max_steps+1, 3), dtype=int)
+        free_bounds = np.zeros((max_steps+1, 3), dtype=int)
         coords[0, :] = [z, y, x]
         free_coords[0, :] = [z_free, y_free, x_free]
         steps = 0
@@ -99,28 +101,33 @@ class RandomWalk:
                 z_step -= 1
             # checks to make sure image does not go out of bounds
             if x_free+x_step < 0 or y_free+y_step < 0 or z_free+z_step < 0:
+                free_bounds[step] = [x_step, y_step, z_step]
                 break
-            if (x_free+x_step >= x_max or y_free+y_step >= y_max or
+            elif (x_free+x_step >= x_max or y_free+y_step >= y_max or
                     z_free+z_step >= z_max):
+                free_bounds[step] = [x_step, y_step, z_step]
                 break
+            else:
+                x_free += x_step
+                y_free += y_step
+                z_free += z_step
             if x+x_step < 0 or y+y_step < 0 or z+z_step < 0:
+                bounds[step] = [x_step, y_step, z_step]
                 break
-            if x+x_step >= x_max or y+y_step >= y_max or z+z_step >= z_max:
+            elif x+x_step >= x_max or y+y_step >= y_max or z+z_step >= z_max:
+                bounds[step] = [x_step, y_step, z_step]
                 break
-            x_free += x_step
-            y_free += y_step
-            z_free += z_step
             # checks if the step leads to a pore in image
-            if im[z+z_step, y+y_step, x+x_step]:
+            elif im[z+z_step, y+y_step, x+x_step]:
                 x += x_step
                 y += y_step
                 z += z_step
             steps += 1
             coords[step] = [z, y, x]
             free_coords[step] = [z_free, y_free, x_free]
-        path = namedtuple('path', ('pore_space', 'open_space'))
-        paths = path(coords[::stride, :],
-                     free_coords[::stride, :])
+        path = namedtuple('path', ('pore_space', 'open_space', 'pore_bounds,',
+                                   'open_bounds'))
+        paths = path(coords[::stride, :], free_coords[::stride, :])
         return paths
 
     def find_start_point(self, start_frac):
@@ -418,8 +425,7 @@ class RandomWalk:
             fig_free.invert_yaxis()
             plt.title('Path in Free Space')
         elif self._ndim == 2:
-            if size is None:
-                size = (5, 5)
+            size = (5, 5)
             fig_im = plt.figure(num=1, figsize=size)
             plt.plot(path[2, :], path[1, :], 'c')
             plt.plot(path[2, 0], path[1, 0], 'g.')
