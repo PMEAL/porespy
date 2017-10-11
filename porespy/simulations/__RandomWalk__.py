@@ -418,8 +418,7 @@ class RandomWalk:
             fig_free.invert_yaxis()
             plt.title('Path in Free Space')
         elif self._ndim == 2:
-            if size is None:
-                size = (5, 5)
+            size = (5, 5)
             fig_im = plt.figure(num=1, figsize=size)
             plt.plot(path[2, :], path[1, :], 'c')
             plt.plot(path[2, 0], path[1, 0], 'g.')
