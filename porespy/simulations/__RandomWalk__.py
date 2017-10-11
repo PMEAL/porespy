@@ -100,27 +100,27 @@ class RandomWalk:
             # checks to make sure image does not go out of bounds
             if x_free+x_step < 0 or y_free+y_step < 0 or z_free+z_step < 0:
                 break
-            if (x_free+x_step >= x_max or y_free+y_step >= y_max or
+            elif (x_free+x_step >= x_max or y_free+y_step >= y_max or
                     z_free+z_step >= z_max):
                 break
+            else:
+                x_free += x_step
+                y_free += y_step
+                z_free += z_step
             if x+x_step < 0 or y+y_step < 0 or z+z_step < 0:
                 break
-            if x+x_step >= x_max or y+y_step >= y_max or z+z_step >= z_max:
+            elif x+x_step >= x_max or y+y_step >= y_max or z+z_step >= z_max:
                 break
-            x_free += x_step
-            y_free += y_step
-            z_free += z_step
             # checks if the step leads to a pore in image
-            if im[z+z_step, y+y_step, x+x_step]:
+            elif im[z+z_step, y+y_step, x+x_step]:
                 x += x_step
                 y += y_step
                 z += z_step
             steps += 1
             coords[step] = [z, y, x]
             free_coords[step] = [z_free, y_free, x_free]
-        path = namedtuple('path', ('pore_space', 'open_space'))
-        paths = path(coords[::stride, :],
-                     free_coords[::stride, :])
+        path = namedtuple('path', ('pore_space', 'free_space'))
+        paths = path(coords[::stride, :], free_coords[::stride, :])
         return paths
 
     def find_start_point(self, start_frac):
