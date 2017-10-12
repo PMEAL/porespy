@@ -38,7 +38,7 @@ import numpy as np
 
 def _addDataToFile(vtkFile, cellData, pointData):
     # Point data
-    if pointData != None:
+    if pointData is not None:
         keys = list(pointData.keys())
         vtkFile.openData("Point", scalars=keys[0])
         for key in keys:
@@ -47,7 +47,7 @@ def _addDataToFile(vtkFile, cellData, pointData):
         vtkFile.closeData("Point")
 
     # Cell data
-    if cellData != None:
+    if cellData is not None:
         keys = list(cellData.keys())
         vtkFile.openData("Cell", scalars=keys[0])
         for key in keys:
@@ -58,13 +58,13 @@ def _addDataToFile(vtkFile, cellData, pointData):
 
 def _appendDataToFile(vtkFile, cellData, pointData):
     # Append data to binary section
-    if pointData != None:
+    if pointData is not None:
         keys = list(pointData.keys())
         for key in keys:
             data = pointData[key]
             vtkFile.appendData(data)
 
-    if cellData != None:
+    if cellData is not None:
         keys = list(cellData.keys())
         for key in keys:
             data = cellData[key]
@@ -101,16 +101,16 @@ def imageToVTK(path, origin=(0.0, 0.0, 0.0), spacing=(1.0, 1.0, 1.0),
         NOTE: At least, cellData or pointData must be present
         to infer the dimensions of the image.
     """
-    assert (cellData != None or pointData != None)
+    assert (cellData is not None or pointData is not None)
 
     # Extract dimensions
     start = (0, 0, 0)
     end = None
-    if cellData != None:
+    if cellData is not None:
         keys = list(cellData.keys())
         data = cellData[keys[0]]
         end = data.shape
-    elif pointData != None:
+    elif pointData is not None:
         keys = list(pointData.keys())
         data = pointData[keys[0]]
         end = data.shape
@@ -178,8 +178,7 @@ PARAMETERS:
         assert(False)
     end = (nx, ny, nz)
 
-
-    w =  VtkFile(path, ftype)
+    w = VtkFile(path, ftype)
     w.openGrid(start=start, end=end)
     w.openPiece(start=start, end=end)
 

@@ -34,7 +34,8 @@ class XmlWriter:
         self.stream = open(filepath, "wb")
         self.openTag = False
         self.current = []
-        if (addDeclaration): self.addDeclaration()
+        if (addDeclaration):
+            self.addDeclaration()
 
     def close(self):
         assert(not self.openTag)
@@ -44,7 +45,8 @@ class XmlWriter:
         self.stream.write(b'<?xml version="1.0"?>')
 
     def openElement(self, tag):
-        if self.openTag: self.stream.write(b">")
+        if self.openTag:
+            self.stream.write(b">")
         st = "\n<%s" % tag
         self.stream.write(str.encode(st))
         self.openTag = True

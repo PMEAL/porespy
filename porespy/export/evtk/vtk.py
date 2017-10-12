@@ -217,7 +217,7 @@ class VtkFile:
                   npoints=None, ncells=None,
                   nverts=None, nlines=None, nstrips=None, npolys=None):
         """ Open piece section.
-      
+
         PARAMETERS:
             Next two parameters must be given together.
             start: array or list with start indexes in each direction.
@@ -271,7 +271,7 @@ class VtkFile:
     def closePiece(self):
         self.xml.closeElement("Piece")
 
-    def openData(self, nodeType, scalars=None, vectors=None, 
+    def openData(self, nodeType, scalars=None, vectors=None,
                  normals=None, tensors=None, tcoords=None):
         """ Open data section.
 
@@ -310,7 +310,6 @@ class VtkFile:
                 this VtkFile to allow chained calls.
         """
         self.xml.closeElement(nodeType + "Data")
-
 
     def openGrid(self, start=None, end=None, origin=None, spacing=None):
         """ Open grid section.
@@ -421,7 +420,7 @@ class VtkFile:
         self.openAppendedData()
         dsize = np_to_vtk[dtype].size
         block_size = dsize * ncomp * nelem
-        if self.largeFile == False:
+        if self.largeFile is False:
             writeBlockSize(self.xml.stream, block_size)
         else:
             writeBlockSize64Bit(self.xml.stream, block_size)
@@ -474,7 +473,8 @@ class VtkFile:
             from an external library.
         """
         if not self.appendedDataIsOpen:
-            self.xml.openElement("AppendedData").addAttributes(encoding="raw").addText("_")
+            self.xml.openElement("AppendedData").addAttributes(encoding="raw")
+            self.xml.addText("_")
             self.appendedDataIsOpen = True
 
     def closeAppendedData(self):
