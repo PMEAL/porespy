@@ -94,11 +94,7 @@ def to_palabos(im, filename, solid=0):
     dt[(dt > 0)*(dt <= np.sqrt(2))] = 1
     dt = dt.astype(int)
     # Write out data
-    x, y, z = np.shape(dt)
-    f = open(filename, 'w')
-    for k in range(z):
-        for j in range(y):
-            for i in range(x):
-                f.write(str(dt[i, j, k])+'\n')
-    f.close()
+    with open (filename, 'w') as f:
+        out_data = dt.flatten().tolist()
+        f.write('\n'.join(map(repr, out_data)))
     
