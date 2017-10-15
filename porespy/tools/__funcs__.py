@@ -264,13 +264,15 @@ def extend_slice(s, shape, pad=1):
     >>> s = find_objects(labels)
 
     Using the slices returned by ``find_objects``, set the first label to 3
+        
     >>> labels[s[0]] = 3
     >>> print(labels)
     [[3 0 0]
      [3 0 0]
      [0 0 2]]
 
-    Next extend the slice, and use it to set the values to 4:
+    Next extend the slice, and use it to set the values to 4
+        
     >>> s_ext = extend_slice(s[0], shape=im.shape, pad=1)
     >>> labels[s_ext] = 4
     >>> print(labels)
