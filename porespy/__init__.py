@@ -16,23 +16,23 @@ Modules
 
 This package consists of several modules, the purposes of which are given below:
 
-+------------------------+--------------------------------------------------------------------+
-| **binarization**       | Convert greyscale images to binary images of void and solid        |
-+------------------------+--------------------------------------------------------------------+
-| **filters**            | Process the image based on some structural realated feature        |
-+------------------------+--------------------------------------------------------------------+
-| **generators**         | Create artificial images for testing, validation, and illustration |
-+------------------------+--------------------------------------------------------------------+
-| **metrics**            | Extract information from both raw and filtered images              |
-+------------------------+--------------------------------------------------------------------+
-| **network_extraction** | Extract pore network models from images                            |
-+------------------------+--------------------------------------------------------------------+
-| **simulations**        | Performing complex simulations directly on an image                |
-+------------------------+--------------------------------------------------------------------+
-| **tools**              | Utilities for altering, mangling, and manipulating images          |
-+------------------------+--------------------------------------------------------------------+
-| **visualization**      | Quickly and easily visualiz 3D images                              |
-+------------------------+--------------------------------------------------------------------+
++------------------------+----------------------------------------------------+
+| **binarization**       | Convert greyscale images to binary                 |
++------------------------+----------------------------------------------------+
+| **filters**            | Process images based on structural features        |
++------------------------+----------------------------------------------------+
+| **generators**         | Make artificial images for testing & illustration  |
++------------------------+----------------------------------------------------+
+| **metrics**            | Extract information from images                    |
++------------------------+----------------------------------------------------+
+| **network_extraction** | Extract pore network models from images            |
++------------------------+----------------------------------------------------+
+| **simulations**        | Performing complex simulations directly on an image|
++------------------------+----------------------------------------------------+
+| **tools**              | Utilities for altering & manipulating images       |
++------------------------+----------------------------------------------------+
+| **visualization**      | Quickly and easily visualiz 3D images              |
++------------------------+----------------------------------------------------+
 
 -------------
 Example Usage
