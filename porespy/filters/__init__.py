@@ -3,7 +3,8 @@ r"""
 Filters
 =======
 
-This module contains a variety of functions for 
+This module contains a variety of functions for altering image based on the
+structural characteristics, such as pore sizes.
 
 .. autofunction:: apply_chords
 .. autofunction:: apply_chords_3D

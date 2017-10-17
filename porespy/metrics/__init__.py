@@ -3,8 +3,8 @@ r"""
 Metrics
 =======
 
-A suite of tools for determine key metrics about an image.  Typically these are 
-applied to an image after applying a filter, but a few functions can be applied 
+A suite of tools for determine key metrics about an image.  Typically these are
+applied to an image after applying a filter, but a few functions can be applied
 directly to the binary image.
 
 .. autofunction:: chord_length_counts

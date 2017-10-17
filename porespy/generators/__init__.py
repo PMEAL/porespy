@@ -3,8 +3,8 @@ r"""
 Generators
 ==========
 
-This module contains a variety of functions for generating artificial images 
-of porous materials, generally for testing, validation, debugging, and 
+This module contains a variety of functions for generating artificial images
+of porous materials, generally for testing, validation, debugging, and
 illustration purposes.
 
 .. autofunction:: add_noise

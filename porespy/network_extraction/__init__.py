@@ -1,5 +1,5 @@
 r"""
-This module contains functions for extracting pore networks from images.  
+This module contains functions for extracting pore networks from images.
 
 .. autofunction:: partition_pore_space
 .. autofunction:: align_image_with_openpnm
