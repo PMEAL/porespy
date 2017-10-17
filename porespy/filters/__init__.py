@@ -17,7 +17,6 @@ structural characteristics, such as pore sizes.
 .. autofunction:: trim_extrema
 .. autofunction:: trim_floating_solid
 
-
 """
 from .__funcs__ import apply_chords
 from .__funcs__ import apply_chords_3D

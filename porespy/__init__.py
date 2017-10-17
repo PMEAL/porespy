@@ -15,7 +15,7 @@ Modules
 -------
 
 This package consists of several modules, the purposes of which are given below:
-    
+
 +------------------------+--------------------------------------------------------------------+
 | **binarization**       | Convert greyscale images to binary images of void and solid        |
 +------------------------+--------------------------------------------------------------------+
@@ -33,7 +33,7 @@ This package consists of several modules, the purposes of which are given below:
 +------------------------+--------------------------------------------------------------------+
 | **visualization**      | Quickly and easily visualiz 3D images                              |
 +------------------------+--------------------------------------------------------------------+
- 
+
 -------------
 Example Usage
 -------------
@@ -43,8 +43,7 @@ Example Usage
 >>> im = ps.generators.blobs([100, 100])
 >>> mip = ps.filters.porosimetry(im)
 >>> PcSw = ps.metrics.pore_size_distribution(mip)
->>> fig = plt.plot(*PcSw)    
-
+>>> fig = plt.plot(*PcSw)
 
 ----------------
 Related Packages
@@ -55,7 +54,7 @@ PoreSpy relies heavily on two general image analysis packages:
 contains an assortment of veyr general image analysis tools such as image
 morphology filters, while the latter offers more complex but still general
 functions such as watershed segmentation.  PoreSpy does not duplicate any of
-these general functions so you will also have to install and learn how to 
+these general functions so you will also have to install and learn how to
 use them to get the most from PoreSpy.  The functions in PoreSpy are generally
 built up using several of the more general functions offered by **skimage**
 and **scipy**.  There are a few functions in PoreSpy that are implimented
@@ -81,6 +80,7 @@ morphology.  The advantage of PoreSpy is the flexibility offered by the
 Python environment.
 
 '''
+
 __version__ = "0.3.5"
 
 from . import tools

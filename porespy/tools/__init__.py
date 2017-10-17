@@ -16,7 +16,6 @@ that do NOT return a modified version of the original image.
 .. autofunction:: randomize_colors
 .. autofunction:: subdivide
 
-
 '''
 
 from .__funcs__ import binary_opening_fast
