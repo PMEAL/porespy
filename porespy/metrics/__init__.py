@@ -1,11 +1,21 @@
 r"""
-===============================================================================
+=======
 Metrics
-===============================================================================
-A suite of tools for determine key metrics about an image, including:
+=======
 
-``porosity`` - Quickly determines the ratio of void voxels to total voxels
-of the image.
+A suite of tools for determine key metrics about an image.  Typically these are
+applied to an image after applying a filter, but a few functions can be applied
+directly to the binary image.
+
+.. autofunction:: chord_length_counts
+.. autofunction:: chord_length_distribution
+.. autofunction:: pore_size_density
+.. autofunction:: pore_size_distribution
+.. autofunction:: porosity
+.. autofunction:: representative_elementary_volume
+.. autofunction:: two_point_correlation_bf
+.. autofunction:: two_point_correlation_fft
+
 """
 
 from .__funcs__ import chord_length_counts
