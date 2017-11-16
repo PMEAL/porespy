@@ -75,14 +75,19 @@ class RandomWalk:
         if not im[z, y, x]:
             raise ValueError('invalid starting point: not a pore')
         z_max, y_max, x_max = self._shape
+        max_index = np.array([z_max, y_max, x_max])
         z_free, y_free, x_free = z, y, x
         coords = np.ones((max_steps+1, 3), dtype=int) * (-1)
         free_coords = np.ones((max_steps+1, 3), dtype=int) * (-1)
+        bounds = np.zeros((max_steps+1, 3), dtype=int)
+        free_bounds = np.zeros((max_steps+1, 3), dtype=int)
         coords[0, :] = [z, y, x]
         free_coords[0, :] = [z_free, y_free, x_free]
         steps = 0
+        s = 0
+        s_f = 0
         # begin walk
-        for step in range(1, max_steps+1):
+        for step in range(1, max_steps):
             x_step, y_step, z_step = 0, 0, 0
             direction = np.random.randint(0, directions)
             if direction == 0:
@@ -97,20 +102,25 @@ class RandomWalk:
                 z_step += 1
             elif direction == 5:
                 z_step -= 1
+            pos = np.array([z+z_step, y+y_step, x+x_step])
+            free_pos = np.array([z_free+z_step, y_free+y_step, x_free+x_step])
             # checks to make sure image does not go out of bounds
             if x_free+x_step < 0 or y_free+y_step < 0 or z_free+z_step < 0:
-                break
-            elif (x_free+x_step >= x_max or y_free+y_step >= y_max or
-                    z_free+z_step >= z_max):
-                break
+                free_bounds[s_f, np.where(free_pos < 0)[0]] = -1
+                s_f += 1
+            elif x_free+x_step >= x_max or y_free+y_step >= y_max or z_free+z_step >= z_max:
+                free_bounds[s_f, np.where(free_pos >= max_index)[0]] = 1
+                s_f += 1
             else:
                 x_free += x_step
                 y_free += y_step
                 z_free += z_step
             if x+x_step < 0 or y+y_step < 0 or z+z_step < 0:
-                break
+                bounds[s, np.where(pos < 0)[0]] = -1
+                s += 1
             elif x+x_step >= x_max or y+y_step >= y_max or z+z_step >= z_max:
-                break
+                bounds[s, np.where(pos >= max_index)[0]] = 1
+                s += 1
             # checks if the step leads to a pore in image
             elif im[z+z_step, y+y_step, x+x_step]:
                 x += x_step
@@ -120,8 +130,10 @@ class RandomWalk:
             coords[step] = [z, y, x]
             free_coords[step] = [z_free, y_free, x_free]
         path = namedtuple('path', ('pore_space', 'free_space'))
+        boundary = namedtuple('bounds', ('pore_space', 'free_space'))
         paths = path(coords[::stride, :], free_coords[::stride, :])
-        return paths
+        boundaries = boundary(bounds[:s, :], free_bounds[:s_f, :])
+        return paths, boundaries
 
     def find_start_point(self, start_frac):
         r"""
@@ -177,20 +189,31 @@ class RandomWalk:
         path_data = -1*np.ones((3, walkers, self._max_steps//self._stride+1))
         free_path_data = -1*np.ones((3, walkers,
                                      self._max_steps//self._stride+1))
-        paths = namedtuple('path', ('pore_space', 'free_space'))
+        bounds_list = []
+        free_bounds_list = []
+        path_array = namedtuple('path', ('pore_space', 'free_space'))
+        bounds_lists = namedtuple('bounds', ('pore_space', 'free_space'))
         for w in range(walkers):
             p = self.find_start_point(self._start_frac)
-            path, free_path = self.walk(p, self._max_steps, self._stride)
-            path_data[:, w, :] = np.swapaxes(path, 0, 1)
-            free_path_data[:, w, :] = np.swapaxes(free_path, 0, 1)
+            paths, boundaries = self.walk(p, self._max_steps, self._stride)
+            path_data[:, w, :] = np.swapaxes(paths[0], 0, 1)
+            free_path_data[:, w, :] = np.swapaxes(paths[1], 0, 1)
+            bounds_list.append(np.swapaxes(boundaries[0], 0, 1))
+            free_bounds_list.append(np.swapaxes(boundaries[1], 0, 1))
         if self._path_data is None:
-            self._path_data = paths(path_data, free_path_data)
+            self._path_data = path_array(path_data, free_path_data)
         else:
             new_data = np.concatenate((self._path_data.pore_space, path_data),
                                       1)
             new_free_data = np.concatenate((self._path_data.free_space,
                                             free_path_data), 1)
-            self._path_data = paths(new_data, new_free_data)
+            self._path_data = path_array(new_data, new_free_data)
+        if self._out_of_bounds is None:
+            self._out_of_bounds = bounds_lists(bounds_list, free_bounds_list)
+        else:
+            new_bounds = self._out_of_bounds.pore_space + bounds_list
+            new_free_bounds = self._out_of_bounds.free_space + free_bounds_list
+            self._out_of_bounds = bounds_lists(new_bounds, new_free_bounds)
         self._sd_updated = False
         self._sterr_updated = False
 
@@ -214,6 +237,7 @@ class RandomWalk:
             raise ValueError('image needs to be 2 or 3 dimensional')
         self._shape = (self._z_len, self._y_len, self._x_len)
         self._path_data = None
+        self._out_of_bounds = None
         self._sd_data = None
         self._sd_updated = False
         self._sterr_data = None
