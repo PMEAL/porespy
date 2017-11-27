@@ -4,6 +4,7 @@ from porespy.metrics import porosity
 from numba import jit
 from mpl_toolkits.mplot3d import Axes3D
 from collections import namedtuple
+from itertools import groupby
 
 
 class RandomWalk:
@@ -298,14 +299,18 @@ class RandomWalk:
         free_paths = self._path_data.free_space
         sd = np.ones(paths.shape)*-1
         sd_free = np.ones(free_paths.shape)*-1
+        # Work out the shifted starts for walkers that reach the domain edges
+        self._get_shift_start()
         for w in range(np.size(paths, 1)):
             path = paths[:, w, :]
             path = path[:, path[0, :] >= 0]
             free_path = free_paths[:, w, :]
             free_path = free_path[:, free_path[0, :] >= 0]
+            s_p = self._shift_start.pore_space[w]
+            s_f = self._shift_start.free_space[w]
             for i in range(np.size(path, 1)):
-                sd[:, w, i] = (path[:, i]-path[:, 0])**2
-                sd_free[:, w, i] = (free_path[:, i] - free_path[:, 0])**2
+                sd[:, w, i] = (path[:, i]-path[:, 0]-s_p)**2
+                sd_free[:, w, i] = (free_path[:, i]-free_path[:, 0]-s_f)**2
         self._sd_data = squared_displacement(sd, sd_free)
         self._sd_updated = True
 
@@ -492,3 +497,87 @@ class RandomWalk:
         plt.savefig(f_name+'free_space.png')
         plt.figure(num=1)
         plt.savefig(f_name+'pore_space.png')
+
+    def _get_shift_start(self):
+        r"""
+        The idea is that if a walker hits an upper wall followed by lower wall
+        bouncing back and forth it is actually travelling in a straight line
+        in the real space. Every bounce signifies a change between travelling
+        in the real and relfected image. Hitting the same wall twice in a
+        row cancels out and so these are removed from the bounce tracker list.
+        For example:
+        walker hits top wall once followed by bottom wall twice followed by top
+        wall once. Effectively it is still in the original image as all bounces
+        have cancelled - start is not shifted
+        [1]
+        [1, -1]
+        [1, -1, -1] -> [1]
+        [1, 1] -> []
+        walker hits top wall twice followed by bottom wall twice followed by
+        top wall once. Now walker is in the image reflected at the top face
+        Start is shifted up once
+        [1]
+        [1, 1] -> []
+        [-1]
+        [-1, -1] -> []
+        [1]
+        walker hits bottom once followed by top once followed by bottom once
+        [-1, 1, -1]
+        walker has travelled through the image 3 times and is shifted down 3
+        """
+        def keep_odd_size(alist):
+            r"""
+            Helper that groups consecutive bounces to a face and only retains
+            those that have hit an odd number of times
+            """
+            groups = [list(j) for i, j in groupby(alist)]
+            reduced = [group[0] for group in groups if len(group) % 2 == 1]
+            return reduced
+
+        def loop_reduce(alist):
+            r"""
+            Helper to loop the above function to catch groups that encompass
+            other bounce groups that are now removed
+            """
+            length = len(alist)+1
+            while length > len(alist):
+                length = len(alist)
+                alist = keep_odd_size(alist)
+            return alist
+
+        dim = self.shape
+
+        def sum_bounces(bounce_track):
+            r"""
+            Helper to process the kept bounces and work out the shifted start
+            """
+            sum_bounce = np.zeros(len(dim))
+            for ax, face_list in enumerate(bounce_track):
+                # Last wall that w bounces off sets which direction to shift
+                # Number of opposite face bounces sets the magnitude of shift
+                if len(face_list) > 0:
+                    sum_bounce[ax] = len(face_list) * face_list[-1]
+            shift_start = sum_bounce*(dim - (sum_bounce != 0).astype(int))
+            return shift_start
+
+        b = self._out_of_bounds
+        shifts = [[], []]
+        shift_start = namedtuple('shift', ('pore_space', 'free_space'))
+        # Loop through pore and free space
+        for space, blist in enumerate(b):
+            # Loop through walkers
+            for w, wlist in enumerate(blist):
+                bounce_track = []
+                if len(wlist) > 0:
+                    # If any walls were hit loop through axis
+                    for i in range(len(wlist)):
+                        face = wlist[i]
+                        face = face[face != 0]
+                        # If walls on this axis were hit analyze bounces
+                        if np.size(face) > 0:
+                            bounce = loop_reduce(face)
+                            bounce_track.append(bounce)
+                        else:
+                            bounce_track.append([])
+                shifts[space].append(sum_bounces(bounce_track))
+        self._shift_start = shift_start(shifts[0], shifts[1])
