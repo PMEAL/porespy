@@ -122,7 +122,7 @@ def trim_extrema(im, h, mode='maxima'):
 
     Notes
     -----
-    This function is referred to as **imhmax** or **imhmin** in Mablab.
+    This function is referred to as **imhmax** or **imhmin** in Matlab.
     """
     result = im
     if mode in ['maxima', 'extrema']:
@@ -162,6 +162,7 @@ def flood(im, mode='max'):
 
     """
     labels, N = spim.label(im)
+    mask = im != 0
     I = im.flatten()
     L = labels.flatten()
     if mode.startswith('max'):
@@ -179,7 +180,7 @@ def flood(im, mode='max'):
         for i in range(len(L)):
             V[L[i]] += 1
     im_flooded = sp.reshape(V[labels], newshape=im.shape)
-    im_flooded = im_flooded*im
+    im_flooded = im_flooded*mask
     return im_flooded
 
 
@@ -379,7 +380,7 @@ def porosimetry(im, npts=25, sizes=None, inlets=None, access_limited=True):
     else:
         sizes = sp.sort(a=sizes)[-1::-1]
     imresults = sp.zeros(sp.shape(im))
-    for r in tqdm(sizes[1:]):
+    for r in tqdm(sizes):
         imtemp = dt >= r
         if access_limited:
             imtemp[inlets] = True  # Add inlets before labeling
