@@ -13,4 +13,5 @@ to obtain structural information
 
 """
 from .__RandomWalk__ import RandomWalk
+from .__VRandomWalk__ import VRandomWalk
 from .__Porosimetry__ import Porosimetry

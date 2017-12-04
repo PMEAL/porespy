@@ -80,7 +80,9 @@ morphology.  The advantage of PoreSpy is the flexibility offered by the
 Python environment.
 
 '''
-
+from os import path as osp
+pkg_dir = osp.abspath(osp.dirname(__file__))
+data_dir = osp.join(pkg_dir, 'data')
 __version__ = "0.3.5"
 
 from . import tools
@@ -92,3 +94,4 @@ from . import generators
 from . import binarization
 from . import filters
 from . import export
+from . import data
