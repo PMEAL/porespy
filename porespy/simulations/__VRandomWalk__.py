@@ -133,6 +133,7 @@ class VRandomWalk():
                 step = step.astype(int) * direction
                 ax_list.append(step)
                 index += 1
+                print('Wall Map', str(index), 'done!')
             moves.append(ax_list)
             indices.append([index-2, index-1])
         moves = np.asarray(moves)
@@ -239,10 +240,10 @@ class VRandomWalk():
         # Set solid to -1 for vis
         small_im = self.im.copy()
         small_im[small_im == 1] *= -1
-        big_im = self.im_big.copy()
-        big_im[big_im == 1] *= -1
+
         real_coords = np.ndarray([self.nt, self.nw, self.dim], dtype=int)
         for t in range(nt):
+            print(t)
             # Random velocity update
             # Randomly select an axis to move along for each walker
             ax = np.random.randint(0, self.dim, self.nw)
