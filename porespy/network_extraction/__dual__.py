@@ -4,46 +4,48 @@ import scipy.ndimage as spim
 from tqdm import tqdm
 from porespy.tools import extend_slice
 
-def dual(solid_regions, pore_regions, im, pore_dt=None, solid_dt=None, voxel_size=1):
+
+def dual(solid_regions, pore_regions, im, pore_dt=None, solid_dt=None,
+         voxel_size=1):
     # Pore on Solid
-    merge=sp.amax(pore_regions)
-    p_im=pore_regions*im                #Shows pore labels on pore region
-    pore_on_solid=pore_regions*(~im)    #Expose pores labels on solids
+    merge = sp.amax(pore_regions)
+    p_im = pore_regions*im                # Shows pore labels on pore region
+    pore_on_solid = pore_regions*(~im)    # Expose pores labels on solids
     # Solid on Pore
-    solid_regions=solid_regions+(merge)
-    s_im=solid_regions*~im              #Shows solid labels on solid region
-    solid_on_pore=solid_regions*im      #Expose solid labels on pores
+    solid_regions = solid_regions+(merge)
+    s_im = solid_regions*~im              # Shows solid labels on solid region
+    solid_on_pore = solid_regions*im      # Expose solid labels on pores
     s_dt = solid_dt
     p_dt = pore_dt
     if p_im.ndim == 2:
         cube = square
         ball = disk
-    
+
     if ~sp.any(p_im == 0):
         raise Exception('The received image has no solid phase (0\'s)')
-    
+
     if p_dt is None:
         p_dt = spim.distance_transform_edt(p_im > 0)
         p_dt = spim.gaussian_filter(input=p_dt, sigma=0.5)
-    
+
     if s_im.ndim == 2:
         cube = square
         ball = disk
-    
+
     if ~sp.any(s_im == 0):
         raise Exception('The received image has no solid phase (0\'s)')
-    
+
     if s_dt is None:
         s_dt = spim.distance_transform_edt(s_im > 0)
         s_dt = spim.gaussian_filter(input=s_dt, sigma=0.5)
-    
+
     # Pore on Solid Slices
     p_slice = spim.find_objects(p_im)   #Slice of Pore region
     pore_on_solid_slice = spim.find_objects(pore_on_solid)  #Slice of Pore on solid regions
     # Solid on Pore Slices
     s_slice = spim.find_objects(s_im)   #Slice of Solid region
-    solid_on_pore_slice = spim.find_objects(solid_on_pore)  #Slice of Solid on pore regions 
-    
+    solid_on_pore_slice = spim.find_objects(solid_on_pore)  #Slice of Solid on pore regions
+
     #%% Pore space array initialization
     # Initialize arrays
     Ps = sp.arange(1, sp.amax(p_im)+1)
@@ -63,7 +65,7 @@ def dual(solid_regions, pore_regions, im, pore_dt=None, solid_dt=None, voxel_siz
     pore_solid_conns=[]
     pore_solid_area_surf=sp.zeros((Np, ), dtype=int)
     pore_solid_volume = sp.zeros((Np, ), dtype=int)
-    
+
     # Start extracting size information for pores and throats
     for i in tqdm(Ps):
         pore = i - 1
@@ -76,7 +78,7 @@ def dual(solid_regions, pore_regions, im, pore_dt=None, solid_dt=None, voxel_siz
         #Chunk of solid connected with pore
         sub_sim=pore_on_solid[ext_pore_on_solid_slice]  # Sub image of solid extended slide
         sub_sdt=spim.distance_transform_edt(sub_sim)    # Sub distance transform of solid extended slide
-        sub_sdt=sub_sdt==1  # Finding only surface region of solid 
+        sub_sdt=sub_sdt==1  # Finding only surface region of solid
         solid_im=(sub_sdt*sub_sim)==i # Detecting chunk of solid connected with ith pore
         pore_solid_area_surf[pore]=sp.sum(solid_im)
         pore_solid_volume[pore]=sp.sum(sub_sim==i)
@@ -126,10 +128,10 @@ def dual(solid_regions, pore_regions, im, pore_dt=None, solid_dt=None, voxel_siz
     if p_im.ndim == 2:  # If 2D, add 0's in 3rd dimension
         p_coords = sp.vstack((p_coords.T, sp.zeros((Np, )))).T
         pt_coords = sp.vstack((sp.array(pt_coords).T, sp.zeros((Nt, )))).T
-      
+
     print('_'*60)
-    print('Extracting Solid and Solid throats information from image')    
-    #%% Solid Space array initialization 
+    print('Extracting Solid and Solid throats information from image')
+    #%% Solid Space array initialization
     Ss = sp.arange(sp.amin(solid_regions), sp.amax(s_im)+1)
     Ns = sp.size(Ss)+Np
     s_coords = sp.zeros((Ns, s_im.ndim), dtype=float)
@@ -156,7 +158,7 @@ def dual(solid_regions, pore_regions, im, pore_dt=None, solid_dt=None, voxel_siz
         sub_im_s_mask=sub_im_s==k
         sub_im_s_solid_labels=sub_im_s_mask*sub_im_s_dt
         solid_pore_area_surf[solid] = sp.sum(sub_im_s_solid_labels == 1)
-    
+
         #%% Finding Solid pore Neighbours
         solid_region_full=solid_regions[ext_solid_on_pore_slice]
         solid_region_mask=solid_regions[ext_solid_on_pore_slice]==k
@@ -167,7 +169,7 @@ def dual(solid_regions, pore_regions, im, pore_dt=None, solid_dt=None, voxel_siz
         neigbhour_pore_labels=neigbhour_pore_labels-1
         for pore_label in neigbhour_pore_labels:
             solid_pore_conns.append([solid,pore_label])
-        
+
         #%% New Code of porespy for solid extraction
         im_solid_s = sub_im_s == k   #  True/False form Sub image of kth solid extended slice
         dt_solid_s = spim.distance_transform_edt(sp.pad(im_solid_s, pad_width=1,
@@ -198,13 +200,13 @@ def dual(solid_regions, pore_regions, im, pore_dt=None, solid_dt=None, voxel_siz
                     st_coords.append(tuple((st_inds[0][temp_s],
                                            st_inds[1][temp_s],
                                            st_inds[2][temp_s])))
-    
+
     Nst = len(st_dia_inscribed)  # Get number of throats
     if s_im.ndim == 2:  # If 2D, add 0's in 3rd dimension
         s_coords = sp.vstack((s_coords.T, sp.zeros((Ns, )))).T
         st_coords = sp.vstack((sp.array(st_coords).T, sp.zeros((Nst, )))).T
-    
-    bond_all=Ns    
+
+    bond_all=Ns
     site_all=Nt+Nst
     s_coords[Ps-1]=p_coords[Ps-1]
     bond_coords=s_coords
@@ -227,7 +229,7 @@ def dual(solid_regions, pore_regions, im, pore_dt=None, solid_dt=None, voxel_siz
     site_dia_inscribed=pt_dia_inscribed+st_dia_inscribed
     site_area=pt_area+st_area
     site_perimeter=pt_perimeter+st_perimeter
-    
+
     net = {}
     net['pore.all'] = sp.ones((bond_all, ), dtype=bool)
     net['throat.all'] = sp.ones((site_all, ), dtype=bool)
@@ -263,5 +265,5 @@ def dual(solid_regions, pore_regions, im, pore_dt=None, solid_dt=None, voxel_siz
     P13=net['throat.conns']
     dist = (bond_coords[P13[:, 0]]-bond_coords[P13[:, 1]])*voxel_size
     net['throat.direct_length'] = sp.sqrt(sp.sum(dist**2, axis=1))
-    
+
     return net
