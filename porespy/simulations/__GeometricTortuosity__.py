@@ -101,13 +101,13 @@ if __name__ == '__main__':
 #    print(gt.tau(axis=2))
 
 
-fig, ax = plt.subplots()
-plt.subplots_adjust(left=0.25, bottom=0.25)
-l = plt.imshow(ps.visualization.sem(im), cmap=plt.cm.gray)
-ax_vmax = plt.axes([0.25, 0.1, 0.65, 0.03])
-ax_vmin = plt.axes([0.25, 0.05, 0.65, 0.03])
-sl_vmin = Slider(ax_vmax, 'min', 0, im.shape[2]*2, valinit=l.get_clim()[0])
-sl_vmax = Slider(ax_vmin, 'max', 0, im.shape[2]*2, valinit=l.get_clim()[1])
+    fig, ax = plt.subplots()
+    plt.subplots_adjust(left=0.25, bottom=0.25)
+    l = plt.imshow(ps.visualization.sem(im), cmap=plt.cm.gray)
+    ax_vmax = plt.axes([0.25, 0.1, 0.65, 0.03])
+    ax_vmin = plt.axes([0.25, 0.05, 0.65, 0.03])
+    sl_vmin = Slider(ax_vmax, 'min', 0, im.shape[2]*2, valinit=l.get_clim()[0])
+    sl_vmax = Slider(ax_vmin, 'max', 0, im.shape[2]*2, valinit=l.get_clim()[1])
 
 
 def update_vmax(val):
@@ -125,5 +125,5 @@ def update_vmin(val):
     l.set_clim(vmin=vmin)
     fig.canvas.draw_idle()
 
-sl_vmax.on_changed(update_vmax)
-sl_vmin.on_changed(update_vmin)
+#sl_vmax.on_changed(update_vmax)
+#sl_vmin.on_changed(update_vmin)
