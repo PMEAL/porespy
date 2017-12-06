@@ -93,12 +93,12 @@ def dual(solid_regions, pore_regions, im, pore_dt=None, solid_dt=None,
         pore_regions_full = pore_regions[ext_pore_on_solid_slice]
         pore_region_mask = pore_regions[ext_pore_on_solid_slice] == i
         solid_regions_full = solid_regions[ext_pore_on_solid_slice]
-        solid_labels_on_pore = ((pore_region_mask*pore_regions_full != 0)
-                                * solid_regions_full)
+        solid_labels_on_pore = ((pore_region_mask*pore_regions_full != 0) *
+                                solid_regions_full)
         neigbhour_solid_labels = sp.unique(solid_labels_on_pore)
         neigbhour_solid_labels = sp.delete(neigbhour_solid_labels,
-                                           sp.where(neigbhour_solid_labels
-                                                    == 0))
+                                           sp.where(neigbhour_solid_labels ==
+                                                    0))
         neigbhour_solid_labels = neigbhour_solid_labels-1
         for solid_label in neigbhour_solid_labels:
             pore_solid_conns.append([pore, solid_label])
@@ -175,8 +175,8 @@ def dual(solid_regions, pore_regions, im, pore_dt=None, solid_dt=None,
         solid_region_full = solid_regions[ext_solid_on_pore_slice]
         solid_region_mask = solid_regions[ext_solid_on_pore_slice] == k
         pore_region_full = pore_regions[ext_solid_on_pore_slice]
-        pore_labels_on_solid = ((solid_region_mask*solid_region_full != 0)
-                                * pore_region_full)
+        pore_labels_on_solid = ((solid_region_mask*solid_region_full != 0) *
+                                pore_region_full)
         neigbhour_pore_labels = sp.unique(pore_labels_on_solid)
         neigbhour_pore_labels = sp.delete(neigbhour_pore_labels,
                                           sp.where(neigbhour_pore_labels == 0))
