@@ -1,583 +1,607 @@
+# -*- coding: utf-8 -*-
+"""
+@author: Tom Tranter
+
+Random Walker Code
+"""
+
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
-from porespy.metrics import porosity
-from numba import jit
-from mpl_toolkits.mplot3d import Axes3D
-from collections import namedtuple
-from itertools import groupby
+import time
+import porespy as ps
+import os
+from tqdm import tqdm
+
+plt.close('all')
+
+# Code for profiling stats
+# uncomment decorator on the run method to switch profiling on
+
+try:
+    from line_profiler import LineProfiler
+
+    def do_profile(follow=[]):
+        def inner(func):
+            def profiled_func(*args, **kwargs):
+                try:
+                    profiler = LineProfiler()
+                    profiler.add_function(func)
+                    for f in follow:
+                        profiler.add_function(f)
+                    profiler.enable_by_count()
+                    return func(*args, **kwargs)
+                finally:
+                    profiler.print_stats()
+            return profiled_func
+        return inner
+
+except ImportError:
+    def do_profile(follow=[]):
+        "Helpful if you accidentally leave in production!"
+        def inner(func):
+            def nothing(*args, **kwargs):
+                return func(*args, **kwargs)
+            return nothing
+        return inner
 
 
-class RandomWalk:
-    r"""
-    This class generates objects for performing random walk simulations
-    on.
+class RandomWalk():
+    r'''
+    The RandomWalk class implements a simple vectorized version of a random
+    walker. The image that is analyzed can be 2 or 3 dimensional and the run
+    method can take an arbitrary number of steps and walkers.
+    Walker starting positions can be set to the same point or to different ones
+    chosen at random.
+    The image is duplicated and flipped a number of times for visualization as
+    this represents the real path the walker would have taken if it had not
+    been confined to the bounds of the image.
+    The mean square displacement is calculated and the gradient of the msd
+    when plotted over time is equal to 1/tortuosity
+    The image data and walker co-ordinates can be exported for visualization
+    in paraview.
+    A simple 2d slice can also be viewed directly using matplotlib.
+    Currently walkers do not travel along diagonals.
+    '''
 
-    Parameters
-    ----------
-    im: ndarray of bool
-        2D or 3D image
-    walkers: int (default = 1000)
-        The number of walks to initially perform
-    max_steps: int (default = 5000)
-        The number of steps to attempt per walk
-    stride: int (default = 10)
-        The number of steps taken between each coordinate in path_data
-    st_frac: float (default = 0.2)
-        This fraction of the image (in the centre) is searched for a valid
-        starting point for each walk
-
-    Examples
-    --------
-
-    Creating a RandomWalk object:
-
-    >>> import porespy as ps
-    >>> im = ps.generators.blobs(300)
-    >>> rw = ps.simulations.RandomWalk(im, walkers=500, max_steps=3000)
-
-    """
-
-    @jit
-    def walk(self, start_point, max_steps, stride=1):
-        r"""
-        This function performs a single random walk through porous image. It
-        returns an array containing the walker path in the image, and the
-        walker path in free space.
-
-        Parameters
-        ----------
-        start_point: array_like
-           A sequence containing the indices of a valid starting point. If
-           the image is 2D, the first coordinate needs to be zero
-        max_steps: int
-            The number of steps to attempt per walk
-        stride: int
-            Number of steps taken between each returned coordinate
-
-        Returns
-        --------
-        paths: namedtuple
-            A tuple containing 2 arrays showing the paths taken by the walker:
-            path.pore_space and path.free_space
-
-        Notes
-        ------
-        This function only performs a single walk through the image. Use
-        RandomWalk.-perform_walks() to add more
-        """
-
-        ndim = self._ndim
-        im = self.im
-        if ndim == 3:
-            directions = 6
-        elif ndim == 2:
-            directions = 4
-        (z, y, x) = start_point
-        if not im[z, y, x]:
-            raise ValueError('invalid starting point: not a pore')
-        z_max, y_max, x_max = self._shape
-        max_index = np.array([z_max, y_max, x_max])
-        z_free, y_free, x_free = z, y, x
-        coords = np.ones((max_steps+1, 3), dtype=int) * (-1)
-        free_coords = np.ones((max_steps+1, 3), dtype=int) * (-1)
-        bounds = np.zeros((max_steps+1, 3), dtype=int)
-        free_bounds = np.zeros((max_steps+1, 3), dtype=int)
-        coords[0, :] = [z, y, x]
-        free_coords[0, :] = [z_free, y_free, x_free]
-        steps = 0
-        s = 0
-        s_f = 0
-        # begin walk
-        for step in range(1, max_steps):
-            x_step, y_step, z_step = 0, 0, 0
-            direction = np.random.randint(0, directions)
-            if direction == 0:
-                x_step += 1
-            elif direction == 1:
-                x_step -= 1
-            elif direction == 2:
-                y_step += 1
-            elif direction == 3:
-                y_step -= 1
-            elif direction == 4:
-                z_step += 1
-            elif direction == 5:
-                z_step -= 1
-            pos = np.array([z+z_step, y+y_step, x+x_step])
-            free_pos = np.array([z_free+z_step, y_free+y_step, x_free+x_step])
-            # checks to make sure image does not go out of bounds
-            if x_free+x_step < 0 or y_free+y_step < 0 or z_free+z_step < 0:
-                free_bounds[s_f, np.where(free_pos < 0)[0]] = -1
-                s_f += 1
-            elif x_free+x_step >= x_max or y_free+y_step >= y_max or z_free+z_step >= z_max:
-                free_bounds[s_f, np.where(free_pos >= max_index)[0]] = 1
-                s_f += 1
-            else:
-                x_free += x_step
-                y_free += y_step
-                z_free += z_step
-            if x+x_step < 0 or y+y_step < 0 or z+z_step < 0:
-                bounds[s, np.where(pos < 0)[0]] = -1
-                s += 1
-            elif x+x_step >= x_max or y+y_step >= y_max or z+z_step >= z_max:
-                bounds[s, np.where(pos >= max_index)[0]] = 1
-                s += 1
-            # checks if the step leads to a pore in image
-            elif im[z+z_step, y+y_step, x+x_step]:
-                x += x_step
-                y += y_step
-                z += z_step
-            steps += 1
-            coords[step] = [z, y, x]
-            free_coords[step] = [z_free, y_free, x_free]
-        path = namedtuple('path', ('pore_space', 'free_space'))
-        boundary = namedtuple('bounds', ('pore_space', 'free_space'))
-        paths = path(coords[::stride, :], free_coords[::stride, :])
-        boundaries = boundary(bounds[:s, :], free_bounds[:s_f, :])
-        return paths, boundaries
-
-    def find_start_point(self, start_frac):
-        r"""
-        Finds a random valid start point in a porous image, searching in the
-        given fraction of the image
+    def __init__(self, image, offset=1):
+        r'''
+        Get image info and make a bigger periodically flipped image for viz
 
         Parameters
         ----------
-        start_frac: float
-            A value between 0 and 1. Determines what fraction of the image is
-            randomly searched for a starting point
+        image: ndarray of int
+            2D or 3D image with 1 denoting pore space and 0 denoting solid
 
-        Returns
+        offset: int (default = 1)
+            The number of image offsets to start the real walkers in along each
+            axis. The big image is flipped and tiled twice this many times so
+            that walkers start in the middle.
+
+        Examples
         --------
-        start_point: tuple
-            A tuple containing the index of a valid start point.
-            If the image is 2D, start_point will have 0 as the first coord
-        """
 
-        x_r = self._x_len*start_frac
-        y_r = self._y_len*start_frac
-        z_r = self._z_len*start_frac
-        i = 0
-        while True:
-            i += 1
-            if i > 10000:
-                print("failed to find starting point")
-                return None
-            x = int(self._x_len/2 - x_r/2 + np.random.randint(x_r+1))
-            y = int(self._y_len/2 - y_r/2 + np.random.randint(y_r+1))
-            z = int(self._z_len/2 - z_r/2 + np.random.randint(z_r+1))
-            if self.im[z, y, x]:
-                break
-        start_point = (z, y, x)
-        return start_point
+        Creating a RandomWalk object:
 
-    def perform_walks(self, walkers):
-        r"""
-        Adds the specified number of walkers to the path_data attribute
+        >>> import porespy as ps
+        >>> im = ps.generators.blobs([100, 100])
+        >>> rw = ps.RandomWalk(im)
+        '''
+        self.im = image
+        self.shape = np.array(np.shape(self.im))
+        self.dim = len(self.shape)
+        self.offset = offset
+        self.solid_value = 0
+
+    def _transform_coord(self, coord=None, reflection=None):
+        r'''
+        Transform a coordinate from the original image to a reflected image
 
         Parameters
         ----------
-        walkers: int
-            The number of walks to perform. This many rows will be added
-            to each of the path_data arrays (path_data.pore_space and
-            path_data.free_space)
+        coord: ndarray of int
+            coordinates in the original image
+        reflection: ndarray of int
+            number of times to shift the coordinate into a reflected image.
+            An odd number results in a reflection and even results in a shift
+        '''
+        t_coord = coord.copy()
+        for ax in range(self.dim):
+            rs = reflection[:, ax] % 2 == 1
+            t_coord[rs, ax] = self.shape[ax] - 1 - coord[rs, ax]
+            t_coord[:, ax] += reflection[:, ax]*self.shape[ax]
+        return t_coord
 
-        Notes
-        ------
-        This function will continue to use the max_steps and stride value
-        stored on the object
-        """
-        path_data = -1*np.ones((3, walkers, self._max_steps//self._stride+1))
-        free_path_data = -1*np.ones((3, walkers,
-                                     self._max_steps//self._stride+1))
-        bounds_list = []
-        free_bounds_list = []
-        path_array = namedtuple('path', ('pore_space', 'free_space'))
-        bounds_lists = namedtuple('bounds', ('pore_space', 'free_space'))
-        for w in range(walkers):
-            p = self.find_start_point(self._start_frac)
-            paths, boundaries = self.walk(p, self._max_steps, self._stride)
-            path_data[:, w, :] = np.swapaxes(paths[0], 0, 1)
-            free_path_data[:, w, :] = np.swapaxes(paths[1], 0, 1)
-            bounds_list.append(np.swapaxes(boundaries[0], 0, 1))
-            free_bounds_list.append(np.swapaxes(boundaries[1], 0, 1))
-        if self._path_data is None:
-            self._path_data = path_array(path_data, free_path_data)
-        else:
-            new_data = np.concatenate((self._path_data.pore_space, path_data),
-                                      1)
-            new_free_data = np.concatenate((self._path_data.free_space,
-                                            free_path_data), 1)
-            self._path_data = path_array(new_data, new_free_data)
-        if self._out_of_bounds is None:
-            self._out_of_bounds = bounds_lists(bounds_list, free_bounds_list)
-        else:
-            new_bounds = self._out_of_bounds.pore_space + bounds_list
-            new_free_bounds = self._out_of_bounds.free_space + free_bounds_list
-            self._out_of_bounds = bounds_lists(new_bounds, new_free_bounds)
-        self._sd_updated = False
-        self._sterr_updated = False
-
-    def __init__(self, im, walkers=1000, max_steps=5000, stride=10,
-                 start_frac=0.2):
-        self.im = np.array(im, ndmin=3)
-        self._max_steps = max_steps
-        self._stride = stride
-        self._start_frac = start_frac
-        self.porosity = porosity(im)
-        self._ndim = np.ndim(im)
-        if self._ndim == 3:
-            self._z_len = np.size(im, 0)
-            self._y_len = np.size(im, 1)
-            self._x_len = np.size(im, 2)
-        elif self._ndim == 2:
-            self._z_len = 1
-            self._y_len = np.size(im, 0)
-            self._x_len = np.size(im, 1)
-        else:
-            raise ValueError('image needs to be 2 or 3 dimensional')
-        self._shape = (self._z_len, self._y_len, self._x_len)
-        self._path_data = None
-        self._out_of_bounds = None
-        self._sd_data = None
-        self._sd_updated = False
-        self._sterr_data = None
-        self._sterr_updated = False
-        self.perform_walks(walkers)
-
-    @property
-    def steps(self):
-        return np.arange(0, self.max_steps+1, self.stride)
-
-    @property
-    def path_data(self):
-        return self._path_data
-
-    @property
-    def sd_data(self):
-        if not self._sd_updated:
-            self._get_sq_displacement()
-        return self._sd_data
-
-    @property
-    def sterr_data(self):
-        if not self._sterr_updated:
-            self._get_sterr()
-        return self._sterr_data
-
-    @property
-    def ndim(self):
-        return self._ndim
-
-    @property
-    def shape(self):
-        return self._shape
-
-    @property
-    def max_steps(self):
-        return self._max_steps
-
-    @property
-    def total_walkers(self):
-        return np.size(self._path_data.pore_space, 1)
-
-    @property
-    def stride(self):
-        return self._stride
-
-    @property
-    def start_frac(self):
-        return self._start_frac
-
-    def _get_sq_displacement(self):
-        r"""
-        Generates squared displacement arrays for pore_space and free_space
-        """
-        squared_displacement = namedtuple('square_displacement',
-                                          ('pore_space', 'free_space'))
-        paths = self._path_data.pore_space
-        free_paths = self._path_data.free_space
-        sd = np.ones(paths.shape)*-1
-        sd_free = np.ones(free_paths.shape)*-1
-        # Work out the shifted starts for walkers that reach the domain edges
-        self._get_shift_start()
-        for w in range(np.size(paths, 1)):
-            path = paths[:, w, :]
-            path = path[:, path[0, :] >= 0]
-            free_path = free_paths[:, w, :]
-            free_path = free_path[:, free_path[0, :] >= 0]
-            s_p = self._shift_start.pore_space[w]
-            s_f = self._shift_start.free_space[w]
-            for i in range(np.size(path, 1)):
-                sd[:, w, i] = (path[:, i]-path[:, 0]-s_p)**2
-                sd_free[:, w, i] = (free_path[:, i]-free_path[:, 0]-s_f)**2
-        self._sd_data = squared_displacement(sd, sd_free)
-        self._sd_updated = True
-
-    def _get_sterr(self):
-        r"""
-        """
-        standard_error = namedtuple('standard_error',
-                                    ('pore_space', 'free_space'))
-        sd, sd_f = self.sd_data
-        ste = np.zeros((4, np.size(self.steps)))
-        ste_f = np.zeros((4, np.size(self.steps)))
-        for col in range(np.size(sd, 2)):
-            ste[3, col] = np.std(np.sum(sd[:, np.where(sd[0, :, col] >= 0),
-                                 col], 0))
-            ste_f[3, col] = np.std(np.sum(sd_f[:,
-                                   np.where(sd_f[0, :, col] >= 0), col], 0))
-            ste[3, col] /= np.sqrt(np.size(np.where(sd[0, :, col] >= 0)))
-            ste_f[3, col] /= np.sqrt(np.size(np.where(sd[0, :, col] >= 0)))
-        for d in range(3):
-            for col in range(np.size(sd, 2)):
-                ste[d, col] = np.std(sd[d, np.where(sd[d, :, col] >= 0), col])
-                ste_f[d, col] = np.std(sd_f[d, np.where(sd_f[d, :, col] >= 0),
-                                       col])
-                ste[d, col] /= np.sqrt(np.size(np.where(sd[0, :, col] >= 0)))
-                ste_f[d, col] /= np.sqrt(np.size(np.where(sd[0, :, col] >= 0)))
-        self._sterr_data = standard_error(ste, ste_f)
-        self._sterr_updated = True
-
-    def get_msd(self, direction=None):
-        r"""
-        """
-        d = direction
-        sd, sd_f = self.sd_data
-        msd = np.zeros(np.size(self.steps))
-        msd_f = np.zeros(np.size(self.steps))
-        mean_sd = namedtuple('mean_squared_displacement',
-                             ('pore_space', 'free_space'))
-        if d is None:
-            for col in range(np.size(sd, 2)):
-                msd[col] = np.mean(np.sum(sd[:, np.where(sd[0, :, col] >= 0),
-                                   col], 0))
-                msd_f[col] = np.mean(np.sum(sd_f[:,
-                                     np.where(sd_f[0, :, col] >= 0), col], 0))
-        else:
-            for col in range(np.size(sd, 2)):
-                msd[col] = np.mean(sd[d, np.where(sd[0, :, col] >= 0), col])
-                msd_f[col] = np.mean(sd_f[d, np.where(sd_f[0, :, col] >= 0),
-                                     col])
-        return mean_sd(msd, msd_f)
-
-    def show_msd(self, step_range=None, direction=None, showstderr=True):
-        r"""
-        Graphs mean squared displacement in pore space and free space
-        vs. number of steps taken
+    def _build_big_image(self, num_copies):
+        r'''
+        Build the big image by flipping and stacking along each axis a number
+        of times
 
         Parameters
-        -----------
-        step_range: array_like (optional)
-            A sequence with the min and max range of steps to plot. If no
-            argument is given, the range will be zero to max_steps
-        direction: int (optional)
-            The axis along which to show mean squared displacement in. If no
-            argument is given, total msd is shown
-        showstderr: bool (optional)
-            If set to True, the graph will show error bars
+        ----------
+        num_copies: int
+            the number of times to copy the image along each axis
+        '''
+        big_im = self.im.copy()
+        func = [np.vstack, np.hstack, np.dstack]
+        temp_im = self.im.copy()
+        for ax in range(self.dim):
+            flip_im = np.flip(temp_im, ax)
+            for c in range(num_copies):
+                if c % 2 == 0:
+                    big_im = func[ax]((big_im, flip_im))
+                else:
+                    big_im = func[ax]((big_im, temp_im))
+            temp_im = big_im.copy()
+        return big_im
 
-        Returns
-        --------
-        out: namedtuple
-        """
-        if step_range is None:
-            step_range = (0, self.max_steps)
-        start, stop = step_range
-        d = direction
-        start = start//self.stride
-        stop = stop//self.stride
-        sd, sd_f = self.sd_data
-        ste, ste_f = self.sterr_data
-        steps = self.steps
-        msd, msd_f = self.get_msd(direction)
-        slopes = namedtuple('slope', ('pore_space', 'free_space'))
-        if d is None:
-            ste = ste[3, :]
-            ste_f = ste_f[3, :]
-        else:
-            ste = ste[d, :]
-            ste_f = ste_f[d, :]
-        p = np.polyfit(steps[start:stop], msd[start:stop], 1)
-        p_f = np.polyfit(steps[start:stop], msd_f[start:stop], 1)
-        if showstderr:
-            plt.errorbar(steps[start:stop], msd[start:stop],
-                         yerr=ste[start:stop])
-            plt.errorbar(steps[start:stop], msd_f[start:stop],
-                         yerr=ste_f[start:stop])
-        else:
-            plt.plot(steps[start:stop], msd[start:stop])
-            plt.plot(steps[start:stop], msd_f[start:stop])
-        return slopes(p[0], p_f[0])
-
-    def _get_path(self, walker):
-        r"""
-        Returns matplotlib figures for show_path and save_path functions
-        """
-        z, y, x = self.shape
-        path = self.path_data.pore_space[:, walker, :]
-        path = path[:, path[0, :] >= 0]
-        free_path = self.path_data.free_space[:, walker, :]
-        free_path = free_path[:, free_path[0, :] >= 0]
-        max_i = np.size(path, 1) - 1
-        if self._ndim == 3:
-            size = (7*x/y, 7*z/y)
-            fig_im = plt.figure(num=1, figsize=size)
-            fig_im = Axes3D(fig_im)
-            fig_im.plot(path[2, :], path[1, :], path[0, :], 'c')
-            fig_im.plot([path[2, 0]], [path[1, 0]], [path[0, 0]], 'g.')
-            fig_im.plot([path[2, max_i]], [path[1, max_i]], [path[0, max_i]],
-                        'r.')
-            fig_im.set_xlim3d(0, x)
-            fig_im.set_ylim3d(0, y)
-            fig_im.set_zlim3d(0, z)
-            fig_im.invert_yaxis()
-            plt.title('Path in Pore Space')
-            fig_free = plt.figure(num=2, figsize=size)
-            fig_free = Axes3D(fig_free)
-            fig_free.plot(free_path[2, :], free_path[1, :], free_path[0, :],
-                          'c')
-            fig_free.plot([free_path[2, 0]], [free_path[1, 0]],
-                          [free_path[0, 0]], 'g.')
-            fig_free.plot([free_path[2, max_i]], [free_path[1, max_i]],
-                          [free_path[0, max_i]], 'r.')
-            fig_free.set_xlim3d(0, x)
-            fig_free.set_ylim3d(0, y)
-            fig_free.set_zlim3d(0, z)
-            fig_free.invert_yaxis()
-            plt.title('Path in Free Space')
-        elif self._ndim == 2:
-            size = (5, 5)
-            fig_im = plt.figure(num=1, figsize=size)
-            plt.plot(path[2, :], path[1, :], 'c')
-            plt.plot(path[2, 0], path[1, 0], 'g.')
-            plt.plot(path[2, max_i], path[1, max_i], 'r.')
-            plt.xlim((0, x))
-            plt.ylim((0, y))
-            plt.gca().invert_yaxis()
-            plt.title('Path in Pore Space')
-            fig_free = plt.figure(num=2, figsize=size)
-            plt.plot(free_path[2, :], free_path[1, :], 'c')
-            plt.plot(free_path[2, 0], free_path[1, 0], 'g.')
-            plt.plot(free_path[2, max_i], free_path[1, max_i], 'r.')
-            plt.xlim((0, x))
-            plt.ylim((0, y))
-            plt.gca().invert_yaxis()
-            plt.title('Path in Free Space')
-        return(fig_im, fig_free)
-
-    def show_path(self, walker):
-        r"""
-        Shows the selected walkers path through pore space and free space
-        using a matplotlib figure
+    def _rand_start(self, image, num=1):
+        r'''
+        Get a number of start points in the pore space of the image
 
         Parameters
-        -----------
-        walker: int
-            The walker whose path will be shown
-        """
-        self._get_path(walker)
-        plt.show()
+        ----------
+        image: ndarray of int
+            2D or 3D image with 1 denoting pore space and 0 denoting solid
+        num: int
+            number of unique starting points to return
+        '''
+        inds = np.argwhere(image != self.solid_value)
+        choice = np.random.choice(np.arange(0, len(inds), 1),
+                                  num,
+                                  replace=False)
+        return inds[choice]
 
-    def save_path(self, walker, f_name):
-        r"""
-        Saves the selected walkers path through pore space and free space
+    def _setup_walk(self):
+        r'''
+        Initialize variables for this walk
+        '''
+        # Main data array - the walkers coordinates
+        self.coords = np.ndarray([self.nt, self.nw, self.dim], dtype=int)
+        self.start = self._find_start()
+        # Array to keep track of whether the walker is travelling in a real
+        # or reflected image in each axis
+        self.real = self.start.copy()
+        self.real.fill(1)
+
+    def _crop(self, image):
+        r'''
+        Crop image all around the edges by one pixel. Helper function to undo
+        the padding that occurs during the building of the wall map.
+        This function is generic and does not have to be just used on the image
+        passed in when class is initialized.
 
         Parameters
-        -----------
-        walker: int
-            The walker whose path will be saved
+        ----------
+        image: ndarray of any type
+            2D or 3D image with 1 denoting pore space and 0 denoting solid
+        '''
+        dim = len(np.shape(image))
+        if dim == 1:
+            return image[1:-1]
+        elif dim == 2:
+            return image[1:-1, 1:-1]
+        elif dim == 3:
+            return image[1:-1, 1:-1, 1:-1]
+        else:
+            print('Images must be 3D or less')
 
-        f_name: string
-            A path to a filename. Note that this function will add the suffix
-            pore_space and free_space to differentiate between paths
-        """
+    def _get_wall_map(self, image):
+        r'''
+        Function takes an image and rolls it back and forth on each axis saving
+        the results in a wall_map. This is referred to later when random walker
+        moves in a particular direction to detect where the walls are.
 
-        fig_im, fig_free = self._get_path(walker)
-        plt.savefig(f_name+'free_space.png')
-        plt.figure(num=1)
-        plt.savefig(f_name+'pore_space.png')
+        Parameters
+        ----------
+        image: ndarray of int
+            2D or 3D image with 1 denoting pore space and 0 denoting solid
+        '''
+        # Make boolean map where solid is True
+        solid = image.copy() == self.solid_value
+        solid = solid.astype(bool)
+        wall_dim = list(self.shape) + [self.dim*2]
+        wall_map = np.zeros(wall_dim, dtype=bool)
+        index = 0
+        moves = []
+        indices = []
+        # Pad image to catch edges
+        solid = np.pad(solid, 1, mode='constant', constant_values=False)
+        for axis in range(self.dim):
+            ax_list = []
+            for direction in [-1, 1]:
+                # Roll the image and get the back in the original shape
+                temp = self._crop(np.roll(solid, -direction, axis))
+                if self.dim == 2:
+                    wall_map[:, :, index] = temp
+                else:
+                    wall_map[:, :, :, index] = temp
+                # Store the direction of the step in an array for later use
+                step = np.arange(0, self.dim, 1, dtype=int) == axis
+                step = step.astype(int) * direction
+                ax_list.append(step)
+                index += 1
+            moves.append(ax_list)
+            indices.append([index-2, index-1])
+        moves = np.asarray(moves)
+        indices = np.asarray(indices)
+        # Return inverse of the solid wall map for fluid map
+        return ~wall_map, moves, indices
 
-    def _get_shift_start(self):
-        r"""
-        The idea is that if a walker hits an upper wall followed by lower wall
-        bouncing back and forth it is actually travelling in a straight line
-        in the real space. Every bounce signifies a change between travelling
-        in the real and relfected image. Hitting the same wall twice in a
-        row cancels out and so these are removed from the bounce tracker list.
-        For example:
-        walker hits top wall once followed by bottom wall twice followed by top
-        wall once. Effectively it is still in the original image as all bounces
-        have cancelled - start is not shifted
-        [1]
-        [1, -1]
-        [1, -1, -1] -> [1]
-        [1, 1] -> []
-        walker hits top wall twice followed by bottom wall twice followed by
-        top wall once. Now walker is in the image reflected at the top face
-        Start is shifted up once
-        [1]
-        [1, 1] -> []
-        [-1]
-        [-1, -1] -> []
-        [1]
-        walker hits bottom once followed by top once followed by bottom once
-        [-1, 1, -1]
-        walker has travelled through the image 3 times and is shifted down 3
-        """
-        def keep_odd_size(alist):
-            r"""
-            Helper that groups consecutive bounces to a face and only retains
-            those that have hit an odd number of times
-            """
-            groups = [list(j) for i, j in groupby(alist)]
-            reduced = [group[0] for group in groups if len(group) % 2 == 1]
-            return reduced
+    def check_wall(self, walkers, move, inds, wall_map):
+        r'''
+        The walkers are an array of coordinates of the image,
+        the wall map is a boolean map of the image rolled in each direction.
+        directions is an array referring to the movement up or down an axis
+        and is used to increment the walker coordinates if a wall is not met
 
-        def loop_reduce(alist):
-            r"""
-            Helper to loop the above function to catch groups that encompass
-            other bounce groups that are now removed
-            """
-            length = len(alist)+1
-            while length > len(alist):
-                length = len(alist)
-                alist = keep_odd_size(alist)
-            return alist
+        Parameters
+        ----------
+        walkers: ndarray of int and shape [nw, dim]
+            the current coordinates of the walkers
+        move: ndarray of int and shape [nw, dim]
+            the vector of the next move to be made by the walker
+        inds: array of int and shape [nw]
+            the index of the wall map corresponding to the move vector
+        '''
+        if self.dim == 2:
+            move_ok = wall_map[walkers[:, 0],
+                               walkers[:, 1],
+                               inds]
+        elif self.dim == 3:
+            move_ok = wall_map[walkers[:, 0],
+                               walkers[:, 1],
+                               walkers[:, 2],
+                               inds]
+        # Cancel moves that hit walls - effectively walker travels half way
+        # across, hits a wall, bounces back and results in net zero movement
+        if np.any(~move_ok):
+            move[~move_ok] = 0
+        return move
 
-        dim = self.shape
+    def check_edge(self, walkers, axis, move, real):
+        r'''
+        Check to see if next move passes out of the domain
+        If so, zero walker move and update the real velocity direction.
+        Walker has remained stationary in the small image but tranisioned
+        between real and reflected domains.
+        Parameters
+        ----------
+        walkers: ndarray of int and shape [nw, dim]
+            the current coordinates of the walkers
+        move: ndarray of int and shape [nw, dim]
+            the vector of the next move to be made by the walker
+        inds: array of int and shape [nw]
+            the index of the wall map corresponding to the move vector
+        '''
+        next_move = walkers + move
+        move_real = move.copy()
+        # Divide walkers into two groups, those moving postive and negative
+        # Check lower edge
+        axis = axis.flatten()
+        w_id = np.arange(len(walkers))
+        shift = np.zeros_like(axis)
+        # Check lower edge
+        l_hit = next_move[w_id, axis] < 0
+        shift[l_hit] = -1
+        # Check upper edge
+        u_hit = next_move[w_id, axis] >= self.shape[axis]
+        shift[u_hit] = 1
+        # Combine again and update arrays
+        hit = np.logical_or(l_hit, u_hit)
 
-        def sum_bounces(bounce_track):
-            r"""
-            Helper to process the kept bounces and work out the shifted start
-            """
-            sum_bounce = np.zeros(len(dim))
-            for ax, face_list in enumerate(bounce_track):
-                # Last wall that w bounces off sets which direction to shift
-                # Number of opposite face bounces sets the magnitude of shift
-                if len(face_list) > 0:
-                    sum_bounce[ax] = len(face_list) * face_list[-1]
-            shift_start = sum_bounce*(dim - (sum_bounce != 0).astype(int))
-            return shift_start
+        if np.any(hit) > 0:
+            ax = axis[hit]
+            real[hit, ax] *= -1
+            # walker in the original image stays stationary
+            move[hit, ax] = 0
+            # walker in the real image passes through an interface between
+            # original and flipped along the axis of travel
+            # the transition step is reversed as it the reality of travel
+            # both cancel to make the real walker follow the initial move
+            move_real[hit, ax] *= -1
+        return move, move_real, real
 
-        b = self._out_of_bounds
-        shifts = [[], []]
-        shift_start = namedtuple('shift', ('pore_space', 'free_space'))
-        # Loop through pore and free space
-        for space, blist in enumerate(b):
-            # Loop through walkers
-            for w, wlist in enumerate(blist):
-                bounce_track = []
-                if len(wlist) > 0:
-                    # If any walls were hit loop through axis
-                    for i in range(len(wlist)):
-                        face = wlist[i]
-                        face = face[face != 0]
-                        # If walls on this axis were hit analyze bounces
-                        if np.size(face) > 0:
-                            bounce = loop_reduce(face)
-                            bounce_track.append(bounce)
-                        else:
-                            bounce_track.append([])
-                shifts[space].append(sum_bounces(bounce_track))
-        self._shift_start = shift_start(shifts[0], shifts[1])
+    def _get_starts(self, same_start=False):
+        r'''
+        Start walkers in the pore space at random location
+        same_start starts all the walkers at the same spot if True and at
+        different ones if False
+        Parameters
+        ----------
+        same_start: bool
+            determines whether to start all the walkers at the same coordinate
+        '''
+        if not same_start:
+            walkers = self._rand_start(self.im, num=self.nw)
+        else:
+            w = self._rand_start(self.im, num=1).flatten()
+            walkers = np.tile(w, (self.nw, 1))
+        # Start the real walkers in the middle of the big image
+        reflection = np.ones_like(walkers)*int(self.offset)
+        walkers_real = self._transform_coord(walkers, reflection)
+        return walkers, walkers_real
+
+#    @do_profile(follow=[_get_wall_map, check_wall, check_edge])
+    def run(self, nt=1000, nw=1, same_start=False, debug_mode=None):
+        r'''
+        Main run loop over nt timesteps and nw walkers.
+        same_start starts all the walkers at the same spot if True and at
+        different ones if False.
+
+        Parameters
+        ----------
+        nt: int (default = 1000)
+            the number of timesteps to run the simulation for
+        nw: int (default = 1)
+            he vector of the next move to be made by the walker
+        same_start: bool
+            determines whether to start all the walkers at the same coordinate
+        debug_mode: string (default None) options ('save', 'load')
+            save: saves the walker starts, and movement vectors
+            load: loads the saved info enabling the same random walk to be
+                  run multiple times which can be useful for debug
+        '''
+        self.nt = int(nt)
+        self.nw = int(nw)
+        if debug_mode != 'save':
+            # Get starts
+            walkers, walkers_real = self._get_starts(same_start)
+            # save axis and pn movements for debug
+            self.save_ax = np.zeros([self.nt, self.nw], dtype=int)
+            self.save_pn = self.save_ax.copy()
+        elif debug_mode == 'load':
+            lf = np.load('dbg.npz')
+            (walkers,
+             walkers_real,
+             self.save_ax,
+             self.save_pn) = [lf[file] for file in lf.files]
+        # Save starts
+        self.start = walkers.copy()
+        self.start_real = walkers_real.copy()
+        wall_map, moves, indices = self._get_wall_map(self.im)
+        # Array to keep track of whether the walker is travelling in a real
+        # or reflected image in each axis
+        # Offsetting the walker start positions in the real image an odd
+        # Number of times starts them in a reflected image
+        real = np.ones_like(walkers)
+        if self.offset % 2 == 1:
+            real *= -1
+
+        real_coords = np.ndarray([self.nt, self.nw, self.dim], dtype=int)
+        for t in range(nt):
+            # Random velocity update
+            # Randomly select an axis to move along for each walker
+            ax = np.random.randint(0, self.dim, self.nw)
+            # Randomly select a direction positive = 1, negative = 0 index
+            pn = np.random.randint(0, 2, self.nw)
+            if debug_mode == 'save':
+                self.save_ax[t, :] = ax
+                self.save_pn[t, :] = pn
+            elif debug_mode == 'load':
+                ax = self.save_ax[t, :]
+                pn = self.save_pn[t, :]
+            # Get the movement
+            m = moves[ax, pn]
+            # Get the index of the wall map
+            ind = indices[ax, pn]
+            # Check for hitting walls
+            mw = self.check_wall(walkers, m, ind, wall_map)
+            # Reflected velocity (if wall is hit)
+            m, mr, real = self.check_edge(walkers, ax, mw, real)
+            # Check for hitting walls
+            # Reflected velocity in real direction
+            walkers_real += mr*real
+            real_coords[t] = walkers_real.copy()
+            walkers += m
+
+        self.real = real
+        self.real_coords = real_coords
+        self.walkers = walkers
+        self.walkers_real = walkers_real
+        if debug_mode == 'save':
+            np.savez('dbg', self.start, self.start_real,
+                     self.save_ax, self.save_pn)
+            np.savez('image', self.im)
+
+    def plot_msd(self):
+        r'''
+        Plot the mean square displacement for all walkers vs timestep
+        And include a least squares regression fit.
+        '''
+        disp = self.real_coords[:, :, :] - self.real_coords[0, :, :]
+        self.sq_disp = np.sum(disp**2, axis=2)
+        self.msd = np.mean(self.sq_disp, axis=1)
+        plt.figure()
+        plt.plot(self.msd, 'k-', label='msd')
+        x = np.arange(0, self.nt, 1)[:, np.newaxis]
+        a, res, _, _ = np.linalg.lstsq(x, self.msd)
+        from scipy.stats import linregress
+        [slope,
+         intercept,
+         r_value,
+         p_value,
+         std_err] = linregress(self.msd, (a*x).flatten())
+        rsq = r_value**2
+        print('#'*30)
+        label = ('Slope: ' + str(np.around(a[0], 3)) +
+                 ', Tau: ' + str(np.around(1/a[0], 3)) +
+                 ', R^2: ' + str(np.around(rsq, 3)))
+        print(label)
+        plt.plot(a*x, 'r--', label=label)
+        plt.legend()
+
+    def _check_big_bounds(self):
+        r'''
+        Helper function to check whether the big image is big enough to show
+        all the walks
+        '''
+        big_shape = np.asarray(np.shape(self.im_big))
+        ok = True
+        if np.sum(self.real_coords < 0):
+            ok = False
+        if np.sum(self.real_coords - big_shape >= 0):
+            ok = False
+        return ok
+
+    def export_walk(self, image=None, path=None, sub='data', prefix='rw_',
+                    stride=10):
+        r'''
+        Export big image to vti and walker coords to vtu every stride number of
+        steps
+
+        Parameters
+        ----------
+        image: ndarray of int size[im*self.offset*2]
+            the walkers in the big image
+        path: string (default = None)
+            the filepath to save the data, defaults to current working dir
+        prefix: string (default = 'rw_)
+            a string prefix for all the data
+        stride: int (default = 10)
+            used to export the coordinates every number of strides
+        '''
+        # This function may have been called with plot function with a pre-
+        # populated image of a subset of walkers
+        # if not then export all walkers
+        if image is None:
+            image = self._fill_im_big()
+        if self.dim == 2:
+            image = image[:, :, np.newaxis]
+        if path is None:
+            path = os.getcwd()
+        if sub is not None:
+            subdir = os.path.join(path, sub)
+            # if it doesn't exist, make it
+            if not os.path.exists(subdir):
+                os.makedirs(subdir)
+            path = subdir
+        im_fp = os.path.join(path, prefix+'image')
+        ps.export.evtk.imageToVTK(im_fp,
+                                  cellData={'pore_space': image})
+        zf = np.int(np.ceil(np.log10(self.nt*10)))
+        time_data = np.ascontiguousarray(np.zeros(self.nw, dtype=int))
+        if self.dim == 2:
+            z_coords = np.ascontiguousarray(np.ones(self.nw, dtype=int))
+        coords = self.real_coords
+        for t in np.arange(0, self.nt, stride, dtype=int):
+            x_coords = np.ascontiguousarray(coords[t, :, 0])
+            y_coords = np.ascontiguousarray(coords[t, :, 1])
+            if self.dim == 3:
+                z_coords = np.ascontiguousarray(coords[t, :, 2])
+            wc_fp = os.path.join(path, prefix+'coords_'+str(t).zfill(zf))
+            ps.export.evtk.pointsToVTK(path=wc_fp,
+                                       x=x_coords,
+                                       y=y_coords,
+                                       z=z_coords,
+                                       data={'time': time_data})
+            time_data += 1
+
+    def _fill_im_big(self, w_id=None, data='t'):
+        r'''
+        Fill up a copy of the big image with walker data.
+        Move untouched pore space to index -1 and solid to -2
+
+        Parameters
+        ----------
+        w_id: array of int and any length (default = None)
+            the indices of the walkers to plot. If None then all are shown
+        data: string (options are 't' or 'w')
+            t fills image with timestep, w fills image with walker index
+        '''
+        # Check to see whether im_big exists, if not then make it
+        if not hasattr(self, 'im_big'):
+            self.im_big = self._build_big_image(self.offset*2)
+
+        big_im = self.im_big.copy()
+        big_im -= 2
+        if w_id is None:
+            w_id = np.arange(0, self.nw, 1, dtype=int)
+        else:
+            w_id = np.array([w_id])
+        for w in w_id:
+            coords = self.real_coords[:, w, :]
+            if data == 't':
+                ts = np.arange(0, self.nt, 1, dtype=int)
+                if self.dim == 3:
+                    big_im[coords[:, 0], coords[:, 1], coords[:, 2]] = ts
+                else:
+                    big_im[coords[:, 0], coords[:, 1]] = ts
+            elif data == 'w':
+                if self.dim == 3:
+                    big_im[coords[:, 0], coords[:, 1], coords[:, 2]] = w
+                else:
+                    big_im[coords[:, 0], coords[:, 1]] = w
+
+        return big_im
+
+    def plot_walk(self, w_id=None, slice_ind=None, export=False, stride=10,
+                  data='t'):
+        r'''
+        Plot the walker paths in the big image.
+        If 3d show a slice along the last axis.
+        w_id is the integer index of the walker to plot. If None all are shown.
+        slice_ind defaults to the middle of the image.
+
+        Parameters
+        ----------
+        w_id: array of int and any length (default = None)
+            the indices of the walkers to plot. If None then all are shown
+        slice_ind: int (default = None)
+            the index of the slice to take along the last axis if image is 3d
+            If None then the middle slice is taken
+        export: bool (default = False)
+            Determines whether to export the image and walker steps to vti and
+            vtu, respectively
+        stride: int (default = 10)
+            used if export to output the coordinates every number of strides
+        data: string (options are 't' or 'w')
+            t fills image with timestep, w fills image with walker index
+        '''
+        self.im_big = self._build_big_image(self.offset*2)
+        if self._check_big_bounds():
+            sb = np.sum(self.im_big == 0)
+            big_im = self._fill_im_big(w_id=w_id, data=data)
+            print('#'*30)
+            sa = np.sum(big_im == -2)
+            print('Solids Match?:', sb == sa, sb, sa, sb-sa)
+            plt.figure()
+            if export:
+                self.export_walk(image=big_im, stride=stride)
+            if self.dim == 3:
+                big_im = big_im[:, :, slice_ind]
+            masked_array = np.ma.masked_where(big_im == self.solid_value-2,
+                                              big_im)
+            cmap = matplotlib.cm.brg
+            cmap.set_bad(color='black')
+            plt.imshow(masked_array, cmap=cmap)
+
+        else:
+            print('Walk exceeds big image size! consider reducing nt ' +
+                  'or increasing the starting offset')
+
+
+if __name__ == "__main__":
+    if 1 == 1:
+        # Load tau test image
+        im = 1 - ps.data.tau()
+    else:
+        try:
+            im = np.load('image.npz').items()[0][1]
+        except:
+            im = ps.generators.blobs([100, 100], porosity=0.65).astype(int)
+
+    # Number of time steps and walkers
+    num_t = 50000
+    num_w = 100
+    # Track time of simulation
+    st = time.time()
+    rw = RandomWalk(im, offset=3)
+    rw.run(num_t, num_w, same_start=False)
+    # Plot mean square displacement
+    rw.plot_msd()
+    # Plot the longest walk
+    rw.plot_walk(w_id=np.argmax(rw.sq_disp[-1, :]))
+    # Plot all the walks
+    rw.plot_walk(export=False, stride=10)
+    print('sim time', time.time()-st)
