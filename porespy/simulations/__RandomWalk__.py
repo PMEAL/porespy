@@ -85,7 +85,8 @@ class RandomWalk():
 
         >>> import porespy as ps
         >>> im = ps.generators.blobs([100, 100])
-        >>> rw = ps.RandomWalk(im)
+        >>> rw = ps.simulations.RandomWalk(im, offset=1)
+        >>> rw.run(nt=1000, nw=100)
         '''
         self.im = image
         self.shape = np.array(np.shape(self.im))
