@@ -369,7 +369,7 @@ class RandomWalk():
             real *= -1
 
         real_coords = np.ndarray([self.nt, self.nw, self.dim], dtype=int)
-        for t in range(nt):
+        for t in tqdm(range(nt), desc='Running Walk'):
             # Random velocity update
             # Randomly select an axis to move along for each walker
             ax = np.random.randint(0, self.dim, self.nw)
@@ -424,6 +424,7 @@ class RandomWalk():
          std_err] = linregress(self.msd, (a*x).flatten())
         rsq = r_value**2
         print('#'*30)
+        print('Mean Square Displacement Data:')
         label = ('Slope: ' + str(np.around(a[0], 3)) +
                  ', Tau: ' + str(np.around(1/a[0], 3)) +
                  ', R^2: ' + str(np.around(rsq, 3)))
@@ -500,11 +501,11 @@ class RandomWalk():
     def _fill_im_big(self, w_id=None, data='t'):
         r'''
         Fill up a copy of the big image with walker data.
-        Move untouched pore space to index -1 and solid to -2
+        Move untrodden pore space to index -1 and solid to -2
 
         Parameters
         ----------
-        w_id: array of int and any length (default = None)
+        w_id: array of int of any length (default = None)
             the indices of the walkers to plot. If None then all are shown
         data: string (options are 't' or 'w')
             t fills image with timestep, w fills image with walker index
@@ -513,35 +514,36 @@ class RandomWalk():
         if not hasattr(self, 'im_big'):
             self.im_big = self._build_big_image(self.offset*2)
 
-        big_im = self.im_big.copy()
+        big_im = self.im_big.copy().astype(int)
         big_im -= 2
         if w_id is None:
             w_id = np.arange(0, self.nw, 1, dtype=int)
         else:
             w_id = np.array([w_id])
-        for w in w_id:
-            coords = self.real_coords[:, w, :]
-            if data == 't':
-                ts = np.arange(0, self.nt, 1, dtype=int)
-                if self.dim == 3:
-                    big_im[coords[:, 0], coords[:, 1], coords[:, 2]] = ts
-                else:
-                    big_im[coords[:, 0], coords[:, 1]] = ts
-            elif data == 'w':
-                if self.dim == 3:
-                    big_im[coords[:, 0], coords[:, 1], coords[:, 2]] = w
-                else:
-                    big_im[coords[:, 0], coords[:, 1]] = w
+        indices = np.indices(np.shape(self.real_coords))
+        coords = self.real_coords
+        if data == 't':
+            # Get timestep indices
+            d = indices[0, :, w_id, 0].T
+        else:
+            # Get walker indices
+            d = indices[1, :, w_id, 0].T
+        if self.dim == 3:
+            big_im[coords[:, w_id, 0],
+                   coords[:, w_id, 1],
+                   coords[:, w_id, 2]] = d
+        else:
+            big_im[coords[:, w_id, 0],
+                   coords[:, w_id, 1]] = d
 
         return big_im
 
-    def plot_walk(self, w_id=None, slice_ind=None, export=False, stride=10,
-                  data='t'):
+    def plot_walk(self, w_id=None, slice_ind=None, data='t', export=False,
+                  export_stride=10):
         r'''
-        Plot the walker paths in the big image.
-        If 3d show a slice along the last axis.
-        w_id is the integer index of the walker to plot. If None all are shown.
-        slice_ind defaults to the middle of the image.
+        Plot the walker paths in the big image. If 3d show a slice along the
+        last axis at the slice index slice_ind. For 3d walks, a better option
+        for viewing results is to export and view files in paraview.
 
         Parameters
         ----------
@@ -550,25 +552,29 @@ class RandomWalk():
         slice_ind: int (default = None)
             the index of the slice to take along the last axis if image is 3d
             If None then the middle slice is taken
-        export: bool (default = False)
-            Determines whether to export the image and walker steps to vti and
-            vtu, respectively
-        stride: int (default = 10)
-            used if export to output the coordinates every number of strides
         data: string (options are 't' or 'w')
             t fills image with timestep, w fills image with walker index
+        export: bool (default = False)
+            Determines whether to export the image and walker steps to vti and
+            vtu, respectively. Saves a bit of time filling image up again
+            separately, if export data is required. Saves in cwd.
+        stride: int (default = 10)
+            used if export to output the coordinates every number of strides
+
         '''
         self.im_big = self._build_big_image(self.offset*2)
+#        sb = np.sum(self.im_big == 0)
         if self._check_big_bounds():
-            sb = np.sum(self.im_big == 0)
-            big_im = self._fill_im_big(w_id=w_id, data=data)
-            print('#'*30)
-            sa = np.sum(big_im == -2)
-            print('Solids Match?:', sb == sa, sb, sa, sb-sa)
+            big_im = self._fill_im_big(w_id=w_id, data=data).astype(int)
+#            print('#'*30)
+#            sa = np.sum(big_im == -2)
+#            print('Solids Match?:', sb == sa, sb, sa, sb-sa)
             plt.figure()
             if export:
-                self.export_walk(image=big_im, stride=stride)
+                self.export_walk(image=big_im, stride=export_stride)
             if self.dim == 3:
+                if slice_ind is None:
+                    slice_ind = int(np.shape(big_im)[2]/2)
                 big_im = big_im[:, :, slice_ind]
             masked_array = np.ma.masked_where(big_im == self.solid_value-2,
                                               big_im)
@@ -586,13 +592,10 @@ if __name__ == "__main__":
         # Load tau test image
         im = 1 - ps.data.tau()
     else:
-        try:
-            im = np.load('image.npz').items()[0][1]
-        except:
-            im = ps.generators.blobs([100, 100], porosity=0.65).astype(int)
+        im = ps.generators.blobs([100, 100], porosity=0.65).astype(int)
 
     # Number of time steps and walkers
-    num_t = 50000
+    num_t = 10000
     num_w = 100
     # Track time of simulation
     st = time.time()
@@ -601,7 +604,7 @@ if __name__ == "__main__":
     # Plot mean square displacement
     rw.plot_msd()
     # Plot the longest walk
-    rw.plot_walk(w_id=np.argmax(rw.sq_disp[-1, :]))
+    rw.plot_walk(w_id=np.argmax(rw.sq_disp[-1, :]), slice_ind=None, data='w')
     # Plot all the walks
-    rw.plot_walk(export=False, stride=10)
+    rw.plot_walk()
     print('sim time', time.time()-st)
