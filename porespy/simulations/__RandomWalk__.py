@@ -363,7 +363,7 @@ class RandomWalk():
         self.axial_sq_disp = disp**2
         self.sq_disp = np.sum(disp**2, axis=2)
         self.msd = np.mean(self.sq_disp, axis=1)
-        self.axial_msd = np.mean(self.axial_sq_disp, axis=1)*self.dim
+        self.axial_msd = np.mean(self.axial_sq_disp, axis=1)
 
     def _add_linear_plot(self, x, y):
         r'''
@@ -377,9 +377,7 @@ class RandomWalk():
          p_value,
          std_err] = linregress(y, (a*x).flatten())
         rsq = r_value**2
-
-        label = ('Slope: ' + str(np.around(a[0], 3)) +
-                 ', Tau: ' + str(np.around(1/a[0], 3)) +
+        label = ('Tau: ' + str(np.around(1/a[0], 3)) +
                  ', R^2: ' + str(np.around(rsq, 3)))
         print(label)
         plt.plot(a*x, '--', label=label)
@@ -398,7 +396,7 @@ class RandomWalk():
         self._add_linear_plot(x, self.msd)
         for ax in range(self.dim):
             print('Axis ' + str(ax) + ' Square Displacement Data:')
-            data = self.axial_msd[:, ax]
+            data = self.axial_msd[:, ax]*self.dim
             plt.plot(data, '-', label='axis '+str(ax))
             self._add_linear_plot(x, data)
         plt.legend()
