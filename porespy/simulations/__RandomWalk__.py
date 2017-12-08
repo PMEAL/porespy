@@ -9,40 +9,9 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 import porespy as ps
+from porespy.tools.__funcs__ import do_profile
 import os
 from tqdm import tqdm
-
-plt.close('all')
-
-# Code for profiling stats
-# uncomment decorator on the run method to switch profiling on
-
-try:
-    from line_profiler import LineProfiler
-
-    def do_profile(follow=[]):
-        def inner(func):
-            def profiled_func(*args, **kwargs):
-                try:
-                    profiler = LineProfiler()
-                    profiler.add_function(func)
-                    for f in follow:
-                        profiler.add_function(f)
-                    profiler.enable_by_count()
-                    return func(*args, **kwargs)
-                finally:
-                    profiler.print_stats()
-            return profiled_func
-        return inner
-
-except ImportError:
-    def do_profile(follow=[]):
-        "Helpful if you accidentally leave in production!"
-        def inner(func):
-            def nothing(*args, **kwargs):
-                return func(*args, **kwargs)
-            return nothing
-        return inner
 
 
 class RandomWalk():
@@ -316,6 +285,7 @@ class RandomWalk():
         walkers_real = self._transform_coord(walkers, reflection)
         return walkers, walkers_real
 
+#   Uncomment the line below to profile the run method
 #    @do_profile(follow=[_get_wall_map, check_wall, check_edge])
     def run(self, nt=1000, nw=1, same_start=False):
         r'''
@@ -544,12 +514,8 @@ class RandomWalk():
 
         '''
         self.im_big = self._build_big_image(self.offset*2)
-#        sb = np.sum(self.im_big == 0)
         if self._check_big_bounds():
             big_im = self._fill_im_big(w_id=w_id, data=data).astype(int)
-#            print('#'*30)
-#            sa = np.sum(big_im == -2)
-#            print('Solids Match?:', sb == sa, sb, sa, sb-sa)
             plt.figure()
             if export:
                 self.export_walk(image=big_im, stride=export_stride)
