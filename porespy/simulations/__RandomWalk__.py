@@ -65,6 +65,7 @@ class RandomWalk():
         self.offset = offset
         self.solid_value = 0
         self.seed = seed
+        self.wall_map, self.moves, self.indices = self._get_wall_map(self.im)
 
     def _transform_coord(self, coord=None, reflection=None):
         r'''
@@ -85,7 +86,7 @@ class RandomWalk():
             t_coord[:, ax] += reflection[:, ax]*self.shape[ax]
         return t_coord
 
-    def _build_big_image(self, num_copies):
+    def _build_big_image(self, num_copies=0):
         r'''
         Build the big image by flipping and stacking along each axis a number
         of times
@@ -191,7 +192,7 @@ class RandomWalk():
         # Return inverse of the solid wall map for fluid map
         return ~wall_map, moves, indices
 
-    def check_wall(self, walkers, move, inds, wall_map):
+    def check_wall(self, walkers, move, inds):
         r'''
         The walkers are an array of coordinates of the image,
         the wall map is a boolean map of the image rolled in each direction.
@@ -208,14 +209,14 @@ class RandomWalk():
             the index of the wall map corresponding to the move vector
         '''
         if self.dim == 2:
-            move_ok = wall_map[walkers[:, 0],
-                               walkers[:, 1],
-                               inds]
+            move_ok = self.wall_map[walkers[:, 0],
+                                    walkers[:, 1],
+                                    inds]
         elif self.dim == 3:
-            move_ok = wall_map[walkers[:, 0],
-                               walkers[:, 1],
-                               walkers[:, 2],
-                               inds]
+            move_ok = self.wall_map[walkers[:, 0],
+                                    walkers[:, 1],
+                                    walkers[:, 2],
+                                    inds]
         # Cancel moves that hit walls - effectively walker travels half way
         # across, hits a wall, bounces back and results in net zero movement
         if np.any(~move_ok):
@@ -313,7 +314,6 @@ class RandomWalk():
         # Save starts
         self.start = walkers.copy()
         self.start_real = walkers_real.copy()
-        wall_map, moves, indices = self._get_wall_map(self.im)
         # Array to keep track of whether the walker is travelling in a real
         # or reflected image in each axis
         # Offsetting the walker start positions in the real image an odd
@@ -337,11 +337,11 @@ class RandomWalk():
                 np.random.seed(seeds[-t])
             pn = np.random.randint(0, 2, self.nw)
             # Get the movement
-            m = moves[ax, pn]
+            m = self.moves[ax, pn]
             # Get the index of the wall map
-            ind = indices[ax, pn]
+            ind = self.indices[ax, pn]
             # Check for hitting walls
-            mw = self.check_wall(walkers, m, ind, wall_map)
+            mw = self.check_wall(walkers, m, ind)
             # Reflected velocity (if wall is hit)
             m, mr, real = self.check_edge(walkers, ax, mw, real)
             # Check for hitting walls
@@ -355,32 +355,52 @@ class RandomWalk():
         self.walkers = walkers
         self.walkers_real = walkers_real
 
-    def plot_msd(self):
+    def calc_msd(self):
         r'''
-        Plot the mean square displacement for all walkers vs timestep
-        And include a least squares regression fit.
+        Calculate the mean square displacement
         '''
         disp = self.real_coords[:, :, :] - self.real_coords[0, :, :]
+        self.axial_sq_disp = disp**2
         self.sq_disp = np.sum(disp**2, axis=2)
         self.msd = np.mean(self.sq_disp, axis=1)
-        plt.figure()
-        plt.plot(self.msd, 'k-', label='msd')
-        x = np.arange(0, self.nt, 1)[:, np.newaxis]
-        a, res, _, _ = np.linalg.lstsq(x, self.msd)
+        self.axial_msd = np.mean(self.axial_sq_disp, axis=1)*self.dim
+
+    def _add_linear_plot(self, x, y):
+        r'''
+        Helper method to add a line to the msd plot
+        '''
+        a, res, _, _ = np.linalg.lstsq(x, y)
         from scipy.stats import linregress
         [slope,
          intercept,
          r_value,
          p_value,
-         std_err] = linregress(self.msd, (a*x).flatten())
+         std_err] = linregress(y, (a*x).flatten())
         rsq = r_value**2
-        print('#'*30)
-        print('Mean Square Displacement Data:')
+
         label = ('Slope: ' + str(np.around(a[0], 3)) +
                  ', Tau: ' + str(np.around(1/a[0], 3)) +
                  ', R^2: ' + str(np.around(rsq, 3)))
         print(label)
-        plt.plot(a*x, 'r--', label=label)
+        plt.plot(a*x, '--', label=label)
+
+    def plot_msd(self):
+        r'''
+        Plot the mean square displacement for all walkers vs timestep
+        And include a least squares regression fit.
+        '''
+        self.calc_msd()
+        plt.figure()
+        plt.plot(self.msd, '-', label='msd')
+        x = np.arange(0, self.nt, 1)[:, np.newaxis]
+        print('#'*30)
+        print('Mean Square Displacement Data:')
+        self._add_linear_plot(x, self.msd)
+        for ax in range(self.dim):
+            print('Axis ' + str(ax) + ' Square Displacement Data:')
+            data = self.axial_msd[:, ax]
+            plt.plot(data, '-', label='axis '+str(ax))
+            self._add_linear_plot(x, data)
         plt.legend()
 
     def _check_big_bounds(self):
