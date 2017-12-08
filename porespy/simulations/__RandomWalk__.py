@@ -131,7 +131,6 @@ class RandomWalk():
             choice = np.random.choice(np.arange(0, len(inds), 1),
                                       num,
                                       replace=True)
-            
         return inds[choice]
 
     def _get_wall_map(self, image):
