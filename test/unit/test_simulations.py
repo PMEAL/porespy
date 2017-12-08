@@ -13,7 +13,8 @@ class SimulationTest():
         self.blobs = ps.generators.blobs([self.l, self.l, self.l])
         self.rw = ps.simulations.RandomWalk(self.blobs, offset=2)
         self.blobs_2d = ps.generators.blobs([self.l, self.l])
-        self.rw_2d = ps.simulations.RandomWalk(self.blobs_2d, offset=3)
+        self.rw_2d = ps.simulations.RandomWalk(self.blobs_2d, offset=3,
+                                               seed=True)
 
     def test_porosimetry(self):
         self.mip.run()
@@ -64,20 +65,13 @@ class SimulationTest():
             os.remove(fp)
         os.rmdir(subdir)
 
-    def test_debug_random_walk(self):
-        cwd = os.getcwd()
-        self.rw_2d.run(nt=1000, nw=100, same_start=True, debug_mode='save')
-        dbg_path = os.path.join(cwd, 'dbg.npz')
-        im_path = os.path.join(cwd, 'image.npz')
-        assert os.path.exists(dbg_path)
-        assert os.path.exists(im_path)
+    def test_seed(self):
+        # rw_2d was initialized with seed = True, this should mean running it
+        # repeatedly produces the same movements
+        self.rw_2d.run(nt=1000, nw=100, same_start=True)
         temp_coords = self.rw_2d.real_coords.copy()
-        # running with same start as False instead of True should be over-
-        # written by loading the debug info which includes the starts
-        self.rw_2d.run(nt=1000, nw=100, same_start=False, debug_mode='load')
+        self.rw_2d.run(nt=1000, nw=100, same_start=True)
         assert sp.allclose(self.rw_2d.real_coords, temp_coords)
-        os.remove(dbg_path)
-        os.remove(im_path)
 
 if __name__ == '__main__':
     t = SimulationTest()
@@ -91,4 +85,4 @@ if __name__ == '__main__':
     t.test_random_walk_2d()
     t.test_plot_walk_2d()
     t.test_export()
-    t.test_debug_random_walk()
+    t.test_seed()
