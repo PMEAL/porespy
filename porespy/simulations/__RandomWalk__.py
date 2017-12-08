@@ -65,7 +65,7 @@ class RandomWalk():
         self.offset = offset
         self.solid_value = 0
         self.seed = seed
-        self.wall_map, self.moves, self.indices = self._get_wall_map(self.im)
+        self._get_wall_map(self.im)
 
     def _transform_coord(self, coord=None, reflection=None):
         r'''
@@ -123,38 +123,22 @@ class RandomWalk():
         inds = np.argwhere(image != self.solid_value)
         if self.seed:
             np.random.seed(1)
-        choice = np.random.choice(np.arange(0, len(inds), 1),
-                                  num,
-                                  replace=False)
+        try:
+            choice = np.random.choice(np.arange(0, len(inds), 1),
+                                      num,
+                                      replace=False)
+        except ValueError:
+            choice = np.random.choice(np.arange(0, len(inds), 1),
+                                      num,
+                                      replace=True)
+            
         return inds[choice]
-
-    def _crop(self, image):
-        r'''
-        Crop image all around the edges by one pixel. Helper function to undo
-        the padding that occurs during the building of the wall map.
-        This function is generic and does not have to be just used on the image
-        passed in when class is initialized.
-
-        Parameters
-        ----------
-        image: ndarray of any type
-            2D or 3D image with 1 denoting pore space and 0 denoting solid
-        '''
-        dim = len(np.shape(image))
-        if dim == 1:
-            return image[1:-1]
-        elif dim == 2:
-            return image[1:-1, 1:-1]
-        elif dim == 3:
-            return image[1:-1, 1:-1, 1:-1]
-        else:
-            print('Images must be 3D or less')
 
     def _get_wall_map(self, image):
         r'''
-        Function takes an image and rolls it back and forth on each axis saving
-        the results in a wall_map. This is referred to later when random walker
-        moves in a particular direction to detect where the walls are.
+        Function savesc a wall map and movement vectors.
+        This is referred to later when random walker moves in a particular
+        direction to detect where the walls are.
 
         Parameters
         ----------
@@ -164,35 +148,20 @@ class RandomWalk():
         # Make boolean map where solid is True
         solid = image.copy() == self.solid_value
         solid = solid.astype(bool)
-        wall_dim = list(self.shape) + [self.dim*2]
-        wall_map = np.zeros(wall_dim, dtype=bool)
-        index = 0
         moves = []
-        indices = []
-        # Pad image to catch edges
-        solid = np.pad(solid, 1, mode='constant', constant_values=False)
         for axis in range(self.dim):
             ax_list = []
             for direction in [-1, 1]:
-                # Roll the image and get the back in the original shape
-                temp = self._crop(np.roll(solid, -direction, axis))
-                if self.dim == 2:
-                    wall_map[:, :, index] = temp
-                else:
-                    wall_map[:, :, :, index] = temp
                 # Store the direction of the step in an array for later use
                 step = np.arange(0, self.dim, 1, dtype=int) == axis
                 step = step.astype(int) * direction
                 ax_list.append(step)
-                index += 1
             moves.append(ax_list)
-            indices.append([index-2, index-1])
-        moves = np.asarray(moves)
-        indices = np.asarray(indices)
-        # Return inverse of the solid wall map for fluid map
-        return ~wall_map, moves, indices
+        # Save inverse of the solid wall map for fluid map
+        self.wall_map = ~solid
+        self.moves = np.asarray(moves)
 
-    def check_wall(self, walkers, move, inds):
+    def check_wall(self, walkers, move):
         r'''
         The walkers are an array of coordinates of the image,
         the wall map is a boolean map of the image rolled in each direction.
@@ -208,15 +177,14 @@ class RandomWalk():
         inds: array of int and shape [nw]
             the index of the wall map corresponding to the move vector
         '''
+        next_move = walkers + move
         if self.dim == 2:
-            move_ok = self.wall_map[walkers[:, 0],
-                                    walkers[:, 1],
-                                    inds]
+            move_ok = self.wall_map[next_move[:, 0],
+                                    next_move[:, 1]]
         elif self.dim == 3:
-            move_ok = self.wall_map[walkers[:, 0],
-                                    walkers[:, 1],
-                                    walkers[:, 2],
-                                    inds]
+            move_ok = self.wall_map[next_move[:, 0],
+                                    next_move[:, 1],
+                                    next_move[:, 2]]
         # Cancel moves that hit walls - effectively walker travels half way
         # across, hits a wall, bounces back and results in net zero movement
         if np.any(~move_ok):
@@ -338,17 +306,14 @@ class RandomWalk():
             pn = np.random.randint(0, 2, self.nw)
             # Get the movement
             m = self.moves[ax, pn]
-            # Get the index of the wall map
-            ind = self.indices[ax, pn]
+            # Reflected velocity (if edge is hit)
+            m, mr, real = self.check_edge(walkers, ax, m, real)
             # Check for hitting walls
-            mw = self.check_wall(walkers, m, ind)
-            # Reflected velocity (if wall is hit)
-            m, mr, real = self.check_edge(walkers, ax, mw, real)
-            # Check for hitting walls
+            mw = self.check_wall(walkers, m)
             # Reflected velocity in real direction
-            walkers_real += mr*real
+            walkers_real += mw*real
             real_coords[t] = walkers_real.copy()
-            walkers += m
+            walkers += mw
 
         self.real = real
         self.real_coords = real_coords
