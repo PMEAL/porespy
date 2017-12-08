@@ -8,7 +8,6 @@ Random Walker Code
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
-import time
 import porespy as ps
 import os
 from tqdm import tqdm
@@ -385,96 +384,6 @@ class RandomWalk():
         self.real_coords = real_coords
         self.walkers = walkers
         self.walkers_real = walkers_real
-
-
-#    @do_profile(follow=[_get_wall_map, check_wall, check_edge])
-    def run_debug(self, nt=1000, nw=1, same_start=False, debug_mode=None):
-        r'''
-        Main run loop over nt timesteps and nw walkers.
-        same_start starts all the walkers at the same spot if True and at
-        different ones if False.
-
-        Parameters
-        ----------
-        nt: int (default = 1000)
-            the number of timesteps to run the simulation for
-        nw: int (default = 1)
-            he vector of the next move to be made by the walker
-        same_start: bool
-            determines whether to start all the walkers at the same coordinate
-        debug_mode: string (default None) options ('save', 'load')
-            save: saves the walker starts, and movement vectors
-            load: loads the saved info enabling the same random walk to be
-                  run multiple times which can be useful for debug
-        '''
-        self.nt = int(nt)
-        self.nw = int(nw)
-        if debug_mode != 'load':
-            # Get starts
-            walkers, walkers_real = self._get_starts(same_start)
-            # save axis and pn movements for debug
-            self.save_ax = np.zeros([self.nt, self.nw], dtype=int)
-            self.save_pn = self.save_ax.copy()
-        else:
-            lf = np.load('dbg.npz')
-            (walkers,
-             walkers_real,
-             self.save_ax,
-             self.save_pn) = [lf[file] for file in lf.files]
-        # Save starts
-        self.start = walkers.copy()
-        self.start_real = walkers_real.copy()
-        wall_map, moves, indices = self._get_wall_map(self.im)
-        # Array to keep track of whether the walker is travelling in a real
-        # or reflected image in each axis
-        # Offsetting the walker start positions in the real image an odd
-        # Number of times starts them in a reflected image
-        real = np.ones_like(walkers)
-        if self.offset % 2 == 1:
-            real *= -1
-
-        if self.seed:
-            np.random.seed(1)
-            seeds = np.random.randint(0, self.nw, self.nt)
-        real_coords = np.ndarray([self.nt, self.nw, self.dim], dtype=int)
-        for t in tqdm(range(nt), desc='Running Walk'):
-            # Random velocity update
-            # Randomly select an axis to move along for each walker
-            if self.seed:
-                np.random.seed(seeds[t])
-            ax = np.random.randint(0, self.dim, self.nw)
-            # Randomly select a direction positive = 1, negative = 0 index
-            if self.seed:
-                np.random.seed(seeds[t])
-            pn = np.random.randint(0, 2, self.nw)
-            if debug_mode == 'save':
-                self.save_ax[t, :] = ax
-                self.save_pn[t, :] = pn
-            elif debug_mode == 'load':
-                ax = self.save_ax[t, :]
-                pn = self.save_pn[t, :]
-            # Get the movement
-            m = moves[ax, pn]
-            # Get the index of the wall map
-            ind = indices[ax, pn]
-            # Check for hitting walls
-            mw = self.check_wall(walkers, m, ind, wall_map)
-            # Reflected velocity (if wall is hit)
-            m, mr, real = self.check_edge(walkers, ax, mw, real)
-            # Check for hitting walls
-            # Reflected velocity in real direction
-            walkers_real += mr*real
-            real_coords[t] = walkers_real.copy()
-            walkers += m
-
-        self.real = real
-        self.real_coords = real_coords
-        self.walkers = walkers
-        self.walkers_real = walkers_real
-        if debug_mode == 'save':
-            np.savez('dbg', self.start, self.start_real,
-                     self.save_ax, self.save_pn)
-            np.savez('image', self.im)
 
     def plot_msd(self):
         r'''
