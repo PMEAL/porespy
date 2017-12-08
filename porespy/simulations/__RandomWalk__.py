@@ -153,18 +153,6 @@ class RandomWalk():
                                   replace=False)
         return inds[choice]
 
-    def _setup_walk(self):
-        r'''
-        Initialize variables for this walk
-        '''
-        # Main data array - the walkers coordinates
-        self.coords = np.ndarray([self.nt, self.nw, self.dim], dtype=int)
-        self.start = self._find_start()
-        # Array to keep track of whether the walker is travelling in a real
-        # or reflected image in each axis
-        self.real = self.start.copy()
-        self.real.fill(1)
-
     def _crop(self, image):
         r'''
         Crop image all around the edges by one pixel. Helper function to undo
@@ -345,13 +333,13 @@ class RandomWalk():
         '''
         self.nt = int(nt)
         self.nw = int(nw)
-        if debug_mode != 'save':
+        if debug_mode != 'load':
             # Get starts
             walkers, walkers_real = self._get_starts(same_start)
             # save axis and pn movements for debug
             self.save_ax = np.zeros([self.nt, self.nw], dtype=int)
             self.save_pn = self.save_ax.copy()
-        elif debug_mode == 'load':
+        else:
             lf = np.load('dbg.npz')
             (walkers,
              walkers_real,
@@ -586,26 +574,3 @@ class RandomWalk():
         else:
             print('Walk exceeds big image size! consider reducing nt ' +
                   'or increasing the starting offset')
-
-
-if __name__ == "__main__":
-    if 1 == 1:
-        # Load tau test image
-        im = 1 - ps.data.tau()
-    else:
-        im = ps.generators.blobs([100, 100], porosity=0.65).astype(int)
-
-    # Number of time steps and walkers
-    num_t = 10000
-    num_w = 100
-    # Track time of simulation
-    st = time.time()
-    rw = RandomWalk(im, offset=3)
-    rw.run(num_t, num_w, same_start=False)
-    # Plot mean square displacement
-    rw.plot_msd()
-    # Plot the longest walk
-    rw.plot_walk(w_id=np.argmax(rw.sq_disp[-1, :]), slice_ind=None, data='w')
-    # Plot all the walks
-    rw.plot_walk()
-    print('sim time', time.time()-st)

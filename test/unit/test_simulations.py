@@ -64,6 +64,21 @@ class SimulationTest():
             os.remove(fp)
         os.rmdir(subdir)
 
+    def test_debug_random_walk(self):
+        cwd = os.getcwd()
+        self.rw_2d.run(nt=1000, nw=100, same_start=True, debug_mode='save')
+        dbg_path = os.path.join(cwd, 'dbg.npz')
+        im_path = os.path.join(cwd, 'image.npz')
+        assert os.path.exists(dbg_path)
+        assert os.path.exists(im_path)
+        temp_coords = self.rw_2d.real_coords.copy()
+        # running with same start as False instead of True should be over-
+        # written by loading the debug info which includes the starts
+        self.rw_2d.run(nt=1000, nw=100, same_start=False, debug_mode='load')
+        assert sp.allclose(self.rw_2d.real_coords, temp_coords)
+        os.remove(dbg_path)
+        os.remove(im_path)
+
 if __name__ == '__main__':
     t = SimulationTest()
     t.setup_class()
@@ -76,3 +91,4 @@ if __name__ == '__main__':
     t.test_random_walk_2d()
     t.test_plot_walk_2d()
     t.test_export()
+    t.test_debug_random_walk()
