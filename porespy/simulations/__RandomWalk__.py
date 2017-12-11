@@ -13,6 +13,8 @@ import porespy as ps
 from porespy.tools.__funcs__ import do_profile
 import os
 from tqdm import tqdm
+import time
+import csv
 
 
 class RandomWalk():
@@ -166,11 +168,7 @@ class RandomWalk():
             move_ok = self.wall_map[next_move[:, 0],
                                     next_move[:, 1],
                                     next_move[:, 2]]
-        # Cancel moves that hit walls - effectively walker travels half way
-        # across, hits a wall, bounces back and results in net zero movement
-        if np.any(~move_ok):
-            move[~move_ok] = 0
-        return move
+        return ~move_ok
 
     def check_edge(self, walkers, axis, move, real):
         r'''
@@ -213,6 +211,7 @@ class RandomWalk():
             # the transition step is reversed as it the reality of travel
             # both cancel to make the real walker follow the initial move
             move_real[hit, ax] *= -1
+
         return move, move_real, real
 
     def _get_starts(self, same_start=False):
@@ -233,7 +232,7 @@ class RandomWalk():
         return walkers
 
 #   Uncomment the line below to profile the run method
-#    @do_profile(follow=[_get_wall_map, check_wall, check_edge])
+#    @do_profile(follow=[check_wall, check_edge])
     def run(self, nt=1000, nw=1, same_start=False):
         r'''
         Main run loop over nt timesteps and nw walkers.
@@ -283,12 +282,17 @@ class RandomWalk():
             m = self.moves[ax, pn]
             # Reflected velocity (if edge is hit)
             m, mr, real = self.check_edge(walkers, ax, m, real)
-            # Check for hitting walls
-            mw = self.check_wall(walkers, m)
+            # Check for wall hits and zero both movements
+            # Cancel moves that hit walls - effectively walker travels half way
+            # across, hits a wall, bounces back and results in net zero move
+            wall_hit = self.check_wall(walkers, m)
+            if np.any(wall_hit):
+                m[wall_hit] = 0
+                mr[wall_hit] = 0
             # Reflected velocity in real direction
-            walkers_real += mw*real
+            walkers_real += mr*real
             real_coords[t] = walkers_real.copy()
-            walkers += mw
+            walkers += m
 
         self.real = real
         self.real_coords = real_coords
@@ -305,22 +309,20 @@ class RandomWalk():
         self.msd = np.mean(self.sq_disp, axis=1)
         self.axial_msd = np.mean(self.axial_sq_disp, axis=1)
 
-    def _add_linear_plot(self, x, y):
+    def _add_linear_plot(self, x, y, descriptor=None):
         r'''
         Helper method to add a line to the msd plot
         '''
         a, res, _, _ = np.linalg.lstsq(x, y)
-        from scipy.stats import linregress
-        [slope,
-         intercept,
-         r_value,
-         p_value,
-         std_err] = linregress(y, (a*x).flatten())
-        rsq = r_value**2
-        label = ('Tau: ' + str(np.around(1/a[0], 3)) +
+        tau = 1/a[0]
+        SStot = np.sum((y - y.mean())**2)
+        rsq = 1 - (np.sum(res)/SStot)
+        label = ('Tau: ' + str(np.around(tau, 3)) +
                  ', R^2: ' + str(np.around(rsq, 3)))
         print(label)
-        plt.plot(a*x, '--', label=label)
+        plt.plot(a[0]*x, '--', label=label)
+        self.data[descriptor + '_tau'] = tau
+        self.data[descriptor + '_rsq'] = rsq
 
     def plot_msd(self):
         r'''
@@ -328,17 +330,19 @@ class RandomWalk():
         And include a least squares regression fit.
         '''
         self.calc_msd()
+        self.data = {}
         plt.figure()
         plt.plot(self.msd, '-', label='msd')
         x = np.arange(0, self.nt, 1)[:, np.newaxis]
         print('#'*30)
         print('Mean Square Displacement Data:')
-        self._add_linear_plot(x, self.msd)
+        self._add_linear_plot(x, self.msd, 'mean')
+
         for ax in range(self.dim):
             print('Axis ' + str(ax) + ' Square Displacement Data:')
             data = self.axial_msd[:, ax]*self.dim
             plt.plot(data, '-', label='axis '+str(ax))
-            self._add_linear_plot(x, data)
+            self._add_linear_plot(x, data, 'axis_'+str(ax))
         plt.legend()
 
     def _check_big_bounds(self):
@@ -369,10 +373,6 @@ class RandomWalk():
         stride: int (default = 10)
             used to export the coordinates every number of strides
         '''
-        # This function may have been called with plot function with a pre-
-        # populated image of a subset of walkers
-        # if not then export all walkers
-
         if path is None:
             path = os.getcwd()
         if sub is not None:
@@ -406,7 +406,7 @@ class RandomWalk():
                                        data={'time': time_data})
             time_data += 1
 
-    def _fill_im_big(self, w_id=None, data='t'):
+    def _fill_im_big(self, w_id=None, coords=None, data='t'):
         r'''
         Fill up a copy of the big image with walker data.
         Move untrodden pore space to index -1 and solid to -2
@@ -425,7 +425,8 @@ class RandomWalk():
         else:
             w_id = np.array([w_id])
         indices = np.indices(np.shape(self.real_coords))
-        coords = self.real_coords
+        if coords is None:
+            coords = self.real_coords
         if data == 't':
             # Get timestep indices
             d = indices[0, :, w_id, 0].T
@@ -442,11 +443,10 @@ class RandomWalk():
 
         return big_im
 
-    def plot_walk_2d(self, w_id=None, data='t'):
+    def plot_walk_2d(self, w_id=None, data='t', check_solid=False):
         r'''
-        Plot the walker paths in the big image. If 3d show a slice along the
-        last axis at the slice index slice_ind. For 3d walks, a better option
-        for viewing results is to export and view files in paraview.
+        Plot the walker paths in a big image that shows real and reflected
+        domains. The starts are temporarily shifted and then put back
 
         Parameters
         ----------
@@ -462,12 +462,85 @@ class RandomWalk():
         else:
             offset = self._check_big_bounds()
             self.im_big = self._build_big_image(offset)
-            self.real_coords += self.shape*offset
-            big_im = self._fill_im_big(w_id=w_id, data=data).astype(int)
-            self.real_coords -= self.shape*offset
+            sb = np.sum(self.im_big == self.solid_value)
+            coords = self.real_coords + self.shape*offset
+            big_im = self._fill_im_big(w_id=w_id,
+                                       data=data,
+                                       coords=coords).astype(int)
+            sa = np.sum(big_im == self.solid_value - 2)
             plt.figure()
             masked_array = np.ma.masked_where(big_im == self.solid_value-2,
                                               big_im)
             cmap = matplotlib.cm.brg
             cmap.set_bad(color='black')
             plt.imshow(masked_array, cmap=cmap)
+            if check_solid:
+                print('Solid pixel match?', sb == sa, sb, sa)
+
+    def run_analytics(self, lw=2, uw=4, lt=2, ut=4):
+        r'''
+        Run run a number of times saving info
+        Warning - this method may take some time to complete!
+
+        Parameters
+        ----------
+        lw: int (default = 2)
+            the lower power of 10 to use for nummber of walkers
+        uw: int (default = 4)
+            the upper power of 10 to use for nummber of walkers
+        lt: int (default = 2)
+            the lower power of 10 to use for nummber of timesteps
+        ut: int (default = 4)
+            the upper power of 10 to use for nummber of timesteps
+        '''
+        pow_10w = np.arange(lw, uw+1, 1, dtype=int)
+        pow_10t = np.arange(lt, ut+1, 1, dtype=int)
+        with open('analytics.csv', 'w', newline='\n') as f:
+            self.data['sim_nw'] = 0
+            self.data['sim_nt'] = 0
+            self.data['sim_time'] = 0
+            w = csv.DictWriter(f, self.data)
+            w.writeheader()
+            for pw in pow_10w:
+                for pt in pow_10t:
+                    nw = np.power(10, pw)
+                    nt = np.power(10, pt)
+                    print('Running Analystics for:')
+                    print('Number of Walkers: ' + str(nw))
+                    print('Number of Timesteps: ' + str(nt))
+                    start_time = time.time()
+                    self.run(nt, nw, same_start=False)
+                    sim_time = time.time() - start_time
+                    print('Completed in: ' + str(sim_time))
+                    self.plot_msd()
+                    plt.title('Walkers: ' + str(nw) + ' Steps: ' + str(nt))
+                    self.data['sim_nw'] = nw
+                    self.data['sim_nt'] = nt
+                    self.data['sim_time'] = sim_time
+                    w = csv.DictWriter(f, self.data)
+                    w.writerow(self.data)
+
+if __name__ == "__main__":
+    if 1 == 2:
+        # Load tau test image
+        im = 1 - ps.data.tau()
+    else:
+        im = ps.generators.blobs([100, 100], porosity=0.65).astype(int)
+
+    # Number of time steps and walkers
+    num_t = 1000
+    num_w = 10
+    # Track time of simulation
+    st = time.time()
+    rw = ps.simulations.RandomWalk(im, seed=False)
+    rw.run(num_t, num_w, same_start=False)
+    rw.calc_msd()
+    # Plot mean square displacement
+    rw.plot_msd()
+    # Plot the longest walk
+    rw.plot_walk_2d(w_id=np.argmax(rw.sq_disp[-1, :]), data='w')
+    # Plot all the walks
+    rw.plot_walk_2d(check_solid=True)
+    print('sim time', time.time()-st)
+    rw.export_walk(image=rw.im)
+    rw.run_analytics(lw=2, uw=3, lt=2, ut=6)
