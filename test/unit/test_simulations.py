@@ -11,10 +11,9 @@ class SimulationTest():
                                                     porosity=0.5)
         self.mip = ps.simulations.Porosimetry(self.im)
         self.blobs = ps.generators.blobs([self.l, self.l, self.l])
-        self.rw = ps.simulations.RandomWalk(self.blobs, offset=2)
+        self.rw = ps.simulations.RandomWalk(self.blobs)
         self.blobs_2d = ps.generators.blobs([self.l, self.l])
-        self.rw_2d = ps.simulations.RandomWalk(self.blobs_2d, offset=3,
-                                               seed=True)
+        self.rw_2d = ps.simulations.RandomWalk(self.blobs_2d, seed=True)
 
     def test_porosimetry(self):
         self.mip.run()
@@ -36,11 +35,6 @@ class SimulationTest():
 
     def test_plot_msd(self):
         self.rw.plot_msd()
-
-    def test_plot_walk(self):
-        self.rw.plot_walk(w_id=0)
-        assert hasattr(self.rw, 'im_big')
-        assert sp.sum(self.rw.im_big > self.rw.nt) == 0
 
     def test_random_walk_2d(self):
         self.rw_2d.run(nt=1000, nw=100, same_start=True)
@@ -81,7 +75,6 @@ if __name__ == '__main__':
     t.test_plot_size_histogram()
     t.test_random_walk()
     t.test_plot_msd()
-    t.test_plot_walk()
     t.test_random_walk_2d()
     t.test_plot_walk_2d()
     t.test_export()
