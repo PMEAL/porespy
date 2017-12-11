@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-@author: Tom Tranter
+@author: Tom Tranter, Matt Lam, Matt Kok, Jeff Gostick
+PMEAL lab, University of Waterloo, Ontario, Canada
 
 Random Walker Code
 """
@@ -25,14 +26,14 @@ class RandomWalk():
     this represents the real path the walker would have taken if it had not
     been confined to the bounds of the image.
     The mean square displacement is calculated and the gradient of the msd
-    when plotted over time is equal to 1/tortuosity
+    when plotted over time is equal to 1/tau, the tortuosity factor.
     The image data and walker co-ordinates can be exported for visualization
     in paraview.
     A simple 2d slice can also be viewed directly using matplotlib.
     Currently walkers do not travel along diagonals.
     '''
 
-    def __init__(self, image, offset=1, seed=False):
+    def __init__(self, image, seed=False):
         r'''
         Get image info and make a bigger periodically flipped image for viz
 
@@ -41,10 +42,6 @@ class RandomWalk():
         image: ndarray of int
             2D or 3D image with 1 denoting pore space and 0 denoting solid
 
-        offset: int (default = 1)
-            The number of image offsets to start the real walkers in along each
-            axis. The big image is flipped and tiled twice this many times so
-            that walkers start in the middle.
         seed: bool
             Determines whether to seed the random number generators so that
             Simulation is repeatable
@@ -62,34 +59,14 @@ class RandomWalk():
         self.im = image
         self.shape = np.array(np.shape(self.im))
         self.dim = len(self.shape)
-        self.offset = offset
         self.solid_value = 0
         self.seed = seed
         self._get_wall_map(self.im)
 
-    def _transform_coord(self, coord=None, reflection=None):
-        r'''
-        Transform a coordinate from the original image to a reflected image
-
-        Parameters
-        ----------
-        coord: ndarray of int
-            coordinates in the original image
-        reflection: ndarray of int
-            number of times to shift the coordinate into a reflected image.
-            An odd number results in a reflection and even results in a shift
-        '''
-        t_coord = coord.copy()
-        for ax in range(self.dim):
-            rs = reflection[:, ax] % 2 == 1
-            t_coord[rs, ax] = self.shape[ax] - 1 - coord[rs, ax]
-            t_coord[:, ax] += reflection[:, ax]*self.shape[ax]
-        return t_coord
-
     def _build_big_image(self, num_copies=0):
         r'''
         Build the big image by flipping and stacking along each axis a number
-        of times
+        of times on both sides of the image to keep the original in the center
 
         Parameters
         ----------
@@ -103,9 +80,14 @@ class RandomWalk():
             flip_im = np.flip(temp_im, ax)
             for c in range(num_copies):
                 if c % 2 == 0:
+                    # Place one flipped copy either side
                     big_im = func[ax]((big_im, flip_im))
+                    big_im = func[ax]((flip_im, big_im))
                 else:
+                    # Place one original copy either side
                     big_im = func[ax]((big_im, temp_im))
+                    big_im = func[ax]((temp_im, big_im))
+            # Update image to copy for next axis
             temp_im = big_im.copy()
         return big_im
 
@@ -248,10 +230,7 @@ class RandomWalk():
         else:
             w = self._rand_start(self.im, num=1).flatten()
             walkers = np.tile(w, (self.nw, 1))
-        # Start the real walkers in the middle of the big image
-        reflection = np.ones_like(walkers)*int(self.offset)
-        walkers_real = self._transform_coord(walkers, reflection)
-        return walkers, walkers_real
+        return walkers
 
 #   Uncomment the line below to profile the run method
 #    @do_profile(follow=[_get_wall_map, check_wall, check_edge])
@@ -277,17 +256,14 @@ class RandomWalk():
         self.nt = int(nt)
         self.nw = int(nw)
         # Get starts
-        walkers, walkers_real = self._get_starts(same_start)
+        walkers = self._get_starts(same_start)
+        walkers_real = walkers.copy()
         # Save starts
         self.start = walkers.copy()
         self.start_real = walkers_real.copy()
         # Array to keep track of whether the walker is travelling in a real
         # or reflected image in each axis
-        # Offsetting the walker start positions in the real image an odd
-        # Number of times starts them in a reflected image
         real = np.ones_like(walkers)
-        if self.offset % 2 == 1:
-            real *= -1
         if self.seed:
             # Generate a seed for each timestep
             np.random.seed(1)
@@ -367,16 +343,14 @@ class RandomWalk():
 
     def _check_big_bounds(self):
         r'''
-        Helper function to check whether the big image is big enough to show
-        all the walks
+        Helper function to check the maximum displacement and return the number
+        of image copies needed to build a big image large enough to display all
+        the walks
         '''
-        big_shape = np.asarray(np.shape(self.im_big))
-        ok = True
-        if np.sum(self.real_coords < 0):
-            ok = False
-        if np.sum(self.real_coords - big_shape >= 0):
-            ok = False
-        return ok
+        max_disp = np.max(np.max(np.abs(self.real_coords), axis=0), axis=0)
+        num_domains = np.ceil(max_disp / self.shape)
+        num_copies = int(np.max(num_domains))-1
+        return num_copies
 
     def export_walk(self, image=None, path=None, sub='data', prefix='rw_',
                     stride=10):
@@ -386,8 +360,8 @@ class RandomWalk():
 
         Parameters
         ----------
-        image: ndarray of int size[im*self.offset*2]
-            the walkers in the big image
+        image: ndarray of int size (Default is None)
+            Can be used to export verisons of the image
         path: string (default = None)
             the filepath to save the data, defaults to current working dir
         prefix: string (default = 'rw_)
@@ -398,10 +372,7 @@ class RandomWalk():
         # This function may have been called with plot function with a pre-
         # populated image of a subset of walkers
         # if not then export all walkers
-        if image is None:
-            image = self._fill_im_big()
-        if self.dim == 2:
-            image = image[:, :, np.newaxis]
+
         if path is None:
             path = os.getcwd()
         if sub is not None:
@@ -410,9 +381,13 @@ class RandomWalk():
             if not os.path.exists(subdir):
                 os.makedirs(subdir)
             path = subdir
-        im_fp = os.path.join(path, prefix+'image')
-        ps.export.evtk.imageToVTK(im_fp,
-                                  cellData={'pore_space': image})
+        if image is not None:
+            if len(np.shape(image)) == 2:
+                image = image[:, :, np.newaxis]
+            im_fp = os.path.join(path, prefix+'image')
+            ps.export.evtk.imageToVTK(im_fp,
+                                      cellData={'image_data': image})
+        # number of zeros to fill the file index
         zf = np.int(np.ceil(np.log10(self.nt*10)))
         time_data = np.ascontiguousarray(np.zeros(self.nw, dtype=int))
         if self.dim == 2:
@@ -443,10 +418,6 @@ class RandomWalk():
         data: string (options are 't' or 'w')
             t fills image with timestep, w fills image with walker index
         '''
-        # Check to see whether im_big exists, if not then make it
-        if not hasattr(self, 'im_big'):
-            self.im_big = self._build_big_image(self.offset*2)
-
         big_im = self.im_big.copy().astype(int)
         big_im -= 2
         if w_id is None:
@@ -471,8 +442,7 @@ class RandomWalk():
 
         return big_im
 
-    def plot_walk(self, w_id=None, slice_ind=None, data='t', export=False,
-                  export_stride=10):
+    def plot_walk_2d(self, w_id=None, data='t'):
         r'''
         Plot the walker paths in the big image. If 3d show a slice along the
         last axis at the slice index slice_ind. For 3d walks, a better option
@@ -482,35 +452,22 @@ class RandomWalk():
         ----------
         w_id: array of int and any length (default = None)
             the indices of the walkers to plot. If None then all are shown
-        slice_ind: int (default = None)
-            the index of the slice to take along the last axis if image is 3d
-            If None then the middle slice is taken
         data: string (options are 't' or 'w')
             t fills image with timestep, w fills image with walker index
-        export: bool (default = False)
-            Determines whether to export the image and walker steps to vti and
-            vtu, respectively. Saves a bit of time filling image up again
-            separately, if export data is required. Saves in cwd.
-        stride: int (default = 10)
-            used if export to output the coordinates every number of strides
 
         '''
-        self.im_big = self._build_big_image(self.offset*2)
-        if self._check_big_bounds():
+        if self.dim == 3:
+            print('Method is not implemented for 3d images')
+            print('Please use export for visualizing 3d walks in paraview')
+        else:
+            offset = self._check_big_bounds()
+            self.im_big = self._build_big_image(offset)
+            self.real_coords += self.shape*offset
             big_im = self._fill_im_big(w_id=w_id, data=data).astype(int)
+            self.real_coords -= self.shape*offset
             plt.figure()
-            if export:
-                self.export_walk(image=big_im, stride=export_stride)
-            if self.dim == 3:
-                if slice_ind is None:
-                    slice_ind = int(np.shape(big_im)[2]/2)
-                big_im = big_im[:, :, slice_ind]
             masked_array = np.ma.masked_where(big_im == self.solid_value-2,
                                               big_im)
             cmap = matplotlib.cm.brg
             cmap.set_bad(color='black')
             plt.imshow(masked_array, cmap=cmap)
-
-        else:
-            print('Walk exceeds big image size! consider reducing nt ' +
-                  'or increasing the starting offset')
