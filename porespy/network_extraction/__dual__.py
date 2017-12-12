@@ -63,19 +63,6 @@ def dual(net=None, solid_dt=None):
         sub_im_s_solid_labels = sub_im_s_mask*sub_im_s_dt
         solid_pore_area_surf[solid] = sp.sum(sub_im_s_solid_labels == 1)
 
-        # Finding Solid pore Neighbours
-        solid_region_full = solid_regions[ext_solid_on_pore_slice]
-        solid_region_mask = solid_regions[ext_solid_on_pore_slice] == k
-        pore_region_full = pore_regions[ext_solid_on_pore_slice]
-        pore_labels_on_solid = ((solid_region_mask*solid_region_full != 0) *
-                                pore_region_full)
-        neigbhour_pore_labels = sp.unique(pore_labels_on_solid)
-        neigbhour_pore_labels = sp.delete(neigbhour_pore_labels,
-                                          sp.where(neigbhour_pore_labels == 0))
-        neigbhour_pore_labels = neigbhour_pore_labels-1
-        for pore_label in neigbhour_pore_labels:
-            solid_pore_conns.append([solid, pore_label])
-
         im_solid_s = sub_im_s == k
         dt_solid_s = spim.distance_transform_edt(sp.pad(im_solid_s,
                                                         pad_width=1,
