@@ -12,7 +12,7 @@ class SimulationTest():
         self.mip = ps.simulations.Porosimetry(self.im)
         self.blobs = ps.generators.blobs([self.l, self.l, self.l])
         self.rw = ps.simulations.RandomWalk(self.blobs)
-        self.blobs_2d = ps.generators.blobs([self.l, self.l])
+        self.blobs_2d = ps.generators.blobs([self.l, self.l]).astype(int)
         self.rw_2d = ps.simulations.RandomWalk(self.blobs_2d, seed=True)
 
     def test_porosimetry(self):
@@ -41,13 +41,13 @@ class SimulationTest():
         assert sp.shape(self.rw_2d.real_coords) == (1000, 100, 2)
 
     def test_plot_walk_2d(self):
-        self.rw_2d.plot_walk(data='w')
+        self.rw_2d.plot_walk_2d(data='w')
         assert hasattr(self.rw_2d, 'im_big')
         assert sp.sum(self.rw_2d.im_big > self.rw_2d.nw) == 0
 
     def test_export(self):
         cwd = os.getcwd()
-        self.rw_2d.export_walk(sub='temp', stride=100)
+        self.rw_2d.export_walk(sub='temp', image=self.rw_2d.im, stride=100)
         subdir = os.path.join(cwd, 'temp')
         assert os.path.exists(subdir)
         file_list = os.listdir(subdir)
