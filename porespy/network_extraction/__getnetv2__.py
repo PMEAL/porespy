@@ -5,8 +5,8 @@ from porespy.tools import extend_slice
 from tqdm import tqdm
 
 
-def extract_pore_network(im, pore_regions=None, dt=None, voxel_size=1,
-                         dual=False, solid_regions=None):
+def extract_phase_network(im, pore_regions=None, dt=None, voxel_size=1,
+                          dual=False, solid_regions=None):
     r"""
     Analyzes an image that has been partitioned into pore regions and extracts
     the pore and throat geometry as well as network connectivity.
@@ -68,8 +68,9 @@ def extract_pore_network(im, pore_regions=None, dt=None, voxel_size=1,
         raise Exception('Please provide solid regions map for' +
                         ' dual newtwork extraction')
 
-    merge = sp.amax(pore_regions)
-    solid_regions = solid_regions + merge
+    if solid_regions is not None:
+        merge = sp.amax(pore_regions)
+        solid_regions = solid_regions + merge
     p_on_s = pore_regions*(~im)    # Expose pores labels on solid
     p_on_s_slice = spim.find_objects(p_on_s)  # Slice of Pore on solid regions
     p_im = pore_regions*im                # Shows pore labels on pore region
