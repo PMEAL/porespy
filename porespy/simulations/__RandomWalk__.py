@@ -15,6 +15,7 @@ import os
 from tqdm import tqdm
 import time
 import csv
+from concurrent.futures import ProcessPoolExecutor
 
 
 class RandomWalk():
@@ -33,6 +34,8 @@ class RandomWalk():
     in paraview.
     A simple 2d slice can also be viewed directly using matplotlib.
     Currently walkers do not travel along diagonals.
+    Running walkers in parallel by setting num_proc is possible to speed up
+    calculations as wach walker path is completely independent of the others.
     '''
 
     def __init__(self, image, seed=False):
@@ -64,34 +67,6 @@ class RandomWalk():
         self.solid_value = 0
         self.seed = seed
         self._get_wall_map(self.im)
-
-    def _build_big_image(self, num_copies=0):
-        r'''
-        Build the big image by flipping and stacking along each axis a number
-        of times on both sides of the image to keep the original in the center
-
-        Parameters
-        ----------
-        num_copies: int
-            the number of times to copy the image along each axis
-        '''
-        big_im = self.im.copy()
-        func = [np.vstack, np.hstack, np.dstack]
-        temp_im = self.im.copy()
-        for ax in range(self.dim):
-            flip_im = np.flip(temp_im, ax)
-            for c in range(num_copies):
-                if c % 2 == 0:
-                    # Place one flipped copy either side
-                    big_im = func[ax]((big_im, flip_im))
-                    big_im = func[ax]((flip_im, big_im))
-                else:
-                    # Place one original copy either side
-                    big_im = func[ax]((big_im, temp_im))
-                    big_im = func[ax]((temp_im, big_im))
-            # Update image to copy for next axis
-            temp_im = big_im.copy()
-        return big_im
 
     def _rand_start(self, image, num=1):
         r'''
@@ -233,7 +208,7 @@ class RandomWalk():
 
 #   Uncomment the line below to profile the run method
 #    @do_profile(follow=[check_wall, check_edge])
-    def run(self, nt=1000, nw=1, same_start=False):
+    def run(self, nt=1000, nw=1, same_start=False, num_proc=None):
         r'''
         Main run loop over nt timesteps and nw walkers.
         same_start starts all the walkers at the same spot if True and at
@@ -247,10 +222,8 @@ class RandomWalk():
             he vector of the next move to be made by the walker
         same_start: bool
             determines whether to start all the walkers at the same coordinate
-        debug_mode: string (default None) options ('save', 'load')
-            save: saves the walker starts, and movement vectors
-            load: loads the saved info enabling the same random walk to be
-                  run multiple times which can be useful for debug
+        num_proc: int (default None - uses half available)
+            number of concurrent processes to start running
         '''
         self.nt = int(nt)
         self.nw = int(nw)
@@ -262,22 +235,57 @@ class RandomWalk():
         self.start_real = walkers_real.copy()
         # Array to keep track of whether the walker is travelling in a real
         # or reflected image in each axis
-        real = np.ones_like(walkers)
         if self.seed:
             # Generate a seed for each timestep
             np.random.seed(1)
-            seeds = np.random.randint(0, self.nw, self.nt)
+            self.seeds = np.random.randint(0, self.nw, self.nt)
         real_coords = np.ndarray([self.nt, self.nw, self.dim], dtype=int)
-        for t in tqdm(range(nt), desc='Running Walk'):
+
+        if num_proc is None:
+            num_proc = int(os.cpu_count()/2)
+        if num_proc > 1:
+            walker_batches = self._chunk_walkers(walkers, num_proc)
+            pool = ProcessPoolExecutor(max_workers=num_proc)
+            mapped_coords = list(pool.map(self._run_walk, walker_batches))
+            si = 0
+            for mp in mapped_coords:
+                mnw = np.shape(mp)[1]
+                real_coords[:, si: si + mnw, :] = mp.copy()
+                si = si + mnw
+        else:
+            real_coords = self._run_walk(walkers.tolist())
+
+        self.real_coords = real_coords
+
+    def _chunk_walkers(self, walkers, num_chunks):
+        r'''
+        Helper function to divide the walkers into batches for pool-processing
+        '''
+        num_walkers = len(walkers)
+        n = int(np.floor(num_walkers / num_chunks))
+        l = walkers.tolist()
+        return [l[i:i + n] for i in range(0, len(l), n)]
+
+    def _run_walk(self, walkers):
+        r'''
+        Run the walk in self contained way to enable parallel processing for
+        batches of walkers
+        '''
+        nw = len(walkers)
+        walkers = np.asarray(walkers)
+        wr = walkers.copy()
+        real = np.ones_like(walkers)
+        real_coords = np.ndarray([self.nt, nw, self.dim], dtype=int)
+        for t in range(self.nt):
             # Random velocity update
             # Randomly select an axis to move along for each walker
             if self.seed:
-                np.random.seed(seeds[t])
-            ax = np.random.randint(0, self.dim, self.nw)
+                np.random.seed(self.seeds[t])
+            ax = np.random.randint(0, self.dim, nw)
             # Randomly select a direction positive = 1, negative = 0 index
             if self.seed:
-                np.random.seed(seeds[-t])
-            pn = np.random.randint(0, 2, self.nw)
+                np.random.seed(self.seeds[-t])
+            pn = np.random.randint(0, 2, nw)
             # Get the movement
             m = self.moves[ax, pn]
             # Reflected velocity (if edge is hit)
@@ -290,14 +298,10 @@ class RandomWalk():
                 m[wall_hit] = 0
                 mr[wall_hit] = 0
             # Reflected velocity in real direction
-            walkers_real += mr*real
-            real_coords[t] = walkers_real.copy()
+            wr += mr*real
+            real_coords[t] = wr.copy()
             walkers += m
-
-        self.real = real
-        self.real_coords = real_coords
-        self.walkers = walkers
-        self.walkers_real = walkers_real
+        return real_coords
 
     def calc_msd(self):
         r'''
@@ -405,6 +409,34 @@ class RandomWalk():
                                        z=z_coords,
                                        data={'time': time_data})
             time_data += 1
+
+    def _build_big_image(self, num_copies=0):
+        r'''
+        Build the big image by flipping and stacking along each axis a number
+        of times on both sides of the image to keep the original in the center
+
+        Parameters
+        ----------
+        num_copies: int
+            the number of times to copy the image along each axis
+        '''
+        big_im = self.im.copy()
+        func = [np.vstack, np.hstack, np.dstack]
+        temp_im = self.im.copy()
+        for ax in range(self.dim):
+            flip_im = np.flip(temp_im, ax)
+            for c in range(num_copies):
+                if c % 2 == 0:
+                    # Place one flipped copy either side
+                    big_im = func[ax]((big_im, flip_im))
+                    big_im = func[ax]((flip_im, big_im))
+                else:
+                    # Place one original copy either side
+                    big_im = func[ax]((big_im, temp_im))
+                    big_im = func[ax]((temp_im, big_im))
+            # Update image to copy for next axis
+            temp_im = big_im.copy()
+        return big_im
 
     def _fill_im_big(self, w_id=None, coords=None, data='t'):
         r'''
@@ -525,11 +557,23 @@ if __name__ == "__main__":
         # Load tau test image
         im = 1 - ps.data.tau()
     else:
-        im = ps.generators.blobs([100, 100], porosity=0.65).astype(int)
+        # Generate a Sierpinski carpet by tiling an image and blanking the
+        # Middle tile recursively
+        def tileandblank(image, n):
+            if n > 0:
+                n -= 1
+                shape = np.asarray(np.shape(image))
+                image = np.tile(image, (3, 3))
+                image[shape[0]:2*shape[0], shape[1]:2*shape[1]] = 0
+                image = tileandblank(image, n)
+            return image
+
+        im = np.ones([1, 1], dtype=int)
+        im = tileandblank(im, 5)
 
     # Number of time steps and walkers
-    num_t = 1000
-    num_w = 10
+    num_t = 10000
+    num_w = 12000
     # Track time of simulation
     st = time.time()
     rw = ps.simulations.RandomWalk(im, seed=False)
@@ -538,9 +582,9 @@ if __name__ == "__main__":
     # Plot mean square displacement
     rw.plot_msd()
     # Plot the longest walk
-    rw.plot_walk_2d(w_id=np.argmax(rw.sq_disp[-1, :]), data='w')
-    # Plot all the walks
+    rw.plot_walk_2d(w_id=np.argmax(rw.sq_disp[-1, :]), data='t')
+#    # Plot all the walks
     rw.plot_walk_2d(check_solid=True)
-    print('sim time', time.time()-st)
-    rw.export_walk(image=rw.im)
-    rw.run_analytics(lw=2, uw=3, lt=2, ut=6)
+#    print('sim time', time.time()-st)
+#    rw.export_walk(image=rw.im)
+#    rw.run_analytics(lw=2, uw=3, lt=2, ut=6)
