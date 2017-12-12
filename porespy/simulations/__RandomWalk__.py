@@ -12,7 +12,6 @@ import matplotlib.pyplot as plt
 import porespy as ps
 from porespy.tools.__funcs__ import do_profile
 import os
-from tqdm import tqdm
 import time
 import csv
 from concurrent.futures import ProcessPoolExecutor
@@ -176,7 +175,7 @@ class RandomWalk():
         # Combine again and update arrays
         hit = np.logical_or(l_hit, u_hit)
 
-        if np.any(hit) > 0:
+        if np.any(hit):
             ax = axis[hit]
             real[hit, ax] *= -1
             # walker in the original image stays stationary
@@ -206,8 +205,46 @@ class RandomWalk():
             walkers = np.tile(w, (self.nw, 1))
         return walkers
 
-#   Uncomment the line below to profile the run method
-#    @do_profile(follow=[check_wall, check_edge])
+    def _run_walk(self, walkers):
+        r'''
+        Run the walk in self contained way to enable parallel processing for
+        batches of walkers
+        '''
+        nw = len(walkers)
+        walkers = np.asarray(walkers)
+        wr = walkers.copy()
+        real = np.ones_like(walkers)
+        real_coords = np.ndarray([self.nt, nw, self.dim], dtype=int)
+        for t in range(self.nt):
+            # Random velocity update
+            # Randomly select an axis to move along for each walker
+            if self.seed:
+                np.random.seed(self.seeds[t])
+            ax = np.random.randint(0, self.dim, nw)
+            # Randomly select a direction positive = 1, negative = 0 index
+            if self.seed:
+                np.random.seed(self.seeds[-t])
+            pn = np.random.randint(0, 2, nw)
+            # Get the movement
+            m = self.moves[ax, pn]
+            # Reflected velocity (if edge is hit)
+            m, mr, real = self.check_edge(walkers, ax, m, real)
+            # Check for wall hits and zero both movements
+            # Cancel moves that hit walls - effectively walker travels half way
+            # across, hits a wall, bounces back and results in net zero move
+            wall_hit = self.check_wall(walkers, m)
+            if np.any(wall_hit):
+                m[wall_hit] = 0
+                mr[wall_hit] = 0
+            # Reflected velocity in real direction
+            wr += mr*real
+            real_coords[t] = wr.copy()
+            walkers += m
+        return real_coords
+
+    # Uncomment the line below to profile the run method
+    # Only works for single process
+    @do_profile(follow=[_run_walk, check_wall, check_edge])
     def run(self, nt=1000, nw=1, same_start=False, num_proc=None):
         r'''
         Main run loop over nt timesteps and nw walkers.
@@ -265,43 +302,6 @@ class RandomWalk():
         n = int(np.floor(num_walkers / num_chunks))
         l = walkers.tolist()
         return [l[i:i + n] for i in range(0, len(l), n)]
-
-    def _run_walk(self, walkers):
-        r'''
-        Run the walk in self contained way to enable parallel processing for
-        batches of walkers
-        '''
-        nw = len(walkers)
-        walkers = np.asarray(walkers)
-        wr = walkers.copy()
-        real = np.ones_like(walkers)
-        real_coords = np.ndarray([self.nt, nw, self.dim], dtype=int)
-        for t in range(self.nt):
-            # Random velocity update
-            # Randomly select an axis to move along for each walker
-            if self.seed:
-                np.random.seed(self.seeds[t])
-            ax = np.random.randint(0, self.dim, nw)
-            # Randomly select a direction positive = 1, negative = 0 index
-            if self.seed:
-                np.random.seed(self.seeds[-t])
-            pn = np.random.randint(0, 2, nw)
-            # Get the movement
-            m = self.moves[ax, pn]
-            # Reflected velocity (if edge is hit)
-            m, mr, real = self.check_edge(walkers, ax, m, real)
-            # Check for wall hits and zero both movements
-            # Cancel moves that hit walls - effectively walker travels half way
-            # across, hits a wall, bounces back and results in net zero move
-            wall_hit = self.check_wall(walkers, m)
-            if np.any(wall_hit):
-                m[wall_hit] = 0
-                mr[wall_hit] = 0
-            # Reflected velocity in real direction
-            wr += mr*real
-            real_coords[t] = wr.copy()
-            walkers += m
-        return real_coords
 
     def calc_msd(self):
         r'''
