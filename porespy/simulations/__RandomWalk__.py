@@ -57,7 +57,7 @@ class RandomWalk():
 
         >>> import porespy as ps
         >>> im = ps.generators.blobs([100, 100])
-        >>> rw = ps.simulations.RandomWalk(im, offset=1)
+        >>> rw = ps.simulations.RandomWalk(im)
         >>> rw.run(nt=1000, nw=100)
         '''
         self.im = image
@@ -210,9 +210,12 @@ class RandomWalk():
         Run the walk in self contained way to enable parallel processing for
         batches of walkers
         '''
+        # Number of walkers in this batch
         nw = len(walkers)
         walkers = np.asarray(walkers)
         wr = walkers.copy()
+        # Array to keep track of whether the walker is travelling in a real
+        # or reflected image in each axis
         real = np.ones_like(walkers)
         real_coords = np.ndarray([self.nt, nw, self.dim], dtype=int)
         for t in range(self.nt):
@@ -244,7 +247,7 @@ class RandomWalk():
 
     # Uncomment the line below to profile the run method
     # Only works for single process
-    @do_profile(follow=[_run_walk, check_wall, check_edge])
+#    @do_profile(follow=[_run_walk, check_wall, check_edge])
     def run(self, nt=1000, nw=1, same_start=False, num_proc=None):
         r'''
         Main run loop over nt timesteps and nw walkers.
@@ -266,30 +269,27 @@ class RandomWalk():
         self.nw = int(nw)
         # Get starts
         walkers = self._get_starts(same_start)
-        walkers_real = walkers.copy()
-        # Save starts
-        self.start = walkers.copy()
-        self.start_real = walkers_real.copy()
-        # Array to keep track of whether the walker is travelling in a real
-        # or reflected image in each axis
         if self.seed:
             # Generate a seed for each timestep
             np.random.seed(1)
             self.seeds = np.random.randint(0, self.nw, self.nt)
         real_coords = np.ndarray([self.nt, self.nw, self.dim], dtype=int)
-
+        # Default to run in parallel with half the number of available procs
         if num_proc is None:
             num_proc = int(os.cpu_count()/2)
         if num_proc > 1:
-            walker_batches = self._chunk_walkers(walkers, num_proc)
-            pool = ProcessPoolExecutor(max_workers=num_proc)
-            mapped_coords = list(pool.map(self._run_walk, walker_batches))
+            # Run in parallel over multiple CPUs
+            batches = self._chunk_walkers(walkers, num_proc)
+            with ProcessPoolExecutor(max_workers=num_proc) as pool:
+                mapped_coords = list(pool.map(self._run_walk, batches))
+            # Put coords back together
             si = 0
-            for mp in mapped_coords:
-                mnw = np.shape(mp)[1]
-                real_coords[:, si: si + mnw, :] = mp.copy()
+            for mc in mapped_coords:
+                mnw = np.shape(mc)[1]
+                real_coords[:, si: si + mnw, :] = mc.copy()
                 si = si + mnw
         else:
+            # Run in serial
             real_coords = self._run_walk(walkers.tolist())
 
         self.real_coords = real_coords
