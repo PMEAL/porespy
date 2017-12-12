@@ -13,7 +13,6 @@ def dual(net=None, solid_dt=None):
     solid_regions = net['dual.solid_regions']
     im = net['dual.image']
     Np = sp.size(net['pore.label'])
-    pore_regions = net['dual.pore_regions']
     s_im = solid_regions*~im              # Shows solid labels on solid region
     solid_on_pore = solid_regions*im      # Expose solid labels on pores
     s_dt = solid_dt
@@ -48,13 +47,12 @@ def dual(net=None, solid_dt=None):
     st_area = []
     st_perimeter = []
     st_coords = []
-    solid_pore_conns = []
+
     solid_pore_area_surf = sp.zeros((Ns, ), dtype=float)
     for k in tqdm(Ss):
         solid = k - 1
         ext_s_slice = extend_slice(s_slice[solid], s_im.shape)
-        ext_solid_on_pore_slice = extend_slice(solid_on_pore_slice[solid],
-                                               s_im.shape)
+
         sub_im_s = s_im[ext_s_slice]  # Sub image of solid extended slice
         sub_dt_s = s_dt[ext_s_slice]  # Sub dt of solid ex_slice
         # Surface Area Calculation
