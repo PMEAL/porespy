@@ -121,8 +121,8 @@ def extract_pore_network(im, pore_regions=None, dt=None, voxel_size=1,
             pore_regions_full = pore_regions[ext_p_on_s_slice]
             pore_region_mask = pore_regions[ext_p_on_s_slice] == i
             solid_regions_full = solid_regions[ext_p_on_s_slice]
-            solid_labels_on_pore = ((pore_region_mask * pore_regions_full != 0)
-                                    * solid_regions_full)
+            solid_labels_on_pore = ((pore_region_mask * pore_regions_full !=
+                                     0) * solid_regions_full)
             neigbhour_solid = sp.unique(solid_labels_on_pore)
             neigbhour_solid = sp.delete(neigbhour_solid,
                                         sp.where(neigbhour_solid == 0))
@@ -185,13 +185,13 @@ def extract_pore_network(im, pore_regions=None, dt=None, voxel_size=1,
     net['throat.inscribed_diameter'] = sp.array(t_dia_inscribed)*voxel_size
     net['throat.area'] = sp.array(t_area)*(voxel_size**2)
     net['throat.perimeter'] = sp.array(t_perimeter)*voxel_size
-    net['throat.equivalent_diameter'] = ((sp.array(t_area)
-                                         * (voxel_size**2))**(0.5))
+    net['throat.equivalent_diameter'] = ((sp.array(t_area) *
+                                         (voxel_size**2))**(0.5))
     P12 = net['throat.conns']
-    PT1 = (sp.sqrt(sp.sum(((p_coords[P12[:, 0]]-t_coords)
-                           * voxel_size)**2, axis=1)))
-    PT2 = (sp.sqrt(sp.sum(((p_coords[P12[:, 1]]-t_coords)
-                           * voxel_size)**2, axis=1)))
+    PT1 = (sp.sqrt(sp.sum(((p_coords[P12[:, 0]]-t_coords) *
+                           voxel_size)**2, axis=1)))
+    PT2 = (sp.sqrt(sp.sum(((p_coords[P12[:, 1]]-t_coords) *
+                           voxel_size)**2, axis=1)))
     net['throat.total_length'] = PT1 + PT2
     PT1 = PT1-p_dia_local[P12[:, 0]]/2*voxel_size
     PT2 = PT2-p_dia_local[P12[:, 1]]/2*voxel_size
@@ -200,8 +200,8 @@ def extract_pore_network(im, pore_regions=None, dt=None, voxel_size=1,
     net['throat.direct_length'] = sp.sqrt(sp.sum(dist**2, axis=1))
 
     if dual is True:
-        net['pore.solid_surface_area'] = sp.copy((p_solid_area_surf)
-                                                 * (voxel_size)**2)
+        net['pore.solid_surface_area'] = sp.copy((p_solid_area_surf) *
+                                                 (voxel_size)**2)
         net['pore.solid_volume'] = sp.copy(p_solid_volume)*(voxel_size**3)
         net['dual.throat_conns'] = sp.array(pore_solid_conns)
         net['dual.solid_regions'] = solid_regions
