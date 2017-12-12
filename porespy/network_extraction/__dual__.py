@@ -119,6 +119,7 @@ def dual(net=None, solid_dt=None):
 
     v_inv = (net['dual.voxel_size'][0])**(-1)
     voxel_size = net['dual.voxel_size']
+    p_label = net['pore.label']
     bond_all = Ns
     site_all = len(net['throat.diameter']) + Nst
     p_coords = net['pore.coords'] * v_inv
@@ -161,9 +162,9 @@ def dual(net=None, solid_dt=None):
     net['pore.coords'] = sp.copy(bond_coords)*voxel_size
     net['pore.centroid'] = sp.copy(bond_coords)*voxel_size
     net['throat.centroid'] = sp.array(site_coords)*voxel_size
+    net['pore.label_pore'] = sp.trim_zeros(p_label)-1
+    net['pore.label_solid'] = sp.trim_zeros(s_label)-1
     net['pore.label'] = sp.array(bond_label)-1
-    net['pore.label_pore'] = sp.trim_zeros(net['pore.label']-1)
-    net['pore.label_solid'] = sp.trim_zeros(s_label-1)
     net['pore.volume'] = sp.copy(bond_volume)*(voxel_size**3)
     net['throat.volume'] = sp.zeros((site_volume, ), dtype=float)
     net['pore.diameter'] = sp.copy(bond_dia_local)*voxel_size
