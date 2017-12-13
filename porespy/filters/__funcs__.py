@@ -7,7 +7,7 @@ from collections import namedtuple
 from tqdm import tqdm
 from numba import jit
 from skimage.morphology import ball, disk, square, cube
-from skimage.morphology import reconstruction
+from skimage.morphology import reconstruction, skeletonize_3d
 
 
 def find_disconnected_voxels(im, conn=None):
@@ -391,3 +391,97 @@ def porosimetry(im, npts=25, sizes=None, inlets=None, access_limited=True):
             imtemp = spim.distance_transform_edt(~imtemp) < r
             imresults[(imresults == 0)*imtemp] = r
     return imresults
+
+
+def coalesce_menisci(invaded_image, dt=None):
+    r'''
+    This function enhances an image of invading phase obtained using the
+    ``porosimetry`` function by find incidents where menisci touch, and
+    and forcing them to coalesce.
+
+    Parameters
+    ----------
+    invaded_image : ND-image
+        The image produced by the ``porosimetry`` function
+
+    dt : ND-image (optional)
+        The distance transform of the pore phase.  If this is not provide, it
+        will be calcualted, so providing one can save time.
+
+    returns
+    -------
+    The returned image is a modified version of the provided ``invaded_image``
+    where the touching mensici are considered to collapse and fill all nearby
+    space.
+
+    '''
+    mio = invaded_image  # Rename image to something shorter
+    # Obtain an image of just the pore space
+    im = mio > 0
+    # Create empty image to place results into
+    im_result = sp.zeros_like(mio)
+
+    # Get correct structuring element for image dimensions
+    if im.ndim == 2:
+        from skimage.morphology import square as cube
+    else:
+        from skimage.morphology import cube
+
+    # Deal with missing input arguments if necessary
+    if dt is None:
+        dt = spim.distance_transform_edt(im)
+
+    # Create skeleton of pore space
+    # Pad edges of image to ensure skeleton is complete (touching edges)
+    temp = sp.pad(im, pad_width=20, mode='constant', constant_values=1)
+    # Get skeleton (3d version works in 2d also)
+    skel = skeletonize_3d(temp).astype(bool)
+    # Extract original section from padded skeleton
+    skel = extract_subsection(skel, im.shape)
+    # Perform simple convolution, so branch points can be found (due to their
+    # higher local connectivity they have higher values in the convolution)
+    temp = spim.convolve(skel.astype(float), weights=cube(3))
+    # Remove branch points
+    skel = skel*(~(temp >= 4))
+
+    # Find all distance values in invaded image, and scan through backwards
+    Rs = sp.unique(mio)[::-1]
+    for R in tqdm(Rs):
+        # Find regions of invading fluid blobs, dictated by inlet parameters
+        # used when finding original invaded_image
+        blobs = (mio >= R)
+        # Find core of invading fluid blobs
+        core = (dt >= R)*blobs
+        # Remove isolated core regions that are inadvertantly overlapping
+        # with blobs, but not actually part of the invading fluid
+        core = fill_blind_pores(core)
+        # Find all sections of the skeleton that overlap with the invading
+        # fluid, but are not part of the core
+        arcs = skel*blobs*~core
+        # Label all arcs, and find slice indices for each arc
+        arc_labels = spim.label(arcs, structure=cube(3))[0]
+        slices = spim.find_objects(arc_labels)
+        # Scan over each arc and analyze
+        label_num = 0
+        for s in slices:
+            label_num += 1
+            # Find largest potential blob and expand area of analysis
+            r = int(sp.ceil((dt[s]*(arc_labels[s] == label_num)).max()))
+            s2 = extend_slice(s, im.shape, r)
+            arc = arc_labels[s2] == label_num
+            # Dliate both the core and the arc to ensure they overlap correctly
+            core2 = spim.binary_dilation(core[s2], structure=cube(3))
+            arc2 = spim.binary_dilation(arc, structure=cube(3))
+            # Label and count the number of overlaps between arc and core
+            L, N = spim.label(core2*arc2, structure=cube(3))
+            # If 2 overlaps, then arc spans a throat and coalescence occurs
+            if N == 2:
+                # Create a new blob that fills the corners of touching menisci
+                dt2 = spim.distance_transform_edt(~arc2)
+                blob = R*(dt2 < r)
+                # Ensure a larger blob has not already been added nearby
+                inds = im_result[s2] == 0
+                im_result[s2][inds] += blob[inds]
+    # Update the invaded_image with the new blobs
+    mio_new = sp.maximum.reduce([mio, im_result])*im
+    return mio_new
