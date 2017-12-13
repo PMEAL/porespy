@@ -9,6 +9,7 @@ Random Walker Code
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
+import matplotlib.colors as pltcolors
 import porespy as ps
 from porespy.tools.__funcs__ import do_profile
 import os
@@ -512,11 +513,17 @@ class RandomWalk():
 #            fs = (np.asarray(np.shape(big_im))/200).tolist()
             fig, ax = plt.subplots(figsize=[6, 6])
             ax.set(aspect=1)
-            masked_array = np.ma.masked_where(big_im == self.solid_value-2,
-                                              big_im)
+            solid = big_im == self.solid_value-2
+            solid = solid.astype(float)
+            solid[np.where(solid == 0)] = np.nan
+            porous = big_im == self.solid_value-1
+            porous = porous.astype(float)
+            porous[np.where(porous == 0)] = np.nan
             cmap = matplotlib.cm.viridis
-            cmap.set_bad(color='black')
-            plt.imshow(masked_array, cmap=cmap)
+#            cmap.set_bad(color='black')
+            plt.imshow(big_im, cmap=cmap)
+            plt.imshow(solid, cmap='binary', vmin=0, vmax=1)
+            plt.imshow(porous, cmap='gist_gray', vmin=0, vmax=1)
             if check_solid:
                 print('Solid pixel match?', sb == sa, sb, sa)
 
@@ -617,9 +624,10 @@ if __name__ == "__main__":
         rw._save_fig(fname+'msd.png')
         if rw.dim == 2:
             # Plot the longest walk
-            rw.plot_walk_2d(w_id=np.argmax(rw.sq_disp[-1, :]), data='t')
-            big_shape = np.shape(rw.im_big)
-            dpi = np.int(np.ceil(big_shape[0]))
+            rw.plot_walk_2d(w_id=np.argmax(rw.sq_disp[-1, :]), data='w')
+#            big_shape = np.shape(rw.im_big)
+#            dpi = np.int(np.ceil(big_shape[0]))
+            dpi = 600
             rw._save_fig(fname+'longest.png', dpi=dpi)
             # Plot all the walks
             rw.plot_walk_2d(check_solid=True)
