@@ -313,7 +313,7 @@ class RandomWalk():
         self.msd = np.mean(self.sq_disp, axis=1)
         self.axial_msd = np.mean(self.axial_sq_disp, axis=1)
 
-    def _add_linear_plot(self, x, y, descriptor=None):
+    def _add_linear_plot(self, x, y, descriptor=None, color='k'):
         r'''
         Helper method to add a line to the msd plot
         '''
@@ -324,7 +324,7 @@ class RandomWalk():
         label = ('Tau: ' + str(np.around(tau, 3)) +
                  ', R^2: ' + str(np.around(rsq, 3)))
         print(label)
-        plt.plot(a[0]*x, '--', label=label)
+        plt.plot(a[0]*x, color+'--', label=label)
         self.data[descriptor + '_tau'] = tau
         self.data[descriptor + '_rsq'] = rsq
 
@@ -335,18 +335,19 @@ class RandomWalk():
         '''
         self.calc_msd()
         self.data = {}
-        plt.figure()
-        plt.plot(self.msd, '-', label='msd')
+        fig, ax = plt.subplots(figsize=[6, 6])
+        ax.set(aspect=1, xlim=(0, self.nt), ylim=(0, self.nt))
+        plt.plot(self.msd, 'k-', label='msd')
         x = np.arange(0, self.nt, 1)[:, np.newaxis]
         print('#'*30)
-        print('Mean Square Displacement Data:')
-        self._add_linear_plot(x, self.msd, 'mean')
-
+        print('Square Displacement:')
+        self._add_linear_plot(x, self.msd, 'Mean', color='k')
+        colors = ['r', 'g', 'b']
         for ax in range(self.dim):
             print('Axis ' + str(ax) + ' Square Displacement Data:')
             data = self.axial_msd[:, ax]*self.dim
-            plt.plot(data, '-', label='axis '+str(ax))
-            self._add_linear_plot(x, data, 'axis_'+str(ax))
+            plt.plot(data, colors[ax]+'-', label='asd '+str(ax))
+            self._add_linear_plot(x, data, 'axis_'+str(ax), colors[ax])
         plt.legend()
 
     def _check_big_bounds(self):
@@ -475,6 +476,14 @@ class RandomWalk():
 
         return big_im
 
+    def _save_fig(self, figname='test.png', dpi=600):
+        r'''
+        Wrapper for saving figure in journal format
+        '''
+        plt.figaspect(1)
+        plt.savefig(filename=figname, dpi=dpi, facecolor='w', edgecolor='w',
+                    format='png', bbox_inches='tight', pad_inches=0.0)
+
     def plot_walk_2d(self, w_id=None, data='t', check_solid=False):
         r'''
         Plot the walker paths in a big image that shows real and reflected
@@ -500,10 +509,12 @@ class RandomWalk():
                                        data=data,
                                        coords=coords).astype(int)
             sa = np.sum(big_im == self.solid_value - 2)
-            plt.figure()
+#            fs = (np.asarray(np.shape(big_im))/200).tolist()
+            fig, ax = plt.subplots(figsize=[6, 6])
+            ax.set(aspect=1)
             masked_array = np.ma.masked_where(big_im == self.solid_value-2,
                                               big_im)
-            cmap = matplotlib.cm.brg
+            cmap = matplotlib.cm.viridis
             cmap.set_bad(color='black')
             plt.imshow(masked_array, cmap=cmap)
             if check_solid:
@@ -553,38 +564,68 @@ class RandomWalk():
                     w.writerow(self.data)
 
 if __name__ == "__main__":
-    if 1 == 2:
-        # Load tau test image
-        im = 1 - ps.data.tau()
-    else:
-        # Generate a Sierpinski carpet by tiling an image and blanking the
-        # Middle tile recursively
-        def tileandblank(image, n):
-            if n > 0:
-                n -= 1
-                shape = np.asarray(np.shape(image))
-                image = np.tile(image, (3, 3))
-                image[shape[0]:2*shape[0], shape[1]:2*shape[1]] = 0
-                image = tileandblank(image, n)
-            return image
+    plt.close('all')
+    for image_run in range(4):
+        if image_run == 0:
+            # Open space
+            im = np.ones([1, 1], dtype=int)
+            fname = 'open_'
+            num_t = 10000
+            num_w = 10000
+        elif image_run == 1:
+            # Load tau test image
+            im = 1 - ps.data.tau()
+            fname = 'tau_'
+            # Number of time steps and walkers
+            num_t = 200000
+            num_w = 1000
+        elif image_run == 2:
+            # Generate a Sierpinski carpet by tiling an image and blanking the
+            # Middle tile recursively
+            def tileandblank(image, n):
+                if n > 0:
+                    n -= 1
+                    shape = np.asarray(np.shape(image))
+                    image = np.tile(image, (3, 3))
+                    image[shape[0]:2*shape[0], shape[1]:2*shape[1]] = 0
+                    image = tileandblank(image, n)
+                return image
 
-        im = np.ones([1, 1], dtype=int)
-        im = tileandblank(im, 5)
+            im = np.ones([1, 1], dtype=int)
+            im = tileandblank(im, 5)
+            fname = 'sierpinski_'
+            # Number of time steps and walkers
+            num_t = 5000
+            num_w = 100000
+        else:
+            # Do some blobs
+            im = ps.generators.blobs(shape=[200, 200, 200], porosity=0.75,
+                                     blobiness=[1, 2, 3]).astype(int)
+            fname = 'blobs_'
+            # Number of time steps and walkers
+            num_t = 1000
+            num_w = 10000
 
-    # Number of time steps and walkers
-    num_t = 10000
-    num_w = 12000
-    # Track time of simulation
-    st = time.time()
-    rw = ps.simulations.RandomWalk(im, seed=False)
-    rw.run(num_t, num_w, same_start=False)
-    rw.calc_msd()
-    # Plot mean square displacement
-    rw.plot_msd()
-    # Plot the longest walk
-    rw.plot_walk_2d(w_id=np.argmax(rw.sq_disp[-1, :]), data='t')
-#    # Plot all the walks
-    rw.plot_walk_2d(check_solid=True)
-#    print('sim time', time.time()-st)
-#    rw.export_walk(image=rw.im)
+        # Track time of simulation
+        st = time.time()
+        rw = ps.simulations.RandomWalk(im, seed=False)
+        rw.run(num_t, num_w, same_start=False)
+        print('run time', time.time()-st)
+        rw.calc_msd()
+        # Plot mean square displacement
+        rw.plot_msd()
+        rw._save_fig(fname+'msd.png')
+        if rw.dim == 2:
+            # Plot the longest walk
+            rw.plot_walk_2d(w_id=np.argmax(rw.sq_disp[-1, :]), data='t')
+            big_shape = np.shape(rw.im_big)
+            dpi = np.int(np.ceil(big_shape[0]))
+            rw._save_fig(fname+'longest.png', dpi=dpi)
+            # Plot all the walks
+            rw.plot_walk_2d(check_solid=True)
+            rw._save_fig(fname+'all.png', dpi=dpi)
+        else:
+            pass
+            # export to paraview
+#            rw.export_walk(image=rw.im, stride=1)
 #    rw.run_analytics(lw=2, uw=3, lt=2, ut=6)
