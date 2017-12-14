@@ -2,14 +2,19 @@ from porespy.metrics import porosity
 import matplotlib.pyplot as plt
 import scipy.ndimage as spim
 from porespy.visualization import sem
+from porespy.filters import porosimetry
 
 
-class Bundle(dict):
+class Bundle():
 
-    def __init__(self, im, dt=None):
-        self.__dict__ = self
-        self['im'] = im
-        self['dt'] = dt
+    def __init__(self, im):
+        # self.__dict__ = self
+        # self['im'] = im
+        self._im = im
+
+    @property
+    def im(self):
+        return self._im
 
     @property
     def porosity(self):
@@ -30,15 +35,31 @@ class Bundle(dict):
         return self.im.ndim
 
     def _get_dt(self):
-        if self['dt'] is None:
+        if not hasattr(self, '_dt'):
             print('Calculating distance transform for the first time...')
-            dt = spim.distance_transform_edt(self['im'])
-            self.update({'dt': dt})
+            dt = spim.distance_transform_edt(self.im)
+            self._dt = dt
         else:
-            dt = self['dt']
+            dt = self._dt
         return dt
 
-    dt = property(fget=_get_dt)
+    def _set_dt(self, dt):
+        if dt.shape != self.shape:
+            print('The recieved distant transform has an incorrect shape')
+        else:
+            self._dt = dt
+
+    dt = property(fget=_get_dt, fset=_set_dt)
+
+    def show_psd(self, bins=25):
+        plt.hist(self.lt[self.im], bins=bins, normed=True)
+
+    @property
+    def lt(self):
+        if not hasattr(self, '_lt'):
+            print('Calculating local thickness for the first time...')
+            self._lt = porosimetry(self.im, access_limited=False)
+        return self._lt
 
     @property
     def Lx(self):
@@ -53,7 +74,7 @@ class Bundle(dict):
         if self.ndim == 3:
             return self.im.shape[2]
 
-    def show(self):
+    def show_slice(self):
         if self.ndim == 2:
             im = self.im
         else:
@@ -62,7 +83,7 @@ class Bundle(dict):
         plt.imshow(im)
         plt.axis('off')
 
-    def show3D(self):
+    def show_3D(self):
         rot = spim.rotate(input=self.im, angle=35, axes=[2, 0], order=0,
                           mode='constant', cval=1)
         rot = spim.rotate(input=rot, angle=25, axes=[1, 0], order=0,
