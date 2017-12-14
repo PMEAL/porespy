@@ -572,68 +572,65 @@ class RandomWalk():
 
 if __name__ == "__main__":
     plt.close('all')
-    for image_run in range(4):
-        if image_run == 0:
-            # Open space
-            im = np.ones([1, 1], dtype=int)
-            fname = 'open_'
-            num_t = 10000
-            num_w = 10000
-        elif image_run == 1:
-            # Load tau test image
-            im = 1 - ps.data.tau()
-            fname = 'tau_'
-            # Number of time steps and walkers
-            num_t = 200000
-            num_w = 1000
-        elif image_run == 2:
-            # Generate a Sierpinski carpet by tiling an image and blanking the
-            # Middle tile recursively
-            def tileandblank(image, n):
-                if n > 0:
-                    n -= 1
-                    shape = np.asarray(np.shape(image))
-                    image = np.tile(image, (3, 3))
-                    image[shape[0]:2*shape[0], shape[1]:2*shape[1]] = 0
-                    image = tileandblank(image, n)
-                return image
+    image_run = 0
+    if image_run == 0:
+        # Open space
+        im = np.ones([3, 3], dtype=int)
+        fname = 'open_'
+        num_t = 10000
+        num_w = 10000
+    elif image_run == 1:
+        # Load tau test image
+        im = 1 - ps.data.tau()
+        fname = 'tau_'
+        # Number of time steps and walkers
+        num_t = 200000
+        num_w = 1000
+    elif image_run == 2:
+        # Generate a Sierpinski carpet by tiling an image and blanking the
+        # Middle tile recursively
+        def tileandblank(image, n):
+            if n > 0:
+                n -= 1
+                shape = np.asarray(np.shape(image))
+                image = np.tile(image, (3, 3))
+                image[shape[0]:2*shape[0], shape[1]:2*shape[1]] = 0
+                image = tileandblank(image, n)
+            return image
 
-            im = np.ones([1, 1], dtype=int)
-            im = tileandblank(im, 5)
-            fname = 'sierpinski_'
-            # Number of time steps and walkers
-            num_t = 5000
-            num_w = 100000
-        else:
-            # Do some blobs
-            im = ps.generators.blobs(shape=[200, 200, 200], porosity=0.75,
-                                     blobiness=[1, 2, 3]).astype(int)
-            fname = 'blobs_'
-            # Number of time steps and walkers
-            num_t = 1000
-            num_w = 10000
+        im = np.ones([1, 1], dtype=int)
+        im = tileandblank(im, 5)
+        fname = 'sierpinski_'
+        # Number of time steps and walkers
+        num_t = 5000
+        num_w = 100000
+    else:
+        # Do some blobs
+        im = ps.generators.blobs(shape=[300, 300, 300], porosity=0.5,
+                                 blobiness=[1, 2, 5]).astype(int)
+        fname = 'blobs_'
+        # Number of time steps and walkers
+        num_t = 10000
+        num_w = 100000
 
-        # Track time of simulation
-        st = time.time()
-        rw = ps.simulations.RandomWalk(im, seed=False)
-        rw.run(num_t, num_w, same_start=False)
-        print('run time', time.time()-st)
-        rw.calc_msd()
-        # Plot mean square displacement
-        rw.plot_msd()
-        rw._save_fig(fname+'msd.png')
-        if rw.dim == 2:
-            # Plot the longest walk
-            rw.plot_walk_2d(w_id=np.argmax(rw.sq_disp[-1, :]), data='w')
-#            big_shape = np.shape(rw.im_big)
-#            dpi = np.int(np.ceil(big_shape[0]))
-            dpi = 600
-            rw._save_fig(fname+'longest.png', dpi=dpi)
-            # Plot all the walks
-            rw.plot_walk_2d(check_solid=True)
-            rw._save_fig(fname+'all.png', dpi=dpi)
-        else:
-            pass
-            # export to paraview
-#            rw.export_walk(image=rw.im, stride=1)
-#    rw.run_analytics(lw=2, uw=3, lt=2, ut=6)
+    # Track time of simulation
+    st = time.time()
+    rw = ps.simulations.RandomWalk(im, seed=False)
+    rw.run(num_t, num_w, same_start=False)
+    print('run time', time.time()-st)
+    rw.calc_msd()
+    # Plot mean square displacement
+    rw.plot_msd()
+    rw._save_fig(fname+'msd.png')
+    if rw.dim == 2:
+        # Plot the longest walk
+        rw.plot_walk_2d(w_id=np.argmax(rw.sq_disp[-1, :]), data='w')
+        dpi = 600
+        rw._save_fig(fname+'longest.png', dpi=dpi)
+        # Plot all the walks
+        rw.plot_walk_2d(check_solid=True)
+        rw._save_fig(fname+'all.png', dpi=dpi)
+    else:
+        # export to paraview
+        rw.export_walk(image=rw.im, stride=1)
+#rw.run_analytics(lw=2, uw=3, lt=2, ut=6)
