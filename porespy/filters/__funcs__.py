@@ -405,7 +405,7 @@ def coalesce_menisci(invaded_image, dt=None):
         The image produced by the ``porosimetry`` function
 
     dt : ND-image (optional)
-        The distance transform of the pore phase.  If this is not provide, it
+        The distance transform of the pore phase.  If this is not provided it
         will be calcualted, so providing one can save time.
 
     returns
