@@ -30,15 +30,15 @@ class SimulationTest():
         assert sp.sum(counts) == int(sp.sum(self.mip.result > 0))
 
     def test_random_walk(self):
-        self.rw.run(nt=1000, nw=100)
+        self.rw.run(nt=1000, nw=100, stride=1)
         assert sp.shape(self.rw.real_coords) == (1000, 100, 3)
 
     def test_plot_msd(self):
         self.rw.plot_msd()
 
     def test_random_walk_2d(self):
-        self.rw_2d.run(nt=1000, nw=100, same_start=True)
-        assert sp.shape(self.rw_2d.real_coords) == (1000, 100, 2)
+        self.rw_2d.run(nt=1000, nw=100, same_start=True, stride=100)
+        assert sp.shape(self.rw_2d.real_coords) == (10, 100, 2)
 
     def test_plot_walk_2d(self):
         self.rw_2d.plot_walk_2d(data='w')
@@ -47,7 +47,7 @@ class SimulationTest():
 
     def test_export(self):
         cwd = os.getcwd()
-        self.rw_2d.export_walk(sub='temp', image=self.rw_2d.im, stride=100)
+        self.rw_2d.export_walk(sub='temp', image=self.rw_2d.im, sample=10)
         subdir = os.path.join(cwd, 'temp')
         assert os.path.exists(subdir)
         file_list = os.listdir(subdir)

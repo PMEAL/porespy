@@ -211,6 +211,7 @@ class RandomWalk():
         Run the walk in self contained way to enable parallel processing for
         batches of walkers
         '''
+        print(self.stride)
         # Number of walkers in this batch
         nw = len(walkers)
         walkers = np.asarray(walkers)
@@ -218,7 +219,8 @@ class RandomWalk():
         # Array to keep track of whether the walker is travelling in a real
         # or reflected image in each axis
         real = np.ones_like(walkers)
-        real_coords = np.ndarray([self.nt, nw, self.dim], dtype=int)
+#        real_coords = np.ndarray([self.nt, nw, self.dim], dtype=int)
+        real_coords = []
         for t in range(self.nt):
             # Random velocity update
             # Randomly select an axis to move along for each walker
@@ -242,14 +244,15 @@ class RandomWalk():
                 mr[wall_hit] = 0
             # Reflected velocity in real direction
             wr += mr*real
-            real_coords[t] = wr.copy()
             walkers += m
+            if t % self.stride == 0:
+                real_coords.append(wr.copy())
         return real_coords
 
     # Uncomment the line below to profile the run method
     # Only works for single process
 #    @do_profile(follow=[_run_walk, check_wall, check_edge])
-    def run(self, nt=1000, nw=1, same_start=False, num_proc=None):
+    def run(self, nt=1000, nw=1, same_start=False, stride=1, num_proc=None):
         r'''
         Main run loop over nt timesteps and nw walkers.
         same_start starts all the walkers at the same spot if True and at
@@ -263,18 +266,22 @@ class RandomWalk():
             he vector of the next move to be made by the walker
         same_start: bool
             determines whether to start all the walkers at the same coordinate
+        stride: int
+            save coordinate data every stride number of timesteps
         num_proc: int (default None - uses half available)
             number of concurrent processes to start running
         '''
         self.nt = int(nt)
         self.nw = int(nw)
+        self.stride = stride
+        record_t = int(self.nt/stride)
         # Get starts
         walkers = self._get_starts(same_start)
         if self.seed:
             # Generate a seed for each timestep
             np.random.seed(1)
             self.seeds = np.random.randint(0, self.nw, self.nt)
-        real_coords = np.ndarray([self.nt, self.nw, self.dim], dtype=int)
+        real_coords = np.ndarray([record_t, self.nw, self.dim], dtype=int)
         # Default to run in parallel with half the number of available procs
         if num_proc is None:
             num_proc = int(os.cpu_count()/2)
@@ -325,7 +332,7 @@ class RandomWalk():
         label = ('Tau: ' + str(np.around(tau, 3)) +
                  ', R^2: ' + str(np.around(rsq, 3)))
         print(label)
-        plt.plot(a[0]*x, color+'--', label=label)
+        plt.plot(x, a[0]*x, color+'--', label=label)
         self.data[descriptor + '_tau'] = tau
         self.data[descriptor + '_rsq'] = rsq
 
@@ -338,8 +345,8 @@ class RandomWalk():
         self.data = {}
         fig, ax = plt.subplots(figsize=[6, 6])
         ax.set(aspect=1, xlim=(0, self.nt), ylim=(0, self.nt))
-        plt.plot(self.msd, 'k-', label='msd')
-        x = np.arange(0, self.nt, 1)[:, np.newaxis]
+        x = np.arange(0, self.nt, self.stride)[:, np.newaxis]
+        plt.plot(x, self.msd, 'k-', label='msd')
         print('#'*30)
         print('Square Displacement:')
         self._add_linear_plot(x, self.msd, 'Mean', color='k')
@@ -347,7 +354,7 @@ class RandomWalk():
         for ax in range(self.dim):
             print('Axis ' + str(ax) + ' Square Displacement Data:')
             data = self.axial_msd[:, ax]*self.dim
-            plt.plot(data, colors[ax]+'-', label='asd '+str(ax))
+            plt.plot(x, data, colors[ax]+'-', label='asd '+str(ax))
             self._add_linear_plot(x, data, 'axis_'+str(ax), colors[ax])
         plt.legend()
 
@@ -363,10 +370,9 @@ class RandomWalk():
         return num_copies
 
     def export_walk(self, image=None, path=None, sub='data', prefix='rw_',
-                    stride=10):
+                    sample=1):
         r'''
-        Export big image to vti and walker coords to vtu every stride number of
-        steps
+        Export big image to vti and walker coords to vtu
 
         Parameters
         ----------
@@ -376,8 +382,8 @@ class RandomWalk():
             the filepath to save the data, defaults to current working dir
         prefix: string (default = 'rw_)
             a string prefix for all the data
-        stride: int (default = 10)
-            used to export the coordinates every number of strides
+        sample: int (default = 1)
+            used to down-sample the number of walkers to export by this factor
         '''
         if path is None:
             path = os.getcwd()
@@ -395,22 +401,25 @@ class RandomWalk():
                                       cellData={'image_data': image})
         # number of zeros to fill the file index
         zf = np.int(np.ceil(np.log10(self.nt*10)))
-        time_data = np.ascontiguousarray(np.zeros(self.nw, dtype=int))
+        w_id = np.arange(0, self.nw, sample)
+        nw = len(w_id)
+        time_data = np.ascontiguousarray(np.zeros(nw, dtype=int))
         if self.dim == 2:
-            z_coords = np.ascontiguousarray(np.ones(self.nw, dtype=int))
+            z_coords = np.ascontiguousarray(np.ones(nw, dtype=int))
         coords = self.real_coords
-        for t in np.arange(0, self.nt, stride, dtype=int):
-            x_coords = np.ascontiguousarray(coords[t, :, 0])
-            y_coords = np.ascontiguousarray(coords[t, :, 1])
+        for t in range(np.shape(coords)[0]):
+            st = self.stride*t
+            time_data.fill(st)
+            x_coords = np.ascontiguousarray(coords[t, w_id, 0])
+            y_coords = np.ascontiguousarray(coords[t, w_id, 1])
             if self.dim == 3:
-                z_coords = np.ascontiguousarray(coords[t, :, 2])
-            wc_fp = os.path.join(path, prefix+'coords_'+str(t).zfill(zf))
+                z_coords = np.ascontiguousarray(coords[t, w_id, 2])
+            wc_fp = os.path.join(path, prefix+'coords_'+str(st).zfill(zf))
             ps.export.evtk.pointsToVTK(path=wc_fp,
                                        x=x_coords,
                                        y=y_coords,
                                        z=z_coords,
                                        data={'time': time_data})
-            time_data += 1
 
     def _build_big_image(self, num_copies=0):
         r'''
@@ -573,12 +582,13 @@ class RandomWalk():
 if __name__ == "__main__":
     plt.close('all')
     image_run = 0
-    if image_run == 0:
+    if image_run == 3:
         # Open space
         im = np.ones([3, 3], dtype=int)
         fname = 'open_'
         num_t = 10000
         num_w = 10000
+        stride = 10
     elif image_run == 1:
         # Load tau test image
         im = 1 - ps.data.tau()
@@ -586,6 +596,7 @@ if __name__ == "__main__":
         # Number of time steps and walkers
         num_t = 200000
         num_w = 1000
+        stride = 200
     elif image_run == 2:
         # Generate a Sierpinski carpet by tiling an image and blanking the
         # Middle tile recursively
@@ -604,6 +615,7 @@ if __name__ == "__main__":
         # Number of time steps and walkers
         num_t = 5000
         num_w = 100000
+        stride = 5
     else:
         # Do some blobs
         im = ps.generators.blobs(shape=[300, 300, 300], porosity=0.5,
@@ -612,11 +624,12 @@ if __name__ == "__main__":
         # Number of time steps and walkers
         num_t = 10000
         num_w = 100000
+        stride = 100
 
     # Track time of simulation
     st = time.time()
     rw = ps.simulations.RandomWalk(im, seed=False)
-    rw.run(num_t, num_w, same_start=False)
+    rw.run(num_t, num_w, same_start=False, stride=stride)
     print('run time', time.time()-st)
     rw.calc_msd()
     # Plot mean square displacement
@@ -632,5 +645,5 @@ if __name__ == "__main__":
         rw._save_fig(fname+'all.png', dpi=dpi)
     else:
         # export to paraview
-        rw.export_walk(image=rw.im, stride=1)
+        rw.export_walk(image=rw.im, sample=100)
 #rw.run_analytics(lw=2, uw=3, lt=2, ut=6)
