@@ -93,7 +93,7 @@ def extract_pore_network(im, pore_regions=None, solid_regions=None,
         s = extend_slice(slices[pore], im.shape)
         sub_im = im[s]
         sub_dt = dt[s]
-        if pore < solid_num:
+        if (solid_regions is not None) and (pore < solid_num):
             # This calculates chunk of solid volume connected with pore
             ext_p_on_s_slice = extend_slice(p_on_s_slice[pore], p_im.shape)
             # Sub image of solid extended slice
