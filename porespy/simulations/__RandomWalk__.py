@@ -18,6 +18,7 @@ import csv
 from concurrent.futures import ProcessPoolExecutor
 cmap = matplotlib.cm.viridis
 
+
 class RandomWalk():
     r'''
     The RandomWalk class implements a simple vectorized version of a random
@@ -585,7 +586,7 @@ class RandomWalk():
         plt.hist2d(a_coords, b_coords, bins=bins, cmin=1, cmap=cmap)
         plt.colorbar()
 
-    def run_analytics(self, ws, ts):
+    def run_analytics(self, ws, ts, fname='analytics.csv'):
         r'''
         Run run a number of times saving info
         Warning - this method may take some time to complete!
@@ -596,8 +597,10 @@ class RandomWalk():
             list of number of walkers to run
         ts: int (default = 4)
             list of number of walkers to run
+        fname: string
+            file name - must end '.csv'
         '''
-        with open('analytics.csv', 'w', newline='\n') as f:
+        with open(fname, 'w', newline='\n') as f:
             self.data['sim_nw'] = 0
             self.data['sim_nt'] = 0
             self.data['sim_time'] = 0
@@ -619,87 +622,3 @@ class RandomWalk():
                     self.data['sim_time'] = sim_time
                     w = csv.DictWriter(f, self.data)
                     w.writerow(self.data)
-
-###############################################################################
-if __name__ == "__main__":
-    plt.close('all')
-    image_run = 2
-    save_figures = True
-    if image_run == 0:
-        # Open space
-        im = np.ones([3, 3], dtype=int)
-        fname = 'open_'
-        num_t = 10000
-        num_w = 10000
-        stride = 10
-    elif image_run == 1:
-        # Load tau test image
-        im = 1 - ps.data.tau()
-        fname = 'tau_'
-        # Number of time steps and walkers
-        num_t = 20000
-        num_w = 1000
-        stride = 20
-    elif image_run == 2:
-        # Generate a Sierpinski carpet by tiling an image and blanking the
-        # Middle tile recursively
-        def tileandblank(image, n):
-            if n > 0:
-                n -= 1
-                shape = np.asarray(np.shape(image))
-                image = np.tile(image, (3, 3))
-                image[shape[0]:2*shape[0], shape[1]:2*shape[1]] = 0
-                image = tileandblank(image, n)
-            return image
-
-        im = np.ones([1, 1], dtype=int)
-        im = tileandblank(im, 4)
-        fname = 'sierpinski_'
-        # Number of time steps and walkers
-        num_t = 2500
-        num_w = 100000
-        stride = 5
-    else:
-        # Make an anisotropic image of 3D blobs
-        im = ps.generators.blobs(shape=[300, 300, 300], porosity=0.5,
-                                 blobiness=[1, 2, 5]).astype(int)
-        fname = 'blobs_'
-        # Number of time steps and walkers
-        num_t = 1000
-        num_w = 1000
-        stride = 100
-    # Override all strides
-    stride = 1
-    # Track time of simulation
-    st = time.time()
-    rw = ps.simulations.RandomWalk(im, seed=False)
-    rw.run(num_t, num_w, same_start=False, stride=stride)
-    print('run time', time.time()-st)
-    rw.calc_msd()
-    # Plot mean square displacement
-    rw.plot_msd()
-    dpi = 600
-    if save_figures:
-        rw._save_fig(fname+'msd.png')
-    if rw.dim == 2:
-        # Plot the longest walk
-        rw.plot_walk_2d(w_id=np.argmax(rw.sq_disp[-1, :]), data='t')
-
-        if save_figures:
-            rw._save_fig(fname+'longest.png', dpi=dpi)
-        # Plot all the walks
-        rw.plot_walk_2d(check_solid=True, data='t')
-        if save_figures:
-            rw._save_fig(fname+'all.png', dpi=dpi)
-    else:
-        if save_figures:
-            # export to paraview
-            #pass
-            rw.export_walk(image=rw.im, sample=1)
-    nstrides = np.shape(rw.real_coords)[0]-1
-    steps = [np.int(np.floor(nstrides*i/4)) for i in np.arange(0, 5, 1)]
-    for step in steps:
-        rw.axial_density_plot(time=step, bins=50)
-        plt.title('Timestep: '+str(step*stride))
-        if save_figures:
-            rw._save_fig(fname+'density_'+str(step*stride)+'.png', dpi=dpi)

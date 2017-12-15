@@ -72,6 +72,15 @@ class SimulationTest():
         self.rw.axial_density_plot(time=0, axis=0)
         pass
 
+    def test_rw_analytics(self):
+        w_list = [10, 100]
+        t_list = [10, 100]
+        self.rw_2d.run_analytics(w_list, t_list, fname='test.csv')
+        cwd = os.getcwd()
+        fpath = os.path.join(cwd, 'test.csv')
+        assert os.path.exists(fpath)
+        os.remove(fpath)
+
 if __name__ == '__main__':
     t = SimulationTest()
     t.setup_class()
