@@ -35,6 +35,7 @@ class SimulationTest():
 
     def test_plot_msd(self):
         self.rw.plot_msd()
+        pass
 
     def test_random_walk_2d(self):
         self.rw_2d.run(nt=1000, nw=100, same_start=True, stride=100)
@@ -67,6 +68,10 @@ class SimulationTest():
         self.rw_2d.run(nt=1000, nw=100, same_start=True)
         assert sp.allclose(self.rw_2d.real_coords, temp_coords)
 
+    def test_axial_density_plot(self):
+        self.rw.axial_density_plot(time=0, axis=0)
+        pass
+
 if __name__ == '__main__':
     t = SimulationTest()
     t.setup_class()
@@ -79,3 +84,4 @@ if __name__ == '__main__':
     t.test_plot_walk_2d()
     t.test_export()
     t.test_seed()
+    t.test_axial_density_plot()

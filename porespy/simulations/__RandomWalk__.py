@@ -9,7 +9,6 @@ Random Walker Code
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
-import matplotlib.colors as pltcolors
 import porespy as ps
 from porespy.tools.__funcs__ import do_profile
 from tqdm import tqdm
@@ -17,8 +16,6 @@ import os
 import time
 import csv
 from concurrent.futures import ProcessPoolExecutor
-import scipy.ndimage as ndi
-from scipy.stats import gaussian_kde
 
 
 class RandomWalk():
@@ -52,7 +49,8 @@ class RandomWalk():
 
         seed: bool
             Determines whether to seed the random number generators so that
-            Simulation is repeatable
+            Simulation is repeatable. Warning - This results in only semi-
+            random walks so should only be used for debugging
 
         Examples
         --------
@@ -550,25 +548,23 @@ class RandomWalk():
             if check_solid:
                 print('Solid pixel match?', sb == sa, sb, sa)
 
-    def axial_density_plot(self, axis=None, time=None):
+    def axial_density_plot(self, time=None, axis=None, nbin=50):
         r'''
         Plot the walker density summed along an axis at a given time
 
         Parameters
         ----------
-        axis: int
-            The axis over which to sum, produces a slice in the plane normal to
-            this axis
         time: int
             the index in stride time. If the run method was set with a stride
             of 10 then putting time=2 will visualize the 20th timestep as this
             is the second stored time-step (after 0)
+        axis: int - Used only for 3D walks
+            The axis over which to sum, produces a slice in the plane normal to
+            this axis.
+
         '''
-#        offset = self._check_big_bounds()
-#        coords = self.real_coords + self.shape*offset
         t_coords = self.real_coords[time, :, :]
-#        big_im = self.im_big.copy()
-        if self.dim == 3:
+        if self.dim == 3 and axis is not None:
             axes = np.arange(0, self.dim, 1)
             [a, b] = axes[axes != axis]
         else:
@@ -576,62 +572,8 @@ class RandomWalk():
         a_coords = t_coords[:, a]
         b_coords = t_coords[:, b]
         plt.figure()
-        plt.hist2d(a_coords, b_coords, (50, 50))
+        plt.hist2d(a_coords, b_coords, (nbin, nbin))
         plt.colorbar()
-
-    def axial_density_plot3(self, axis=None, time=None):
-        r'''
-        Plot the walker density summed along an axis at a given time
-
-        Parameters
-        ----------
-        axis: int
-            The axis over which to sum, produces a slice in the plane normal to
-            this axis
-        time: int
-            the index in stride time. If the run method was set with a stride
-            of 10 then putting time=2 will visualize the 20th timestep as this
-            is the second stored time-step (after 0)
-        '''
-        offset = self._check_big_bounds()
-        coords = self.real_coords + self.shape*offset
-        t_coords = coords[time, :, :]
-        big_im = self.im_big.copy()
-        if self.dim == 3:
-            axes = np.arange(0, self.dim, 1)
-            [a, b] = axes[axes != axis]
-        else:
-            [a, b] = [0, 1]
-        for w in tqdm(range(self.nw), desc='Creating Density Plot'):
-            big_im[t_coords[w, a], t_coords[w, b]] += 1
-        plt.figure()
-        plt.imshow(big_im)
-
-    def axial_density_plot2(self, axis=None, time=None):
-        r'''
-        Plot the walker density summed along an axis at a given time
-
-        Parameters
-        ----------
-        axis: int
-            The axis over which to sum, produces a slice in the plane normal to
-            this axis
-        time: int
-            the index in stride time. If the run method was set with a stride
-            of 10 then putting time=2 will visualize the 20th timestep as this
-            is the second stored time-step (after 0)
-        '''
-        offset = self._check_big_bounds()
-        coords = self.real_coords + self.shape*offset
-        bins = np.floor(np.asarray(np.shape(self.im_big))).astype(int)
-        H, edges = np.histogramdd(coords[time, :, :], bins=bins)
-        ix, iy = np.where(H > 0)
-        ex = np.around(edges[0][ix], 0).astype(int)
-        ey = np.around(edges[1][iy], 0).astype(int)
-        big_im = self.im_big.copy()
-        big_im[ex, ey] = H[ix, iy]
-        plt.figure()
-        plt.imshow(big_im)
 
     def run_analytics(self, ws, ts):
         r'''
@@ -668,9 +610,11 @@ class RandomWalk():
                     w = csv.DictWriter(f, self.data)
                     w.writerow(self.data)
 
+###############################################################################
 if __name__ == "__main__":
     plt.close('all')
-    image_run = 0
+    image_run = 1
+    save_figures = False
     if image_run == 0:
         # Open space
         im = np.ones([3, 3], dtype=int)
@@ -683,9 +627,9 @@ if __name__ == "__main__":
         im = 1 - ps.data.tau()
         fname = 'tau_'
         # Number of time steps and walkers
-        num_t = 200000
+        num_t = 20000
         num_w = 1000
-        stride = 200
+        stride = 20
     elif image_run == 2:
         # Generate a Sierpinski carpet by tiling an image and blanking the
         # Middle tile recursively
@@ -717,27 +661,30 @@ if __name__ == "__main__":
 
     # Track time of simulation
     st = time.time()
-    rw = ps.simulations.RandomWalk(im, seed=True)
+    rw = ps.simulations.RandomWalk(im, seed=False)
     rw.run(num_t, num_w, same_start=False, stride=stride)
     print('run time', time.time()-st)
     rw.calc_msd()
     # Plot mean square displacement
     rw.plot_msd()
-#    rw._save_fig(fname+'msd.png')
+    if save_figures:
+        rw._save_fig(fname+'msd.png')
     if rw.dim == 2:
         # Plot the longest walk
         rw.plot_walk_2d(w_id=np.argmax(rw.sq_disp[-1, :]), data='w')
         dpi = 600
-#        rw._save_fig(fname+'longest.png', dpi=dpi)
+        if save_figures:
+            rw._save_fig(fname+'longest.png', dpi=dpi)
         # Plot all the walks
         rw.plot_walk_2d(check_solid=True)
-#        rw._save_fig(fname+'all.png', dpi=dpi)
+        if save_figures:
+            rw._save_fig(fname+'all.png', dpi=dpi)
     else:
-        pass
-        # export to paraview
-        #rw.export_walk(image=rw.im, sample=100)
-    step = 0
-    while step < rw.nt/stride:
+        if save_figures:
+            # export to paraview
+            rw.export_walk(image=rw.im, sample=100)
+    nstrides = np.shape(rw.real_coords)[0]-1
+    steps = [np.int(np.floor(nstrides*i/4)) for i in np.arange(0, 5, 1)]
+    for step in steps:
         rw.axial_density_plot(time=step)
-        step += stride*20
-
+        plt.title('Timestep: '+str(step*stride))
