@@ -290,7 +290,7 @@ def apply_chords_3D(im, spacing=0, trim_edges=True):
     return chords
 
 
-def local_thickness(im):
+def local_thickness(im, npts=25, sizes=None):
     r"""
     For each voxel, this functions calculates the radius of the largest sphere
     that both engulfs the voxel and fits entirely within the foreground. This
@@ -302,6 +302,15 @@ def local_thickness(im):
     im : array_like
         A binary image with the phase of interest set to True
 
+    npts : scalar
+        The number of sizes to uses when probing pore space.  Points will be
+        generated spanning the range of sizes in the distance transform.
+        The default is 25 points.
+
+    sizes : array_like
+        The sizes to prove.  Use this argument instead of ``npts`` for
+        more control of the range and spacing of points.
+
     Returns
     -------
     An image with the pore size values in each voxel
@@ -311,19 +320,11 @@ def local_thickness(im):
     The term *foreground* is used since this function can be applied to both
     pore space or the solid, whichever is set to True.
 
+    This function is identical to porosimetry with ``access_limited`` set to
+    False.
+
     """
-    from skimage.morphology import cube
-    if im.ndim == 2:
-        from skimage.morphology import square as cube
-    dt = spim.distance_transform_edt(im)
-    sizes = sp.unique(sp.around(dt, decimals=0))
-    im_new = sp.zeros_like(im, dtype=float)
-    for r in tqdm(sizes):
-        im_temp = dt >= r
-        im_temp = spim.distance_transform_edt(~im_temp) <= r
-        im_new[im_temp] = r
-    # Trim outer edge of features to remove noise
-    im_new = spim.binary_erosion(input=im, structure=cube(1))*im_new
+    im_new = porosimetry(im=im, npts=npts, sizes=sizes, access_limited=False)
     return im_new
 
 
