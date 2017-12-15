@@ -16,7 +16,7 @@ import os
 import time
 import csv
 from concurrent.futures import ProcessPoolExecutor
-
+cmap = matplotlib.cm.viridis
 
 class RandomWalk():
     r'''
@@ -365,9 +365,9 @@ class RandomWalk():
         of image copies needed to build a big image large enough to display all
         the walks
         '''
-        max_disp = np.max(np.max(np.abs(self.real_coords), axis=0), axis=0)
+        max_disp = np.max(np.max(np.abs(self.real_coords), axis=0), axis=0)+1
         num_domains = np.ceil(max_disp / self.shape)
-        num_copies = int(np.max(num_domains))
+        num_copies = int(np.max(num_domains))-1
         return num_copies
 
     def export_walk(self, image=None, path=None, sub='data', prefix='rw_',
@@ -541,14 +541,15 @@ class RandomWalk():
             porous = big_im == self.solid_value-1
             porous = porous.astype(float)
             porous[np.where(porous == 0)] = np.nan
-            cmap = matplotlib.cm.viridis
             plt.imshow(big_im, cmap=cmap)
+            # Make Solid Black
             plt.imshow(solid, cmap='binary', vmin=0, vmax=1)
+            # Make Untouched Porous White
             plt.imshow(porous, cmap='gist_gray', vmin=0, vmax=1)
             if check_solid:
                 print('Solid pixel match?', sb == sa, sb, sa)
 
-    def axial_density_plot(self, time=None, axis=None, nbin=50):
+    def axial_density_plot(self, time=None, axis=None, bins=None):
         r'''
         Plot the walker density summed along an axis at a given time
 
@@ -563,16 +564,25 @@ class RandomWalk():
             this axis.
 
         '''
+        copies = self._check_big_bounds()
+        im_bins = (copies + 1)*np.asarray(self.shape)
         t_coords = self.real_coords[time, :, :]
-        if self.dim == 3 and axis is not None:
+        if self.dim == 3:
+            if axis is None:
+                axis = 2
             axes = np.arange(0, self.dim, 1)
             [a, b] = axes[axes != axis]
+            [na, nb] = im_bins[axes != axis]
         else:
             [a, b] = [0, 1]
+            [na, nb] = im_bins
         a_coords = t_coords[:, a]
         b_coords = t_coords[:, b]
-        plt.figure()
-        plt.hist2d(a_coords, b_coords, (nbin, nbin))
+        fig, ax = plt.subplots(figsize=[6, 6])
+        ax.set(aspect=1)
+        if bins is None:
+            bins = max([na, nb])
+        plt.hist2d(a_coords, b_coords, bins=bins, cmin=1, cmap=cmap)
         plt.colorbar()
 
     def run_analytics(self, ws, ts):
@@ -613,8 +623,8 @@ class RandomWalk():
 ###############################################################################
 if __name__ == "__main__":
     plt.close('all')
-    image_run = 1
-    save_figures = False
+    image_run = 2
+    save_figures = True
     if image_run == 0:
         # Open space
         im = np.ones([3, 3], dtype=int)
@@ -643,22 +653,23 @@ if __name__ == "__main__":
             return image
 
         im = np.ones([1, 1], dtype=int)
-        im = tileandblank(im, 5)
+        im = tileandblank(im, 4)
         fname = 'sierpinski_'
         # Number of time steps and walkers
-        num_t = 5000
+        num_t = 2500
         num_w = 100000
         stride = 5
     else:
-        # Do some blobs
+        # Make an anisotropic image of 3D blobs
         im = ps.generators.blobs(shape=[300, 300, 300], porosity=0.5,
                                  blobiness=[1, 2, 5]).astype(int)
         fname = 'blobs_'
         # Number of time steps and walkers
-        num_t = 10000
-        num_w = 100000
+        num_t = 1000
+        num_w = 1000
         stride = 100
-
+    # Override all strides
+    stride = 1
     # Track time of simulation
     st = time.time()
     rw = ps.simulations.RandomWalk(im, seed=False)
@@ -667,24 +678,28 @@ if __name__ == "__main__":
     rw.calc_msd()
     # Plot mean square displacement
     rw.plot_msd()
+    dpi = 600
     if save_figures:
         rw._save_fig(fname+'msd.png')
     if rw.dim == 2:
         # Plot the longest walk
-        rw.plot_walk_2d(w_id=np.argmax(rw.sq_disp[-1, :]), data='w')
-        dpi = 600
+        rw.plot_walk_2d(w_id=np.argmax(rw.sq_disp[-1, :]), data='t')
+
         if save_figures:
             rw._save_fig(fname+'longest.png', dpi=dpi)
         # Plot all the walks
-        rw.plot_walk_2d(check_solid=True)
+        rw.plot_walk_2d(check_solid=True, data='t')
         if save_figures:
             rw._save_fig(fname+'all.png', dpi=dpi)
     else:
         if save_figures:
             # export to paraview
-            rw.export_walk(image=rw.im, sample=100)
+            #pass
+            rw.export_walk(image=rw.im, sample=1)
     nstrides = np.shape(rw.real_coords)[0]-1
     steps = [np.int(np.floor(nstrides*i/4)) for i in np.arange(0, 5, 1)]
     for step in steps:
-        rw.axial_density_plot(time=step)
+        rw.axial_density_plot(time=step, bins=50)
         plt.title('Timestep: '+str(step*stride))
+        if save_figures:
+            rw._save_fig(fname+'density_'+str(step*stride)+'.png', dpi=dpi)
