@@ -586,7 +586,7 @@ class RandomWalk():
         plt.hist2d(a_coords, b_coords, bins=bins, cmin=1, cmap=cmap)
         plt.colorbar()
 
-    def run_analytics(self, ws, ts, fname='analytics.csv'):
+    def run_analytics(self, ws, ts, fname='analytics.csv', num_proc=None):
         r'''
         Run run a number of times saving info
         Warning - this method may take some time to complete!
@@ -605,14 +605,15 @@ class RandomWalk():
             self.data['sim_nt'] = 0
             self.data['sim_time'] = 0
             w = csv.DictWriter(f, self.data)
-            w.writeheader()
+            header_written = False
             for nw in ws:
                 for nt in ts:
                     print('Running Analytics for:')
                     print('Number of Walkers: ' + str(nw))
                     print('Number of Timesteps: ' + str(nt))
                     start_time = time.time()
-                    self.run(nt, nw, same_start=False, stride=1)
+                    self.run(nt, nw, same_start=False, stride=10,
+                             num_proc=num_proc)
                     sim_time = time.time() - start_time
                     print('Completed in: ' + str(sim_time))
                     self.plot_msd()
@@ -621,4 +622,7 @@ class RandomWalk():
                     self.data['sim_nt'] = nt
                     self.data['sim_time'] = sim_time
                     w = csv.DictWriter(f, self.data)
+                    if ~header_written:
+                        w.writeheader()
+                        header_written = True
                     w.writerow(self.data)
