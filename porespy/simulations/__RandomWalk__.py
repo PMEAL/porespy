@@ -69,6 +69,7 @@ class RandomWalk():
         self.solid_value = 0
         self.seed = seed
         self._get_wall_map(self.im)
+        self.data= {}
 
     def _rand_start(self, image, num=1):
         r'''
@@ -213,7 +214,6 @@ class RandomWalk():
         Run the walk in self contained way to enable parallel processing for
         batches of walkers
         '''
-        print(self.stride)
         # Number of walkers in this batch
         nw = len(walkers)
         walkers = np.asarray(walkers)
@@ -287,7 +287,7 @@ class RandomWalk():
         # Default to run in parallel with half the number of available procs
         if num_proc is None:
             num_proc = int(os.cpu_count()/2)
-        if num_proc > 1:
+        if num_proc > 1 and self.nw >= num_proc:
             # Run in parallel over multiple CPUs
             batches = self._chunk_walkers(walkers, num_proc)
             with ProcessPoolExecutor(max_workers=num_proc) as pool:
@@ -300,7 +300,7 @@ class RandomWalk():
                 si = si + mnw
         else:
             # Run in serial
-            real_coords = self._run_walk(walkers.tolist())
+            real_coords = np.asarray(self._run_walk(walkers.tolist()))
 
         self.real_coords = real_coords
 
@@ -608,11 +608,11 @@ class RandomWalk():
             w.writeheader()
             for nw in ws:
                 for nt in ts:
-                    print('Running Analystics for:')
+                    print('Running Analytics for:')
                     print('Number of Walkers: ' + str(nw))
                     print('Number of Timesteps: ' + str(nt))
                     start_time = time.time()
-                    self.run(nt, nw, same_start=False)
+                    self.run(nt, nw, same_start=False, stride=1)
                     sim_time = time.time() - start_time
                     print('Completed in: ' + str(sim_time))
                     self.plot_msd()

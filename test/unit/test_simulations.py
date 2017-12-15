@@ -1,6 +1,7 @@
 import porespy as ps
 import scipy as sp
 import os
+import matplotlib.pyplot as plt
 
 
 class SimulationTest():
@@ -45,6 +46,7 @@ class SimulationTest():
         self.rw_2d.plot_walk_2d(data='w')
         assert hasattr(self.rw_2d, 'im_big')
         assert sp.sum(self.rw_2d.im_big > self.rw_2d.nw) == 0
+        plt.close('all')
 
     def test_export(self):
         cwd = os.getcwd()
@@ -70,16 +72,17 @@ class SimulationTest():
 
     def test_axial_density_plot(self):
         self.rw.axial_density_plot(time=0, axis=0)
-        pass
+        plt.close('all')
 
     def test_rw_analytics(self):
-        w_list = [10, 100]
-        t_list = [10, 100]
+        w_list = [1, 10, 100]
+        t_list = [1, 10, 100]
         self.rw_2d.run_analytics(w_list, t_list, fname='test.csv')
         cwd = os.getcwd()
         fpath = os.path.join(cwd, 'test.csv')
         assert os.path.exists(fpath)
         os.remove(fpath)
+        plt.close('all')
 
 if __name__ == '__main__':
     t = SimulationTest()
@@ -94,3 +97,5 @@ if __name__ == '__main__':
     t.test_export()
     t.test_seed()
     t.test_axial_density_plot()
+    t.test_rw_analytics()
+
