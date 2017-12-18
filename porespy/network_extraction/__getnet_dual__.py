@@ -63,6 +63,11 @@ def extract_dual_network(im, pore_regions=None, solid_regions=None,
     tarea1 = net['throat.area'] * loc1
     loc2 = net['throat.conns'][:, 1] >= solid_num
     tarea2 = net['throat.area'] * loc2
+    pore_solid_labels = loc1 * loc2
+    loc3 = net['throat.conns'][:, 0] >= solid_num
+    solid_solid_labels = loc3 * loc2
+    loc4 = net['throat.conns'][:, 1] < solid_num
+    pore_pore_labels = loc1 * loc4
     Ps = net['pore.label']
     p_solid_surf = sp.zeros((len(Ps), ), dtype=int)
     p_solid_volume = sp.zeros((len(Ps), ), dtype=int)
@@ -89,5 +94,8 @@ def extract_dual_network(im, pore_regions=None, solid_regions=None,
 
     net['pore.solid_volume'] = p_solid_volume * res**3
     net['pore.solid_area_surf'] = p_solid_surf * res**2
+    net['pore.pore_labels'] = pore_pore_labels
+    net['pore.solid_labels'] = pore_solid_labels
+    net['pore.solid_solid_labels'] = solid_solid_labels
 
     return net
