@@ -49,21 +49,12 @@ def extract_pore_network(im, pore_regions=None, solid_regions=None,
         cube = square
         ball = disk
 
-    if ~sp.any(im == 0):
-        raise Exception('The received image has no solid phase (0\'s)')
+#    if ~sp.any(im == 0):
+#        raise Exception('The received image has no solid phase (0\'s)')
 
     if dt is None:
         dt = spim.distance_transform_edt(im > 0)
         dt = spim.gaussian_filter(input=dt, sigma=0.5)
-
-    if solid_regions is not None:
-        solid_num = sp.amax(pore_regions)
-        s_im = (solid_regions + solid_num)*~im
-
-    p_on_s = pore_regions*(~im)    # Expose pores labels on solid
-    p_im = pore_regions*im  # Shows pore labels on pore region
-    im = p_im + s_im
-    p_on_s_slice = spim.find_objects(p_on_s)  # Slice of Pore on solid regions
 
     # Get 'slices' into im for each pore region
     slices = spim.find_objects(im)
@@ -93,12 +84,6 @@ def extract_pore_network(im, pore_regions=None, solid_regions=None,
         s = extend_slice(slices[pore], im.shape)
         sub_im = im[s]
         sub_dt = dt[s]
-        if (solid_regions is not None) and (pore < solid_num):
-            # This calculates chunk of solid volume connected with pore
-            ext_p_on_s_slice = extend_slice(p_on_s_slice[pore], p_im.shape)
-            # Sub image of solid extended slice
-            sub_sim = p_on_s[ext_p_on_s_slice]
-            p_solid_volume[pore] = sp.sum(sub_sim == i)
         pore_im = sub_im == i
         pore_dt = spim.distance_transform_edt(sp.pad(pore_im, pad_width=1,
                                                      mode='constant'))
@@ -128,26 +113,11 @@ def extract_pore_network(im, pore_regions=None, solid_regions=None,
                     t_coords.append(tuple((t_inds[0][temp],
                                            t_inds[1][temp],
                                            t_inds[2][temp])))
-        if pore < solid_num:
-            t_conns_index = sp.where(sp.array(t_conns)[:, 0] == pore)[0]
-            pore_pair = sp.array(t_conns)[t_conns_index]
-            bool_mask = pore_pair[:, 1] >= solid_num
-            p_solid_area_surf[pore] = (sp.sum(sp.array(t_area)[t_conns_index] *
-                                       bool_mask))
-
     # Clean up values
     Nt = len(t_dia_inscribed)  # Get number of throats
     if im.ndim == 2:  # If 2D, add 0's in 3rd dimension
         p_coords = sp.vstack((p_coords.T, sp.zeros((Np, )))).T
         t_coords = sp.vstack((sp.array(t_coords).T, sp.zeros((Nt, )))).T
-
-    loc1 = (sp.array(t_conns)[:, 0]) < solid_num
-    loc2 = (sp.array(t_conns)[:, 1]) >= solid_num
-    pore_solid_labels = loc1 * loc2
-    loc3 = (sp.array(t_conns)[:, 0]) >= solid_num
-    solid_solid_labels = loc3 * loc2
-    loc4 = (sp.array(t_conns)[:, 1]) < solid_num
-    pore_pore_labels = loc1 * loc4
 
     net = {}
     net['pore.all'] = sp.ones((Np, ), dtype=bool)
@@ -157,9 +127,6 @@ def extract_pore_network(im, pore_regions=None, solid_regions=None,
     net['throat.centroid'] = sp.array(t_coords)*voxel_size
     net['throat.conns'] = sp.array(t_conns)
     net['pore.label'] = sp.array(p_label)
-    net['pore.pore_labels'] = pore_pore_labels
-    net['pore.solid_labels'] = pore_solid_labels
-    net['pore.solid_solid_labels'] = solid_solid_labels
     net['pore.volume'] = sp.copy(p_volume)*(voxel_size**3)
     net['throat.volume'] = sp.zeros((Nt, ), dtype=float)
     net['pore.diameter'] = sp.copy(p_dia_local)*voxel_size
