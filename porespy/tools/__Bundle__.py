@@ -1,8 +1,8 @@
 from porespy.metrics import porosity
 import matplotlib.pyplot as plt
 import scipy.ndimage as spim
-from porespy.visualization import sem
 from porespy.filters import porosimetry
+from porespy.visualization import show_slices as _show_slices
 
 
 class Bundle():
@@ -51,7 +51,7 @@ class Bundle():
 
     dt = property(fget=_get_dt, fset=_set_dt)
 
-    def show_psd(self, bins=25):
+    def show_psd(self, bins=10):
         plt.hist(self.lt[self.im], bins=bins, normed=True)
 
     @property
@@ -74,19 +74,9 @@ class Bundle():
         if self.ndim == 3:
             return self.im.shape[2]
 
-    def show_slice(self):
-        if self.ndim == 2:
-            im = self.im
-        else:
-            z = int(self.Lz/2)
-            im = self.im[:, :, z]
-        plt.imshow(im)
-        plt.axis('off')
+    def show_slices(self, n=1, visible_phase=0, stride=1):
+        r"""
+        """
+        _show_slices(self.im, n=n, visible_phase=visible_phase, stride=stride)
 
-    def show_3D(self):
-        rot = spim.rotate(input=self.im, angle=35, axes=[2, 0], order=0,
-                          mode='constant', cval=1)
-        rot = spim.rotate(input=rot, angle=25, axes=[1, 0], order=0,
-                          mode='constant', cval=1)
-        plt.imshow(sem(rot), cmap=plt.cm.bone)
-        plt.axis('off')
+    show_slices.__doc__ = _show_slices.__doc__
