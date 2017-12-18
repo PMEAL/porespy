@@ -20,4 +20,4 @@ from .__snow__ import trim_nearby_peaks
 from .__snow__ import reduce_peaks_to_points
 from .__snow__ import find_peaks
 from .__getnet__ import extract_pore_network
-from .__dual__ import dual
+from .__getnet_dual__ import extract_dual_network
