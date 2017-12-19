@@ -41,7 +41,6 @@ def extract_dual_network(im, pore_regions=None, solid_regions=None,
     convention (i.e. 'pore.coords', 'throat.conns') so it may be converted
     directly to an OpenPNM network object using the ``update`` command.
     """
-    res = voxel_size
     pore_region = pore_regions*im
     solid_region = solid_regions*~im
     solid_num = sp.amax(pore_regions)
@@ -54,7 +53,7 @@ def extract_dual_network(im, pore_regions=None, solid_regions=None,
     solid_dt = spim.gaussian_filter(solid_dt, sigma=0.4)
     dt = pore_dt + solid_dt
     regions = pore_region + solid_region
-    net = extract_pore_network(im=regions, dt=dt, voxel_size=res)
+    net = extract_pore_network(im=regions, dt=dt, voxel_size=voxel_size)
     p_on_s = pore_regions*(~im)    # Expose pores labels on solid
     p_on_s_slice = spim.find_objects(p_on_s)  # Slice of Pore on solid regions
     s_on_p = (solid_regions + solid_num) * im
@@ -92,8 +91,8 @@ def extract_dual_network(im, pore_regions=None, solid_regions=None,
             sub_sim = s_on_p[ext_s_on_p_slice]
         p_solid_volume[i] = sp.sum(sub_sim == solid)
 
-    net['pore.solid_volume'] = p_solid_volume * res**3
-    net['pore.solid_area_surf'] = p_solid_surf * res**2
+    net['pore.solid_volume'] = p_solid_volume * voxel_size**3
+    net['pore.solid_area_surf'] = p_solid_surf * voxel_size**2
     net['pore.pore_labels'] = pore_pore_labels
     net['pore.solid_labels'] = pore_solid_labels
     net['pore.solid_solid_labels'] = solid_solid_labels
