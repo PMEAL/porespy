@@ -55,9 +55,12 @@ def extract_dual_network(im, pore_regions=None, solid_regions=None,
     regions = pore_region + solid_region
     net = extract_pore_network(im=regions, dt=dt, voxel_size=voxel_size)
     p_on_s = pore_regions*(~im)    # Expose pores labels on solid
-    p_on_s_slice = spim.find_objects(p_on_s)  # Slice of Pore on solid regions
-    s_on_p = (solid_regions + solid_num) * im
-    s_on_p_slice = spim.find_objects(s_on_p)  # Slice of solid on pore regions
+    s_on_p = (solid_regions + solid_num) * im  # Expose solid labels on pores
+    pv = sp.unique(p_on_s, return_counts=True)[1]
+    pv = pv[1:]
+    sv = sp.unique(s_on_p, return_counts=True)[1]
+    sv = sv[1:]
+    p_solid_volume = sp.concatenate((pv, sv))
     loc1 = net['throat.conns'][:, 0] < solid_num
     tarea1 = net['throat.area'] * loc1
     loc2 = net['throat.conns'][:, 1] >= solid_num
@@ -69,7 +72,6 @@ def extract_dual_network(im, pore_regions=None, solid_regions=None,
     pore_pore_labels = loc1 * loc4
     Ps = net['pore.label']
     p_solid_surf = sp.zeros((len(Ps), ), dtype=int)
-    p_solid_volume = sp.zeros((len(Ps), ), dtype=int)
 
     print('_'*60)
     print('Extracting dual network information from image')
@@ -78,18 +80,10 @@ def extract_dual_network(im, pore_regions=None, solid_regions=None,
         if i < solid_num:
             p_solid_surf[i] = sp.sum(tarea2[sp.where(net['throat.conns']
                                                         [:, 0] == i)[0]])
-            # This calculates chunk of solid properties connected with pore
-            ext_p_on_s_slice = extend_slice(p_on_s_slice[i], im.shape)
-            # Sub image of solid extended slice
-            sub_sim = p_on_s[ext_p_on_s_slice]
+
         else:
             p_solid_surf[i] = sp.sum(tarea1[sp.where(net['throat.conns']
                                                         [:, 1] == i)[0]])
-            # This calculates chunk of pore volume connected with solid
-            ext_s_on_p_slice = extend_slice(s_on_p_slice[i], im.shape)
-            # Sub image of solid extended slice
-            sub_sim = s_on_p[ext_s_on_p_slice]
-        p_solid_volume[i] = sp.sum(sub_sim == solid)
 
     net['pore.solid_volume'] = p_solid_volume * voxel_size**3
     net['pore.solid_surface_area'] = p_solid_surf * voxel_size**2
