@@ -92,7 +92,7 @@ def extract_dual_network(im, pore_regions=None, solid_regions=None,
         p_solid_volume[i] = sp.sum(sub_sim == solid)
 
     net['pore.solid_volume'] = p_solid_volume * voxel_size**3
-    net['pore.solid_area_surf'] = p_solid_surf * voxel_size**2
+    net['pore.solid_surface_area'] = p_solid_surf * voxel_size**2
     net['pore.pore_labels'] = pore_pore_labels
     net['pore.solid_labels'] = pore_solid_labels
     net['pore.solid_solid_labels'] = solid_solid_labels
