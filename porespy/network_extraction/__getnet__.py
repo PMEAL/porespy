@@ -73,8 +73,6 @@ def extract_pore_network(im, pore_regions=None, solid_regions=None,
     t_area = []
     t_perimeter = []
     t_coords = []
-    p_solid_area_surf = sp.zeros((Np, ), dtype=int)
-    p_solid_volume = sp.zeros((Np, ), dtype=int)
 
     # Start extracting size information for pores and throats
     for i in tqdm(Ps):
@@ -134,8 +132,6 @@ def extract_pore_network(im, pore_regions=None, solid_regions=None,
     net['pore.equivalent_diameter'] = 2*((3/4*net['pore.volume']/sp.pi)**(1/3))
     net['pore.extended_diameter'] = sp.copy(p_dia_global)*voxel_size
     net['pore.surface_area'] = sp.copy(p_area_surf)*(voxel_size)**2
-    net['pore.solid_surface_area'] = sp.copy(p_solid_area_surf)*(voxel_size)**2
-    net['pore.solid_volume'] = sp.copy(p_solid_volume)*(voxel_size)**3
     net['throat.diameter'] = sp.array(t_dia_inscribed)*voxel_size
     net['throat.inscribed_diameter'] = sp.array(t_dia_inscribed)*voxel_size
     net['throat.area'] = sp.array(t_area)*(voxel_size**2)
