@@ -62,28 +62,20 @@ def extract_dual_network(im, pore_regions=None, solid_regions=None,
     sv = sv[1:]
     p_solid_volume = sp.concatenate((pv, sv))
     loc1 = net['throat.conns'][:, 0] < solid_num
-    tarea1 = net['throat.area'] * loc1
     loc2 = net['throat.conns'][:, 1] >= solid_num
-    tarea2 = net['throat.area'] * loc2
     pore_solid_labels = loc1 * loc2
     loc3 = net['throat.conns'][:, 0] >= solid_num
     solid_solid_labels = loc3 * loc2
     loc4 = net['throat.conns'][:, 1] < solid_num
     pore_pore_labels = loc1 * loc4
-    Ps = net['pore.label']
-    p_solid_surf = sp.zeros((len(Ps), ), dtype=int)
-
-    print('_'*60)
-    print('Extracting dual network information from image')
-    for solid in tqdm(Ps):
-        i = solid-1
-        if i < solid_num:
-            p_solid_surf[i] = sp.sum(tarea2[sp.where(net['throat.conns']
-                                                        [:, 0] == i)[0]])
-
-        else:
-            p_solid_surf[i] = sp.sum(tarea1[sp.where(net['throat.conns']
-                                                        [:, 1] == i)[0]])
+    p_conns = net['throat.conns'][:, 0][pore_solid_labels]
+    ps = net['throat.area'][pore_solid_labels]
+    p_sa = sp.bincount(p_conns, ps)
+    s_conns = net['throat.conns'][:, 1][pore_solid_labels]
+    ss = net['throat.area'][pore_solid_labels]
+    s_sa = sp.bincount(s_conns, ss)
+    s_sa = sp.trim_zeros(s_sa)
+    p_solid_surf = sp.concatenate((p_sa, s_sa))
 
     net['pore.solid_volume'] = p_solid_volume * voxel_size**3
     net['pore.solid_surface_area'] = p_solid_surf * voxel_size**2
