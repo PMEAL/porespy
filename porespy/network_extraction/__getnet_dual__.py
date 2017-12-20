@@ -72,8 +72,7 @@ def extract_dual_network(im, pore_regions=None, solid_regions=None,
     ps = net['throat.area'][pore_solid_labels]
     p_sa = sp.bincount(p_conns, ps)
     s_conns = net['throat.conns'][:, 1][pore_solid_labels]
-    ss = net['throat.area'][pore_solid_labels]
-    s_sa = sp.bincount(s_conns, ss)
+    s_sa = sp.bincount(s_conns, ps)
     s_sa = sp.trim_zeros(s_sa)
     p_solid_surf = sp.concatenate((p_sa, s_sa))
 
