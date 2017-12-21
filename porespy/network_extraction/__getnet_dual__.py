@@ -92,7 +92,7 @@ def extract_dual_network(im, pore_regions, solid_regions,
     s_sa = sp.trim_zeros(s_sa)
     p_solid_surf = sp.concatenate((p_sa, s_sa))
 
-    # Adding additional information for dual network dictionary
+    # Adding additional information of dual network
     net['pore.solid_volume'] = p_solid_volume * voxel_size**3
     net['pore.solid_surface_area'] = p_solid_surf * voxel_size**2
     net['throat.pore_pore_conns'] = pore_pore_labels
