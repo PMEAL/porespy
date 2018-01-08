@@ -75,8 +75,8 @@ class SimulationTest():
         plt.close('all')
 
     def test_rw_analytics(self):
-        w_list = [1, 10, 100]
-        t_list = [1, 10, 100]
+        w_list = [10, 100]
+        t_list = [10, 100]
         self.rw_2d.run_analytics(w_list, t_list, fname='test.csv')
         cwd = os.getcwd()
         fpath = os.path.join(cwd, 'test.csv')
@@ -98,4 +98,3 @@ if __name__ == '__main__':
     t.test_seed()
     t.test_axial_density_plot()
     t.test_rw_analytics()
-

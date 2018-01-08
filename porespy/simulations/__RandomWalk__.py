@@ -69,7 +69,7 @@ class RandomWalk():
         self.solid_value = 0
         self.seed = seed
         self._get_wall_map(self.im)
-        self.data= {}
+        self.data = {}
 
     def _rand_start(self, image, num=1):
         r'''
