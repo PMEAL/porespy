@@ -16,6 +16,7 @@ import os
 import time
 import csv
 from concurrent.futures import ProcessPoolExecutor
+import gc
 cmap = matplotlib.cm.viridis
 
 
@@ -290,8 +291,10 @@ class RandomWalk():
         if num_proc > 1 and self.nw >= num_proc:
             # Run in parallel over multiple CPUs
             batches = self._chunk_walkers(walkers, num_proc)
-            with ProcessPoolExecutor(max_workers=num_proc) as pool:
-                mapped_coords = list(pool.map(self._run_walk, batches))
+            pool = ProcessPoolExecutor(max_workers=num_proc)
+            mapped_coords = list(pool.map(self._run_walk, batches))
+            pool.shutdown()
+            del pool
             # Put coords back together
             si = 0
             for mc in mapped_coords:
@@ -311,7 +314,8 @@ class RandomWalk():
         num_walkers = len(walkers)
         n = int(np.floor(num_walkers / num_chunks))
         l = walkers.tolist()
-        return [l[i:i + n] for i in range(0, len(l), n)]
+        chunks = [l[i:i + n] for i in range(0, len(l), n)]
+        return chunks
 
     def calc_msd(self):
         r'''
@@ -622,7 +626,8 @@ class RandomWalk():
                     self.data['sim_nt'] = nt
                     self.data['sim_time'] = sim_time
                     w = csv.DictWriter(f, self.data)
-                    if ~header_written:
+                    if not header_written:
                         w.writeheader()
                         header_written = True
                     w.writerow(self.data)
+                    gc.collect()
