@@ -17,7 +17,7 @@ PoreSpy consists of the following modules:
 * ``simulations``: More complex calculations based on physical processes
 * ``network_extraction``: Tools for obtaining pore network representations of images
 * ``visualization``: Helper functions for creating useful views of the image
-* ``export``: Functions for output image data in various formats for use in common software
+* ``io``: Functions for output image data in various formats for use in common software
 * ``tools``: Various useful tools for working with images
 
 ## Installation
