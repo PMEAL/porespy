@@ -33,6 +33,8 @@ This package consists of several modules, the purposes of which are given below:
 +------------------------+----------------------------------------------------+
 | **visualization**      | Quickly and easily visualiz 3D images              |
 +------------------------+----------------------------------------------------+
+| **io**                 | Import and export image data in various formats    |
++------------------------+----------------------------------------------------+
 
 -------------
 Example Usage
@@ -91,4 +93,4 @@ from . import metrics
 from . import generators
 from . import binarization
 from . import filters
-from . import export
+from . import io
