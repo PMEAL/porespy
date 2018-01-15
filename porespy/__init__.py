@@ -83,7 +83,7 @@ Python environment.
 
 '''
 
-__version__ = "0.3.7"
+__version__ = "0.3.9"
 
 from . import tools
 from . import network_extraction
