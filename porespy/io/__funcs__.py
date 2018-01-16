@@ -1,6 +1,6 @@
 import numpy as np
 from scipy import ndimage as spim
-from porespy.export.evtk import hl as bp
+from porespy.io.evtk import hl as bp
 import scipy.ndimage as nd
 
 

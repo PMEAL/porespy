@@ -33,6 +33,8 @@ This package consists of several modules, the purposes of which are given below:
 +------------------------+----------------------------------------------------+
 | **visualization**      | Quickly and easily visualiz 3D images              |
 +------------------------+----------------------------------------------------+
+| **io**                 | Import and export image data in various formats    |
++------------------------+----------------------------------------------------+
 
 -------------
 Example Usage
@@ -80,10 +82,7 @@ morphology.  The advantage of PoreSpy is the flexibility offered by the
 Python environment.
 
 '''
-from os import path as osp
-pkg_dir = osp.abspath(osp.dirname(__file__))
-data_dir = osp.join(pkg_dir, 'data')
-__version__ = "0.3.5"
+__version__ = "0.3.9"
 
 from . import tools
 from . import network_extraction
@@ -93,5 +92,4 @@ from . import metrics
 from . import generators
 from . import binarization
 from . import filters
-from . import export
-from . import data
+from . import io
