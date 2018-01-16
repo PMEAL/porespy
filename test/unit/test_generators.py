@@ -110,6 +110,10 @@ class GeneratorTest():
     def test_noise_perlin(self):
         pass
 
+    def test_blobs_1d_shape(self):
+        im = ps.generators.blobs(shape=[101])
+        assert len(list(im.shape)) == 3
+
 if __name__ == '__main__':
     t = GeneratorTest()
     t.setup_class()
@@ -123,3 +127,4 @@ if __name__ == '__main__':
     t.test_sphere_pack_sc()
     t.test_sphere_pack_fcc()
     t.test_sphere_pack_bcc()
+    t.test_blobs_1d_shape()
