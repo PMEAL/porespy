@@ -5,8 +5,7 @@ from porespy.tools import extend_slice
 from tqdm import tqdm
 
 
-def extract_pore_network(im, pore_regions=None,
-                         dt=None, voxel_size=1):
+def extract_pore_network(im, dt=None, voxel_size=1):
     r"""
     Analyzes an image that has been partitioned into pore regions and extracts
     the pore and throat geometry as well as network connectivity.
@@ -26,11 +25,6 @@ def extract_pore_network(im, pore_regions=None,
         voxel, so the volume of a voxel would be **voxel_size**-cubed.  The
         default is 1, which is useful when overlaying the PNM on the original
         image since the scale of the image is alway 1 unit lenth per voxel.
-
-    pore_rgions : ND-array
-        A ND-array the same size as ``dt`` with regions belonging to each peak
-        labelled.
-
 
     Returns
     -------
