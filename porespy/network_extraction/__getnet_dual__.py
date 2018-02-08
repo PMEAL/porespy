@@ -3,7 +3,7 @@ import scipy.ndimage as spim
 from porespy.network_extraction import extract_pore_network
 
 
-def extract_dual_network(im, pore_regions, solid_regions,
+def extract_dual_network(im, pore_regions=None, solid_regions=None,
                          pore_dt=None, solid_dt=None, voxel_size=1):
 
     r"""
@@ -66,13 +66,13 @@ def extract_dual_network(im, pore_regions, solid_regions,
     net = extract_pore_network(im=regions, dt=dt, voxel_size=voxel_size)
 
     # Calculates chunk of solid volume connected with pores and vice versa
-    p_on_s = pore_regions*(~im)    # Expose pores labels on solid
-    s_on_p = (solid_regions + solid_num) * im  # Expose solid labels on pores
-    pv = sp.unique(p_on_s, return_counts=True)[1]
-    pv = pv[1:]
-    sv = sp.unique(s_on_p, return_counts=True)[1]
-    sv = sv[1:]
-    p_solid_volume = sp.concatenate((pv, sv))
+#    p_on_s = pore_regions*(~im)    # Expose pores labels on solid
+#    s_on_p = (solid_regions + solid_num) * im  # Expose solid labels on pores
+#    pv = sp.unique(p_on_s, return_counts=True)[1]
+#    pv = pv[1:]
+#    sv = sp.unique(s_on_p, return_counts=True)[1]
+#    sv = sv[1:]
+#    p_solid_volume = sp.concatenate((pv, sv))
 
     # Find pore to pore, pore to solid and solid to solid throat conns
     loc1 = net['throat.conns'][:, 0] < solid_num
@@ -93,7 +93,7 @@ def extract_dual_network(im, pore_regions, solid_regions,
     p_solid_surf = sp.concatenate((p_sa, s_sa))
 
     # Adding additional information of dual network
-    net['pore.solid_volume'] = p_solid_volume * voxel_size**3
+#    net['pore.solid_volume'] = p_solid_volume * voxel_size**3
     net['pore.solid_surface_area'] = p_solid_surf * voxel_size**2
     net['throat.pore_pore_conns'] = pore_pore_labels
     net['throat.pore_solid_conns'] = pore_solid_labels

@@ -5,7 +5,7 @@ from porespy.tools import extend_slice
 from tqdm import tqdm
 
 
-def extract_pore_network(im, pore_regions=None, solid_regions=None,
+def extract_pore_network(im, pore_regions=None,
                          dt=None, voxel_size=1):
     r"""
     Analyzes an image that has been partitioned into pore regions and extracts
@@ -31,9 +31,6 @@ def extract_pore_network(im, pore_regions=None, solid_regions=None,
         A ND-array the same size as ``dt`` with regions belonging to each peak
         labelled.
 
-    solid_regions : ND-array
-        A ND-array the same size as ``dt`` with regions belonging to each peak
-        labelled.
 
     Returns
     -------
