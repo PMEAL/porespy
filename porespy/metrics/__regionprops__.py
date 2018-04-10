@@ -1,5 +1,6 @@
 import scipy as sp
 import scipy.ndimage as spim
+import scipy.spatial as sptl
 
 
 def regionprops_3D(im, props=[]):
@@ -42,14 +43,15 @@ def regionprops_3D(im, props=[]):
     to fill this gap.
 
     Regions can be identified using a watershed algorithm, which can be a bit
-    tricky to obtain desired results.  PoreSpy includes the SNOW algorithm,
-    which may be quite helpful.
+    tricky to obtain desired results.  *PoreSpy* includes the SNOW algorithm,
+    which may be helpful.
 
     Examples
     --------
     >>> import porespy as ps
     >>> import scipy.ndimage as spim
-    >>> im = ps.generators.blobs(shape=[100, 100], porosity=0.3, blobiness=4)
+    >>> im = ~ps.generators.overlapping_spheres(shape=[100, 100], radius=5,
+    ...                                         porosity=0.4)
     >>> im = spim.label(im)[0]
     >>> regions = ps.metrics.regionprops_3D(im)
 
@@ -69,7 +71,10 @@ def regionprops_3D(im, props=[]):
 
     for i in regions:
         s = slices[i - 1]
-        if 'volume' in props:
-            results[i]['volume'] = sp.sum(im[s] == i)
+        mask = im[s] == i
+        points = sp.vstack(sp.where(mask)).T
+        # tree = sptl.cKDTree(data=points)
+        # Volume:
+        results[i]['volume'] = sp.sum(mask)
 
     return results
