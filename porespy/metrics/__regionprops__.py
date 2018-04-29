@@ -212,11 +212,14 @@ def regionprops_3D(im, props=[], exclude=[]):
             results[i]['equivalent_surface_area'] = 4*sp.pi*(r)**2
         if 'extent' in props:
             results[i]['extent'] = sp.sum(mask)/sp.prod(mask.shape)
-        if 'surface_area' in props:
+        if 'surface_mesh' in props:
             tmp = sp.pad(sp.atleast_3d(mask), pad_width=1, mode='constant')
             verts, faces, normals, values = marching_cubes(volume=tmp, level=0)
-            area = mesh_surface_area(verts, faces)
-            results[i]['surface_area'] = area
+            results[i]['surface_mesh_vertices'] = verts
+            results[i]['surface_mesh_simplices'] = faces
+            if 'surface_area' in props:
+                area = mesh_surface_area(verts, faces)
+                results[i]['surface_area'] = area
             if 'sphericity' in props:
                 vol = sp.sum(mask)
                 r = (3/4/sp.pi*vol)**(1/3)
