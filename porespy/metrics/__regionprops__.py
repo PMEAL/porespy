@@ -7,6 +7,66 @@ from skimage.measure import mesh_surface_area, marching_cubes
 from skimage.morphology import skeletonize_3d
 from sklearn.feature_extraction.image import grid_to_graph
 from openpnm.utils import tic, toc
+from pandas import DataFrame
+
+
+def props_to_DataFrame(regionprops):
+    r"""
+    Returns a Pandas DataFrame containing all the key metrics for each region.
+    Key metrics are the various scalar values that were calculated for each
+    region such as volume, sphericity, as so.
+
+    Parameters
+    ----------
+    regionprops : dictionary
+        This is a dictionary of properties for each region that is compuated
+        by ``regionprops_3D``.
+
+    Returns
+    -------
+    A Pandas DataFrame with each region corresponding to a row and each column
+    corresponding to a key metric.  All the values for a given property (e.g.
+    'sphericity') can be obtained as ``val = df['sphericity']``.  Conversely,
+    all the key metrics for a given region can be found with ``df.iloc[1]``.
+    """
+    df = DataFrame({i: regionprops[i].key_metrics for i in regionprops.keys()})
+    return df.T
+
+
+def props_to_image(regionprops, shape, prop):
+    r"""
+    Creates an image with each region colored according the requested ``prop``.
+
+    Parameters
+    ----------
+    regionprops : dictionary
+        This is a dictionary of properties for each region that is compuated
+        by ``regionprops_3D``.
+
+    shape : array_like
+        The shape of the original image for which ``regionprops`` was obtained.
+
+    prop : string
+        The region property of interest.  Can be a scalar item such as 'volume'
+        in which case the the regions will be colored by their respective
+        volumes, or can be an image-type property such as 'border' or
+        'convex_image', which will return an image composed of the sub-images.
+
+    Returns
+    -------
+    An ND-image the same size as the original image, with each region
+    represented by the values specified in ``prop``.
+
+    """
+    im = sp.zeros(shape=shape)
+    for i in regionprops.keys():
+        if 'convex' in prop:
+            mask = regionprops[i].convex_image
+        else:
+            mask = regionprops[i].image
+        temp = mask * regionprops[i][prop]
+        im[regionprops[i].slices] += temp
+    return im
 
 
 def regionprops_3D(im, props=[], exclude=[]):
@@ -80,7 +140,7 @@ def regionprops_3D(im, props=[], exclude=[]):
         props = all_props
     [props.remove(item) for item in exclude]
 
-    class _dict(dict):
+    class PropDict(dict):
         def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
             for item in props:
@@ -90,7 +150,9 @@ def regionprops_3D(im, props=[], exclude=[]):
     regions = sp.unique(im)
     if regions[0] == 0:  # Remove 0 from region list if present
         regions = regions[1:]
-    results = {i: _dict() for i in regions}
+    results = {}
+#    results[0] = PropDict()
+    results.update({i: PropDict() for i in regions})
     slices = spim.find_objects(im)
     for i in tqdm(regions):
         tic()
@@ -126,12 +188,12 @@ def regionprops_3D(im, props=[], exclude=[]):
                 hits = in_hull(points=points, hull=hull)
                 im_temp = sp.reshape(hits, mask.shape)
                 results[i]['convex_image'] = im_temp
-                if 'convex_volume' in props:
-                    vol = sp.sum(results[i]['convex_image'])
-                    results[i]['convex_volume'] = vol
-                if 'solidity' in props:
-                    im_hull = sp.sum(results[i]['convex_image'])
-                    results[i]['solidity'] = sp.sum(mask)/im_hull
+            if 'convex_volume' in props:
+                vol = results[i]['convex_hull'].volume
+                results[i]['convex_volume'] = vol
+            if 'solidity' in props:
+                vol = results[i]['convex_hull'].volume
+                results[i]['solidity'] = sp.sum(mask)/vol
         if 'border' in props:
             temp = dt == 1
             results[i]['border'] = temp
@@ -169,8 +231,8 @@ def regionprops_3D(im, props=[], exclude=[]):
         key_metrics = ['bbox_volume', 'convex_volume', 'solidity',
                        'equivalent_diameter', 'equivalent_surface_area',
                        'sphericity', 'extent']
-        metrics = set(key_metrics).intersection(set(props))
-        d = {item: results[i][item] for item in metrics}
+        available_metrics = set(key_metrics).intersection(set(props))
+        d = {item: results[i][item] for item in available_metrics}
         results[i]['key_metrics'] = d
         results[i]['processing_time'] = toc(quiet=True)
 
