@@ -6,9 +6,10 @@ from porespy.tools import extract_subsection, in_hull
 from skimage.measure import mesh_surface_area, marching_cubes
 from skimage.morphology import skeletonize_3d
 from sklearn.feature_extraction.image import grid_to_graph
+from openpnm.utils import tic, toc
 
 
-def regionprops_3D(im, props='all'):
+def regionprops_3D(im, props=[], exclude=[]):
     r"""
     Calculates various metrics for each labeled region in a 3D image.
 
@@ -35,6 +36,11 @@ def regionprops_3D(im, props='all'):
 
         **volume** : int
             The number of voxels in the region
+
+    exclude : list of strings
+        This optional argument is used to exclude some specific properties
+        from being calculated, which may be more expedient than listing the
+        desired properties.
 
     Returns
     -------
@@ -63,9 +69,22 @@ def regionprops_3D(im, props='all'):
     >>> regions = ps.metrics.regionprops_3D(im)
 
     """
+
+    all_props = ['slices', 'image', 'volume', 'coords', 'bbox', 'bbox_volume',
+                 'convex_hull', 'convex_image', 'convex_volume', 'solidity',
+                 'border', 'inscribed_sphere', 'equivalent_diameter',
+                 'equivalent_surface_area', 'extent', 'surface_area',
+                 'sphericity', 'skeleton']
+
+    if len(props) == 0:
+        props = all_props
+    [props.remove(item) for item in exclude]
+
     class _dict(dict):
         def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
+            for item in props:
+                self[item] = None
             self.__dict__ = self
 
     regions = sp.unique(im)
@@ -74,70 +93,75 @@ def regionprops_3D(im, props='all'):
     results = {i: _dict() for i in regions}
     slices = spim.find_objects(im)
     for i in tqdm(regions):
+        tic()
         s = slices[i - 1]
         mask = im[s] == i
         mask_padded = sp.pad(mask, pad_width=1, mode='constant')
         temp = spim.distance_transform_edt(mask_padded)
         dt = extract_subsection(temp, shape=mask.shape)
-        if 'slices' in props or props == 'all':
+        if 'slices' in props:
             results[i]['slices'] = s
-        if 'image' in props or props == 'all':
+        if 'image' in props:
             results[i]['image'] = mask
-        if 'volume' in props or props == 'all':
+        if 'volume' in props:
             results[i]['volume'] = sp.sum(mask)
-        if 'coords' in props or props == 'all':
+        if 'coords' in props:
             points = sp.vstack(sp.where(mask)).T
             points += sp.array([i.start for i in s])
             results[i]['coords'] = points
-        if 'bbox' in props or props == 'all':
+        if 'bbox' in props:
             lower = [i.start for i in s]
             upper = [i.stop for i in s]
             lower.extend(upper)
             results[i]['bbox'] = lower
-        if 'bbox_volume' in props or props == 'all':
+        if 'bbox_volume' in props:
             results[i]['bbox_volume'] = sp.prod(mask.shape)
-        if 'convex_hull' in props or props == 'all':
+        if 'convex_hull' in props:
             points = sp.vstack(sp.where(dt == 1)).T
             hull = sptl.ConvexHull(points=points)
             results[i]['convex_hull'] = hull
-        if 'convex_image' in props or props == 'all':
-            hull = results[i]['convex_hull']
-            points = sp.vstack(sp.where(mask >= 0)).T
-            hits = in_hull(points=points, hull=hull)
-            im_temp = sp.reshape(hits, mask.shape)
-            results[i]['convex_image'] = im_temp
-        if 'convex_volume' in props or props == 'all':
-            results[i]['convex_volume'] = sp.sum(results[i]['convex_image'])
-        if 'solidity' in props or props == 'all':
-            im_hull = sp.sum(results[i]['convex_image'])
-            results[i]['solidity'] = sp.sum(mask)/im_hull
-        if 'border' in props or props == 'all':
+            if 'convex_image' in props:
+                hull = results[i]['convex_hull']
+                points = sp.vstack(sp.where(mask >= 0)).T
+                hits = in_hull(points=points, hull=hull)
+                im_temp = sp.reshape(hits, mask.shape)
+                results[i]['convex_image'] = im_temp
+                if 'convex_volume' in props:
+                    vol = sp.sum(results[i]['convex_image'])
+                    results[i]['convex_volume'] = vol
+                if 'solidity' in props:
+                    im_hull = sp.sum(results[i]['convex_image'])
+                    results[i]['solidity'] = sp.sum(mask)/im_hull
+        if 'border' in props:
             temp = dt == 1
             results[i]['border'] = temp
-        if 'inscribed_sphere' in props or props == 'all':
+        if 'inscribed_sphere' in props:
             r = dt.max()
             inv_dt = spim.distance_transform_edt(dt < r)
             sphere = inv_dt < r
             results[i]['inscribed_sphere'] = sphere
-        if 'equivalent_diameter' in props or props == 'all':
+        if 'equivalent_diameter' in props:
             vol = sp.sum(mask)
             r = (3/4/sp.pi*vol)**(1/3)
             results[i]['equivalent_diameter'] = 2*r
-        if 'equivalent_surface_area' in props or props == 'all':
-            d = results[i]['equivalent_diameter']
-            results[i]['equivalent_surface_area'] = 4*sp.pi*(d/2)**2
-        if 'extent' in props or props == 'all':
+        if 'equivalent_surface_area' in props:
+            vol = sp.sum(mask)
+            r = (3/4/sp.pi*vol)**(1/3)
+            results[i]['equivalent_surface_area'] = 4*sp.pi*(r)**2
+        if 'extent' in props:
             results[i]['extent'] = sp.sum(mask)/sp.prod(mask.shape)
-        if 'surface_area' in props or props == 'all':
+        if 'surface_area' in props:
             tmp = sp.pad(sp.atleast_3d(mask), pad_width=1, mode='constant')
             verts, faces, normals, values = marching_cubes(volume=tmp, level=0)
             area = mesh_surface_area(verts, faces)
             results[i]['surface_area'] = area
-        if 'sphericity' in props or props == 'all':
-            a_equiv = results[i]['equivalent_surface_area']
-            a_region = results[i]['surface_area']
-            results[i]['sphericity'] = a_equiv/a_region
-        if 'skeleton' in props or props == 'all':
+            if 'sphericity' in props:
+                vol = sp.sum(mask)
+                r = (3/4/sp.pi*vol)**(1/3)
+                a_equiv = 4*sp.pi*(r)**2
+                a_region = results[i]['surface_area']
+                results[i]['sphericity'] = a_equiv/a_region
+        if 'skeleton' in props:
             results[i]['skeleton'] = skeletonize_3d(mask)
         if 'graph' in props:
             am = grid_to_graph(*mask.shape, mask=mask)
@@ -145,8 +169,10 @@ def regionprops_3D(im, props='all'):
         key_metrics = ['bbox_volume', 'convex_volume', 'solidity',
                        'equivalent_diameter', 'equivalent_surface_area',
                        'sphericity', 'extent']
-        d = {item: results[i][item] for item in key_metrics}
+        metrics = set(key_metrics).intersection(set(props))
+        d = {item: results[i][item] for item in metrics}
         results[i]['key_metrics'] = d
+        results[i]['processing_time'] = toc(quiet=True)
 
 
 
