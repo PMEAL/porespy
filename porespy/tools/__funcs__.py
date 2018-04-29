@@ -493,3 +493,30 @@ def get_border(shape, thickness=1, mode='edges'):
             border[0::, t:-t, 0::] = False
             border[0::, 0::, t:-t] = False
     return border
+
+
+def in_hull(points, hull):
+    """
+    Test if a list of coordinates are inside a given convex hull
+
+    Parameters
+    ----------
+    points : array_like (N x ndims)
+        The spatial coordinates of the points to check
+
+    hull : scipy.spatial.ConvexHull object **OR** array_like
+        Can be either a convex hull object as returned by
+        ``scipy.spatial.ConvexHull`` or simply the coordinates of the points
+        that define the convex hull.
+
+    Returns
+    -------
+    A Boolean array of length *N* indicating whether or not the given points
+    in ``points`` lies within the provided ``hull``.
+
+    """
+    from scipy.spatial import Delaunay, ConvexHull
+    if isinstance(hull, ConvexHull):
+        hull = hull.points
+    hull = Delaunay(hull)
+    return hull.find_simplex(points) >= 0

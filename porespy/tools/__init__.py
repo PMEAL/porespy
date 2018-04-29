@@ -12,6 +12,7 @@ that do NOT return a modified version of the original image.
 .. autofunction:: find_outer_region
 .. autofunction:: get_border
 .. autofunction:: get_slice
+.. autofunction:: in_hull
 .. autofunction:: make_contiguous
 .. autofunction:: randomize_colors
 .. autofunction:: subdivide
@@ -25,6 +26,7 @@ from .__funcs__ import extract_cylinder
 from .__funcs__ import find_outer_region
 from .__funcs__ import get_border
 from .__funcs__ import get_slice
+from .__funcs__ import in_hull
 from .__funcs__ import make_contiguous
 from .__funcs__ import randomize_colors
 from .__funcs__ import subdivide
