@@ -123,9 +123,19 @@ def regionprops_3D(im, props=[], exclude=[]):
     --------
     >>> import porespy as ps
     >>> import scipy.ndimage as spim
-    >>> im = ps.generators.blobs(shape=[300, 300], porosity=0.3, blobiness=2)
-    >>> im = ps.network_extraction.snow(im).regions*im
-    >>> regions = ps.metrics.regionprops_3D(im)
+    >>> import scipy.stats as spst
+    >>> from skimage.feature import peak_local_max
+    >>> from skimage.morphology import watershed
+    >>> dist = spst.norm(loc=15, scale=5)
+    >>> im = ps.generators.polydisperse_spheres(shape=[500, 500], dist=dist,
+    ...                                         porosity=0.5, nbins=5)
+    >>> dt = spim.distance_transform_edt(~im)
+    >>> dt_blurred = spim.gaussian_filter(dt, sigma=1)
+    >>> peaks = peak_local_max(image=dt_blurred, indices=False)
+    >>> markers = spim.label(peaks)[0]
+    >>> regions = watershed(image=-dt, markers=markers)*(~im)
+    >>> regions = ps.tools.randomize_colors(regions)
+    >>> props = ps.metrics.regionprops_3D(regions)
 
     """
 
