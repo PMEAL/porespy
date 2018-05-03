@@ -6,7 +6,6 @@ from porespy.tools import extract_subsection, in_hull
 from skimage.measure import mesh_surface_area, marching_cubes
 from skimage.morphology import skeletonize_3d
 from sklearn.feature_extraction.image import grid_to_graph
-from openpnm.utils import tic, toc
 from pandas import DataFrame
 
 
@@ -155,7 +154,6 @@ def regionprops_3D(im, props=[], exclude=[]):
     results.update({i: PropDict() for i in regions})
     slices = spim.find_objects(im)
     for i in tqdm(regions):
-        tic()
         s = slices[i - 1]
         mask = im[s] == i
         mask_padded = sp.pad(mask, pad_width=1, mode='constant')
@@ -237,11 +235,5 @@ def regionprops_3D(im, props=[], exclude=[]):
         available_metrics = set(key_metrics).intersection(set(props))
         d = {item: results[i][item] for item in available_metrics}
         results[i]['key_metrics'] = d
-        results[i]['processing_time'] = toc(quiet=True)
-
-
-
-
-        # tree = sptl.cKDTree(data=points)
 
     return results
