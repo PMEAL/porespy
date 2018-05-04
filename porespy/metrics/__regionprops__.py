@@ -13,12 +13,12 @@ def props_to_DataFrame(regionprops):
     r"""
     Returns a Pandas DataFrame containing all the key metrics for each region.
     Key metrics are the various scalar values that were calculated for each
-    region such as volume, sphericity, as so.
+    region such as volume, sphericity, and so on.
 
     Parameters
     ----------
     regionprops : dictionary
-        This is a dictionary of properties for each region that is compuated
+        This is a dictionary of properties for each region that is computed
         by ``regionprops_3D``.
 
     Returns
@@ -39,7 +39,7 @@ def props_to_image(regionprops, shape, prop):
     Parameters
     ----------
     regionprops : dictionary
-        This is a dictionary of properties for each region that is compuated
+        This is a dictionary of properties for each region that is computed
         by ``regionprops_3D``.
 
     shape : array_like
@@ -160,7 +160,7 @@ def regionprops_3D(im, props=[], exclude=[]):
     if regions[0] == 0:  # Remove 0 from region list if present
         regions = regions[1:]
     results = {}
-#    results[0] = PropDict()
+    # results[0] = PropDict()
     results.update({i: PropDict() for i in regions})
     slices = spim.find_objects(im)
     for i in tqdm(regions):
