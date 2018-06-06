@@ -13,6 +13,8 @@ directly to the binary image.
 .. autofunction:: pore_size_distribution
 .. autofunction:: porosity
 .. autofunction:: regionprops_3d
+.. autofunction:: props_to_image
+.. autofunction:: props_to_DataFrame
 .. autofunction:: representative_elementary_volume
 .. autofunction:: two_point_correlation_bf
 .. autofunction:: two_point_correlation_fft

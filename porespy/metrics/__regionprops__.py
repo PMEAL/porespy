@@ -12,7 +12,8 @@ from pandas import DataFrame
 def props_to_DataFrame(regionprops):
     r"""
     Returns a Pandas DataFrame containing all the scalar metrics for each
-    region, such as volume, sphericity, and so on.
+    region, such as volume, sphericity, and so on, calculated by
+    ``regionprops_3D``.
 
     Parameters
     ----------
@@ -26,6 +27,11 @@ def props_to_DataFrame(regionprops):
     corresponding to a key metric.  All the values for a given property (e.g.
     'sphericity') can be obtained as ``val = df['sphericity']``.  Conversely,
     all the key metrics for a given region can be found with ``df.iloc[1]``.
+
+    See Also
+    --------
+    props_to_image
+    regionprops_3d
     """
     # Parse the regionprops list and pull out all props with scalar values
     metrics = []
@@ -51,7 +57,8 @@ def props_to_DataFrame(regionprops):
 
 def props_to_image(regionprops, shape, prop):
     r"""
-    Creates an image with each region colored according the specified ``prop``.
+    Creates an image with each region colored according the specified ``prop``,
+    as obtained by ``regionprops_3d``.
 
     Parameters
     ----------
@@ -72,6 +79,11 @@ def props_to_image(regionprops, shape, prop):
     -------
     An ND-image the same size as the original image, with each region
     represented by the values specified in ``prop``.
+
+    See Also
+    --------
+    props_to_DataFrame
+    regionprops_3d
 
     """
     im = sp.zeros(shape=shape)
@@ -116,24 +128,6 @@ def regionprops_3D(im):
     Regions can be identified using a watershed algorithm, which can be a bit
     tricky to obtain desired results.  *PoreSpy* includes the SNOW algorithm,
     which may be helpful.
-
-    Examples
-    --------
-    >>> import porespy as ps
-    >>> import scipy.ndimage as spim
-    >>> import scipy.stats as spst
-    >>> from skimage.feature import peak_local_max
-    >>> from skimage.morphology import watershed
-    >>> dist = spst.norm(loc=15, scale=5)
-    >>> im = ps.generators.polydisperse_spheres(shape=[500, 500], dist=dist,
-    ...                                         porosity=0.5, nbins=5)
-    >>> dt = spim.distance_transform_edt(~im)
-    >>> dt_blurred = spim.gaussian_filter(dt, sigma=1)
-    >>> peaks = peak_local_max(image=dt_blurred, indices=False)
-    >>> markers = spim.label(peaks)[0]
-    >>> regions = watershed(image=-dt, markers=markers)*(~im)
-    >>> regions = ps.tools.randomize_colors(regions)
-    >>> props = ps.metrics.regionprops_3D(regions)
 
     """
     print('_'*60)
