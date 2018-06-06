@@ -87,13 +87,13 @@ def props_to_image(regionprops, shape, prop):
 
     """
     im = sp.zeros(shape=shape)
-    for i in regionprops.keys():
+    for r in regionprops:
         if 'convex' in prop:
-            mask = regionprops[i].convex_image
+            mask = r.convex_image
         else:
-            mask = regionprops[i].image
-        temp = mask * regionprops[i][prop]
-        im[regionprops[i].slices] += temp
+            mask = r.image
+        temp = mask * r[prop]
+        im[r.slice] += temp
     return im
 
 
