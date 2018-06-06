@@ -1,9 +1,9 @@
 import scipy as sp
 import scipy.ndimage as spim
-import scipy.spatial as sptl
 from tqdm import tqdm
-from porespy.tools import extract_subsection, in_hull
-from skimage.measure import mesh_surface_area, marching_cubes
+from porespy.tools import extract_subsection
+from skimage.measure import regionprops
+from skimage.measure import mesh_surface_area, marching_cubes_lewiner
 from skimage.morphology import skeletonize_3d
 from sklearn.feature_extraction.image import grid_to_graph
 from pandas import DataFrame
@@ -11,14 +11,13 @@ from pandas import DataFrame
 
 def props_to_DataFrame(regionprops):
     r"""
-    Returns a Pandas DataFrame containing all the key metrics for each region.
-    Key metrics are the various scalar values that were calculated for each
-    region such as volume, sphericity, and so on.
+    Returns a Pandas DataFrame containing all the scalar metrics for each
+    region, such as volume, sphericity, and so on.
 
     Parameters
     ----------
-    regionprops : dictionary
-        This is a dictionary of properties for each region that is computed
+    regionprops : list
+        This is a list of properties for each region that is computed
         by ``regionprops_3D``.
 
     Returns
@@ -28,19 +27,37 @@ def props_to_DataFrame(regionprops):
     'sphericity') can be obtained as ``val = df['sphericity']``.  Conversely,
     all the key metrics for a given region can be found with ``df.iloc[1]``.
     """
-    df = DataFrame({i: regionprops[i].key_metrics for i in regionprops.keys()})
-    return df.T
+    # Parse the regionprops list and pull out all props with scalar values
+    metrics = []
+    reg = regionprops[0]
+    for item in reg.__dir__():
+        if not item.startswith('_'):
+            try:
+                if sp.shape(getattr(reg, item)) == ():
+                    metrics.append(item)
+            except (TypeError, NotImplementedError, AttributeError):
+                pass
+    # Create a dictionary of all metrics that are simple scalar propertie
+    d = {}
+    for k in metrics:
+        try:
+            d[k] = sp.array([r[k] for r in regionprops])
+        except ValueError:
+            print('Error encountered evaluating ' + k + ' so skipping it')
+    # Create pandas data frame an return
+    df = DataFrame(d)
+    return df
 
 
 def props_to_image(regionprops, shape, prop):
     r"""
-    Creates an image with each region colored according the requested ``prop``.
+    Creates an image with each region colored according the specified ``prop``.
 
     Parameters
     ----------
-    regionprops : dictionary
-        This is a dictionary of properties for each region that is computed
-        by ``regionprops_3D``.
+    regionprops : list
+        This is a list of properties for each region that is computed
+        by PoreSpy's ``regionprops_3D`` or Skimage's ``regionsprops``.
 
     shape : array_like
         The shape of the original image for which ``regionprops`` was obtained.
@@ -68,9 +85,13 @@ def props_to_image(regionprops, shape, prop):
     return im
 
 
-def regionprops_3D(im, props=[], exclude=[]):
+def regionprops_3D(im):
     r"""
     Calculates various metrics for each labeled region in a 3D image.
+
+    The ``regionsprops`` method in **skimage** is very thorough for 2D images,
+    but is a bit limited when it comes to 3D images, so this function aims
+    to fill this gap.
 
     Parameters
     ----------
@@ -79,41 +100,18 @@ def regionprops_3D(im, props=[], exclude=[]):
         is received than the ``True`` voxels are treated as a single region
         labeled ``1``.  Regions labeled 0 are ignored in all cases.
 
-    props : list of strings
-        This optional argument can be used to limit which properties are
-        calculated for each region.  This can save time when many regions
-        are supplied, and only a few properties are of interest.
-
-        Below is a full list of available properties and their descriptions:
-
-        **slices** : tuple
-            A set of slice indices that bounds the region.  These are obtained
-            by the ``scipy.ndimage.find_objects`` function.
-
-        **image** : array_like
-            An sub-image containing only the region
-
-        **volume** : int
-            The number of voxels in the region
-
-    exclude : list of strings
-        This optional argument is used to exclude some specific properties
-        from being calculated, which may be more expedient than listing the
-        desired properties.
-
     Returns
     -------
-    A object for each region containing the properties of that regions that
-    can be accessed as attriutes.  The objects are contained in a dictionary
-    with region number as the key.  For example, assuming the result is stored
-    in a variable `d`, the *volume* of region 10 can be obtained with
-    ``d[10].volume``.
+    An augmented version of the list returned by skimage's ``regionprops``.
+    Information, such as ``volume``, can be found for region A using the
+    following syntax: ``result[A-1].volume``.
 
     Notes
     -----
-    The ``regionsprops`` method in **skimage** is very thorough for 2D images,
-    but is a bit limited when it comes to 3D images, so this function aims
-    to fill this gap.
+    This function may seem slow compared to the skimage version, but that is
+    because they defer calculation of certain properties until they are
+    accessed while this one evalulates everything (inlcuding the deferred
+    properties from skimage's ``regionprops``)
 
     Regions can be identified using a watershed algorithm, which can be a bit
     tricky to obtain desired results.  *PoreSpy* includes the SNOW algorithm,
@@ -138,112 +136,56 @@ def regionprops_3D(im, props=[], exclude=[]):
     >>> props = ps.metrics.regionprops_3D(regions)
 
     """
+    print('_'*60)
+    print('Calculating regionprops')
 
-    all_props = ['slices', 'image', 'volume', 'coords', 'bbox', 'bbox_volume',
-                 'convex_hull', 'convex_image', 'convex_volume', 'solidity',
-                 'border', 'inscribed_sphere', 'equivalent_diameter',
-                 'equivalent_surface_area', 'extent', 'surface_area',
-                 'sphericity', 'skeleton']
-
-    if len(props) == 0:
-        props = all_props
-    [props.remove(item) for item in exclude]
-
-    class PropDict(dict):
-        def __init__(self, *args, **kwargs):
-            super().__init__(*args, **kwargs)
-            for item in props:
-                self[item] = None
-            self.__dict__ = self
-
-    regions = sp.unique(im)
-    if regions[0] == 0:  # Remove 0 from region list if present
-        regions = regions[1:]
-    results = {}
-    # results[0] = PropDict()
-    results.update({i: PropDict() for i in regions})
-    slices = spim.find_objects(im)
-    for i in tqdm(regions):
-        s = slices[i - 1]
-        mask = im[s] == i
+    results = regionprops(im)
+    for i in tqdm(range(len(results))):
+        mask = results[i].image
         mask_padded = sp.pad(mask, pad_width=1, mode='constant')
         temp = spim.distance_transform_edt(mask_padded)
         dt = extract_subsection(temp, shape=mask.shape)
-        if 'slices' in props:
-            results[i]['slices'] = s
-        if 'image' in props:
-            results[i]['image'] = mask
-        if 'volume' in props:
-            results[i]['volume'] = sp.sum(mask)
-        if 'coords' in props:
-            points = sp.vstack(sp.where(mask)).T
-            points += sp.array([i.start for i in s])
-            results[i]['coords'] = points
-        if 'bbox' in props:
-            lower = [i.start for i in s]
-            upper = [i.stop for i in s]
-            lower.extend(upper)
-            results[i]['bbox'] = lower
-        if 'bbox_volume' in props:
-            results[i]['bbox_volume'] = sp.prod(mask.shape)
-        if 'convex_hull' in props:
-            points = sp.vstack(sp.where(dt == 1)).T
-            hull = sptl.ConvexHull(points=points)
-            results[i]['convex_hull'] = hull
-            if 'convex_image' in props:
-                hull = results[i]['convex_hull']
-                points = sp.vstack(sp.where(mask >= 0)).T
-                hits = in_hull(points=points, hull=hull)
-                im_temp = sp.reshape(hits, mask.shape)
-                results[i]['convex_image'] = im_temp
-            if 'convex_volume' in props:
-                vol = results[i]['convex_hull'].volume
-                results[i]['convex_volume'] = vol
-            if 'solidity' in props:
-                vol = results[i]['convex_hull'].volume
-                results[i]['solidity'] = sp.sum(mask)/vol
-        if 'border' in props:
-            temp = dt == 1
-            results[i]['border'] = temp
-        if 'inscribed_sphere' in props:
-            r = dt.max()
-            inv_dt = spim.distance_transform_edt(dt < r)
-            sphere = inv_dt < r
-            results[i]['inscribed_sphere'] = sphere
-        if 'equivalent_diameter' in props:
-            vol = sp.sum(mask)
-            r = (3/4/sp.pi*vol)**(1/3)
-            results[i]['equivalent_diameter'] = 2*r
-        if 'equivalent_surface_area' in props:
-            vol = sp.sum(mask)
-            r = (3/4/sp.pi*vol)**(1/3)
-            results[i]['equivalent_surface_area'] = 4*sp.pi*(r)**2
-        if 'extent' in props:
-            results[i]['extent'] = sp.sum(mask)/sp.prod(mask.shape)
-        if 'surface_mesh' in props:
-            tmp = sp.pad(sp.atleast_3d(mask), pad_width=1, mode='constant')
-            verts, faces, normals, values = marching_cubes(volume=tmp, level=0)
-            results[i]['surface_mesh_vertices'] = verts
-            results[i]['surface_mesh_simplices'] = faces
-            if 'surface_area' in props:
-                area = mesh_surface_area(verts, faces)
-                results[i]['surface_area'] = area
-            if 'sphericity' in props:
-                vol = sp.sum(mask)
-                r = (3/4/sp.pi*vol)**(1/3)
-                a_equiv = 4*sp.pi*(r)**2
-                a_region = results[i]['surface_area']
-                results[i]['sphericity'] = a_equiv/a_region
-        if 'skeleton' in props:
-            results[i]['skeleton'] = skeletonize_3d(mask)
-        if 'graph' in props:
-            am = grid_to_graph(*mask.shape, mask=mask)
-            results[i]['graph'] = am
-        key_metrics = ['bbox_volume', 'convex_volume', 'solidity',
-                       'equivalent_diameter', 'equivalent_surface_area',
-                       'sphericity', 'extent']
-        available_metrics = set(key_metrics).intersection(set(props))
-        d = {item: results[i][item] for item in available_metrics}
-        results[i]['key_metrics'] = d
+        # ---------------------------------------------------------------------
+        # Slice indices
+        results[i].slice = results[i]._slice
+        # ---------------------------------------------------------------------
+        # Volume of regions in voxels
+        results[i].volume = results[i].area
+        # ---------------------------------------------------------------------
+        # Volume of bounding box, in voxels
+        results[i].bbox_volume = sp.prod(mask.shape)
+        # ---------------------------------------------------------------------
+        # Create an image of the border
+        results[i].border = dt == 1
+        # ---------------------------------------------------------------------
+        # Create an image of the maximal inscribed sphere
+        r = dt.max()
+        inv_dt = spim.distance_transform_edt(dt < r)
+        results[i].inscribed_sphere = inv_dt < r
+        # ---------------------------------------------------------------------
+        # Find surface area using marching cubes and analyze the mesh
+        tmp = sp.pad(sp.atleast_3d(mask), pad_width=1, mode='constant')
+        verts, faces, norms, vals = marching_cubes_lewiner(volume=tmp, level=0)
+        results[i].surface_mesh_vertices = verts
+        results[i].surface_mesh_simplices = faces
+        area = mesh_surface_area(verts, faces)
+        results[i].surface_area = area
+        # ---------------------------------------------------------------------
+        # Find sphericity
+        vol = results[i].volume
+        r = (3/4/sp.pi*vol)**(1/3)
+        a_equiv = 4*sp.pi*(r)**2
+        a_region = results[i].surface_area
+        results[i].sphericity = a_equiv/a_region
+        # ---------------------------------------------------------------------
+        # Find skeleton of region
+        results[i].skeleton = skeletonize_3d(mask)
+        # ---------------------------------------------------------------------
+        # Volume of convex image, equal to area in 2D, so just translating
+        results[i].convex_volume = results[i].convex_area
+        # ---------------------------------------------------------------------
+        # Convert region grid to a graph
+        am = grid_to_graph(*mask.shape, mask=mask)
+        results[i].graph = am
 
     return results
