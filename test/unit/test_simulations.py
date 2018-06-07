@@ -4,18 +4,15 @@ import scipy as sp
 
 class SimulationTest():
     def setup_class(self):
-        self.im = ps.generators.overlapping_spheres(shape=[300, 300],
+        self.l = 100
+        self.im = ps.generators.overlapping_spheres(shape=[self.l, self.l],
                                                     radius=5,
                                                     porosity=0.5)
         self.mip = ps.simulations.Porosimetry(self.im)
-        self.blobs = ps.generators.blobs([300, 300, 300])
-        self.rw = ps.simulations.RandomWalk(self.blobs,
-                                            walkers=500,
-                                            max_steps=3000)
-        self.blobs_2d = ps.generators.blobs([300, 300])
-        self.rw_2d = ps.simulations.RandomWalk(self.blobs_2d,
-                                               walkers=500,
-                                               max_steps=3000)
+        self.blobs = ps.generators.blobs([self.l, self.l, self.l])
+        self.rw = ps.simulations.RandomWalk(image=self.blobs)
+        self.blobs_2d = ps.generators.blobs([self.l, self.l]).astype(int)
+        self.rw_2d = ps.simulations.RandomWalk(image=self.blobs_2d, seed=True)
 
     def test_porosimetry(self):
         self.mip.run()
@@ -32,26 +29,13 @@ class SimulationTest():
         assert sp.sum(counts) == int(sp.sum(self.mip.result > 0))
 
     def test_random_walk(self):
-        assert sp.shape(self.rw.path_data)[2] == 500
+        r'''
+        All tests for RandomWalk are done in pytrax. We are just testing that
+        the package imports ok and runs
+        '''
+        self.rw.run(nt=1000, nw=100, stride=1)
+        assert sp.shape(self.rw.real_coords) == (1000, 100, 3)
 
-    def test_show_msd(self):
-        slopes = self.rw.show_msd()
-        assert slopes.pore_space is not None
-
-    def test_get_path(self):
-        figs = self.rw._get_path(walker=0)
-        assert len(figs) == 2
-
-    def test_random_walk_2d(self):
-        assert sp.shape(self.rw_2d.path_data)[2] == 500
-
-    def test_show_msd_2d(self):
-        slopes = self.rw_2d.show_msd()
-        assert slopes.pore_space is not None
-
-    def test_get_path_2d(self):
-        figs = self.rw._get_path(walker=0)
-        assert len(figs) == 2
 
 if __name__ == '__main__':
     t = SimulationTest()
@@ -60,8 +44,3 @@ if __name__ == '__main__':
     t.test_plot_drainage_curve()
     t.test_plot_size_histogram()
     t.test_random_walk()
-    t.test_show_msd()
-    t.test_get_path()
-    t.test_random_walk_2d()
-    t.test_show_msd_2d()
-    t.test_get_path_2d()
