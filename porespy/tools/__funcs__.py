@@ -230,6 +230,33 @@ def extract_subsection(im, shape):
     return im[s_im]
 
 
+def get_planes(im, squeeze=True):
+    r"""
+    Extracts three planar images from the volumetric image, one for each
+    principle axis.  The planes are taken from the middle of the domain.
+
+    Parameters
+    ----------
+    im : ND-array
+        The volumetric image from which the 3 planar images are to be obtained
+
+    squeeze : boolean, optional
+        If True (default) the returned images are 2D (i.e. squeezed).  If
+        False, the images are 1 element deep along the axis where the slice
+        was obtained.
+    """
+    x, y, z = (sp.array(im.shape)/2).astype(int)
+    planes = [im[x, :, :], im[:, y, :], im[:, :, z]]
+    if not squeeze:
+        imx = planes[0]
+        planes[0] = sp.reshape(imx, [1, imx.shape[0], imx.shape[1]])
+        imy = planes[1]
+        planes[1] = sp.reshape(imy, [imy.shape[0], 1, imy.shape[1]])
+        imz = planes[2]
+        planes[2] = sp.reshape(imz, [imz.shape[0], imz.shape[1], 1])
+    return planes
+
+
 def extend_slice(s, shape, pad=1):
     r"""
     Adjust slice indices to include additional voxles around the slice.  The
