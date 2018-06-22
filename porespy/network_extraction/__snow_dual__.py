@@ -4,9 +4,9 @@ from porespy.tools import make_contiguous
 from skimage.segmentation import find_boundaries
                                                                                                                                                                                                                          
 
-def extract_dual_network(im, voxel_size=1 , 
-                         boundary_faces = ['top','bottom','left','right',
-                                           'front','back']):
+def snow_dual_network(im, voxel_size=1 , 
+                      boundary_faces = ['top','bottom','left','right',
+                                        'front','back']):
 
     r"""
     Analyzes an image that has been partitioned into void and solid regions
