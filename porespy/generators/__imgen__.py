@@ -27,6 +27,73 @@ def insert_shape(im, center, element, value=1):
     return im
 
 
+def RSA(im, radius, volume_fraction=1, max_iters=10000):
+    r"""
+    Generates a sphere or disk packing using Random Sequential Addition, which
+    ensures that spheres do not overlap but does not guarantee they are
+    tightly packed.
+
+    Parameters
+    ----------
+    im : ND-array
+        The image into which the spheres should be inserted.  By accepting an
+        image rather than a shape, it allows users to insert spheres into an
+        already existing image.  To begin the process, start with an array of
+        zero such as ``im = np.zeros([200, 200], dtype=bool)``.
+
+    radius : int
+        The radius of the disk or sphere to insert.
+
+    volume_fraction : scalar
+        The fraction of the image that should be filled with spheres.  The
+        spheres are addeds 1's, so each sphere addition increases the
+        ``volume_fraction`` until the specified limit is reach.
+
+    max_iters : int
+        The maximum number of iterations to perform before stopping.  If this
+        value is reached before the specified ``volume_fraction`` value then
+        the addition of spheres will stop and the image will NOT have the
+        requested value.
+
+    References
+    ----------
+    [1] Random Heterogeneous Materials, S. Torquato (2001)
+
+    """
+    # Note: The 2D vs 3D splitting of this just me being lazy...I can't be
+    # bothered to figure it out programmatically right now
+    # TODO: Ideally the spheres should be added periodically
+    r = radius
+    if im.ndim == 2:
+        temp = disk(r+1)
+        temp = temp[1:-1, 1:-1]
+        vf = im.sum()/im.size
+        i = 0
+        while (vf < volume_fraction) and (i < max_iters):
+            x = sp.random.randint(r, im.shape[0]-r)
+            y = sp.random.randint(r, im.shape[1]-r)
+            t = im[x-r:x+r+1, y-r:y+r+1]
+            if ~sp.any(t*temp):
+                im[x-r:x+r+1, y-r:y+r+1] += temp
+            i += 1
+            vf = im.sum()/im.size
+    elif im.ndim == 3:
+        temp = ball(r+1)
+        temp = temp[1:-1, 1:-1, 1:-1]
+        vf = im.sum()/im.size
+        i = 0
+        while (vf < volume_fraction) and (i < max_iters):
+            x = sp.random.randint(r, im.shape[0]-r)
+            y = sp.random.randint(r, im.shape[1]-r)
+            z = sp.random.randint(r, im.shape[2]-r)
+            t = im[x-r:x+r+1, y-r:y+r+1, z-r:z+r+1]
+            if ~sp.any(t*temp):
+                im[x-r:x+r+1, y-r:y+r+1, z-r:z+r+1] += temp
+            i += 1
+            vf = im.sum()/im.size
+    return im
+
+
 def add_noise(im, u_void=0.8, u_solid=0.2, s_void=0.15, s_solid=0.15):
     r"""
     Add some normally distributed noise values to the image.  This is useful
