@@ -33,6 +33,10 @@ def RSA(im, radius, volume_fraction=1, max_iters=10000):
     ensures that spheres do not overlap but does not guarantee they are
     tightly packed.
 
+    Each sphere is filled with 1's, and the center is marked with a 2.  This
+    allows easy boolean masking to extract only the centers, which can be
+    converted to coordinates using ``scipy.where`` and used for other purposes.
+
     Parameters
     ----------
     im : ND-array
@@ -73,10 +77,11 @@ def RSA(im, radius, volume_fraction=1, max_iters=10000):
             x = sp.random.randint(r, im.shape[0]-r)
             y = sp.random.randint(r, im.shape[1]-r)
             t = im[x-r:x+r+1, y-r:y+r+1]
-            if ~sp.any(t*temp):
+            if (im[x, y] == 0) and (~sp.any(t*temp)):
                 im[x-r:x+r+1, y-r:y+r+1] += temp
+                im[x, y] += 1.0
             i += 1
-            vf = im.sum()/im.size
+            vf = sp.sum(im > 0)/im.size
     elif im.ndim == 3:
         temp = ball(r+1)
         temp = temp[1:-1, 1:-1, 1:-1]
@@ -87,10 +92,13 @@ def RSA(im, radius, volume_fraction=1, max_iters=10000):
             y = sp.random.randint(r, im.shape[1]-r)
             z = sp.random.randint(r, im.shape[2]-r)
             t = im[x-r:x+r+1, y-r:y+r+1, z-r:z+r+1]
-            if ~sp.any(t*temp):
+            if (im[x, y, z] == 0) and (~sp.any(t*temp)):
+                im[x, y, z] += 1.0
                 im[x-r:x+r+1, y-r:y+r+1, z-r:z+r+1] += temp
             i += 1
-            vf = im.sum()/im.size
+            vf = sp.sum(im > 0)/im.size
+    if i >= max_iters:
+        print("Maximum iterations reached, volume fraction is: "+str(vf))
     return im
 
 
