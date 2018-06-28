@@ -73,5 +73,5 @@ def partition_pore_space(im, peaks):
     if peaks.dtype == bool:
         print('Boolean peaks received, applying labeling')
         peaks = spim.label(input=peaks)[0]
-    regions = watershed(-im, markers=peaks)
+    regions = watershed(-im, markers=peaks,mask=im>0)
     return regions
