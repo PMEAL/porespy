@@ -103,7 +103,7 @@ def snow_dual_network(im, voxel_size=1 ,
     p_solid_surf = sp.concatenate((p_sa, s_sa, t_sa))
     ##-------------------------------------------------------------------------
     # Adding additional information of dual network
-    net['pore.solid_surface_area'] = p_solid_surf * voxel_size**2
+    net['pore.solid_interfacial_area'] = p_solid_surf * voxel_size**2
     net['throat.void'] = pore_pore_labels
     net['throat.interconnect'] = pore_solid_labels
     net['throat.solid'] = solid_solid_labels
