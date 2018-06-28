@@ -3,6 +3,8 @@ import scipy.ndimage as spim
 from scipy.spatial.distance import cdist
 from porespy.tools import extend_slice
 from tqdm import tqdm
+from skimage import measure
+
 
 
 def extract_pore_network(im, dt=None, voxel_size=1):
@@ -59,6 +61,9 @@ def extract_pore_network(im, dt=None, voxel_size=1):
     p_dia_global = sp.zeros((Np, ), dtype=float)
     p_label = sp.zeros((Np, ), dtype=int)
     p_area_surf = sp.zeros((Np, ), dtype=int)
+    #--------------------------------------------------------------------------
+    MC_sa = sp.zeros((Np, ), dtype=float)
+    #--------------------------------------------------------------------------
     t_conns = []
     t_dia_inscribed = []
     t_area = []
@@ -74,8 +79,17 @@ def extract_pore_network(im, dt=None, voxel_size=1):
         sub_im = im[s]
         sub_dt = dt[s]
         pore_im = sub_im == i
-        pore_dt = spim.distance_transform_edt(sp.pad(pore_im, pad_width=1,
-                                                     mode='constant'))
+        #----------------------------------------------------------------------
+        padded_mask = sp.pad(pore_im, pad_width=1,mode='constant')
+        pore_dt = spim.distance_transform_edt(padded_mask)
+        
+        padded_mask = sp.array(padded_mask, dtype = int)
+        filter_mask = spim.convolve(padded_mask, 
+                                    weights=ball(1))/sp.sum(ball(1))
+        verts, faces, normals, values = measure.marching_cubes_lewiner(
+                filter_mask)
+        MC_sa[pore] = measure.mesh_surface_area(verts,faces)
+        #----------------------------------------------------------------------
         s_offset = sp.array([i.start for i in s])
         p_label[pore] = i
         p_coords[pore, :] = spim.center_of_mass(pore_im) + s_offset
@@ -123,6 +137,9 @@ def extract_pore_network(im, dt=None, voxel_size=1):
     net['pore.equivalent_diameter'] = 2*((3/4*net['pore.volume']/sp.pi)**(1/3))
     net['pore.extended_diameter'] = sp.copy(p_dia_global)*voxel_size
     net['pore.surface_area'] = sp.copy(p_area_surf)*(voxel_size)**2
+    #--------------------------------------------------------------------------
+    net['pore.surface_area_MC'] = sp.copy(MC_sa)*(voxel_size)**2
+    #--------------------------------------------------------------------------    
     net['throat.diameter'] = sp.array(t_dia_inscribed)*voxel_size
     net['throat.inscribed_diameter'] = sp.array(t_dia_inscribed)*voxel_size
     net['throat.area'] = sp.array(t_area)*(voxel_size**2)
