@@ -91,7 +91,7 @@ def snow_dual_network(im, voxel_size=1 ,
     boundary_labels = net['pore.label'] > b_num
     t_sa = sp.zeros(len(boundary_labels[boundary_labels==True]))
     ##-------------------------------------------------------------------------
-    # Calculates void surface area that connects with solid and vice versa
+    # Calculates void interfacial area that connects with solid and vice versa
     p_conns = net['throat.conns'][:, 0][pore_solid_labels]
     ps = net['throat.area'][pore_solid_labels]
     p_sa = sp.bincount(p_conns, ps)
@@ -100,11 +100,16 @@ def snow_dual_network(im, voxel_size=1 ,
     s_sa = sp.trim_zeros(s_sa)
     p_solid_surf = sp.concatenate((p_sa, s_sa, t_sa))
     ##-------------------------------------------------------------------------
-    # Finding uncorrected area
-    
+    # Calculates interfacial area using marching cube method 
+    ps_c = net['throat.area_mc'][pore_solid_labels]
+    p_sa_c = sp.bincount(p_conns, ps_c)
+    s_sa_c = sp.bincount(s_conns, ps_c)
+    s_sa_c = sp.trim_zeros(s_sa_c)
+    p_solid_surf_c = sp.concatenate((p_sa_c, s_sa_c, t_sa))
     ##-------------------------------------------------------------------------
     # Adding additional information of dual network
-    net['pore.solid_interfacial_area'] = p_solid_surf * voxel_size**2
+    net['pore.solid_IFA'] = p_solid_surf * voxel_size**2
+    net['pore.solid_IFA_mc'] = (p_solid_surf_c * voxel_size**2)
     net['throat.void'] = pore_pore_labels
     net['throat.interconnect'] = pore_solid_labels
     net['throat.solid'] = solid_solid_labels
@@ -165,3 +170,10 @@ def define_boundary_nodes(regions=None, dt=None,
     # Make labels contiguous
     regions = make_contiguous(regions)
     return regions,dt
+
+    conns = net['throat.conns']
+    tarea = net['throat.area']
+    sa1 = sp.bincount(conns[:,0],tarea[conns[:,0]])
+    sa2mask = conns[:,1] > max(conns[:,0])
+    sa2 = sp.bincount(conns[:,1][sa2mask],tarea[sa2mask])
+    p_tsa = sp.concatenate((sa1,sa2[sa2 > max(conns[:,1])]))
