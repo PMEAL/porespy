@@ -79,15 +79,13 @@ def snow_dual_network(im, voxel_size=1 ,
     
     loc4 = net['throat.conns'][:, 0] >= solid_num
     loc5 = net['throat.conns'][:, 0] < b_num
-    loc6 = net['throat.conns'][:, 1] < b_num
-    solid_solid_labels = loc4 * loc2 * loc5 * loc6
+    solid_solid_labels = loc4 * loc2 * loc5 * loc3
     
-    loc7 = net['throat.conns'][:, 1] < solid_num
-    pore_pore_labels = loc1 * loc7
+    loc6 = net['throat.conns'][:, 1] < solid_num
+    pore_pore_labels = loc1 * loc6
     
-    loc8 = net['throat.conns'][:, 0] < b_num
-    loc9 = net['throat.conns'][:, 1] >= b_num
-    boundary_throat_labels = loc8 * loc9 
+    loc7 = net['throat.conns'][:, 1] >= b_num
+    boundary_throat_labels = loc5 * loc7 
     
     solid_labels = (net['pore.label'] > solid_num) * ~(net['pore.label'] > b_num)
     boundary_labels = net['pore.label'] > b_num
@@ -101,6 +99,9 @@ def snow_dual_network(im, voxel_size=1 ,
     s_sa = sp.bincount(s_conns, ps)
     s_sa = sp.trim_zeros(s_sa)
     p_solid_surf = sp.concatenate((p_sa, s_sa, t_sa))
+    ##-------------------------------------------------------------------------
+    # Finding uncorrected area
+    
     ##-------------------------------------------------------------------------
     # Adding additional information of dual network
     net['pore.solid_interfacial_area'] = p_solid_surf * voxel_size**2
