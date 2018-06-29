@@ -170,10 +170,3 @@ def define_boundary_nodes(regions=None, dt=None,
     # Make labels contiguous
     regions = make_contiguous(regions)
     return regions,dt
-
-    conns = net['throat.conns']
-    tarea = net['throat.area']
-    sa1 = sp.bincount(conns[:,0],tarea[conns[:,0]])
-    sa2mask = conns[:,1] > max(conns[:,0])
-    sa2 = sp.bincount(conns[:,1][sa2mask],tarea[sa2mask])
-    p_tsa = sp.concatenate((sa1,sa2[sa2 > max(conns[:,1])]))
