@@ -87,7 +87,8 @@ def snow_dual_network(im, voxel_size=1 ,
     loc7 = net['throat.conns'][:, 1] >= b_num
     boundary_throat_labels = loc5 * loc7 
     
-    solid_labels = (net['pore.label'] > solid_num) * ~(net['pore.label'] > b_num)
+    solid_labels = ((net['pore.label'] > solid_num) * 
+                    ~(net['pore.label'] > b_num))
     boundary_labels = net['pore.label'] > b_num
     t_sa = sp.zeros(len(boundary_labels[boundary_labels==True]))
     ##-------------------------------------------------------------------------
