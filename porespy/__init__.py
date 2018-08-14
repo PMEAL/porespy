@@ -17,13 +17,11 @@ Modules
 This package consists of several modules, the purposes of which are given below:
 
 +------------------------+----------------------------------------------------+
-| **binarization**       | Convert greyscale images to binary                 |
-+------------------------+----------------------------------------------------+
 | **filters**            | Process images based on structural features        |
 +------------------------+----------------------------------------------------+
 | **generators**         | Make artificial images for testing & illustration  |
 +------------------------+----------------------------------------------------+
-| **metrics**            | Extract information from images                    |
+| **metrics**            | Obtain quantitative information from images        |
 +------------------------+----------------------------------------------------+
 | **network_extraction** | Extract pore network models from images            |
 +------------------------+----------------------------------------------------+
@@ -31,7 +29,7 @@ This package consists of several modules, the purposes of which are given below:
 +------------------------+----------------------------------------------------+
 | **tools**              | Utilities for altering & manipulating images       |
 +------------------------+----------------------------------------------------+
-| **visualization**      | Quickly and easily visualiz 3D images              |
+| **visualization**      | Quickly but rough visualization of 3D images       |
 +------------------------+----------------------------------------------------+
 | **io**                 | Import and export image data in various formats    |
 +------------------------+----------------------------------------------------+
@@ -75,11 +73,12 @@ for the solid.
 -----------
 Limitations
 -----------
+
 Although *scikit-image* and *scipy.ndimage* have a wide assortment of
 functions, they are not always the fastest implementation.  It is often faster
-to use ImageJ for many things, such as distance transforms and image
-morphology.  The advantage of PoreSpy is the flexibility offered by the
-Python environment.
+to use other packages (e.g. ImageJ) for many things, such as distance
+transforms and image morphology.  The advantage of PoreSpy is the flexibility
+offered by the Python environment.
 
 '''
 __version__ = "0.3.9"
@@ -90,6 +89,5 @@ from . import visualization
 from . import simulations
 from . import metrics
 from . import generators
-from . import binarization
 from . import filters
 from . import io

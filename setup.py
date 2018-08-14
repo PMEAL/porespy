@@ -32,7 +32,6 @@ setup(
               'porespy.filters',
               'porespy.network_extraction',
               'porespy.visualization',
-              'porespy.binarization',
               'porespy.simulations',
               'porespy.io',
               'porespy.io.evtk'],
