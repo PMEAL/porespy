@@ -114,6 +114,45 @@ class GeneratorTest():
         im = ps.generators.blobs(shape=[101])
         assert len(list(im.shape)) == 3
 
+    def test_RSA_2d_single(self):
+        sp.random.seed(0)
+        im = sp.zeros([100, 100], dtype=int)
+        im = ps.generators.RSA(im, radius=10, volume_fraction=0.5)
+        assert sp.sum(im > 0) == 5299
+        assert sp.sum(im > 1) == 19
+
+    def test_RSA_2d_multi(self):
+        sp.random.seed(0)
+        im = sp.zeros([100, 100], dtype=int)
+        im = ps.generators.RSA(im, radius=10, volume_fraction=0.5)
+        im = ps.generators.RSA(im, radius=5, volume_fraction=0.75)
+        assert sp.sum(im > 0) == 6682
+        assert sp.sum(im > 1) == 38
+
+    def test_RSA_3d_single(self):
+        sp.random.seed(0)
+        im = sp.zeros([50, 50, 50], dtype=int)
+        im = ps.generators.RSA(im, radius=5, volume_fraction=0.5)
+        assert sp.sum(im > 0) == 38172
+        assert sp.sum(im > 1) == 96
+
+    def test_RSA_mask_edge_2d(self):
+        im = sp.zeros([100, 100], dtype=int)
+        im = ps.generators.RSA(im, radius=10, volume_fraction=0.5,
+                               mask_edge=True)
+        coords = sp.argwhere(im == 2)
+        assert ~sp.any(coords < 10)
+        assert ~sp.any(coords > 90)
+
+    def test_RSA_mask_edge_3d(self):
+        im = sp.zeros([50, 50, 50], dtype=int)
+        im = ps.generators.RSA(im, radius=5, volume_fraction=0.5,
+                               mask_edge=True)
+        coords = sp.argwhere(im == 2)
+        assert ~sp.any(coords < 5)
+        assert ~sp.any(coords > 45)
+
+
 if __name__ == '__main__':
     t = GeneratorTest()
     t.setup_class()
@@ -128,3 +167,8 @@ if __name__ == '__main__':
     t.test_sphere_pack_fcc()
     t.test_sphere_pack_bcc()
     t.test_blobs_1d_shape()
+    t.test_RSA_2d_single()
+    t.test_RSA_2d_multi()
+    t.test_RSA_3d_single()
+    t.test_RSA_mask_edge_2d()
+    t.test_RSA_mask_edge_3d()

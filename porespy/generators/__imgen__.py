@@ -1,3 +1,4 @@
+import porespy as ps
 import scipy as sp
 import scipy.spatial as sptl
 import scipy.ndimage as spim
@@ -27,7 +28,7 @@ def insert_shape(im, center, element, value=1):
     return im
 
 
-def RSA(im, radius, volume_fraction=1, max_iters=10000):
+def RSA(im, radius, volume_fraction=1, mask_edge=False):
     r"""
     Generates a sphere or disk packing using Random Sequential Addition, which
     ensures that spheres do not overlap but does not guarantee they are
@@ -53,11 +54,10 @@ def RSA(im, radius, volume_fraction=1, max_iters=10000):
         spheres are addeds 1's, so each sphere addition increases the
         ``volume_fraction`` until the specified limit is reach.
 
-    max_iters : int
-        The maximum number of iterations to perform before stopping.  If this
-        value is reached before the specified ``volume_fraction`` value then
-        the addition of spheres will stop and the image will NOT have the
-        requested value.
+    mask_edge : boolean
+        If True, the structuring elements are completely contained within the
+        image as the edge is masked from placing their centers. If False, the
+        elements will be sliced to fit.
 
     References
     ----------
@@ -67,38 +67,43 @@ def RSA(im, radius, volume_fraction=1, max_iters=10000):
     # Note: The 2D vs 3D splitting of this just me being lazy...I can't be
     # bothered to figure it out programmatically right now
     # TODO: Ideally the spheres should be added periodically
-    r = radius
-    if im.ndim == 2:
-        temp = disk(r+1)
-        temp = temp[1:-1, 1:-1]
+    d2 = len(im.shape) == 2
+    mrad = 2*radius + 1
+    if d2:
+        im_strel = disk(radius)
+        mask_strel = disk(mrad)
+    else:
+        im_strel = ball(radius)
+        mask_strel = ball(mrad)
+    if sp.any(im > 0):
+        mask = ps.tools.fft_dilate(im > 0, im_strel > 0)
+        mask = mask.astype(int)
+    else:
+        mask = sp.zeros_like(im)
+    if mask_edge:
+        mask = _remove_edge(mask, radius)
+    vf = im.sum()/im.size
+    free_spots = sp.argwhere(mask == 0)
+    i = 0
+    while vf <= volume_fraction and len(free_spots) > 0:
+        choice = sp.random.randint(0, len(free_spots), size=1)
+        if d2:
+            [x, y] = free_spots[choice].flatten()
+            im = _fit_strel_to_im_2d(im, im_strel, radius, x, y)
+            mask = _fit_strel_to_im_2d(mask, mask_strel, mrad, x, y)
+            im[x, y] = 2
+        else:
+            [x, y, z] = free_spots[choice].flatten()
+            im = _fit_strel_to_im_3d(im, im_strel, radius, x, y, z)
+            mask = _fit_strel_to_im_3d(mask, mask_strel, mrad, x, y, z)
+            im[x, y, z] = 2
+        free_spots = sp.argwhere(mask == 0)
         vf = im.sum()/im.size
-        i = 0
-        while (vf < volume_fraction) and (i < max_iters):
-            x = sp.random.randint(r, im.shape[0]-r)
-            y = sp.random.randint(r, im.shape[1]-r)
-            t = im[x-r:x+r+1, y-r:y+r+1]
-            if (im[x, y] == 0) and (~sp.any(t*temp)):
-                im[x-r:x+r+1, y-r:y+r+1] += temp
-                im[x, y] += 1.0
-            i += 1
-            vf = sp.sum(im > 0)/im.size
-    elif im.ndim == 3:
-        temp = ball(r+1)
-        temp = temp[1:-1, 1:-1, 1:-1]
-        vf = im.sum()/im.size
-        i = 0
-        while (vf < volume_fraction) and (i < max_iters):
-            x = sp.random.randint(r, im.shape[0]-r)
-            y = sp.random.randint(r, im.shape[1]-r)
-            z = sp.random.randint(r, im.shape[2]-r)
-            t = im[x-r:x+r+1, y-r:y+r+1, z-r:z+r+1]
-            if (im[x, y, z] == 0) and (~sp.any(t*temp)):
-                im[x, y, z] += 1.0
-                im[x-r:x+r+1, y-r:y+r+1, z-r:z+r+1] += temp
-            i += 1
-            vf = sp.sum(im > 0)/im.size
-    if i >= max_iters:
-        print("Maximum iterations reached, volume fraction is: "+str(vf))
+        i += 1
+    if vf > volume_fraction:
+        print('Rad', radius, 'Volume Fraction', volume_fraction, 'reached')
+    if len(free_spots) == 0:
+        print('Rad', radius, 'No more free spots', 'Volume Fraction', vf)
     return im
 
 
@@ -727,3 +732,89 @@ def line_segment(X0, X1):
     y = sp.rint(sp.linspace(X0[1], X1[1], L)).astype(int)
     z = sp.rint(sp.linspace(X0[2], X1[2], L)).astype(int)
     return [x, y, z]
+
+
+def _fit_strel_to_im_2d(im, strel, r, x, y):
+    r"""
+    Helper function to add a structuring element to a 2D image.
+    Used by RSA. Makes sure if center is less than r pixels from edge of image
+    that the strel is sliced to fit.
+    """
+    elem = strel.copy()
+    x_dim, y_dim = im.shape
+    x_min = x-r
+    x_max = x+r+1
+    y_min = y-r
+    y_max = y+r+1
+    if x_min < 0:
+        x_adj = -x_min
+        elem = elem[x_adj:, :]
+        x_min = 0
+    elif x_max > x_dim:
+        x_adj = x_max - x_dim
+        elem = elem[:-x_adj, :]
+    if y_min < 0:
+        y_adj = -y_min
+        elem = elem[:, y_adj:]
+        y_min = 0
+    elif y_max > y_dim:
+        y_adj = y_max - y_dim
+        elem = elem[:, :-y_adj]
+    ex, ey = elem.shape
+    im[x_min:x_min+ex, y_min:y_min+ey] += elem
+    return im
+
+
+def _fit_strel_to_im_3d(im, strel, r, x, y, z):
+    r"""
+    Helper function to add a structuring element to a 2D image.
+    Used by RSA. Makes sure if center is less than r pixels from edge of image
+    that the strel is sliced to fit.
+    """
+    elem = strel.copy()
+    x_dim, y_dim, z_dim = im.shape
+    x_min = x-r
+    x_max = x+r+1
+    y_min = y-r
+    y_max = y+r+1
+    z_min = z-r
+    z_max = z+r+1
+    if x_min < 0:
+        x_adj = -x_min
+        elem = elem[x_adj:, :, :]
+        x_min = 0
+    elif x_max > x_dim:
+        x_adj = x_max - x_dim
+        elem = elem[:-x_adj, :, :]
+    if y_min < 0:
+        y_adj = -y_min
+        elem = elem[:, y_adj:, :]
+        y_min = 0
+    elif y_max > y_dim:
+        y_adj = y_max - y_dim
+        elem = elem[:, :-y_adj, :]
+    if z_min < 0:
+        z_adj = -z_min
+        elem = elem[:, :, z_adj:]
+        z_min = 0
+    elif z_max > z_dim:
+        z_adj = z_max - z_dim
+        elem = elem[:, :, :-z_adj]
+    ex, ey, ez = elem.shape
+    im[x_min:x_min+ex, y_min:y_min+ey, z_min:z_min+ez] += elem
+    return im
+
+
+def _remove_edge(im, r):
+    r'''
+    Fill in the edges of the input image.
+    Used by RSA to ensure that no elements are placed too close to the edge.
+    '''
+    edge = sp.ones_like(im)
+    if len(im.shape) == 2:
+        sx, sy = im.shape
+        edge[r:sx-r, r:sy-r] = im[r:sx-r, r:sy-r]
+    else:
+        sx, sy, sz = im.shape
+        edge[r:sx-r, r:sy-r, r:sz-r] = im[r:sx-r, r:sy-r, r:sz-r]
+    return edge

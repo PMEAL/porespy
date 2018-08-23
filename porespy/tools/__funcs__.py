@@ -2,6 +2,7 @@ import scipy as sp
 import scipy.ndimage as spim
 from skimage.morphology import ball, disk, square, cube
 from array_split import shape_split
+from scipy.signal import fftconvolve
 
 
 def subdivide(im, divs=2):
@@ -520,3 +521,39 @@ def get_border(shape, thickness=1, mode='edges'):
             border[0::, t:-t, 0::] = False
             border[0::, 0::, t:-t] = False
     return border
+
+
+def fft_dilate(im, strel):
+    r"""
+    Performs an image dilation using a fast fourier transform
+
+    Parameters
+    ----------
+    im : ND-array
+        An ND image of the porous material containing True values in the
+        pore space.
+
+    strel : ND-array
+        An ND image of a structuring element.
+
+    Returns
+    ----------
+    An ND array with same dimensions as im
+
+    Examples
+    ----------
+    >>> import porespy as ps
+    >>> from skimage.morphology import disk
+    >>> import numpy as np
+    >>> im = np.zeros([5, 5], dtype=bool)
+    >>> im[2, 2] = True
+    >>> strel = disk(2)
+    >>> im_d = ps.tools.fft_dilate(im, strel)
+    >>> print(im_d)
+    [[False False  True False False]
+     [False  True  True  True False]
+     [ True  True  True  True  True]
+     [False  True  True  True False]
+     [False False  True False False]]
+    """
+    return fftconvolve(im, strel, 'same') > 0.5
