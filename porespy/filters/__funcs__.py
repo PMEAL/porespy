@@ -133,17 +133,21 @@ def trim_extrema(im, h, mode='maxima'):
 
 
 @jit
-def flood(im, mode='max'):
+def flood(im, regions=None, mode='max'):
     r"""
     Floods/fills each region in an image with a single value based on the
     specific values in that region.  The ``mode`` argument is used to
-    determine how the value is calculated.  A region is defined as a connected
-    cluster of voxels surrounded by 0's for False's.
+    determine how the value is calculated.
 
     Parameters
     ----------
     im : array_like
         An ND image with isolated regions containing 0's elsewhere.
+
+    regions : array_like
+        An array the same shape as ``im`` with each region labeled.  If None is
+        supplied (default) then ``scipy.ndimage.label`` is used with its
+        default arguments.
 
     mode : string
         Specifies how to determine which value should be used to flood each
@@ -161,8 +165,12 @@ def flood(im, mode='max'):
     forground voxel based on the ``mode``.
 
     """
-    labels, N = spim.label(im)
-    mask = im != 0
+    mask = im > 0
+    if regions is None:
+        labels, N = spim.label(mask)
+    else:
+        labels = sp.copy(regions)
+        N = labels.max()
     I = im.flatten()
     L = labels.flatten()
     if mode.startswith('max'):
@@ -301,6 +309,15 @@ def local_thickness(im):
     ----------
     im : array_like
         A binary image with the phase of interest set to True
+
+    npts : scalar
+        The number of sizes to uses when probing pore space.  Points will be
+        generated spanning the range of sizes in the distance transform.
+        The default is 25 points.
+
+    sizes : array_like
+        The sizes to probe.  Use this argument instead of ``npts`` for
+        more control of the range and spacing of points.
 
     Returns
     -------
