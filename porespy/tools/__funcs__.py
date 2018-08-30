@@ -63,6 +63,33 @@ def subdivide(im, divs=2):
     return s
 
 
+def bbox_to_slices(bbox):
+    r"""
+    Given a tuple containing bounding box coordinates, return a tuple of slice
+    objects.
+
+    Parameters
+    ----------
+    bbox : tuple of ints
+        The bounding box indices in the form (``xmin``, ``ymin``, ``zmin``,
+        ``xmax``, ``ymax``, ``zmax``).  For a 2D image, simply omit the
+        ``zmin`` and ``zmax`` entries.
+
+    Returns
+    -------
+    A tuple of slice objects that can be used to directly index into a larger
+    image.  A
+    """
+    if len(bbox) == 4:
+        ret = (slice(bbox[0], bbox[2]),
+               slice(bbox[1], bbox[3]))
+    else:
+        ret = (slice(bbox[0], bbox[3]),
+               slice(bbox[1], bbox[4]),
+               slice(bbox[2], bbox[5]))
+    return ret
+
+
 def get_slice(im, center, size, pad=0):
     r"""
     Given a ``center`` location and ``radius`` of a feature, returns the slice

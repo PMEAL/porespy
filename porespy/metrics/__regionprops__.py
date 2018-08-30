@@ -1,7 +1,7 @@
 import scipy as sp
 import scipy.ndimage as spim
 from tqdm import tqdm
-from porespy.tools import extract_subsection
+from porespy.tools import extract_subsection, bbox_to_slices
 from skimage.measure import regionprops
 from skimage.measure import mesh_surface_area, marching_cubes_lewiner
 from skimage.morphology import skeletonize_3d
@@ -93,7 +93,8 @@ def props_to_image(regionprops, shape, prop):
         else:
             mask = r.image
         temp = mask * r[prop]
-        im[r.slice] += temp
+        s = bbox_to_slices(r.bbox)
+        im[s] += temp
     return im
 
 
