@@ -8,7 +8,6 @@ structural characteristics, such as pore sizes.
 
 .. autofunction:: apply_chords
 .. autofunction:: apply_chords_3D
-.. autofunction:: local_thickness
 .. autofunction:: fill_blind_pores
 .. autofunction:: find_disconnected_voxels
 .. autofunction:: flood

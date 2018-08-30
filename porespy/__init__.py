@@ -51,13 +51,13 @@ Related Packages
 
 PoreSpy relies heavily on two general image analysis packages:
 **scipy.ndimage** and **scikit-image** also known as **skimage**.  The former
-contains an assortment of veyr general image analysis tools such as image
+contains an assortment of general image analysis tools such as image
 morphology filters, while the latter offers more complex but still general
 functions such as watershed segmentation.  PoreSpy does not duplicate any of
 these general functions so you will also have to install and learn how to
 use them to get the most from PoreSpy.  The functions in PoreSpy are generally
 built up using several of the more general functions offered by **skimage**
-and **scipy**.  There are a few functions in PoreSpy that are implimented
+and **scipy**.  There are a few functions in PoreSpy that are implemented
 natively, but only when necessary.
 
 -----------
