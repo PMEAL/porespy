@@ -10,6 +10,37 @@ from skimage.morphology import ball, disk, square, cube
 from skimage.morphology import reconstruction
 
 
+def norm_to_uniform(im, scale=None):
+    r"""
+    Take an image with normally distributed greyscale values and converts it to
+    a uniform (i.e. flat) distribution.  It's also possible to specify the
+    lower and upper limits of the uniform distribution.
+
+    Parameters
+    ----------
+    im : ND-image
+        The image containing the normally distributed scalar field
+
+    scale : [low, high]
+        A list or array indicating the lower and upper bounds for the new
+        randomly distributed data.  The default is ``None``, which uses the
+        ``max`` and ``min`` of the original image as the the lower and upper
+        bounds, but another common option might be [0, 1].
+
+    Returns
+    -------
+    An ND-image the same size as ``im`` with uniformly distributed greyscale
+    values spanning the specified range, if given.
+    """
+    if scale is None:
+        scale = [im.min(), im.max()]
+    im = (im - sp.mean(im))/sp.std(im)
+    im = 1/2*sp.special.erfc(-im/sp.sqrt(2))
+    im = (im - im.min()) / (im.max() - im.min())
+    im = im*(scale[1] - scale[0]) + scale[0]
+    return im
+
+
 def find_disconnected_voxels(im, conn=None):
     r"""
     This identifies all pore (or solid) voxels that are not connected to the
