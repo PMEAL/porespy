@@ -132,30 +132,30 @@ def trim_nonpercolating_paths(im, inlet_axis=0, outlet_axis=0):
     labels = spim.label(im)[0]
     inlet = sp.zeros_like(im,dtype=int)
     outlet = sp.zeros_like(im,dtype=int)
-    if im.ndim == 3
-        if inlet_axis = 0:
+    if im.ndim == 3:
+        if inlet_axis == 0:
             inlet[0,:,:] = 1
-        elif inlet_axis = 1:
+        elif inlet_axis == 1:
             inlet[:,0,:] = 1
-        else inlet_axis = 2:
+        elif inlet_axis == 2:
             inlet[:,:,0] = 1
         
-        if outlet_axis = 0:
+        if outlet_axis == 0:
             outlet[-1,:,:] = 1
-        elif outlet_axis = 1:
+        elif outlet_axis == 1:
             outlet[:,-1,:] = 1
-        else outlet_axis = 2:
+        elif outlet_axis == 2:
             outlet[:,:,-1] = 1
     
-    if im.ndim == 2
-        if inlet_axis = 0:
+    if im.ndim == 2:
+        if inlet_axis == 0:
             inlet[0,:] = 1
-        else inlet_axis = 1:
+        elif inlet_axis == 1:
             inlet[:,0] = 1
         
-        if outlet_axis = 0:
+        if outlet_axis == 0:
             outlet[-1,:] = 1
-        else outlet_axis = 1:
+        elif outlet_axis == 1:
             outlet[:,-1] = 1       
     IN = sp.unique(labels*inlet)
     OUT = sp.unique(labels*outlet)
