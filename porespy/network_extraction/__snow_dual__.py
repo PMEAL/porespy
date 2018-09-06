@@ -94,7 +94,7 @@ def snow_dual_network(im, voxel_size=1 ,
     ##-------------------------------------------------------------------------
     # Calculates void interfacial area that connects with solid and vice versa
     p_conns = net['throat.conns'][:, 0][pore_solid_labels]
-    ps = net['throat.area'][pore_solid_labels]
+    ps = net['throat.area_mc1'][pore_solid_labels]
     p_sa = sp.bincount(p_conns, ps)
     s_conns = net['throat.conns'][:, 1][pore_solid_labels]
     s_sa = sp.bincount(s_conns, ps)
@@ -102,7 +102,7 @@ def snow_dual_network(im, voxel_size=1 ,
     p_solid_surf = sp.concatenate((p_sa, s_sa, t_sa))
     ##-------------------------------------------------------------------------
     # Calculates interfacial area using marching cube method 
-    ps_c = net['throat.area_mc'][pore_solid_labels]
+    ps_c = net['throat.area_mc1'][pore_solid_labels]
     p_sa_c = sp.bincount(p_conns, ps_c)
     s_sa_c = sp.bincount(s_conns, ps_c)
     s_sa_c = sp.trim_zeros(s_sa_c)
@@ -125,48 +125,54 @@ def define_boundary_nodes(regions=None, dt=None,
               faces=['front','back','left','right','top','bottom']):
     ##-------------------------------------------------------------------------
     # Edge pad segmentation and distance transform 
-    regions = sp.pad(regions,1,'edge')
-    dt = sp.pad(dt,1,'edge')
-    ##-------------------------------------------------------------------------
-    # Remove boundary nodes interconnection
-    regions[:,:,0] = regions[:,:,0] + regions.max()
-    regions[:,:,-1] = regions[:,:,-1] + regions.max()
-    regions[0,:,:] = regions[0,:,:] + regions.max()
-    regions[-1,:,:] = regions[-1,:,:] + regions.max()
-    regions[:,0,:] = regions[:,0,:] + regions.max()
-    regions[:,-1,:] = regions[:,-1,:] + regions.max()
-    regions[:,:,0] = (~find_boundaries(regions[:,:,0],
-           mode='outer'))*regions[:,:,0]
-    regions[:,:,-1] = (~find_boundaries(regions[:,:,-1],
-           mode='outer'))*regions[:,:,-1]
-    regions[0,:,:] = (~find_boundaries(regions[0,:,:],
-           mode='outer'))*regions[0,:,:]
-    regions[-1,:,:] = (~find_boundaries(regions[-1,:,:],
-           mode='outer'))*regions[-1,:,:]
-    regions[:,0,:] = (~find_boundaries(regions[:,0,:],
-           mode='outer'))*regions[:,0,:]
-    regions[:,-1,:] = (~find_boundaries(regions[:,-1,:],
-           mode='outer'))*regions[:,-1,:]
-    ##-------------------------------------------------------------------------
-    # Remove unselected faces
-    if 'top' not in faces:
-        regions = regions[:,:,1:]
-        dt      = dt[:,:,1:]
-    if 'bottom' not in faces:
-        regions = regions[:,:,:-1]
-        dt      = dt[:,:,:-1]
-    if 'front' not in faces:
-        regions = regions[:,1:,:]
-        dt      = dt[:,1:,:]
-    if 'back' not in faces:
-        regions = regions[:,:-1,:]
-        dt      = dt[:,1:,:]
-    if 'left' not in faces:
-        regions = regions[1:,:,:]
-        dt      = dt[1:,:,:]
-    if 'right' not in faces:
-        regions = regions[:-1,:,:]
-        dt      = dt[:-1,:,:]
+    if faces is not None:
+        regions = sp.pad(regions,1,'edge')
+        dt = sp.pad(dt,3,'edge')
+        ##-------------------------------------------------------------------------
+        # Remove boundary nodes interconnection
+        regions[:,:,0] = regions[:,:,0] + regions.max()
+        regions[:,:,-1] = regions[:,:,-1] + regions.max()
+        regions[0,:,:] = regions[0,:,:] + regions.max()
+        regions[-1,:,:] = regions[-1,:,:] + regions.max()
+        regions[:,0,:] = regions[:,0,:] + regions.max()
+        regions[:,-1,:] = regions[:,-1,:] + regions.max()
+        regions[:,:,0] = (~find_boundaries(regions[:,:,0],
+               mode='outer'))*regions[:,:,0]
+        regions[:,:,-1] = (~find_boundaries(regions[:,:,-1],
+               mode='outer'))*regions[:,:,-1]
+        regions[0,:,:] = (~find_boundaries(regions[0,:,:],
+               mode='outer'))*regions[0,:,:]
+        regions[-1,:,:] = (~find_boundaries(regions[-1,:,:],
+               mode='outer'))*regions[-1,:,:]
+        regions[:,0,:] = (~find_boundaries(regions[:,0,:],
+               mode='outer'))*regions[:,0,:]
+        regions[:,-1,:] = (~find_boundaries(regions[:,-1,:],
+               mode='outer'))*regions[:,-1,:]
+        ##-------------------------------------------------------------------------
+        regions = sp.pad(regions,2,'edge')
+    
+        # Remove unselected faces
+        if 'top' not in faces:
+            regions = regions[:,:,3:]
+            dt      = dt[:,:,3:]
+        if 'bottom' not in faces:
+            regions = regions[:,:,:-3]
+            dt      = dt[:,:,:-3]
+        if 'front' not in faces:
+            regions = regions[:,3:,:]
+            dt      = dt[:,3:,:]
+        if 'back' not in faces:
+            regions = regions[:,:-3,:]
+            dt      = dt[:,-3:,:]
+        if 'left' not in faces:
+            regions = regions[3:,:,:]
+            dt      = dt[3:,:,:]
+        if 'right' not in faces:
+            regions = regions[:-3,:,:]
+            dt      = dt[:-3,:,:]
+    else:
+        regions = regions
+        dt = dt
     ##-------------------------------------------------------------------------
     # Make labels contiguous
     regions = make_contiguous(regions)
