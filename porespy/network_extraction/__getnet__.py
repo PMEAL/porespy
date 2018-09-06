@@ -62,8 +62,9 @@ def extract_pore_network(im, dt=None, voxel_size=1):
     p_label = sp.zeros((Np, ), dtype=int)
     p_area_surf = sp.zeros((Np, ), dtype=int)
     ##-------------------------------------------------------------------------
-    mc_sa = sp.zeros((Np, ), dtype=float)
+    mc_sa = sp.zeros((Np, ), dtype=int)
     t_area_mc = []
+    t_area_mc1 = []
     ##-------------------------------------------------------------------------
     t_conns = []
     t_dia_inscribed = []
@@ -111,6 +112,27 @@ def extract_pore_network(im, dt=None, voxel_size=1):
                 ##-------------------------------------------------------------
                 t_area_mc.append(cf*sp.size(vx[0]))
                 ##-------------------------------------------------------------
+                ###------------------------------------------------------------
+                merged_region = im[(min(slices[pore][0].start,slices[j][0].start)):max(slices[pore][0].stop,slices[j][0].stop),(min(slices[pore][1].start,slices[j][1].start)):max(slices[pore][1].stop,slices[j][1].stop)]
+                merged_region = (merged_region == pore + 1) + (merged_region == j + 1)
+                merged_region = sp.pad(merged_region,pad_width = 1, mode='constant', constant_values = 0)
+                merged_filter = spim.convolve(merged_region*1.0, 
+                                              weights=ball(1))/sp.sum(ball(1))
+                verts1, faces1, normals1, values1 = measure.marching_cubes_lewiner(merged_filter)
+                mc_sa_combined = measure.mesh_surface_area(verts1,faces1)
+
+                j_mask = im[slices[j]] == j + 1
+                j_mask = sp.pad(j_mask*1.0, pad_width = 1, mode='constant', constant_values = 0)
+                j_filter = spim.convolve(j_mask, 
+                                         weights=ball(1))/sp.sum(ball(1))
+                verts2, faces2, normals2, values2 = measure.marching_cubes_lewiner(j_filter)
+                mc_sa_j = measure.mesh_surface_area(verts2,faces2)
+                mc_area = 0.5 * (mc_sa_j + mc_sa[pore] - mc_sa_combined)
+                if mc_area < 0:
+                    mc_area = 1.0
+                t_area_mc1.append(mc_area)
+#                print(mc_sa_j)
+                ###------------------------------------------------------------
                 t_inds = tuple([i+j for i, j in zip(vx, s_offset)])
                 temp = sp.where(dt[t_inds] == sp.amax(dt[t_inds]))[0][0]
                 if im.ndim == 2:
@@ -144,7 +166,10 @@ def extract_pore_network(im, dt=None, voxel_size=1):
     ##-------------------------------------------------------------------------
     net['pore.surface_area_mc'] = sp.copy(mc_sa)*(voxel_size)**2
     net['throat.area_mc'] = sp.array(t_area_mc)*(voxel_size**2)
-    ##-------------------------------------------------------------------------    
+    ##-------------------------------------------------------------------------
+    ###------------------------------------------------------------------------
+    net['throat.area_mc1'] = sp.array(t_area_mc1)*(voxel_size**2)
+    ###------------------------------------------------------------------------    
     net['throat.diameter'] = sp.array(t_dia_inscribed)*voxel_size
     net['throat.inscribed_diameter'] = sp.array(t_dia_inscribed)*voxel_size
     net['throat.area'] = sp.array(t_area)*(voxel_size**2)
