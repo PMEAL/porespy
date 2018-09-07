@@ -99,9 +99,10 @@ def trim_floating_solid(im):
     im[holes] = True
     return im
 
+
 def trim_nonpercolating_paths(im, inlet_axis=0, outlet_axis=0):
     r"""
-    Removes all disconnected solid clusters including edges that are 
+    Removes all disconnected solid clusters including edges that are
     nonpercolating.
 
     Parameters
@@ -110,13 +111,13 @@ def trim_nonpercolating_paths(im, inlet_axis=0, outlet_axis=0):
         The image of the porous material
     
     inlet_axis : int
-        Inlet axis of boundary condition. For three dimensional image the 
-        number ranges from 0 to 2. For two dimensional image the range is 
+        Inlet axis of boundary condition. For three dimensional image the
+        number ranges from 0 to 2. For two dimensional image the range is
         between 0 to 1.
     
     outlet_axis : int
-        Outlet axis of boundary condition. For three dimensional image the 
-        number ranges from 0 to 2. For two dimensional image the range is 
+        Outlet axis of boundary condition. For three dimensional image the
+        number ranges from 0 to 2. For two dimensional image the range is
         between 0 to 1.
 
     Returns
@@ -130,38 +131,39 @@ def trim_nonpercolating_paths(im, inlet_axis=0, outlet_axis=0):
     """
     im = trim_floating_solid(im)
     labels = spim.label(~im)[0]
-    inlet = sp.zeros_like(im,dtype=int)
-    outlet = sp.zeros_like(im,dtype=int)
+    inlet = sp.zeros_like(im, dtype=int)
+    outlet = sp.zeros_like(im, dtype=int)
     if im.ndim == 3:
         if inlet_axis == 0:
-            inlet[0,:,:] = 1
+            inlet[0, :, :] = 1
         elif inlet_axis == 1:
-            inlet[:,0,:] = 1
+            inlet[:, 0, :] = 1
         elif inlet_axis == 2:
-            inlet[:,:,0] = 1
-        
+            inlet[:, :, 0] = 1
+
         if outlet_axis == 0:
-            outlet[-1,:,:] = 1
+            outlet[-1, :, :] = 1
         elif outlet_axis == 1:
-            outlet[:,-1,:] = 1
+            outlet[:, -1, :] = 1
         elif outlet_axis == 2:
-            outlet[:,:,-1] = 1
-    
+            outlet[:, :, -1] = 1
+
     if im.ndim == 2:
         if inlet_axis == 0:
-            inlet[0,:] = 1
+            inlet[0, :] = 1
         elif inlet_axis == 1:
-            inlet[:,0] = 1
-        
+            inlet[:, 0] = 1
+
         if outlet_axis == 0:
-            outlet[-1,:] = 1
+            outlet[-1, :] = 1
         elif outlet_axis == 1:
-            outlet[:,-1] = 1       
+            outlet[:, -1] = 1       
     IN = sp.unique(labels*inlet)
     OUT = sp.unique(labels*outlet)
     new_im = sp.isin(labels,list(set(IN) ^ set(OUT)), invert=True)
     im[new_im == False] = True
     return im
+
 
 def trim_extrema(im, h, mode='maxima'):
     r"""

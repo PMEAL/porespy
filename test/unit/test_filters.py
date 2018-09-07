@@ -101,30 +101,30 @@ class FilterTest():
         assert sp.sum(h) == 202
 
     def test_trim_nonpercolating_paths_2d_axis0(self):
-        h = ps.filters.trim_nonpercolating_paths(self.im[:, :, 0],inlet_axis=0,
-                                                 outlet_axis=0)
+        h = ps.filters.trim_nonpercolating_paths(self.im[:, :, 0],
+                                                 inlet_axis=0, outlet_axis=0)
         assert sp.sum(h) == 5030
 
     def test_trim_nonpercolating_paths_2d_axis1(self):
-        h = ps.filters.trim_nonpercolating_paths(self.im[:, :, 0],inlet_axis=1,
-                                                 outlet_axis=1)
+        h = ps.filters.trim_nonpercolating_paths(self.im[:, :, 0],
+                                                 inlet_axis=1, outlet_axis=1)
         assert sp.sum(h) == 5185
         
     def test_trim_nonpercolating_paths_3d_axis0(self):
-        h = ps.filters.trim_nonpercolating_paths(self.im,inlet_axis=0,
-                                                 outlet_axis=0)
+        h = ps.filters.trim_nonpercolating_paths(self.im,
+                                                 inlet_axis=0, outlet_axis=0)
         assert sp.sum(h) == 500283
         
     def test_trim_nonpercolating_paths_3d_axis1(self):
-        h = ps.filters.trim_nonpercolating_paths(self.im,inlet_axis=1,
-                                                 outlet_axis=1)
+        h = ps.filters.trim_nonpercolating_paths(self.im,
+                                                 inlet_axis=1, outlet_axis=1)
         assert sp.sum(h) == 500402
-        
+
     def test_trim_nonpercolating_paths_3d_axis2(self):
-        h = ps.filters.trim_nonpercolating_paths(self.im,inlet_axis=2,
-                                                 outlet_axis=2)
+        h = ps.filters.trim_nonpercolating_paths(self.im,
+                                                 inlet_axis=2, outlet_axis=2)
         assert sp.sum(h) == 500413
-        
+
     def test_fill_blind_pores(self):
         h = ps.filters.find_disconnected_voxels(self.im)
         b = ps.filters.fill_blind_pores(h)
