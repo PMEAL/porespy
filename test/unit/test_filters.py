@@ -109,12 +109,12 @@ class FilterTest():
         h = ps.filters.trim_nonpercolating_paths(self.im[:, :, 0],
                                                  inlet_axis=1, outlet_axis=1)
         assert sp.sum(h) == 5185
-        
+
     def test_trim_nonpercolating_paths_3d_axis0(self):
         h = ps.filters.trim_nonpercolating_paths(self.im,
                                                  inlet_axis=0, outlet_axis=0)
         assert sp.sum(h) == 500283
-        
+
     def test_trim_nonpercolating_paths_3d_axis1(self):
         h = ps.filters.trim_nonpercolating_paths(self.im,
                                                  inlet_axis=1, outlet_axis=1)

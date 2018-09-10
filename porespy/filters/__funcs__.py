@@ -109,12 +109,12 @@ def trim_nonpercolating_paths(im, inlet_axis=0, outlet_axis=0):
     ----------
     im : ND-array
         The image of the porous material
-    
+
     inlet_axis : int
         Inlet axis of boundary condition. For three dimensional image the
         number ranges from 0 to 2. For two dimensional image the range is
         between 0 to 1.
-    
+
     outlet_axis : int
         Outlet axis of boundary condition. For three dimensional image the
         number ranges from 0 to 2. For two dimensional image the range is
@@ -157,10 +157,10 @@ def trim_nonpercolating_paths(im, inlet_axis=0, outlet_axis=0):
         if outlet_axis == 0:
             outlet[-1, :] = 1
         elif outlet_axis == 1:
-            outlet[:, -1] = 1       
+            outlet[:, -1] = 1  
     IN = sp.unique(labels*inlet)
     OUT = sp.unique(labels*outlet)
-    new_im = sp.isin(labels,list(set(IN) ^ set(OUT)), invert=True)
+    new_im = sp.isin(labels, list(set(IN) ^ set(OUT)), invert=True)
     im[new_im == False] = True
     return im
 
