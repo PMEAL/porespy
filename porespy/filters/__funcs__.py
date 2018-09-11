@@ -192,7 +192,7 @@ def trim_nonpercolating_paths(im, inlet_axis=0, outlet_axis=0):
     IN = sp.unique(labels*inlet)
     OUT = sp.unique(labels*outlet)
     new_im = sp.isin(labels, list(set(IN) ^ set(OUT)), invert=True)
-    im[new_im == False] = True
+    im[new_im == 0] = True
     return ~im
 
 
