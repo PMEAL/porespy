@@ -188,7 +188,7 @@ def trim_nonpercolating_paths(im, inlet_axis=0, outlet_axis=0):
         if outlet_axis == 0:
             outlet[-1, :] = 1
         elif outlet_axis == 1:
-            outlet[:, -1] = 1  
+            outlet[:, -1] = 1
     IN = sp.unique(labels*inlet)
     OUT = sp.unique(labels*outlet)
     new_im = sp.isin(labels, list(set(IN) ^ set(OUT)), invert=True)
@@ -228,7 +228,7 @@ def trim_extrema(im, h, mode='maxima'):
     return result
 
 
-@jit
+@jit(forceobj=True)
 def flood(im, regions=None, mode='max'):
     r"""
     Floods/fills each region in an image with a single value based on the

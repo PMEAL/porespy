@@ -227,7 +227,7 @@ def extract_subsection(im, shape):
         lower_im = sp.amax((center[dim]-r, 0))
         upper_im = sp.amin((center[dim]+r, im.shape[dim]))
         s_im.append(slice(int(lower_im), int(upper_im)))
-    return im[s_im]
+    return im[tuple(s_im)]
 
 
 def extend_slice(s, shape, pad=1):
