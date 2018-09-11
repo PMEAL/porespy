@@ -102,13 +102,13 @@ def trim_floating_solid(im):
 
 def trim_nonpercolating_paths(im, inlet_axis=0, outlet_axis=0):
     r"""
-    Removes all disconnected solid clusters including edges that are
-    nonpercolating.
+    Removes all nonpercolating paths including edges.
 
     Parameters
     ----------
     im : ND-array
-        The image of the porous material
+        The Boolean image of the porous material with True values of selected
+        phase where path needs to be trimmed.
 
     inlet_axis : int
         Inlet axis of boundary condition. For three dimensional image the
@@ -122,14 +122,15 @@ def trim_nonpercolating_paths(im, inlet_axis=0, outlet_axis=0):
 
     Returns
     -------
-        A version of ``im`` but with all the disconnected solid removed.
+        A version of ``im`` but with all the nonpercolating paths removed.
 
     See Also
     --------
     find_disconnected_voxels
 
     """
-    im = trim_floating_solid(im)
+#    im = ~im
+    im = trim_floating_solid(~im)
     labels = spim.label(~im)[0]
     inlet = sp.zeros_like(im, dtype=int)
     outlet = sp.zeros_like(im, dtype=int)
@@ -162,7 +163,7 @@ def trim_nonpercolating_paths(im, inlet_axis=0, outlet_axis=0):
     OUT = sp.unique(labels*outlet)
     new_im = sp.isin(labels, list(set(IN) ^ set(OUT)), invert=True)
     im[new_im == False] = True
-    return im
+    return ~im
 
 
 def trim_extrema(im, h, mode='maxima'):
