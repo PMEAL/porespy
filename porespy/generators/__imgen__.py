@@ -4,6 +4,7 @@ import scipy.ndimage as spim
 from skimage.segmentation import find_boundaries
 from skimage.morphology import ball, disk, square, cube
 from tqdm import tqdm
+from porespy.filters import norm_to_uniform
 
 
 def insert_shape(im, center, element, value=1):
@@ -24,43 +25,6 @@ def insert_shape(im, center, element, value=1):
         upper_el = sp.amin((upper_im - center[dim] + r, element.shape[dim]))
         s_el.append(slice(lower_el, upper_el))
     im[s_im] = im[s_im] + element[s_el]*value
-    return im
-
-
-def add_noise(im, u_void=0.8, u_solid=0.2, s_void=0.15, s_solid=0.15):
-    r"""
-    Add some normally distributed noise values to the image.  This is useful
-    for testing binarization routines.
-
-    Parameters
-    ----------
-    im : ND-array
-        The image of the porous media, with 1's or True's denoting voids
-
-    u_solid : float
-        The mean greyscale value in the solid space (default is 0.2)
-
-    s_solid : float
-        The standard deviation of the greyscale values in the solid phase (the
-        default is 0.15)
-
-    u_void: float
-        The mean greyscale value in the void space (default is 0.8)
-
-    s_void: float
-        The standard deviation of the greyscale values in the void phase (the
-        default is 0.15)
-
-    Returns
-    -------
-    A greyscale image with the same shape as ``im``, but normally distributed
-    noise values in the void and solid phase.  A histogram of the default image
-    should reveal to distinguishable but overlapping peaks.  This can be
-    adjusted using the mean and standard deviation arguments.
-
-    """
-    im = im*sp.random.normal(loc=u_void, scale=s_void, size=im.shape) + \
-        ~im*sp.random.normal(loc=u_solid, scale=s_solid, size=im.shape)
     return im
 
 
@@ -544,37 +508,6 @@ def blobs(shape, porosity=0.5, blobiness=1):
     if porosity:
         im = norm_to_uniform(im, scale=[0, 1])
         im = im < porosity
-    return im
-
-
-def norm_to_uniform(im, scale=None):
-    r"""
-    Take an image with normally distributed greyscale values and converts it to
-    a uniform (i.e. flat) distribution.  It's also possible to specify the
-    lower and upper limits of the uniform distribution.
-
-    Parameters
-    ----------
-    im : ND-image
-        The image containing the normally distributed scalar field
-
-    scale : [low, high]
-        A list or array indicating the lower and upper bounds for the new
-        randomly distributed data.  The default is ``None``, which uses the
-        ``max`` and ``min`` of the original image as the the lower and upper
-        bounds.
-
-    Returns
-    -------
-    An ND-image the same size as ``im`` with uniformly distributed greyscale
-    values spanning the specified range, if given.
-    """
-    if scale is None:
-        scale = [im.min(), im.max()]
-    im = (im - sp.mean(im))/sp.std(im)
-    im = 1/2*sp.special.erfc(-im/sp.sqrt(2))
-    im = (im - im.min()) / (im.max() - im.min())
-    im = im*(scale[1] - scale[0]) + scale[0]
     return im
 
 
