@@ -34,10 +34,13 @@ print(sys.path)
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = ['sphinx.ext.autodoc',
+              'sphinx.ext.napoleon',
               'sphinx.ext.autosummary',
+              'sphinx.ext.ifconfig',
               'sphinx.ext.mathjax',
               'sphinx.ext.viewcode',
               'numpydoc']
+
 autosummary_generate = True
 exclude_patterns = ['_build', '_templates']
 
@@ -55,7 +58,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'PoreSpy'
-copyright = '2017, PMEAL Team'
+copyright = '2018, PMEAL Team'
 author = 'PMEAL Team'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -91,7 +94,7 @@ todo_include_todos = False
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'sphinxdoc'
+html_theme = 'sphinx_rtd_theme'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
