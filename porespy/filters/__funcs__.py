@@ -129,7 +129,6 @@ def trim_nonpercolating_paths(im, inlet_axis=0, outlet_axis=0):
     find_disconnected_voxels
 
     """
-#    im = ~im
     im = trim_floating_solid(~im)
     labels = spim.label(~im)[0]
     inlet = sp.zeros_like(im, dtype=int)
