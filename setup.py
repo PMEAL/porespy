@@ -32,7 +32,6 @@ setup(
               'porespy.filters',
               'porespy.network_extraction',
               'porespy.visualization',
-              'porespy.binarization',
               'porespy.simulations',
               'porespy.io',
               'porespy.io.evtk'],
@@ -42,7 +41,8 @@ setup(
                       'scikit-image',
                       'imageio',
                       'tqdm',
-                      'array_split'],
+                      'array_split',
+                      'pytrax'],
     author='Jeff Gostick',
     author_email='jgostick@gmail.com',
     url='http://porespy.org'

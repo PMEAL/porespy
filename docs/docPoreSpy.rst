@@ -5,12 +5,6 @@ Function Reference
 ==================
 
 
-------------
-Binarization
-------------
-
-.. automodule:: porespy.binarization
-
 -------
 Filters
 -------
@@ -22,7 +16,7 @@ Generators
 ----------
 
 .. automodule:: porespy.generators
-  
+
 -------
 Metrics
 -------
@@ -52,3 +46,9 @@ Visualization
 -------------
 
 .. automodule:: porespy.visualization
+
+-----------------
+Import and Export
+-----------------
+
+.. automodule:: porespy.io

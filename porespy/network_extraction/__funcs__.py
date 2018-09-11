@@ -38,7 +38,7 @@ def align_image_with_openpnm(im):
     Parameters
     ----------
     im : ND-array
-        The image to be rotated.  Can the Boolean image of the pore space or
+        The image to be rotated.  Can be the Boolean image of the pore space or
         any other image of interest.
 
     Returns
