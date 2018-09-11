@@ -103,27 +103,27 @@ class FilterTest():
     def test_trim_nonpercolating_paths_2d_axis0(self):
         h = ps.filters.trim_nonpercolating_paths(self.im[:, :, 0],
                                                  inlet_axis=0, outlet_axis=0)
-        assert sp.sum(h) == 5030
+        assert sp.sum(h) == 3178
 
     def test_trim_nonpercolating_paths_2d_axis1(self):
         h = ps.filters.trim_nonpercolating_paths(self.im[:, :, 0],
                                                  inlet_axis=1, outlet_axis=1)
-        assert sp.sum(h) == 5185
+        assert sp.sum(h) == 1067
 
     def test_trim_nonpercolating_paths_3d_axis0(self):
         h = ps.filters.trim_nonpercolating_paths(self.im,
                                                  inlet_axis=0, outlet_axis=0)
-        assert sp.sum(h) == 500283
+        assert sp.sum(h) == 499733
 
     def test_trim_nonpercolating_paths_3d_axis1(self):
         h = ps.filters.trim_nonpercolating_paths(self.im,
                                                  inlet_axis=1, outlet_axis=1)
-        assert sp.sum(h) == 500402
+        assert sp.sum(h) == 499693
 
     def test_trim_nonpercolating_paths_3d_axis2(self):
         h = ps.filters.trim_nonpercolating_paths(self.im,
                                                  inlet_axis=2, outlet_axis=2)
-        assert sp.sum(h) == 500413
+        assert sp.sum(h) == 499611
 
     def test_fill_blind_pores(self):
         h = ps.filters.find_disconnected_voxels(self.im)
