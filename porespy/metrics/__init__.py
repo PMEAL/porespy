@@ -26,3 +26,4 @@ from .__funcs__ import porosity
 from .__funcs__ import representative_elementary_volume
 from .__funcs__ import two_point_correlation_bf
 from .__funcs__ import two_point_correlation_fft
+from .__funcs__ import cld_helper

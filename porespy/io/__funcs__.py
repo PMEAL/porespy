@@ -2,6 +2,7 @@ import numpy as np
 from scipy import ndimage as spim
 from porespy.io.evtk import hl as bp
 import scipy.ndimage as nd
+import skimage.io as io
 
 
 def to_vtk(im, path='./voxvtk', divide=False, downsample=False, voxel_size=1,
@@ -99,3 +100,12 @@ def to_palabos(im, filename, solid=0):
     with open(filename, 'w') as f:
         out_data = dt.flatten().tolist()
         f.write('\n'.join(map(repr, out_data)))
+        
+    
+    
+    
+    
+    
+    
+    
+    

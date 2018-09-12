@@ -8,6 +8,7 @@ from tqdm import tqdm
 from numba import jit
 from skimage.morphology import ball, disk, square, cube
 from skimage.morphology import reconstruction
+from scipy.signal import fftconvolve
 
 
 def norm_to_uniform(im, scale=None):
@@ -439,3 +440,88 @@ def porosimetry(im, npts=25, sizes=None, inlets=None, access_limited=True):
             imtemp = spim.distance_transform_edt(~imtemp) < r
             imresults[(imresults == 0)*imtemp] = r
     return imresults
+
+def porosimetry_fft(im, npts=25, sizes=None, inlets=None, access_limited=True):
+    r"""
+    Performs a porosimetry simulution on the image
+
+    Parameters
+    ----------
+    im : ND-array
+        An ND image of the porous material containing True values in the
+        pore space.
+
+    npts : scalar
+        The number of invasion points to simulate.  Points will be
+        generated spanning the range of sizes in the distance transform.
+        The default is 25 points.
+
+    sizes : array_like
+        The sizes to invade.  Use this argument instead of ``npts`` for
+        more control of the range and spacing of points.
+
+    inlets : ND-array, boolean
+        A boolean mask with True values indicating where the invasion
+        enters the image.  By default all faces are considered inlets,
+        akin to a mercury porosimetry experiment.  Users can also apply
+        solid boundaries to their image externally before passing it in,
+        allowing for complex inlets like circular openings, etc.
+
+    access_limited : Boolean
+        This flag indicates if the intrusion should only occur from the
+        surfaces (``access_limited`` is True, which is the default), or
+        if the invading phase should be allowed to appear in the core of
+        the image.  The former simulates experimental tools like mercury
+        intrusion porosimetry, while the latter is useful for comparison
+        to gauge the extent of shielding effects in the sample.
+
+    Returns
+    -------
+    An ND-image with voxel values indicating the sphere radius at which it
+    becomes accessible from the inlets.  This image can be used to find
+    invading fluid configurations as a function of applied capillary pressure
+    by applying a boolean comparison: ``inv_phase = im > r`` where ``r`` is
+    the radius (in voxels) of the invading sphere.  Of course, ``r`` can be
+    converted to capillary pressure using your favorite model.
+
+    """
+    dt = spim.distance_transform_edt(im > 0)
+    if inlets is None:
+        inlets = get_border(im.shape, mode='faces')
+    inlets = sp.where(inlets)
+    if sizes is None:
+        sizes = sp.logspace(start=sp.log10(sp.amax(dt)), stop=0, num=npts)
+    else:
+        sizes = sp.sort(a=sizes)[-1::-1]
+    imresults = sp.zeros(sp.shape(im))
+    for r in tqdm(sizes):
+        imtemp = dt >= r
+        if im.ndim == 2:
+            strel = disk(r)
+        else:
+            strel = ball(r)
+        if access_limited:
+            imtemp[inlets] = True  # Add inlets before labeling
+            labels, N = spim.label(imtemp)
+            imtemp = imtemp ^ (clear_border(labels=labels) > 0)
+            imtemp[inlets] = False  # Remove inlets
+        if sp.any(imtemp):
+            imtemp = fftconvolve(imtemp,strel,mode='same') >= 1
+            imresults[(imresults == 0)*imtemp] = r
+    return imresults
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
