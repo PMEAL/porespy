@@ -153,11 +153,13 @@ def trim_nonpercolating_paths(im, inlet_axis=0, outlet_axis=0):
 
     Returns
     -------
-        A version of ``im`` but with all the nonpercolating paths removed.
+    A copy of ``im`` but with all the nonpercolating paths removed.
 
     See Also
     --------
     find_disconnected_voxels
+    trim_floating_solid
+    trim_blind_pores
 
     """
     im = trim_floating_solid(~im)
