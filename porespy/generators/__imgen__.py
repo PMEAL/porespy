@@ -5,6 +5,7 @@ import scipy.ndimage as spim
 from skimage.segmentation import find_boundaries
 from skimage.morphology import ball, disk, square, cube
 from tqdm import tqdm
+from porespy.filters import norm_to_uniform
 
 
 def insert_shape(im, center, element, value=1):
@@ -633,37 +634,6 @@ def blobs(shape, porosity=0.5, blobiness=1):
     if porosity:
         im = norm_to_uniform(im, scale=[0, 1])
         im = im < porosity
-    return im
-
-
-def norm_to_uniform(im, scale=None):
-    r"""
-    Take an image with normally distributed greyscale values and converts it to
-    a uniform (i.e. flat) distribution.  It's also possible to specify the
-    lower and upper limits of the uniform distribution.
-
-    Parameters
-    ----------
-    im : ND-image
-        The image containing the normally distributed scalar field
-
-    scale : [low, high]
-        A list or array indicating the lower and upper bounds for the new
-        randomly distributed data.  The default is ``None``, which uses the
-        ``max`` and ``min`` of the original image as the the lower and upper
-        bounds.
-
-    Returns
-    -------
-    An ND-image the same size as ``im`` with uniformly distributed greyscale
-    values spanning the specified range, if given.
-    """
-    if scale is None:
-        scale = [im.min(), im.max()]
-    im = (im - sp.mean(im))/sp.std(im)
-    im = 1/2*sp.special.erfc(-im/sp.sqrt(2))
-    im = (im - im.min()) / (im.max() - im.min())
-    im = im*(scale[1] - scale[0]) + scale[0]
     return im
 
 

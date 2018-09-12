@@ -19,7 +19,8 @@ that do NOT return a modified version of the original image.
 
 '''
 
-from .__funcs__ import binary_opening_fast
+from .__funcs__ import binary_opening_dt
+from .__funcs__ import binary_opening_fft
 from .__funcs__ import extend_slice
 from .__funcs__ import extract_subsection
 from .__funcs__ import extract_cylinder
