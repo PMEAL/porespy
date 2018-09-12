@@ -28,3 +28,4 @@ from .__funcs__ import norm_to_uniform
 from .__funcs__ import porosimetry
 from .__funcs__ import trim_extrema
 from .__funcs__ import trim_floating_solid
+from .__funcs__ import trim_nonpercolating_paths
