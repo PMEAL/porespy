@@ -131,6 +131,73 @@ def trim_floating_solid(im):
     return im
 
 
+def trim_nonpercolating_paths(im, inlet_axis=0, outlet_axis=0):
+    r"""
+    Removes all nonpercolating paths including edges.
+
+    Parameters
+    ----------
+    im : ND-array
+        The Boolean image of the porous material with True values of selected
+        phase where path needs to be trimmed.
+
+    inlet_axis : int
+        Inlet axis of boundary condition. For three dimensional image the
+        number ranges from 0 to 2. For two dimensional image the range is
+        between 0 to 1.
+
+    outlet_axis : int
+        Outlet axis of boundary condition. For three dimensional image the
+        number ranges from 0 to 2. For two dimensional image the range is
+        between 0 to 1.
+
+    Returns
+    -------
+    A copy of ``im`` but with all the nonpercolating paths removed.
+
+    See Also
+    --------
+    find_disconnected_voxels
+    trim_floating_solid
+    trim_blind_pores
+
+    """
+    im = trim_floating_solid(~im)
+    labels = spim.label(~im)[0]
+    inlet = sp.zeros_like(im, dtype=int)
+    outlet = sp.zeros_like(im, dtype=int)
+    if im.ndim == 3:
+        if inlet_axis == 0:
+            inlet[0, :, :] = 1
+        elif inlet_axis == 1:
+            inlet[:, 0, :] = 1
+        elif inlet_axis == 2:
+            inlet[:, :, 0] = 1
+
+        if outlet_axis == 0:
+            outlet[-1, :, :] = 1
+        elif outlet_axis == 1:
+            outlet[:, -1, :] = 1
+        elif outlet_axis == 2:
+            outlet[:, :, -1] = 1
+
+    if im.ndim == 2:
+        if inlet_axis == 0:
+            inlet[0, :] = 1
+        elif inlet_axis == 1:
+            inlet[:, 0] = 1
+
+        if outlet_axis == 0:
+            outlet[-1, :] = 1
+        elif outlet_axis == 1:
+            outlet[:, -1] = 1
+    IN = sp.unique(labels*inlet)
+    OUT = sp.unique(labels*outlet)
+    new_im = sp.isin(labels, list(set(IN) ^ set(OUT)), invert=True)
+    im[new_im == 0] = True
+    return ~im
+
+
 def trim_extrema(im, h, mode='maxima'):
     r"""
     This trims local extrema in greyscale values by a specified amount,
@@ -163,7 +230,7 @@ def trim_extrema(im, h, mode='maxima'):
     return result
 
 
-@jit
+@jit(forceobj=True)
 def flood(im, regions=None, mode='max'):
     r"""
     Floods/fills each region in an image with a single value based on the
