@@ -2,6 +2,7 @@ import scipy as sp
 import scipy.ndimage as spim
 from skimage.morphology import ball, disk, square, cube
 from array_split import shape_split
+from scipy.signal import fftconvolve
 
 
 def subdivide(im, divs=2):
@@ -230,6 +231,33 @@ def extract_subsection(im, shape):
     return im[tuple(s_im)]
 
 
+def get_planes(im, squeeze=True):
+    r"""
+    Extracts three planar images from the volumetric image, one for each
+    principle axis.  The planes are taken from the middle of the domain.
+
+    Parameters
+    ----------
+    im : ND-array
+        The volumetric image from which the 3 planar images are to be obtained
+
+    squeeze : boolean, optional
+        If True (default) the returned images are 2D (i.e. squeezed).  If
+        False, the images are 1 element deep along the axis where the slice
+        was obtained.
+    """
+    x, y, z = (sp.array(im.shape)/2).astype(int)
+    planes = [im[x, :, :], im[:, y, :], im[:, :, z]]
+    if not squeeze:
+        imx = planes[0]
+        planes[0] = sp.reshape(imx, [1, imx.shape[0], imx.shape[1]])
+        imy = planes[1]
+        planes[1] = sp.reshape(imy, [imy.shape[0], 1, imy.shape[1]])
+        imz = planes[2]
+        planes[2] = sp.reshape(imz, [imz.shape[0], imz.shape[1], 1])
+    return planes
+
+
 def extend_slice(s, shape, pad=1):
     r"""
     Adjust slice indices to include additional voxles around the slice.  The
@@ -283,6 +311,7 @@ def extend_slice(s, shape, pad=1):
     As can be seen by the location of the 4s, the slice was extended by 1, and
     also handled the extension beyond the boundary correctly.
     """
+    pad = int(pad)
     a = []
     for i, dim in zip(s, shape):
         start = 0
@@ -526,3 +555,39 @@ def get_border(shape, thickness=1, mode='edges'):
             border[0::, t:-t, 0::] = False
             border[0::, 0::, t:-t] = False
     return border
+
+
+def fft_dilate(im, strel):
+    r"""
+    Performs an image dilation using a fast fourier transform
+
+    Parameters
+    ----------
+    im : ND-array
+        An ND image of the porous material containing True values in the
+        pore space.
+
+    strel : ND-array
+        An ND image of a structuring element.
+
+    Returns
+    ----------
+    An ND array with same dimensions as im
+
+    Examples
+    ----------
+    >>> import porespy as ps
+    >>> from skimage.morphology import disk
+    >>> import numpy as np
+    >>> im = np.zeros([5, 5], dtype=bool)
+    >>> im[2, 2] = True
+    >>> strel = disk(2)
+    >>> im_d = ps.tools.fft_dilate(im, strel)
+    >>> print(im_d)
+    [[False False  True False False]
+     [False  True  True  True False]
+     [ True  True  True  True  True]
+     [False  True  True  True False]
+     [False False  True False False]]
+    """
+    return fftconvolve(im, strel, 'same') > 0.5

@@ -1,4 +1,16 @@
 import scipy as sp
+import matplotlib.pyplot as plt
+
+
+def show_planes(planes, overlaid=False):
+    r"""
+    """
+    plt.subplot(1, 3, 1)
+    plt.imshow(planes[0])
+    plt.subplot(1, 3, 2)
+    plt.imshow(planes[1])
+    plt.subplot(1, 3, 3)
+    plt.imshow(planes[2])
 
 
 def sem(im, direction='X'):

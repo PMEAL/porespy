@@ -151,7 +151,7 @@ class FilterTest():
 
     def test_local_thickness(self):
         lt = ps.filters.local_thickness(self.im)
-        assert lt.max() == sp.around(self.im_dt.max(), decimals=0)
+        assert lt.max() == self.im_dt.max()
 
     def test_porosimetry(self):
         im2d = self.im[:, :, 50]
@@ -167,32 +167,9 @@ class FilterTest():
 
 if __name__ == '__main__':
     t = FilterTest()
-    t.setup_class()
-    t.test_apply_chords_axis0()
-    t.test_apply_chords_axis1()
-    t.test_apply_chords_axis2()
-    t.test_apply_chords_with_spacing()
-    t.test_apply_chords_without_trimming()
-    t.test_apply_chords3D()
-    t.test_apply_chords3D_with_spacing()
-    t.test_flood_size()
-    t.test_flood_max()
-    t.test_flood_min()
-    t.test_find_disconnected_voxels_2d()
-    t.test_find_disconnected_voxels_2d_conn4()
-    t.test_find_disconnected_voxels_3d()
-    t.test_find_disconnected_voxels_3d_conn6()
-    t.test_fill_blind_pores()
-    t.test_trim_floating_solid()
-    t.test_trim_extrema_min()
-    t.test_trim_extrema_max()
-    t.test_local_thickness()
-    t.test_porosimetry()
-    t.test_porosimetry_npts_10()
-    t.test_porosimetry_with_sizes()
-    t.test_trim_nonpercolating_paths_2d_axis0()
-    t.test_trim_nonpercolating_paths_2d_axis1()
-    t.test_trim_nonpercolating_paths_3d_axis0()
-    t.test_trim_nonpercolating_paths_3d_axis1()
-    t.test_trim_nonpercolating_paths_3d_axis2()
     self = t
+    t.setup_class()
+    for item in t.__dir__():
+        if item.startswith('test'):
+            print('running test: '+item)
+            t.__getattribute__(item)()

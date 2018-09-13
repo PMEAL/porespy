@@ -16,6 +16,7 @@ illustration purposes.
 .. autofunction:: noise
 .. autofunction:: overlapping_spheres
 .. autofunction:: polydisperse_spheres
+.. autofunction:: RSA
 .. autofunction:: sphere_pack
 .. autofunction:: voronoi_edges
 
@@ -30,5 +31,6 @@ from .__imgen__ import line_segment
 from .__imgen__ import noise
 from .__imgen__ import overlapping_spheres
 from .__imgen__ import polydisperse_spheres
+from .__imgen__ import RSA
 from .__imgen__ import sphere_pack
 from .__imgen__ import voronoi_edges
