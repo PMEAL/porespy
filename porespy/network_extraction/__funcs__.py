@@ -1,6 +1,32 @@
+import pickle
+from pathlib import Path
 import scipy as sp
 import scipy.ndimage as spim
 from skimage.morphology import watershed
+
+
+def export_to_openpnm(net, filename):
+    r"""
+    Save the result of the `extract_pore_network` function to a file that is
+    suitable for opening in OpenPNM.
+
+    Parameters
+    ----------
+    net : dict
+        The dictionary object produced by `extract_pore_network`
+
+    filename : string or path object
+        The name and location to save the file, which will have `.net` file
+        extension.
+
+    """
+    p = Path(filename)
+    p = p.resolve()
+    # If extension not part of filename
+    if p.suffix == '':
+        p = p.with_suffix('.net')
+    with open(p, 'wb') as f:
+        pickle.dump(net, f)
 
 
 def align_image_with_openpnm(im):

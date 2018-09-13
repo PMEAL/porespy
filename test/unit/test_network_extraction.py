@@ -26,8 +26,8 @@ class NetExtractTest():
 
     def test_align_image_with_openpnm(self):
         op = ps.network_extraction.align_image_with_openpnm(self.snow.regions)
-        itm_snow = itemfreq(self.snow.regions)
-        itm_op = itemfreq(op)
+        itm_snow = np.unique(self.snow.regions, return_counts=True)[1]
+        itm_op = np.unique(op, return_counts=True)[1]
         assert np.allclose(itm_snow, itm_op)
 
     def test_snow_3d(self):
@@ -46,8 +46,8 @@ class NetExtractTest():
 
     def test_align_image_with_openpnm_3d(self):
         op = ps.network_extraction.align_image_with_openpnm(self.snow3d.regions)
-        itm_snow = itemfreq(self.snow3d.regions)
-        itm_op = itemfreq(op)
+        itm_snow = np.unique(self.snow3d.regions, return_counts=True)[1]
+        itm_op = np.unique(op, return_counts=True)[1]
         assert np.allclose(itm_snow, itm_op)
 
 if __name__ == '__main__':
