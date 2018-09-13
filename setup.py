@@ -43,6 +43,8 @@ setup(
                       'tqdm',
                       'array_split',
                       'pytrax'],
+                      'numba'],
+                      'gitpython',
     author='Jeff Gostick',
     author_email='jgostick@gmail.com',
     url='http://porespy.org'
