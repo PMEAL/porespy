@@ -17,7 +17,7 @@ class ExportTest():
         S = X*Y*Z
         im = ps.generators.blobs(shape=[X, Y, Z], porosity=0.7, blobiness=1)
         tmp = os.path.join(self.path, 'palabos.dat')
-        ps.export.to_palabos(im, tmp, solid=0)
+        ps.io.to_palabos(im, tmp, solid=0)
         assert os.path.isfile(tmp)
         with open(tmp) as f:
             val = f.read().splitlines()
