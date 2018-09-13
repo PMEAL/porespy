@@ -5,8 +5,8 @@
 SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
 SPHINXPROJ    = PoreSpy
-SOURCEDIR     = source
-BUILDDIR      = build
+SOURCEDIR     = docs
+BUILDDIR      = _build
 
 # Put it first so that "make" without argument is like "make help".
 help:

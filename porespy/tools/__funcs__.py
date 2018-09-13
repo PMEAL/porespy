@@ -1,9 +1,67 @@
 import scipy as sp
 import scipy.ndimage as spim
 from skimage.morphology import ball, disk, square, cube
-from skimage.morphology import reconstruction
-from skimage.segmentation import clear_border
-from numba import jit
+from array_split import shape_split
+from scipy.signal import fftconvolve
+
+
+def subdivide(im, divs=2):
+    r"""
+    Returns slices into an image describing the specified number of sub-arrays.
+    This function is useful for performing operations on smaller images for
+    memory or speed.  Note that for most typical operations this will NOT work,
+    since the image borders would cause artifacts (e.g. ``distance_transform``)
+
+    Parameters
+    ----------
+    im : ND-array
+        The image of the porous media
+
+    divs : scalar or array_like
+        The number of sub-divisions to create in each axis of the image.  If a
+        scalar is given it is assumed this value applies in all dimensions.
+
+    Returns
+    -------
+    An ND-array containing slice objects for indexing into ``im`` that extract
+    the sub-divided arrays.
+
+    Notes
+    -----
+    This method uses the
+    `array_split package <https://github.com/array-split/array_split>`_ which
+    offers the same functionality as the ``split`` method of Numpy's ND-array,
+    but supports the splitting multidimensional arrays in all dimensions.
+
+    Examples
+    --------
+    >>> import porespy as ps
+    >>> import matplotlib.pyplot as plt
+    >>> im = ps.generators.blobs(shape=[200, 200])
+    >>> s = ps.tools.subdivide(im, divs=[2, 2])
+
+    ``s`` contains an array with the shape given by ``divs``.  To access the
+    first and last quadrants of ``im`` use:
+    >>> print(im[s[0, 0]].shape)
+    (100, 100)
+    >>> print(im[s[1, 1]].shape)
+    (100, 100)
+
+    It can be easier to index the array with the slices by applying ``flatten``
+    first:
+    >>> s_flat = s.flatten()
+    >>> for i in s_flat:
+    ...     print(im[i].shape)
+    (100, 100)
+    (100, 100)
+    (100, 100)
+    (100, 100)
+    """
+    # Expand scalar divs
+    if sp.array(divs, ndmin=1).size == 1:
+        divs = [divs for i in range(im.ndim)]
+    s = shape_split(im.shape, axis=divs)
+    return s
 
 
 def get_slice(im, center, size, pad=0):
@@ -60,15 +118,16 @@ def find_outer_region(im, r=0):
         Image of the porous material with 1's for void and 0's for solid
 
     r : scalar
-        The radius of the rolling ball to use.  If not specified the a value
+        The radius of the rolling ball to use.  If not specified then a value
         is calculated as twice maximum of the distance transform.  The image
         size is padded by this amount in all directions, so the image can
-        become quite large and unwieldy it too large a value is given.
+        become quite large and unwieldy if too large a value is given.
 
     Returns
     -------
     A boolean mask the same shape as ``im``, containing True in all voxels
     identified as *outside* the sample.
+
     """
     if r == 0:
         dt = spim.distance_transform_edt(input=im)
@@ -86,6 +145,44 @@ def find_outer_region(im, r=0):
     return outer_region
 
 
+def extract_cylinder(im, r=None, axis=0):
+    r"""
+    Returns a cylindrical section of the image of specified radius. This is
+    useful for making square images look like cylindrical cores such as those
+    obtained from X-ray tomography.
+
+    Parameters
+    ----------
+    im : ND-array
+        The image of the porous material
+
+    r : scalr
+        The radius of the cylinder to extract.  If none if given then the
+        default is the largest cylinder that can fit inside the x-y plane.
+
+    axis : scalar
+        The axis along with the cylinder will be oriented.
+
+    Returns
+    -------
+    An ND-image the same size ``im`` with True values indicating the void space
+    but with the sample trimmed to a cylindrical section in the center of the
+    image.  The region outside the cylindrical section is labeled with True
+    values since it is open space.
+    """
+    if r is None:
+        a = list(im.shape)
+        a.pop(axis)
+        r = sp.amin(a)/2
+    dim = [range(int(-s/2), int(s/2)) for s in im.shape]
+    inds = sp.meshgrid(*dim, indexing='ij')
+    inds[axis] = inds[axis]*0
+    d = sp.sqrt(sp.sum(sp.square(inds), axis=0))
+    mask = d <= r
+    im[~mask] = True
+    return im
+
+
 def extract_subsection(im, shape):
     r"""
     Extracts the middle section of a image
@@ -94,14 +191,36 @@ def extract_subsection(im, shape):
     ----------
     im : ND-array
         Image from which to extract the subsection
+
     shape : array_like
-        Can either specify the size of the extracted section or the fractonal
+        Can either specify the size of the extracted section or the fractional
         size of the image to extact.
 
+    Returns
+    -------
+    An ND-array of size given by the ``shape`` argument, taken from the center
+    of the image.
+
+    Examples
+    --------
+    >>> import scipy as sp
+    >>> from porespy.tools import extract_subsection
+    >>> im = sp.array([[1, 1, 1, 1], [1, 2, 2, 2], [1, 2, 3, 3], [1, 2, 3, 4]])
+    >>> print(im)
+    [[1 1 1 1]
+     [1 2 2 2]
+     [1 2 3 3]
+     [1 2 3 4]]
+    >>> im = extract_subsection(im=im, shape=[2, 2])
+    >>> print(im)
+    [[2 2]
+     [2 3]]
+
     """
+    # Check if shape was given as a fraction
+    shape = sp.array(shape)
     if shape[0] < 1:
         shape = sp.array(im.shape)*shape
-    sp.amax(sp.vstack([shape, im.shape]), axis=0)
     center = sp.array(im.shape)/2
     s_im = []
     for dim in range(im.ndim):
@@ -109,8 +228,34 @@ def extract_subsection(im, shape):
         lower_im = sp.amax((center[dim]-r, 0))
         upper_im = sp.amin((center[dim]+r, im.shape[dim]))
         s_im.append(slice(int(lower_im), int(upper_im)))
-    im = im[s_im]
-    return im
+    return im[tuple(s_im)]
+
+
+def get_planes(im, squeeze=True):
+    r"""
+    Extracts three planar images from the volumetric image, one for each
+    principle axis.  The planes are taken from the middle of the domain.
+
+    Parameters
+    ----------
+    im : ND-array
+        The volumetric image from which the 3 planar images are to be obtained
+
+    squeeze : boolean, optional
+        If True (default) the returned images are 2D (i.e. squeezed).  If
+        False, the images are 1 element deep along the axis where the slice
+        was obtained.
+    """
+    x, y, z = (sp.array(im.shape)/2).astype(int)
+    planes = [im[x, :, :], im[:, y, :], im[:, :, z]]
+    if not squeeze:
+        imx = planes[0]
+        planes[0] = sp.reshape(imx, [1, imx.shape[0], imx.shape[1]])
+        imy = planes[1]
+        planes[1] = sp.reshape(imy, [imy.shape[0], 1, imy.shape[1]])
+        imz = planes[2]
+        planes[2] = sp.reshape(imz, [imz.shape[0], imz.shape[1], 1])
+    return planes
 
 
 def extend_slice(s, shape, pad=1):
@@ -137,6 +282,34 @@ def extend_slice(s, shape, pad=1):
     A list slice objects with the start and stop attributes respectively
     incremented and decremented by 1, without extending beyond the image
     boundaries.
+
+    Examples
+    --------
+    >>> from scipy.ndimage import label, find_objects
+    >>> from porespy.tools import extend_slice
+    >>> im = sp.array([[1, 0, 0], [1, 0, 0], [0, 0, 1]])
+    >>> labels = label(im)[0]
+    >>> s = find_objects(labels)
+
+    Using the slices returned by ``find_objects``, set the first label to 3
+
+    >>> labels[s[0]] = 3
+    >>> print(labels)
+    [[3 0 0]
+     [3 0 0]
+     [0 0 2]]
+
+    Next extend the slice, and use it to set the values to 4
+
+    >>> s_ext = extend_slice(s[0], shape=im.shape, pad=1)
+    >>> labels[s_ext] = 4
+    >>> print(labels)
+    [[4 4 0]
+     [4 4 0]
+     [4 4 2]]
+
+    As can be seen by the location of the 4s, the slice was extended by 1, and
+    also handled the extension beyond the boundary correctly.
     """
     a = []
     for i, dim in zip(s, shape):
@@ -147,25 +320,53 @@ def extend_slice(s, shape, pad=1):
         if i.stop + pad < dim:
             stop = i.stop + pad
         a.append(slice(start, stop, None))
-    return a
+    return tuple(a)
 
 
-def binary_opening_fast(im, r, dt=None):
+def binary_opening_fft(im, strel):
     r"""
-    This function uses a shortcut to perform a morphological opening that does
-    not slow down with larger structuring elements.  Because of the shortcut,
-    it only applies to spherical structuring elements.
+    Using the ``scipy.signal.fftconvolve`` function (twice) to accomplish
+    binary image opening.
+
+    The use of the fft-based convolution produces a 10x speed-up compared to
+    the standard ``binary_opening`` included in ``scipy.ndimage``.
+
+    See Also
+    --------
+    binary_opening_dt
+
+    Notes
+    -----
+    The ``fftconvolve`` function is only optimzed in some scipy installations,
+    depending how it was compiled.  If the promised speed-up is not acheived,
+    this may be the issue.  Using ``binary_opening_dt`` should still be fast
+    but is limited to spherical and circular structing elements.
+
+    """
+    if isinstance(strel, int):
+        if im.ndim == 2:
+            strel = disk(strel)
+        else:
+            strel = ball(strel)
+    seeds = sp.signal.fftconvolve(im, strel) > (strel.sum() - 0.1)
+    result = sp.signal.fftconvolve(seeds, strel) > 0.1
+    result = extract_subsection(result, im.shape)
+    return result
+
+
+def binary_opening_dt(im, r):
+    r"""
+    Perform a morphological opening that does not slow down with larger
+    structuring elements.
+
+    It uses a shortcut based on the distance transform, which means it only
+    applies to spherical (or cicular if the image is 2d) structuring elements.
 
     Parameters
     ----------
     im : ND-array
         The image of the porous material with True values (or 1's) indicating
         the pore phase.
-
-    dt : ND-array
-        The distance transform of the pore space.  If none is provided, it will
-        be calculated; however, providing one is a good idea since it will cut
-        the processing time in half.
 
     r : scalar, int
         The radius of the spherical structuring element to apply
@@ -175,11 +376,16 @@ def binary_opening_fast(im, r, dt=None):
     A binary image with ``True`` values in all locations where a sphere of size
     ``r`` could fit entirely within the pore space.
 
+    See Also
+    --------
+    binary_opening_fft
+
     """
-    if dt is None:
-        dt = spim.distance_transform_edt(im)
+    temp = sp.pad(im, pad_width=1, mode='constant', constant_values=0)
+    dt = spim.distance_transform_edt(temp)
     seeds = dt > r
     im_opened = spim.distance_transform_edt(~seeds) <= r
+    im_opened = extract_subsection(im_opened, im.shape)
     return im_opened
 
 
@@ -259,6 +465,22 @@ def make_contiguous(im):
     ----------
     im : array_like
         An ND array containing greyscale values
+
+    Returns
+    -------
+    An ND-array the same size as ``im`` but with all values in contiguous
+    orders.
+
+    Example
+    -------
+    >>> import porespy as ps
+    >>> import scipy as sp
+    >>> im = sp.array([[0, 2, 9], [6, 8, 3]])
+    >>> im = ps.tools.make_contiguous(im)
+    >>> print(im)
+    [[0 1 5]
+     [3 4 2]]
+
     """
     im_flat = im.flatten()
     im_vals = sp.unique(im_flat)
@@ -268,33 +490,6 @@ def make_contiguous(im):
     im_new = sp.reshape(im_new, newshape=sp.shape(im))
     im_new = sp.array(im_new, dtype=im_flat.dtype)
     return im_new
-
-
-def add_walls(im, faces=[1, 1, 1]):
-    r"""
-    Add walls of solid material to specified faces of an image.
-
-    Parameters
-    ----------
-    im : ND-array
-        The image of the porous material
-
-    faces : N-dim by 1 array
-        Specifies which faces of the image to add walls.
-
-    Returns
-    -------
-    An ND-array the same size as ``im`` with solid (``False``) values added to
-    the specified faces.
-
-    """
-    if im.ndim == 2:
-        im = im[1:-1, 1:-1]
-    elif im.ndim == 3:
-        im = im[1:-1, 1:-1, 1:-1]
-    pad = [sp.array([1, 1])*faces[dim] for dim in range(im.ndim)]
-    temp = sp.pad(array=im, pad_width=pad, mode='constant', constant_values=0)
-    return temp
 
 
 def get_border(shape, thickness=1, mode='edges'):
@@ -322,8 +517,8 @@ def get_border(shape, thickness=1, mode='edges'):
 
     Examples
     --------
-    >>> import scipy as sp
     >>> import porespy as ps
+    >>> import scipy as sp
     >>> mask = ps.tools.get_border(shape=[3, 3], mode='corners')
     >>> print(mask)
     [[ True False  True]
@@ -359,3 +554,39 @@ def get_border(shape, thickness=1, mode='edges'):
             border[0::, t:-t, 0::] = False
             border[0::, 0::, t:-t] = False
     return border
+
+
+def fft_dilate(im, strel):
+    r"""
+    Performs an image dilation using a fast fourier transform
+
+    Parameters
+    ----------
+    im : ND-array
+        An ND image of the porous material containing True values in the
+        pore space.
+
+    strel : ND-array
+        An ND image of a structuring element.
+
+    Returns
+    ----------
+    An ND array with same dimensions as im
+
+    Examples
+    ----------
+    >>> import porespy as ps
+    >>> from skimage.morphology import disk
+    >>> import numpy as np
+    >>> im = np.zeros([5, 5], dtype=bool)
+    >>> im[2, 2] = True
+    >>> strel = disk(2)
+    >>> im_d = ps.tools.fft_dilate(im, strel)
+    >>> print(im_d)
+    [[False False  True False False]
+     [False  True  True  True False]
+     [ True  True  True  True  True]
+     [False  True  True  True False]
+     [False False  True False False]]
+    """
+    return fftconvolve(im, strel, 'same') > 0.5

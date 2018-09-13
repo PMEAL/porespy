@@ -10,6 +10,37 @@ from skimage.morphology import ball, disk, square, cube
 from skimage.morphology import reconstruction
 
 
+def norm_to_uniform(im, scale=None):
+    r"""
+    Take an image with normally distributed greyscale values and converts it to
+    a uniform (i.e. flat) distribution.  It's also possible to specify the
+    lower and upper limits of the uniform distribution.
+
+    Parameters
+    ----------
+    im : ND-image
+        The image containing the normally distributed scalar field
+
+    scale : [low, high]
+        A list or array indicating the lower and upper bounds for the new
+        randomly distributed data.  The default is ``None``, which uses the
+        ``max`` and ``min`` of the original image as the the lower and upper
+        bounds, but another common option might be [0, 1].
+
+    Returns
+    -------
+    An ND-image the same size as ``im`` with uniformly distributed greyscale
+    values spanning the specified range, if given.
+    """
+    if scale is None:
+        scale = [im.min(), im.max()]
+    im = (im - sp.mean(im))/sp.std(im)
+    im = 1/2*sp.special.erfc(-im/sp.sqrt(2))
+    im = (im - im.min()) / (im.max() - im.min())
+    im = im*(scale[1] - scale[0]) + scale[0]
+    return im
+
+
 def find_disconnected_voxels(im, conn=None):
     r"""
     This identifies all pore (or solid) voxels that are not connected to the
@@ -100,6 +131,73 @@ def trim_floating_solid(im):
     return im
 
 
+def trim_nonpercolating_paths(im, inlet_axis=0, outlet_axis=0):
+    r"""
+    Removes all nonpercolating paths including edges.
+
+    Parameters
+    ----------
+    im : ND-array
+        The Boolean image of the porous material with True values of selected
+        phase where path needs to be trimmed.
+
+    inlet_axis : int
+        Inlet axis of boundary condition. For three dimensional image the
+        number ranges from 0 to 2. For two dimensional image the range is
+        between 0 to 1.
+
+    outlet_axis : int
+        Outlet axis of boundary condition. For three dimensional image the
+        number ranges from 0 to 2. For two dimensional image the range is
+        between 0 to 1.
+
+    Returns
+    -------
+    A copy of ``im`` but with all the nonpercolating paths removed.
+
+    See Also
+    --------
+    find_disconnected_voxels
+    trim_floating_solid
+    trim_blind_pores
+
+    """
+    im = trim_floating_solid(~im)
+    labels = spim.label(~im)[0]
+    inlet = sp.zeros_like(im, dtype=int)
+    outlet = sp.zeros_like(im, dtype=int)
+    if im.ndim == 3:
+        if inlet_axis == 0:
+            inlet[0, :, :] = 1
+        elif inlet_axis == 1:
+            inlet[:, 0, :] = 1
+        elif inlet_axis == 2:
+            inlet[:, :, 0] = 1
+
+        if outlet_axis == 0:
+            outlet[-1, :, :] = 1
+        elif outlet_axis == 1:
+            outlet[:, -1, :] = 1
+        elif outlet_axis == 2:
+            outlet[:, :, -1] = 1
+
+    if im.ndim == 2:
+        if inlet_axis == 0:
+            inlet[0, :] = 1
+        elif inlet_axis == 1:
+            inlet[:, 0] = 1
+
+        if outlet_axis == 0:
+            outlet[-1, :] = 1
+        elif outlet_axis == 1:
+            outlet[:, -1] = 1
+    IN = sp.unique(labels*inlet)
+    OUT = sp.unique(labels*outlet)
+    new_im = sp.isin(labels, list(set(IN) ^ set(OUT)), invert=True)
+    im[new_im == 0] = True
+    return ~im
+
+
 def trim_extrema(im, h, mode='maxima'):
     r"""
     This trims local extrema in greyscale values by a specified amount,
@@ -122,7 +220,7 @@ def trim_extrema(im, h, mode='maxima'):
 
     Notes
     -----
-    This function is referred to as **imhmax** or **imhmin** in Mablab.
+    This function is referred to as **imhmax** or **imhmin** in Matlab.
     """
     result = im
     if mode in ['maxima', 'extrema']:
@@ -132,18 +230,22 @@ def trim_extrema(im, h, mode='maxima'):
     return result
 
 
-@jit
-def flood(im, mode='max'):
+@jit(forceobj=True)
+def flood(im, regions=None, mode='max'):
     r"""
     Floods/fills each region in an image with a single value based on the
     specific values in that region.  The ``mode`` argument is used to
-    determine how the value is calculated.  A region is defined as a connected
-    cluster of voxels surrounded by 0's for False's.
+    determine how the value is calculated.
 
     Parameters
     ----------
     im : array_like
         An ND image with isolated regions containing 0's elsewhere.
+
+    regions : array_like
+        An array the same shape as ``im`` with each region labeled.  If None is
+        supplied (default) then ``scipy.ndimage.label`` is used with its
+        default arguments.
 
     mode : string
         Specifies how to determine which value should be used to flood each
@@ -161,7 +263,12 @@ def flood(im, mode='max'):
     forground voxel based on the ``mode``.
 
     """
-    labels, N = spim.label(im)
+    mask = im > 0
+    if regions is None:
+        labels, N = spim.label(mask)
+    else:
+        labels = sp.copy(regions)
+        N = labels.max()
     I = im.flatten()
     L = labels.flatten()
     if mode.startswith('max'):
@@ -179,7 +286,7 @@ def flood(im, mode='max'):
         for i in range(len(L)):
             V[L[i]] += 1
     im_flooded = sp.reshape(V[labels], newshape=im.shape)
-    im_flooded = im_flooded*im
+    im_flooded = im_flooded*mask
     return im_flooded
 
 
@@ -301,6 +408,15 @@ def local_thickness(im):
     im : array_like
         A binary image with the phase of interest set to True
 
+    npts : scalar
+        The number of sizes to uses when probing pore space.  Points will be
+        generated spanning the range of sizes in the distance transform.
+        The default is 25 points.
+
+    sizes : array_like
+        The sizes to probe.  Use this argument instead of ``npts`` for
+        more control of the range and spacing of points.
+
     Returns
     -------
     An image with the pore size values in each voxel
@@ -370,8 +486,6 @@ def porosimetry(im, npts=25, sizes=None, inlets=None, access_limited=True):
     converted to capillary pressure using your favorite model.
 
     """
-    print('_'*60)
-    print('Performing simulation, please wait...')
     dt = spim.distance_transform_edt(im > 0)
     if inlets is None:
         inlets = get_border(im.shape, mode='faces')
@@ -388,6 +502,7 @@ def porosimetry(im, npts=25, sizes=None, inlets=None, access_limited=True):
             labels, N = spim.label(imtemp)
             imtemp = imtemp ^ (clear_border(labels=labels) > 0)
             imtemp[inlets] = False  # Remove inlets
-        imtemp = spim.distance_transform_edt(~imtemp) < r
-        imresults[(imresults == 0)*imtemp] = r
+        if sp.any(imtemp):
+            imtemp = spim.distance_transform_edt(~imtemp) < r
+            imresults[(imresults == 0)*imtemp] = r
     return imresults
