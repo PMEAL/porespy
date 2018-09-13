@@ -670,11 +670,11 @@ def cylinders(shape, radius, nfibers, phi_max=0, theta_max=90):
     n = 0
     while n < nfibers:
         x = sp.rand(3)*shape
-        phi = sp.deg2rad(90 + 90*(0.5 - sp.rand())*phi_max/90)
-        theta = sp.deg2rad(180 - 90*(0.5 - sp.rand())*2*theta_max/90)
-        X0 = R*sp.array([sp.sin(theta)*sp.cos(phi),
-                         sp.sin(theta)*sp.sin(phi),
-                         sp.cos(theta)])
+        phi = sp.deg2rad(90 + 90*(0.5 - sp.rand())*2*phi_max/90)
+        theta = sp.deg2rad(90 + 90*(0.5 - sp.rand())*2*theta_max/90)
+        X0 = R*sp.array([sp.sin(phi)*sp.cos(theta),
+                         sp.sin(phi)*sp.sin(theta),
+                         sp.cos(phi)])
         [X0, X1] = [X0 + x, -X0 + x]
         crds = line_segment(X0, X1)
         lower = ~sp.any(sp.vstack(crds).T < [0, 0, 0], axis=1)
