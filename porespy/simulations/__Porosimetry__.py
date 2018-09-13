@@ -61,10 +61,11 @@ class Porosimetry(object):
             ax = fig.add_subplot(111)
         else:
             ax = fig.get_axes()[0]
-        ax.hist(self.result.flatten(), bins=sp.unique(self.result)[1:])
-        fig.xlabel('Radius of Invading Sphere')
-        fig.ylabel('Number of Invaded Voxels')
-        return fig
+        counts, bins, bars = ax.hist(self.result.flatten(),
+                                     bins=sp.unique(self.result)[1:])
+        plt.xlabel('Radius of Invading Sphere')
+        plt.ylabel('Number of Invaded Voxels')
+        return fig, counts, bins, bars
 
     def get_drainage_data(self):
         r"""

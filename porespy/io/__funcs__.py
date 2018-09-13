@@ -1,6 +1,6 @@
 import numpy as np
 from scipy import ndimage as spim
-from porespy.export.evtk import hl as bp
+from porespy.io.evtk import hl as bp
 import scipy.ndimage as nd
 
 
@@ -53,7 +53,7 @@ def to_vtk(im, path='./voxvtk', divide=False, downsample=False, voxel_size=1,
                       cellData={'im': np.ascontiguousarray(im2)},
                       spacing=(vs, vs, vs))
     elif downsample:
-        im = spim.interpolation.zoom(im, zoom=0.5, order=0)
+        im = spim.interpolation.zoom(im, zoom=0.5, order=0, mode='reflect')
         bp.imageToVTK(path, cellData={'im': np.ascontiguousarray(im)},
                       spacing=(2*vs, 2*vs, 2*vs))
     else:

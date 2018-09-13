@@ -72,6 +72,30 @@ def representative_elementary_volume(im, npoints=1000):
     return profile
 
 
+def porosity_profile(im, axis):
+    r"""
+    Returns a porosity profile along the specified axis
+
+    Parameters
+    ----------
+    im : ND-array
+        The volumetric image for which to calculate the porosity profile
+
+    axis : int
+        The axis (0, 1, or 2) along which to calculate the profile.  For
+        instance, if `axis` is 0, then the porosity in each YZ plane is
+        calculated and returned as 1D array with 1 value for each X position.
+
+    """
+    if axis > 2:
+        raise Exception('axis out of range')
+    im = np.atleast_3d(im)
+    a = set(range(im.ndim)).difference(set([axis]))
+    a1, a2 = a
+    prof = np.sum(np.sum(im, axis=a2), axis=a1)/(im.shape[a2]*im.shape[a1])
+    return prof*100
+
+
 def radial_distribution(im, bins=10):
     r"""
 
@@ -167,10 +191,6 @@ def porosity(im):
     image such that blind pores have a value of 2, thus allowing the
     calculation of accessible porosity, rather than overall porosity.
 
-    References
-    ----------
-    [1] Torquato, S. Random Heterogeneous Materials: Mircostructure and
-    Macroscopic Properties. Springer, New York (2002)
     """
     im = sp.array(im, dtype=int)
     Vp = sp.sum(im == 1)
@@ -249,8 +269,16 @@ def _radial_profile(autocorr, r_max, nbins=100):
     r_max : int or float
         The maximum radius in pixels to sum the image over
     """
-    inds = sp.indices(autocorr.shape) - sp.reshape(autocorr.shape, [2, 1, 1])/2
-    dt = sp.sqrt(inds[0]**2 + inds[1]**2)
+    if len(autocorr.shape) == 2:
+        adj = sp.reshape(autocorr.shape, [2, 1, 1])
+        inds = sp.indices(autocorr.shape) - adj/2
+        dt = sp.sqrt(inds[0]**2 + inds[1]**2)
+    elif len(autocorr.shape) == 3:
+        adj = sp.reshape(autocorr.shape, [3, 1, 1, 1])
+        inds = sp.indices(autocorr.shape) - adj/2
+        dt = sp.sqrt(inds[0]**2 + inds[1]**2 + inds[2]**2)
+    else:
+        raise Exception('Image dimensions must be 2 or 3')
     bin_size = np.int(np.ceil(r_max/nbins))
     bins = np.arange(bin_size, r_max, step=bin_size)
     radial_sum = np.zeros_like(bins)
@@ -265,7 +293,7 @@ def _radial_profile(autocorr, r_max, nbins=100):
     return tpcf(bins, norm_autoc_radial)
 
 
-def two_point_correlation_fft(im, pad=False):
+def two_point_correlation_fft(im):
     r"""
     Calculates the two-point correlation function using fourier transforms
 
@@ -273,9 +301,6 @@ def two_point_correlation_fft(im, pad=False):
     ----------
     im : ND-array
         The image of the void space on which the 2-point correlation is desired
-
-    pad : bool
-        The image is padded with Trues or 1's depending on dtype around border
 
     Returns
     -------
@@ -293,18 +318,6 @@ def two_point_correlation_fft(im, pad=False):
     """
     # Calculate half lengths of the image
     hls = (np.ceil(np.shape(im))/2).astype(int)
-    if pad:
-        # Pad image boundaries with ones
-        dtype = im.dtype
-        ish = np.shape(im)
-        off = hls + ish
-        if len(ish) == 2:
-            pad_im = np.ones(shape=[2*ish[0], 2*ish[1]], dtype=dtype)
-            pad_im[hls[0]:off[0], hls[1]:off[1]] = im
-        elif len(ish) == 3:
-            pad_im = np.ones(shape=[2*ish[0], 2*ish[1], 2*ish[2]], dtype=dtype)
-            pad_im[hls[0]:off[0], hls[1]:off[1], hls[2]:off[2]] = im
-        im = pad_im
     # Fourier Transform and shift image
     F = sp_ft.ifftshift(sp_ft.fftn(sp_ft.fftshift(im)))
     # Compute Power Spectrum

@@ -1,6 +1,8 @@
 # PoreSpy
 
-![https://travis-ci.org/PMEAL/porespy](https://travis-ci.org/PMEAL/porespy.svg?branch=master)
+[![](https://travis-ci.org/PMEAL/porespy)](https://travis-ci.org/PMEAL/porespy.svg?branch=master)
+
+[![](https://img.shields.io/badge/ReadTheDocs-GO-blue.svg)](http://porespy.readthedocs.io/en/master/)
 
 ## What is PoreSpy?
 
@@ -10,14 +12,13 @@ PoreSpy is a collection of image analysis tool used to extract information from 
 
 PoreSpy consists of the following modules:
 
-* ``binarization``: Functions for converting greyscale reconstruction into segmented binary image of solid and void
 * ``generators``: Routines for generating artificial images of porous materials useful for testing and illustration
 * ``filters``: Functions that accept an image and return an altered image
 * ``metrics``: Tools for quantifying properties of images
 * ``simulations``: More complex calculations based on physical processes
 * ``network_extraction``: Tools for obtaining pore network representations of images
 * ``visualization``: Helper functions for creating useful views of the image
-* ``export``: Functions for output image data in various formats for use in common software
+* ``io``: Functions for output image data in various formats for use in common software
 * ``tools``: Various useful tools for working with images
 
 ## Installation
