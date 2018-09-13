@@ -64,6 +64,33 @@ def subdivide(im, divs=2):
     return s
 
 
+def bbox_to_slices(bbox):
+    r"""
+    Given a tuple containing bounding box coordinates, return a tuple of slice
+    objects.
+
+    Parameters
+    ----------
+    bbox : tuple of ints
+        The bounding box indices in the form (``xmin``, ``ymin``, ``zmin``,
+        ``xmax``, ``ymax``, ``zmax``).  For a 2D image, simply omit the
+        ``zmin`` and ``zmax`` entries.
+
+    Returns
+    -------
+    A tuple of slice objects that can be used to directly index into a larger
+    image.  A
+    """
+    if len(bbox) == 4:
+        ret = (slice(bbox[0], bbox[2]),
+               slice(bbox[1], bbox[3]))
+    else:
+        ret = (slice(bbox[0], bbox[3]),
+               slice(bbox[1], bbox[4]),
+               slice(bbox[2], bbox[5]))
+    return ret
+
+
 def get_slice(im, center, size, pad=0):
     r"""
     Given a ``center`` location and ``radius`` of a feature, returns the slice
@@ -555,6 +582,33 @@ def get_border(shape, thickness=1, mode='edges'):
             border[0::, t:-t, 0::] = False
             border[0::, 0::, t:-t] = False
     return border
+
+
+def in_hull(points, hull):
+    """
+    Test if a list of coordinates are inside a given convex hull
+
+    Parameters
+    ----------
+    points : array_like (N x ndims)
+        The spatial coordinates of the points to check
+
+    hull : scipy.spatial.ConvexHull object **OR** array_like
+        Can be either a convex hull object as returned by
+        ``scipy.spatial.ConvexHull`` or simply the coordinates of the points
+        that define the convex hull.
+
+    Returns
+    -------
+    A Boolean array of length *N* indicating whether or not the given points
+    in ``points`` lies within the provided ``hull``.
+
+    """
+    from scipy.spatial import Delaunay, ConvexHull
+    if isinstance(hull, ConvexHull):
+        hull = hull.points
+    hull = Delaunay(hull)
+    return hull.find_simplex(points) >= 0
 
 
 def fft_dilate(im, strel):
