@@ -262,6 +262,10 @@ def flood(im, regions=None, mode='max'):
     An ND-array the same size as ``im`` with new values placed in each
     forground voxel based on the ``mode``.
 
+    See Also
+    --------
+    props_to_image
+
     """
     mask = im > 0
     if regions is None:

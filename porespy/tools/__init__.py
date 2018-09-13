@@ -6,6 +6,7 @@ Tools
 This module contains a variety of functions for manipulating images in ways
 that do NOT return a modified version of the original image.
 
+.. autofunction:: bbox_to_slices
 .. autofunction:: extend_slice
 .. autofunction:: extract_subsection
 .. autofunction:: extract_cylinder
@@ -13,6 +14,7 @@ that do NOT return a modified version of the original image.
 .. autofunction:: get_border
 .. autofunction:: get_planes
 .. autofunction:: get_slice
+.. autofunction:: in_hull
 .. autofunction:: make_contiguous
 .. autofunction:: randomize_colors
 .. autofunction:: subdivide
@@ -21,6 +23,7 @@ that do NOT return a modified version of the original image.
 
 from .__funcs__ import binary_opening_dt
 from .__funcs__ import binary_opening_fft
+from .__funcs__ import bbox_to_slices
 from .__funcs__ import extend_slice
 from .__funcs__ import extract_subsection
 from .__funcs__ import extract_cylinder

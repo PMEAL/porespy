@@ -39,6 +39,7 @@ setup(
                       'scipy',
                       'matplotlib',
                       'scikit-image',
+                      'pandas',
                       'imageio',
                       'tqdm',
                       'array_split',
