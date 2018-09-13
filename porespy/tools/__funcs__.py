@@ -311,6 +311,7 @@ def extend_slice(s, shape, pad=1):
     As can be seen by the location of the 4s, the slice was extended by 1, and
     also handled the extension beyond the boundary correctly.
     """
+    pad = int(pad)
     a = []
     for i, dim in zip(s, shape):
         start = 0

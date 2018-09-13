@@ -16,10 +16,13 @@ structural characteristics, such as pore sizes.
 .. autofunction:: porosimetry
 .. autofunction:: trim_extrema
 .. autofunction:: trim_floating_solid
+.. autofunction:: trim_nonpercolating_paths
 
 """
 from .__funcs__ import apply_chords
 from .__funcs__ import apply_chords_3D
+from .__funcs__ import basic_mio
+from .__funcs__ import coalesce_menisci
 from .__funcs__ import fill_blind_pores
 from .__funcs__ import find_disconnected_voxels
 from .__funcs__ import flood
