@@ -86,6 +86,7 @@ class FilterTest():
     def test_find_disconnected_voxels_2d(self):
         h = ps.filters.find_disconnected_voxels(self.im[:, :, 0])
         assert sp.sum(h) == 477
+#        print(sp.sum(h))
 
     def test_find_disconnected_voxels_2d_conn4(self):
         h = ps.filters.find_disconnected_voxels(self.im[:, :, 0], conn=4)
@@ -98,6 +99,31 @@ class FilterTest():
     def test_find_disconnected_voxels_3d_conn6(self):
         h = ps.filters.find_disconnected_voxels(self.im, conn=6)
         assert sp.sum(h) == 202
+
+    def test_trim_nonpercolating_paths_2d_axis0(self):
+        h = ps.filters.trim_nonpercolating_paths(self.im[:, :, 0],
+                                                 inlet_axis=0, outlet_axis=0)
+        assert sp.sum(h) == 3178
+
+    def test_trim_nonpercolating_paths_2d_axis1(self):
+        h = ps.filters.trim_nonpercolating_paths(self.im[:, :, 0],
+                                                 inlet_axis=1, outlet_axis=1)
+        assert sp.sum(h) == 1067
+
+    def test_trim_nonpercolating_paths_3d_axis0(self):
+        h = ps.filters.trim_nonpercolating_paths(self.im,
+                                                 inlet_axis=0, outlet_axis=0)
+        assert sp.sum(h) == 499733
+
+    def test_trim_nonpercolating_paths_3d_axis1(self):
+        h = ps.filters.trim_nonpercolating_paths(self.im,
+                                                 inlet_axis=1, outlet_axis=1)
+        assert sp.sum(h) == 499693
+
+    def test_trim_nonpercolating_paths_3d_axis2(self):
+        h = ps.filters.trim_nonpercolating_paths(self.im,
+                                                 inlet_axis=2, outlet_axis=2)
+        assert sp.sum(h) == 499611
 
     def test_fill_blind_pores(self):
         h = ps.filters.find_disconnected_voxels(self.im)
@@ -125,7 +151,7 @@ class FilterTest():
 
     def test_local_thickness(self):
         lt = ps.filters.local_thickness(self.im)
-        assert lt.max() == sp.around(self.im_dt.max(), decimals=0)
+        assert lt.max() == self.im_dt.max()
 
     def test_porosimetry(self):
         im2d = self.im[:, :, 50]
@@ -141,27 +167,9 @@ class FilterTest():
 
 if __name__ == '__main__':
     t = FilterTest()
-    t.setup_class()
-    t.test_apply_chords_axis0()
-    t.test_apply_chords_axis1()
-    t.test_apply_chords_axis2()
-    t.test_apply_chords_with_spacing()
-    t.test_apply_chords_without_trimming()
-    t.test_apply_chords3D()
-    t.test_apply_chords3D_with_spacing()
-    t.test_flood_size()
-    t.test_flood_max()
-    t.test_flood_min()
-    t.test_find_disconnected_voxels_2d()
-    t.test_find_disconnected_voxels_2d_conn4()
-    t.test_find_disconnected_voxels_3d()
-    t.test_find_disconnected_voxels_3d_conn6()
-    t.test_fill_blind_pores()
-    t.test_trim_floating_solid()
-    t.test_trim_extrema_min()
-    t.test_trim_extrema_max()
-    t.test_local_thickness()
-    t.test_porosimetry()
-    t.test_porosimetry_npts_10()
-    t.test_porosimetry_with_sizes()
     self = t
+    t.setup_class()
+    for item in t.__dir__():
+        if item.startswith('test'):
+            print('running test: '+item)
+            t.__getattribute__(item)()

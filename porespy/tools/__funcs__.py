@@ -2,13 +2,14 @@ import scipy as sp
 import scipy.ndimage as spim
 from skimage.morphology import ball, disk, square, cube
 from array_split import shape_split
+from scipy.signal import fftconvolve
 
 
 def subdivide(im, divs=2):
     r"""
     Returns slices into an image describing the specified number of sub-arrays.
     This function is useful for performing operations on smaller images for
-    memory or speed.  Note that most typical operations this will NOT work,
+    memory or speed.  Note that for most typical operations this will NOT work,
     since the image borders would cause artifacts (e.g. ``distance_transform``)
 
     Parameters
@@ -18,7 +19,7 @@ def subdivide(im, divs=2):
 
     divs : scalar or array_like
         The number of sub-divisions to create in each axis of the image.  If a
-        scalar is given it is assume this value applies in all dimensions.
+        scalar is given it is assumed this value applies in all dimensions.
 
     Returns
     -------
@@ -227,7 +228,34 @@ def extract_subsection(im, shape):
         lower_im = sp.amax((center[dim]-r, 0))
         upper_im = sp.amin((center[dim]+r, im.shape[dim]))
         s_im.append(slice(int(lower_im), int(upper_im)))
-    return im[s_im]
+    return im[tuple(s_im)]
+
+
+def get_planes(im, squeeze=True):
+    r"""
+    Extracts three planar images from the volumetric image, one for each
+    principle axis.  The planes are taken from the middle of the domain.
+
+    Parameters
+    ----------
+    im : ND-array
+        The volumetric image from which the 3 planar images are to be obtained
+
+    squeeze : boolean, optional
+        If True (default) the returned images are 2D (i.e. squeezed).  If
+        False, the images are 1 element deep along the axis where the slice
+        was obtained.
+    """
+    x, y, z = (sp.array(im.shape)/2).astype(int)
+    planes = [im[x, :, :], im[:, y, :], im[:, :, z]]
+    if not squeeze:
+        imx = planes[0]
+        planes[0] = sp.reshape(imx, [1, imx.shape[0], imx.shape[1]])
+        imy = planes[1]
+        planes[1] = sp.reshape(imy, [imy.shape[0], 1, imy.shape[1]])
+        imz = planes[2]
+        planes[2] = sp.reshape(imz, [imz.shape[0], imz.shape[1], 1])
+    return planes
 
 
 def extend_slice(s, shape, pad=1):
@@ -264,13 +292,15 @@ def extend_slice(s, shape, pad=1):
     >>> s = find_objects(labels)
 
     Using the slices returned by ``find_objects``, set the first label to 3
+
     >>> labels[s[0]] = 3
     >>> print(labels)
     [[3 0 0]
      [3 0 0]
      [0 0 2]]
 
-    Next extend the slice, and use it to set the values to 4:
+    Next extend the slice, and use it to set the values to 4
+
     >>> s_ext = extend_slice(s[0], shape=im.shape, pad=1)
     >>> labels[s_ext] = 4
     >>> print(labels)
@@ -281,6 +311,7 @@ def extend_slice(s, shape, pad=1):
     As can be seen by the location of the 4s, the slice was extended by 1, and
     also handled the extension beyond the boundary correctly.
     """
+    pad = int(pad)
     a = []
     for i, dim in zip(s, shape):
         start = 0
@@ -290,25 +321,53 @@ def extend_slice(s, shape, pad=1):
         if i.stop + pad < dim:
             stop = i.stop + pad
         a.append(slice(start, stop, None))
-    return a
+    return tuple(a)
 
 
-def binary_opening_fast(im, r, dt=None):
+def binary_opening_fft(im, strel):
     r"""
-    This function uses a shortcut to perform a morphological opening that does
-    not slow down with larger structuring elements.  Because of the shortcut,
-    it only applies to spherical structuring elements.
+    Using the ``scipy.signal.fftconvolve`` function (twice) to accomplish
+    binary image opening.
+
+    The use of the fft-based convolution produces a 10x speed-up compared to
+    the standard ``binary_opening`` included in ``scipy.ndimage``.
+
+    See Also
+    --------
+    binary_opening_dt
+
+    Notes
+    -----
+    The ``fftconvolve`` function is only optimzed in some scipy installations,
+    depending how it was compiled.  If the promised speed-up is not acheived,
+    this may be the issue.  Using ``binary_opening_dt`` should still be fast
+    but is limited to spherical and circular structing elements.
+
+    """
+    if isinstance(strel, int):
+        if im.ndim == 2:
+            strel = disk(strel)
+        else:
+            strel = ball(strel)
+    seeds = sp.signal.fftconvolve(im, strel) > (strel.sum() - 0.1)
+    result = sp.signal.fftconvolve(seeds, strel) > 0.1
+    result = extract_subsection(result, im.shape)
+    return result
+
+
+def binary_opening_dt(im, r):
+    r"""
+    Perform a morphological opening that does not slow down with larger
+    structuring elements.
+
+    It uses a shortcut based on the distance transform, which means it only
+    applies to spherical (or cicular if the image is 2d) structuring elements.
 
     Parameters
     ----------
     im : ND-array
         The image of the porous material with True values (or 1's) indicating
         the pore phase.
-
-    dt : ND-array
-        The distance transform of the pore space.  If none is provided, it will
-        be calculated; however, providing one is a good idea since it will cut
-        the processing time in half.
 
     r : scalar, int
         The radius of the spherical structuring element to apply
@@ -318,11 +377,16 @@ def binary_opening_fast(im, r, dt=None):
     A binary image with ``True`` values in all locations where a sphere of size
     ``r`` could fit entirely within the pore space.
 
+    See Also
+    --------
+    binary_opening_fft
+
     """
-    if dt is None:
-        dt = spim.distance_transform_edt(im)
+    temp = sp.pad(im, pad_width=1, mode='constant', constant_values=0)
+    dt = spim.distance_transform_edt(temp)
     seeds = dt > r
     im_opened = spim.distance_transform_edt(~seeds) <= r
+    im_opened = extract_subsection(im_opened, im.shape)
     return im_opened
 
 
@@ -491,3 +555,39 @@ def get_border(shape, thickness=1, mode='edges'):
             border[0::, t:-t, 0::] = False
             border[0::, 0::, t:-t] = False
     return border
+
+
+def fft_dilate(im, strel):
+    r"""
+    Performs an image dilation using a fast fourier transform
+
+    Parameters
+    ----------
+    im : ND-array
+        An ND image of the porous material containing True values in the
+        pore space.
+
+    strel : ND-array
+        An ND image of a structuring element.
+
+    Returns
+    ----------
+    An ND array with same dimensions as im
+
+    Examples
+    ----------
+    >>> import porespy as ps
+    >>> from skimage.morphology import disk
+    >>> import numpy as np
+    >>> im = np.zeros([5, 5], dtype=bool)
+    >>> im[2, 2] = True
+    >>> strel = disk(2)
+    >>> im_d = ps.tools.fft_dilate(im, strel)
+    >>> print(im_d)
+    [[False False  True False False]
+     [False  True  True  True False]
+     [ True  True  True  True  True]
+     [False  True  True  True False]
+     [False False  True False False]]
+    """
+    return fftconvolve(im, strel, 'same') > 0.5
