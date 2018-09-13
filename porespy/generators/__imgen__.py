@@ -29,7 +29,7 @@ def insert_shape(im, center, element, value=1):
     return im
 
 
-def RSA(im, r, f=1, mode='extended'):
+def RSA(im, radius, volume_fraction=1, mode='extended'):
     r"""
     Generates a sphere or disk packing using Random Sequential Addition, which
     ensures that spheres do not overlap but does not guarantee they are
@@ -46,9 +46,9 @@ def RSA(im, r, f=1, mode='extended'):
         image rather than a shape, it allows users to insert spheres into an
         already existing image.  To begin the process, start with an array of
         zero such as ``im = np.zeros([200, 200], dtype=bool)``.
-    r : int
+    radius : int
         The radius of the disk or sphere to insert.
-    f : scalar
+    volume_fraction : scalar
         The fraction of the image that should be filled with spheres.  The
         spheres are addeds 1's, so each sphere addition increases the
         ``volume_fraction`` until the specified limit is reach.
@@ -70,14 +70,14 @@ def RSA(im, r, f=1, mode='extended'):
     # Note: The 2D vs 3D splitting of this just me being lazy...I can't be
     # bothered to figure it out programmatically right now
     # TODO: Ideally the spheres should be added periodically
-    print('Adding spheres of size:', r)
+    print('Adding spheres of size:', radius)
     d2 = len(im.shape) == 2
-    mrad = 2*r + 1
+    mrad = 2*radius + 1
     if d2:
-        im_strel = disk(r)
+        im_strel = disk(radius)
         mask_strel = disk(mrad)
     else:
-        im_strel = ball(r)
+        im_strel = ball(radius)
         mask_strel = ball(mrad)
     if sp.any(im > 0):
         mask = ps.tools.fft_dilate(im > 0, im_strel > 0)
@@ -85,7 +85,7 @@ def RSA(im, r, f=1, mode='extended'):
     else:
         mask = sp.zeros_like(im)
     if mode == 'contained':
-        mask = _remove_edge(mask, r)
+        mask = _remove_edge(mask, radius)
     elif mode == 'extended':
         pass
     elif mode == 'periodic':
@@ -95,23 +95,23 @@ def RSA(im, r, f=1, mode='extended'):
     vf = im.sum()/im.size
     free_spots = sp.argwhere(mask == 0)
     i = 0
-    while vf <= f and len(free_spots) > 0:
+    while vf <= volume_fraction and len(free_spots) > 0:
         choice = sp.random.randint(0, len(free_spots), size=1)
         if d2:
             [x, y] = free_spots[choice].flatten()
-            im = _fit_strel_to_im_2d(im, im_strel, r, x, y)
+            im = _fit_strel_to_im_2d(im, im_strel, radius, x, y)
             mask = _fit_strel_to_im_2d(mask, mask_strel, mrad, x, y)
             im[x, y] = 2
         else:
             [x, y, z] = free_spots[choice].flatten()
-            im = _fit_strel_to_im_3d(im, im_strel, r, x, y, z)
+            im = _fit_strel_to_im_3d(im, im_strel, radius, x, y, z)
             mask = _fit_strel_to_im_3d(mask, mask_strel, mrad, x, y, z)
             im[x, y, z] = 2
         free_spots = sp.argwhere(mask == 0)
         vf = im.sum()/im.size
         i += 1
-    if vf > f:
-        print('Volume Fraction', f, 'reached')
+    if vf > volume_fraction:
+        print('Volume Fraction', volume_fraction, 'reached')
     if len(free_spots) == 0:
         print('No more free spots', 'Volume Fraction', vf)
     return im
