@@ -412,22 +412,23 @@ def chord_length_distribution(im, bins=25, log=False):
                                              'differential_chord_length'))
     return data(x[:-1], y_num_cum, y_len_cum, y_num, y_len)
 
-def cld_helper(im, axes=(0,1,2), spacing=0, trim_edges=True):
+
+def cld_helper(im, axes=(0, 1, 2), spacing=0, trim_edges=True):
     r"""
     Takes a binary image and returns a weighted coord length distribution in
-    the three principle directions as presented in (ref my paper). 
-    
+    the three principle directions as presented in (ref my paper).
+
     Parameters
     ----------
     im : ND-image
         An image of the porous material with phase pof interest marked as True
-        
+
     axes : tuple or int (default = (0,1,2))
         A tuple containing the desired direction for the chords to  be
         applied and counted. This argument is identical to the axis argument in
-        filters.apply_chords except it accepts a single integer or a tuple of 
+        filters.apply_chords except it accepts a single integer or a tuple of
         integers.
-        
+
     spacing : int (default = 0)
         Chords are automatically separated by 1 voxel and this argument
         increases the separation.
@@ -436,72 +437,27 @@ def cld_helper(im, axes=(0,1,2), spacing=0, trim_edges=True):
         Whether or not to remove chords that touch the edges of the image.
         These chords are artifically shortened, so skew the chord length
         distribution
-        
+
     Returns
     -------
     A list of 1D arrays representing the chord length distibutions for each
-    axis as specified by axes. The length of each array is equal to 1 + the 
+    axis as specified by axes. The length of each array is equal to 1 + the
     size of the largest chord in that direction:
-        For example if the longest chord in x has length 100, then length(cx) = 
+        For example if the longest chord in x has length 100, then length(cx) =
         101.
-    The chord lengths have also been normalized according to the total lenght 
+    The chord lengths have also been normalized according to the total lenght
     of chords in that direction:
         For example if the total chords drawn in the x direction is equal to
         1000, and there are 3 chords of length 4, then cx[3] = 0.12. In this
         way the integral of the curve provided is always 1.
-    """ 
-    if isinstance(axes,int):
+    """
+    if isinstance(axes, int):
         axes = (axes,)
     res = []
     for ax in axes:
-        c = apply_chords(im,axis=ax,spacing=spacing,trim_edges=trim_edges)
-        c =chord_length_counts(c)
+        c = apply_chords(im, axis=ax, spacing=spacing, trim_edges=trim_edges)
+        c = chord_length_counts(c)
         c = np.bincount(c)
         c = c*range(c.size)/(c*range(c.size)).sum()
         res.append(c)
     return res
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    

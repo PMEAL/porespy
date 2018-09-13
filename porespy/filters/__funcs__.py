@@ -441,6 +441,7 @@ def porosimetry(im, npts=25, sizes=None, inlets=None, access_limited=True):
             imresults[(imresults == 0)*imtemp] = r
     return imresults
 
+
 def porosimetry_fft(im, npts=25, sizes=None, inlets=None, access_limited=True):
     r"""
     Performs a porosimetry simulution on the image
@@ -506,22 +507,6 @@ def porosimetry_fft(im, npts=25, sizes=None, inlets=None, access_limited=True):
             imtemp = imtemp ^ (clear_border(labels=labels) > 0)
             imtemp[inlets] = False  # Remove inlets
         if sp.any(imtemp):
-            imtemp = fftconvolve(imtemp,strel,mode='same') >= 1
+            imtemp = fftconvolve(imtemp, strel, mode='same') >= 1
             imresults[(imresults == 0)*imtemp] = r
     return imresults
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
