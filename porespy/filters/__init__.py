@@ -16,6 +16,7 @@ structural characteristics, such as pore sizes.
 .. autofunction:: porosimetry
 .. autofunction:: trim_extrema
 .. autofunction:: trim_floating_solid
+.. autofunction:: trim_nonpercolating_paths
 
 """
 from .__funcs__ import apply_chords
