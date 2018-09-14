@@ -5,7 +5,7 @@ import scipy.ndimage as spim
 from skimage.segmentation import find_boundaries
 from skimage.morphology import ball, disk, square, cube
 from tqdm import tqdm
-from porespy.filters import norm_to_uniform
+from porespy.tools import norm_to_uniform
 
 
 def insert_shape(im, center, element, value=1):

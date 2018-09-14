@@ -61,11 +61,11 @@ def fftmorphology(im, strel, mode='opening'):
 
     """
     def erode(im, strel):
-        t = sp.signal.fftconvolve(im, strel, mode='same') > (strel.sum() - 0.1)
+        t = fftconvolve(im, strel, mode='same') > (strel.sum() - 0.1)
         return t
 
     def dilate(im, strel):
-        t = sp.signal.fftconvolve(im, strel, mode='same') > 0.1
+        t = fftconvolve(im, strel, mode='same') > 0.1
         return t
 
     # The array must be padded with 0's so it works correctly at edges

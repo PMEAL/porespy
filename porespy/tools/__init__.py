@@ -23,8 +23,6 @@ that do NOT return a modified version of the original image.
 
 '''
 
-from .__funcs__ import binary_opening_dt
-from .__funcs__ import binary_opening_fft
 from .__funcs__ import bbox_to_slices
 from .__funcs__ import extend_slice
 from .__funcs__ import extract_subsection
@@ -32,9 +30,9 @@ from .__funcs__ import extract_cylinder
 from .__funcs__ import fftmorphology
 from .__funcs__ import find_outer_region
 from .__funcs__ import get_border
-from .__funcs__ import get_slice
 from .__funcs__ import get_planes
-# from .__funcs__ import in_hull
+from .__funcs__ import get_slice
+from .__funcs__ import in_hull
 from .__funcs__ import make_contiguous
 from .__funcs__ import norm_to_uniform
 from .__funcs__ import randomize_colors
