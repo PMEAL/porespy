@@ -9,7 +9,6 @@ directly to the binary image.
 
 .. autofunction:: chord_length_counts
 .. autofunction:: chord_length_distribution
-.. autofunction:: pore_size_density
 .. autofunction:: pore_size_distribution
 .. autofunction:: porosity
 .. autofunction:: porosity_profile
@@ -24,7 +23,6 @@ directly to the binary image.
 
 from .__funcs__ import chord_length_counts
 from .__funcs__ import chord_length_distribution
-from .__funcs__ import pore_size_density
 from .__funcs__ import pore_size_distribution
 from .__funcs__ import porosity
 from .__funcs__ import porosity_profile
