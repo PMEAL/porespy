@@ -105,13 +105,17 @@ def trim_floating_solid(im):
 
 def trim_nonpercolating_paths(im, inlet_axis=0, outlet_axis=0):
     r"""
-    Removes all nonpercolating paths including edges.
+    Removes all nonpercolating paths between specified edges
+
+    This function is essential when performing transport simulations on an
+    image, since image regions that do not span between the desired inlet and
+    outlet do not contribute to the transport.
 
     Parameters
     ----------
     im : ND-array
-        The Boolean image of the porous material with True values of selected
-        phase where path needs to be trimmed.
+        The image of the porous material with ```True`` values indicating the
+        phase of interest
 
     inlet_axis : int
         Inlet axis of boundary condition. For three dimensional image the
@@ -125,7 +129,7 @@ def trim_nonpercolating_paths(im, inlet_axis=0, outlet_axis=0):
 
     Returns
     -------
-    A copy of ``im`` but with all the nonpercolating paths removed.
+    A copy of ``im`` but with all the nonpercolating paths removed
 
     See Also
     --------
@@ -193,6 +197,7 @@ def trim_extrema(im, h, mode='maxima'):
     Notes
     -----
     This function is referred to as **imhmax** or **imhmin** in Matlab.
+
     """
     result = im
     if mode in ['maxima', 'extrema']:
