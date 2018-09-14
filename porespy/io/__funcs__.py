@@ -100,12 +100,3 @@ def to_palabos(im, filename, solid=0):
     with open(filename, 'w') as f:
         out_data = dt.flatten().tolist()
         f.write('\n'.join(map(repr, out_data)))
-        
-    
-    
-    
-    
-    
-    
-    
-    
