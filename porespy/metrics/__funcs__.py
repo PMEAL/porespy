@@ -97,28 +97,6 @@ def porosity_profile(im, axis):
     return prof*100
 
 
-def radial_distribution(im, bins=10):
-    r"""
-
-    References
-    ----------
-    [1] Torquato, S. Random Heterogeneous Materials: Microstructure and
-    Macroscopic Properties. Springer, New York (2002)
-    """
-    print("Sorry, but this function is not implemented yet")
-
-
-def lineal_path(im):
-    r"""
-
-    References
-    ----------
-    [1] Torquato, S. Random Heterogeneous Materials: Mircostructure and
-    Macroscopic Properties. Springer, New York (2002)
-    """
-    print("Sorry, but this function is not implemented yet")
-
-
 def pore_size_density(im, bins=10, voxel_size=1):
     r"""
     Computes the histogram of the distance transform as an estimator of the
@@ -469,7 +447,7 @@ def cld_helper(im, axes=(0, 1, 2), spacing=0, trim_edges=True):
     size of the largest chord in that direction:
         For example if the longest chord in x has length 100, then length(cx) =
         101.
-    The chord lengths have also been normalized according to the total lenght
+    The chord lengths have also been normalized according to the total length
     of chords in that direction:
         For example if the total chords drawn in the x direction is equal to
         1000, and there are 3 chords of length 4, then cx[3] = 0.12. In this
