@@ -17,6 +17,7 @@ structural characteristics, such as pore sizes.
 .. autofunction:: trim_extrema
 .. autofunction:: trim_floating_solid
 .. autofunction:: trim_nonpercolating_paths
+.. autofunction:: fftmorphology
 
 """
 from .__funcs__ import apply_chords
@@ -33,3 +34,4 @@ from .__funcs__ import trim_extrema
 from .__funcs__ import trim_floating_solid
 from .__funcs__ import trim_nonpercolating_paths
 from .__funcs__ import porosimetry_fft
+from .__funcs__ import fftmorphology

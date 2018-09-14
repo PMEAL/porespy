@@ -12,6 +12,91 @@ from skimage.morphology import reconstruction
 from scipy.signal import fftconvolve
 
 
+def fftmorphology(im, strel, mode='opening'):
+    r"""
+    Perform morphological operations on binary images using fft approach for
+    improved performance
+
+    Parameters
+    ----------
+    im : nd-array
+        The binary image on which to perform the morphological operation
+
+    strel : nd-array
+        The structuring element to use.  Must have the same dims as ``im``.
+
+    mode : string
+        The type of operation to perform.  Options are 'dilation', 'erosion',
+        'opening' and 'closing'.
+
+    Notes
+    -----
+    This function uses ``scipy.signal.fftconvolve`` which *can* be more than
+    10x faster than the standard binary morphology operation in
+    ``scipy.ndimage``.  This speed up may not always be realized, depending
+    on the scipy distribution used.
+
+    Examples
+    --------
+    >>> import porespy as ps
+    >>> from numpy import array_equal
+    >>> import scipy.ndimage as spim
+    >>> from skimage.morphology import disk
+    >>> im = ps.generators.blobs(shape=[50, 50], porosity=0.8)
+
+    Check that erosion, dilation, opening, and closing are all the same as
+    the ``scipy.ndimage`` functions:
+
+    >>> result = ps.filters.fftmorphology(im, strel=disk(5), mode='erosion')
+    >>> temp = spim.binary_erosion(im, structure=disk(5))
+    >>> array_equal(result, temp)
+    True
+
+    >>> result = ps.filters.fftmorphology(im, strel=disk(5), mode='dilation')
+    >>> temp = spim.binary_dilation(im, structure=disk(5))
+    >>> array_equal(result, temp)
+    True
+
+    >>> result = ps.filters.fftmorphology(im, strel=disk(5), mode='opening')
+    >>> temp = spim.binary_opening(im, structure=disk(5))
+    >>> array_equal(result, temp)
+    True
+
+    >>> result = ps.filters.fftmorphology(im, strel=disk(5), mode='closing')
+    >>> temp = spim.binary_closing(im, structure=disk(5))
+    >>> array_equal(result, temp)
+    True
+
+    """
+    def erode(im, strel):
+        t = sp.signal.fftconvolve(im, strel, mode='same') >= (strel.sum() - 0.1)
+        return t
+
+    def dilate(im, strel):
+        t = sp.signal.fftconvolve(im, strel, mode='same') > 0.1
+        return t
+
+    # The array must be padded with 0's so it works correctly at edges
+    temp = sp.pad(array=im, pad_width=1, mode='constant', constant_values=0)
+    # Perform erosion
+    if mode.startswith('ero'):
+        temp = erode(temp, strel)
+    if mode.startswith('open'):
+        temp = erode(temp, strel)
+        temp = dilate(temp, strel)
+    if mode.startswith('dila'):
+        temp = dilate(temp, strel)
+    if mode.startswith('clos'):
+        temp = dilate(temp, strel)
+        temp = erode(temp, strel)
+    # Remove padding from resulting image
+    if im.ndim == 2:
+        result = temp[1:-1, 1:-1]
+    elif im.ndim == 3:
+        result = temp[1:-1, 1:-1, 1:-1]
+    return result
+
+
 def norm_to_uniform(im, scale=None):
     r"""
     Take an image with normally distributed greyscale values and converts it to
