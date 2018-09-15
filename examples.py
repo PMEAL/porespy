@@ -8,8 +8,7 @@ import matplotlib.pyplot as plt
 
 # Generate an image of spheres using the imgen class
 # im = ps.imgen.spheres(shape=100, radius=4, porosity=0.9)
-#im = ps.generators.blobs(shape=[500, 500], porosity=0.7, blobiness=1)
-im = ps.generators.RSA(sp.zeros([200, 200]), radius=10, volume_fraction=0.2)
+im = ps.generators.blobs(shape=[500, 500], porosity=0.7, blobiness=1)
 
 plt.figure(1)
 plt.imshow(im)

@@ -1,5 +1,6 @@
 import porespy as ps
 import scipy as sp
+import numpy as np
 
 
 class MetricsTest():
@@ -60,7 +61,7 @@ class MetricsTest():
     def test_pore_size_density(self):
         den = ps.metrics.pore_size_density(self.blobs)
         assert den.F.max() == 1
-        sp.testing.assert_approx_equal(1.0, den.P.sum())
+        np.testing.assert_approx_equal(1.0, den.P.sum())
 
 
 if __name__ == '__main__':
