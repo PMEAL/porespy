@@ -6,16 +6,17 @@ class MetricsTest():
 
     def setup_class(self):
         sp.random.seed(0)
-        im2D = ps.generators.circle_pack(shape=[100, 100], radius=5, offset=2)
-        im2D_big = ps.generators.circle_pack(shape=[500, 500],
-                                             radius=10,
-                                             offset=10,
-                                             packing='square')
+        im2D = ps.generators.lattice_spheres(shape=[100, 100],
+                                             radius=5, offset=2,
+                                             lattice='square')
+        im2D_big = ps.generators.lattice_spheres(shape=[500, 500],
+                                                 radius=10, offset=10,
+                                                 lattice='square')
         self.im2D = im2D
         self.im2D_big = im2D_big
-        self.im3D = ps.generators.sphere_pack(shape=[51, 51, 51],
-                                              radius=4,
-                                              offset=2)
+        self.im3D = ps.generators.lattice_spheres(shape=[51, 51, 51],
+                                                  radius=4, offset=2,
+                                                  lattice='cubic')
         self.blobs = ps.generators.blobs(shape=[101, 101, 101], porosity=0.5,
                                          blobiness=[1, 2, 3])
 
@@ -58,15 +59,15 @@ class MetricsTest():
 
     def test_pore_size_density(self):
         den = ps.metrics.pore_size_density(self.blobs)
-        assert sp.around(sp.sum(den.count), 6) == 1.0
+        assert den.F.max() == 1
+        sp.testing.assert_approx_equal(1.0, den.P.sum())
+
 
 if __name__ == '__main__':
     t = MetricsTest()
+    self = t
     t.setup_class()
-    t.test_porosity()
-    t.test_tpcf_fft_2d()
-    t.test_tpcf_fft_3d()
-    t.test_pore_size_distribution()
-    t.test_two_point_correlation_bf()
-    t.test_rev()
-    t.test_pore_size_density()
+    for item in t.__dir__():
+        if item.startswith('test'):
+            print('running test: '+item)
+            t.__getattribute__(item)()

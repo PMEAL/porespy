@@ -70,7 +70,8 @@ def RSA(im, radius, volume_fraction=1, mode='extended'):
     # Note: The 2D vs 3D splitting of this just me being lazy...I can't be
     # bothered to figure it out programmatically right now
     # TODO: Ideally the spheres should be added periodically
-    print('Adding spheres of size:', radius)
+    print(78*'―')
+    print('RSA: Adding spheres of size ' + str(radius))
     d2 = len(im.shape) == 2
     mrad = 2*radius + 1
     if d2:
@@ -80,7 +81,7 @@ def RSA(im, radius, volume_fraction=1, mode='extended'):
         im_strel = ball(radius)
         mask_strel = ball(mrad)
     if sp.any(im > 0):
-        mask = ps.tools.fft_dilate(im > 0, im_strel > 0)
+        mask = ps.tools.fftmorphology(im > 0, im_strel > 0, mode='dilate')
         mask = mask.astype(int)
     else:
         mask = sp.zeros_like(im)
@@ -239,6 +240,8 @@ def voronoi_edges(shape, radius, ncells, flat_faces=True):
     A boolean array with True values denoting the pore space
 
     """
+    print(78*'―')
+    print('voronoi_edges: Generating', ncells, ' cells')
     shape = sp.array(shape)
     if sp.size(shape) == 1:
         shape = sp.full((3, ), int(shape))
@@ -334,6 +337,8 @@ def lattice_spheres(shape, radius, offset=0, lattice='sc'):
     -------
     A boolean array with True values denoting the pore space
     """
+    print(78*'―')
+    print('lattice_spheres: Generating ' + lattice + ' lattice')
     r = radius
     shape = sp.array(shape)
     if sp.size(shape) == 1:
@@ -342,19 +347,20 @@ def lattice_spheres(shape, radius, offset=0, lattice='sc'):
     im = im.squeeze()
 
     # Parse lattice type
+    lattice = lattice.lower()
     if im.ndim == 2:
         if lattice in ['sc']:
             lattice = 'sq'
         if lattice in ['bcc', 'fcc']:
             lattice = 'tri'
 
-    if lattice.startswith('sq'):
+    if lattice in ['sq', 'square']:
         spacing = 2*r
         s = int(spacing/2) + sp.array(offset)
         coords = sp.mgrid[r:im.shape[0]-r:2*s,
                           r:im.shape[1]-r:2*s]
         im[coords[0], coords[1]] = 1
-    elif lattice.startswith('tri'):
+    elif lattice in ['tri', 'triangular']:
         spacing = 2*sp.floor(sp.sqrt(2*(r**2))).astype(int)
         s = int(spacing/2) + offset
         coords = sp.mgrid[r:im.shape[0]-r:2*s,
@@ -363,14 +369,14 @@ def lattice_spheres(shape, radius, offset=0, lattice='sc'):
         coords = sp.mgrid[s+r:im.shape[0]-r:2*s,
                           s+r:im.shape[1]-r:2*s]
         im[coords[0], coords[1]] = 1
-    elif lattice.startswith('sc'):
+    elif lattice in ['sc', 'simple cubic', 'cubic']:
         spacing = 2*r
         s = int(spacing/2) + sp.array(offset)
         coords = sp.mgrid[r:im.shape[0]-r:2*s,
                           r:im.shape[1]-r:2*s,
                           r:im.shape[2]-r:2*s]
         im[coords[0], coords[1], coords[2]] = 1
-    elif lattice.startswith('bcc'):
+    elif lattice in ['bcc', 'body cenetered cubic']:
         spacing = 2*sp.floor(sp.sqrt(4/3*(r**2))).astype(int)
         s = int(spacing/2) + offset
         coords = sp.mgrid[r:im.shape[0]-r:2*s,
@@ -381,7 +387,7 @@ def lattice_spheres(shape, radius, offset=0, lattice='sc'):
                           s+r:im.shape[1]-r:2*s,
                           s+r:im.shape[2]-r:2*s]
         im[coords[0], coords[1], coords[2]] = 1
-    elif lattice.startswith('fcc'):
+    elif lattice in ['fcc', 'face centered cubic']:
         spacing = 2*sp.floor(sp.sqrt(2*(r**2))).astype(int)
         s = int(spacing/2) + offset
         coords = sp.mgrid[r:im.shape[0]-r:2*s,
@@ -400,7 +406,7 @@ def lattice_spheres(shape, radius, offset=0, lattice='sc'):
                           s+r:im.shape[1]-r:2*s,
                           s:im.shape[2]-r:2*s]
         im[coords[0], coords[1], coords[2]] = 1
-    im = spim.distance_transform_edt(~im) > r
+    im = ~(spim.distance_transform_edt(~im) < r)
     return im
 
 
@@ -495,7 +501,7 @@ def noise(shape, porosity=None, octaves=3, frequency=32, mode='simplex'):
     """
     try:
         import noise
-    except:
+    except ModuleNotFoundError:
         raise Exception("The noise package must be installed")
     shape = sp.array(shape)
     if sp.size(shape) == 1:

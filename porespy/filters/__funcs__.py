@@ -325,7 +325,7 @@ def apply_chords(im, spacing=0, axis=0, trim_edges=True):
     return chords
 
 
-def local_thickness(im, npts=25, sizes=None):
+def local_thickness(im, sizes=25):
     r"""
     For each voxel, this functions calculates the radius of the largest sphere
     that both engulfs the voxel and fits entirely within the foreground. This
@@ -337,14 +337,10 @@ def local_thickness(im, npts=25, sizes=None):
     im : array_like
         A binary image with the phase of interest set to True
 
-    npts : scalar
-        The number of sizes to uses when probing pore space.  Points will be
-        generated spanning the range of sizes in the distance transform.
-        The default is 25 points.
-
-    sizes : array_like
-        The sizes to probe.  Use this argument instead of ``npts`` for
-        more control of the range and spacing of points.
+    sizes : array_like or scalar
+        The sizes to invade.  If a list of values of provided they are used
+        directly.  If a scalar is provided then that number of points spanning
+        the min and max of the distance transform are used.
 
     Returns
     -------
@@ -359,7 +355,7 @@ def local_thickness(im, npts=25, sizes=None):
     False.
 
     """
-    im_new = porosimetry(im=im, npts=npts, sizes=sizes, access_limited=False)
+    im_new = porosimetry(im=im, sizes=sizes, access_limited=False)
     return im_new
 
 
@@ -427,6 +423,13 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
     fftmorphology
 
     """
+    def trim_blobs(im, inlets):
+        im[inlets] = True  # Add inlets before labeling
+        labels, N = spim.label(im)
+        im = im ^ (clear_border(labels=labels) > 0)
+        im[inlets] = False  # Remove inlets
+        return im
+
     dt = spim.distance_transform_edt(im > 0)
     if inlets is None:
         inlets = get_border(im.shape, mode='faces')
@@ -446,20 +449,14 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
         for r in tqdm(sizes):
             imtemp = fftmorphology(im, strel(r), mode='opening')
             if access_limited:
-                imtemp[inlets] = True  # Add inlets before labeling
-                labels, N = spim.label(imtemp)
-                imtemp = imtemp ^ (clear_border(labels=labels) > 0)
-                imtemp[inlets] = False  # Remove inlets
+                trim_blobs(imtemp, inlets)
             if sp.any(imtemp):
                 imresults[(imresults == 0)*imtemp] = r
     if mode == 'dt':
         for r in tqdm(sizes):
             imtemp = dt >= r
             if access_limited:
-                imtemp[inlets] = True  # Add inlets before labeling
-                labels, N = spim.label(imtemp)
-                imtemp = imtemp ^ (clear_border(labels=labels) > 0)
-                imtemp[inlets] = False  # Remove inlets
+                trim_blobs(imtemp, inlets)
             if sp.any(imtemp):
                 imtemp = spim.distance_transform_edt(~imtemp) < r
                 imresults[(imresults == 0)*imtemp] = r
@@ -467,11 +464,8 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
         for r in tqdm(sizes):
             imtemp = dt >= r
             if access_limited:
-                imtemp[inlets] = True  # Add inlets before labeling
-                labels, N = spim.label(imtemp)
-                imtemp = imtemp ^ (clear_border(labels=labels) > 0)
-                imtemp[inlets] = False  # Remove inlets
+                trim_blobs(imtemp, inlets)
             if sp.any(imtemp):
-                imtemp = fftmorphology(im, strel(r), mode='dilate')
+                imtemp = fftmorphology(imtemp, strel(r), mode='dilation')
                 imresults[(imresults == 0)*imtemp] = r
     return imresults

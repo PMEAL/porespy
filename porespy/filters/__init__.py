@@ -9,6 +9,7 @@ structural characteristics, such as pore sizes.  A definition of a *filter* is
  altered values.
 
 .. autofunction:: apply_chords
+.. autofunction:: fftmorphology
 .. autofunction:: find_disconnected_voxels
 .. autofunction:: fill_blind_pores
 .. autofunction:: trim_floating_solid
@@ -20,6 +21,7 @@ structural characteristics, such as pore sizes.  A definition of a *filter* is
 
 """
 from .__funcs__ import apply_chords
+from .__funcs__ import fftmorphology
 from .__funcs__ import fill_blind_pores
 from .__funcs__ import find_disconnected_voxels
 from .__funcs__ import flood

@@ -99,8 +99,24 @@ def porosity_profile(im, axis):
 
 def pore_size_density(im, bins=10, voxel_size=1):
     r"""
-    Computes the histogram of the distance transform as an estimator of the
-    pore sizes in the image.
+    Computes pore-size density function by analyzing the histogram of voxel
+    values in the distance transform.  This function is defined by
+    Torquato [1] as :
+
+        .. math::
+
+            \int_0^\infty P(r)dr = 1.0
+
+    where *P(r)dr* is the probability of finding a voxel at a lying at a
+    distance between *r* and *dr* from the solid interface.
+
+    The cumulative distribution is defined as:
+
+        .. math::
+
+            F(r) = \int_r^\infty P(r)dt
+
+    which gives the fraction of pore-space with a radius larger than *r*.
 
     Parameters
     ----------
@@ -121,26 +137,36 @@ def pore_size_density(im, bins=10, voxel_size=1):
 
     Returns
     -------
-    A tuple containing two 1D arrays: ``radius `` is the radius of the voxels,
-    and ``count`` is the number of voxels that are within R of the solid.
+    A named-tuple containing several 1D arrays: ``R `` is the radius of the
+    voxels (or x-axis of a pore-size density plot).  ``P`` is the pore-size
+    density function, and ``F`` is the complementary cumulative distribution
+    function.
 
     Notes
     -----
     This function should not be taken as a pore size distribution in the
-    explict sense, but rather an indicator of the sizes in the image.
+    explict sense, but rather an indicator of the sizes in the image.  The
+    distance transform contains a very skewed number of voxels with small
+    values near the solid walls.  Nonetheless, it does provide a useful
+    indicator and it's mathematical formalism is handy.
 
     References
     ----------
     [1] Torquato, S. Random Heterogeneous Materials: Mircostructure and
-    Macroscopic Properties. Springer, New York (2002) - See page 292
+    Macroscopic Properties. Springer, New York (2002) - See page 48 & 292
     """
     if im.dtype == bool:
         im = spim.distance_transform_edt(im)
-    hist = sp.histogram(a=im[im > 0], bins=bins)
-    n = hist[0]/sp.sum(im > 0)
-    r = hist[1][:-1]*voxel_size
-    rdf = namedtuple('rdf', ('radius', 'count'))
-    return rdf(r, n)
+    h = sp.histogram(a=im[im > 0], bins=bins, density=True)
+    R = h[1]
+    P = h[0]*(R[1:]-R[:-1])
+    F = sp.cumsum(P[-1::-1])[-1::-1]
+    R = R*voxel_size
+    rdf = namedtuple('psdf', ('R', 'P', 'F'))
+    rdf.R = R
+    rdf.P = P
+    rdf.F = F
+    return rdf
 
 
 def porosity(im):
