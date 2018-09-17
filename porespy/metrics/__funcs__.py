@@ -97,24 +97,24 @@ def porosity_profile(im, axis):
     return prof*100
 
 
-def pore_size_density(im, bins=10, voxel_size=1):
+def radial_density(im, bins=10, voxel_size=1):
     r"""
     Computes pore-size density function by analyzing the histogram of voxel
     values in the distance transform.  This function is defined by
-    Torquato [1] as :
+    Torquato [1] as:
 
         .. math::
 
             \int_0^\infty P(r)dr = 1.0
 
-    where *P(r)dr* is the probability of finding a voxel at a lying at a
+    where *P(r)dr* is the probability of finding a voxel at a lying at a radial
     distance between *r* and *dr* from the solid interface.
 
     The cumulative distribution is defined as:
 
         .. math::
 
-            F(r) = \int_r^\infty P(r)dt
+            F(r) = \int_r^\infty P(r)dr
 
     which gives the fraction of pore-space with a radius larger than *r*.
 
@@ -138,7 +138,7 @@ def pore_size_density(im, bins=10, voxel_size=1):
     Returns
     -------
     A named-tuple containing several 1D arrays: ``R `` is the radius of the
-    voxels (or x-axis of a pore-size density plot).  ``P`` is the pore-size
+    voxels (or x-axis of a pore-size density plot).  ``P`` is the radial
     density function, and ``F`` is the complementary cumulative distribution
     function.
 
@@ -150,6 +150,11 @@ def pore_size_density(im, bins=10, voxel_size=1):
     values near the solid walls.  Nonetheless, it does provide a useful
     indicator and it's mathematical formalism is handy.
 
+    Torquato refers to this as the pore-size density function, and mentions
+    that it is also known as the pore-size distribution function.  These
+    terms are avoided here since they have very specific connotations, and
+    this function does not satisfy them.
+
     References
     ----------
     [1] Torquato, S. Random Heterogeneous Materials: Mircostructure and
@@ -159,8 +164,9 @@ def pore_size_density(im, bins=10, voxel_size=1):
         im = spim.distance_transform_edt(im)
     h = sp.histogram(a=im[im > 0], bins=bins, density=True)
     R = h[1]
-    P = h[0]*(R[1:]-R[:-1])
-    F = sp.cumsum(P[-1::-1])[-1::-1]
+    P = h[0]
+    temp = P*(R[1:]-R[:-1])
+    F = sp.cumsum(temp[-1::-1])[-1::-1]
     R = R*voxel_size
     rdf = namedtuple('psdf', ('R', 'P', 'F'))
     rdf.R = R

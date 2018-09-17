@@ -58,8 +58,8 @@ class MetricsTest():
         rev = ps.metrics.representative_elementary_volume(self.blobs)
         assert (sp.mean(rev.porosity) - 0.5)**2 < 0.05
 
-    def test_pore_size_density(self):
-        den = ps.metrics.pore_size_density(self.blobs)
+    def test_radial_density(self):
+        den = ps.metrics.radial_density(self.blobs)
         assert den.F.max() == 1
         np.testing.assert_approx_equal(1.0, den.P.sum())
 
