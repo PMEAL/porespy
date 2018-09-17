@@ -163,16 +163,17 @@ def radial_density(im, bins=10, voxel_size=1):
     if im.dtype == bool:
         im = spim.distance_transform_edt(im)
     h = sp.histogram(a=im[im > 0], bins=bins, density=True)
-    R = h[1]
+    dR = h[1]
     P = h[0]
-    temp = P*(R[1:]-R[:-1])
+    temp = P*(dR[1:] - dR[:-1])
     F = sp.cumsum(temp[-1::-1])[-1::-1]
-    R = R*voxel_size
-    rdf = namedtuple('radial_density_function', ('R', 'P', 'F'))
-    rdf.R = R
-    rdf.P = P
-    rdf.F = F
-    return rdf
+    dR = dR*voxel_size
+    bin_edges = dR
+    bin_widths = dR[1:] - dR[:-1]
+    bin_centers = (dR[:-1] + dR[1:])/2
+    rdf = namedtuple('radial_density_function',
+                     ('R', 'P', 'F', 'bin_centers', 'bin_edges', 'bin_widths'))
+    return rdf(bin_centers, P, F, bin_centers, bin_edges, bin_widths)
 
 
 def porosity(im):
@@ -378,8 +379,7 @@ def pore_size_distribution(im, bins=10, log=True):
     (1) To ensure the returned values represent actual sizes be sure to scale
     the distance transform by the voxel size first (``dt *= voxel_size``)
 
-    plt.bar(psd.logR, psd.satn, width=psd.bin_widths, edgecolor='k')
-    plt.bar(psd.logR, sp.cumsum(psd.satn), width=psd.bin_widths, edgecolor='k')
+    plt.bar(psd.R, psd.satn, width=psd.bin_widths, edgecolor='k')
 
     """
     im = im.flatten()
@@ -390,18 +390,18 @@ def pore_size_distribution(im, bins=10, log=True):
     else:
         rad = 'R'
     h = sp.histogram(vals, bins=bins, density=True)
-    R = h[1]
+    dR = h[1]
     P = h[0]
-    temp = P*(R[1:] - R[:-1])
+    temp = P*(dR[1:] - dR[:-1])
     C = sp.cumsum(temp[-1::-1])[-1::-1]
-    S = P*(R[1:] - R[:-1])
-    B = R
-    W = R[1:] - R[:-1]
-    R = (R[:-1] + R[1:])/2
+    S = P*(dR[1:] - dR[:-1])
+    bin_edges = dR
+    bin_widths = dR[1:] - dR[:-1]
+    bin_centers = (dR[:-1] + dR[1:])/2
     psd = namedtuple('pore_size_distribution',
                      (rad, 'pdf', 'cdf', 'satn',
                       'bin_centers', 'bin_edges', 'bin_widths'))
-    return psd(R, P, C, S, R, B, W)
+    return psd(bin_centers, P, C, S, bin_centers, bin_edges, bin_widths)
 
 
 def chord_length_counts(im):
