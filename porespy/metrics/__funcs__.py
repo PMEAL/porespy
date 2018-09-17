@@ -88,7 +88,7 @@ def porosity_profile(im, axis):
         calculated and returned as 1D array with 1 value for each X position.
 
     """
-    if axis > 2:
+    if axis > im.ndim:
         raise Exception('axis out of range')
     im = np.atleast_3d(im)
     a = set(range(im.ndim)).difference(set([axis]))
@@ -99,7 +99,7 @@ def porosity_profile(im, axis):
 
 def radial_density(im, bins=10, voxel_size=1):
     r"""
-    Computes pore-size density function by analyzing the histogram of voxel
+    Computes radial density function by analyzing the histogram of voxel
     values in the distance transform.  This function is defined by
     Torquato [1] as:
 

@@ -424,16 +424,18 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
 
     """
     def trim_blobs(im, inlets):
-        im[inlets] = True  # Add inlets before labeling
-        labels, N = spim.label(im)
+        temp = sp.zeros_like(im)
+        temp[inlets] = True
+        labels, N = spim.label(im + temp)
         im = im ^ (clear_border(labels=labels) > 0)
-        im[inlets] = False  # Remove inlets
         return im
 
     dt = spim.distance_transform_edt(im > 0)
+
     if inlets is None:
         inlets = get_border(im.shape, mode='faces')
     inlets = sp.where(inlets)
+
     if isinstance(sizes, int):
         sizes = sp.logspace(start=sp.log10(sp.amax(dt)), stop=0, num=sizes)
     else:
@@ -449,14 +451,14 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
         for r in tqdm(sizes):
             imtemp = fftmorphology(im, strel(r), mode='opening')
             if access_limited:
-                trim_blobs(imtemp, inlets)
+                imtemp = trim_blobs(imtemp, inlets)
             if sp.any(imtemp):
                 imresults[(imresults == 0)*imtemp] = r
     if mode == 'dt':
         for r in tqdm(sizes):
             imtemp = dt >= r
             if access_limited:
-                trim_blobs(imtemp, inlets)
+                imtemp = trim_blobs(imtemp, inlets)
             if sp.any(imtemp):
                 imtemp = spim.distance_transform_edt(~imtemp) < r
                 imresults[(imresults == 0)*imtemp] = r
@@ -464,8 +466,8 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
         for r in tqdm(sizes):
             imtemp = dt >= r
             if access_limited:
-                trim_blobs(imtemp, inlets)
+                imtemp = trim_blobs(imtemp, inlets)
             if sp.any(imtemp):
-                imtemp = fftmorphology(imtemp, strel(r), mode='dilation')
+                imtemp = fftconvolve(imtemp, strel(r), mode='same') > 0.1
                 imresults[(imresults == 0)*imtemp] = r
     return imresults
