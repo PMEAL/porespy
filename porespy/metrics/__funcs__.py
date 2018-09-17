@@ -168,7 +168,7 @@ def radial_density(im, bins=10, voxel_size=1):
     temp = P*(R[1:]-R[:-1])
     F = sp.cumsum(temp[-1::-1])[-1::-1]
     R = R*voxel_size
-    rdf = namedtuple('psdf', ('R', 'P', 'F'))
+    rdf = namedtuple('radial_density_function', ('R', 'P', 'F'))
     rdf.R = R
     rdf.P = P
     rdf.F = F
@@ -339,48 +339,75 @@ def two_point_correlation_fft(im):
     return tpcf
 
 
-def pore_size_distribution(im):
+def pore_size_distribution(im, bins=10, log=True):
     r"""
-    Calculate drainage curve based on the image produced by the
-    ``porosimetry`` function.
+    Calculate a pore-size distribution based on the image produced by the
+    ``porosimetry`` or ``local_thickness`` functions.
 
     Parameters
     ----------
     im : ND-array
-        The array of entry sizes as produced by the ``porosimetry`` function.
+        The array of containing the sizes of the largest sphere that overlaps
+        each voxel.  Obtained from either ``porosimetry`` or
+        ``local_thickness``.
+
+    bins : scalar or array_like
+        Either an array of bin sizes to use, or the number of bins that should
+        be automatically generated that span the data range.
+
+    log : boolean
+        If ``True`` (default) the size data is converted to log (base-10)
+        values before processing.  This can help
 
     Returns
     -------
-    Rp, Snwp: Two arrays containing (a) the radius of the penetrating
-    sphere (in voxels) and (b) the volume fraction of pore phase voxels
-    that are accessible from the specfied inlets.
+    A named-tuple containing several values:
+        *R* or *logR* - radius, equivalent to ``bin_centers``
+        *pdf* - probability density function
+        *cdf* - cumulative density function
+        *satn* - phase saturation in differential form.  For the cumulative
+        saturation, just use *cfd* which is already normalized to 1.
+        *bin_centers* - the center point of each bin
+        *bin_edges* - locations of bin divisions, including 1 more value than
+        the number of bins
+        *bin_widths* - useful for passing to the ``width`` argument of
+        ``matplotlib.pyplot.bar``
 
     Notes
     -----
-    This function normalizes the invading phase saturation by total pore
-    volume of the dry image, which is assumed to be all voxels with a value
-    equal to 1.  To do porosimetry on images with large outer regions,
-    use the ```find_outer_region``` function then set these regions to 0 in
-    the input image.  In future, this function could be adapted to apply
-    this check by default.
+    (1) To ensure the returned values represent actual sizes be sure to scale
+    the distance transform by the voxel size first (``dt *= voxel_size``)
+
+    plt.bar(psd.logR, psd.satn, width=psd.bin_widths, edgecolor='k')
+    plt.bar(psd.logR, sp.cumsum(psd.satn), width=psd.bin_widths, edgecolor='k')
 
     """
-    sizes = sp.unique(im)
-    R = []
-    Snwp = []
-    Vp = sp.sum(im > 0)
-    for r in sizes[1:]:
-        R.append(r)
-        Snwp.append(sp.sum(im >= r))
-    Snwp = [s/Vp for s in Snwp]
-    data = namedtuple('xy_data', ('radius', 'saturation'))
-    return data(R, Snwp)
+    im = im.flatten()
+    vals = im[im > 0]
+    if log:
+        rad = 'logR'
+        vals = sp.log10(vals)
+    else:
+        rad = 'R'
+    h = sp.histogram(vals, bins=bins, density=True)
+    R = h[1]
+    P = h[0]
+    temp = P*(R[1:] - R[:-1])
+    C = sp.cumsum(temp[-1::-1])[-1::-1]
+    S = P*(R[1:] - R[:-1])
+    B = R
+    W = R[1:] - R[:-1]
+    R = (R[:-1] + R[1:])/2
+    psd = namedtuple('pore_size_distribution',
+                     (rad, 'pdf', 'cdf', 'satn',
+                      'bin_centers', 'bin_edges', 'bin_widths'))
+    return psd(R, P, C, S, R, B, W)
 
 
 def chord_length_counts(im):
     r"""
-    Determines the length of each chord in the supplied image by looking at
-    its size.
+    Finds the length of each chord in the supplied image and returns a list
+    of their individual sizes
 
     Parameters
     ----------
@@ -407,7 +434,7 @@ def chord_length_counts(im):
     return chord_lens
 
 
-def chord_length_distribution(im, bins=25, log=False):
+def chord_length_distribution(im, bins=25, log=False, voxel_size=1):
     r"""
     Determines the distribution of chord lengths in a image containing chords.
 
