@@ -44,8 +44,7 @@ class MetricsTest():
     def test_pore_size_distribution(self):
         mip = ps.filters.porosimetry(self.im3D)
         psd = ps.metrics.pore_size_distribution(mip)
-        # Silly test, can't think of better
-        assert psd.saturation[0] == 1.0
+        assert sp.sum(psd.satn) == 1.0
 
     def test_two_point_correlation_bf(self):
         tpcf_bf = ps.metrics.two_point_correlation_bf(self.im2D)
@@ -61,7 +60,6 @@ class MetricsTest():
     def test_radial_density(self):
         den = ps.metrics.radial_density(self.blobs)
         assert den.F.max() == 1
-        np.testing.assert_approx_equal(1.0, den.P.sum())
 
 
 if __name__ == '__main__':

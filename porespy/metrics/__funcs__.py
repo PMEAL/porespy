@@ -497,7 +497,7 @@ def cld_helper(im, axes=(0, 1, 2), spacing=0, trim_edges=True):
     trim_edges : bool (default = True)
         Whether or not to remove chords that touch the edges of the image.
         These chords are artifically shortened, so skew the chord length
-        distribution
+        distribution.
 
     Returns
     -------

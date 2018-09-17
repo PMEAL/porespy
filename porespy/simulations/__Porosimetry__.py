@@ -6,9 +6,7 @@ from collections import namedtuple
 
 class Porosimetry(object):
     r"""
-    Simulates a porosimetry experiment on a binary image.  This function is
-    equivalent to the morphological image opening and/or the full
-    morphology approaches.
+    Simulates a porosimetry experiment on a binary image.
 
     Parameters
     ----------

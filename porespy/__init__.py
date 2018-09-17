@@ -43,7 +43,7 @@ Example Usage
 >>> im = ps.generators.blobs([100, 100])
 >>> mip = ps.filters.porosimetry(im)
 >>> PcSw = ps.metrics.pore_size_distribution(mip)
->>> fig = plt.plot(*PcSw)
+>>> fig = plt.plot(PcSw.logR, PcSw.satn)
 
 ----------------
 Related Packages
