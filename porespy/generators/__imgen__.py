@@ -1,9 +1,11 @@
+import porespy as ps
 import scipy as sp
 import scipy.spatial as sptl
 import scipy.ndimage as spim
 from skimage.segmentation import find_boundaries
 from skimage.morphology import ball, disk, square, cube
 from tqdm import tqdm
+from porespy.tools import norm_to_uniform
 
 
 def insert_shape(im, center, element, value=1):
@@ -27,40 +29,92 @@ def insert_shape(im, center, element, value=1):
     return im
 
 
-def add_noise(im, u_void=0.8, u_solid=0.2, s_void=0.15, s_solid=0.15):
+def RSA(im, radius, volume_fraction=1, mode='extended'):
     r"""
-    Add some normally distributed noise values to the image.  This is useful
-    for testing binarization routines.
+    Generates a sphere or disk packing using Random Sequential Addition, which
+    ensures that spheres do not overlap but does not guarantee they are
+    tightly packed.
+
+    Each sphere is filled with 1's, and the center is marked with a 2.  This
+    allows easy boolean masking to extract only the centers, which can be
+    converted to coordinates using ``scipy.where`` and used for other purposes.
 
     Parameters
     ----------
     im : ND-array
-        The image of the porous media, with 1's or True's denoting voids
+        The image into which the spheres should be inserted.  By accepting an
+        image rather than a shape, it allows users to insert spheres into an
+        already existing image.  To begin the process, start with an array of
+        zero such as ``im = np.zeros([200, 200], dtype=bool)``.
+    radius : int
+        The radius of the disk or sphere to insert.
+    volume_fraction : scalar
+        The fraction of the image that should be filled with spheres.  The
+        spheres are addeds 1's, so each sphere addition increases the
+        ``volume_fraction`` until the specified limit is reach.
+    mode : string
+        Controls how the edges of the image are handled.  Options are:
 
-    u_solid : float
-        The mean greyscale value in the solid space (default is 0.2)
+        'extended' - Spheres are allowed to extend beyond the edge of the image
 
-    s_solid : float
-        The standard deviation of the greyscale values in the solid phase (the
-        default is 0.15)
+        'contained' - Spheres are all completely within the image
 
-    u_void: float
-        The mean greyscale value in the void space (default is 0.8)
+        'periodic' - The portion of a sphere that extends beyond the image is
+        inserted into the opposite edge of the image (Not Implemented Yet!)
 
-    s_void: float
-        The standard deviation of the greyscale values in the void phase (the
-        default is 0.15)
-
-    Returns
-    -------
-    A greyscale image with the same shape as ``im``, but normally distributed
-    noise values in the void and solid phase.  A histogram of the default image
-    should reveal to distinguishable but overlapping peaks.  This can be
-    adjusted using the mean and standard deviation arguments.
+    References
+    ----------
+    [1] Random Heterogeneous Materials, S. Torquato (2001)
 
     """
-    im = im*sp.random.normal(loc=u_void, scale=s_void, size=im.shape) + \
-        ~im*sp.random.normal(loc=u_solid, scale=s_solid, size=im.shape)
+    # Note: The 2D vs 3D splitting of this just me being lazy...I can't be
+    # bothered to figure it out programmatically right now
+    # TODO: Ideally the spheres should be added periodically
+    print(78*'―')
+    print('RSA: Adding spheres of size ' + str(radius))
+    d2 = len(im.shape) == 2
+    mrad = 2*radius + 1
+    if d2:
+        im_strel = disk(radius)
+        mask_strel = disk(mrad)
+    else:
+        im_strel = ball(radius)
+        mask_strel = ball(mrad)
+    if sp.any(im > 0):
+        mask = ps.tools.fftmorphology(im > 0, im_strel > 0, mode='dilate')
+        mask = mask.astype(int)
+    else:
+        mask = sp.zeros_like(im)
+    if mode == 'contained':
+        mask = _remove_edge(mask, radius)
+    elif mode == 'extended':
+        pass
+    elif mode == 'periodic':
+        raise Exception('Periodic edges are not implemented yet')
+    else:
+        raise Exception('Unrecognized mode: ' + mode)
+    vf = im.sum()/im.size
+    free_spots = sp.argwhere(mask == 0)
+    i = 0
+    while vf <= volume_fraction and len(free_spots) > 0:
+        choice = sp.random.randint(0, len(free_spots), size=1)
+        if d2:
+            [x, y] = free_spots[choice].flatten()
+            im = _fit_strel_to_im_2d(im, im_strel, radius, x, y)
+            mask = _fit_strel_to_im_2d(mask, mask_strel, mrad, x, y)
+            im[x, y] = 2
+        else:
+            [x, y, z] = free_spots[choice].flatten()
+            im = _fit_strel_to_im_3d(im, im_strel, radius, x, y, z)
+            mask = _fit_strel_to_im_3d(mask, mask_strel, mrad, x, y, z)
+            im[x, y, z] = 2
+        free_spots = sp.argwhere(mask == 0)
+        vf = im.sum()/im.size
+        i += 1
+    if vf > volume_fraction:
+        print('Volume Fraction', volume_fraction, 'reached')
+    if len(free_spots) == 0:
+        print('No more free spots', 'Volume Fraction', vf)
     return im
 
 
@@ -186,6 +240,8 @@ def voronoi_edges(shape, radius, ncells, flat_faces=True):
     A boolean array with True values denoting the pore space
 
     """
+    print(78*'―')
+    print('voronoi_edges: Generating', ncells, ' cells')
     shape = sp.array(shape)
     if sp.size(shape) == 1:
         shape = sp.full((3, ), int(shape))
@@ -251,45 +307,60 @@ def _get_Voronoi_edges(vor):
     return edges
 
 
-def circle_pack(shape, radius, offset=0, packing='square'):
+def lattice_spheres(shape, radius, offset=0, lattice='sc'):
     r"""
-    Generates a 2D packing of circles
+    Generates a cubic packing of spheres in a specified lattice arrangement
 
     Parameters
     ----------
     shape : list
-        The size of the image to generate in [Nx, Ny] where N is the
-        number of voxels in each direction
+        The size of the image to generate in [Nx, Ny, Nz] where N is the
+        number of voxels in each direction.  For a 2D image, use [Nx, Ny].
 
     radius : scalar
-        The radius of circles in the packing (in pixels)
+        The radius of spheres (circles) in the packing
 
     offset : scalar
-        The amount offset (+ or -) to add between pore centers (in pixels).
+        The amount offset (+ or -) to add between sphere centers.
 
-    packing : string
-        Specifies the type of cubic packing to create.  Options are
-        'square' (default) and 'triangular'.
+    lattice : string
+        Specifies the type of lattice to create.  Options are:
+
+        'sc' : Simple Cubic (default)
+        'fcc' : Face Centered Cubic
+        'bcc' : Body Centered Cubic
+
+        For 2D images, 'sc' gives a square lattice and both 'fcc' and 'bcc'
+        give a triangular lattice.
 
     Returns
     -------
     A boolean array with True values denoting the pore space
     """
+    print(78*'―')
+    print('lattice_spheres: Generating ' + lattice + ' lattice')
     r = radius
     shape = sp.array(shape)
     if sp.size(shape) == 1:
-        shape = sp.full((2, ), int(shape))
-    elif (sp.size(shape) == 3) or (1 in shape):
-        raise Exception("This function only produces 2D images, " +
-                        "try \'sphere_pack\'")
+        shape = sp.full((3, ), int(shape))
     im = sp.zeros(shape, dtype=bool)
-    if packing.startswith('s'):
+    im = im.squeeze()
+
+    # Parse lattice type
+    lattice = lattice.lower()
+    if im.ndim == 2:
+        if lattice in ['sc']:
+            lattice = 'sq'
+        if lattice in ['bcc', 'fcc']:
+            lattice = 'tri'
+
+    if lattice in ['sq', 'square']:
         spacing = 2*r
         s = int(spacing/2) + sp.array(offset)
         coords = sp.mgrid[r:im.shape[0]-r:2*s,
                           r:im.shape[1]-r:2*s]
         im[coords[0], coords[1]] = 1
-    if packing.startswith('t'):
+    elif lattice in ['tri', 'triangular']:
         spacing = 2*sp.floor(sp.sqrt(2*(r**2))).astype(int)
         s = int(spacing/2) + offset
         coords = sp.mgrid[r:im.shape[0]-r:2*s,
@@ -298,53 +369,14 @@ def circle_pack(shape, radius, offset=0, packing='square'):
         coords = sp.mgrid[s+r:im.shape[0]-r:2*s,
                           s+r:im.shape[1]-r:2*s]
         im[coords[0], coords[1]] = 1
-    im = spim.distance_transform_edt(~im) >= r
-    return im
-
-
-def sphere_pack(shape, radius, offset=0, packing='sc'):
-    r"""
-    Generates a cubic packing of spheres
-
-    Parameters
-    ----------
-    shape : list
-        The size of the image to generate in [Nx, Ny, Nz] where N is the
-        number of voxels in each direction.
-
-    radius : scalar
-        The radius of spheres in the packing
-
-    offset : scalar
-        The amount offset (+ or -) to add between pore centers.
-
-    packing : string
-        Specifies the type of cubic packing to create.  Options are:
-
-        'sc' : Simple Cubic (default)
-        'fcc' : Face Centered Cubic
-        'bcc' : Body Centered Cubic
-
-    Returns
-    -------
-    A boolean array with True values denoting the pore space
-    """
-    r = radius
-    shape = sp.array(shape)
-    if sp.size(shape) == 1:
-        shape = sp.full((3, ), int(shape))
-    elif (sp.size(shape) == 2) or (1 in shape):
-        raise Exception("This function only produces 3D images, " +
-                        "try \'circle_pack\'")
-    im = sp.zeros(shape, dtype=bool)
-    if packing.startswith('s'):
+    elif lattice in ['sc', 'simple cubic', 'cubic']:
         spacing = 2*r
         s = int(spacing/2) + sp.array(offset)
         coords = sp.mgrid[r:im.shape[0]-r:2*s,
                           r:im.shape[1]-r:2*s,
                           r:im.shape[2]-r:2*s]
         im[coords[0], coords[1], coords[2]] = 1
-    elif packing.startswith('b'):
+    elif lattice in ['bcc', 'body cenetered cubic']:
         spacing = 2*sp.floor(sp.sqrt(4/3*(r**2))).astype(int)
         s = int(spacing/2) + offset
         coords = sp.mgrid[r:im.shape[0]-r:2*s,
@@ -355,7 +387,7 @@ def sphere_pack(shape, radius, offset=0, packing='sc'):
                           s+r:im.shape[1]-r:2*s,
                           s+r:im.shape[2]-r:2*s]
         im[coords[0], coords[1], coords[2]] = 1
-    elif packing.startswith('f'):
+    elif lattice in ['fcc', 'face centered cubic']:
         spacing = 2*sp.floor(sp.sqrt(2*(r**2))).astype(int)
         s = int(spacing/2) + offset
         coords = sp.mgrid[r:im.shape[0]-r:2*s,
@@ -374,7 +406,7 @@ def sphere_pack(shape, radius, offset=0, packing='sc'):
                           s+r:im.shape[1]-r:2*s,
                           s:im.shape[2]-r:2*s]
         im[coords[0], coords[1], coords[2]] = 1
-    im = spim.distance_transform_edt(~im) > r
+    im = ~(spim.distance_transform_edt(~im) < r)
     return im
 
 
@@ -469,7 +501,7 @@ def noise(shape, porosity=None, octaves=3, frequency=32, mode='simplex'):
     """
     try:
         import noise
-    except:
+    except ModuleNotFoundError:
         raise Exception("The noise package must be installed")
     shape = sp.array(shape)
     if sp.size(shape) == 1:
@@ -547,37 +579,6 @@ def blobs(shape, porosity=0.5, blobiness=1):
     return im
 
 
-def norm_to_uniform(im, scale=None):
-    r"""
-    Take an image with normally distributed greyscale values and converts it to
-    a uniform (i.e. flat) distribution.  It's also possible to specify the
-    lower and upper limits of the uniform distribution.
-
-    Parameters
-    ----------
-    im : ND-image
-        The image containing the normally distributed scalar field
-
-    scale : [low, high]
-        A list or array indicating the lower and upper bounds for the new
-        randomly distributed data.  The default is ``None``, which uses the
-        ``max`` and ``min`` of the original image as the the lower and upper
-        bounds.
-
-    Returns
-    -------
-    An ND-image the same size as ``im`` with uniformly distributed greyscale
-    values spanning the specified range, if given.
-    """
-    if scale is None:
-        scale = [im.min(), im.max()]
-    im = (im - sp.mean(im))/sp.std(im)
-    im = 1/2*sp.special.erfc(-im/sp.sqrt(2))
-    im = (im - im.min()) / (im.max() - im.min())
-    im = im*(scale[1] - scale[0]) + scale[0]
-    return im
-
-
 def cylinders(shape, radius, nfibers, phi_max=0, theta_max=90):
     r"""
     Generates a binary image of overlapping cylinders.  This is a good
@@ -652,3 +653,89 @@ def line_segment(X0, X1):
     y = sp.rint(sp.linspace(X0[1], X1[1], L)).astype(int)
     z = sp.rint(sp.linspace(X0[2], X1[2], L)).astype(int)
     return [x, y, z]
+
+
+def _fit_strel_to_im_2d(im, strel, r, x, y):
+    r"""
+    Helper function to add a structuring element to a 2D image.
+    Used by RSA. Makes sure if center is less than r pixels from edge of image
+    that the strel is sliced to fit.
+    """
+    elem = strel.copy()
+    x_dim, y_dim = im.shape
+    x_min = x-r
+    x_max = x+r+1
+    y_min = y-r
+    y_max = y+r+1
+    if x_min < 0:
+        x_adj = -x_min
+        elem = elem[x_adj:, :]
+        x_min = 0
+    elif x_max > x_dim:
+        x_adj = x_max - x_dim
+        elem = elem[:-x_adj, :]
+    if y_min < 0:
+        y_adj = -y_min
+        elem = elem[:, y_adj:]
+        y_min = 0
+    elif y_max > y_dim:
+        y_adj = y_max - y_dim
+        elem = elem[:, :-y_adj]
+    ex, ey = elem.shape
+    im[x_min:x_min+ex, y_min:y_min+ey] += elem
+    return im
+
+
+def _fit_strel_to_im_3d(im, strel, r, x, y, z):
+    r"""
+    Helper function to add a structuring element to a 2D image.
+    Used by RSA. Makes sure if center is less than r pixels from edge of image
+    that the strel is sliced to fit.
+    """
+    elem = strel.copy()
+    x_dim, y_dim, z_dim = im.shape
+    x_min = x-r
+    x_max = x+r+1
+    y_min = y-r
+    y_max = y+r+1
+    z_min = z-r
+    z_max = z+r+1
+    if x_min < 0:
+        x_adj = -x_min
+        elem = elem[x_adj:, :, :]
+        x_min = 0
+    elif x_max > x_dim:
+        x_adj = x_max - x_dim
+        elem = elem[:-x_adj, :, :]
+    if y_min < 0:
+        y_adj = -y_min
+        elem = elem[:, y_adj:, :]
+        y_min = 0
+    elif y_max > y_dim:
+        y_adj = y_max - y_dim
+        elem = elem[:, :-y_adj, :]
+    if z_min < 0:
+        z_adj = -z_min
+        elem = elem[:, :, z_adj:]
+        z_min = 0
+    elif z_max > z_dim:
+        z_adj = z_max - z_dim
+        elem = elem[:, :, :-z_adj]
+    ex, ey, ez = elem.shape
+    im[x_min:x_min+ex, y_min:y_min+ey, z_min:z_min+ez] += elem
+    return im
+
+
+def _remove_edge(im, r):
+    r'''
+    Fill in the edges of the input image.
+    Used by RSA to ensure that no elements are placed too close to the edge.
+    '''
+    edge = sp.ones_like(im)
+    if len(im.shape) == 2:
+        sx, sy = im.shape
+        edge[r:sx-r, r:sy-r] = im[r:sx-r, r:sy-r]
+    else:
+        sx, sy, sz = im.shape
+        edge[r:sx-r, r:sy-r, r:sz-r] = im[r:sx-r, r:sy-r, r:sz-r]
+    return edge

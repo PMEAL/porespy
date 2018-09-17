@@ -99,7 +99,7 @@ def find_peaks(dt, r=4, footprint=None):
 
     r : scalar
         The size of the structuring element used in the maximum filter.  This
-        controls the localness of any maxima. The default is 3 voxels.
+        controls the localness of any maxima. The default is 4 voxels.
 
     footprint : ND-array
         Specifies the shape of the structuring element used to define the

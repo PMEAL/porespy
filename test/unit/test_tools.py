@@ -2,6 +2,7 @@ import porespy as ps
 import scipy as sp
 import scipy.ndimage as spim
 import matplotlib.pyplot as plt
+from skimage.morphology import disk, ball
 plt.close('all')
 
 
@@ -41,12 +42,12 @@ class ToolsTest():
         sec = ps.tools.extract_subsection(self.blobs, [0.5])
         assert sp.all(sp.array(sp.shape(sec)) == 50)
 
+
 if __name__ == '__main__':
     t = ToolsTest()
+    self = t
     t.setup_class()
-    t.test_randomize_colors()
-    t.test_make_contiguous_size()
-    t.test_make_contiguous_contiguity()
-    t.test_get_slice()
-    t.test_find_outer_region()
-    t.test_extract_subsection()
+    for item in t.__dir__():
+        if item.startswith('test'):
+            print('running test: '+item)
+            t.__getattribute__(item)()

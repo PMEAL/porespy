@@ -2,13 +2,98 @@ import scipy as sp
 import scipy.ndimage as spim
 from skimage.morphology import ball, disk, square, cube
 from array_split import shape_split
+from scipy.signal import fftconvolve
+
+
+def fftmorphology(im, strel, mode='opening'):
+    r"""
+    Perform morphological operations on binary images using fft approach for
+    improved performance
+
+    Parameters
+    ----------
+    im : nd-array
+        The binary image on which to perform the morphological operation
+
+    strel : nd-array
+        The structuring element to use.  Must have the same dims as ``im``.
+
+    mode : string
+        The type of operation to perform.  Options are 'dilation', 'erosion',
+        'opening' and 'closing'.
+
+    Notes
+    -----
+    This function uses ``scipy.signal.fftconvolve`` which *can* be more than
+    10x faster than the standard binary morphology operation in
+    ``scipy.ndimage``.  This speed up may not always be realized, depending
+    on the scipy distribution used.
+
+    Examples
+    --------
+    >>> import porespy as ps
+    >>> from numpy import array_equal
+    >>> import scipy.ndimage as spim
+    >>> from skimage.morphology import disk
+    >>> im = ps.generators.blobs(shape=[100, 100], porosity=0.8)
+
+    Check that erosion, dilation, opening, and closing are all the same as
+    the ``scipy.ndimage`` functions:
+
+    >>> result = ps.filters.fftmorphology(im, strel=disk(5), mode='erosion')
+    >>> temp = spim.binary_erosion(im, structure=disk(5))
+    >>> array_equal(result, temp)
+    True
+
+    >>> result = ps.filters.fftmorphology(im, strel=disk(5), mode='dilation')
+    >>> temp = spim.binary_dilation(im, structure=disk(5))
+    >>> array_equal(result, temp)
+    True
+
+    >>> result = ps.filters.fftmorphology(im, strel=disk(5), mode='opening')
+    >>> temp = spim.binary_opening(im, structure=disk(5))
+    >>> array_equal(result, temp)
+    True
+
+    >>> result = ps.filters.fftmorphology(im, strel=disk(5), mode='closing')
+    >>> temp = spim.binary_closing(im, structure=disk(5))
+    >>> # This one does not work yet!!
+
+    """
+    def erode(im, strel):
+        t = fftconvolve(im, strel, mode='same') > (strel.sum() - 0.1)
+        return t
+
+    def dilate(im, strel):
+        t = fftconvolve(im, strel, mode='same') > 0.1
+        return t
+
+    # The array must be padded with 0's so it works correctly at edges
+    temp = sp.pad(array=im, pad_width=1, mode='constant', constant_values=0)
+    # Perform erosion
+    if mode.startswith('ero'):
+        temp = erode(temp, strel)
+    if mode.startswith('open'):
+        temp = erode(temp, strel)
+        temp = dilate(temp, strel)
+    if mode.startswith('dila'):
+        temp = dilate(temp, strel)
+    if mode.startswith('clos'):
+        temp = dilate(temp, strel)
+        temp = erode(temp, strel)
+    # Remove padding from resulting image
+    if im.ndim == 2:
+        result = temp[1:-1, 1:-1]
+    elif im.ndim == 3:
+        result = temp[1:-1, 1:-1, 1:-1]
+    return result
 
 
 def subdivide(im, divs=2):
     r"""
     Returns slices into an image describing the specified number of sub-arrays.
     This function is useful for performing operations on smaller images for
-    memory or speed.  Note that most typical operations this will NOT work,
+    memory or speed.  Note that for most typical operations this will NOT work,
     since the image borders would cause artifacts (e.g. ``distance_transform``)
 
     Parameters
@@ -18,7 +103,7 @@ def subdivide(im, divs=2):
 
     divs : scalar or array_like
         The number of sub-divisions to create in each axis of the image.  If a
-        scalar is given it is assume this value applies in all dimensions.
+        scalar is given it is assumed this value applies in all dimensions.
 
     Returns
     -------
@@ -61,6 +146,33 @@ def subdivide(im, divs=2):
         divs = [divs for i in range(im.ndim)]
     s = shape_split(im.shape, axis=divs)
     return s
+
+
+def bbox_to_slices(bbox):
+    r"""
+    Given a tuple containing bounding box coordinates, return a tuple of slice
+    objects.
+
+    Parameters
+    ----------
+    bbox : tuple of ints
+        The bounding box indices in the form (``xmin``, ``ymin``, ``zmin``,
+        ``xmax``, ``ymax``, ``zmax``).  For a 2D image, simply omit the
+        ``zmin`` and ``zmax`` entries.
+
+    Returns
+    -------
+    A tuple of slice objects that can be used to directly index into a larger
+    image.  A
+    """
+    if len(bbox) == 4:
+        ret = (slice(bbox[0], bbox[2]),
+               slice(bbox[1], bbox[3]))
+    else:
+        ret = (slice(bbox[0], bbox[3]),
+               slice(bbox[1], bbox[4]),
+               slice(bbox[2], bbox[5]))
+    return ret
 
 
 def get_slice(im, center, size, pad=0):
@@ -227,7 +339,34 @@ def extract_subsection(im, shape):
         lower_im = sp.amax((center[dim]-r, 0))
         upper_im = sp.amin((center[dim]+r, im.shape[dim]))
         s_im.append(slice(int(lower_im), int(upper_im)))
-    return im[s_im]
+    return im[tuple(s_im)]
+
+
+def get_planes(im, squeeze=True):
+    r"""
+    Extracts three planar images from the volumetric image, one for each
+    principle axis.  The planes are taken from the middle of the domain.
+
+    Parameters
+    ----------
+    im : ND-array
+        The volumetric image from which the 3 planar images are to be obtained
+
+    squeeze : boolean, optional
+        If True (default) the returned images are 2D (i.e. squeezed).  If
+        False, the images are 1 element deep along the axis where the slice
+        was obtained.
+    """
+    x, y, z = (sp.array(im.shape)/2).astype(int)
+    planes = [im[x, :, :], im[:, y, :], im[:, :, z]]
+    if not squeeze:
+        imx = planes[0]
+        planes[0] = sp.reshape(imx, [1, imx.shape[0], imx.shape[1]])
+        imy = planes[1]
+        planes[1] = sp.reshape(imy, [imy.shape[0], 1, imy.shape[1]])
+        imz = planes[2]
+        planes[2] = sp.reshape(imz, [imz.shape[0], imz.shape[1], 1])
+    return planes
 
 
 def extend_slice(s, shape, pad=1):
@@ -283,6 +422,7 @@ def extend_slice(s, shape, pad=1):
     As can be seen by the location of the 4s, the slice was extended by 1, and
     also handled the extension beyond the boundary correctly.
     """
+    pad = int(pad)
     a = []
     for i, dim in zip(s, shape):
         start = 0
@@ -292,25 +432,53 @@ def extend_slice(s, shape, pad=1):
         if i.stop + pad < dim:
             stop = i.stop + pad
         a.append(slice(start, stop, None))
-    return a
+    return tuple(a)
 
 
-def binary_opening_fast(im, r, dt=None):
+def binary_opening_fft(im, strel):
     r"""
-    This function uses a shortcut to perform a morphological opening that does
-    not slow down with larger structuring elements.  Because of the shortcut,
-    it only applies to spherical structuring elements.
+    Using the ``scipy.signal.fftconvolve`` function (twice) to accomplish
+    binary image opening.
+
+    The use of the fft-based convolution produces a 10x speed-up compared to
+    the standard ``binary_opening`` included in ``scipy.ndimage``.
+
+    See Also
+    --------
+    binary_opening_dt
+
+    Notes
+    -----
+    The ``fftconvolve`` function is only optimzed in some scipy installations,
+    depending how it was compiled.  If the promised speed-up is not acheived,
+    this may be the issue.  Using ``binary_opening_dt`` should still be fast
+    but is limited to spherical and circular structing elements.
+
+    """
+    if isinstance(strel, int):
+        if im.ndim == 2:
+            strel = disk(strel)
+        else:
+            strel = ball(strel)
+    seeds = sp.signal.fftconvolve(im, strel) > (strel.sum() - 0.1)
+    result = sp.signal.fftconvolve(seeds, strel) > 0.1
+    result = extract_subsection(result, im.shape)
+    return result
+
+
+def binary_opening_dt(im, r):
+    r"""
+    Perform a morphological opening that does not slow down with larger
+    structuring elements.
+
+    It uses a shortcut based on the distance transform, which means it only
+    applies to spherical (or cicular if the image is 2d) structuring elements.
 
     Parameters
     ----------
     im : ND-array
         The image of the porous material with True values (or 1's) indicating
         the pore phase.
-
-    dt : ND-array
-        The distance transform of the pore space.  If none is provided, it will
-        be calculated; however, providing one is a good idea since it will cut
-        the processing time in half.
 
     r : scalar, int
         The radius of the spherical structuring element to apply
@@ -320,11 +488,16 @@ def binary_opening_fast(im, r, dt=None):
     A binary image with ``True`` values in all locations where a sphere of size
     ``r`` could fit entirely within the pore space.
 
+    See Also
+    --------
+    binary_opening_fft
+
     """
-    if dt is None:
-        dt = spim.distance_transform_edt(im)
+    temp = sp.pad(im, pad_width=1, mode='constant', constant_values=0)
+    dt = spim.distance_transform_edt(temp)
     seeds = dt > r
     im_opened = spim.distance_transform_edt(~seeds) <= r
+    im_opened = extract_subsection(im_opened, im.shape)
     return im_opened
 
 
@@ -493,3 +666,61 @@ def get_border(shape, thickness=1, mode='edges'):
             border[0::, t:-t, 0::] = False
             border[0::, 0::, t:-t] = False
     return border
+
+
+def in_hull(points, hull):
+    """
+    Test if a list of coordinates are inside a given convex hull
+
+    Parameters
+    ----------
+    points : array_like (N x ndims)
+        The spatial coordinates of the points to check
+
+    hull : scipy.spatial.ConvexHull object **OR** array_like
+        Can be either a convex hull object as returned by
+        ``scipy.spatial.ConvexHull`` or simply the coordinates of the points
+        that define the convex hull.
+
+    Returns
+    -------
+    A Boolean array of length *N* indicating whether or not the given points
+    in ``points`` lies within the provided ``hull``.
+
+    """
+    from scipy.spatial import Delaunay, ConvexHull
+    if isinstance(hull, ConvexHull):
+        hull = hull.points
+    hull = Delaunay(hull)
+    return hull.find_simplex(points) >= 0
+
+
+def norm_to_uniform(im, scale=None):
+    r"""
+    Take an image with normally distributed greyscale values and converts it to
+    a uniform (i.e. flat) distribution.  It's also possible to specify the
+    lower and upper limits of the uniform distribution.
+
+    Parameters
+    ----------
+    im : ND-image
+        The image containing the normally distributed scalar field
+
+    scale : [low, high]
+        A list or array indicating the lower and upper bounds for the new
+        randomly distributed data.  The default is ``None``, which uses the
+        ``max`` and ``min`` of the original image as the the lower and upper
+        bounds, but another common option might be [0, 1].
+
+    Returns
+    -------
+    An ND-image the same size as ``im`` with uniformly distributed greyscale
+    values spanning the specified range, if given.
+    """
+    if scale is None:
+        scale = [im.min(), im.max()]
+    im = (im - sp.mean(im))/sp.std(im)
+    im = 1/2*sp.special.erfc(-im/sp.sqrt(2))
+    im = (im - im.min()) / (im.max() - im.min())
+    im = im*(scale[1] - scale[0]) + scale[0]
+    return im
