@@ -178,6 +178,5 @@ def add_boundary_nodes(regions=None, faces=['front', 'back', 'left',
         regions = make_contiguous(regions)
     else:
         regions = regions
-        dt = dt
 
     return regions
