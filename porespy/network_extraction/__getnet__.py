@@ -115,20 +115,18 @@ def extract_pore_network(im, dt=None, voxel_size=1):
                                  (merged_region == j + 1))
                 merged_region = sp.pad(merged_region, pad_width=1,
                                        mode='constant', constant_values=0)
-                merged_filter = spim.convolve(merged_region*1.0,
-                                              weights=ball(1))/sp.sum(ball(1))
-                verts1, faces1, n1, v1 = measure.marching_cubes_lewiner(
-                        merged_filter)
-                mc_sa_combined = measure.mesh_surface_area(verts1, faces1)
+                mfilter = spim.convolve(merged_region*1.0,
+                                        weights=ball(1))/sp.sum(ball(1))
+                verts1, face1, n1, v1 = measure.marching_cubes_lewiner(mfilter)
+                mc_sa_combined = measure.mesh_surface_area(verts1, face1)
 
                 j_mask = im[slices[j]] == j + 1
                 j_mask = sp.pad(j_mask*1.0, pad_width=1, mode='constant',
                                 constant_values=0)
-                j_filter = spim.convolve(j_mask,
-                                         weights=ball(1))/sp.sum(ball(1))
-                verts2, faces2, n2, v2 = measure.marching_cubes_lewiner(
-                        j_filter)
-                mc_sa_j = measure.mesh_surface_area(verts2, faces2)
+                jfilter = spim.convolve(j_mask,
+                                        weights=ball(1))/sp.sum(ball(1))
+                verts2, face2, n2, v2 = measure.marching_cubes_lewiner(jfilter)
+                mc_sa_j = measure.mesh_surface_area(verts2, face2)
                 mc_area = 0.5 * (mc_sa_j + mc_sa[pore] - mc_sa_combined)
                 if mc_area < 0:
                     mc_area = 1.0
