@@ -2,11 +2,11 @@ import scipy as sp
 from porespy.network_extraction import snow, extract_pore_network
 from porespy.tools import make_contiguous
 from skimage.segmentation import find_boundaries
-                                                                                                                                                                                                                         
 
-def snow_dual_network(im, voxel_size=1 , 
-                      boundary_faces = ['top','bottom','left','right',
-                                        'front','back']):
+
+def snow_dual_network(im, voxel_size=1,
+                      boundary_faces=['top', 'bottom', 'left',
+                                      'right', 'front', 'back']):
 
     r"""
     Analyzes an image that has been partitioned into void and solid regions
@@ -16,10 +16,10 @@ def snow_dual_network(im, voxel_size=1 ,
     Parameters
     ----------
     im : ND-array
-        Binary image in the Boolean form with True’s as void phase and False’s 
-        as solid phase. It can process the inverted configuration of the 
-        boolean image as well, but output labelling of phases will be inverted 
-        and solid phase properties will be assigned to void phase properties 
+        Binary image in the Boolean form with True’s as void phase and False’s
+        as solid phase. It can process the inverted configuration of the
+        boolean image as well, but output labelling of phases will be inverted
+        and solid phase properties will be assigned to void phase properties
         labels which will cause confusion while performing the simulation.
 
     voxel_size : scalar
@@ -27,14 +27,14 @@ def snow_dual_network(im, voxel_size=1 ,
         voxel, so the volume of a voxel would be **voxel_size**-cubed.  The
         default is 1, which is useful when overlaying the PNM on the original
         image since the scale of the image is alway 1 unit lenth per voxel.
-        
+
     boundary_faces
-        Boundary faces labels are provided to assign hypothetical boundary 
-        nodes having zero resistance to transport process. For cubical 
-        geometry, the user can choose ‘left’, ‘right’, ‘top’, ‘bottom’, 
+        Boundary faces labels are provided to assign hypothetical boundary
+        nodes having zero resistance to transport process. For cubical
+        geometry, the user can choose ‘left’, ‘right’, ‘top’, ‘bottom’,
         ‘front’ and ‘back’ face labels to assign boundary nodes. If no label is
-        assigned then all six faces will be selected as boundary nodes 
-        automatically which can be trimmed later on based on user requirements.  
+        assigned then all six faces will be selected as boundary nodes
+        automatically which can be trimmed later on based on user requirements.
 
     Returns
     -------
@@ -43,12 +43,12 @@ def snow_dual_network(im, voxel_size=1 ,
     convention (i.e. 'pore.coords', 'throat.conns') so it may be converted
     directly to an OpenPNM network object using the ``update`` command.
     """
-    ##-------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     # SNOW void phase
     pore_regions = snow(im)
     # SNOW solid phase
     solid_regions = snow(~im)
-    ##-------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     # Combined Distance transform of two phases.
     pore_dt = pore_regions.dt
     solid_dt = solid_regions.dt
@@ -63,51 +63,61 @@ def snow_dual_network(im, voxel_size=1 ,
     solid_region = solid_region * ~im
     regions = pore_region + solid_region
     b_num = sp.amax(regions)
-    ##-------------------------------------------------------------------------    
+    # -------------------------------------------------------------------------
     # Boundary Conditions
-    regions , dt = define_boundary_nodes(regions=regions, dt=dt,
-                        faces= boundary_faces)
-    ##-------------------------------------------------------------------------      
+    regions = add_boundary_nodes(regions=regions, faces=boundary_faces)
+    # -------------------------------------------------------------------------
+    # Padding distance transform to extract geometrical properties
+    f = boundary_faces
+    if f is not None:
+        faces = [(int('top' in f)*3, int('bottom' in f)*3),
+                 (int('left' in f)*3, int('right' in f)*3)]
+        if im.ndim == 3:
+            faces = [(int('front' in f)*3, int('back' in f)*3)] + faces
+        dt = sp.pad(dt, pad_width=faces, mode='edge')
+    else:
+        dt = dt
+    # -------------------------------------------------------------------------
     # Extract void,solid and throat information from image
     net = extract_pore_network(im=regions, dt=dt, voxel_size=voxel_size)
-    ##-------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     # Find void to void, void to solid and solid to solid throat conns
     loc1 = net['throat.conns'][:, 0] < solid_num
     loc2 = net['throat.conns'][:, 1] >= solid_num
     loc3 = net['throat.conns'][:, 1] < b_num
     pore_solid_labels = loc1 * loc2 * loc3
-    
+
     loc4 = net['throat.conns'][:, 0] >= solid_num
     loc5 = net['throat.conns'][:, 0] < b_num
     solid_solid_labels = loc4 * loc2 * loc5 * loc3
-    
+
     loc6 = net['throat.conns'][:, 1] < solid_num
     pore_pore_labels = loc1 * loc6
-    
+
     loc7 = net['throat.conns'][:, 1] >= b_num
-    boundary_throat_labels = loc5 * loc7 
-    
-    solid_labels = ((net['pore.label'] > solid_num) * 
+    boundary_throat_labels = loc5 * loc7
+
+    solid_labels = ((net['pore.label'] > solid_num) *
                     ~(net['pore.label'] > b_num))
     boundary_labels = net['pore.label'] > b_num
-    t_sa = sp.zeros(len(boundary_labels[boundary_labels==True]))
-    ##-------------------------------------------------------------------------
+    b_sa = sp.zeros(len(boundary_labels[boundary_labels == 1.0]))
+    # -------------------------------------------------------------------------
     # Calculates void interfacial area that connects with solid and vice versa
     p_conns = net['throat.conns'][:, 0][pore_solid_labels]
-    ps = net['throat.area_mc1'][pore_solid_labels]
+    ps = net['throat.area'][pore_solid_labels]
     p_sa = sp.bincount(p_conns, ps)
     s_conns = net['throat.conns'][:, 1][pore_solid_labels]
-    s_sa = sp.bincount(s_conns, ps)
-    s_sa = sp.trim_zeros(s_sa)
-    p_solid_surf = sp.concatenate((p_sa, s_sa, t_sa))
-    ##-------------------------------------------------------------------------
-    # Calculates interfacial area using marching cube method 
-    ps_c = net['throat.area_mc1'][pore_solid_labels]
+    s_pa = sp.bincount(s_conns, ps)
+    s_pa = sp.trim_zeros(s_pa)  # remove pore surface area labels
+    p_solid_surf = sp.concatenate((p_sa, s_pa, b_sa))
+    # -------------------------------------------------------------------------
+    # Calculates interfacial area using marching cube method
+    ps_c = net['throat.area_mc'][pore_solid_labels]
     p_sa_c = sp.bincount(p_conns, ps_c)
-    s_sa_c = sp.bincount(s_conns, ps_c)
-    s_sa_c = sp.trim_zeros(s_sa_c)
-    p_solid_surf_c = sp.concatenate((p_sa_c, s_sa_c, t_sa))
-    ##-------------------------------------------------------------------------
+    s_pa_c = sp.bincount(s_conns, ps_c)
+    s_pa_c = sp.trim_zeros(s_pa_c)  # remove pore surface area labels
+    p_solid_surf_c = sp.concatenate((p_sa_c, s_pa_c, b_sa))
+    # -------------------------------------------------------------------------
     # Adding additional information of dual network
     net['pore.solid_IFA'] = p_solid_surf * voxel_size**2
     net['pore.solid_IFA_mc'] = (p_solid_surf_c * voxel_size**2)
@@ -121,59 +131,51 @@ def snow_dual_network(im, voxel_size=1 ,
     return net
 
 
-def define_boundary_nodes(regions=None, dt=None, 
-              faces=['front','back','left','right','top','bottom']):
-    ##-------------------------------------------------------------------------
-    # Edge pad segmentation and distance transform 
+def add_boundary_nodes(regions=None, faces=['front', 'back', 'left',
+                                            'right', 'top', 'bottom']):
+    # -------------------------------------------------------------------------
+    # Edge pad segmentation and distance transform
     if faces is not None:
-        regions = sp.pad(regions,1,'edge')
-        dt = sp.pad(dt,3,'edge')
-        ##-------------------------------------------------------------------------
+        regions = sp.pad(regions, 1, 'edge')
+        # ---------------------------------------------------------------------
         # Remove boundary nodes interconnection
-        regions[:,:,0] = regions[:,:,0] + regions.max()
-        regions[:,:,-1] = regions[:,:,-1] + regions.max()
-        regions[0,:,:] = regions[0,:,:] + regions.max()
-        regions[-1,:,:] = regions[-1,:,:] + regions.max()
-        regions[:,0,:] = regions[:,0,:] + regions.max()
-        regions[:,-1,:] = regions[:,-1,:] + regions.max()
-        regions[:,:,0] = (~find_boundaries(regions[:,:,0],
-               mode='outer'))*regions[:,:,0]
-        regions[:,:,-1] = (~find_boundaries(regions[:,:,-1],
-               mode='outer'))*regions[:,:,-1]
-        regions[0,:,:] = (~find_boundaries(regions[0,:,:],
-               mode='outer'))*regions[0,:,:]
-        regions[-1,:,:] = (~find_boundaries(regions[-1,:,:],
-               mode='outer'))*regions[-1,:,:]
-        regions[:,0,:] = (~find_boundaries(regions[:,0,:],
-               mode='outer'))*regions[:,0,:]
-        regions[:,-1,:] = (~find_boundaries(regions[:,-1,:],
-               mode='outer'))*regions[:,-1,:]
-        ##-------------------------------------------------------------------------
-        regions = sp.pad(regions,2,'edge')
-    
+        regions[:, :, 0] = regions[:, :, 0] + regions.max()
+        regions[:, :, -1] = regions[:, :, -1] + regions.max()
+        regions[0, :, :] = regions[0, :, :] + regions.max()
+        regions[-1, :, :] = regions[-1, :, :] + regions.max()
+        regions[:, 0, :] = regions[:, 0, :] + regions.max()
+        regions[:, -1, :] = regions[:, -1, :] + regions.max()
+        regions[:, :, 0] = (~find_boundaries(
+                regions[:, :, 0], mode='outer'))*regions[:, :, 0]
+        regions[:, :, -1] = (~find_boundaries(
+                regions[:, :, -1], mode='outer'))*regions[:, :, -1]
+        regions[0, :, :] = (~find_boundaries(
+                regions[0, :, :], mode='outer'))*regions[0, :, :]
+        regions[-1, :, :] = (~find_boundaries(
+                regions[-1, :, :], mode='outer'))*regions[-1, :, :]
+        regions[:, 0, :] = (~find_boundaries(
+                regions[:, 0, :], mode='outer'))*regions[:, 0, :]
+        regions[:, -1, :] = (~find_boundaries(
+                regions[:, -1, :], mode='outer'))*regions[:, -1, :]
+        # ---------------------------------------------------------------------
+        regions = sp.pad(regions, 2, 'edge')
+
         # Remove unselected faces
         if 'top' not in faces:
-            regions = regions[:,:,3:]
-            dt      = dt[:,:,3:]
+            regions = regions[:, :, 3:]
         if 'bottom' not in faces:
-            regions = regions[:,:,:-3]
-            dt      = dt[:,:,:-3]
+            regions = regions[:, :, :-3]
         if 'front' not in faces:
-            regions = regions[:,3:,:]
-            dt      = dt[:,3:,:]
+            regions = regions[:, 3:, :]
         if 'back' not in faces:
-            regions = regions[:,:-3,:]
-            dt      = dt[:,-3:,:]
+            regions = regions[:, :-3, :]
         if 'left' not in faces:
-            regions = regions[3:,:,:]
-            dt      = dt[3:,:,:]
+            regions = regions[3:, :, :]
         if 'right' not in faces:
-            regions = regions[:-3,:,:]
-            dt      = dt[:-3,:,:]
+            regions = regions[:-3, :, :]
     else:
         regions = regions
-        dt = dt
-    ##-------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     # Make labels contiguous
     regions = make_contiguous(regions)
-    return regions,dt
+    return regions
