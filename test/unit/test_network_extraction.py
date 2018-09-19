@@ -45,8 +45,7 @@ class NetExtractTest():
         assert found_nans is False
 
     def test_snow_dual_2d(self):
-        net = ps.network_extraction.snow_dual_network(self.im,
-                                                      boundary_faces=None)
+        net = ps.network_extraction.snow_dual_network(self.im)
         found_nans = False
         for key in net.keys():
             if np.any(np.isnan(net[key])):
