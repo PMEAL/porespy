@@ -44,6 +44,23 @@ class NetExtractTest():
                 found_nans = True
         assert found_nans is False
 
+    def test_snow_dual_2d(self):
+        net = ps.network_extraction.snow_dual_network(self.im,
+                                                      boundary_faces=None)
+        found_nans = False
+        for key in net.keys():
+            if np.any(np.isnan(net[key])):
+                found_nans = True
+        assert found_nans is False
+
+    def test_snow_dual_3d(self):
+        net = ps.network_extraction.snow_dual_network(self.im3d)
+        found_nans = False
+        for key in net.keys():
+            if np.any(np.isnan(net[key])):
+                found_nans = True
+        assert found_nans is False
+
     def test_align_image_with_openpnm_3d(self):
         op = ps.network_extraction.align_image_with_openpnm(self.snow3d.regions)
         itm_snow = np.unique(self.snow3d.regions, return_counts=True)[1]

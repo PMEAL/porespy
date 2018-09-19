@@ -133,6 +133,8 @@ def extract_pore_network(im, dt=None, voxel_size=1):
                     if mc_area < 0:
                         mc_area = 1.0
                     t_area_mc.append(mc_area)
+                else:
+                    t_area_mc.append(0)
                 # -------------------------------------------------------------
                 t_inds = tuple([i+j for i, j in zip(vx, s_offset)])
                 temp = sp.where(dt[t_inds] == sp.amax(dt[t_inds]))[0][0]
