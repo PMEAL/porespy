@@ -129,6 +129,11 @@ def extract_pore_network(im, dt=None, voxel_size=1):
                                     constant_values=0)
                     jfilter = spim.convolve(j_mask,
                                             weights=ball(1))/sp.sum(ball(1))
+                    verts1, face1, n1, v1 = measure.marching_cubes_lewiner(mfilter)
+                    mc_sa_combined = measure.mesh_surface_area(verts1, face1)
+                    verts2, face2, n2, v2 = measure.marching_cubes_lewiner(jfilter)
+                    mc_sa_j = measure.mesh_surface_area(verts2, face2)
+                    mc_area = 0.5 * (mc_sa_j + mc_sa[pore] - mc_sa_combined)
                 else:
                     merged_region = sp.reshape(merged_region,
                                                (1,) + merged_region.shape)
@@ -138,12 +143,11 @@ def extract_pore_network(im, dt=None, voxel_size=1):
                     j_mask = sp.reshape(j_mask, (1,) + j_mask.shape)
                     jfilter = sp.pad(j_mask*1.0, pad_width=1,
                                      mode='constant', constant_values=0)
+                    mc_sa_combined = 0.5 * measure.mesh_surface_area(verts1, face1)
+                    verts2, face2, n2, v2 = measure.marching_cubes_lewiner(jfilter)
+                    mc_sa_j = 0.5 * measure.mesh_surface_area(verts2, face2)
+                    mc_area = 0.5 * (mc_sa_j + mc_sa[pore] - mc_sa_combined)
 
-                verts1, face1, n1, v1 = measure.marching_cubes_lewiner(mfilter)
-                mc_sa_combined = measure.mesh_surface_area(verts1, face1)
-                verts2, face2, n2, v2 = measure.marching_cubes_lewiner(jfilter)
-                mc_sa_j = measure.mesh_surface_area(verts2, face2)
-                mc_area = 0.5 * (mc_sa_j + mc_sa[pore] - mc_sa_combined)
                 if mc_area < 0:
                     mc_area = 1.0
                 t_area_mc.append(mc_area)
