@@ -50,12 +50,12 @@ class NetExtractTest():
         itm_op = np.unique(op, return_counts=True)[1]
         assert np.allclose(itm_snow, itm_op)
 
+
 if __name__ == '__main__':
     t = NetExtractTest()
+    self = t
     t.setup_class()
-    t.test_snow()
-    t.test_extract_pore_network()
-    t.test_align_image_with_openpnm()
-    t.test_snow_3d()
-    t.test_extract_pore_network_3d()
-    t.test_align_image_with_openpnm_3d()
+    for item in t.__dir__():
+        if item.startswith('test'):
+            print('running test: '+item)
+            t.__getattribute__(item)()
