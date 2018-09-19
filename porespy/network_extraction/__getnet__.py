@@ -80,10 +80,11 @@ def extract_pore_network(im, dt=None, voxel_size=1):
         # ---------------------------------------------------------------------
         padded_mask = sp.pad(pore_im, pad_width=1, mode='constant')
         pore_dt = spim.distance_transform_edt(padded_mask)
-        filter_mask = spim.convolve(padded_mask*1.0,
-                                    weights=ball(1))/sp.sum(ball(1))
-        verts, faces, norm, val = measure.marching_cubes_lewiner(filter_mask)
-        mc_sa[pore] = measure.mesh_surface_area(verts, faces)
+        if padded_mask.ndim == 3:
+            filter_mask = spim.convolve(padded_mask*1.0,
+                                        weights=ball(1))/sp.sum(ball(1))
+            verts, faces, norm, val = measure.marching_cubes_lewiner(filter_mask)
+            mc_sa[pore] = measure.mesh_surface_area(verts, faces)
         # ---------------------------------------------------------------------
         s_offset = sp.array([i.start for i in s])
         p_label[pore] = i
@@ -103,34 +104,35 @@ def extract_pore_network(im, dt=None, voxel_size=1):
                 t_perimeter.append(sp.sum(sub_dt[vx] < 2))
                 t_area.append(sp.size(vx[0]))
                 # -------------------------------------------------------------
-                merged_region = im[(min(slices[pore][0].start,
-                                        slices[j][0].start)):
-                                   max(slices[pore][0].stop,
-                                       slices[j][0].stop),
-                                   (min(slices[pore][1].start,
-                                        slices[j][1].start)):
-                                   max(slices[pore][1].stop,
-                                       slices[j][1].stop)]
-                merged_region = ((merged_region == pore + 1) +
-                                 (merged_region == j + 1))
-                merged_region = sp.pad(merged_region, pad_width=1,
-                                       mode='constant', constant_values=0)
-                mfilter = spim.convolve(merged_region*1.0,
-                                        weights=ball(1))/sp.sum(ball(1))
-                verts1, face1, n1, v1 = measure.marching_cubes_lewiner(mfilter)
-                mc_sa_combined = measure.mesh_surface_area(verts1, face1)
+                if im.ndim == 3:
+                    merged_region = im[(min(slices[pore][0].start,
+                                            slices[j][0].start)):
+                                       max(slices[pore][0].stop,
+                                           slices[j][0].stop),
+                                       (min(slices[pore][1].start,
+                                            slices[j][1].start)):
+                                       max(slices[pore][1].stop,
+                                           slices[j][1].stop)]
+                    merged_region = ((merged_region == pore + 1) +
+                                     (merged_region == j + 1))
+                    merged_region = sp.pad(merged_region, pad_width=1,
+                                           mode='constant', constant_values=0)
+                    mfilter = spim.convolve(merged_region*1.0,
+                                            weights=ball(1))/sp.sum(ball(1))
+                    verts1, face1, n1, v1 = measure.marching_cubes_lewiner(mfilter)
+                    mc_sa_combined = measure.mesh_surface_area(verts1, face1)
 
-                j_mask = im[slices[j]] == j + 1
-                j_mask = sp.pad(j_mask*1.0, pad_width=1, mode='constant',
-                                constant_values=0)
-                jfilter = spim.convolve(j_mask,
-                                        weights=ball(1))/sp.sum(ball(1))
-                verts2, face2, n2, v2 = measure.marching_cubes_lewiner(jfilter)
-                mc_sa_j = measure.mesh_surface_area(verts2, face2)
-                mc_area = 0.5 * (mc_sa_j + mc_sa[pore] - mc_sa_combined)
-                if mc_area < 0:
-                    mc_area = 1.0
-                t_area_mc.append(mc_area)
+                    j_mask = im[slices[j]] == j + 1
+                    j_mask = sp.pad(j_mask*1.0, pad_width=1, mode='constant',
+                                    constant_values=0)
+                    jfilter = spim.convolve(j_mask,
+                                            weights=ball(1))/sp.sum(ball(1))
+                    verts2, face2, n2, v2 = measure.marching_cubes_lewiner(jfilter)
+                    mc_sa_j = measure.mesh_surface_area(verts2, face2)
+                    mc_area = 0.5 * (mc_sa_j + mc_sa[pore] - mc_sa_combined)
+                    if mc_area < 0:
+                        mc_area = 1.0
+                    t_area_mc.append(mc_area)
                 # -------------------------------------------------------------
                 t_inds = tuple([i+j for i, j in zip(vx, s_offset)])
                 temp = sp.where(dt[t_inds] == sp.amax(dt[t_inds]))[0][0]
