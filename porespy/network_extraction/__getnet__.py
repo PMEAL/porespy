@@ -143,6 +143,7 @@ def extract_pore_network(im, dt=None, voxel_size=1):
                     j_mask = sp.reshape(j_mask, (1,) + j_mask.shape)
                     jfilter = sp.pad(j_mask*1.0, pad_width=1,
                                      mode='constant', constant_values=0)
+                    verts1, face1, n1, v1 = measure.marching_cubes_lewiner(mfilter)
                     mc_sa_combined = 0.5 * measure.mesh_surface_area(verts1, face1)
                     verts2, face2, n2, v2 = measure.marching_cubes_lewiner(jfilter)
                     mc_sa_j = 0.5 * measure.mesh_surface_area(verts2, face2)
