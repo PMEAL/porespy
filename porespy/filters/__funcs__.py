@@ -3,6 +3,7 @@ from skimage.segmentation import clear_border
 import scipy.ndimage as spim
 import scipy.spatial as sptl
 from porespy.tools import get_border, extract_subsection, extend_slice
+from porespy.tools import fftmorphology
 from collections import namedtuple
 from tqdm import tqdm
 from numba import jit
@@ -10,121 +11,6 @@ from skimage.morphology import ball, disk, square, cube
 from skimage.morphology import reconstruction, skeletonize_3d
 from skimage.morphology import reconstruction
 from scipy.signal import fftconvolve
-
-
-def fftmorphology(im, strel, mode='opening'):
-    r"""
-    Perform morphological operations on binary images using fft approach for
-    improved performance
-
-    Parameters
-    ----------
-    im : nd-array
-        The binary image on which to perform the morphological operation
-
-    strel : nd-array
-        The structuring element to use.  Must have the same dims as ``im``.
-
-    mode : string
-        The type of operation to perform.  Options are 'dilation', 'erosion',
-        'opening' and 'closing'.
-
-    Notes
-    -----
-    This function uses ``scipy.signal.fftconvolve`` which *can* be more than
-    10x faster than the standard binary morphology operation in
-    ``scipy.ndimage``.  This speed up may not always be realized, depending
-    on the scipy distribution used.
-
-    Examples
-    --------
-    >>> import porespy as ps
-    >>> from numpy import array_equal
-    >>> import scipy.ndimage as spim
-    >>> from skimage.morphology import disk
-    >>> im = ps.generators.blobs(shape=[100, 100], porosity=0.8)
-
-    Check that erosion, dilation, opening, and closing are all the same as
-    the ``scipy.ndimage`` functions:
-
-    >>> result = ps.filters.fftmorphology(im, strel=disk(5), mode='erosion')
-    >>> temp = spim.binary_erosion(im, structure=disk(5))
-    >>> array_equal(result, temp)
-    True
-
-    >>> result = ps.filters.fftmorphology(im, strel=disk(5), mode='dilation')
-    >>> temp = spim.binary_dilation(im, structure=disk(5))
-    >>> array_equal(result, temp)
-    True
-
-    >>> result = ps.filters.fftmorphology(im, strel=disk(5), mode='opening')
-    >>> temp = spim.binary_opening(im, structure=disk(5))
-    >>> array_equal(result, temp)
-    True
-
-    >>> result = ps.filters.fftmorphology(im, strel=disk(5), mode='closing')
-    >>> temp = spim.binary_closing(im, structure=disk(5))
-    >>> # This one does not work yet!!
-
-    """
-    def erode(im, strel):
-        t = sp.signal.fftconvolve(im, strel, mode='same') > (strel.sum() - 0.1)
-        return t
-
-    def dilate(im, strel):
-        t = sp.signal.fftconvolve(im, strel, mode='same') > 0.1
-        return t
-
-    # The array must be padded with 0's so it works correctly at edges
-    temp = sp.pad(array=im, pad_width=1, mode='constant', constant_values=0)
-    # Perform erosion
-    if mode.startswith('ero'):
-        temp = erode(temp, strel)
-    if mode.startswith('open'):
-        temp = erode(temp, strel)
-        temp = dilate(temp, strel)
-    if mode.startswith('dila'):
-        temp = dilate(temp, strel)
-    if mode.startswith('clos'):
-        temp = dilate(temp, strel)
-        temp = erode(temp, strel)
-    # Remove padding from resulting image
-    if im.ndim == 2:
-        result = temp[1:-1, 1:-1]
-    elif im.ndim == 3:
-        result = temp[1:-1, 1:-1, 1:-1]
-    return result
-
-
-def norm_to_uniform(im, scale=None):
-    r"""
-    Take an image with normally distributed greyscale values and converts it to
-    a uniform (i.e. flat) distribution.  It's also possible to specify the
-    lower and upper limits of the uniform distribution.
-
-    Parameters
-    ----------
-    im : ND-image
-        The image containing the normally distributed scalar field
-
-    scale : [low, high]
-        A list or array indicating the lower and upper bounds for the new
-        randomly distributed data.  The default is ``None``, which uses the
-        ``max`` and ``min`` of the original image as the the lower and upper
-        bounds, but another common option might be [0, 1].
-
-    Returns
-    -------
-    An ND-image the same size as ``im`` with uniformly distributed greyscale
-    values spanning the specified range, if given.
-    """
-    if scale is None:
-        scale = [im.min(), im.max()]
-    im = (im - sp.mean(im))/sp.std(im)
-    im = 1/2*sp.special.erfc(-im/sp.sqrt(2))
-    im = (im - im.min()) / (im.max() - im.min())
-    im = im*(scale[1] - scale[0]) + scale[0]
-    return im
 
 
 def find_disconnected_voxels(im, conn=None):
@@ -219,13 +105,17 @@ def trim_floating_solid(im):
 
 def trim_nonpercolating_paths(im, inlet_axis=0, outlet_axis=0):
     r"""
-    Removes all nonpercolating paths including edges.
+    Removes all nonpercolating paths between specified edges
+
+    This function is essential when performing transport simulations on an
+    image, since image regions that do not span between the desired inlet and
+    outlet do not contribute to the transport.
 
     Parameters
     ----------
     im : ND-array
-        The Boolean image of the porous material with True values of selected
-        phase where path needs to be trimmed.
+        The image of the porous material with ```True`` values indicating the
+        phase of interest
 
     inlet_axis : int
         Inlet axis of boundary condition. For three dimensional image the
@@ -239,7 +129,7 @@ def trim_nonpercolating_paths(im, inlet_axis=0, outlet_axis=0):
 
     Returns
     -------
-    A copy of ``im`` but with all the nonpercolating paths removed.
+    A copy of ``im`` but with all the nonpercolating paths removed
 
     See Also
     --------
@@ -307,6 +197,7 @@ def trim_extrema(im, h, mode='maxima'):
     Notes
     -----
     This function is referred to as **imhmax** or **imhmin** in Matlab.
+
     """
     result = im
     if mode in ['maxima', 'extrema']:
@@ -434,59 +325,7 @@ def apply_chords(im, spacing=0, axis=0, trim_edges=True):
     return chords
 
 
-def apply_chords_3D(im, spacing=0, trim_edges=True):
-    r"""
-    Adds chords to the void space in all three principle directions.  The
-    chords are seprated by 1 voxel plus the provided spacing.  Chords in the X,
-    Y and Z directions are labelled 1, 2 and 3 resepctively.
-
-    Parameters
-    ----------
-    im : ND-array
-        A 3D image of the porous material with void space marked as True.
-
-    spacing : int (default = 0)
-        Chords are automatically separed by 1 voxel on all sides, and this
-        argument increases the separation.
-
-    trim_edges : bool (default = True)
-        Whether or not to remove chords that touch the edges of the image.
-        These chords are artifically shortened, so skew the chord length
-        distribution
-
-    Returns
-    -------
-    An ND-array of the same size as ```im``` with values of 1 indicating
-    x-direction chords, 2 indicating y-direction chords, and 3 indicating
-    z-direction chords.
-
-    Notes
-    -----
-    The chords are separated by a spacing of at least 1 voxel so that tools
-    that search for connected components, such as ``scipy.ndimage.label`` can
-    detect individual chords.
-
-    See Also
-    --------
-    apply_chords
-
-    """
-    if im.ndim < 3:
-        raise Exception('Must be a 3D image to use this function')
-    if spacing < 0:
-        raise Exception('Spacing cannot be less than 0')
-    ch = sp.zeros_like(im, dtype=int)
-    ch[:, ::4+2*spacing, ::4+2*spacing] = 1  # X-direction
-    ch[::4+2*spacing, :, 2::4+2*spacing] = 2  # Y-direction
-    ch[2::4+2*spacing, 2::4+2*spacing, :] = 3  # Z-direction
-    chords = ch*im
-    if trim_edges:
-        temp = clear_border(spim.label(chords > 0)[0]) > 0
-        chords = temp*chords
-    return chords
-
-
-def local_thickness(im, npts=25, sizes=None):
+def local_thickness(im, sizes=25):
     r"""
     For each voxel, this functions calculates the radius of the largest sphere
     that both engulfs the voxel and fits entirely within the foreground. This
@@ -498,14 +337,10 @@ def local_thickness(im, npts=25, sizes=None):
     im : array_like
         A binary image with the phase of interest set to True
 
-    npts : scalar
-        The number of sizes to uses when probing pore space.  Points will be
-        generated spanning the range of sizes in the distance transform.
-        The default is 25 points.
-
-    sizes : array_like
-        The sizes to probe.  Use this argument instead of ``npts`` for
-        more control of the range and spacing of points.
+    sizes : array_like or scalar
+        The sizes to invade.  If a list of values of provided they are used
+        directly.  If a scalar is provided then that number of points spanning
+        the min and max of the distance transform are used.
 
     Returns
     -------
@@ -520,11 +355,12 @@ def local_thickness(im, npts=25, sizes=None):
     False.
 
     """
-    im_new = porosimetry(im=im, npts=npts, sizes=sizes, access_limited=False)
+    im_new = porosimetry(im=im, sizes=sizes, access_limited=False)
     return im_new
 
 
-def porosimetry(im, npts=25, sizes=None, inlets=None, access_limited=True):
+def porosimetry(im, sizes=25, inlets=None, access_limited=True,
+                mode='fft'):
     r"""
     Performs a porosimetry simulution on the image
 
@@ -534,21 +370,18 @@ def porosimetry(im, npts=25, sizes=None, inlets=None, access_limited=True):
         An ND image of the porous material containing True values in the
         pore space.
 
-    npts : scalar
-        The number of invasion points to simulate.  Points will be
-        generated spanning the range of sizes in the distance transform.
-        The default is 25 points.
-
-    sizes : array_like
-        The sizes to invade.  Use this argument instead of ``npts`` for
-        more control of the range and spacing of points.
+    sizes : array_like or scalar
+        The sizes to invade.  If a list of values of provided they are used
+        directly.  If a scalar is provided then that number of points spanning
+        the min and max of the distance transform are used.
 
     inlets : ND-array, boolean
         A boolean mask with True values indicating where the invasion
         enters the image.  By default all faces are considered inlets,
         akin to a mercury porosimetry experiment.  Users can also apply
         solid boundaries to their image externally before passing it in,
-        allowing for complex inlets like circular openings, etc.
+        allowing for complex inlets like circular openings, etc.  This argument
+        is only used if ``access_limited`` is ``True``.
 
     access_limited : Boolean
         This flag indicates if the intrusion should only occur from the
@@ -557,6 +390,24 @@ def porosimetry(im, npts=25, sizes=None, inlets=None, access_limited=True):
         the image.  The former simulates experimental tools like mercury
         intrusion porosimetry, while the latter is useful for comparison
         to gauge the extent of shielding effects in the sample.
+
+    mode : string
+        Controls with method is used to compute the result.  Options are:
+
+        *'fft'* - (default) Performs a distance tranform of the void space,
+        thresholds to find voxels larger than ``sizes[i]``, trims the resulting
+        mask if ``access_limitations`` is ``True``, then dilates it using the
+        efficient fft-method to obtain the non-wetting fluid configuration.
+
+        *'dt'* - Same as 'fft', except uses a second distance transform,
+        relative to the thresholded mask, to find the invading fluid
+        configuration.  The choice of 'dt' or 'fft' depends on speed, which
+        is system and installation specific.
+
+        *'mio'* - Using a single morphological image opening step to obtain the
+        invading fluid confirguration directly, *then* trims if
+        ``access_limitations`` is ``True``.  This method is not ideal and is
+        included mostly for comparison purposes.
 
     Returns
     -------
@@ -567,257 +418,56 @@ def porosimetry(im, npts=25, sizes=None, inlets=None, access_limited=True):
     the radius (in voxels) of the invading sphere.  Of course, ``r`` can be
     converted to capillary pressure using your favorite model.
 
-    """
-    dt = spim.distance_transform_edt(im > 0)
-    if inlets is None:
-        inlets = get_border(im.shape, mode='faces')
-    inlets = sp.where(inlets)
-    if sizes is None:
-        sizes = sp.logspace(start=sp.log10(sp.amax(dt)), stop=0, num=npts)
-    else:
-        sizes = sp.sort(a=sizes)[-1::-1]
-    imresults = sp.zeros(sp.shape(im))
-    for r in tqdm(sizes):
-        imtemp = dt >= r
-        if access_limited:
-            imtemp[inlets] = True  # Add inlets before labeling
-            labels, N = spim.label(imtemp)
-            imtemp = imtemp ^ (clear_border(labels=labels) > 0)
-            imtemp[inlets] = False  # Remove inlets
-        if sp.any(imtemp):
-            imtemp = spim.distance_transform_edt(~imtemp) < r
-            imresults[(imresults == 0)*imtemp] = r
-    return imresults
-
-
-def coalesce_menisci(invaded_image, dt=None):
-    r'''
-    This function enhances an image of invading phase obtained using the
-    ``porosimetry`` function by find incidents where menisci touch, and
-    and forcing them to coalesce.
-
-    Parameters
-    ----------
-    invaded_image : ND-image
-        The image produced by the ``porosimetry`` function
-
-    dt : ND-image (optional)
-        The distance transform of the pore phase.  If this is not provided it
-        will be calcualted, so providing one can save time.
-
-    returns
-    -------
-    The returned image is a modified version of the provided ``invaded_image``
-    where the touching mensici are considered to collapse and fill all nearby
-    space.
-
-    '''
-    mio = invaded_image  # Rename image to something shorter
-    # Obtain an image of just the pore space
-    im = mio > 0
-    # Create empty image to place results into
-    im_result = sp.zeros_like(mio)
-
-    # Get correct structuring element for image dimensions
-    if im.ndim == 2:
-        from skimage.morphology import square as cube
-    else:
-        from skimage.morphology import cube
-
-    # Deal with missing input arguments if necessary
-    if dt is None:
-        dt = spim.distance_transform_edt(im)
-
-    # Create skeleton of pore space
-    # Pad edges of image to ensure skeleton is complete (touching edges)
-    temp = sp.pad(im, pad_width=20, mode='constant', constant_values=1)
-    # Get skeleton (3d version works in 2d also)
-    skel = skeletonize_3d(temp).astype(bool)
-    # Extract original section from padded skeleton
-    skel = extract_subsection(skel, im.shape)
-    # Perform simple convolution, so branch points can be found (due to their
-    # higher local connectivity they have higher values in the convolution)
-    temp = spim.convolve(skel.astype(float), weights=cube(3))
-    # Remove branch points
-    skel = skel*(~(temp >= 4))
-
-    # Find all distance values in invaded image, and scan through backwards
-    Rs = sp.unique(mio)[::-1]
-    for R in tqdm(Rs):
-        # Find regions of invading fluid blobs, dictated by inlet parameters
-        # used when finding original invaded_image
-        blobs = (mio >= R)
-        # Find core of invading fluid blobs
-        core = (dt >= R)*blobs
-        # Remove isolated core regions that are inadvertantly overlapping
-        # with blobs, but not actually part of the invading fluid
-        core = fill_blind_pores(core)
-        # Find all sections of the skeleton that overlap with the invading
-        # fluid, but are not part of the core
-        arcs = skel*blobs*~core
-        # Label all arcs, and find slice indices for each arc
-        arc_labels = spim.label(arcs, structure=cube(3))[0]
-        slices = spim.find_objects(arc_labels)
-        # Scan over each arc and analyze
-        label_num = 0
-        for s in slices:
-            label_num += 1
-            # Find largest potential blob and expand area of analysis
-            r = int(sp.ceil((dt[s]*(arc_labels[s] == label_num)).max()))
-            s2 = extend_slice(s, im.shape, r)
-            arc = arc_labels[s2] == label_num
-            # Dliate both the core and the arc to ensure they overlap correctly
-            core2 = spim.binary_dilation(core[s2], structure=cube(3))
-            arc2 = spim.binary_dilation(arc, structure=cube(3))
-            # Label and count the number of overlaps between arc and core
-            L, N = spim.label(core2*arc2, structure=cube(3))
-            # If 2 overlaps, then arc spans a throat and coalescence occurs
-            if N == 2:
-                # Create a new blob that fills the corners of touching menisci
-                dt2 = spim.distance_transform_edt(~arc2)
-                blob = R*(dt2 < r)
-                # Ensure a larger blob has not already been added nearby
-                inds = im_result[s2] == 0
-                im_result[s2][inds] += blob[inds]
-    # Update the invaded_image with the new blobs
-    mio_new = sp.maximum.reduce([mio, im_result])*im
-    return mio_new
-
-
-def basic_mio(im, npts=25, sizes=None, inlets=None, access_limited=True):
-    r'''
-    An implementation of the most basic image-based porosimetry using binary
-    image opening, also know as morphological image opening.
-
-    Parameters
-    ----------
-    im : ND-array
-        An ND image of the porous material containing True values in the
-        pore space.
-
-    npts : scalar
-        The number of invasion points to simulate.  Points will be
-        generated spanning the range of sizes in the distance transform.
-        The default is 25 points.
-
-    sizes : array_like
-        The sizes to invade.  Use this argument instead of ``npts`` for
-        more control of the range and spacing of points.
-
-    inlets : ND-array, boolean
-        A boolean mask with True values indicating where the invasion
-        enters the image.  By default all faces are considered inlets,
-        akin to a mercury porosimetry experiment.  Users can also apply
-        solid boundaries to their image externally before passing it in,
-        allowing for complex inlets like circular openings, etc.
-
-    access_limited : Boolean
-        This flag indicates if the intrusion should only occur from the
-        surfaces (``access_limited`` is True, which is the default), or
-        if the invading phase should be allowed to appear in the core of
-        the image.  The former simulates experimental tools like mercury
-        intrusion porosimetry, while the latter is useful for comparison
-        to gauge the extent of shielding effects in the sample.
-
-    Notes
-    -----
-    This function uses the ``binary_opening`` function from Scipy's ``ndimage``
-    module, which is not parallelized and is quite memory intensive, therefore
-    this function is not the best way to perform this simulation and is only
-    added to PoreSpy for completeness and comparison.
-
-    '''
-    if im.ndim == 2:
-        from skimage.morphology import disk as ball
-    else:
-        from skimage.morphology import ball
-    if inlets is None:
-        inlets = get_border(im.shape, mode='faces')
-    inlets = sp.where(inlets)
-    if sizes is None:
-        dt = spim.distance_transform_edt(im)
-        sizes = sp.logspace(start=sp.log10(sp.amax(dt)), stop=0, num=npts)
-        del dt
-    else:
-        sizes = sp.sort(a=sizes)[-1::-1]
-    imresults = sp.zeros(sp.shape(im))
-    for r in tqdm(sizes):
-        imtemp = spim.binary_opening(im, structure=ball(r))
-        if access_limited:
-            imtemp[inlets] = True  # Add inlets before labeling
-            labels, N = spim.label(imtemp)
-            imtemp = imtemp ^ (clear_border(labels=labels) > 0)
-            imtemp[inlets] = False  # Remove inlets
-        if sp.any(imtemp):
-            imresults[(imresults == 0)*imtemp] = r
-    return imresults
-
-
-def porosimetry_fft(im, npts=25, sizes=None, inlets=None, access_limited=True):
-    r"""
-    Performs a porosimetry simulution on the image
-
-    Parameters
-    ----------
-    im : ND-array
-        An ND image of the porous material containing True values in the
-        pore space.
-
-    npts : scalar
-        The number of invasion points to simulate.  Points will be
-        generated spanning the range of sizes in the distance transform.
-        The default is 25 points.
-
-    sizes : array_like
-        The sizes to invade.  Use this argument instead of ``npts`` for
-        more control of the range and spacing of points.
-
-    inlets : ND-array, boolean
-        A boolean mask with True values indicating where the invasion
-        enters the image.  By default all faces are considered inlets,
-        akin to a mercury porosimetry experiment.  Users can also apply
-        solid boundaries to their image externally before passing it in,
-        allowing for complex inlets like circular openings, etc.
-
-    access_limited : Boolean
-        This flag indicates if the intrusion should only occur from the
-        surfaces (``access_limited`` is True, which is the default), or
-        if the invading phase should be allowed to appear in the core of
-        the image.  The former simulates experimental tools like mercury
-        intrusion porosimetry, while the latter is useful for comparison
-        to gauge the extent of shielding effects in the sample.
-
-    Returns
-    -------
-    An ND-image with voxel values indicating the sphere radius at which it
-    becomes accessible from the inlets.  This image can be used to find
-    invading fluid configurations as a function of applied capillary pressure
-    by applying a boolean comparison: ``inv_phase = im > r`` where ``r`` is
-    the radius (in voxels) of the invading sphere.  Of course, ``r`` can be
-    converted to capillary pressure using your favorite model.
+    See Also
+    --------
+    fftmorphology
 
     """
+    def trim_blobs(im, inlets):
+        temp = sp.zeros_like(im)
+        temp[inlets] = True
+        labels, N = spim.label(im + temp)
+        im = im ^ (clear_border(labels=labels) > 0)
+        return im
+
     dt = spim.distance_transform_edt(im > 0)
+
     if inlets is None:
         inlets = get_border(im.shape, mode='faces')
     inlets = sp.where(inlets)
-    if sizes is None:
-        sizes = sp.logspace(start=sp.log10(sp.amax(dt)), stop=0, num=npts)
+
+    if isinstance(sizes, int):
+        sizes = sp.logspace(start=sp.log10(sp.amax(dt)), stop=0, num=sizes)
     else:
         sizes = sp.sort(a=sizes)[-1::-1]
+
+    if im.ndim == 2:
+        strel = disk
+    else:
+        strel = ball
+
     imresults = sp.zeros(sp.shape(im))
-    for r in tqdm(sizes):
-        imtemp = dt >= r
-        if im.ndim == 2:
-            strel = disk(r)
-        else:
-            strel = ball(r)
-        if access_limited:
-            imtemp[inlets] = True  # Add inlets before labeling
-            labels, N = spim.label(imtemp)
-            imtemp = imtemp ^ (clear_border(labels=labels) > 0)
-            imtemp[inlets] = False  # Remove inlets
-        if sp.any(imtemp):
-            imtemp = fftconvolve(imtemp, strel, mode='same') >= 1
-            imresults[(imresults == 0)*imtemp] = r
+    if mode == 'mio':
+        for r in tqdm(sizes):
+            imtemp = fftmorphology(im, strel(r), mode='opening')
+            if access_limited:
+                imtemp = trim_blobs(imtemp, inlets)
+            if sp.any(imtemp):
+                imresults[(imresults == 0)*imtemp] = r
+    if mode == 'dt':
+        for r in tqdm(sizes):
+            imtemp = dt >= r
+            if access_limited:
+                imtemp = trim_blobs(imtemp, inlets)
+            if sp.any(imtemp):
+                imtemp = spim.distance_transform_edt(~imtemp) < r
+                imresults[(imresults == 0)*imtemp] = r
+    if mode == 'fft':
+        for r in tqdm(sizes):
+            imtemp = dt >= r
+            if access_limited:
+                imtemp = trim_blobs(imtemp, inlets)
+            if sp.any(imtemp):
+                imtemp = fftconvolve(imtemp, strel(r), mode='same') > 0.1
+                imresults[(imresults == 0)*imtemp] = r
     return imresults

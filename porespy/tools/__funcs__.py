@@ -5,6 +5,90 @@ from array_split import shape_split
 from scipy.signal import fftconvolve
 
 
+def fftmorphology(im, strel, mode='opening'):
+    r"""
+    Perform morphological operations on binary images using fft approach for
+    improved performance
+
+    Parameters
+    ----------
+    im : nd-array
+        The binary image on which to perform the morphological operation
+
+    strel : nd-array
+        The structuring element to use.  Must have the same dims as ``im``.
+
+    mode : string
+        The type of operation to perform.  Options are 'dilation', 'erosion',
+        'opening' and 'closing'.
+
+    Notes
+    -----
+    This function uses ``scipy.signal.fftconvolve`` which *can* be more than
+    10x faster than the standard binary morphology operation in
+    ``scipy.ndimage``.  This speed up may not always be realized, depending
+    on the scipy distribution used.
+
+    Examples
+    --------
+    >>> import porespy as ps
+    >>> from numpy import array_equal
+    >>> import scipy.ndimage as spim
+    >>> from skimage.morphology import disk
+    >>> im = ps.generators.blobs(shape=[100, 100], porosity=0.8)
+
+    Check that erosion, dilation, opening, and closing are all the same as
+    the ``scipy.ndimage`` functions:
+
+    >>> result = ps.filters.fftmorphology(im, strel=disk(5), mode='erosion')
+    >>> temp = spim.binary_erosion(im, structure=disk(5))
+    >>> array_equal(result, temp)
+    True
+
+    >>> result = ps.filters.fftmorphology(im, strel=disk(5), mode='dilation')
+    >>> temp = spim.binary_dilation(im, structure=disk(5))
+    >>> array_equal(result, temp)
+    True
+
+    >>> result = ps.filters.fftmorphology(im, strel=disk(5), mode='opening')
+    >>> temp = spim.binary_opening(im, structure=disk(5))
+    >>> array_equal(result, temp)
+    True
+
+    >>> result = ps.filters.fftmorphology(im, strel=disk(5), mode='closing')
+    >>> temp = spim.binary_closing(im, structure=disk(5))
+    >>> # This one does not work yet!!
+
+    """
+    def erode(im, strel):
+        t = fftconvolve(im, strel, mode='same') > (strel.sum() - 0.1)
+        return t
+
+    def dilate(im, strel):
+        t = fftconvolve(im, strel, mode='same') > 0.1
+        return t
+
+    # The array must be padded with 0's so it works correctly at edges
+    temp = sp.pad(array=im, pad_width=1, mode='constant', constant_values=0)
+    # Perform erosion
+    if mode.startswith('ero'):
+        temp = erode(temp, strel)
+    if mode.startswith('open'):
+        temp = erode(temp, strel)
+        temp = dilate(temp, strel)
+    if mode.startswith('dila'):
+        temp = dilate(temp, strel)
+    if mode.startswith('clos'):
+        temp = dilate(temp, strel)
+        temp = erode(temp, strel)
+    # Remove padding from resulting image
+    if im.ndim == 2:
+        result = temp[1:-1, 1:-1]
+    elif im.ndim == 3:
+        result = temp[1:-1, 1:-1, 1:-1]
+    return result
+
+
 def subdivide(im, divs=2):
     r"""
     Returns slices into an image describing the specified number of sub-arrays.
@@ -611,37 +695,32 @@ def in_hull(points, hull):
     return hull.find_simplex(points) >= 0
 
 
-def fft_dilate(im, strel):
+def norm_to_uniform(im, scale=None):
     r"""
-    Performs an image dilation using a fast fourier transform
+    Take an image with normally distributed greyscale values and converts it to
+    a uniform (i.e. flat) distribution.  It's also possible to specify the
+    lower and upper limits of the uniform distribution.
 
     Parameters
     ----------
-    im : ND-array
-        An ND image of the porous material containing True values in the
-        pore space.
+    im : ND-image
+        The image containing the normally distributed scalar field
 
-    strel : ND-array
-        An ND image of a structuring element.
+    scale : [low, high]
+        A list or array indicating the lower and upper bounds for the new
+        randomly distributed data.  The default is ``None``, which uses the
+        ``max`` and ``min`` of the original image as the the lower and upper
+        bounds, but another common option might be [0, 1].
 
     Returns
-    ----------
-    An ND array with same dimensions as im
-
-    Examples
-    ----------
-    >>> import porespy as ps
-    >>> from skimage.morphology import disk
-    >>> import numpy as np
-    >>> im = np.zeros([5, 5], dtype=bool)
-    >>> im[2, 2] = True
-    >>> strel = disk(2)
-    >>> im_d = ps.tools.fft_dilate(im, strel)
-    >>> print(im_d)
-    [[False False  True False False]
-     [False  True  True  True False]
-     [ True  True  True  True  True]
-     [False  True  True  True False]
-     [False False  True False False]]
+    -------
+    An ND-image the same size as ``im`` with uniformly distributed greyscale
+    values spanning the specified range, if given.
     """
-    return fftconvolve(im, strel, 'same') > 0.5
+    if scale is None:
+        scale = [im.min(), im.max()]
+    im = (im - sp.mean(im))/sp.std(im)
+    im = 1/2*sp.special.erfc(-im/sp.sqrt(2))
+    im = (im - im.min()) / (im.max() - im.min())
+    im = im*(scale[1] - scale[0]) + scale[0]
+    return im

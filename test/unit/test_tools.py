@@ -42,35 +42,12 @@ class ToolsTest():
         sec = ps.tools.extract_subsection(self.blobs, [0.5])
         assert sp.all(sp.array(sp.shape(sec)) == 50)
 
-    def test_fft_dilate_2d(self):
-        sp.random.seed(1)
-        im = ps.generators.blobs(shape=[100, 100])
-        r = 2
-        strel = disk(r)
-        im_d = ps.tools.fft_dilate(im, strel)
-        diff = im_d*~im
-        dt = spim.distance_transform_edt(diff.astype(int))**2
-        assert sp.amax(dt) <= r**2
-
-    def test_fft_dilate_3d(self):
-        sp.random.seed(1)
-        im = ps.generators.blobs(shape=[100, 100, 100])
-        r = 2
-        strel = ball(r)
-        im_d = ps.tools.fft_dilate(im, strel)
-        diff = im_d*~im
-        dt = spim.distance_transform_edt(diff.astype(int))**2
-        assert sp.amax(dt) <= r**2
-
 
 if __name__ == '__main__':
     t = ToolsTest()
+    self = t
     t.setup_class()
-    t.test_randomize_colors()
-    t.test_make_contiguous_size()
-    t.test_make_contiguous_contiguity()
-    t.test_get_slice()
-    t.test_find_outer_region()
-    t.test_extract_subsection()
-    t.test_fft_dilate_2d()
-    t.test_fft_dilate_3d()
+    for item in t.__dir__():
+        if item.startswith('test'):
+            print('running test: '+item)
+            t.__getattribute__(item)()

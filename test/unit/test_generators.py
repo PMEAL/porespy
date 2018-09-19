@@ -70,37 +70,36 @@ class GeneratorTest():
         top_slice = im[:, :, 0]
         assert sp.sum(top_slice) == 1409
 
-    def test_circle_pack_square(self):
-        im = ps.generators.circle_pack(shape=[101, 101], radius=5)
+    def test_lattice_spheres_square(self):
+        im = ps.generators.lattice_spheres(shape=[101, 101], radius=5,
+                                           offset=0, lattice='sc')
         labels, N = spim.label(input=~im)
         assert N == 100
 
-    def test_circle_pack_triangular(self):
-        im = ps.generators.circle_pack(shape=[101, 101], radius=5,
-                                       packing='triangular')
+    def test_lattice_spheres_triangular(self):
+        im = ps.generators.lattice_spheres(shape=[101, 101], radius=5,
+                                           lattice='triangular')
         labels, N = spim.label(input=~im)
         assert N == 85
 
-    def test_sphere_pack_sc(self):
-        im = ps.generators.sphere_pack(shape=[101, 101, 101],
-                                       radius=4,
-                                       offset=1)
+    def test_lattice_spheres_sc(self):
+        im = ps.generators.lattice_spheres(shape=[101, 101, 101],
+                                           radius=4, offset=1,
+                                           lattice='sc')
         labels, N = spim.label(input=~im)
         assert N == 1000
 
-    def test_sphere_pack_fcc(self):
-        im = ps.generators.sphere_pack(shape=[101, 101, 101],
-                                       radius=4,
-                                       offset=2,
-                                       packing='fcc')
+    def test_lattice_spheres_fcc(self):
+        im = ps.generators.lattice_spheres(shape=[101, 101, 101],
+                                           radius=4, offset=2,
+                                           lattice='fcc')
         labels, N = spim.label(input=~im)
         assert N == 392
 
-    def test_sphere_pack_bcc(self):
-        im = ps.generators.sphere_pack(shape=[101, 101, 101],
-                                       radius=4,
-                                       offset=2,
-                                       packing='bcc')
+    def test_lattice_spheres_bcc(self):
+        im = ps.generators.lattice_spheres(shape=[101, 101, 101],
+                                           radius=4, offset=2,
+                                           lattice='bcc')
         labels, N = spim.label(input=~im)
         assert N == 1024
 
@@ -155,20 +154,9 @@ class GeneratorTest():
 
 if __name__ == '__main__':
     t = GeneratorTest()
+    self = t
     t.setup_class()
-    t.test_insert_shape()
-    t.test_bundle_of_tubes()
-    t.test_overlapping_spheres_3d()
-    t.test_polydisperse_spheres()
-    t.test_voronoi_edges()
-    t.test_circle_pack_square()
-    t.test_circle_pack_triangular()
-    t.test_sphere_pack_sc()
-    t.test_sphere_pack_fcc()
-    t.test_sphere_pack_bcc()
-    t.test_blobs_1d_shape()
-    t.test_RSA_2d_single()
-    t.test_RSA_2d_multi()
-    t.test_RSA_3d_single()
-    t.test_RSA_mask_edge_2d()
-    t.test_RSA_mask_edge_3d()
+    for item in t.__dir__():
+        if item.startswith('test'):
+            print('running test: '+item)
+            t.__getattribute__(item)()
