@@ -158,7 +158,7 @@ def add_boundary_nodes(regions=None, faces=['front', 'back', 'left',
                                                  mode='outer'))*regions[:, 0, :]
             regions[:, -1, :] = (~find_boundaries(regions[:, -1, :],
                                                   mode='outer'))*regions[:, -1, :]
-            # ---------------------------------------------------------------------
+            # -----------------------------------------------------------------
             regions = sp.pad(regions, 2, 'edge')
 
             # Remove unselected faces
@@ -189,7 +189,7 @@ def add_boundary_nodes(regions=None, faces=['front', 'back', 'left',
                                               mode='outer'))*regions[:, 0]
             regions[:, -1] = (~find_boundaries(regions[:, -1],
                                                mode='outer'))*regions[:, -1]
-            # ---------------------------------------------------------------------
+            # -----------------------------------------------------------------
             regions = sp.pad(regions, 2, 'edge')
 
             # Remove unselected faces
