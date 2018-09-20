@@ -2,7 +2,35 @@ import numpy as np
 from scipy import ndimage as spim
 from porespy.io.evtk import hl as bp
 import scipy.ndimage as nd
-import skimage.io as io
+
+
+def dict_to_vtk(data, path='./dictvtk', voxel_size=1, origin=(0, 0, 0)):
+    r"""
+    Wrapper for the pyevtk
+    Copyright 2010 - 2016 Paulo A. Herrera. All rights reserved. (see /evtk
+    folder for complete license information)
+
+    Parameters
+    ----------
+    data : dictionary of 3D arrays
+
+    path : string
+        Path to output file
+
+    voxel_size : int
+        The side length of the voxels (voxels  are cubic)
+
+    origin : float
+        data origin (according to selected voxel size)
+    Output
+    ------
+    File: vtk, vtp or vti file that can opened in paraview
+    """
+    vs = voxel_size
+    for entry in data:
+        if data[entry].flags['C_CONTIGUOUS']:
+            data[entry] = np.ascontiguousarray(data[entry])
+    bp.imageToVTK(path, cellData=data, spacing=(vs, vs, vs), origin=origin)
 
 
 def to_vtk(im, path='./voxvtk', divide=False, downsample=False, voxel_size=1,
@@ -84,6 +112,8 @@ def to_palabos(im, filename, solid=0):
     Output
     -------
     File produced contains 3 values: 2 = Solid, 1 = Interface, 0 = Pore
+    Palabos will run the simulation applying the specified pressure drop from
+    x = 0 to x = -1.
 
     """
     # Create binary image for fluid and solid phases
