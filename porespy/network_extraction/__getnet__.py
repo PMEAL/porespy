@@ -1,12 +1,11 @@
 import scipy as sp
 import scipy.ndimage as spim
-from scipy.spatial.distance import cdist
 from porespy.tools import extend_slice
 from tqdm import tqdm
 from skimage import measure
 
 
-def extract_pore_network(im, dt=None, voxel_size=1):
+def regions_to_network(im, dt=None, voxel_size=1):
     r"""
     Analyzes an image that has been partitioned into pore regions and extracts
     the pore and throat geometry as well as network connectivity.

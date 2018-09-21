@@ -22,6 +22,7 @@ that do NOT return a modified version of the original image.
 .. autofunction:: subdivide
 
 '''
+from .__funcs__ import align_image_with_openpnm
 from .__funcs__ import bbox_to_slices
 from .__funcs__ import extend_slice
 from .__funcs__ import extract_subsection
