@@ -10,7 +10,6 @@ def snow(im, voxel_size=1, boundary_faces=['top', 'bottom', 'left',
     im = regions.im
     dt = regions.dt
     regions = regions.regions
-    regions = add_boundary_regions(regions=regions,
-                                   boundary_faces=boundary_faces)
+    regions = add_boundary_regions(regions=regions, faces=boundary_faces)
     net = regions_to_network(im=regions*im, dt=dt, voxel_size=voxel_size)
     return net

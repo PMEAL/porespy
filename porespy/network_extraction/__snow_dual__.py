@@ -44,9 +44,9 @@ def snow_dual(im, voxel_size=1, boundary_faces=['top', 'bottom', 'left',
     """
     # -------------------------------------------------------------------------
     # SNOW void phase
-    pore_regions = snow_partitioning(im)
+    pore_regions = snow_partitioning(im, return_all=True)
     # SNOW solid phase
-    solid_regions = snow_partitioning(~im)
+    solid_regions = snow_partitioning(~im, return_all=True)
     # -------------------------------------------------------------------------
     # Combined Distance transform of two phases.
     pore_dt = pore_regions.dt
