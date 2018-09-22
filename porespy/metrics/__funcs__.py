@@ -2,6 +2,7 @@ import scipy as sp
 import numpy as np
 from skimage.segmentation import clear_border
 from skimage.feature import peak_local_max
+from skimage.measure import regionprops
 import scipy.ndimage as spim
 import scipy.spatial as sptl
 from porespy.tools import get_border, extract_subsection, extend_slice
@@ -162,18 +163,12 @@ def radial_density(im, bins=10, voxel_size=1):
     """
     if im.dtype == bool:
         im = spim.distance_transform_edt(im)
-    h = sp.histogram(a=im[im > 0], bins=bins, density=True)
-    dR = h[1]
-    P = h[0]
-    temp = P*(dR[1:] - dR[:-1])
-    F = sp.cumsum(temp[-1::-1])[-1::-1]
-    dR = dR*voxel_size
-    bin_edges = dR
-    bin_widths = dR[1:] - dR[:-1]
-    bin_centers = (dR[:-1] + dR[1:])/2
+    h = _histogram(im[im > 0].flatten(), bins=bins)
     rdf = namedtuple('radial_density_function',
-                     ('R', 'P', 'F', 'bin_centers', 'bin_edges', 'bin_widths'))
-    return rdf(bin_centers, P, F, bin_centers, bin_edges, bin_widths)
+                     ('R', 'P', 'F', 'bin_centers', 'bin_edges',
+                      'bin_widths'))
+    return rdf(h.bin_centers, h.pdf, h.cdf, h.bin_centers, h.bin_edges,
+               h.bin_widths)
 
 
 def porosity(im):
@@ -384,27 +379,34 @@ def pore_size_distribution(im, bins=10, log=True):
     """
     im = im.flatten()
     vals = im[im > 0]
+    R_label = 'R'
     if log:
-        rad = 'logR'
         vals = sp.log10(vals)
-    else:
-        rad = 'R'
-    h = sp.histogram(vals, bins=bins, density=True)
-    dR = h[1]
-    P = h[0]
-    temp = P*(dR[1:] - dR[:-1])
-    C = sp.cumsum(temp[-1::-1])[-1::-1]
-    S = P*(dR[1:] - dR[:-1])
-    bin_edges = dR
-    bin_widths = dR[1:] - dR[:-1]
-    bin_centers = (dR[:-1] + dR[1:])/2
+        R_label = 'logR'
+    h = _histogram(x=vals, bins=bins)
     psd = namedtuple('pore_size_distribution',
-                     (rad, 'pdf', 'cdf', 'satn',
+                     (R_label, 'pdf', 'cdf', 'satn',
                       'bin_centers', 'bin_edges', 'bin_widths'))
-    return psd(bin_centers, P, C, S, bin_centers, bin_edges, bin_widths)
+    return psd(h.bin_centers, h.pdf, h.cdf, h.relfreq,
+               h.bin_centers, h.bin_edges, h.bin_widths)
 
 
-def chord_length_counts(im):
+def _histogram(x, bins):
+    h = sp.histogram(x, bins=bins, density=True)
+    delta_x = h[1]
+    P = h[0]
+    temp = P*(delta_x[1:] - delta_x[:-1])
+    C = sp.cumsum(temp[-1::-1])[-1::-1]
+    S = P*(delta_x[1:] - delta_x[:-1])
+    bin_edges = delta_x
+    bin_widths = delta_x[1:] - delta_x[:-1]
+    bin_centers = (delta_x[1:] + delta_x[:-1])/2
+    psd = namedtuple('histogram', ('pdf', 'cdf', 'relfreq',
+                                   'bin_centers', 'bin_edges', 'bin_widths'))
+    return psd(P, C, S, bin_centers, bin_edges, bin_widths)
+
+
+def chord_counts(im):
     r"""
     Finds the length of each chord in the supplied image and returns a list
     of their individual sizes
@@ -426,17 +428,14 @@ def chord_length_counts(im):
     length in a format suitable for ``plt.plot``.
     """
     labels, N = spim.label(im > 0)
-    slices = spim.find_objects(labels)
-    chord_lens = sp.zeros(N, dtype=int)
-    for i in range(len(slices)):
-        s = slices[i]
-        chord_lens[i] = sp.amax([item.stop-item.start for item in s])
+    props = regionprops(labels)
+    chord_lens = sp.array([i.filled_area for i in props])
     return chord_lens
 
 
 def chord_length_distribution(im, bins=25, log=False, voxel_size=1):
     r"""
-    Determines the distribution of chord lengths in a image containing chords.
+    Determines the distribution of chord lengths in an image containing chords.
 
     Parameters
     ----------
@@ -459,66 +458,14 @@ def chord_length_distribution(im, bins=25, log=False, voxel_size=1):
     as well as the ``differenial_chord_count`` and
     ``differential_chord_length``.
     """
-    h = chord_length_counts(im)
+    x = chord_counts(im)
+    L_label = 'L'
     if log:
-        h = sp.log10(h)
-    y_num, x = sp.histogram(h, bins=bins, density=True)
-    y_len, x = sp.histogram(h, bins=bins, weights=h, density=True)
-    y_num_cum = sp.cumsum((y_num*(x[1:]-x[:-1]))[::-1])[::-1]
-    y_len_cum = sp.cumsum((y_len*(x[1:]-x[:-1]))[::-1])[::-1]
-    data = namedtuple('chord_distribution', ('chord_length_bins',
-                                             'cumulative_chord_count',
-                                             'cumulative_chord_length',
-                                             'differential_chord_count',
-                                             'differential_chord_length'))
-    return data(x[:-1], y_num_cum, y_len_cum, y_num, y_len)
-
-
-def cld_helper(im, axes=(0, 1, 2), spacing=0, trim_edges=True):
-    r"""
-    Takes a binary image and returns a weighted coord length distribution in
-    the three principle directions as presented in (ref my paper).
-
-    Parameters
-    ----------
-    im : ND-image
-        An image of the porous material with phase pof interest marked as True
-
-    axes : tuple or int (default = (0,1,2))
-        A tuple containing the desired direction for the chords to  be
-        applied and counted. This argument is identical to the axis argument in
-        filters.apply_chords except it accepts a single integer or a tuple of
-        integers.
-
-    spacing : int (default = 0)
-        Chords are automatically separated by 1 voxel and this argument
-        increases the separation.
-
-    trim_edges : bool (default = True)
-        Whether or not to remove chords that touch the edges of the image.
-        These chords are artifically shortened, so skew the chord length
-        distribution.
-
-    Returns
-    -------
-    A list of 1D arrays representing the chord length distibutions for each
-    axis as specified by axes. The length of each array is equal to 1 + the
-    size of the largest chord in that direction:
-        For example if the longest chord in x has length 100, then length(cx) =
-        101.
-    The chord lengths have also been normalized according to the total length
-    of chords in that direction:
-        For example if the total chords drawn in the x direction is equal to
-        1000, and there are 3 chords of length 4, then cx[3] = 0.12. In this
-        way the integral of the curve provided is always 1.
-    """
-    if isinstance(axes, int):
-        axes = (axes,)
-    res = []
-    for ax in axes:
-        c = apply_chords(im, axis=ax, spacing=spacing, trim_edges=trim_edges)
-        c = chord_length_counts(c)
-        c = np.bincount(c)
-        c = c*range(c.size)/(c*range(c.size)).sum()
-        res.append(c)
-    return res
+        x = sp.log10(x)
+        L_label = 'logL'
+    h = _histogram(x, bins=bins)
+    cld = namedtuple('chord_length_distribution',
+                     (L_label, 'pdf', 'cdf', 'relfreq',
+                      'bin_centers', 'bin_edges', 'bin_widths'))
+    return cld(h.bin_centers, h.pdf, h.cdf, h.relfreq,
+               h.bin_centers, h.bin_edges, h.bin_widths)

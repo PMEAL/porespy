@@ -5,6 +5,31 @@ from array_split import shape_split
 from scipy.signal import fftconvolve
 
 
+def align_image_with_openpnm(im):
+    r"""
+    Rotates an image to agree with the coordinates used in OpenPNM.  It is
+    unclear why they are not in agreement to start with.  This is necessary
+    for overlaying the image and the network in Paraview.
+
+    Parameters
+    ----------
+    im : ND-array
+        The image to be rotated.  Can be the Boolean image of the pore space or
+        any other image of interest.
+
+    Returns
+    -------
+    Returns the image rotated accordingly.
+    """
+    if im.ndim == 2:
+        im = (sp.swapaxes(im, 1, 0))
+        im = im[-1::-1, :]
+    elif im.ndim == 3:
+        im = (sp.swapaxes(im, 2, 0))
+        im = im[:, -1::-1, :]
+    return im
+
+
 def fftmorphology(im, strel, mode='opening'):
     r"""
     Perform morphological operations on binary images using fft approach for
