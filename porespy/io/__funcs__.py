@@ -10,7 +10,7 @@ from pathlib import Path
 def dict_to_vtk(data, path='./dictvtk', voxel_size=1, origin=(0, 0, 0)):
     r"""
     Wrapper for the pyevtk
-    Copyright 2010 - 2016 Paulo A. Herrera. All rights reserved. 
+    Copyright 2010 - 2016 Paulo A. Herrera. All rights reserved.
 
     Parameters
     ----------
@@ -63,7 +63,7 @@ def to_vtk(im, path='./voxvtk', divide=False, downsample=False, voxel_size=1,
            vox=False):
     r"""
     Wrapper for the pyevtk
-    Copyright 2010 - 2016 Paulo A. Herrera. All rights reserved. 
+    Copyright 2010 - 2016 Paulo A. Herrera. All rights reserved.
     Parameters
     ----------
     im : 3D image
@@ -101,17 +101,17 @@ def to_vtk(im, path='./voxvtk', divide=False, downsample=False, voxel_size=1,
         im1 = im[:, :, 0:split]
         im2 = im[:, :, split:]
         imageToVTK(path+'1', cellData={'im': np.ascontiguousarray(im1)},
-                      spacing=(vs, vs, vs))
+                   spacing=(vs, vs, vs))
         imageToVTK(path+'2', origin=(0.0, 0.0, split*vs),
-                      cellData={'im': np.ascontiguousarray(im2)},
-                      spacing=(vs, vs, vs))
+                   cellData={'im': np.ascontiguousarray(im2)},
+                   spacing=(vs, vs, vs))
     elif downsample:
         im = spim.interpolation.zoom(im, zoom=0.5, order=0, mode='reflect')
         imageToVTK(path, cellData={'im': np.ascontiguousarray(im)},
-                      spacing=(2*vs, 2*vs, 2*vs))
+                   spacing=(2*vs, 2*vs, 2*vs))
     else:
         imageToVTK(path, cellData={'im': np.ascontiguousarray(im)},
-                      spacing=(vs, vs, vs))
+                   spacing=(vs, vs, vs))
 
 
 def to_palabos(im, filename, solid=0):
