@@ -164,7 +164,7 @@ def radial_density(im, bins=10, voxel_size=1):
     if im.dtype == bool:
         im = spim.distance_transform_edt(im)
     x = im[im > 0].flatten()*voxel_size
-    h = _parse_histogram(sp.histogram(x, bins=bins, density=False))
+    h = _parse_histogram(sp.histogram(x, bins=bins, density=True))
     rdf = namedtuple('radial_density_function',
                      ('R', 'P', 'F', 'bin_centers', 'bin_edges',
                       'bin_widths'))
