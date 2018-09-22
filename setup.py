@@ -43,7 +43,8 @@ setup(
                       'imageio',
                       'tqdm',
                       'array_split',
-                      'pytrax'],
+                      'pytrax',
+                      'numba'],
     author='Jeff Gostick',
     author_email='jgostick@gmail.com',
     url='http://porespy.org'

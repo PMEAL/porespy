@@ -25,3 +25,13 @@ class ExportTest():
         assert np.size(val) == S
         assert np.sum(val == 0) + np.sum(val == 1) + np.sum(val == 2) == S
         os.remove(tmp)
+
+
+if __name__ == '__main__':
+    t = ExportTest()
+    self = t
+    t.setup_class()
+    for item in t.__dir__():
+        if item.startswith('test'):
+            print('running test: '+item)
+            t.__getattribute__(item)()
