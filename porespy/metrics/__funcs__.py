@@ -163,7 +163,8 @@ def radial_density(im, bins=10, voxel_size=1):
     """
     if im.dtype == bool:
         im = spim.distance_transform_edt(im)
-    h = _histogram(im[im > 0].flatten(), bins=bins)
+    x = im[im > 0].flatten()*voxel_size
+    h = _parse_histogram(sp.histogram(x, bins=bins, density=False))
     rdf = namedtuple('radial_density_function',
                      ('R', 'P', 'F', 'bin_centers', 'bin_edges',
                       'bin_widths'))
@@ -335,7 +336,7 @@ def two_point_correlation_fft(im):
     return tpcf
 
 
-def pore_size_distribution(im, bins=10, log=True):
+def pore_size_distribution(im, bins=10, log=True, voxel_size=1):
     r"""
     Calculate a pore-size distribution based on the image produced by the
     ``porosimetry`` or ``local_thickness`` functions.
@@ -354,6 +355,10 @@ def pore_size_distribution(im, bins=10, log=True):
     log : boolean
         If ``True`` (default) the size data is converted to log (base-10)
         values before processing.  This can help
+
+    voxel_size : scalar
+        The size of a voxel side in preferred units.  The default is 1, so the
+        user can apply the scaling to the returned results after the fact.
 
     Returns
     -------
@@ -378,12 +383,12 @@ def pore_size_distribution(im, bins=10, log=True):
 
     """
     im = im.flatten()
-    vals = im[im > 0]
+    vals = im[im > 0]*voxel_size
     R_label = 'R'
     if log:
         vals = sp.log10(vals)
         R_label = 'logR'
-    h = _histogram(x=vals, bins=bins)
+    h = _parse_histogram(sp.histogram(vals, bins=bins, density=True))
     psd = namedtuple('pore_size_distribution',
                      (R_label, 'pdf', 'cdf', 'satn',
                       'bin_centers', 'bin_edges', 'bin_widths'))
@@ -391,8 +396,7 @@ def pore_size_distribution(im, bins=10, log=True):
                h.bin_centers, h.bin_edges, h.bin_widths)
 
 
-def _histogram(x, bins):
-    h = sp.histogram(x, bins=bins, density=True)
+def _parse_histogram(h):
     delta_x = h[1]
     P = h[0]
     temp = P*(delta_x[1:] - delta_x[:-1])
@@ -433,7 +437,8 @@ def chord_counts(im):
     return chord_lens
 
 
-def chord_length_distribution(im, bins=25, log=False, voxel_size=1):
+def chord_length_distribution(im, bins=25, log=False, voxel_size=1,
+                              normalization='count'):
     r"""
     Determines the distribution of chord lengths in an image containing chords.
 
@@ -451,19 +456,50 @@ def chord_length_distribution(im, bins=25, log=False, voxel_size=1):
         If true, the logarithm of the chord lengths will be used, which can
         make the data more clear.
 
+    normalization : string
+        Indicates how to normalize the bin heights.  Options are:
+
+        *'count' or 'number'* - (default) This simply counts the number of
+        chords in each bin in the normal sense of a histogram.
+        *'length'* - This multiplies the number of chords in each bin by the
+        chord length (e.e. bin size).  The normalization scheme accounts for
+        the fact that long chords are less frequent while short chords are.
+        Thus it gives a more balanced distribution.
+
+    voxel_size : scalar
+        The size of a voxel side in preferred units.  The default is 1, so the
+        user can apply the scaling to the returned results after the fact.
+
     Returns
     -------
-    A tuple containing the ``chord_length_bins``, and four separate pieces of
-    information: ``cumulative_chord_count`` and ``cumulative_chord_length``,
-    as well as the ``differenial_chord_count`` and
-    ``differential_chord_length``.
+    A tuple containing the following elements, which can be retrieved by
+    attribute name:
+        *L* or *logL* - chord length, equivalent to ``bin_centers``
+        *pdf* - probability density function
+        *cdf* - cumulative density function
+        *relfreq* - relative frequency chords in each bin.  The sum of all bin
+        heights is 1.0.  For the cumulative relativce, use *cdf* which is
+        already normalized to 1.
+        *bin_centers* - the center point of each bin
+        *bin_edges* - locations of bin divisions, including 1 more value than
+        the number of bins
+        *bin_widths* - useful for passing to the ``width`` argument of
+        ``matplotlib.pyplot.bar``
     """
-    x = chord_counts(im)
+    x = chord_counts(im)*voxel_size
     L_label = 'L'
     if log:
         x = sp.log10(x)
         L_label = 'logL'
-    h = _histogram(x, bins=bins)
+    if normalization == 'length':
+        h = list(sp.histogram(x, bins=bins, density=False))
+        h[0] = h[0]*(h[1][1:]+h[1][:-1])/2  # Scale bin heigths by length
+        h[0] = h[0]/h[0].sum()/(h[1][1:]-h[1][:-1])  # Normalize h[0] manually
+    elif normalization in ['number', 'count']:
+        h = sp.histogram(x, bins=bins, density=True)
+    else:
+        raise Exception('Unsupported normalization:', normalization)
+    h = _parse_histogram(h)
     cld = namedtuple('chord_length_distribution',
                      (L_label, 'pdf', 'cdf', 'relfreq',
                       'bin_centers', 'bin_edges', 'bin_widths'))
