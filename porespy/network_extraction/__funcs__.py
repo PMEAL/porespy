@@ -1,102 +1,84 @@
-import pickle
-from pathlib import Path
 import scipy as sp
-import scipy.ndimage as spim
-from skimage.morphology import watershed
+from porespy.tools import make_contiguous
+from skimage.segmentation import find_boundaries
 
 
-def export_to_openpnm(net, filename):
-    r"""
-    Save the result of the `extract_pore_network` function to a file that is
-    suitable for opening in OpenPNM.
+def add_boundary_regions(regions=None, faces=['front', 'back', 'left',
+                                              'right', 'top', 'bottom']):
+    # -------------------------------------------------------------------------
+    # Edge pad segmentation and distance transform
+    if faces is not None:
+        regions = sp.pad(regions, 1, 'edge')
+        # ---------------------------------------------------------------------
+        if regions.ndim == 3:
+            # Remove boundary nodes interconnection
+            regions[:, :, 0] = regions[:, :, 0] + regions.max()
+            regions[:, :, -1] = regions[:, :, -1] + regions.max()
+            regions[0, :, :] = regions[0, :, :] + regions.max()
+            regions[-1, :, :] = regions[-1, :, :] + regions.max()
+            regions[:, 0, :] = regions[:, 0, :] + regions.max()
+            regions[:, -1, :] = regions[:, -1, :] + regions.max()
+            regions[:, :, 0] = (~find_boundaries(regions[:, :, 0],
+                                                 mode='outer'))*regions[:, :, 0]
+            regions[:, :, -1] = (~find_boundaries(regions[:, :, -1],
+                                                  mode='outer'))*regions[:, :, -1]
+            regions[0, :, :] = (~find_boundaries(regions[0, :, :],
+                                                 mode='outer'))*regions[0, :, :]
+            regions[-1, :, :] = (~find_boundaries(regions[-1, :, :],
+                                                  mode='outer'))*regions[-1, :, :]
+            regions[:, 0, :] = (~find_boundaries(regions[:, 0, :],
+                                                 mode='outer'))*regions[:, 0, :]
+            regions[:, -1, :] = (~find_boundaries(regions[:, -1, :],
+                                                  mode='outer'))*regions[:, -1, :]
+            # ---------------------------------------------------------------------
+            regions = sp.pad(regions, 2, 'edge')
 
-    Parameters
-    ----------
-    net : dict
-        The dictionary object produced by `extract_pore_network`
+            # Remove unselected faces
+            if 'top' not in faces:
+                regions = regions[:, 3:, :]
+            if 'bottom' not in faces:
+                regions = regions[:, :-3, :]
+            if 'front' not in faces:
+                regions = regions[3:, :, :]
+            if 'back' not in faces:
+                regions = regions[:-3, :, :]
+            if 'left' not in faces:
+                regions = regions[:, :, 3:]
+            if 'right' not in faces:
+                regions = regions[:, :, :-3]
 
-    filename : string or path object
-        The name and location to save the file, which will have `.net` file
-        extension.
+        elif regions.ndim == 2:
+            # Remove boundary nodes interconnection
+            regions[0, :] = regions[0, :] + regions.max()
+            regions[-1, :] = regions[-1, :] + regions.max()
+            regions[:, 0] = regions[:, 0] + regions.max()
+            regions[:, -1] = regions[:, -1] + regions.max()
+            regions[0, :] = (~find_boundaries(regions[0, :],
+                                              mode='outer'))*regions[0, :]
+            regions[-1, :] = (~find_boundaries(regions[-1, :],
+                                               mode='outer'))*regions[-1, :]
+            regions[:, 0] = (~find_boundaries(regions[:, 0],
+                                              mode='outer'))*regions[:, 0]
+            regions[:, -1] = (~find_boundaries(regions[:, -1],
+                                               mode='outer'))*regions[:, -1]
+            # ---------------------------------------------------------------------
+            regions = sp.pad(regions, 2, 'edge')
 
-    """
-    p = Path(filename)
-    p = p.resolve()
-    # If extension not part of filename
-    if p.suffix == '':
-        p = p.with_suffix('.net')
-    with open(p, 'wb') as f:
-        pickle.dump(net, f)
+            # Remove unselected faces
+            if 'top' not in faces:
+                regions = regions[3:, :]
+            if 'bottom' not in faces:
+                regions = regions[:-3, :]
+            if 'left' not in faces:
+                regions = regions[:, 3:]
+            if 'right' not in faces:
+                regions = regions[:, :-3]
+        else:
+            print('add_boundary_regions works only on 2D and 3D images')
+        # ---------------------------------------------------------------------
+        # Make labels contiguous
+        regions = make_contiguous(regions)
+    else:
+        regions = regions
 
-
-def align_image_with_openpnm(im):
-    r"""
-    Rotates an image to agree with the coordinates used in OpenPNM.  It is
-    unclear why they are not in agreement to start with.  This is necessary
-    for overlaying the image and the network in Paraview.
-
-    Parameters
-    ----------
-    im : ND-array
-        The image to be rotated.  Can be the Boolean image of the pore space or
-        any other image of interest.
-
-    Returns
-    -------
-    Returns the image rotated accordingly.
-    """
-    if im.ndim == 2:
-        im = (sp.swapaxes(im, 1, 0))
-        im = im[-1::-1, :]
-    elif im.ndim == 3:
-        im = (sp.swapaxes(im, 2, 0))
-        im = im[:, -1::-1, :]
-    return im
-
-
-def partition_pore_space(im, peaks):
-    r"""
-    Applies a watershed segmentation to partition the distance transform into
-    discrete pores.
-
-    Parameters
-    ----------
-    im : ND-array
-        Either the Boolean array of the pore space or a distance tranform.
-        Passing in a pre-existing distance transform saves time, since one is
-        calculated by the function if a Boolean array is passed.
-
-    peaks : ND-array
-        An array the same size as ``dt`` indicating where the pore centers are.
-        If boolean, the peaks are labeled; if numeric then it's assumed that
-        peaks have already been given desired labels.
-
-    Returns
-    -------
-    A ND-array the same size as ``dt`` with regions belonging to each peak
-    labelled.  The region number is randomized so that neighboring regions
-    are contrasting colors for easier visualization.
-
-    Notes
-    -----
-    Find the appropriate ``peaks`` array is the tricky part.  In principle,
-    each local maxima in the distance transform is a pore center, but due to
-    loss of fidelity in the voxel representation this leads to many extraneous
-    peaks.  Several functions are available to help select peaks which can then
-    be passed to this function.
-
-    See Also
-    --------
-    snow
-
-    """
-    print('_'*60)
-    print('Partitioning Pore Space using Marker Based Watershed')
-    if im.dtype == bool:
-        print('Boolean image received, applying distance transform')
-        im = spim.distance_transform_edt(im)
-    if peaks.dtype == bool:
-        print('Boolean peaks received, applying labeling')
-        peaks = spim.label(input=peaks)[0]
-    regions = watershed(-im, markers=peaks)
     return regions

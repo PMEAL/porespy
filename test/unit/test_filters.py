@@ -17,7 +17,7 @@ class FilterTest():
         self.flood_im_dt = spim.distance_transform_edt(self.flood_im)
 
     def test_porosimetry_npts_10(self):
-        mip = ps.filters.porosimetry(im=self.im, npts=10)
+        mip = ps.filters.porosimetry(im=self.im, sizes=10)
         ans = sp.array([0.00000000, 1.00000000, 1.37871571, 1.61887041,
                         1.90085700, 2.23196205, 2.62074139, 3.07724114,
                         3.61325732])
@@ -49,21 +49,6 @@ class FilterTest():
     def test_apply_chords_without_trimming(self):
         c = ps.filters.apply_chords(im=self.im, trim_edges=False)
         assert c.sum() == 31215
-
-    def test_apply_chords3D(self):
-        c = ps.filters.apply_chords_3D(im=self.im)
-        assert c.sum() == 162885
-        assert sp.all(sp.unique(c) == [0, 1, 2, 3])
-
-    def test_apply_chords3D_with_spacing(self):
-        with pytest.raises(Exception):
-            c = ps.filters.apply_chords(im=self.im, spacing=-1)
-        c = ps.filters.apply_chords_3D(im=self.im, spacing=1)
-        assert c.sum() == 74250
-
-    def test_apply_chords3D_without_trimming(self):
-        c = ps.filters.apply_chords_3D(im=self.im, trim_edges=False)
-        assert c.sum() == 187576
 
     def test_flood_size(self):
         m = ps.filters.flood(im=self.flood_im, mode='size')
@@ -157,10 +142,8 @@ class FilterTest():
         im2d = self.im[:, :, 50]
         lt = ps.filters.local_thickness(im2d)
         sizes = np.unique(lt)
-        npts = len(sizes)
         mip = ps.filters.porosimetry(im2d,
-                                     npts=npts,
-                                     sizes=sizes,
+                                     sizes=len(sizes),
                                      access_limited=False)
         assert mip.max() <= sizes.max()
 

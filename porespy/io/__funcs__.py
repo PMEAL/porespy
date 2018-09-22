@@ -1,7 +1,10 @@
+import pickle
 import numpy as np
 from scipy import ndimage as spim
 from pyevtk.hl import imageToVTK
 import scipy.ndimage as nd
+import skimage.io as io
+from pathlib import Path
 
 
 def dict_to_vtk(data, path='./dictvtk', voxel_size=1, origin=(0, 0, 0)):
@@ -30,6 +33,30 @@ def dict_to_vtk(data, path='./dictvtk', voxel_size=1, origin=(0, 0, 0)):
         if data[entry].flags['C_CONTIGUOUS']:
             data[entry] = np.ascontiguousarray(data[entry])
     imageToVTK(path, cellData=data, spacing=(vs, vs, vs), origin=origin)
+
+
+def to_openpnm(net, filename):
+    r"""
+    Save the result of the `extract_pore_network` function to a file that is
+    suitable for opening in OpenPNM.
+
+    Parameters
+    ----------
+    net : dict
+        The dictionary object produced by `extract_pore_network`
+
+    filename : string or path object
+        The name and location to save the file, which will have `.net` file
+        extension.
+
+    """
+    p = Path(filename)
+    p = p.resolve()
+    # If extension not part of filename
+    if p.suffix == '':
+        p = p.with_suffix('.net')
+    with open(p, 'wb') as f:
+        pickle.dump(net, f)
 
 
 def to_vtk(im, path='./voxvtk', divide=False, downsample=False, voxel_size=1,
