@@ -1,14 +1,13 @@
 import numpy as np
 from scipy import ndimage as spim
-from porespy.io.evtk import hl as bp
+from pyevtk.hl import imageToVTK
 import scipy.ndimage as nd
 
 
 def dict_to_vtk(data, path='./dictvtk', voxel_size=1, origin=(0, 0, 0)):
     r"""
     Wrapper for the pyevtk
-    Copyright 2010 - 2016 Paulo A. Herrera. All rights reserved. (see /evtk
-    folder for complete license information)
+    Copyright 2010 - 2016 Paulo A. Herrera. All rights reserved. 
 
     Parameters
     ----------
@@ -30,16 +29,14 @@ def dict_to_vtk(data, path='./dictvtk', voxel_size=1, origin=(0, 0, 0)):
     for entry in data:
         if data[entry].flags['C_CONTIGUOUS']:
             data[entry] = np.ascontiguousarray(data[entry])
-    bp.imageToVTK(path, cellData=data, spacing=(vs, vs, vs), origin=origin)
+    imageToVTK(path, cellData=data, spacing=(vs, vs, vs), origin=origin)
 
 
 def to_vtk(im, path='./voxvtk', divide=False, downsample=False, voxel_size=1,
            vox=False):
     r"""
     Wrapper for the pyevtk
-    Copyright 2010 - 2016 Paulo A. Herrera. All rights reserved. (see /evtk
-    folder for complete license information)
-
+    Copyright 2010 - 2016 Paulo A. Herrera. All rights reserved. 
     Parameters
     ----------
     im : 3D image
@@ -76,17 +73,17 @@ def to_vtk(im, path='./voxvtk', divide=False, downsample=False, voxel_size=1,
         split = np.round(im.shape[2]/2).astype(np.int)
         im1 = im[:, :, 0:split]
         im2 = im[:, :, split:]
-        bp.imageToVTK(path+'1', cellData={'im': np.ascontiguousarray(im1)},
+        imageToVTK(path+'1', cellData={'im': np.ascontiguousarray(im1)},
                       spacing=(vs, vs, vs))
-        bp.imageToVTK(path+'2', origin=(0.0, 0.0, split*vs),
+        imageToVTK(path+'2', origin=(0.0, 0.0, split*vs),
                       cellData={'im': np.ascontiguousarray(im2)},
                       spacing=(vs, vs, vs))
     elif downsample:
         im = spim.interpolation.zoom(im, zoom=0.5, order=0, mode='reflect')
-        bp.imageToVTK(path, cellData={'im': np.ascontiguousarray(im)},
+        imageToVTK(path, cellData={'im': np.ascontiguousarray(im)},
                       spacing=(2*vs, 2*vs, 2*vs))
     else:
-        bp.imageToVTK(path, cellData={'im': np.ascontiguousarray(im)},
+        imageToVTK(path, cellData={'im': np.ascontiguousarray(im)},
                       spacing=(vs, vs, vs))
 
 
