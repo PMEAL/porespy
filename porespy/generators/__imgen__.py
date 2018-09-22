@@ -168,7 +168,8 @@ def bundle_of_tubes(shape, spacing):
     return im
 
 
-def polydisperse_spheres(shape: List[int], porosity: float, dist, nbins: int=5):
+def polydisperse_spheres(shape: List[int], porosity: float, dist,
+                         nbins: int = 5):
     r"""
     Create an image of spheres with a distribution of radii.
 
@@ -186,9 +187,9 @@ def polydisperse_spheres(shape: List[int], porosity: float, dist, nbins: int=5):
         after the image is generated.
 
     dist : scipy.stats distribution object
-        This should be an initialized distribution the large number of options
-        in the scipy.stats submodule.  For instance, a normal distribution with
-        a mean of 20 and a standard deviation of 10 can be obtain with
+        This should be an initialized distribution from the large number of
+        options in the scipy.stats module.  For instance, a normal distribution
+        with a mean of 20 and a standard deviation of 10 can be obtain with
         ``dist = scipy.stats.norm(loc=20, scale=10)``
 
     nbins : scalar
@@ -216,7 +217,8 @@ def polydisperse_spheres(shape: List[int], porosity: float, dist, nbins: int=5):
     return im
 
 
-def voronoi_edges(shape: List[int], radius: int, ncells: int, flat_faces: bool=True):
+def voronoi_edges(shape: List[int], radius: int, ncells: int,
+                  flat_faces: bool = True):
     r"""
     Create an image of the edges in a Voronoi tessellation
 
@@ -308,8 +310,8 @@ def _get_Voronoi_edges(vor):
     return edges
 
 
-def circle_pack(shape: List[int], radius: int, offset: int=0, packing: bool='square'):
-def lattice_spheres(shape, radius, offset=0, lattice='sc'):
+def lattice_spheres(shape: List[int], radius: int, offset: int = 0,
+                    lattice: str = 'square'):
     r"""
     Generates a cubic packing of spheres in a specified lattice arrangement
 
@@ -537,7 +539,7 @@ def noise(shape, porosity=None, octaves=3, frequency=32, mode='simplex'):
     return im
 
 
-def blobs(shape: List[int], porosity: float=0.5, blobiness: int=1):
+def blobs(shape: List[int], porosity: float = 0.5, blobiness: int = 1):
     """
     Generates an image containing amorphous blobs
 
@@ -581,8 +583,8 @@ def blobs(shape: List[int], porosity: float=0.5, blobiness: int=1):
     return im
 
 
-def cylinders(shape: List[int], radius: int, nfibers: int, phi_max: float=0,
-              theta_max: float=90):
+def cylinders(shape: List[int], radius: int, nfibers: int, phi_max: float = 0,
+              theta_max: float = 90):
     r"""
     Generates a binary image of overlapping cylinders.  This is a good
     approximation of a fibrous mat.
