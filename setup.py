@@ -44,11 +44,8 @@ setup(
                       'tqdm',
                       'array_split',
                       'pytrax',
-<<<<<<< HEAD
-                      'pyevtk'],
-=======
+                      'pyevtk',
                       'numba'],
->>>>>>> dd53f70d5d3433afab6aad1894e97afe6de2bb64
     author='Jeff Gostick',
     author_email='jgostick@gmail.com',
     url='http://porespy.org'
