@@ -9,24 +9,24 @@ from pathlib import Path
 
 def dict_to_vtk(data, path='./dictvtk', voxel_size=1, origin=(0, 0, 0)):
     r"""
-    Wrapper for the pyevtk
-    Copyright 2010 - 2016 Paulo A. Herrera. All rights reserved.
+    Accepts multiple images as a dictionary and compiles them into a vtk file
 
     Parameters
     ----------
-    data : dictionary of 3D arrays
-
+    data : dict
+        A dictionary of *key: value* pairs, where the *key* is the name of the
+        scalar property stored in each voxel of the array stored in the
+        corresponding *value*.
     path : string
         Path to output file
-
     voxel_size : int
         The side length of the voxels (voxels  are cubic)
-
     origin : float
         data origin (according to selected voxel size)
+
     Output
     ------
-    File: vtk, vtp or vti file that can opened in paraview
+    File: vtk, vtp or vti file that can opened in ParaView
     """
     vs = voxel_size
     for entry in data:
@@ -44,7 +44,6 @@ def to_openpnm(net, filename):
     ----------
     net : dict
         The dictionary object produced by `extract_pore_network`
-
     filename : string or path object
         The name and location to save the file, which will have `.net` file
         extension.
@@ -62,28 +61,23 @@ def to_openpnm(net, filename):
 def to_vtk(im, path='./voxvtk', divide=False, downsample=False, voxel_size=1,
            vox=False):
     r"""
-    Wrapper for the pyevtk
-    Copyright 2010 - 2016 Paulo A. Herrera. All rights reserved.
+    Converts an array to a vtk file.
+
     Parameters
     ----------
     im : 3D image
         The image of the porous material
-
     path : string
         Path to output file
-
     divide : bool
         vtk files can get very large, this option allows you for two output
         files, divided at z = half. This allows for large data sets to be
         imaged without loss of information
-
     downsample : bool
         very large images acan be downsampled to half the size in each
         dimension, this doubles the effective voxel size
-
     voxel_size : int
         The side length of the voxels (voxels  are cubic)
-
     vox : bool
         For an image that is binary (1's and 0's) this reduces the file size by
         using int8 format (can also be used to reduce file size when accuracy
