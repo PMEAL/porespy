@@ -2,7 +2,7 @@ import scipy as sp
 import numpy as np
 from skimage.segmentation import clear_border
 from skimage.feature import peak_local_max
-from skimage.measure import  regionprops
+from skimage.measure import regionprops
 import scipy.ndimage as spim
 import scipy.spatial as sptl
 from porespy.tools import get_border, extract_subsection, extend_slice
