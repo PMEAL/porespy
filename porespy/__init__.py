@@ -43,7 +43,7 @@ Example Usage
 >>> im = ps.generators.blobs([100, 100])
 >>> mip = ps.filters.porosimetry(im)
 >>> PcSw = ps.metrics.pore_size_distribution(mip)
->>> fig = plt.plot(*PcSw)
+>>> fig = plt.plot(PcSw.logR, PcSw.satn)
 
 ----------------
 Related Packages
@@ -82,7 +82,6 @@ offered by the Python environment.
 
 '''
 __version__ = "0.3.9"
-
 from . import tools
 from . import network_extraction
 from . import visualization

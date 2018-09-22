@@ -2,6 +2,7 @@ import scipy as sp
 import numpy as np
 from skimage.segmentation import clear_border
 from skimage.feature import peak_local_max
+from skimage.measure import regionprops
 import scipy.ndimage as spim
 import scipy.spatial as sptl
 from porespy.tools import get_border, extract_subsection, extend_slice
@@ -88,7 +89,7 @@ def porosity_profile(im, axis):
         calculated and returned as 1D array with 1 value for each X position.
 
     """
-    if axis > 2:
+    if axis > im.ndim:
         raise Exception('axis out of range')
     im = np.atleast_3d(im)
     a = set(range(im.ndim)).difference(set([axis]))
@@ -97,32 +98,26 @@ def porosity_profile(im, axis):
     return prof*100
 
 
-def radial_distribution(im, bins=10):
+def radial_density(im, bins=10, voxel_size=1):
     r"""
+    Computes radial density function by analyzing the histogram of voxel
+    values in the distance transform.  This function is defined by
+    Torquato [1] as:
 
-    References
-    ----------
-    [1] Torquato, S. Random Heterogeneous Materials: Microstructure and
-    Macroscopic Properties. Springer, New York (2002)
-    """
-    print("Sorry, but this function is not implemented yet")
+        .. math::
 
+            \int_0^\infty P(r)dr = 1.0
 
-def lineal_path(im):
-    r"""
+    where *P(r)dr* is the probability of finding a voxel at a lying at a radial
+    distance between *r* and *dr* from the solid interface.
 
-    References
-    ----------
-    [1] Torquato, S. Random Heterogeneous Materials: Mircostructure and
-    Macroscopic Properties. Springer, New York (2002)
-    """
-    print("Sorry, but this function is not implemented yet")
+    The cumulative distribution is defined as:
 
+        .. math::
 
-def pore_size_density(im, bins=10, voxel_size=1):
-    r"""
-    Computes the histogram of the distance transform as an estimator of the
-    pore sizes in the image.
+            F(r) = \int_r^\infty P(r)dr
+
+    which gives the fraction of pore-space with a radius larger than *r*.
 
     Parameters
     ----------
@@ -143,26 +138,37 @@ def pore_size_density(im, bins=10, voxel_size=1):
 
     Returns
     -------
-    A tuple containing two 1D arrays: ``radius `` is the radius of the voxels,
-    and ``count`` is the number of voxels that are within R of the solid.
+    A named-tuple containing several 1D arrays: ``R `` is the radius of the
+    voxels (or x-axis of a pore-size density plot).  ``P`` is the radial
+    density function, and ``F`` is the complementary cumulative distribution
+    function.
 
     Notes
     -----
     This function should not be taken as a pore size distribution in the
-    explict sense, but rather an indicator of the sizes in the image.
+    explict sense, but rather an indicator of the sizes in the image.  The
+    distance transform contains a very skewed number of voxels with small
+    values near the solid walls.  Nonetheless, it does provide a useful
+    indicator and it's mathematical formalism is handy.
+
+    Torquato refers to this as the pore-size density function, and mentions
+    that it is also known as the pore-size distribution function.  These
+    terms are avoided here since they have very specific connotations, and
+    this function does not satisfy them.
 
     References
     ----------
     [1] Torquato, S. Random Heterogeneous Materials: Mircostructure and
-    Macroscopic Properties. Springer, New York (2002) - See page 292
+    Macroscopic Properties. Springer, New York (2002) - See page 48 & 292
     """
     if im.dtype == bool:
         im = spim.distance_transform_edt(im)
-    hist = sp.histogram(a=im[im > 0], bins=bins)
-    n = hist[0]/sp.sum(im > 0)
-    r = hist[1][:-1]*voxel_size
-    rdf = namedtuple('rdf', ('radius', 'count'))
-    return rdf(r, n)
+    h = _histogram(im[im > 0].flatten(), bins=bins)
+    rdf = namedtuple('radial_density_function',
+                     ('R', 'P', 'F', 'bin_centers', 'bin_edges',
+                      'bin_widths'))
+    return rdf(h.bin_centers, h.pdf, h.cdf, h.bin_centers, h.bin_edges,
+               h.bin_widths)
 
 
 def porosity(im):
@@ -329,48 +335,81 @@ def two_point_correlation_fft(im):
     return tpcf
 
 
-def pore_size_distribution(im):
+def pore_size_distribution(im, bins=10, log=True):
     r"""
-    Calculate drainage curve based on the image produced by the
-    ``porosimetry`` function.
+    Calculate a pore-size distribution based on the image produced by the
+    ``porosimetry`` or ``local_thickness`` functions.
 
     Parameters
     ----------
     im : ND-array
-        The array of entry sizes as produced by the ``porosimetry`` function.
+        The array of containing the sizes of the largest sphere that overlaps
+        each voxel.  Obtained from either ``porosimetry`` or
+        ``local_thickness``.
+
+    bins : scalar or array_like
+        Either an array of bin sizes to use, or the number of bins that should
+        be automatically generated that span the data range.
+
+    log : boolean
+        If ``True`` (default) the size data is converted to log (base-10)
+        values before processing.  This can help
 
     Returns
     -------
-    Rp, Snwp: Two arrays containing (a) the radius of the penetrating
-    sphere (in voxels) and (b) the volume fraction of pore phase voxels
-    that are accessible from the specfied inlets.
+    A named-tuple containing several values:
+        *R* or *logR* - radius, equivalent to ``bin_centers``
+        *pdf* - probability density function
+        *cdf* - cumulative density function
+        *satn* - phase saturation in differential form.  For the cumulative
+        saturation, just use *cfd* which is already normalized to 1.
+        *bin_centers* - the center point of each bin
+        *bin_edges* - locations of bin divisions, including 1 more value than
+        the number of bins
+        *bin_widths* - useful for passing to the ``width`` argument of
+        ``matplotlib.pyplot.bar``
 
     Notes
     -----
-    This function normalizes the invading phase saturation by total pore
-    volume of the dry image, which is assumed to be all voxels with a value
-    equal to 1.  To do porosimetry on images with large outer regions,
-    use the ```find_outer_region``` function then set these regions to 0 in
-    the input image.  In future, this function could be adapted to apply
-    this check by default.
+    (1) To ensure the returned values represent actual sizes be sure to scale
+    the distance transform by the voxel size first (``dt *= voxel_size``)
+
+    plt.bar(psd.R, psd.satn, width=psd.bin_widths, edgecolor='k')
 
     """
-    sizes = sp.unique(im)
-    R = []
-    Snwp = []
-    Vp = sp.sum(im > 0)
-    for r in sizes[1:]:
-        R.append(r)
-        Snwp.append(sp.sum(im >= r))
-    Snwp = [s/Vp for s in Snwp]
-    data = namedtuple('xy_data', ('radius', 'saturation'))
-    return data(R, Snwp)
+    im = im.flatten()
+    vals = im[im > 0]
+    R_label = 'R'
+    if log:
+        vals = sp.log10(vals)
+        R_label = 'logR'
+    h = _histogram(x=vals, bins=bins)
+    psd = namedtuple('pore_size_distribution',
+                     (R_label, 'pdf', 'cdf', 'satn',
+                      'bin_centers', 'bin_edges', 'bin_widths'))
+    return psd(h.bin_centers, h.pdf, h.cdf, h.relfreq,
+               h.bin_centers, h.bin_edges, h.bin_widths)
 
 
-def chord_length_counts(im):
+def _histogram(x, bins):
+    h = sp.histogram(x, bins=bins, density=True)
+    delta_x = h[1]
+    P = h[0]
+    temp = P*(delta_x[1:] - delta_x[:-1])
+    C = sp.cumsum(temp[-1::-1])[-1::-1]
+    S = P*(delta_x[1:] - delta_x[:-1])
+    bin_edges = delta_x
+    bin_widths = delta_x[1:] - delta_x[:-1]
+    bin_centers = (delta_x[1:] + delta_x[:-1])/2
+    psd = namedtuple('histogram', ('pdf', 'cdf', 'relfreq',
+                                   'bin_centers', 'bin_edges', 'bin_widths'))
+    return psd(P, C, S, bin_centers, bin_edges, bin_widths)
+
+
+def chord_counts(im):
     r"""
-    Determines the length of each chord in the supplied image by looking at
-    its size.
+    Finds the length of each chord in the supplied image and returns a list
+    of their individual sizes
 
     Parameters
     ----------
@@ -389,17 +428,14 @@ def chord_length_counts(im):
     length in a format suitable for ``plt.plot``.
     """
     labels, N = spim.label(im > 0)
-    slices = spim.find_objects(labels)
-    chord_lens = sp.zeros(N, dtype=int)
-    for i in range(len(slices)):
-        s = slices[i]
-        chord_lens[i] = sp.amax([item.stop-item.start for item in s])
+    props = regionprops(labels)
+    chord_lens = sp.array([i.filled_area for i in props])
     return chord_lens
 
 
-def chord_length_distribution(im, bins=25, log=False):
+def chord_length_distribution(im, bins=25, log=False, voxel_size=1):
     r"""
-    Determines the distribution of chord lengths in a image containing chords.
+    Determines the distribution of chord lengths in an image containing chords.
 
     Parameters
     ----------
@@ -422,66 +458,14 @@ def chord_length_distribution(im, bins=25, log=False):
     as well as the ``differenial_chord_count`` and
     ``differential_chord_length``.
     """
-    h = chord_length_counts(im)
+    x = chord_counts(im)
+    L_label = 'L'
     if log:
-        h = sp.log10(h)
-    y_num, x = sp.histogram(h, bins=bins, density=True)
-    y_len, x = sp.histogram(h, bins=bins, weights=h, density=True)
-    y_num_cum = sp.cumsum((y_num*(x[1:]-x[:-1]))[::-1])[::-1]
-    y_len_cum = sp.cumsum((y_len*(x[1:]-x[:-1]))[::-1])[::-1]
-    data = namedtuple('chord_distribution', ('chord_length_bins',
-                                             'cumulative_chord_count',
-                                             'cumulative_chord_length',
-                                             'differential_chord_count',
-                                             'differential_chord_length'))
-    return data(x[:-1], y_num_cum, y_len_cum, y_num, y_len)
-
-
-def cld_helper(im, axes=(0, 1, 2), spacing=0, trim_edges=True):
-    r"""
-    Takes a binary image and returns a weighted coord length distribution in
-    the three principle directions as presented in (ref my paper).
-
-    Parameters
-    ----------
-    im : ND-image
-        An image of the porous material with phase pof interest marked as True
-
-    axes : tuple or int (default = (0,1,2))
-        A tuple containing the desired direction for the chords to  be
-        applied and counted. This argument is identical to the axis argument in
-        filters.apply_chords except it accepts a single integer or a tuple of
-        integers.
-
-    spacing : int (default = 0)
-        Chords are automatically separated by 1 voxel and this argument
-        increases the separation.
-
-    trim_edges : bool (default = True)
-        Whether or not to remove chords that touch the edges of the image.
-        These chords are artifically shortened, so skew the chord length
-        distribution
-
-    Returns
-    -------
-    A list of 1D arrays representing the chord length distibutions for each
-    axis as specified by axes. The length of each array is equal to 1 + the
-    size of the largest chord in that direction:
-        For example if the longest chord in x has length 100, then length(cx) =
-        101.
-    The chord lengths have also been normalized according to the total lenght
-    of chords in that direction:
-        For example if the total chords drawn in the x direction is equal to
-        1000, and there are 3 chords of length 4, then cx[3] = 0.12. In this
-        way the integral of the curve provided is always 1.
-    """
-    if isinstance(axes, int):
-        axes = (axes,)
-    res = []
-    for ax in axes:
-        c = apply_chords(im, axis=ax, spacing=spacing, trim_edges=trim_edges)
-        c = chord_length_counts(c)
-        c = np.bincount(c)
-        c = c*range(c.size)/(c*range(c.size)).sum()
-        res.append(c)
-    return res
+        x = sp.log10(x)
+        L_label = 'logL'
+    h = _histogram(x, bins=bins)
+    cld = namedtuple('chord_length_distribution',
+                     (L_label, 'pdf', 'cdf', 'relfreq',
+                      'bin_centers', 'bin_edges', 'bin_widths'))
+    return cld(h.bin_centers, h.pdf, h.cdf, h.relfreq,
+               h.bin_centers, h.bin_edges, h.bin_widths)
