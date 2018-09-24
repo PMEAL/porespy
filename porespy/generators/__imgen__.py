@@ -6,6 +6,7 @@ from skimage.segmentation import find_boundaries
 from skimage.morphology import ball, disk, square, cube
 from tqdm import tqdm
 from porespy.tools import norm_to_uniform
+from typing import List
 
 
 def insert_shape(im, center, element, value=1):
@@ -118,7 +119,7 @@ def RSA(im, radius, volume_fraction=1, mode='extended'):
     return im
 
 
-def bundle_of_tubes(shape, spacing):
+def bundle_of_tubes(shape: List[int], spacing: int):
     r"""
     Create a 3D image of a bundle of tubes, in the form of a rectangular
     plate with randomly sized holes through it.
@@ -167,7 +168,8 @@ def bundle_of_tubes(shape, spacing):
     return im
 
 
-def polydisperse_spheres(shape, porosity, dist, nbins=5):
+def polydisperse_spheres(shape: List[Int], porosity: float, dist,
+                         nbins: int=5):
     r"""
     Create an image of spheres with a distribution of radii.
 
@@ -215,7 +217,8 @@ def polydisperse_spheres(shape, porosity, dist, nbins=5):
     return im
 
 
-def voronoi_edges(shape, radius, ncells, flat_faces=True):
+def voronoi_edges(shape: List[int], radius: int, ncells: int,
+                  flat_faces: bool=True):
     r"""
     Create an image of the edges in a Voronoi tessellation
 
@@ -307,7 +310,8 @@ def _get_Voronoi_edges(vor):
     return edges
 
 
-def lattice_spheres(shape, radius, offset=0, lattice='sc'):
+def lattice_spheres(shape: List[int], radius: int, offset: int=0,
+                    lattice: str='sc'):
     r"""
     Generates a cubic packing of spheres in a specified lattice arrangement
 
@@ -410,7 +414,7 @@ def lattice_spheres(shape, radius, offset=0, lattice='sc'):
     return im
 
 
-def overlapping_spheres(shape, radius, porosity):
+def overlapping_spheres(shape: List[int], radius: int, porosity: float):
     r"""
     Generate a packing of overlapping mono-disperse spheres
 
@@ -452,7 +456,8 @@ def overlapping_spheres(shape, radius, porosity):
     return ~im
 
 
-def noise(shape, porosity=None, octaves=3, frequency=32, mode='simplex'):
+def noise(shape: List[int], porosity=None, octaves: int=3, frequency: int=32,
+          mode: str='simplex'):
     r"""
     Generate a field of spatially correlated random noise using the Perlin
     noise algorithm, or the updated Simplex noise algorithm.
@@ -535,7 +540,7 @@ def noise(shape, porosity=None, octaves=3, frequency=32, mode='simplex'):
     return im
 
 
-def blobs(shape, porosity=0.5, blobiness=1):
+def blobs(shape: List[int], porosity: float=0.5, blobiness: int=1):
     """
     Generates an image containing amorphous blobs
 
@@ -579,7 +584,8 @@ def blobs(shape, porosity=0.5, blobiness=1):
     return im
 
 
-def cylinders(shape, radius, nfibers, phi_max=0, theta_max=90):
+def cylinders(shape: List[int], radius: int, nfibers: int, phi_max: float=0,
+              theta_max: float=90):
     r"""
     Generates a binary image of overlapping cylinders.  This is a good
     approximation of a fibrous mat.
