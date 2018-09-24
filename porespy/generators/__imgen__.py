@@ -168,7 +168,7 @@ def bundle_of_tubes(shape: List[int], spacing: int):
     return im
 
 
-def polydisperse_spheres(shape: List[Int], porosity: float, dist,
+def polydisperse_spheres(shape: List[int], porosity: float, dist,
                          nbins: int=5):
     r"""
     Create an image of spheres with a distribution of radii.
