@@ -13,6 +13,60 @@ from porespy.tools import get_border, extend_slice
 from porespy.tools import fftmorphology
 
 
+def distance_transform_lin(im, axis=0, mode='both'):
+    r"""
+    Replaces each void voxel with the linear distance to the nearest solid
+    voxel along the specified axis.
+
+    Parameters
+    ----------
+    im : ND-array
+        The image of the porous material with ``True`` values indicating the
+        void phase (or phase of interest)
+
+    axis : scalar
+        The direction along which the distance should be measured, the default
+        is 0 (i.e. along the x-direction)
+
+    mode : string
+        Controls how the distance is measured.  Options are:
+
+        *'forward'* - Distances are measured in the increasing direction along
+        the specified axis
+
+        *'reverse'* - Distances are measured in the reverse direction.
+        *'backward'* is also accepted.
+
+        *'both'* - Distances are calculated in both directions (by recursively
+        calling itself), then reporting the minimum value of the two results.
+    """
+    if mode in ['backward', 'reverse']:
+        im = sp.flip(im, axis)
+        im = distance_transform_lin(im=im, axis=axis, mode='forward')
+        im = sp.flip(im, axis)
+        return im
+    elif mode in ['both']:
+        im_f = distance_transform_lin(im=im, axis=axis, mode='forward')
+        im_b = distance_transform_lin(im=im, axis=axis, mode='backward')
+        return sp.minimum(im_f, im_b)
+    else:
+        b = sp.cumsum(im > 0, axis=axis)
+        c = sp.diff(b*(im == 0), axis=axis)
+        d = sp.minimum.accumulate(c, axis=axis)
+        if im.ndim == 1:
+            e = sp.pad(d, pad_width=[1, 0], mode='constant', constant_values=0)
+        elif im.ndim == 2:
+            ax = [[[1, 0], [0, 0]], [[0, 0], [1, 0]]]
+            e = sp.pad(d, pad_width=ax[axis], mode='constant', constant_values=0)
+        elif im.ndim == 3:
+            ax = [[[1, 0], [0, 0], [0, 0]],
+                  [[0, 0], [1, 0], [0, 0]],
+                  [[0, 0], [0, 0], [1, 0]]]
+            e = sp.pad(d, pad_width=ax[axis], mode='constant', constant_values=0)
+        f = im*(b + e)
+        return f
+
+
 def snow_partitioning(im, r_max=4, sigma=0.4, return_all=False):
     r"""
     This function partitions the void space into pore regions using a
@@ -581,7 +635,7 @@ def apply_chords(im, spacing=0, axis=0, trim_edges=True):
     trim_edges : bool (default = True)
         Whether or not to remove chords that touch the edges of the image.
         These chords are artifically shortened, so skew the chord length
-        distribution
+        distribution.
 
     Returns
     -------
