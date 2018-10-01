@@ -471,11 +471,7 @@ def linear_density(im, bins=25, voxel_size=1, log=False):
     Macroscopic Properties. Springer, New York (2002)
 
     """
-    im = spim.label(im)[0]
-    im = props_to_image(regionprops(im), im.shape, 'area')
     x = im[im > 0]
-    if bins is None:
-        bins = sp.arange(0, x.max()) + 0.5
     h = list(sp.histogram(x, bins=bins, density=True))
     h = _parse_histogram(h=h, voxel_size=voxel_size)
     cld = namedtuple('linear_density_function',
