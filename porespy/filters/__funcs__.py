@@ -561,7 +561,7 @@ def flood(im, regions=None, mode='max'):
     return im_flooded
 
 
-def apply_chords(im, spacing=0, axis=0, trim_edges=True):
+def apply_chords(im, spacing=1, axis=0, trim_edges=True):
     r"""
     Adds chords to the void space in the specified direction.  The chords are
     separated by 1 voxel plus the provided spacing.
@@ -571,9 +571,10 @@ def apply_chords(im, spacing=0, axis=0, trim_edges=True):
     im : ND-array
         An image of the porous material with void marked as True.
 
-    spacing : int (default = 0)
-        Chords are automatically separated by 1 voxel and this argument
-        increases the separation.
+    spacing : int
+        Separation between chords.  The default is 1 voxel, but this can
+        be increased, although not decreased since chords that touch each other
+        are useless.
 
     axis : int (default = 0)
         The axis along which the chords are drawn.
@@ -585,16 +586,16 @@ def apply_chords(im, spacing=0, axis=0, trim_edges=True):
 
     Returns
     -------
-    An ND-array of the same size as ```im``` with True values indicating the
-    chords.
+    An ND-array of the same size as ```im``` with ``True`` values indicating
+    the chords.
 
     See Also
     --------
     apply_chords_3D
 
     """
-    if spacing < 0:
-        raise Exception('Spacing cannot be less than 0')
+    if spacing < 1:
+        raise Exception('Spacing cannot be less than 1')
     dims1 = sp.arange(0, im.ndim)
     dims2 = sp.copy(dims1)
     dims2[axis] = 0
@@ -602,12 +603,9 @@ def apply_chords(im, spacing=0, axis=0, trim_edges=True):
     im = sp.moveaxis(a=im, source=dims1, destination=dims2)
     im = sp.atleast_3d(im)
     ch = sp.zeros_like(im, dtype=bool)
-    if im.ndim == 2:
-        ch[:, ::2+spacing, ::2+spacing] = 1
-    if im.ndim == 3:
-        ch[:, ::4+2*spacing, ::4+2*spacing] = 1
+    ch[:, ::2+(spacing-1), ::2+(spacing-1)] = 1
     chords = im*ch
-    chords = sp.squeeze(chords)
+    chords = sp.squeeze(chords)  # Convert back to 2D if necessary
     if trim_edges:
         temp = clear_border(spim.label(chords == 1)[0]) > 0
         chords = temp*chords
