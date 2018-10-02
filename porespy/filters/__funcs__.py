@@ -561,6 +561,32 @@ def flood(im, regions=None, mode='max'):
     return im_flooded
 
 
+def region_size(im):
+    r"""
+    Replace each voxel with size of region to which it belongs
+
+    Parameters
+    ----------
+    im : ND-array
+        Either a boolean image wtih ``True`` indicating the features of
+        interest, in which case ``scipy.ndimage.label`` will be applied to
+        find regions, or a greyscale image with integer values indicating
+        regions.
+
+    Returns
+    -------
+    An ND array with each voxel value indicating the size of the region to
+    which is belongs.  This is particularly useful for finding chord sizes
+    on the image produced by ``apply_chords``.
+    """
+    if im.dtype == bool:
+        im = spim.label(im)[0]
+    counts = sp.bincount(im.flatten())
+    counts[0] = 0
+    chords = counts[im]
+    return chords
+
+
 def apply_chords(im, spacing=1, axis=0, trim_edges=True):
     r"""
     Adds chords to the void space in the specified direction.  The chords are
