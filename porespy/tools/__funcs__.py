@@ -1,3 +1,4 @@
+import inspect
 import scipy as sp
 import scipy.ndimage as spim
 from skimage.morphology import ball, disk, square, cube
@@ -749,3 +750,44 @@ def norm_to_uniform(im, scale=None):
     im = (im - im.min()) / (im.max() - im.min())
     im = im*(scale[1] - scale[0]) + scale[0]
     return im
+
+
+def functions_to_table(mod, colwidth=[27, 48]):
+    r"""
+    Given a module of functions, returns a ReST formatted text string that
+    outputs a table when printed.
+
+    Parameters
+    ----------
+    mod : module
+        The module containing the functions to be included in the table, such
+        as 'porespy.filters'.
+
+    colwidths : list of ints
+        The width of the first and second columns.  Note that because of the
+        vertical lines separating columns and define the edges of the table,
+        the total table width will be 3 characters wider than the total sum
+        of the specified column widths.
+    """
+    temp = mod.__dir__()
+    funcs = [i for i in temp if not i[0].startswith('_')]
+    funcs.sort()
+    row = '+' + '-'*colwidth[0] + '+' + '-'*colwidth[1] + '+'
+    fmt = '{0:1s} {1:' + str(colwidth[0]-2) + 's} {2:1s} {3:' \
+          + str(colwidth[1]-2) + 's} {4:1s}'
+    lines = []
+    lines.append(row)
+    lines.append(fmt.format('|', 'Method', '|', 'Description', '|'))
+    lines.append(row.replace('-', '='))
+    for i, item in enumerate(funcs):
+        try:
+            s = getattr(mod, item).__doc__.strip()
+            end = s.find('\n')
+            if end > colwidth[1] - 2:
+                s = s[:colwidth[1] - 5] + '...'
+            lines.append(fmt.format('|', item, '|', s[:end], '|'))
+            lines.append(row)
+        except AttributeError:
+            pass
+    s = '\n'.join(lines)
+    return s

@@ -64,11 +64,11 @@ natively, but only when necessary.
 Image Types
 -----------
 
-PoreSpy is meant to work on single-channel, binary images.  Such images are
-conveniently represented by Numpy arrays, hence all references to an *image* is
-equivalent to an *array*.  It is further assumed that the arrays are binarized,
-meaning 1's or True values indicating the void space, and 0's or False values
-for the solid.
+PoreSpy is meant to work on single-channel, binary or greyscale images.  Such
+images are conveniently represented by Numpy arrays, hence all references to an
+*image* is equivalent to an *array*.  It is further assumed that the arrays are
+binarized, meaning 1's or ``True`` values indicating the void space, and 0's or
+``False`` values for the solid.
 
 -----------
 Limitations
