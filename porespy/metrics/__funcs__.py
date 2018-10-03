@@ -168,7 +168,7 @@ def radial_density(im, bins=10, voxel_size=1):
     h = sp.histogram(x, bins=bins, density=True)
     h = _parse_histogram(h=h, voxel_size=voxel_size)
     rdf = namedtuple('radial_density_function',
-                     ('R', 'P', 'F', 'bin_centers', 'bin_edges',
+                     ('R', 'pdf', 'cdf', 'bin_centers', 'bin_edges',
                       'bin_widths'))
     return rdf(h.bin_centers, h.pdf, h.cdf, h.bin_centers, h.bin_edges,
                h.bin_widths)
