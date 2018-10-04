@@ -437,7 +437,7 @@ def chord_counts(im):
     return chord_lens
 
 
-def chord_length_distribution(im, bins=25, log=False, voxel_size=1,
+def chord_length_distribution(im, bins=None, log=False, voxel_size=1,
                               normalization='count'):
     r"""
     Determines the distribution of chord lengths in an image containing chords.
@@ -486,7 +486,10 @@ def chord_length_distribution(im, bins=25, log=False, voxel_size=1,
         *bin_widths* - useful for passing to the ``width`` argument of
         ``matplotlib.pyplot.bar``
     """
-    x = chord_counts(im)*voxel_size
+    x = chord_counts(im)
+    if bins == None:
+        bins = sp.array(range(0,x.max()+2))*voxel_size
+    x = x*voxel_size
     L_label = 'L'
     if log:
         x = sp.log10(x)
