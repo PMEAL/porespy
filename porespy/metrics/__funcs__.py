@@ -110,7 +110,8 @@ def radial_density(im, bins=10, voxel_size=1):
             \int_0^\infty P(r)dr = 1.0
 
     where *P(r)dr* is the probability of finding a voxel at a lying at a radial
-    distance between *r* and *dr* from the solid interface.
+    distance between *r* and *dr* from the solid interface.  This is equivalent
+    to a probability density function (*pdf*)
 
     The cumulative distribution is defined as:
 
@@ -118,7 +119,8 @@ def radial_density(im, bins=10, voxel_size=1):
 
             F(r) = \int_r^\infty P(r)dr
 
-    which gives the fraction of pore-space with a radius larger than *r*.
+    which gives the fraction of pore-space with a radius larger than *r*. This
+    is equivalent as the cumulative distribution function (*cdf*).
 
     Parameters
     ----------
@@ -140,9 +142,9 @@ def radial_density(im, bins=10, voxel_size=1):
     Returns
     -------
     A named-tuple containing several 1D arrays: ``R `` is the radius of the
-    voxels (or x-axis of a pore-size density plot).  ``P`` is the radial
-    density function, and ``F`` is the complementary cumulative distribution
-    function.
+    voxels (or x-axis of a pore-size density plot).  ``pdf`` is the radial
+    probability density function, and ``cdf`` is the complementary cumulative
+    distribution function.
 
     Notes
     -----
