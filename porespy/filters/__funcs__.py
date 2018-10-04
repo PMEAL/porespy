@@ -8,9 +8,8 @@ from numba import jit
 from skimage.segmentation import clear_border
 from skimage.morphology import ball, disk, square, cube
 from skimage.morphology import reconstruction, watershed
-from porespy.tools import randomize_colors
+from porespy.tools import randomize_colors, fftmorphology
 from porespy.tools import get_border, extend_slice
-from porespy.tools import fftmorphology
 
 
 def snow_partitioning(im, r_max=4, sigma=0.4, return_all=False):
@@ -587,7 +586,7 @@ def region_size(im):
     return chords
 
 
-def apply_chords(im, spacing=1, axis=0, trim_edges=True):
+def apply_chords(im, spacing=1, axis=0, trim_edges=True, label=True):
     r"""
     Adds chords to the void space in the specified direction.  The chords are
     separated by 1 voxel plus the provided spacing.
@@ -598,9 +597,9 @@ def apply_chords(im, spacing=1, axis=0, trim_edges=True):
         An image of the porous material with void marked as True.
 
     spacing : int
-        Separation between chords.  The default is 1 voxel, but this can
-        be increased, although not decreased since chords that touch each other
-        are useless.
+        Separation between chords.  The default is 1 voxel.  This can be
+        decreased to 0, meaning that the chords all touch each other, which
+        automatically sets to the ``label`` argument to ``True``.
 
     axis : int (default = 0)
         The axis along which the chords are drawn.
@@ -609,6 +608,11 @@ def apply_chords(im, spacing=1, axis=0, trim_edges=True):
         Whether or not to remove chords that touch the edges of the image.
         These chords are artifically shortened, so skew the chord length
         distribution
+
+    label : bool
+        If ``True`` (default) the chords in the returned image are each given
+        a unique label, such that all voxels lying on the same chord have the
+        same value.
 
     Returns
     -------
@@ -620,23 +624,39 @@ def apply_chords(im, spacing=1, axis=0, trim_edges=True):
     apply_chords_3D
 
     """
-    if spacing < 1:
-        raise Exception('Spacing cannot be less than 1')
-    dims1 = sp.arange(0, im.ndim)
-    dims2 = sp.copy(dims1)
-    dims2[axis] = 0
-    dims2[0] = axis
-    im = sp.moveaxis(a=im, source=dims1, destination=dims2)
-    im = sp.atleast_3d(im)
-    ch = sp.zeros_like(im, dtype=bool)
-    ch[:, ::2+(spacing-1), ::2+(spacing-1)] = 1
-    chords = im*ch
-    chords = sp.squeeze(chords)  # Convert back to 2D if necessary
-    if trim_edges:
-        temp = clear_border(spim.label(chords == 1)[0]) > 0
-        chords = temp*chords
-    chords = sp.moveaxis(a=chords, source=dims1, destination=dims2)
-    return chords
+    if spacing < 0:
+        raise Exception('Spacing cannot be less than 0')
+    if spacing == 0:  # Treat 0 spacing separately
+        s = [[0, 1, 0], [0, 1, 0], [0, 1, 0]]
+        if im.ndim == 3:
+            s = sp.pad(s, pad_width=((0, 0), (0, 0), (1, 1)), mode='constant',
+                       constant_values=0)
+        s = sp.swapaxes(s, 0, axis)
+        chords = spim.label(im, structure=s)[0]
+        counts = sp.bincount(chords.flatten())
+        counts[0] = 0
+        if trim_edges:
+            chords = clear_border(chords)
+        chords = counts[chords]
+        return sp.squeeze(chords)
+    else:  # Apply chords normally for spacing > 0
+        dims1 = sp.arange(0, im.ndim)
+        dims2 = sp.copy(dims1)
+        dims2[axis] = 0
+        dims2[0] = axis
+        im = sp.moveaxis(a=im, source=dims1, destination=dims2)
+        im = sp.atleast_3d(im)
+        ch = sp.zeros_like(im, dtype=bool)
+        ch[:, ::2+(spacing-1), ::2+(spacing-1)] = 1
+        chords = im*ch
+        chords = sp.squeeze(chords)  # Convert back to 2D if necessary
+        chords = sp.moveaxis(a=chords, source=dims1, destination=dims2)
+        chords = spim.label(chords)[0]  # Labeling is necessary for next step
+        if trim_edges:
+            chords = clear_border(chords)
+        if not label:  # Remove labels if user wants it that way
+            chords = chords > 0
+        return chords
 
 
 def apply_chords_3D(im, spacing=0, trim_edges=True):
