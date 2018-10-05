@@ -483,8 +483,8 @@ def linear_density(im, bins=25, voxel_size=1, log=False):
                h.bin_centers, h.bin_edges, h.bin_widths)
 
 
-def chord_length_distribution(im, bins=25, log=False, voxel_size=1,
-                              normalization='length'):
+def chord_length_distribution(im, bins=None, log=False, voxel_size=1,
+                              normalization='count'):
     r"""
     Determines the distribution of chord lengths in an image containing chords.
 
@@ -538,7 +538,11 @@ def chord_length_distribution(im, bins=25, log=False, voxel_size=1,
     [1] Torquato, S. Random Heterogeneous Materials: Mircostructure and
     Macroscopic Properties. Springer, New York (2002) - See page 45 & 292
     """
-    x = chord_counts(im)*voxel_size
+    x = chord_counts(im)
+    if bins is None:
+        bins = sp.array(range(0, x.max()+2))*voxel_size
+    x = x*voxel_size
+    L_label = 'L'
     if log:
         x = sp.log10(x)
     if normalization == 'length':

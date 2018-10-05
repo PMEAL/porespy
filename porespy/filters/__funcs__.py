@@ -8,9 +8,8 @@ from numba import jit
 from skimage.segmentation import clear_border
 from skimage.morphology import ball, disk, square, cube
 from skimage.morphology import reconstruction, watershed
-from porespy.tools import randomize_colors
+from porespy.tools import randomize_colors, fftmorphology
 from porespy.tools import get_border, extend_slice
-from porespy.tools import fftmorphology
 
 
 def distance_transform_lin(im, axis=0, mode='both'):
@@ -615,7 +614,33 @@ def flood(im, regions=None, mode='max'):
     return im_flooded
 
 
-def apply_chords(im, spacing=0, axis=0, trim_edges=True):
+def region_size(im):
+    r"""
+    Replace each voxel with size of region to which it belongs
+
+    Parameters
+    ----------
+    im : ND-array
+        Either a boolean image wtih ``True`` indicating the features of
+        interest, in which case ``scipy.ndimage.label`` will be applied to
+        find regions, or a greyscale image with integer values indicating
+        regions.
+
+    Returns
+    -------
+    An ND array with each voxel value indicating the size of the region to
+    which is belongs.  This is particularly useful for finding chord sizes
+    on the image produced by ``apply_chords``.
+    """
+    if im.dtype == bool:
+        im = spim.label(im)[0]
+    counts = sp.bincount(im.flatten())
+    counts[0] = 0
+    chords = counts[im]
+    return chords
+
+
+def apply_chords(im, spacing=1, axis=0, trim_edges=True, label=False):
     r"""
     Adds chords to the void space in the specified direction.  The chords are
     separated by 1 voxel plus the provided spacing.
@@ -623,11 +648,12 @@ def apply_chords(im, spacing=0, axis=0, trim_edges=True):
     Parameters
     ----------
     im : ND-array
-        An image of the porous material with void marked as True.
+        An image of the porous material with void marked as ``True``.
 
-    spacing : int (default = 0)
-        Chords are automatically separated by 1 voxel and this argument
-        increases the separation.
+    spacing : int
+        Separation between chords.  The default is 1 voxel.  This can be
+        decreased to 0, meaning that the chords all touch each other, which
+        automatically sets to the ``label`` argument to ``True``.
 
     axis : int (default = 0)
         The axis along which the chords are drawn.
@@ -637,10 +663,16 @@ def apply_chords(im, spacing=0, axis=0, trim_edges=True):
         These chords are artifically shortened, so skew the chord length
         distribution.
 
+    label : bool
+        If ``True`` the chords in the returned image are each given a unique
+        label, such that all voxels lying on the same chord have the same
+        value.  This is automatically set to ``True`` if spacing is 0, but is
+        ``False`` otherwise.
+
     Returns
     -------
-    An ND-array of the same size as ```im``` with True values indicating the
-    chords.
+    An ND-array of the same size as ```im``` with non-zero values indicating
+    the chords.
 
     See Also
     --------
@@ -649,24 +681,27 @@ def apply_chords(im, spacing=0, axis=0, trim_edges=True):
     """
     if spacing < 0:
         raise Exception('Spacing cannot be less than 0')
-    dims1 = sp.arange(0, im.ndim)
-    dims2 = sp.copy(dims1)
-    dims2[axis] = 0
-    dims2[0] = axis
-    im = sp.moveaxis(a=im, source=dims1, destination=dims2)
-    im = sp.atleast_3d(im)
-    ch = sp.zeros_like(im, dtype=bool)
-    if im.ndim == 2:
-        ch[:, ::2+spacing, ::2+spacing] = 1
-    if im.ndim == 3:
-        ch[:, ::4+2*spacing, ::4+2*spacing] = 1
-    chords = im*ch
-    chords = sp.squeeze(chords)
-    if trim_edges:
-        temp = clear_border(spim.label(chords == 1)[0]) > 0
-        chords = temp*chords
-    chords = sp.moveaxis(a=chords, source=dims1, destination=dims2)
-    return chords
+    if spacing == 0:
+        label = True
+    result = sp.zeros(im.shape, dtype=int)  # Will receive chords at end
+    slxyz = [slice(None, None, spacing*(axis != i) + 1) for i in [0, 1, 2]]
+    slices = tuple(slxyz[:im.ndim])
+    s = [[0, 1, 0], [0, 1, 0], [0, 1, 0]]  # Straight-line structuring element
+    if im.ndim == 3:  # Make structuring element 3D if necessary
+        s = sp.pad(sp.atleast_3d(s), pad_width=((0, 0), (0, 0), (1, 1)),
+                   mode='constant', constant_values=0)
+    im = im[slices]
+    s = sp.swapaxes(s, 0, axis)
+    chords = spim.label(im, structure=s)[0]
+    counts = sp.bincount(chords.flatten())
+    counts[0] = 0
+    if trim_edges:  # Label on border chords will be set to 0
+        chords = clear_border(chords)
+    chords = counts[chords]
+    result[slices] = chords  # Place chords into empty image created at top
+    if label is False:  # Remove label if not requested
+        result = result > 0
+    return result
 
 
 def apply_chords_3D(im, spacing=0, trim_edges=True):

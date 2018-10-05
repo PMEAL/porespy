@@ -16,7 +16,7 @@ plt.imshow(im)
 
 # Chord length distributions
 chords = ps.filters.apply_chords(im=im, trim_edges=False)
-colored_chords = ps.filters.flood(im=chords, mode='size')
+colored_chords = ps.filters.region_size(chords)
 h = ps.metrics.chord_length_distribution(chords)
 ps.visualization.set_mpl_style()
 plt.figure(2)

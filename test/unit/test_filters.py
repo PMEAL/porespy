@@ -29,25 +29,31 @@ class FilterTest():
         assert sp.allclose(sp.unique(mip)[1:], s)
 
     def test_apply_chords_axis0(self):
-        c = ps.filters.apply_chords(im=self.im, spacing=0, axis=0)
-        assert c.sum() == 25879
+        c = ps.filters.apply_chords(im=self.im, spacing=3, axis=0)
+        assert c.sum() == 23722
+        c = ps.filters.apply_chords(im=self.im, axis=0)
+        assert c.sum() == 102724
 
     def test_apply_chords_axis1(self):
-        c = ps.filters.apply_chords(im=self.im, spacing=0, axis=1)
-        assert c.sum() == 25569
+        c = ps.filters.apply_chords(im=self.im, spacing=3, axis=1)
+        assert c.sum() == 23422
+        c = ps.filters.apply_chords(im=self.im, axis=1)
+        assert c.sum() == 102205
 
     def test_apply_chords_axis2(self):
-        c = ps.filters.apply_chords(im=self.im, spacing=0, axis=2)
-        assert c.sum() == 25840
+        c = ps.filters.apply_chords(im=self.im, spacing=3, axis=2)
+        assert c.sum() == 23752
+        c = ps.filters.apply_chords(im=self.im, axis=2)
+        assert c.sum() == 103347
 
-    def test_apply_chords_with_spacing(self):
+    def test_apply_chords_with_negative_spacing(self):
         with pytest.raises(Exception):
-            c = ps.filters.apply_chords(im=self.im, spacing=-1)
-        c = ps.filters.apply_chords(im=self.im, spacing=1)
-        assert c.sum() == 11367
+            ps.filters.apply_chords(im=self.im, spacing=-1)
 
     def test_apply_chords_without_trimming(self):
         c = ps.filters.apply_chords(im=self.im, trim_edges=False)
+        assert c.sum() == 125043
+        c = ps.filters.apply_chords(im=self.im, spacing=3, trim_edges=False)
         assert c.sum() == 31215
 
     def test_flood_size(self):
@@ -71,7 +77,6 @@ class FilterTest():
     def test_find_disconnected_voxels_2d(self):
         h = ps.filters.find_disconnected_voxels(self.im[:, :, 0])
         assert sp.sum(h) == 477
-#        print(sp.sum(h))
 
     def test_find_disconnected_voxels_2d_conn4(self):
         h = ps.filters.find_disconnected_voxels(self.im[:, :, 0], conn=4)
