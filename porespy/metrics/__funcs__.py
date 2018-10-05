@@ -168,7 +168,8 @@ def radial_density(im, bins=10, voxel_size=1):
     if im.dtype == bool:
         im = spim.distance_transform_edt(im)
     mask = find_dt_artifacts(im) == 0
-    x = im[im[mask] > 0].flatten()
+    im[mask] = 0
+    x = im[im > 0].flatten()
     h = sp.histogram(x, bins=bins, density=True)
     h = _parse_histogram(h=h, voxel_size=voxel_size)
     rdf = namedtuple('radial_density_function',
