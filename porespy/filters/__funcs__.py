@@ -12,6 +12,60 @@ from porespy.tools import randomize_colors, fftmorphology
 from porespy.tools import get_border, extend_slice
 
 
+def distance_transform_lin(im, axis=0, mode='both'):
+    r"""
+    Replaces each void voxel with the linear distance to the nearest solid
+    voxel along the specified axis.
+
+    Parameters
+    ----------
+    im : ND-array
+        The image of the porous material with ``True`` values indicating the
+        void phase (or phase of interest)
+
+    axis : scalar
+        The direction along which the distance should be measured, the default
+        is 0 (i.e. along the x-direction)
+
+    mode : string
+        Controls how the distance is measured.  Options are:
+
+        *'forward'* - Distances are measured in the increasing direction along
+        the specified axis
+
+        *'reverse'* - Distances are measured in the reverse direction.
+        *'backward'* is also accepted.
+
+        *'both'* - Distances are calculated in both directions (by recursively
+        calling itself), then reporting the minimum value of the two results.
+    """
+    if mode in ['backward', 'reverse']:
+        im = sp.flip(im, axis)
+        im = distance_transform_lin(im=im, axis=axis, mode='forward')
+        im = sp.flip(im, axis)
+        return im
+    elif mode in ['both']:
+        im_f = distance_transform_lin(im=im, axis=axis, mode='forward')
+        im_b = distance_transform_lin(im=im, axis=axis, mode='backward')
+        return sp.minimum(im_f, im_b)
+    else:
+        b = sp.cumsum(im > 0, axis=axis)
+        c = sp.diff(b*(im == 0), axis=axis)
+        d = sp.minimum.accumulate(c, axis=axis)
+        if im.ndim == 1:
+            e = sp.pad(d, pad_width=[1, 0], mode='constant', constant_values=0)
+        elif im.ndim == 2:
+            ax = [[[1, 0], [0, 0]], [[0, 0], [1, 0]]]
+            e = sp.pad(d, pad_width=ax[axis], mode='constant', constant_values=0)
+        elif im.ndim == 3:
+            ax = [[[1, 0], [0, 0], [0, 0]],
+                  [[0, 0], [1, 0], [0, 0]],
+                  [[0, 0], [0, 0], [1, 0]]]
+            e = sp.pad(d, pad_width=ax[axis], mode='constant', constant_values=0)
+        f = im*(b + e)
+        return f
+
+
 def snow_partitioning(im, r_max=4, sigma=0.4, return_all=False):
     r"""
     This function partitions the void space into pore regions using a
@@ -558,6 +612,38 @@ def flood(im, regions=None, mode='max'):
     im_flooded = sp.reshape(V[labels], newshape=im.shape)
     im_flooded = im_flooded*mask
     return im_flooded
+
+
+def find_dt_artifacts(dt):
+    r"""
+    Finds points in a distance transform that are closer to wall than solid.
+
+    These points could *potentially* be erroneously high since their distance
+    values do not reflect the possibility that solid may have been present
+    beyond the border of the image but lost by trimming.
+
+    Parameters
+    ----------
+    dt : ND-array
+        The distance transform of the phase of interest
+
+    Returns
+    -------
+    An ND-array the same shape as ``dt`` with numerical values indicating
+    the maximum amount of error in each volxel, which is found by subtracting
+    the distance to nearest edge of image from the distance transform value.
+    In other words, this is the error that would be found if there were a solid
+    voxel lurking just beyond the nearest edge of the image.  Obviously,
+    voxels with a value of zero have no error.
+
+    """
+    temp = sp.ones(shape=dt.shape)*sp.inf
+    for ax in range(dt.ndim):
+        dt_lin = distance_transform_lin(sp.ones_like(temp, dtype=bool),
+                                        axis=ax, mode='both')
+        temp = sp.minimum(temp, dt_lin)
+    result = sp.clip(dt - temp, a_min=0, a_max=sp.inf)
+    return result
 
 
 def region_size(im):

@@ -9,6 +9,7 @@ directly to the binary image.
 
 .. autofunction:: chord_counts
 .. autofunction:: chord_length_distribution
+.. autofunction:: linear_density
 .. autofunction:: pore_size_distribution
 .. autofunction:: porosity
 .. autofunction:: porosity_profile
@@ -22,8 +23,12 @@ directly to the binary image.
 
 """
 
+from .__regionprops__ import regionprops_3D
+from .__regionprops__ import props_to_DataFrame
+from .__regionprops__ import props_to_image
 from .__funcs__ import chord_counts
 from .__funcs__ import chord_length_distribution
+from .__funcs__ import linear_density
 from .__funcs__ import pore_size_distribution
 from .__funcs__ import radial_density
 from .__funcs__ import porosity
@@ -31,6 +36,3 @@ from .__funcs__ import porosity_profile
 from .__funcs__ import representative_elementary_volume
 from .__funcs__ import two_point_correlation_bf
 from .__funcs__ import two_point_correlation_fft
-from .__regionprops__ import regionprops_3D
-from .__regionprops__ import props_to_DataFrame
-from .__regionprops__ import props_to_image

@@ -59,7 +59,7 @@ class MetricsTest():
 
     def test_radial_density(self):
         den = ps.metrics.radial_density(self.blobs)
-        assert den.F.max() == 1
+        assert den.cdf.max() == 1
 
 
 if __name__ == '__main__':
