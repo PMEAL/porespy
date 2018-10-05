@@ -614,6 +614,38 @@ def flood(im, regions=None, mode='max'):
     return im_flooded
 
 
+def find_dt_artifacts(dt):
+    r"""
+    Finds points in a distance transform that are closer to wall than solid.
+
+    These points could *potentially* be erroneously high since their distance
+    values do not reflect the possibility that solid may have been present
+    beyond the border of the image but lost by trimming.
+
+    Parameters
+    ----------
+    dt : ND-array
+        The distance transform of the phase of interest
+
+    Returns
+    -------
+    An ND-array the same shape as ``dt`` with numerical values indicating
+    the maximum amount of error in each volxel, which is found by subtracting
+    the distance to nearest edge of image from the distance transform value.
+    In other words, this is the error that would be found if there were a solid
+    voxel lurking just beyond the nearest edge of the image.  Obviously,
+    voxels with a value of zero have no error.
+
+    """
+    temp = sp.ones(shape=dt.shape)*sp.inf
+    for ax in range(dt.ndim):
+        dt_lin = distance_transform_lin(sp.ones_like(temp, dtype=bool),
+                                        axis=ax, mode='both')
+        temp = sp.minimum(temp, dt_lin)
+    result = sp.clip(dt - temp, a_min=0, a_max=sp.inf)
+    return result
+
+
 def region_size(im):
     r"""
     Replace each voxel with size of region to which it belongs

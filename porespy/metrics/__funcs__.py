@@ -5,8 +5,9 @@ from skimage.feature import peak_local_max
 from skimage.measure import regionprops
 import scipy.ndimage as spim
 import scipy.spatial as sptl
-from porespy.tools import get_border, extract_subsection, extend_slice
-from porespy.filters import apply_chords
+from porespy.tools import extract_subsection, extend_slice
+from porespy.filters import apply_chords, distance_transform_lin
+from porespy.filters import find_dt_artifacts
 from porespy.metrics import props_to_image
 from collections import namedtuple
 from tqdm import tqdm
@@ -166,7 +167,8 @@ def radial_density(im, bins=10, voxel_size=1):
     """
     if im.dtype == bool:
         im = spim.distance_transform_edt(im)
-    x = im[im > 0].flatten()
+    mask = find_dt_artifacts(im) == 0
+    x = im[im[mask] > 0].flatten()
     h = sp.histogram(x, bins=bins, density=True)
     h = _parse_histogram(h=h, voxel_size=voxel_size)
     rdf = namedtuple('radial_density_function',
