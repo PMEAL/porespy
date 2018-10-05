@@ -594,7 +594,7 @@ def apply_chords(im, spacing=1, axis=0, trim_edges=True, label=False):
     Parameters
     ----------
     im : ND-array
-        An image of the porous material with void marked as True.
+        An image of the porous material with void marked as ``True``.
 
     spacing : int
         Separation between chords.  The default is 1 voxel.  This can be
@@ -607,16 +607,17 @@ def apply_chords(im, spacing=1, axis=0, trim_edges=True, label=False):
     trim_edges : bool (default = True)
         Whether or not to remove chords that touch the edges of the image.
         These chords are artifically shortened, so skew the chord length
-        distribution
+        distribution.
 
     label : bool
         If ``True`` the chords in the returned image are each given a unique
         label, such that all voxels lying on the same chord have the same
-        value.  This is automatically set to ``True`` if spacing is 0.
+        value.  This is automatically set to ``True`` if spacing is 0, but is
+        ``False`` otherwise.
 
     Returns
     -------
-    An ND-array of the same size as ```im``` with ``True`` values indicating
+    An ND-array of the same size as ```im``` with non-zero values indicating
     the chords.
 
     See Also
