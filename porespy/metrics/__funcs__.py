@@ -487,8 +487,8 @@ def chord_length_distribution(im, bins=None, log=False, voxel_size=1,
         ``matplotlib.pyplot.bar``
     """
     x = chord_counts(im)
-    if bins == None:
-        bins = sp.array(range(0,x.max()+2))*voxel_size
+    if bins is None:
+        bins = sp.array(range(0, x.max()+2))*voxel_size
     x = x*voxel_size
     L_label = 'L'
     if log:
