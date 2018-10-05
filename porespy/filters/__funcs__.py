@@ -725,11 +725,8 @@ def apply_chords(im, spacing=1, axis=0, trim_edges=True, label=False):
     im = im[slices]
     s = sp.swapaxes(s, 0, axis)
     chords = spim.label(im, structure=s)[0]
-    counts = sp.bincount(chords.flatten())
-    counts[0] = 0
     if trim_edges:  # Label on border chords will be set to 0
         chords = clear_border(chords)
-    chords = counts[chords]
     result[slices] = chords  # Place chords into empty image created at top
     if label is False:  # Remove label if not requested
         result = result > 0

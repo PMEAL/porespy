@@ -239,7 +239,7 @@ def two_point_correlation_bf(im, spacing=10):
 
     The distance values are binned as follows:
 
-        bins = range(start=0, stop=sp.amin(im.shape)/2, stride=spacing)
+        ``bins = range(start=0, stop=sp.amin(im.shape)/2, stride=spacing)``
 
     Notes
     -----
@@ -373,14 +373,21 @@ def pore_size_distribution(im, bins=10, log=True, voxel_size=1):
     Returns
     -------
     A named-tuple containing several values:
+
         *R* or *logR* - radius, equivalent to ``bin_centers``
+
         *pdf* - probability density function
+
         *cdf* - cumulative density function
+
         *satn* - phase saturation in differential form.  For the cumulative
         saturation, just use *cfd* which is already normalized to 1.
+
         *bin_centers* - the center point of each bin
+
         *bin_edges* - locations of bin divisions, including 1 more value than
         the number of bins
+
         *bin_widths* - useful for passing to the ``width`` argument of
         ``matplotlib.pyplot.bar``
 
@@ -439,7 +446,11 @@ def chord_counts(im):
     function is ``sp.bincount`` which gives the number of chords of each
     length in a format suitable for ``plt.plot``.
     """
-    labels, N = spim.label(im > 0)
+    # Determine if image has been labelled as regions yet
+    if (im.dtype == bool) or (im.max() == 1):
+        labels, N = spim.label(im > 0)
+    else:
+        labels = im
     props = regionprops(labels)
     chord_lens = sp.array([i.filled_area for i in props])
     return chord_lens
@@ -497,6 +508,12 @@ def chord_length_distribution(im, bins=None, log=False, voxel_size=1,
         An image with chords drawn in the pore space, as produced by
         ``apply_chords`` or ``apply_chords_3d``.
 
+        ``im`` can be either boolean, in which case each chord will be
+        identified using ``scipy.ndimage.label``, or numerical values in which
+        case it is assumed that chords have already been identifed and labeled.
+        In both cases, the size of each chord will be computed as the number
+        of voxels belonging to each labelled region.
+
     bins : scalar or array_like
         If a scalar is given it is interpreted as the number of bins to use,
         and if an array is given they are used as the bins directly.
@@ -511,6 +528,7 @@ def chord_length_distribution(im, bins=None, log=False, voxel_size=1,
         *'count' or 'number'* - (default) This simply counts the number of
         chords in each bin in the normal sense of a histogram.  This is the
         rigorous definition according to Torquato [1].
+
         *'length'* - This multiplies the number of chords in each bin by the
         chord length (i.e. bin size).  The normalization scheme accounts for
         the fact that long chords are less frequent than shorert chords,
@@ -524,15 +542,22 @@ def chord_length_distribution(im, bins=None, log=False, voxel_size=1,
     -------
     A tuple containing the following elements, which can be retrieved by
     attribute name:
+
         *L* or *logL* - chord length, equivalent to ``bin_centers``
+
         *pdf* - probability density function
+
         *cdf* - cumulative density function
+
         *relfreq* - relative frequency chords in each bin.  The sum of all bin
         heights is 1.0.  For the cumulative relativce, use *cdf* which is
         already normalized to 1.
+
         *bin_centers* - the center point of each bin
+
         *bin_edges* - locations of bin divisions, including 1 more value than
         the number of bins
+
         *bin_widths* - useful for passing to the ``width`` argument of
         ``matplotlib.pyplot.bar``
 
@@ -545,7 +570,6 @@ def chord_length_distribution(im, bins=None, log=False, voxel_size=1,
     if bins is None:
         bins = sp.array(range(0, x.max()+2))*voxel_size
     x = x*voxel_size
-    L_label = 'L'
     if log:
         x = sp.log10(x)
     if normalization == 'length':
