@@ -586,7 +586,7 @@ def region_size(im):
     return chords
 
 
-def apply_chords(im, spacing=1, axis=0, trim_edges=True, label=True):
+def apply_chords(im, spacing=1, axis=0, trim_edges=True, label=False):
     r"""
     Adds chords to the void space in the specified direction.  The chords are
     separated by 1 voxel plus the provided spacing.
@@ -610,9 +610,9 @@ def apply_chords(im, spacing=1, axis=0, trim_edges=True, label=True):
         distribution
 
     label : bool
-        If ``True`` (default) the chords in the returned image are each given
-        a unique label, such that all voxels lying on the same chord have the
-        same value.
+        If ``True`` the chords in the returned image are each given a unique
+        label, such that all voxels lying on the same chord have the same
+        value.  This is automatically set to ``True`` if spacing is 0.
 
     Returns
     -------
@@ -626,37 +626,27 @@ def apply_chords(im, spacing=1, axis=0, trim_edges=True, label=True):
     """
     if spacing < 0:
         raise Exception('Spacing cannot be less than 0')
-    if spacing == 0:  # Treat 0 spacing separately
-        s = [[0, 1, 0], [0, 1, 0], [0, 1, 0]]
-        if im.ndim == 3:
-            s = sp.pad(s, pad_width=((0, 0), (0, 0), (1, 1)), mode='constant',
-                       constant_values=0)
-        s = sp.swapaxes(s, 0, axis)
-        chords = spim.label(im, structure=s)[0]
-        counts = sp.bincount(chords.flatten())
-        counts[0] = 0
-        if trim_edges:
-            chords = clear_border(chords)
-        chords = counts[chords]
-        return sp.squeeze(chords)
-    else:  # Apply chords normally for spacing > 0
-        dims1 = sp.arange(0, im.ndim)
-        dims2 = sp.copy(dims1)
-        dims2[axis] = 0
-        dims2[0] = axis
-        im = sp.moveaxis(a=im, source=dims1, destination=dims2)
-        im = sp.atleast_3d(im)
-        ch = sp.zeros_like(im, dtype=bool)
-        ch[:, ::2+(spacing-1), ::2+(spacing-1)] = 1
-        chords = im*ch
-        chords = sp.squeeze(chords)  # Convert back to 2D if necessary
-        chords = sp.moveaxis(a=chords, source=dims1, destination=dims2)
-        chords = spim.label(chords)[0]  # Labeling is necessary for next step
-        if trim_edges:
-            chords = clear_border(chords)
-        if not label:  # Remove labels if user wants it that way
-            chords = chords > 0
-        return chords
+    if spacing == 0:
+        label = True
+    result = sp.zeros(im.shape, dtype=int)  # Will receive chords at end
+    slxyz = [slice(None, None, spacing*(axis != i) + 1) for i in [0, 1, 2]]
+    slices = tuple(slxyz[:im.ndim])
+    s = [[0, 1, 0], [0, 1, 0], [0, 1, 0]]  # Straight-line structuring element
+    if im.ndim == 3:  # Make structuring element 3D if necessary
+        s = sp.pad(sp.atleast_3d(s), pad_width=((0, 0), (0, 0), (1, 1)),
+                   mode='constant', constant_values=0)
+    im = im[slices]
+    s = sp.swapaxes(s, 0, axis)
+    chords = spim.label(im, structure=s)[0]
+    counts = sp.bincount(chords.flatten())
+    counts[0] = 0
+    if trim_edges:  # Label on border chords will be set to 0
+        chords = clear_border(chords)
+    chords = counts[chords]
+    result[slices] = chords  # Place chords into empty image created at top
+    if label is False:  # Remove label if not requested
+        result = result > 0
+    return result
 
 
 def apply_chords_3D(im, spacing=0, trim_edges=True):
