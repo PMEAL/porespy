@@ -2,6 +2,7 @@ import porespy as ps
 import scipy as sp
 import scipy.ndimage as spim
 import matplotlib.pyplot as plt
+import pytest
 from skimage.morphology import disk, ball
 plt.close('all')
 
@@ -41,6 +42,21 @@ class ToolsTest():
     def test_extract_subsection(self):
         sec = ps.tools.extract_subsection(self.blobs, [0.5])
         assert sp.all(sp.array(sp.shape(sec)) == 50)
+
+    def test_extract_cylinder(self):
+        cyl = ps.tools.extract_cylinder(self.im3D)
+
+    def test_bbox_to_slices(self):
+        s = ps.tools.bbox_to_slices([0, 0, 0, 10, 10, 10])
+        assert sp.all(self.im3D[s].shape == (10, 10, 10))
+
+    def test_get_slices(self):
+        x, y, z = ps.tools.get_planes(self.im3D)
+        assert sp.all(x.shape == (51, 51))
+        assert sp.all(y.shape == (51, 51))
+        assert sp.all(z.shape == (51, 51))
+        with pytest.raises(ValueError):
+            ps.tools.get_planes(self.im2D)
 
 
 if __name__ == '__main__':
