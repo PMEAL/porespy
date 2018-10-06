@@ -288,9 +288,10 @@ def find_outer_region(im, r=0):
 
 def extract_cylinder(im, r=None, axis=0):
     r"""
-    Returns a cylindrical section of the image of specified radius. This is
-    useful for making square images look like cylindrical cores such as those
-    obtained from X-ray tomography.
+    Returns a cylindrical section of the image of specified radius.
+
+    This is useful for making square images look like cylindrical cores such
+    as those obtained from X-ray tomography.
 
     Parameters
     ----------
@@ -314,8 +315,8 @@ def extract_cylinder(im, r=None, axis=0):
     if r is None:
         a = list(im.shape)
         a.pop(axis)
-        r = sp.amin(a)/2
-    dim = [range(int(-s/2), int(s/2)) for s in im.shape]
+        r = sp.floor(sp.amin(a)/2)
+    dim = [range(int(-s/2), int(s/2) + s % 2) for s in im.shape]
     inds = sp.meshgrid(*dim, indexing='ij')
     inds[axis] = inds[axis]*0
     d = sp.sqrt(sp.sum(sp.square(inds), axis=0))
