@@ -12,6 +12,8 @@ class ToolsTest():
         self.im = sp.random.randint(0, 10, 20)
         sp.random.seed(0)
         self.blobs = ps.generators.blobs(shape=[101, 101])
+        self.im2D = ps.generators.blobs(shape=[51, 51])
+        self.im3D = ps.generators.blobs(shape=[51, 51, 51])
         self.labels, N = spim.label(input=self.blobs)
 
     def test_randomize_colors(self):
