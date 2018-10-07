@@ -93,30 +93,35 @@ def fftmorphology(im, strel, mode='opening'):
         t = fftconvolve(im, strel, mode='same') > 0.1
         return t
 
+    # Perform erosion and dilation
     # The array must be padded with 0's so it works correctly at edges
     temp = sp.pad(array=im, pad_width=1, mode='constant', constant_values=0)
-    # Perform erosion
     if mode.startswith('ero'):
         temp = erode(temp, strel)
-    if mode.startswith('open'):
-        temp = erode(temp, strel)
-        temp = dilate(temp, strel)
     if mode.startswith('dila'):
         temp = dilate(temp, strel)
-    if mode.startswith('clos'):
-        temp = dilate(temp, strel)
-        temp = erode(temp, strel)
+
     # Remove padding from resulting image
     if im.ndim == 2:
         result = temp[1:-1, 1:-1]
     elif im.ndim == 3:
         result = temp[1:-1, 1:-1, 1:-1]
+
+    # Perform opening and closing
+    if mode.startswith('open'):
+        temp = fftmorphology(im=im, strel=strel, mode='erosion')
+        result = fftmorphology(im=temp, strel=strel, mode='dilation')
+    if mode.startswith('clos'):
+        temp = fftmorphology(im=im, strel=strel, mode='dilation')
+        result = fftmorphology(im=temp, strel=strel, mode='erosion')
+
     return result
 
 
 def subdivide(im, divs=2):
     r"""
     Returns slices into an image describing the specified number of sub-arrays.
+
     This function is useful for performing operations on smaller images for
     memory or speed.  Note that for most typical operations this will NOT work,
     since the image borders would cause artifacts (e.g. ``distance_transform``)
