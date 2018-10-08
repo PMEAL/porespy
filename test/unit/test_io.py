@@ -26,6 +26,14 @@ class ExportTest():
         assert np.sum(val == 0) + np.sum(val == 1) + np.sum(val == 2) == S
         os.remove(tmp)
 
+    def test_to_openpnm(self):
+        im = ps.generators.blobs(shape=[100, 100])
+        net = ps.network_extraction.snow(im, boundary_faces=None)
+        ps.io.to_openpnm(net, 'test.net')
+        os.remove('test.net')
+        with pytest.raises(FileNotFoundError):
+            os.remove('test.net')
+
 
 if __name__ == '__main__':
     t = ExportTest()

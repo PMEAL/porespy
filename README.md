@@ -2,7 +2,11 @@
 
 [![](https://travis-ci.org/PMEAL/porespy)](https://travis-ci.org/PMEAL/porespy.svg?branch=master)
 
+[![](https://codecov.io/gh/PMEAL/PoreSpy/branch/master/graph/badge.svg)](https://codecov.io/gh/PMEAL/PoreSpy)
+
 [![](https://img.shields.io/badge/ReadTheDocs-GO-blue.svg)](http://porespy.readthedocs.io/en/master/)
+
+
 
 ## What is PoreSpy?
 

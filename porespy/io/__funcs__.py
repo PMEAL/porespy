@@ -37,7 +37,7 @@ def dict_to_vtk(data, path='./dictvtk', voxel_size=1, origin=(0, 0, 0)):
 
 def to_openpnm(net, filename):
     r"""
-    Save the result of the `extract_pore_network` function to a file that is
+    Save the result of the `snow` network extraction function in a format
     suitable for opening in OpenPNM.
 
     Parameters
