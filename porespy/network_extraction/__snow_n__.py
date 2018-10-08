@@ -16,8 +16,8 @@ def snow_n(im, voxel_size=1, boundary_faces=['top', 'bottom', 'left',
     ----------
     im : ND-array
         Image of porous material where each phase is represented by unique
-        integer If boolean image is given then False's will be phase1 and
-        True's will be phase2
+        integer. Phase integer should start from 1. Boolean image will extract
+        only one network labeled with True's only.
 
     voxel_size : scalar
         The resolution of the image, expressed as the length of one side of a
@@ -117,6 +117,7 @@ def snow_n(im, voxel_size=1, boundary_faces=['top', 'bottom', 'left',
                     s_conns = net['throat.conns'][:, 1][pi_pj_conns]
                     ps = net['throat.area'][pi_pj_conns]
                     p_sa = sp.bincount(p_conns, ps)
+                    # trim zeros at head/tail position to avoid extra bins
                     p_sa = sp.trim_zeros(p_sa)
                     i_index = sp.arange(min(p_conns), max(p_conns)+1)
                     j_index = sp.arange(min(s_conns), max(s_conns)+1)
