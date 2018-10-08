@@ -57,9 +57,10 @@ def to_openpnm(net, filename):
         if p.suffix == '':
             p = p.with_suffix('.net')
     except FileNotFoundError:
-        p = '.'.join(filename.split('.'))
+        p = filename.split('.')
         if p[-1] != 'net':
-            p = p + '.net'
+            p.append('net')
+        p = '.'.join(p)
     with open(p, 'wb') as f:
         pickle.dump(net, f)
 
