@@ -52,7 +52,7 @@ def to_openpnm(net, filename):
 
     try:
         p = Path(filename)
-        p = p.resolve(strict=False)
+        p = p.resolve()
         # If extension not part of filename
         if p.suffix == '':
             p = p.with_suffix('.net')
