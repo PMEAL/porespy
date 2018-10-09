@@ -69,18 +69,19 @@ def snow_n(im, voxel_size=1, boundary_faces=['top', 'bottom', 'left',
     # -------------------------------------------------------------------------
     # Padding distance transform to extract geometrical properties
     if f is not None:
-        faces = [(int('top' in f)*3, int('bottom' in f)*3),
-                 (int('left' in f)*3, int('right' in f)*3)]
+        faces = [(int('left' in f)*3, int('right' in f)*3),
+                 (int('top' in f)*3, int('bottom' in f)*3)]
         if im.ndim == 3:
-            faces = [(int('front' in f)*3, int('back' in f)*3)] + faces
+            faces = faces + [(int('front' in f)*3, int('back' in f)*3)]
         combined_dt = sp.pad(combined_dt, pad_width=faces, mode='edge')
     else:
         combined_dt = combined_dt
     # -------------------------------------------------------------------------
     # For only one phase extraction with boundary regions
     if len(phases_num) == 1 and phases_num == 1:
-        im = sp.pad(phase_snow.im, pad_width=faces, mode='edge')
-        regions = regions*im
+        if f is not None:
+            phase_snow.im = sp.pad(phase_snow.im, pad_width=faces, mode='edge')
+        regions = regions*phase_snow.im
         regions = make_contiguous(regions)
     # -------------------------------------------------------------------------
     # Extract N phases sites and bond information from image
@@ -171,17 +172,39 @@ def label_boundary_cells(network=None, boundary_faces=None):
     f = boundary_faces
     if f is not None:
         coords = network['pore.coords']
-        if all(coords[:, 2] == 0):
-            dic = {'left': 1, 'right': 1, 'top': 2,
-                   'bottom': 2, 'front': 0, 'back': 0}
+        dic = {'left': 0, 'right': 0, 'top': 1,
+               'bottom': 1, 'front': 2, 'back': 2}
+
+        if ('top' in f and 'bottom' in f) or ('front' in f and 'back' in f):
+            for i in f:
+                if all(coords[:, 2] == 0):
+                    if i in ['left', 'bottom']:
+                        network['pore.{}'.format(i)] = (coords[:, dic[i]] <=
+                                                        min(coords[:, dic[i]]))
+                    elif i in ['right', 'top']:
+                        network['pore.{}'.format(i)] = (coords[:, dic[i]] >=
+                                                        max(coords[:, dic[i]]))
+                else:
+                    if i in ['left', 'bottom', 'back']:
+                        network['pore.{}'.format(i)] = (coords[:, dic[i]] <=
+                                                        min(coords[:, dic[i]]))
+                    elif i in ['right', 'top', 'front']:
+                        network['pore.{}'.format(i)] = (coords[:, dic[i]] >=
+                                                        max(coords[:, dic[i]]))
         else:
-            dic = {'left': 1, 'right': 1, 'top': 0,
-                   'bottom': 0, 'front': 2, 'back': 2}
-        for i in f:
-            if i in ['left', 'top', 'front']:
-                network['pore.{}'.format(i)] = (coords[:, dic[i]] <=
-                                                min(coords[:, dic[i]]))
-            else:
-                network['pore.{}'.format(i)] = (coords[:, dic[i]] >=
-                                                max(coords[:, dic[i]]))
+            for i in f:
+                if all(coords[:, 2] == 0):
+                    if i in ['left', 'top']:
+                        network['pore.{}'.format(i)] = (coords[:, dic[i]] <=
+                                                        min(coords[:, dic[i]]))
+                    elif i in ['right', 'bottom']:
+                        network['pore.{}'.format(i)] = (coords[:, dic[i]] >=
+                                                        max(coords[:, dic[i]]))
+                else:
+                    if i in ['left', 'top', 'front']:
+                        network['pore.{}'.format(i)] = (coords[:, dic[i]] <=
+                                                        min(coords[:, dic[i]]))
+                    elif i in ['right', 'bottom', 'back']:
+                        network['pore.{}'.format(i)] = (coords[:, dic[i]] >=
+                                                        max(coords[:, dic[i]]))
     return network
