@@ -234,7 +234,7 @@ def reduce_peaks(peaks):
     markers, N = spim.label(input=peaks, structure=strel(3))
     inds = spim.measurements.center_of_mass(input=peaks,
                                             labels=markers,
-                                            index=sp.arange(1, N))
+                                            index=sp.arange(1, N+1))
     inds = sp.floor(inds).astype(int)
     # Centroid may not be on old pixel, so create a new peaks image
     peaks = sp.zeros_like(peaks, dtype=bool)

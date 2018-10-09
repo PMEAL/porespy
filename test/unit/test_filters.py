@@ -220,6 +220,14 @@ class FilterTest():
         test = ps.tools.fftmorphology(im, strel=ball(3), mode='closing')
         assert sp.all(truth == test)
 
+    def test_reduce_peaks(self):
+        im = ~ps.generators.lattice_spheres(shape=[50, 50], radius=5, offset=3)
+        peaks = ps.filters.reduce_peaks(im)
+        assert spim.label(im)[1] == spim.label(peaks)[1]
+        im = ~ps.generators.lattice_spheres(shape=[50, 50, 50], radius=5, offset=3)
+        peaks = ps.filters.reduce_peaks(im)
+        assert spim.label(im)[1] == spim.label(peaks)[1]
+
 
 if __name__ == '__main__':
     t = FilterTest()
