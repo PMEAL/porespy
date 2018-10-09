@@ -34,6 +34,19 @@ class ExportTest():
         with pytest.raises(FileNotFoundError):
             os.remove('test.net')
 
+    def test_to_vtk(self):
+        im = ps.generators.blobs(shape=[20, 20, 20])
+        ps.io.to_vtk(im, path='vtk_func_test')
+        assert os.stat('vtk_func_test.vti').st_size == 8433
+        os.remove('vtk_func_test.vti')
+
+    def test_dict_to_vtk(self):
+        im = ps.generators.blobs(shape=[20, 20, 20])
+        ps.io.dict_to_vtk({'im': im,
+                           'im_neg': ~im})
+        assert os.stat('dictvtk.vti').st_size == 16529
+        os.remove('dictvtk.vti')
+
 
 if __name__ == '__main__':
     t = ExportTest()

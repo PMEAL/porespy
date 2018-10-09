@@ -30,6 +30,8 @@ def dict_to_vtk(data, path='./dictvtk', voxel_size=1, origin=(0, 0, 0)):
     """
     vs = voxel_size
     for entry in data:
+        if data[entry].dtype == bool:
+            data[entry] = data[entry].astype(np.int8)
         if data[entry].flags['C_CONTIGUOUS']:
             data[entry] = np.ascontiguousarray(data[entry])
     imageToVTK(path, cellData=data, spacing=(vs, vs, vs), origin=origin)
@@ -94,6 +96,8 @@ def to_vtk(im, path='./voxvtk', divide=False, downsample=False, voxel_size=1,
     ------
     File: vtk, vtp or vti file that can opened in paraview
     """
+    if im.dtype == bool:
+        vox = True
     if vox:
         im = im.astype(np.int8)
     vs = voxel_size
