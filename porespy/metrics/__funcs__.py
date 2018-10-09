@@ -91,7 +91,7 @@ def porosity_profile(im, axis):
         calculated and returned as 1D array with 1 value for each X position.
 
     """
-    if axis > im.ndim:
+    if axis >= im.ndim:
         raise Exception('axis out of range')
     im = np.atleast_3d(im)
     a = set(range(im.ndim)).difference(set([axis]))

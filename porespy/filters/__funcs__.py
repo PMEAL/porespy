@@ -234,7 +234,7 @@ def reduce_peaks(peaks):
     markers, N = spim.label(input=peaks, structure=strel(3))
     inds = spim.measurements.center_of_mass(input=peaks,
                                             labels=markers,
-                                            index=sp.arange(1, N))
+                                            index=sp.arange(1, N+1))
     inds = sp.floor(inds).astype(int)
     # Centroid may not be on old pixel, so create a new peaks image
     peaks = sp.zeros_like(peaks, dtype=bool)
@@ -339,7 +339,7 @@ def trim_nearby_peaks(peaks, dt):
     nearest_neighbor = temp[1][:, 1]
     dist_to_neighbor = temp[0][:, 1]
     del temp, tree  # Free-up memory
-    dist_to_solid = dt[list(crds.T)]  # Get distance to solid for each peak
+    dist_to_solid = dt[tuple(crds.T)]  # Get distance to solid for each peak
     hits = sp.where(dist_to_neighbor < dist_to_solid)[0]
     # Drop peak that is closer to the solid than it's neighbor
     drop_peaks = []

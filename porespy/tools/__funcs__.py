@@ -93,30 +93,35 @@ def fftmorphology(im, strel, mode='opening'):
         t = fftconvolve(im, strel, mode='same') > 0.1
         return t
 
+    # Perform erosion and dilation
     # The array must be padded with 0's so it works correctly at edges
     temp = sp.pad(array=im, pad_width=1, mode='constant', constant_values=0)
-    # Perform erosion
     if mode.startswith('ero'):
         temp = erode(temp, strel)
-    if mode.startswith('open'):
-        temp = erode(temp, strel)
-        temp = dilate(temp, strel)
     if mode.startswith('dila'):
         temp = dilate(temp, strel)
-    if mode.startswith('clos'):
-        temp = dilate(temp, strel)
-        temp = erode(temp, strel)
+
     # Remove padding from resulting image
     if im.ndim == 2:
         result = temp[1:-1, 1:-1]
     elif im.ndim == 3:
         result = temp[1:-1, 1:-1, 1:-1]
+
+    # Perform opening and closing
+    if mode.startswith('open'):
+        temp = fftmorphology(im=im, strel=strel, mode='erosion')
+        result = fftmorphology(im=temp, strel=strel, mode='dilation')
+    if mode.startswith('clos'):
+        temp = fftmorphology(im=im, strel=strel, mode='dilation')
+        result = fftmorphology(im=temp, strel=strel, mode='erosion')
+
     return result
 
 
 def subdivide(im, divs=2):
     r"""
     Returns slices into an image describing the specified number of sub-arrays.
+
     This function is useful for performing operations on smaller images for
     memory or speed.  Note that for most typical operations this will NOT work,
     since the image borders would cause artifacts (e.g. ``distance_transform``)
@@ -178,6 +183,11 @@ def bbox_to_slices(bbox):
     Given a tuple containing bounding box coordinates, return a tuple of slice
     objects.
 
+    A bounding box in the form of a straight list is returned by several
+    functions in skimage, but these cannot be used to direct index into an
+    image.  This function returns a tuples of slices can be, such as:
+    ``im[bbox_to_slices([xmin, ymin, xmax, ymax])]``.
+
     Parameters
     ----------
     bbox : tuple of ints
@@ -188,7 +198,7 @@ def bbox_to_slices(bbox):
     Returns
     -------
     A tuple of slice objects that can be used to directly index into a larger
-    image.  A
+    image.
     """
     if len(bbox) == 4:
         ret = (slice(bbox[0], bbox[2]),
@@ -283,9 +293,10 @@ def find_outer_region(im, r=0):
 
 def extract_cylinder(im, r=None, axis=0):
     r"""
-    Returns a cylindrical section of the image of specified radius. This is
-    useful for making square images look like cylindrical cores such as those
-    obtained from X-ray tomography.
+    Returns a cylindrical section of the image of specified radius.
+
+    This is useful for making square images look like cylindrical cores such
+    as those obtained from X-ray tomography.
 
     Parameters
     ----------
@@ -309,8 +320,8 @@ def extract_cylinder(im, r=None, axis=0):
     if r is None:
         a = list(im.shape)
         a.pop(axis)
-        r = sp.amin(a)/2
-    dim = [range(int(-s/2), int(s/2)) for s in im.shape]
+        r = sp.floor(sp.amin(a)/2)
+    dim = [range(int(-s/2), int(s/2) + s % 2) for s in im.shape]
     inds = sp.meshgrid(*dim, indexing='ij')
     inds[axis] = inds[axis]*0
     d = sp.sqrt(sp.sum(sp.square(inds), axis=0))
@@ -458,72 +469,6 @@ def extend_slice(s, shape, pad=1):
             stop = i.stop + pad
         a.append(slice(start, stop, None))
     return tuple(a)
-
-
-def binary_opening_fft(im, strel):
-    r"""
-    Using the ``scipy.signal.fftconvolve`` function (twice) to accomplish
-    binary image opening.
-
-    The use of the fft-based convolution produces a 10x speed-up compared to
-    the standard ``binary_opening`` included in ``scipy.ndimage``.
-
-    See Also
-    --------
-    binary_opening_dt
-
-    Notes
-    -----
-    The ``fftconvolve`` function is only optimzed in some scipy installations,
-    depending how it was compiled.  If the promised speed-up is not acheived,
-    this may be the issue.  Using ``binary_opening_dt`` should still be fast
-    but is limited to spherical and circular structing elements.
-
-    """
-    if isinstance(strel, int):
-        if im.ndim == 2:
-            strel = disk(strel)
-        else:
-            strel = ball(strel)
-    seeds = sp.signal.fftconvolve(im, strel) > (strel.sum() - 0.1)
-    result = sp.signal.fftconvolve(seeds, strel) > 0.1
-    result = extract_subsection(result, im.shape)
-    return result
-
-
-def binary_opening_dt(im, r):
-    r"""
-    Perform a morphological opening that does not slow down with larger
-    structuring elements.
-
-    It uses a shortcut based on the distance transform, which means it only
-    applies to spherical (or cicular if the image is 2d) structuring elements.
-
-    Parameters
-    ----------
-    im : ND-array
-        The image of the porous material with True values (or 1's) indicating
-        the pore phase.
-
-    r : scalar, int
-        The radius of the spherical structuring element to apply
-
-    Returns
-    -------
-    A binary image with ``True`` values in all locations where a sphere of size
-    ``r`` could fit entirely within the pore space.
-
-    See Also
-    --------
-    binary_opening_fft
-
-    """
-    temp = sp.pad(im, pad_width=1, mode='constant', constant_values=0)
-    dt = spim.distance_transform_edt(temp)
-    seeds = dt > r
-    im_opened = spim.distance_transform_edt(~seeds) <= r
-    im_opened = extract_subsection(im_opened, im.shape)
-    return im_opened
 
 
 def randomize_colors(im, keep_vals=[0]):
