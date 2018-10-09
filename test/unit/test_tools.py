@@ -52,13 +52,49 @@ class ToolsTest():
         s = ps.tools.bbox_to_slices([0, 0, 0, 10, 10, 10])
         assert sp.all(self.im3D[s].shape == (10, 10, 10))
 
-    def test_get_slices(self):
+    def test_get_planes(self):
         x, y, z = ps.tools.get_planes(self.im3D)
         assert sp.all(x.shape == (51, 51))
         assert sp.all(y.shape == (51, 51))
         assert sp.all(z.shape == (51, 51))
         with pytest.raises(ValueError):
             ps.tools.get_planes(self.im2D)
+
+    def test_get_planes_not_squeezed(self):
+        x, y, z = ps.tools.get_planes(self.im3D, squeeze=False)
+        assert sp.all(x.shape == (1, 51, 51))
+        assert sp.all(y.shape == (51, 1, 51))
+        assert sp.all(z.shape == (51, 51, 1))
+
+    def test_get_border(self):
+        c = ps.tools.get_border(self.im2D.shape, thickness=1, mode='corners')
+        assert c.sum() == 4
+        c = ps.tools.get_border(self.im3D.shape, thickness=1, mode='corners')
+        assert c.sum() == 8
+        c = ps.tools.get_border(self.im2D.shape, thickness=1, mode='edges')
+        assert c.sum() == 200
+        c = ps.tools.get_border(self.im3D.shape, thickness=1, mode='edges')
+        assert c.sum() == 596
+        c = ps.tools.get_border(self.im2D.shape, thickness=1, mode='faces')
+        assert c.sum() == 200
+        c = ps.tools.get_border(self.im3D.shape, thickness=1, mode='faces')
+        assert c.sum() == 15002
+
+    def test_align_image_w_openpnm(self):
+        im = ps.tools.align_image_with_openpnm(sp.ones([40, 50]))
+        assert im.shape == (50, 40)
+        im = ps.tools.align_image_with_openpnm(sp.ones([40, 50, 60]))
+        assert im.shape == (60, 50, 40)
+
+    def test_inhull(self):
+        X = sp.rand(25, 2)
+        hull = sp.spatial.ConvexHull(X)
+        assert not ps.tools.in_hull([[0, 0]], hull)
+        assert ps.tools.in_hull([sp.mean(X, axis=0)], hull)
+        X = sp.rand(25, 3)
+        hull = sp.spatial.ConvexHull(X)
+        assert not ps.tools.in_hull([[0, 0, 0]], hull)
+        assert ps.tools.in_hull([sp.mean(X, axis=0)], hull)
 
 
 if __name__ == '__main__':
