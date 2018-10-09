@@ -47,8 +47,8 @@ def snow(im, voxel_size=1, boundary_faces=['top', 'bottom', 'left',
     regions = add_boundary_regions(regions=regions, faces=boundary_faces)
     f = boundary_faces
     if f is not None:
-        faces = [(int('top' in f)*3, int('bottom' in f)*3),
-                 (int('left' in f)*3, int('right' in f)*3)]
+        faces = [(int('left' in f)*3, int('right' in f)*3),
+                 (int('top' in f)*3, int('bottom' in f)*3)]
         if im.ndim == 3:
             faces = [(int('front' in f)*3, int('back' in f)*3)] + faces
         dt = sp.pad(dt, pad_width=faces, mode='edge')
@@ -68,21 +68,4 @@ def snow(im, voxel_size=1, boundary_faces=['top', 'bottom', 'left',
     net['throat.boundary'] = loc1 * loc2
     net['pore.phase'] = pore_labels
     net['throat.phase'] = loc3 * loc4
-    # -------------------------------------------------------------------------
-    # label boundary cells according to their poisition in the network
-    if f is not None:
-        coords = net['pore.coords']
-        if im.ndim == 3:
-            dic = {'left': 1, 'right': 1, 'top': 2,
-                   'bottom': 2, 'front': 0, 'back': 0}
-        elif im.ndim == 2:
-            dic = {'left': 1, 'right': 1, 'top': 0,
-                   'bottom': 0, 'front': 2, 'back': 2}
-        for i in f:
-            if i in ['left', 'top', 'front']:
-                net['pore.{}'.format(i)] = (coords[:, dic[i]] <=
-                                            min(coords[:, dic[i]]))
-            else:
-                net['pore.{}'.format(i)] = (coords[:, dic[i]] >=
-                                            max(coords[:, dic[i]]))
     return net
