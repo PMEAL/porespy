@@ -54,6 +54,38 @@ class NetExtractTest():
                 found_nans = True
         assert found_nans is False
 
+    def test_add_bounadary_regions_2D(self):
+        im = self.im
+        regions = ps.filters.snow_partitioning(im)
+        f = ['left', 'right']
+        bd = ps.network_extraction.add_boundary_regions(regions, faces=f)
+        assert bd.shape[1] > regions.shape[1]
+        f = ['bottom', 'top']
+        bd = ps.network_extraction.add_boundary_regions(regions, faces=f)
+        assert bd.shape[0] > regions.shape[0]
+        f = ['bottom', 'top', 'left', 'right']
+        bd = ps.network_extraction.add_boundary_regions(regions, faces=f)
+        assert bd.shape[0] > regions.shape[0]
+        assert bd.shape[1] > regions.shape[1]
+        f = ['front', 'back']
+        bd = ps.network_extraction.add_boundary_regions(regions, faces=f)
+        assert bd.shape == regions.shape
+
+    def test_add_bounadary_regions_3D(self):
+        im = self.im3d
+        regions = ps.filters.snow_partitioning(im)
+        f = ['left', 'right']
+        bd = ps.network_extraction.add_boundary_regions(regions, faces=f)
+        assert bd.shape[2] > regions.shape[2]
+        f = ['bottom', 'top']
+        bd = ps.network_extraction.add_boundary_regions(regions, faces=f)
+        assert bd.shape[1] > regions.shape[1]
+        f = ['bottom', 'top', 'left', 'right', 'front', 'back']
+        bd = ps.network_extraction.add_boundary_regions(regions, faces=f)
+        assert bd.shape[0] > regions.shape[0]
+        assert bd.shape[1] > regions.shape[1]
+        assert bd.shape[2] > regions.shape[2]
+
 
 if __name__ == '__main__':
     t = NetExtractTest()

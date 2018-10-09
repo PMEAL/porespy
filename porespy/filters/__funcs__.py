@@ -339,7 +339,7 @@ def trim_nearby_peaks(peaks, dt):
     nearest_neighbor = temp[1][:, 1]
     dist_to_neighbor = temp[0][:, 1]
     del temp, tree  # Free-up memory
-    dist_to_solid = dt[list(crds.T)]  # Get distance to solid for each peak
+    dist_to_solid = dt[tuple(crds.T)]  # Get distance to solid for each peak
     hits = sp.where(dist_to_neighbor < dist_to_solid)[0]
     # Drop peak that is closer to the solid than it's neighbor
     drop_peaks = []
