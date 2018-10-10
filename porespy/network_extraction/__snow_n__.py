@@ -144,9 +144,9 @@ def snow_n(im, voxel_size=1, boundary_faces=['top', 'bottom', 'left',
                                                            voxel_size**2)
                     net['pore.p{}_{}_IFA_mc'.format(i, j)] = (pi_pj_sa_mc *
                                                               voxel_size**2)
-        # ---------------------------------------------------------------------
-        # label boundary cells
-        net = label_boundary_cells(network=net, boundary_faces=f)
+    # -------------------------------------------------------------------------
+    # label boundary cells
+    net = label_boundary_cells(network=net, boundary_faces=f)
     return net
 
 
