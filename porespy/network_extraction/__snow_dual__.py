@@ -69,10 +69,14 @@ def snow_dual(im, voxel_size=1, boundary_faces=['top', 'bottom', 'left',
     # Padding distance transform to extract geometrical properties
     f = boundary_faces
     if f is not None:
-        faces = [(int('top' in f)*3, int('bottom' in f)*3),
-                 (int('left' in f)*3, int('right' in f)*3)]
+        if im.ndim == 2:
+            faces = [(int('left' in f)*3, int('right' in f)*3),
+                     (int(('front') in f)*3 or int(('bottom') in f)*3,
+                      int(('back') in f)*3 or int(('top') in f)*3)]
         if im.ndim == 3:
-            faces = [(int('front' in f)*3, int('back' in f)*3)] + faces
+            faces = [(int('left' in f)*3, int('right' in f)*3),
+                     (int('front' in f)*3, int('back' in f)*3),
+                     (int('top' in f)*3, int('bottom' in f)*3)]
         dt = sp.pad(dt, pad_width=faces, mode='edge')
     else:
         dt = dt
