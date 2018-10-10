@@ -3,6 +3,7 @@ import pytest
 import scipy as sp
 import numpy as np
 import scipy.ndimage as spim
+from skimage.morphology import disk, ball
 
 
 class FilterTest():
@@ -22,6 +23,22 @@ class FilterTest():
                         1.90085700, 2.23196205, 2.62074139, 3.07724114,
                         3.61325732])
         assert sp.allclose(sp.unique(mip), ans)
+
+    def test_porosimetry_compare_modes_3D(self):
+        im = self.im
+        fft = ps.filters.porosimetry(im, mode='fft')
+        mio = ps.filters.porosimetry(im, mode='mio')
+        dt = ps.filters.porosimetry(im, mode='dt')
+#        assert sp.all(fft == dt)
+#        assert sp.all(fft == mio)
+
+    def test_porosimetry_compare_modes_2D(self):
+        im = self.im[:, :, 50]
+        fft = ps.filters.porosimetry(im, mode='fft')
+        mio = ps.filters.porosimetry(im, mode='mio')
+        dt = ps.filters.porosimetry(im, mode='dt')
+#        assert sp.all(fft == dt)
+#        assert sp.all(fft == mio)
 
     def test_porosimetry_with_sizes(self):
         s = sp.logspace(0.01, 0.6, 5)
@@ -55,6 +72,9 @@ class FilterTest():
         assert c.sum() == 125043
         c = ps.filters.apply_chords(im=self.im, spacing=3, trim_edges=False)
         assert c.sum() == 31215
+
+    def test_apply_chords_3D(self):
+        ps.filters.apply_chords_3D(self.im)
 
     def test_flood_size(self):
         m = ps.filters.flood(im=self.flood_im, mode='size')
@@ -151,6 +171,62 @@ class FilterTest():
                                      sizes=len(sizes),
                                      access_limited=False)
         assert mip.max() <= sizes.max()
+
+    def test_morphology_fft_dilate_2D(self):
+        im = ps.generators.blobs(shape=[100, 100])
+        truth = spim.binary_dilation(im, structure=disk(3))
+        test = ps.tools.fftmorphology(im, strel=disk(3), mode='dilation')
+        assert sp.all(truth == test)
+
+    def test_morphology_fft_erode_2D(self):
+        im = ps.generators.blobs(shape=[100, 100])
+        truth = spim.binary_erosion(im, structure=disk(3))
+        test = ps.tools.fftmorphology(im, strel=disk(3), mode='erosion')
+        assert sp.all(truth == test)
+
+    def test_morphology_fft_opening_2D(self):
+        im = ps.generators.blobs(shape=[100, 100])
+        truth = spim.binary_opening(im, structure=disk(3))
+        test = ps.tools.fftmorphology(im, strel=disk(3), mode='opening')
+        assert sp.all(truth == test)
+
+    def test_morphology_fft_closing_2D(self):
+        im = ps.generators.blobs(shape=[100, 100])
+        truth = spim.binary_closing(im, structure=disk(3))
+        test = ps.tools.fftmorphology(im, strel=disk(3), mode='closing')
+        assert sp.all(truth == test)
+
+    def test_morphology_fft_dilate_3D(self):
+        im = ps.generators.blobs(shape=[100, 100, 100])
+        truth = spim.binary_dilation(im, structure=ball(3))
+        test = ps.tools.fftmorphology(im, strel=ball(3), mode='dilation')
+        assert sp.all(truth == test)
+
+    def test_morphology_fft_erode_3D(self):
+        im = ps.generators.blobs(shape=[100, 100, 100])
+        truth = spim.binary_erosion(im, structure=ball(3))
+        test = ps.tools.fftmorphology(im, strel=ball(3), mode='erosion')
+        assert sp.all(truth == test)
+
+    def test_morphology_fft_opening_3D(self):
+        im = ps.generators.blobs(shape=[100, 100, 100])
+        truth = spim.binary_opening(im, structure=ball(3))
+        test = ps.tools.fftmorphology(im, strel=ball(3), mode='opening')
+        assert sp.all(truth == test)
+
+    def test_morphology_fft_closing_3D(self):
+        im = ps.generators.blobs(shape=[100, 100, 100])
+        truth = spim.binary_closing(im, structure=ball(3))
+        test = ps.tools.fftmorphology(im, strel=ball(3), mode='closing')
+        assert sp.all(truth == test)
+
+    def test_reduce_peaks(self):
+        im = ~ps.generators.lattice_spheres(shape=[50, 50], radius=5, offset=3)
+        peaks = ps.filters.reduce_peaks(im)
+        assert spim.label(im)[1] == spim.label(peaks)[1]
+        im = ~ps.generators.lattice_spheres(shape=[50, 50, 50], radius=5, offset=3)
+        peaks = ps.filters.reduce_peaks(im)
+        assert spim.label(im)[1] == spim.label(peaks)[1]
 
 
 if __name__ == '__main__':

@@ -1,6 +1,7 @@
 import porespy as ps
 import scipy as sp
-import numpy as np
+import scipy.ndimage as spim
+import pytest
 
 
 class MetricsTest():
@@ -60,6 +61,34 @@ class MetricsTest():
     def test_radial_density(self):
         den = ps.metrics.radial_density(self.blobs)
         assert den.cdf.max() == 1
+
+    def test_props_to_DataFrame(self):
+        label = spim.label(self.im2D)[0]
+        rp = ps.metrics.regionprops_3D(label)
+        ps.metrics.props_to_DataFrame(rp)
+
+    def test_props_to_image(self):
+        label = spim.label(self.im2D)[0]
+        rp = ps.metrics.regionprops_3D(label)
+        ps.metrics.props_to_image(rp, self.im2D.shape, 'solidity')
+
+    def test_porosity_profile(self):
+        ps.metrics.porosity_profile(self.im2D, axis=0)
+        ps.metrics.porosity_profile(self.im2D, axis=1)
+        with pytest.raises(Exception):
+            ps.metrics.porosity_profile(self.im2D, axis=2)
+
+    def test_linear_density(self):
+        im = ps.filters.distance_transform_lin(self.im2D, axis=0, mode='both')
+        ps.metrics.linear_density(im)
+
+    def test_chord_length_distribution_2D(self):
+        chords = ps.filters.apply_chords(self.im2D)
+        ps.metrics.chord_length_distribution(chords, normalization='length')
+
+    def test_chord_length_distribution_3D(self):
+        chords = ps.filters.apply_chords(self.im3D)
+        ps.metrics.chord_length_distribution(chords, normalization='length')
 
 
 if __name__ == '__main__':
