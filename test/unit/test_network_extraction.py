@@ -74,7 +74,7 @@ class NetExtractTest():
         f = ['front', 'back']
         bd = ps.network_extraction.add_boundary_regions(regions, faces=f)
         assert bd.shape[1] == regions.shape[1]
-        f = ['bottom', 'top', 'left', 'right', 'front','back']
+        f = ['bottom', 'top', 'left', 'right', 'front', 'back']
         bd = ps.network_extraction.add_boundary_regions(regions, faces=f)
         assert bd.shape[0] > regions.shape[0]
         assert bd.shape[1] > regions.shape[1]
