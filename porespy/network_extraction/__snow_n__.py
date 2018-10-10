@@ -177,6 +177,7 @@ def label_boundary_cells(network=None, boundary_faces=None):
     f = boundary_faces
     if f is not None:
         coords = network['pore.coords']
+        condition = coords[~network['pore.boundary']]
         dic = {'left': 0, 'right': 0, 'front': 1, 'back': 1,
                'top': 2, 'bottom': 2}
         if all(coords[:, 2] == 0):
@@ -184,10 +185,10 @@ def label_boundary_cells(network=None, boundary_faces=None):
             dic['bottom'] = 1
         for i in f:
             if i in ['left', 'front', 'bottom']:
-                network['pore.{}'.format(i)] = (coords[:, dic[i]] <=
-                                                min(coords[:, dic[i]]))
+                network['pore.{}'.format(i)] = (coords[:, dic[i]] <
+                                                min(condition[:, dic[i]]))
             elif i in ['right', 'back', 'top']:
-                network['pore.{}'.format(i)] = (coords[:, dic[i]] >=
-                                                max(coords[:, dic[i]]))
+                network['pore.{}'.format(i)] = (coords[:, dic[i]] >
+                                                max(condition[:, dic[i]]))
 
     return network
