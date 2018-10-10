@@ -34,17 +34,17 @@ def add_boundary_regions(regions=None, faces=['front', 'back', 'left',
             regions = sp.pad(regions, 2, 'edge')
 
             # Remove unselected faces
-            if 'top' not in faces:
-                regions = regions[:, 3:, :]
-            if 'bottom' not in faces:
+            if 'front' not in faces:
+                regions = regions[:, 3:, :]  # y
+            if 'back' not in faces:
                 regions = regions[:, :-3, :]
             if 'left' not in faces:
-                regions = regions[3:, :, :]
+                regions = regions[3:, :, :]  # x
             if 'right' not in faces:
                 regions = regions[:-3, :, :]
-            if 'front' not in faces:
-                regions = regions[:, :, 3:]
-            if 'back' not in faces:
+            if 'bottom' not in faces:
+                regions = regions[:, :, 3:]  # z
+            if 'top' not in faces:
                 regions = regions[:, :, :-3]
 
         elif regions.ndim == 2:
@@ -66,12 +66,12 @@ def add_boundary_regions(regions=None, faces=['front', 'back', 'left',
 
             # Remove unselected faces
             if 'left' not in faces:
-                regions = regions[3:, :]
+                regions = regions[3:, :]  # x
             if 'right' not in faces:
                 regions = regions[:-3, :]
-            if 'top' not in faces:
-                regions = regions[:, 3:]
-            if 'bottom' not in faces:
+            if 'front' not in faces and 'bottom' not in faces:
+                regions = regions[:, 3:]  # y
+            if 'back' not in faces and 'top' not in faces:
                 regions = regions[:, :-3]
         else:
             print('add_boundary_regions works only on 2D and 3D images')

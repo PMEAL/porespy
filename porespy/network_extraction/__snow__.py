@@ -47,10 +47,15 @@ def snow(im, voxel_size=1, boundary_faces=['top', 'bottom', 'left',
     regions = add_boundary_regions(regions=regions, faces=boundary_faces)
     f = boundary_faces
     if f is not None:
-        faces = [(int('left' in f)*3, int('right' in f)*3),
-                 (int('top' in f)*3, int('bottom' in f)*3)]
+        if im.ndim == 2:
+            faces = [(int('left' in f)*3, int('right' in f)*3),
+                     (int(('front') in f)*3 or int(('bottom') in f)*3,
+                      int(('back') in f)*3 or int(('top') in f)*3)]
+
         if im.ndim == 3:
-            faces = [(int('front' in f)*3, int('back' in f)*3)] + faces
+            faces = [(int('left' in f)*3, int('right' in f)*3),
+                     (int('front' in f)*3, int('back' in f)*3),
+                     (int('top' in f)*3, int('bottom' in f)*3)]
         dt = sp.pad(dt, pad_width=faces, mode='edge')
         im = sp.pad(im, pad_width=faces, mode='edge')
     else:
@@ -66,6 +71,24 @@ def snow(im, voxel_size=1, boundary_faces=['top', 'bottom', 'left',
     loc4 = net['throat.conns'][:, 1] < b_num
     net['pore.boundary'] = boundary_labels
     net['throat.boundary'] = loc1 * loc2
-    net['pore.phase'] = pore_labels
-    net['throat.phase'] = loc3 * loc4
+    net['pore.internal'] = pore_labels
+    net['throat.internal'] = loc3 * loc4
+    # -------------------------------------------------------------------------
+    # label boundary pore faces
+    if f is not None:
+        coords = net['pore.coords']
+        condition = coords[net['pore.internal']]
+        dic = {'left': 0, 'right': 0, 'front': 1, 'back': 1,
+               'top': 2, 'bottom': 2}
+        if all(coords[:, 2] == 0):
+            dic['top'] = 1
+            dic['bottom'] = 1
+        print(dic)
+        for i in f:
+            if i in ['left', 'front', 'bottom']:
+                net['pore.{}'.format(i)] = (coords[:, dic[i]] <
+                                            min(condition[:, dic[i]]))
+            elif i in ['right', 'back', 'top']:
+                net['pore.{}'.format(i)] = (coords[:, dic[i]] >
+                                            max(condition[:, dic[i]]))
     return net
