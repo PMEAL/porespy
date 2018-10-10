@@ -62,7 +62,7 @@ class NetExtractTest():
                 found_nans = True
         assert found_nans is False
 
-     def test_add_bounadary_regions_2D(self):
+    def test_add_bounadary_regions_2D(self):
         im = self.im
         regions = ps.filters.snow_partitioning(im)
         f = ['left', 'right']
