@@ -42,9 +42,13 @@ class ExportTest():
 
     def test_dict_to_vtk(self):
         im = ps.generators.blobs(shape=[20, 20, 20])
+        ps.io.dict_to_vtk({'im': im})
+        a = os.stat('dictvtk.vti').st_size
+        os.remove('dictvtk.vti')
         ps.io.dict_to_vtk({'im': im,
                            'im_neg': ~im})
-        assert os.stat('dictvtk.vti').st_size == 16529
+        b = os.stat('dictvtk.vti').st_size
+        assert a < b
         os.remove('dictvtk.vti')
 
 
