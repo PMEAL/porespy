@@ -1,6 +1,6 @@
 import porespy as ps
 import numpy as np
-from scipy.stats import itemfreq
+import pytest
 
 
 class NetExtractTest():
@@ -92,6 +92,13 @@ class NetExtractTest():
         values = np.random.rand(regions.max() + 1)
         mapped = ps.network_extraction.map_to_regions(regions, values)
         assert mapped.max() < 1
+        # Some failures
+        values = np.random.rand(regions.max())
+        with pytest.raises(Exception):
+            mapped = ps.network_extraction.map_to_regions(regions, values)
+        values = np.random.rand(regions.max()+2)
+        with pytest.raises(Exception):
+            mapped = ps.network_extraction.map_to_regions(regions, values)
 
 
 if __name__ == '__main__':
