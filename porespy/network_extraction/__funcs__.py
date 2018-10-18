@@ -7,25 +7,26 @@ def map_to_regions(regions, values):
     r"""
     Maps pore values from a network onto the image from which it was extracted
 
-    This function assumed that the pore numbering has remained unchanged from
-    the region labels in the partitioned image.
+    This function assumes that the pore numbering in the network has remained
+    unchanged from the region labels in the partitioned image.
 
     Parameters
     ----------
     regions : ND-array
-        An image of the pore space partitioned in region and labeled
+        An image of the pore space partitioned into regions and labeled
 
     values : array_like
         An array containing the numerical values to insert into each region.
         The value at location *n* will be inserted into the image where
         ``regions`` is *n+1*.  This mis-match is caused by the fact that 0's
-        in the ``regions`` image is assumed to be the backgroung phase)
+        in the ``regions`` image is assumed to be the backgroung phase, while
+        pore index 0 is valid.
 
     Notes
     -----
     This function assumes that the array of pore values are indexed starting
     at location 0, while in the region image 0's indicate background phase and
-    the region indexing starts at 1.  That is region 1 corresponds to pore 0.
+    the region indexing starts at 1.  That is, region 1 corresponds to pore 0.
 
     """
     values = sp.array(values).flatten()
