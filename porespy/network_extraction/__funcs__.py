@@ -3,6 +3,39 @@ from porespy.tools import make_contiguous
 from skimage.segmentation import find_boundaries
 
 
+def map_to_regions(regions, values):
+    r"""
+    Maps pore values from a network onto the image from which it was extracted
+
+    This function assumed that the pore numbering has remained unchanged from
+    the region labels in the partitioned image.
+
+    Parameters
+    ----------
+    regions : ND-array
+        An image of the pore space partitioned in region and labeled
+
+    values : array_like
+        An array containing the numerical values to insert into each region.
+        The value at location *n* will be inserted into the image where
+        ``regions`` is *n+1*.  This mis-match is caused by the fact that 0's
+        in the ``regions`` image is assumed to be the backgroung phase)
+
+    Notes
+    -----
+    This function assumes that the array of pore values are indexed starting
+    at location 0, while in the region image 0's indicate background phase and
+    the region indexing starts at 1.  That is region 1 corresponds to pore 0.
+
+    """
+    values = sp.array(values).flatten()
+    if sp.size(values) != regions.max() + 1:
+        raise Exception('Number of values does not match number of regions')
+    im = sp.zeros_like(regions)
+    im = values[regions]
+    return im
+
+
 def add_boundary_regions(regions=None, faces=['front', 'back', 'left',
                                               'right', 'top', 'bottom']):
     # -------------------------------------------------------------------------
