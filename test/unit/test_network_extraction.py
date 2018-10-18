@@ -1,6 +1,6 @@
 import porespy as ps
 import numpy as np
-from scipy.stats import itemfreq
+import pytest
 
 
 class NetExtractTest():
@@ -85,6 +85,20 @@ class NetExtractTest():
         assert bd.shape[0] > regions.shape[0]
         assert bd.shape[1] > regions.shape[1]
         assert bd.shape[2] > regions.shape[2]
+
+    def test_map_to_regions(self):
+        im = self.im
+        regions = ps.filters.snow_partitioning(im)
+        values = np.random.rand(regions.max() + 1)
+        mapped = ps.network_extraction.map_to_regions(regions, values)
+        assert mapped.max() < 1
+        # Some failures
+        values = np.random.rand(regions.max())
+        with pytest.raises(Exception):
+            mapped = ps.network_extraction.map_to_regions(regions, values)
+        values = np.random.rand(regions.max()+2)
+        with pytest.raises(Exception):
+            mapped = ps.network_extraction.map_to_regions(regions, values)
 
 
 if __name__ == '__main__':
