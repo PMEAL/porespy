@@ -38,6 +38,14 @@ class NetExtractTest():
                 found_nans = True
         assert found_nans is False
 
+    def test_snow(self):
+        net = ps.network_extraction.snow(self.im3d)
+        found_nans = False
+        for key in net.keys():
+            if np.any(np.isnan(net[key])):
+                found_nans = True
+        assert found_nans is False
+
 #    def test_snow_dual_2d(self):
 #        net = ps.network_extraction.snow_dual(self.im)
 #        found_nans = False
@@ -59,27 +67,30 @@ class NetExtractTest():
         regions = ps.filters.snow_partitioning(im)
         f = ['left', 'right']
         bd = ps.network_extraction.add_boundary_regions(regions, faces=f)
-        assert bd.shape[1] > regions.shape[1]
+        assert bd.shape[0] > regions.shape[0]
         f = ['bottom', 'top']
         bd = ps.network_extraction.add_boundary_regions(regions, faces=f)
-        assert bd.shape[0] > regions.shape[0]
-        f = ['bottom', 'top', 'left', 'right']
-        bd = ps.network_extraction.add_boundary_regions(regions, faces=f)
-        assert bd.shape[0] > regions.shape[0]
         assert bd.shape[1] > regions.shape[1]
         f = ['front', 'back']
         bd = ps.network_extraction.add_boundary_regions(regions, faces=f)
-        assert bd.shape == regions.shape
+        assert bd.shape[1] > regions.shape[1]
+        f = ['bottom', 'top', 'left', 'right', 'front', 'back']
+        bd = ps.network_extraction.add_boundary_regions(regions, faces=f)
+        assert bd.shape[0] > regions.shape[0]
+        assert bd.shape[1] > regions.shape[1]
 
     def test_add_bounadary_regions_3D(self):
         im = self.im3d
         regions = ps.filters.snow_partitioning(im)
         f = ['left', 'right']
         bd = ps.network_extraction.add_boundary_regions(regions, faces=f)
-        assert bd.shape[2] > regions.shape[2]
-        f = ['bottom', 'top']
+        assert bd.shape[0] > regions.shape[0]
+        f = ['front', 'back']
         bd = ps.network_extraction.add_boundary_regions(regions, faces=f)
         assert bd.shape[1] > regions.shape[1]
+        f = ['bottom', 'top']
+        bd = ps.network_extraction.add_boundary_regions(regions, faces=f)
+        assert bd.shape[2] > regions.shape[2]
         f = ['bottom', 'top', 'left', 'right', 'front', 'back']
         bd = ps.network_extraction.add_boundary_regions(regions, faces=f)
         assert bd.shape[0] > regions.shape[0]
