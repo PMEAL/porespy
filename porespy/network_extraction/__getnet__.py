@@ -2,7 +2,6 @@ import scipy as sp
 import scipy.ndimage as spim
 from porespy.tools import extend_slice
 from tqdm import tqdm
-from skimage import measure
 
 
 def regions_to_network(im, dt=None, voxel_size=1):
@@ -59,8 +58,6 @@ def regions_to_network(im, dt=None, voxel_size=1):
     p_dia_global = sp.zeros((Np, ), dtype=float)
     p_label = sp.zeros((Np, ), dtype=int)
     p_area_surf = sp.zeros((Np, ), dtype=int)
-    mc_sa = sp.zeros((Np, ), dtype=int)
-    mc_combined = []
     t_conns = []
     t_dia_inscribed = []
     t_area = []
@@ -76,9 +73,6 @@ def regions_to_network(im, dt=None, voxel_size=1):
         sub_im = im[s]
         sub_dt = dt[s]
         pore_im = sub_im == i
-        # ---------------------------------------------------------------------
-        mc_sa[pore] = get_surface_area(im=pore_im)
-        # ---------------------------------------------------------------------
         padded_mask = sp.pad(pore_im, pad_width=1, mode='constant')
         pore_dt = spim.distance_transform_edt(padded_mask)
         s_offset = sp.array([i.start for i in s])
@@ -98,10 +92,6 @@ def regions_to_network(im, dt=None, voxel_size=1):
                 t_dia_inscribed.append(2*sp.amax(sub_dt[vx]))
                 t_perimeter.append(sp.sum(sub_dt[vx] < 2))
                 t_area.append(sp.size(vx[0]))
-                # -------------------------------------------------------------
-                regions_mask = get_regions_mask(regions=im, labels=[i, j])
-                mc_combined.append(get_surface_area(im=regions_mask))
-                # -------------------------------------------------------------
                 t_inds = tuple([i+j for i, j in zip(vx, s_offset)])
                 temp = sp.where(dt[t_inds] == sp.amax(dt[t_inds]))[0][0]
                 if im.ndim == 2:
@@ -116,12 +106,6 @@ def regions_to_network(im, dt=None, voxel_size=1):
     if im.ndim == 2:  # If 2D, add 0's in 3rd dimension
         p_coords = sp.vstack((p_coords.T, sp.zeros((Np, )))).T
         t_coords = sp.vstack((sp.array(t_coords).T, sp.zeros((Nt, )))).T
-    # -------------------------------------------------------------------------
-    # Marching cube surface area calculation
-    cn = sp.array(t_conns)
-    t_mc_a = 0.5 * (mc_sa[cn[:, 0]] + mc_sa[cn[:, 1]] - mc_combined)
-    t_mc_a[t_mc_a < 0] = 1
-    # -------------------------------------------------------------------------
 
     net = {}
     net['pore.all'] = sp.ones((Np, ), dtype=bool)
@@ -138,8 +122,6 @@ def regions_to_network(im, dt=None, voxel_size=1):
     net['pore.equivalent_diameter'] = 2*((3/4*net['pore.volume']/sp.pi)**(1/3))
     net['pore.extended_diameter'] = sp.copy(p_dia_global)*voxel_size
     net['pore.surface_area'] = sp.copy(p_area_surf)*(voxel_size)**2
-    net['pore.surface_area_mc'] = sp.copy(mc_sa)*(voxel_size)**2
-    net['throat.area_mc'] = sp.array(t_mc_a)*(voxel_size**2)
     net['throat.diameter'] = sp.array(t_dia_inscribed)*voxel_size
     net['throat.inscribed_diameter'] = sp.array(t_dia_inscribed)*voxel_size
     net['throat.area'] = sp.array(t_area)*(voxel_size**2)
@@ -159,60 +141,3 @@ def regions_to_network(im, dt=None, voxel_size=1):
     net['throat.direct_length'] = sp.sqrt(sp.sum(dist**2, axis=1))
 
     return net
-
-
-def get_surface_area(im: bool):
-    r"""
-    Calulates surface area of given image using marching cube algorithm
-
-    Parameters
-    ----------
-    im: ND-array
-        A boolean image with True values showing regions of interest
-
-    Returns
-    -------
-    Measure marching cube surface area of region of interest
-    """
-
-    from skimage.morphology import disk, square, ball, cube
-
-    if im.ndim == 3:
-        padded_mask = sp.pad(im, pad_width=1, mode='constant')
-        padded_mask = spim.convolve(padded_mask*1.0,
-                                    weights=ball(1))/sp.sum(ball(1))
-    else:
-        padded_mask = sp.reshape(im, (1,) + im.shape)
-        padded_mask = sp.pad(padded_mask, pad_width=1, mode='constant')
-    verts, faces, norm, val = measure.marching_cubes_lewiner(padded_mask)
-    mc_surface_area = measure.mesh_surface_area(verts, faces)
-
-    return mc_surface_area
-
-
-def get_regions_mask(regions, labels: list, compress_border=True):
-    r"""
-    Find boolean mask of specified labels in a segmented image.
-
-    Parameters
-    -----------
-    regions: ND-array
-        A segmented image with regions having unique labels.
-
-    labels: list or 1D-array
-        A list of label for which boolean mask is required
-
-    compress_border: bool
-        If True then image shape will be compressed to only represent mask
-        requested.
-
-    Returns
-    -------
-    A boolean mask where True values referes to the region of specified labels
-    """
-
-    mask = sp.isin(regions, labels, assume_unique=True)
-    if compress_border is True:
-        mask_slice = spim.find_objects(mask)
-        mask = mask[mask_slice[0]]
-    return mask

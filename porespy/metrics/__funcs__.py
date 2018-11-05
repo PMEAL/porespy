@@ -12,6 +12,7 @@ from porespy.metrics import props_to_image
 from collections import namedtuple
 from tqdm import tqdm
 from scipy import fftpack as sp_ft
+from skimage import measure
 
 
 def representative_elementary_volume(im, npoints=1000):
@@ -586,3 +587,141 @@ def chord_length_distribution(im, bins=None, log=False, voxel_size=1,
                       'bin_centers', 'bin_edges', 'bin_widths'))
     return cld(h.bin_centers, h.pdf, h.cdf, h.relfreq,
                h.bin_centers, h.bin_edges, h.bin_widths)
+
+
+def get_surface_area(im: bool):
+    r"""
+    Calulates surface area of given image using marching cube algorithm
+
+    Parameters
+    ----------
+    im: ND-array
+        A boolean image with True values showing regions of interest
+
+    Returns
+    -------
+    Measure marching cube surface area of region of interest
+    """
+
+    from skimage.morphology import ball
+
+    if im.ndim == 3:
+        padded_mask = sp.pad(im, pad_width=1, mode='constant')
+        padded_mask = spim.convolve(padded_mask*1.0,
+                                    weights=ball(1))/sp.sum(ball(1))
+    else:
+        padded_mask = sp.reshape(im, (1,) + im.shape)
+        padded_mask = sp.pad(padded_mask, pad_width=1, mode='constant')
+    verts, faces, norm, val = measure.marching_cubes_lewiner(padded_mask)
+    mc_surface_area = measure.mesh_surface_area(verts, faces)
+
+    return mc_surface_area
+
+
+def extract_regions_area(label_image, voxel_size=1, interfacial_area=True):
+    r"""
+    Analyzes an image that has been partitioned into pore regions and extracts
+    marching cube surface area and interfacial area between two regions.
+
+    Parameters
+    ----------
+    label_image : ND-array
+        An image of the pore space partitioned into individual pore regions.
+        Note that zeros in the image will not be considered for area calculation.
+
+    voxel_size : scalar
+        The resolution of the image, expressed as the length of one side of a
+        voxel, so the volume of a voxel would be **voxel_size**-cubed.  The
+        default is 1, which is useful when overlaying the PNM on the original
+        image since the scale of the image is alway 1 unit lenth per voxel.
+
+    interfacial_area: bool
+        If True then calculates the interfacial area of two interconnected
+        regions along with marching cube surface area of individual regions.
+
+    Returns
+    -------
+    A dictionary containing marching cube surface area and interfacial area of
+    interconnected regions. The dictionary names use the OpenPNM convention
+    (i.e. 'pore.surface_area', 'throat.interfacial_area') so it may be converted
+    directly to an OpenPNM network object using the ``update`` command.
+    """
+    print('_'*60)
+    print('Extracting regions surface area using marching cube algorithm')
+    from skimage.morphology import ball
+
+    # Get 'slices' into im for each pore region
+    im = label_image
+    slices = spim.find_objects(im)
+
+    # Initialize arrays
+    Ps = sp.arange(1, sp.amax(im)+1)
+    Np = sp.size(Ps)
+
+    mc_sa = sp.zeros((Np, ), dtype=int)
+    mc_combined = []
+    cn = []
+
+    # Start extracting marching cube area from im
+    for i in tqdm(Ps):
+        pore = i - 1
+        s = slices[pore]
+        sub_im = im[s]
+        mask_im = sub_im == i
+        mc_sa[pore] = get_surface_area(im=mask_im)
+        im_w_throats = spim.binary_dilation(input=mask_im, structure=ball(1))
+        im_w_throats = im_w_throats*sub_im
+        Pn = sp.unique(im_w_throats)[1:] - 1
+        if interfacial_area is True:
+            for j in Pn:
+                if j > pore:
+                    cn.append([pore, j])
+                    merged_region = im[(min(slices[pore][0].start,
+                                            slices[j][0].start)):
+                                       max(slices[pore][0].stop,
+                                           slices[j][0].stop),
+                                       (min(slices[pore][1].start,
+                                            slices[j][1].start)):
+                                       max(slices[pore][1].stop,
+                                           slices[j][1].stop)]
+                    merged_region = ((merged_region == pore + 1) +
+                                     (merged_region == j + 1))
+                    mc_combined.append(get_surface_area(im=merged_region))
+
+    region = {}
+    if interfacial_area is True:
+        # Marching cube interfacial area calculation
+        cn = sp.array(cn)
+        t_mc_a = 0.5 * (mc_sa[cn[:, 0]] + mc_sa[cn[:, 1]] - mc_combined)
+        t_mc_a[t_mc_a < 0] = 1
+        region['throat.interfacial_area'] = t_mc_a * voxel_size**2
+    region['pore.surface_area'] = mc_sa * voxel_size**2
+
+    return region
+
+def get_regions_mask(label_image, labels: list, compress_border=True):
+    r"""
+    Find boolean mask of specified labels in a segmented image.
+
+    Parameters
+    -----------
+    label_image: ND-array
+        A segmented image with regions having unique labels.
+
+    labels: list or 1D-array
+        A list of label for which boolean mask is required
+
+    compress_border: bool
+        If True then image shape will be compressed to only represent mask
+        requested.
+
+    Returns
+    -------
+    A boolean mask where True values referes to the region of specified labels
+    """
+
+    mask = sp.isin(label_image, labels, assume_unique=True)
+    if compress_border is True:
+        mask_slice = spim.find_objects(mask)
+        mask = mask[mask_slice[0]]
+    return mask
