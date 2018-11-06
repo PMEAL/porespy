@@ -13,7 +13,7 @@ from collections import namedtuple
 from tqdm import tqdm
 from scipy import fftpack as sp_ft
 from skimage import measure
-
+from tqdm import tqdm
 
 def representative_elementary_volume(im, npoints=1000):
     r"""
@@ -589,33 +589,6 @@ def chord_length_distribution(im, bins=None, log=False, voxel_size=1,
                h.bin_centers, h.bin_edges, h.bin_widths)
 
 
-def get_surface_area(im: bool):
-    r"""
-    Calulates surface area of given image using marching cube algorithm
-
-    Parameters
-    ----------
-    im: ND-array
-        A boolean image with True values showing regions of interest
-
-    Returns
-    -------
-    Measure marching cube surface area of region of interest
-    """
-
-    from skimage.morphology import ball
-
-    if im.ndim == 3:
-        padded_mask = sp.pad(im, pad_width=1, mode='constant')
-        padded_mask = spim.convolve(padded_mask*1.0,
-                                    weights=ball(1))/sp.sum(ball(1))
-    else:
-        padded_mask = sp.reshape(im, (1,) + im.shape)
-        padded_mask = sp.pad(padded_mask, pad_width=1, mode='constant')
-    verts, faces, norm, val = measure.marching_cubes_lewiner(padded_mask)
-    mc_surface_area = measure.mesh_surface_area(verts, faces)
-
-    return mc_surface_area
 
 
 def extract_regions_area(label_image, voxel_size=1, interfacial_area=True):
@@ -661,14 +634,14 @@ def extract_regions_area(label_image, voxel_size=1, interfacial_area=True):
     mc_sa = sp.zeros((Np, ), dtype=int)
     mc_combined = []
     cn = []
-
+    region = {}
     # Start extracting marching cube area from im
     for i in tqdm(Ps):
         pore = i - 1
-        s = slices[pore]
+        s = extend_slice(slices[pore], im.shape)
         sub_im = im[s]
         mask_im = sub_im == i
-        mc_sa[pore] = get_surface_area(im=mask_im)
+        mc_sa[pore] = get_marching_cube_area(im=mask_im)
         im_w_throats = spim.binary_dilation(input=mask_im, structure=ball(1))
         im_w_throats = im_w_throats*sub_im
         Pn = sp.unique(im_w_throats)[1:] - 1
@@ -686,18 +659,47 @@ def extract_regions_area(label_image, voxel_size=1, interfacial_area=True):
                                            slices[j][1].stop)]
                     merged_region = ((merged_region == pore + 1) +
                                      (merged_region == j + 1))
-                    mc_combined.append(get_surface_area(im=merged_region))
+                    mc_combined.append(get_marching_cube_area(im=merged_region))
 
-    region = {}
     if interfacial_area is True:
         # Marching cube interfacial area calculation
         cn = sp.array(cn)
         t_mc_a = 0.5 * (mc_sa[cn[:, 0]] + mc_sa[cn[:, 1]] - mc_combined)
         t_mc_a[t_mc_a < 0] = 1
         region['throat.interfacial_area'] = t_mc_a * voxel_size**2
-    region['pore.surface_area'] = mc_sa * voxel_size**2
+    region['pore.surface_area_mc'] = mc_sa * voxel_size**2
 
     return region
+
+
+def get_marching_cube_area(im: bool):
+    r"""
+    Calulates surface area of given image using marching cube algorithm
+
+    Parameters
+    ----------
+    im: ND-array
+        A boolean image with True values showing regions of interest
+
+    Returns
+    -------
+    Measure marching cube surface area of region of interest
+    """
+
+    from skimage.morphology import ball
+
+    if im.ndim == 3:
+        padded_mask = sp.pad(im, pad_width=1, mode='constant')
+        padded_mask = spim.convolve(padded_mask*1.0,
+                                    weights=ball(1))/sp.sum(ball(1))
+    else:
+        padded_mask = sp.reshape(im, (1,) + im.shape)
+        padded_mask = sp.pad(padded_mask, pad_width=1, mode='constant')
+    verts, faces, norm, val = measure.marching_cubes_lewiner(padded_mask)
+    mc_surface_area = measure.mesh_surface_area(verts, faces)
+
+    return mc_surface_area
+
 
 def get_regions_mask(label_image, labels: list, compress_border=True):
     r"""
@@ -719,9 +721,9 @@ def get_regions_mask(label_image, labels: list, compress_border=True):
     -------
     A boolean mask where True values referes to the region of specified labels
     """
-
     mask = sp.isin(label_image, labels, assume_unique=True)
     if compress_border is True:
         mask_slice = spim.find_objects(mask)
         mask = mask[mask_slice[0]]
+
     return mask
