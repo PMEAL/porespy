@@ -624,11 +624,9 @@ def extract_regions_area(label_image, voxel_size=1, interfacial_area=True):
     # Get 'slices' into im for each pore region
     im = label_image
     slices = spim.find_objects(im)
-
     # Initialize arrays
     Ps = sp.arange(1, sp.amax(im)+1)
     Np = sp.size(Ps)
-
     mc_sa = sp.zeros((Np, ), dtype=int)
     mc_combined = []
     cn = []
