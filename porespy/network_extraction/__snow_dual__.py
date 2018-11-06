@@ -2,10 +2,12 @@ import scipy as sp
 from porespy.network_extraction import regions_to_network
 from porespy.network_extraction import add_boundary_regions
 from porespy.filters import snow_partitioning
+from porespy.metrics.__funcs__ import extract_regions_area
 
 
 def snow_dual(im, voxel_size=1, boundary_faces=['top', 'bottom', 'left',
-                                                'right', 'front', 'back']):
+                                                'right', 'front', 'back'],
+              extract_MC_area=False):
 
     r"""
     Analyzes an image that has been partitioned into void and solid regions
@@ -34,6 +36,11 @@ def snow_dual(im, voxel_size=1, boundary_faces=['top', 'bottom', 'left',
         ‘front’ and ‘back’ face labels to assign boundary nodes. If no label is
         assigned then all six faces will be selected as boundary nodes
         automatically which can be trimmed later on based on user requirements.
+
+    extract_MC_area: bool
+        If True extract surface area and interfacial area of regions using
+        marching cube algorithm. This is a more accurate representation of area
+        in extracted network.
 
     Returns
     -------
@@ -84,6 +91,12 @@ def snow_dual(im, voxel_size=1, boundary_faces=['top', 'bottom', 'left',
     # Extract void,solid and throat information from image
     net = regions_to_network(im=regions, dt=dt, voxel_size=voxel_size)
     # -------------------------------------------------------------------------
+    # Extract marching cube surface area and interfacial area of regions
+    if extract_MC_area is True:
+        mc_area = extract_regions_area(label_image=regions, voxel_size=voxel_size,
+                                       interfacial_area=True)
+        net = {**net, **mc_area}
+    # -------------------------------------------------------------------------
     # Find void to void, void to solid and solid to solid throat conns
     loc1 = net['throat.conns'][:, 0] < solid_num
     loc2 = net['throat.conns'][:, 1] >= solid_num
@@ -115,15 +128,16 @@ def snow_dual(im, voxel_size=1, boundary_faces=['top', 'bottom', 'left',
     p_solid_surf = sp.concatenate((p_sa, s_pa, b_sa))
     # -------------------------------------------------------------------------
     # Calculates interfacial area using marching cube method
-    ps_c = net['throat.area_mc'][pore_solid_labels]
-    p_sa_c = sp.bincount(p_conns, ps_c)
-    s_pa_c = sp.bincount(s_conns, ps_c)
-    s_pa_c = sp.trim_zeros(s_pa_c)  # remove pore surface area labels
-    p_solid_surf_c = sp.concatenate((p_sa_c, s_pa_c, b_sa))
+    if extract_MC_area is True:
+        ps_c = net['throat.interfacial_area'][pore_solid_labels]
+        p_sa_c = sp.bincount(p_conns, ps_c)
+        s_pa_c = sp.bincount(s_conns, ps_c)
+        s_pa_c = sp.trim_zeros(s_pa_c)  # remove pore surface area labels
+        p_solid_surf_c = sp.concatenate((p_sa_c, s_pa_c, b_sa))
+        net['pore.solid_IFA_mc'] = (p_solid_surf_c * voxel_size**2)
     # -------------------------------------------------------------------------
     # Adding additional information of dual network
     net['pore.solid_IFA'] = p_solid_surf * voxel_size**2
-    net['pore.solid_IFA_mc'] = (p_solid_surf_c * voxel_size**2)
     net['throat.void'] = pore_pore_labels
     net['throat.interconnect'] = pore_solid_labels
     net['throat.solid'] = solid_solid_labels
