@@ -5,8 +5,9 @@ from porespy.filters import snow_partitioning
 from porespy.metrics.__funcs__ import extract_regions_area
 
 
-def snow_dual(im, voxel_size=1, boundary_faces=['top', 'bottom', 'left',
-                                                'right', 'front', 'back'],
+def snow_dual(im,
+              voxel_size=1,
+              boundary_faces=['top', 'bottom', 'left', 'right', 'front', 'back'],
               extract_MC_area=False):
 
     r"""
