@@ -13,7 +13,7 @@ from collections import namedtuple
 from tqdm import tqdm
 from scipy import fftpack as sp_ft
 from skimage import measure
-from tqdm import tqdm
+
 
 def representative_elementary_volume(im, npoints=1000):
     r"""
@@ -587,8 +587,6 @@ def chord_length_distribution(im, bins=None, log=False, voxel_size=1,
                       'bin_centers', 'bin_edges', 'bin_widths'))
     return cld(h.bin_centers, h.pdf, h.cdf, h.relfreq,
                h.bin_centers, h.bin_edges, h.bin_widths)
-
-
 
 
 def extract_regions_area(label_image, voxel_size=1, interfacial_area=True):
