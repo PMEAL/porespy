@@ -1,8 +1,8 @@
 from porespy.network_extraction import regions_to_network, add_boundary_regions
 from porespy.filters import snow_partitioning
 from porespy.tools import make_contiguous
+from porespy.metrics import extract_regions_area
 import scipy as sp
-from porespy.metrics.__funcs__ import extract_regions_area
 
 
 def snow(im,

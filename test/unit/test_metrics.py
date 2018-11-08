@@ -90,6 +90,23 @@ class MetricsTest():
         chords = ps.filters.apply_chords(self.im3D)
         ps.metrics.chord_length_distribution(chords, normalization='length')
 
+    def test_get_marching_cube_area(self):
+        surface_area = ps.metrics.get_marching_cube_area(self.im3D)
+        assert int(surface_area) == 27108
+
+    def test_get_regions_mask(self):
+        mask = ps.metrics.get_regions_mask(self.im3D, labels=[1],
+                                           compress_border=True)
+        assert sp.sum(mask) == 116587
+
+    def test_extract_regions_area(self):
+        regions = ps.filters.snow_partitioning(self.im3D)
+        net = ps.metrics.extract_regions_area(label_image=regions)
+        found_nans = False
+        for key in net.keys():
+            if sp.any(sp.isnan(net[key])):
+                found_nans = True
+        assert found_nans is False
 
 if __name__ == '__main__':
     t = MetricsTest()
