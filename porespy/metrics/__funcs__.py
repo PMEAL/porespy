@@ -619,10 +619,13 @@ def extract_regions_area(label_image, voxel_size=1, interfacial_area=True):
     """
     print('_'*60)
     print('Extracting regions surface area using marching cube algorithm')
-    from skimage.morphology import ball
+    from skimage.morphology import disk, square, ball, cube
+    im = label_image
+    if im.ndim == 2:
+        cube = square
+        ball = disk
 
     # Get 'slices' into im for each pore region
-    im = label_image
     slices = spim.find_objects(im)
     # Initialize arrays
     Ps = sp.arange(1, sp.amax(im)+1)

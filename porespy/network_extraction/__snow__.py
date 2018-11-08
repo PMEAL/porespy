@@ -2,10 +2,13 @@ from porespy.network_extraction import regions_to_network, add_boundary_regions
 from porespy.filters import snow_partitioning
 from porespy.tools import make_contiguous
 import scipy as sp
+from porespy.metrics.__funcs__ import extract_regions_area
 
 
-def snow(im, voxel_size=1, boundary_faces=['top', 'bottom', 'left',
-                                           'right', 'front', 'back']):
+def snow(im,
+         voxel_size=1,
+         boundary_faces=['top', 'bottom', 'left', 'right', 'front', 'back'],
+         extract_MC_area=False):
     r"""
     Analyzes an image that has been partitioned into void and solid regions
     and extracts the void and solid phase geometry as well as network
@@ -31,6 +34,11 @@ def snow(im, voxel_size=1, boundary_faces=['top', 'bottom', 'left',
         assigned then all six faces will be selected as boundary nodes
         automatically which can be trimmed later on based on user requirements.
 
+    extract_MC_area: bool
+        If True extract surface area and interfacial area of regions using
+        marching cube algorithm. This is a more accurate representation of area
+        in extracted network.
+
     Returns
     -------
     A dictionary containing the void phase size data, as well as the network
@@ -39,12 +47,18 @@ def snow(im, voxel_size=1, boundary_faces=['top', 'bottom', 'left',
     directly to an OpenPNM network object using the ``update`` command.
     """
 
+    # -------------------------------------------------------------------------
+    # SNOW void phase
     regions = snow_partitioning(im=im, return_all=True)
     im = regions.im
     dt = regions.dt
     regions = regions.regions
     b_num = sp.amax(regions)
+    # -------------------------------------------------------------------------
+    # Boundary Conditions
     regions = add_boundary_regions(regions=regions, faces=boundary_faces)
+    # -------------------------------------------------------------------------
+    # Padding distance transform to extract geometrical properties
     f = boundary_faces
     if f is not None:
         if im.ndim == 2:
@@ -62,7 +76,17 @@ def snow(im, voxel_size=1, boundary_faces=['top', 'bottom', 'left',
         dt = dt
     regions = regions*im
     regions = make_contiguous(regions)
+    # -------------------------------------------------------------------------
+    # Extract void and throat information from image
     net = regions_to_network(im=regions, dt=dt, voxel_size=voxel_size)
+    # -------------------------------------------------------------------------
+    # Extract marching cube surface area and interfacial area of regions
+    if extract_MC_area is True:
+        mc_area = extract_regions_area(label_image=regions, voxel_size=voxel_size,
+                                       interfacial_area=True)
+        net = {**net, **mc_area}
+    # -------------------------------------------------------------------------
+    # Find void to void connections of boundary and internal voids
     boundary_labels = net['pore.label'] > b_num
     loc1 = net['throat.conns'][:, 0] < b_num
     loc2 = net['throat.conns'][:, 1] >= b_num
