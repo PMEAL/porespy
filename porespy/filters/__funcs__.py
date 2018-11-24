@@ -237,9 +237,9 @@ def reduce_peaks(peaks):
                                             index=sp.arange(1, N+1))
     inds = sp.floor(inds).astype(int)
     # Centroid may not be on old pixel, so create a new peaks image
-    peaks = sp.zeros_like(peaks, dtype=bool)
-    peaks[tuple(inds.T)] = True
-    return peaks
+    peaks_new = sp.zeros_like(peaks, dtype=bool)
+    peaks_new[tuple(inds.T)] = True
+    return peaks_new
 
 
 def trim_saddle_points(peaks, dt, max_iters=10):
@@ -268,6 +268,7 @@ def trim_saddle_points(peaks, dt, max_iters=10):
     -------
     An image with fewer peaks than was received.
     """
+    peaks = sp.copy(peaks)
     if dt.ndim == 2:
         from skimage.morphology import square as cube
     else:
@@ -325,6 +326,7 @@ def trim_nearby_peaks(peaks, dt):
     each pair is considered.  This ensures that only the single peak that is
     furthest from the solid is kept.  No iteration is required.
     """
+    peaks = sp.copy(peaks)
     if dt.ndim == 2:
         from skimage.morphology import square as cube
     else:
@@ -418,6 +420,7 @@ def fill_blind_pores(im):
     find_disconnected_voxels
 
     """
+    im = sp.copy(im)
     holes = find_disconnected_voxels(im)
     im[holes] = False
     return im
@@ -441,6 +444,7 @@ def trim_floating_solid(im):
     find_disconnected_voxels
 
     """
+    im = sp.copy(im)
     holes = find_disconnected_voxels(~im)
     im[holes] = True
     return im
