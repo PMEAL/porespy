@@ -17,6 +17,13 @@ class FilterTest():
         self.flood_im[8, :] = 0
         self.flood_im_dt = spim.distance_transform_edt(self.flood_im)
 
+    def test_im_in_not_im_out(self):
+        im = ps.generators.blobs(shape=[50, 50])
+        for item in ps.filters.__dir__():
+            if ~item.startswith('__'):
+                temp = getattr(ps.filters, item)
+                assert temp is not im
+
     def test_porosimetry_npts_10(self):
         mip = ps.filters.porosimetry(im=self.im, sizes=10)
         ans = sp.array([0.00000000, 1.00000000, 1.37871571, 1.61887041,
