@@ -598,7 +598,8 @@ def extract_regions_area(label_image, voxel_size=1, interfacial_area=True):
     ----------
     label_image : ND-array
         An image of the pore space partitioned into individual pore regions.
-        Note that zeros in the image will not be considered for area calculation.
+        Note that zeros in the image will not be considered for area
+        calculation.
 
     voxel_size : scalar
         The resolution of the image, expressed as the length of one side of a
@@ -614,8 +615,9 @@ def extract_regions_area(label_image, voxel_size=1, interfacial_area=True):
     -------
     A dictionary containing marching cube surface area and interfacial area of
     interconnected regions. The dictionary names use the OpenPNM convention
-    (i.e. 'pore.surface_area', 'throat.interfacial_area') so it may be converted
-    directly to an OpenPNM network object using the ``update`` command.
+    (i.e. 'pore.surface_area', 'throat.interfacial_area') so it may be
+    converted directly to an OpenPNM network object using the ``update``
+    command.
     """
     print('_'*60)
     print('Extracting regions surface area using marching cube algorithm')
@@ -640,7 +642,7 @@ def extract_regions_area(label_image, voxel_size=1, interfacial_area=True):
         s = extend_slice(slices[pore], im.shape)
         sub_im = im[s]
         mask_im = sub_im == i
-        mc_sa[pore] = get_marching_cube_area(im=mask_im)
+        mc_sa[pore] = get_surface_area(im=mask_im)
         im_w_throats = spim.binary_dilation(input=mask_im, structure=ball(1))
         im_w_throats = im_w_throats*sub_im
         Pn = sp.unique(im_w_throats)[1:] - 1
@@ -658,7 +660,7 @@ def extract_regions_area(label_image, voxel_size=1, interfacial_area=True):
                                            slices[j][1].stop)]
                     merged_region = ((merged_region == pore + 1) +
                                      (merged_region == j + 1))
-                    mc_combined.append(get_marching_cube_area(im=merged_region))
+                    mc_combined.append(get_surface_area(region=merged_region))
 
     if interfacial_area is True:
         # Marching cube interfacial area calculation
@@ -671,58 +673,71 @@ def extract_regions_area(label_image, voxel_size=1, interfacial_area=True):
     return region
 
 
-def get_marching_cube_area(im: bool):
+def get_surface_area(region: bool, mode='mc'):
     r"""
-    Calulates surface area of given image using marching cube algorithm
+    Calulates surface area of given region using the specified method
 
     Parameters
     ----------
-    im: ND-array
-        A boolean image with True values showing regions of interest
+    im : ND-array
+        A boolean image with True values showing region of interest
+
+    mode : string
+        Controls which method is used for calculating the area.  Options are:
+
+            **'mc'** : Marching cubes, using the Lewinar method from
+            Scikit-Image
 
     Returns
     -------
-    Measure marching cube surface area of region of interest
+    A scalar value of the surface area of region of interest
+
+    Notes
+    -----
+    At the moment only the Lewinar method is implemented
     """
 
     from skimage.morphology import ball
-
-    if im.ndim == 3:
-        padded_mask = sp.pad(im, pad_width=1, mode='constant')
-        padded_mask = spim.convolve(padded_mask*1.0,
-                                    weights=ball(1))/sp.sum(ball(1))
+    im = region
+    if mode == 'mc':
+        if im.ndim == 3:
+            padded_mask = sp.pad(im, pad_width=1, mode='constant')
+            padded_mask = spim.convolve(padded_mask*1.0,
+                                        weights=ball(1))/sp.sum(ball(1))
+        else:
+            padded_mask = sp.reshape(im, (1,) + im.shape)
+            padded_mask = sp.pad(padded_mask, pad_width=1, mode='constant')
+        verts, faces, norm, val = measure.marching_cubes_lewiner(padded_mask)
+        surface_area = measure.mesh_surface_area(verts, faces)
     else:
-        padded_mask = sp.reshape(im, (1,) + im.shape)
-        padded_mask = sp.pad(padded_mask, pad_width=1, mode='constant')
-    verts, faces, norm, val = measure.marching_cubes_lewiner(padded_mask)
-    mc_surface_area = measure.mesh_surface_area(verts, faces)
-
-    return mc_surface_area
+        raise Exception('Unsupported mode:' + mode)
+    return surface_area
 
 
-def get_regions_mask(label_image, labels: list, compress_border=True):
+def combine_region(regions, labels: list, compress_border=True):
     r"""
-    Find boolean mask of specified labels in a segmented image.
+    Combine given regions into a single boolean mask
 
     Parameters
     -----------
-    label_image: ND-array
-        A segmented image with regions having unique labels.
+    regions : ND-array
+        An image containing an arbitrary number of labeled regions
 
-    labels: list or 1D-array
-        A list of label for which boolean mask is required
+    labels : list or 1D-array
+        A list of labels indicating which regions to combine
 
-    compress_border: bool
-        If True then image shape will be compressed to only represent mask
+    compress_border : bool
+        If ``True`` then image shape will be compressed to only represent mask
         requested.
 
     Returns
     -------
-    A boolean mask where True values referes to the region of specified labels
+    A boolean mask with ``True`` values indicating where the given labels were
+    found.
+
     """
-    mask = sp.isin(label_image, labels, assume_unique=True)
+    mask = sp.isin(regions, labels, assume_unique=True)
     if compress_border is True:
         mask_slice = spim.find_objects(mask)
         mask = mask[mask_slice[0]]
-
     return mask
