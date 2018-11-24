@@ -538,15 +538,25 @@ def randomize_colors(im, keep_vals=[0]):
     return im_new
 
 
-def make_contiguous(im):
+def make_contiguous(im, keep_zeros=True):
     r"""
     Take an image with arbitrary greyscale values and adjust them to ensure
     all values fall in a contiguous range starting at 0.
+
+    This function will handle negative numbers such that most negative number
+    will become 0, *unless* ``keep_zeros`` is ``True`` in which case it will
+    become 1, and all 0's in the original image remain 0.
 
     Parameters
     ----------
     im : array_like
         An ND array containing greyscale values
+
+    keep_zeros : Boolean
+        If ``True`` (default) then 0 values remain 0, regardless of how the
+        other numbers are adjusted.  This is mostly relevant when the array
+        contains negative numbers, and means that -1 will become +1, while
+        0 values remain 0.
 
     Returns
     -------
@@ -564,6 +574,11 @@ def make_contiguous(im):
      [3 4 2]]
 
     """
+    im = sp.copy(im)
+    if keep_zeros:
+        mask = (im == 0)
+        im[mask] = im.min() - 1
+    im = im - im.min()
     im_flat = im.flatten()
     im_vals = sp.unique(im_flat)
     im_map = sp.zeros(shape=sp.amax(im_flat)+1)
