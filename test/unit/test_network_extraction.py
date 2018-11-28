@@ -111,7 +111,7 @@ class NetExtractTest():
         with pytest.raises(Exception):
             mapped = ps.network_extraction.map_to_regions(regions, values)
 
-    def planar_2d_image(self):
+    def test_planar_2d_image(self):
         np.random.seed(1)
         im1 = ps.generators.blobs([100, 100, 1])
         np.random.seed(1)
@@ -136,9 +136,12 @@ class NetExtractTest():
         net3 = ps.network_extraction.regions_to_network(im=pore_map3,
                                                         dt=snow_out3.dt,
                                                         voxel_size=1)
-        assert net1['pore.coords'][:, 0] == net2['pore.coords'][:, 0]
-        assert net1['pore.coords'][:, 1] == net2['pore.coords'][:, 2]
-        assert net1['pore.coords'][:, 0] == net3['pore.coords'][:, 1]
+        assert np.allclose(net1['pore.coords'][:, 0],
+                           net2['pore.coords'][:, 0])
+        assert np.allclose(net1['pore.coords'][:, 1],
+                           net2['pore.coords'][:, 2])
+        assert np.allclose(net1['pore.coords'][:, 0],
+                           net3['pore.coords'][:, 1])
 
 
 if __name__ == '__main__':
