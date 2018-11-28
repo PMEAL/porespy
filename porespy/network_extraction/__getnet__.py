@@ -66,8 +66,9 @@ def regions_to_network(im, dt=None, voxel_size=1):
     t_area = []
     t_perimeter = []
     t_coords = []
-
+    dt_shape = sp.array(dt.shape)
     # Start extracting size information for pores and throats
+
     for i in tqdm(Ps):
         pore = i - 1
     #        if slices[pore] is None:
@@ -78,7 +79,13 @@ def regions_to_network(im, dt=None, voxel_size=1):
         pore_im = sub_im == i
         # ---------------------------------------------------------------------
         padded_mask = sp.pad(pore_im, pad_width=1, mode='constant')
-        pore_dt = spim.distance_transform_edt(padded_mask)
+        if sp.any(dt_shape == 1):
+            mask_2d = sp.pad(pore_im.squeeze(), pad_width=1, mode='constant')
+            ax = sp.where(dt_shape == 1)[0][0]
+            pore_dt = spim.distance_transform_edt(input=mask_2d.squeeze())
+            pore_dt = sp.expand_dims(pore_dt, ax)
+        else:
+            pore_dt = spim.distance_transform_edt(padded_mask)
         if padded_mask.ndim == 3:
             filter_mask = spim.convolve(padded_mask*1.0,
                                         weights=ball(1))/sp.sum(ball(1))
