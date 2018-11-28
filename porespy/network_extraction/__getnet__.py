@@ -3,6 +3,8 @@ import scipy.ndimage as spim
 from porespy.tools import extend_slice
 from tqdm import tqdm
 from skimage import measure
+import openpnm as op
+import openpnm.models.geometry as op_gm
 
 
 def regions_to_network(im, dt=None, voxel_size=1):
@@ -202,5 +204,26 @@ def regions_to_network(im, dt=None, voxel_size=1):
     net['throat.length'] = PT1 + PT2
     dist = (p_coords[P12[:, 0]]-p_coords[P12[:, 1]])*voxel_size
     net['throat.direct_length'] = sp.sqrt(sp.sum(dist**2, axis=1))
+    # Make a dummy openpnm network to get the conduit lengths
+    pn = op.network.GenericNetwork()
+    pn.update(net)
+    pn.add_model(propname='throat.endpoints',
+                 model=op_gm.throat_endpoints.spherical_pores,
+                 pore_diameter='pore.inscribed_diameter',
+                 throat_diameter='throat.inscribed_diameter')
+    pn.add_model(propname='throat.conduit_lengths',
+                 model=op_gm.throat_length.conduit_lengths)
+    pn.add_model(propname='pore.area',
+                 model=op_gm.pore_area.sphere)
+    net['throat.endpoints.head'] = pn['throat.endpoints.head']
+    net['throat.endpoints.tail'] = pn['throat.endpoints.tail']
+    net['throat.conduit_lengths.pore1'] = pn['throat.conduit_lengths.pore1']
+    net['throat.conduit_lengths.pore2'] = pn['throat.conduit_lengths.pore2']
+    net['throat.conduit_lengths.throat'] = pn['throat.conduit_lengths.throat']
+    net['pore.area'] = pn['pore.area']
+    prj = pn.project
+    prj.clear()
+    wrk = op.Workspace()
+    wrk.close_project(prj)
 
     return net
