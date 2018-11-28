@@ -121,13 +121,17 @@ def snow_partitioning(im, r_max=4, sigma=0.4, return_all=False):
 
     """
     tup = namedtuple('results', field_names=['im', 'dt', 'peaks', 'regions'])
-    im = im.squeeze()
     print('_'*60)
     print("Beginning SNOW Algorithm")
-
+    im_shape = sp.array(im.shape)
     if im.dtype == 'bool':
         print('Peforming Distance Transform')
-        dt = spim.distance_transform_edt(input=im)
+        if sp.any(im_shape == 1):
+            ax = sp.where(im_shape == 1)[0][0]
+            dt = spim.distance_transform_edt(input=im.squeeze())
+            dt = sp.expand_dims(dt, ax)
+        else:
+            dt = spim.distance_transform_edt(input=im)
     else:
         dt = im
         im = dt > 0
@@ -191,7 +195,6 @@ def find_peaks(dt, r=4, footprint=None):
     This automatically uses a square structuring element which is significantly
     faster than using a circular or spherical element.
     """
-    dt = dt.squeeze()
     im = dt > 0
     if footprint is None:
         if im.ndim == 2:
