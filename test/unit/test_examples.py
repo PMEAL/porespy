@@ -1,8 +1,9 @@
 import os
 import subprocess
 import logging
+import porespy as ps
 
-rootdir = os.path.split(os.path.split(os.getcwd())[0])[0]
+rootdir = os.path.split(os.path.split(ps.__file__)[0])[0]
 examples_dir = os.path.join(rootdir, 'examples')
 filters_dir = os.path.join(examples_dir, 'filters')
 metrics_dir = os.path.join(examples_dir, 'metrics')
