@@ -642,7 +642,7 @@ def extract_regions_area(label_image, voxel_size=1, interfacial_area=True):
         s = extend_slice(slices[pore], im.shape)
         sub_im = im[s]
         mask_im = sub_im == i
-        mc_sa[pore] = get_surface_area(im=mask_im)
+        mc_sa[pore] = get_surface_area(region=mask_im)
         im_w_throats = spim.binary_dilation(input=mask_im, structure=ball(1))
         im_w_throats = im_w_throats*sub_im
         Pn = sp.unique(im_w_throats)[1:] - 1
@@ -685,7 +685,7 @@ def get_surface_area(region: bool, mode='mc'):
     mode : string
         Controls which method is used for calculating the area.  Options are:
 
-            **'mc'** : Marching cubes, using the Lewinar method from
+            **'mc'** : Marching cubes, using the Lewiner method from
             Scikit-Image
 
     Returns

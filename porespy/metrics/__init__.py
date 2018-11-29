@@ -37,5 +37,5 @@ from .__funcs__ import representative_elementary_volume
 from .__funcs__ import two_point_correlation_bf
 from .__funcs__ import two_point_correlation_fft
 from .__funcs__ import extract_regions_area
-from .__funcs__ import get_marching_cube_area
-from .__funcs__ import get_regions_mask
+from .__funcs__ import get_surface_area
+from .__funcs__ import combine_region
