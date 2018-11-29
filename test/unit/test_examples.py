@@ -22,7 +22,7 @@ class ExamplesTest():
                 stderr=subprocess.PIPE
             )
             process_output, process_error = command_line_process.communicate()
-#            print(process_error)
+            print(process_error)
         except (OSError, subprocess.CalledProcessError) as exception:
             logging.info('Exception occured: ' + str(exception))
             logging.info('Subprocess failed')
