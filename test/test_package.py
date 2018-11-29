@@ -2,7 +2,27 @@ import porespy as ps
 import git
 import os
 import subprocess
-import tempfile
+import logging
+
+
+def run_shell_command(command_line_args):
+    try:
+        command_line_process = subprocess.Popen(
+            command_line_args,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE
+        )
+
+        process_output, process_error = command_line_process.communicate()
+        print(process_error)
+    except (OSError, subprocess.CalledProcessError) as exception:
+        logging.info('Exception occured: ' + str(exception))
+        logging.info('Subprocess failed')
+        return False
+    else:
+        # no exception was raised
+        logging.info('Subprocess finished')
+    return "Error" not in str(process_error)
 
 
 def _notebook_run(path):
@@ -10,12 +30,14 @@ def _notebook_run(path):
        :returns (parsed nb object, execution errors)
     """
     dirname, __ = os.path.split(path)
-    with tempfile.NamedTemporaryFile(suffix=".ipynb") as fout:
-        args = ["jupyter", "nbconvert", "--to", "notebook", "--execute",
-                "--ExecutePreprocessor.timeout=360",
-                "--output", fout.name, path]
-        proc = subprocess.run(args)
-        rc = proc.returncode
+    args = ["jupyter", "nbconvert", "--to", "notebook", "--execute",
+            "--ExecutePreprocessor.timeout=360",
+            "--output", "temp_output.ipynb", path]
+    rc = run_shell_command(args)
+    print(path, rc)
+    print('-'*30)
+    if rc:
+        os.remove(os.path.join(dirname, "temp_output.ipynb"))
     return rc
 
 
@@ -25,13 +47,8 @@ def test_ipynb():
         for name in files:
             if (name.endswith('.ipynb') and 'checkpoint' not in name):
                 nbook = os.path.join(path, name)
-                try:
-                    rc = _notebook_run(nbook)
-                    print(nbook, rc)
-                    assert rc == 0
-                except:
-#                    assert 1 == 2
-                    pass
+                rc = _notebook_run(nbook)
+                assert rc
 
 
 class PackageTest():

@@ -134,7 +134,7 @@ def regionprops_3D(im):
     print('_'*60)
     print('Calculating regionprops')
 
-    results = regionprops(im)
+    results = regionprops(im, coordinates='xy')
     for i in tqdm(range(len(results))):
         mask = results[i].image
         mask_padded = sp.pad(mask, pad_width=1, mode='constant')
