@@ -90,13 +90,13 @@ class MetricsTest():
         chords = ps.filters.apply_chords(self.im3D)
         ps.metrics.chord_length_distribution(chords, normalization='length')
 
-    def test_get_marching_cube_area(self):
-        surface_area = ps.metrics.get_marching_cube_area(self.im3D)
+    def test_get_surface_area(self):
+        surface_area = ps.metrics.get_surface_area(self.im3D)
         assert int(surface_area) == 27108
 
-    def test_get_regions_mask(self):
-        mask = ps.metrics.get_regions_mask(self.im3D, labels=[1],
-                                           compress_border=True)
+    def test_combine_region(self):
+        mask = ps.metrics.combine_region(self.im3D, labels=[1],
+                                         compress_border=True)
         assert sp.sum(mask) == 116587
 
     def test_extract_regions_area(self):
