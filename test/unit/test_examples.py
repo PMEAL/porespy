@@ -17,13 +17,14 @@ class ExamplesTest():
 
     def run_shell_command(self, command_line_args):
         try:
-            command_line_process = subprocess.Popen(
-                command_line_args,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE
-            )
-            process_output, process_error = command_line_process.communicate()
-            print(process_error)
+#            command_line_process = subprocess.Popen(
+#                command_line_args,
+#                stdout=subprocess.PIPE,
+#                stderr=subprocess.PIPE
+#            )
+#            process_output, process_error = command_line_process.communicate()
+#            print(process_error)
+            proc = subprocess.run(command_line_args, timeout=600)
         except (OSError, subprocess.CalledProcessError) as exception:
             logging.info('Exception occured: ' + str(exception))
             logging.info('Subprocess failed')
@@ -31,7 +32,7 @@ class ExamplesTest():
         else:
             # no exception was raised
             logging.info('Subprocess finished')
-        return "Error" not in str(process_error)
+        return proc.returncode == 0
 
     def _notebook_run(self, path):
         """Execute a notebook via nbconvert and collect output.
