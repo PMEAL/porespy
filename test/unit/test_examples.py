@@ -15,15 +15,8 @@ class ExamplesTest():
     def setup_class(self):
         pass
 
-    def run_shell_command(self, command_line_args):
+    def _run_shell_command(self, command_line_args):
         try:
-#            command_line_process = subprocess.Popen(
-#                command_line_args,
-#                stdout=subprocess.PIPE,
-#                stderr=subprocess.PIPE
-#            )
-#            process_output, process_error = command_line_process.communicate()
-#            print(process_error)
             proc = subprocess.run(command_line_args, timeout=600)
         except (OSError, subprocess.CalledProcessError) as exception:
             logging.info('Exception occured: ' + str(exception))
@@ -42,7 +35,7 @@ class ExamplesTest():
         args = ["jupyter", "nbconvert", "--to", "notebook", "--execute",
                 "--ExecutePreprocessor.timeout=360",
                 "--output", "temp_output.ipynb", path]
-        rc = self.run_shell_command(args)
+        rc = self._run_shell_command(args)
         print(path, rc)
         print('-'*30)
         if rc:
