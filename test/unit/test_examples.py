@@ -47,6 +47,11 @@ class ExamplesTest():
         rc = self._notebook_run(nbook)
         assert rc
 
+    def test_filters_snow_partitioning(self):
+        nbook = os.path.join(filters_dir, 'snow_partitioning.ipynb')
+        rc = self._notebook_run(nbook)
+        assert rc
+
     def test_metrics_chord_length_distribution(self):
         nbook = os.path.join(metrics_dir, 'chord_length_distribution.ipynb')
         rc = self._notebook_run(nbook)
