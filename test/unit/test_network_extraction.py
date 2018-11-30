@@ -111,6 +111,38 @@ class NetExtractTest():
         with pytest.raises(Exception):
             mapped = ps.network_extraction.map_to_regions(regions, values)
 
+    def test_planar_2d_image(self):
+        np.random.seed(1)
+        im1 = ps.generators.blobs([100, 100, 1])
+        np.random.seed(1)
+        im2 = ps.generators.blobs([100, 1, 100])
+        np.random.seed(1)
+        im3 = ps.generators.blobs([1, 100, 100])
+        np.random.seed(1)
+        snow_out1 = ps.filters.snow_partitioning(im1, return_all=True)
+        pore_map1 = snow_out1.im * snow_out1.regions
+        net1 = ps.network_extraction.regions_to_network(im=pore_map1,
+                                                        dt=snow_out1.dt,
+                                                        voxel_size=1)
+        np.random.seed(1)
+        snow_out2 = ps.filters.snow_partitioning(im2, return_all=True)
+        pore_map2 = snow_out2.im * snow_out2.regions
+        net2 = ps.network_extraction.regions_to_network(im=pore_map2,
+                                                        dt=snow_out2.dt,
+                                                        voxel_size=1)
+        np.random.seed(1)
+        snow_out3 = ps.filters.snow_partitioning(im3, return_all=True)
+        pore_map3 = snow_out3.im * snow_out3.regions
+        net3 = ps.network_extraction.regions_to_network(im=pore_map3,
+                                                        dt=snow_out3.dt,
+                                                        voxel_size=1)
+        assert np.allclose(net1['pore.coords'][:, 0],
+                           net2['pore.coords'][:, 0])
+        assert np.allclose(net1['pore.coords'][:, 1],
+                           net2['pore.coords'][:, 2])
+        assert np.allclose(net1['pore.coords'][:, 0],
+                           net3['pore.coords'][:, 1])
+
 
 if __name__ == '__main__':
     t = NetExtractTest()

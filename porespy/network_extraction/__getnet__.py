@@ -63,8 +63,9 @@ def regions_to_network(im, dt=None, voxel_size=1):
     t_area = []
     t_perimeter = []
     t_coords = []
-
+    dt_shape = sp.array(dt.shape)
     # Start extracting size information for pores and throats
+
     for i in tqdm(Ps):
         pore = i - 1
     #        if slices[pore] is None:
