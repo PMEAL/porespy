@@ -589,10 +589,12 @@ def chord_length_distribution(im, bins=None, log=False, voxel_size=1,
                h.bin_centers, h.bin_edges, h.bin_widths)
 
 
-def extract_regions_area(label_image, voxel_size=1, interfacial_area=True):
+def region_areas(regions, voxel_size=1, interfacial_area=True):
     r"""
-    Analyzes an image that has been partitioned into pore regions and extracts
-    marching cube surface area and interfacial area between two regions.
+    Extracts the surface area of each region in a labeled image.
+
+    Optionally, it can also find the the interfacial area between all
+    adjoining regions.
 
     Parameters
     ----------
@@ -622,7 +624,7 @@ def extract_regions_area(label_image, voxel_size=1, interfacial_area=True):
     print('_'*60)
     print('Extracting regions surface area using marching cube algorithm')
     from skimage.morphology import disk, square, ball, cube
-    im = label_image
+    im = regions.copy()
     if im.ndim == 2:
         cube = square
         ball = disk
@@ -680,7 +682,7 @@ def get_surface_area(region: bool, mode='mc'):
     Parameters
     ----------
     im : ND-array
-        A boolean image with True values showing region of interest
+        A boolean image with ``True`` values indicating the region of interest
 
     mode : string
         Controls which method is used for calculating the area.  Options are:
@@ -714,7 +716,7 @@ def get_surface_area(region: bool, mode='mc'):
     return surface_area
 
 
-def combine_region(regions, labels: list, compress_border=True):
+def combine_regions(regions, labels: list, compress_border=True):
     r"""
     Combine given regions into a single boolean mask
 
@@ -727,13 +729,12 @@ def combine_region(regions, labels: list, compress_border=True):
         A list of labels indicating which regions to combine
 
     compress_border : bool
-        If ``True`` then image shape will be compressed to only represent mask
-        requested.
+        If ``True`` then image shape will reduced to a bounding box around the
+        given regions.
 
     Returns
     -------
-    A boolean mask with ``True`` values indicating where the given labels were
-    found.
+    A boolean mask with ``True`` values indicating where the given labels exist
 
     """
     mask = sp.isin(regions, labels, assume_unique=True)
