@@ -591,8 +591,40 @@ def chord_length_distribution(im, bins=None, log=False, voxel_size=1,
                h.bin_centers, h.bin_edges, h.bin_widths)
 
 
-def region_interface_areas(regions, areas=None, voxel_size=1):
+def region_interface_areas(regions, areas, voxel_size=1, strel=None):
     r"""
+    Calculates the interfacial area between all pairs of adjecent regions
+
+    Parameters
+    ----------
+    regions : ND-array
+        An image of the pore space partitioned into individual pore regions.
+        Note that zeros in the image will not be considered for area
+        calculation.
+    areas : array_like
+        A list containing the areas of each regions, as determined by
+        ``region_surface_area``.  Note that the region number and list index
+        are offset by 1, such that the area for region 1 is stored in
+        ``areas[0]``.
+    voxel_size : scalar
+        The resolution of the image, expressed as the length of one side of a
+        voxel, so the volume of a voxel would be **voxel_size**-cubed.  The
+        default is 1.
+    strel : array_like
+        The structuring element used to blur the region.  If not provided,
+        then a spherical element (or disk) with radius 1 is used.  See the
+        docstring for ``mesh_region`` for more details, as this argument is
+        passed to there.
+
+    Returns
+    -------
+    A named-tuple containing 2 arrays. ``conns`` holds the connectivity
+    information and ``area`` holds the result for each pair.  ``conns`` is a
+    N-regions by 2 array with each row containing the region number of an
+    adjacent pair of regions.  For instance, if ``conns[0, 0]`` is 0 and
+    ``conns[0, 1]`` is 5, then row 0 of ``area`` contains the interfacial
+    area shared by regions 0 and 5.
+
     """
     print('_'*60)
     print('Finding interfacial areas between each region')
@@ -601,56 +633,49 @@ def region_interface_areas(regions, areas=None, voxel_size=1):
     if im.ndim == 2:
         cube = square
         ball = disk
-
-    # Get 'slices' into im for each pore region
+    # Get 'slices' into im for each region
     slices = spim.find_objects(im)
     # Initialize arrays
     Ps = sp.arange(1, sp.amax(im)+1)
-    Np = sp.size(Ps)
-    sa = sp.zeros((Np, ), dtype=int)
-    sa_combined = []
+    sa = sp.zeros_like(Ps, dtype=float)
+    sa_combined = []  # Difficult to preallocate since number of conns unknown
     cn = []
-    # Start extracting marching cube area from im
+    # Start extracting area from im
     for i in tqdm(Ps):
-        pore = i - 1
-        s = extend_slice(slices[pore], im.shape)
+        reg = i - 1
+        s = extend_slice(slices[reg], im.shape)
         sub_im = im[s]
         mask_im = sub_im == i
-        if areas is None:
-            mesh = mesh_region(region=mask_im)
-            sa[pore] = mesh_surface_area(mesh)
-        else:
-            sa[pore] = areas[pore]
+        sa[reg] = areas[reg]
         im_w_throats = spim.binary_dilation(input=mask_im, structure=ball(1))
         im_w_throats = im_w_throats*sub_im
         Pn = sp.unique(im_w_throats)[1:] - 1
         for j in Pn:
-            if j > pore:
-                cn.append([pore, j])
-                merged_region = im[(min(slices[pore][0].start,
+            if j > reg:
+                cn.append([reg, j])
+                merged_region = im[(min(slices[reg][0].start,
                                         slices[j][0].start)):
-                                   max(slices[pore][0].stop,
+                                   max(slices[reg][0].stop,
                                        slices[j][0].stop),
-                                   (min(slices[pore][1].start,
+                                   (min(slices[reg][1].start,
                                         slices[j][1].start)):
-                                   max(slices[pore][1].stop,
+                                   max(slices[reg][1].stop,
                                        slices[j][1].stop)]
-                merged_region = ((merged_region == pore + 1) +
+                merged_region = ((merged_region == reg + 1) +
                                  (merged_region == j + 1))
-                mesh = mesh_region(region=merged_region)
+                mesh = mesh_region(region=merged_region, strel=strel)
                 sa_combined.append(mesh_surface_area(mesh))
     # Interfacial area calculation
     cn = sp.array(cn)
     ia = 0.5 * (sa[cn[:, 0]] + sa[cn[:, 1]] - sa_combined)
     ia[ia < 0] = 1
-    result = namedtuple('interfacial_areas', ('i', 'j', 'v'))
-    result.i = cn[:, 0]
-    result.j = cn[:, 1]
-    result.v = ia * voxel_size**2
+    result = namedtuple('interfacial_areas', ('conns', 'area'))
+    result.conns = cn
+    result.area = ia * voxel_size**2
     return result
 
 
-def region_surface_areas(regions, voxel_size=1):
+def region_surface_areas(regions, voxel_size=1, strel=None):
     r"""
     Extracts the surface area of each region in a labeled image.
 
@@ -663,11 +688,15 @@ def region_surface_areas(regions, voxel_size=1):
         An image of the pore space partitioned into individual pore regions.
         Note that zeros in the image will not be considered for area
         calculation.
-
     voxel_size : scalar
         The resolution of the image, expressed as the length of one side of a
         voxel, so the volume of a voxel would be **voxel_size**-cubed.  The
         default is 1.
+    strel : array_like
+        The structuring element used to blur the region.  If not provided,
+        then a spherical element (or disk) with radius 1 is used.  See the
+        docstring for ``mesh_region`` for more details, as this argument is
+        passed to there.
 
     Returns
     -------
@@ -677,26 +706,20 @@ def region_surface_areas(regions, voxel_size=1):
     """
     print('_'*60)
     print('Finding surface area of each region')
-    from skimage.morphology import disk, square, ball, cube
     im = regions.copy()
-    if im.ndim == 2:
-        cube = square
-        ball = disk
     # Get 'slices' into im for each pore region
     slices = spim.find_objects(im)
     # Initialize arrays
     Ps = sp.arange(1, sp.amax(im)+1)
-    Np = sp.size(Ps)
-    sa = sp.zeros((Np, ), dtype=int)
-    cn = []
+    sa = sp.zeros_like(Ps, dtype=float)
     # Start extracting marching cube area from im
     for i in tqdm(Ps):
-        pore = i - 1
-        s = extend_slice(slices[pore], im.shape)
+        reg = i - 1
+        s = extend_slice(slices[reg], im.shape)
         sub_im = im[s]
         mask_im = sub_im == i
         mesh = mesh_region(region=mask_im)
-        sa[pore] = mesh_surface_area(mesh)
+        sa[reg] = mesh_surface_area(mesh, strel=strel)
     result = sa * voxel_size**2
     return result
 
