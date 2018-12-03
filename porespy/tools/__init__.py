@@ -7,6 +7,7 @@ This module contains a variety of functions for manipulating images in ways
 that do NOT return a modified version of the original image.
 
 .. autofunction:: bbox_to_slices
+.. autofunction:: combine_regions
 .. autofunction:: extend_slice
 .. autofunction:: extract_subsection
 .. autofunction:: extract_cylinder
@@ -17,6 +18,7 @@ that do NOT return a modified version of the original image.
 .. autofunction:: get_slice
 .. autofunction:: in_hull
 .. autofunction:: make_contiguous
+.. autofunction:: mesh_region
 .. autofunction:: norm_to_uniform
 .. autofunction:: randomize_colors
 .. autofunction:: subdivide
@@ -24,6 +26,7 @@ that do NOT return a modified version of the original image.
 '''
 from .__funcs__ import align_image_with_openpnm
 from .__funcs__ import bbox_to_slices
+from .__funcs__ import combine_regions
 from .__funcs__ import extend_slice
 from .__funcs__ import extract_subsection
 from .__funcs__ import extract_cylinder
@@ -34,6 +37,7 @@ from .__funcs__ import get_planes
 from .__funcs__ import get_slice
 from .__funcs__ import in_hull
 from .__funcs__ import make_contiguous
+from .__funcs__ import mesh_region
 from .__funcs__ import norm_to_uniform
 from .__funcs__ import randomize_colors
 from .__funcs__ import subdivide

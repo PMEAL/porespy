@@ -709,3 +709,73 @@ def norm_to_uniform(im, scale=None):
     im = (im - im.min()) / (im.max() - im.min())
     im = im*(scale[1] - scale[0]) + scale[0]
     return im
+
+
+def mesh_region(region: bool, r=1):
+    r"""
+    Creates a tri-mesh of the provided region using the marching cubes
+    algorithm
+
+    Parameters
+    ----------
+    im : ND-array
+        A boolean image with ``True`` values indicating the region of interest
+
+    r : scalar (default = 1)
+        The radius of the round structuring element used to blur the binary
+        image.  This is necessary to allow the marching cubes algorithm to
+        properly fit the contour of the region.  If ``r=0`` then the
+        boolean mask is used, and as ``r`` increases the region is more
+        blurred, to the point of losing features.  A default of 1 is used.
+
+    Returns
+    -------
+    A named-tuple containing ``faces``, ``verts``, ``norm``, and ``val`` as
+    returned by ``scikit-image.measure.marching_cubes`` function.
+
+    """
+
+    from skimage.morphology import ball
+    im = region
+    if im.ndim == 3:
+        padded_mask = sp.pad(im, pad_width=1, mode='constant')
+        padded_mask = spim.convolve(padded_mask*1.0,
+                                    weights=ball(r))/sp.sum(ball(r))
+    else:
+        padded_mask = sp.reshape(im, (1,) + im.shape)
+        padded_mask = sp.pad(padded_mask, pad_width=1, mode='constant')
+    verts, faces, norm, val = measure.marching_cubes_lewiner(padded_mask)
+    result = namedtuple('mesh', ('verts', 'faces', 'norm', 'val'))
+    result.verts = verts
+    result.faces = faces
+    result.norm = norm
+    result.val = val
+    return result
+
+
+def combine_regions(regions, labels: list, compress_border=True):
+    r"""
+    Combine given regions into a single boolean mask
+
+    Parameters
+    -----------
+    regions : ND-array
+        An image containing an arbitrary number of labeled regions
+
+    labels : list or 1D-array
+        A list of labels indicating which regions to combine
+
+    compress_border : bool
+        If ``True`` then image shape will reduced to a bounding box around the
+        given regions.
+
+    Returns
+    -------
+    A boolean mask with ``True`` values indicating where the given labels exist
+
+    """
+    mask = sp.isin(regions, labels, assume_unique=True)
+    if compress_border is True:
+        mask_slice = spim.find_objects(mask)
+        mask = mask[mask_slice[0]]
+    return mask
