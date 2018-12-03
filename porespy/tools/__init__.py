@@ -7,7 +7,6 @@ This module contains a variety of functions for manipulating images in ways
 that do NOT return a modified version of the original image.
 
 .. autofunction:: bbox_to_slices
-.. autofunction:: combine_regions
 .. autofunction:: extend_slice
 .. autofunction:: extract_subsection
 .. autofunction:: extract_cylinder
@@ -26,7 +25,7 @@ that do NOT return a modified version of the original image.
 '''
 from .__funcs__ import align_image_with_openpnm
 from .__funcs__ import bbox_to_slices
-from .__funcs__ import combine_regions
+#from .__funcs__ import combine_regions
 from .__funcs__ import extend_slice
 from .__funcs__ import extract_subsection
 from .__funcs__ import extract_cylinder

@@ -1,15 +1,10 @@
 import scipy as sp
 import numpy as np
-from skimage.segmentation import clear_border
-from skimage.feature import peak_local_max
 from skimage.measure import regionprops
 import scipy.ndimage as spim
 import scipy.spatial as sptl
-from porespy.tools import extract_subsection, extend_slice
-from porespy.tools import mesh_region, combine_regions
-from porespy.filters import apply_chords, distance_transform_lin
+from porespy.tools import extend_slice, mesh_region
 from porespy.filters import find_dt_artifacts
-from porespy.metrics import props_to_image
 from collections import namedtuple
 from tqdm import tqdm
 from scipy import fftpack as sp_ft

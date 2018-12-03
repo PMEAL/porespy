@@ -758,31 +758,3 @@ def mesh_region(region: bool, strel=None):
     result.norm = norm
     result.val = val
     return result
-
-
-def combine_regions(regions, labels: list, compress_border=True):
-    r"""
-    Combine given regions into a single boolean mask
-
-    Parameters
-    -----------
-    regions : ND-array
-        An image containing an arbitrary number of labeled regions
-
-    labels : list or 1D-array
-        A list of labels indicating which regions to combine
-
-    compress_border : bool
-        If ``True`` then image shape will reduced to a bounding box around the
-        given regions.
-
-    Returns
-    -------
-    A boolean mask with ``True`` values indicating where the given labels exist
-
-    """
-    mask = sp.isin(regions, labels, assume_unique=True)
-    if compress_border is True:
-        mask_slice = spim.find_objects(mask)
-        mask = mask[mask_slice[0]]
-    return mask
