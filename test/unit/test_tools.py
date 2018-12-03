@@ -102,11 +102,6 @@ class ToolsTest():
         assert not ps.tools.in_hull([[0, 0, 0]], hull)
         assert ps.tools.in_hull([sp.mean(X, axis=0)], hull)
 
-    def test_combine_regions(self):
-        mask = ps.tools.combine_regions(self.im3D, labels=[1],
-                                        compress_border=True)
-        assert sp.sum(mask) == 81986
-
 
 if __name__ == '__main__':
     t = ToolsTest()
