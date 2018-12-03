@@ -3,6 +3,8 @@ import scipy as sp
 import scipy.ndimage as spim
 from skimage import io
 import pytest
+from pathlib import Path
+import os
 
 
 class MetricsTest():
@@ -20,7 +22,8 @@ class MetricsTest():
                                                   lattice='cubic')
         self.blobs = ps.generators.blobs(shape=[101, 101, 101], porosity=0.5,
                                          blobiness=[1, 2, 3])
-        path = '../fixtures/partitioned_regions.tif'
+        path = Path(os.path.realpath(__file__),
+                    '../../../test/fixtures/partitioned_regions.tif')
         self.regions = sp.array(io.imread(path))
 
     def test_porosity(self):
