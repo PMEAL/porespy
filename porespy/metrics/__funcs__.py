@@ -6,6 +6,7 @@ from skimage.measure import regionprops
 import scipy.ndimage as spim
 import scipy.spatial as sptl
 from porespy.tools import extract_subsection, extend_slice
+from porespy.tools import mesh_region, combine_regions
 from porespy.filters import apply_chords, distance_transform_lin
 from porespy.filters import find_dt_artifacts
 from porespy.metrics import props_to_image
@@ -460,13 +461,14 @@ def chord_counts(im):
 def linear_density(im, bins=25, voxel_size=1, log=False):
     r"""
     Determines the probability that a point lies within a certain distance
-    of the opposite phase *along a specified distance*
+    of the opposite phase *along a specified direction*
 
     This relates directly the radial density function defined by Torquato [1],
     but instead of reporting the probability of lying within a stated distance
-    to the nearest solid in any direciton, it considers only linear distances.
-    The benefit of this is that anisotropy can be detected in materials by
-    performing the analysis in multiple orthogonal directions.
+    to the nearest solid in any direciton, it considers only linear distances
+    along orthogonal directions.The benefit of this is that anisotropy can be
+    detected in materials by performing the analysis in multiple orthogonal
+    directions.
 
     Parameters
     ----------
@@ -589,40 +591,11 @@ def chord_length_distribution(im, bins=None, log=False, voxel_size=1,
                h.bin_centers, h.bin_edges, h.bin_widths)
 
 
-def region_areas(regions, voxel_size=1, interfacial_area=True):
+def region_interface_areas(regions, areas=None, voxel_size=1):
     r"""
-    Extracts the surface area of each region in a labeled image.
-
-    Optionally, it can also find the the interfacial area between all
-    adjoining regions.
-
-    Parameters
-    ----------
-    label_image : ND-array
-        An image of the pore space partitioned into individual pore regions.
-        Note that zeros in the image will not be considered for area
-        calculation.
-
-    voxel_size : scalar
-        The resolution of the image, expressed as the length of one side of a
-        voxel, so the volume of a voxel would be **voxel_size**-cubed.  The
-        default is 1, which is useful when overlaying the PNM on the original
-        image since the scale of the image is alway 1 unit lenth per voxel.
-
-    interfacial_area: bool
-        If True then calculates the interfacial area of two interconnected
-        regions along with marching cube surface area of individual regions.
-
-    Returns
-    -------
-    A dictionary containing marching cube surface area and interfacial area of
-    interconnected regions. The dictionary names use the OpenPNM convention
-    (i.e. 'pore.surface_area', 'throat.interfacial_area') so it may be
-    converted directly to an OpenPNM network object using the ``update``
-    command.
     """
     print('_'*60)
-    print('Extracting regions surface area using marching cube algorithm')
+    print('Finding interfacial areas between each region')
     from skimage.morphology import disk, square, ball, cube
     im = regions.copy()
     if im.ndim == 2:
@@ -634,111 +607,127 @@ def region_areas(regions, voxel_size=1, interfacial_area=True):
     # Initialize arrays
     Ps = sp.arange(1, sp.amax(im)+1)
     Np = sp.size(Ps)
-    mc_sa = sp.zeros((Np, ), dtype=int)
-    mc_combined = []
+    sa = sp.zeros((Np, ), dtype=int)
+    sa_combined = []
     cn = []
-    region = {}
     # Start extracting marching cube area from im
     for i in tqdm(Ps):
         pore = i - 1
         s = extend_slice(slices[pore], im.shape)
         sub_im = im[s]
         mask_im = sub_im == i
-        mc_sa[pore] = get_surface_area(region=mask_im)
+        if areas is None:
+            mesh = mesh_region(region=mask_im)
+            sa[pore] = mesh_surface_area(mesh)
+        else:
+            sa[pore] = areas[pore]
         im_w_throats = spim.binary_dilation(input=mask_im, structure=ball(1))
         im_w_throats = im_w_throats*sub_im
         Pn = sp.unique(im_w_throats)[1:] - 1
-        if interfacial_area is True:
-            for j in Pn:
-                if j > pore:
-                    cn.append([pore, j])
-                    merged_region = im[(min(slices[pore][0].start,
-                                            slices[j][0].start)):
-                                       max(slices[pore][0].stop,
-                                           slices[j][0].stop),
-                                       (min(slices[pore][1].start,
-                                            slices[j][1].start)):
-                                       max(slices[pore][1].stop,
-                                           slices[j][1].stop)]
-                    merged_region = ((merged_region == pore + 1) +
-                                     (merged_region == j + 1))
-                    mc_combined.append(get_surface_area(region=merged_region))
+        for j in Pn:
+            if j > pore:
+                cn.append([pore, j])
+                merged_region = im[(min(slices[pore][0].start,
+                                        slices[j][0].start)):
+                                   max(slices[pore][0].stop,
+                                       slices[j][0].stop),
+                                   (min(slices[pore][1].start,
+                                        slices[j][1].start)):
+                                   max(slices[pore][1].stop,
+                                       slices[j][1].stop)]
+                merged_region = ((merged_region == pore + 1) +
+                                 (merged_region == j + 1))
+                mesh = mesh_region(region=merged_region)
+                sa_combined.append(mesh_surface_area(mesh))
+    # Interfacial area calculation
+    cn = sp.array(cn)
+    ia = 0.5 * (sa[cn[:, 0]] + sa[cn[:, 1]] - sa_combined)
+    ia[ia < 0] = 1
+    result = namedtuple('interfacial_areas', ('i', 'j', 'v'))
+    result.i = cn[:, 0]
+    result.j = cn[:, 1]
+    result.v = ia * voxel_size**2
+    return result
 
-    if interfacial_area is True:
-        # Marching cube interfacial area calculation
-        cn = sp.array(cn)
-        t_mc_a = 0.5 * (mc_sa[cn[:, 0]] + mc_sa[cn[:, 1]] - mc_combined)
-        t_mc_a[t_mc_a < 0] = 1
-        region['throat.interfacial_area'] = t_mc_a * voxel_size**2
-    region['pore.surface_area_mc'] = mc_sa * voxel_size**2
 
-    return region
-
-
-def get_surface_area(region: bool, mode='mc'):
+def region_surface_areas(regions, voxel_size=1):
     r"""
-    Calulates surface area of given region using the specified method
+    Extracts the surface area of each region in a labeled image.
+
+    Optionally, it can also find the the interfacial area between all
+    adjoining regions.
 
     Parameters
     ----------
-    im : ND-array
-        A boolean image with ``True`` values indicating the region of interest
+    regions : ND-array
+        An image of the pore space partitioned into individual pore regions.
+        Note that zeros in the image will not be considered for area
+        calculation.
 
-    mode : string
-        Controls which method is used for calculating the area.  Options are:
-
-            **'mc'** : Marching cubes, using the Lewiner method from
-            Scikit-Image
+    voxel_size : scalar
+        The resolution of the image, expressed as the length of one side of a
+        voxel, so the volume of a voxel would be **voxel_size**-cubed.  The
+        default is 1.
 
     Returns
     -------
-    A scalar value of the surface area of region of interest
+    A list containing the surface area of each region, offset by 1, such that
+    the surface area of region 1 is stored in element 0 of the list.
+
+    """
+    print('_'*60)
+    print('Finding surface area of each region')
+    from skimage.morphology import disk, square, ball, cube
+    im = regions.copy()
+    if im.ndim == 2:
+        cube = square
+        ball = disk
+    # Get 'slices' into im for each pore region
+    slices = spim.find_objects(im)
+    # Initialize arrays
+    Ps = sp.arange(1, sp.amax(im)+1)
+    Np = sp.size(Ps)
+    sa = sp.zeros((Np, ), dtype=int)
+    cn = []
+    # Start extracting marching cube area from im
+    for i in tqdm(Ps):
+        pore = i - 1
+        s = extend_slice(slices[pore], im.shape)
+        sub_im = im[s]
+        mask_im = sub_im == i
+        mesh = mesh_region(region=mask_im)
+        sa[pore] = mesh_surface_area(mesh)
+    result = sa * voxel_size**2
+    return result
+
+
+def mesh_surface_area(mesh=None, verts=None, faces=None):
+    r"""
+    Calculates the surface area of a meshed region
+
+    Parameters
+    ----------
+    mesh : tuple
+        The tuple returned from the ``mesh_region`` function
+
+    verts : array
+        An N-by-ND array containing the coordinates of each mesh vertex
+
+    faces : array
+        An N-by-ND array indicating which elements in ``verts`` form a mesh
+        element.
 
     Notes
     -----
-    At the moment only the Lewinar method is implemented
+    This function simply calls ``scikit-image.measure.mesh_surface_area``, but
+    it allows for the passing of the ``mesh`` tuple returned by the
+    ``mesh_region`` function, entirely for convenience.
     """
-
-    from skimage.morphology import ball
-    im = region
-    if mode == 'mc':
-        if im.ndim == 3:
-            padded_mask = sp.pad(im, pad_width=1, mode='constant')
-            padded_mask = spim.convolve(padded_mask*1.0,
-                                        weights=ball(1))/sp.sum(ball(1))
-        else:
-            padded_mask = sp.reshape(im, (1,) + im.shape)
-            padded_mask = sp.pad(padded_mask, pad_width=1, mode='constant')
-        verts, faces, norm, val = measure.marching_cubes_lewiner(padded_mask)
-        surface_area = measure.mesh_surface_area(verts, faces)
+    if mesh:
+        verts = mesh.verts
+        faces = mesh.faces
     else:
-        raise Exception('Unsupported mode:' + mode)
+        if (verts is None) or (faces is None):
+            raise Exception('Either mesh or verts and faces must be given')
+    surface_area = measure.mesh_surface_area(verts, faces)
     return surface_area
-
-
-def combine_regions(regions, labels: list, compress_border=True):
-    r"""
-    Combine given regions into a single boolean mask
-
-    Parameters
-    -----------
-    regions : ND-array
-        An image containing an arbitrary number of labeled regions
-
-    labels : list or 1D-array
-        A list of labels indicating which regions to combine
-
-    compress_border : bool
-        If ``True`` then image shape will reduced to a bounding box around the
-        given regions.
-
-    Returns
-    -------
-    A boolean mask with ``True`` values indicating where the given labels exist
-
-    """
-    mask = sp.isin(regions, labels, assume_unique=True)
-    if compress_border is True:
-        mask_slice = spim.find_objects(mask)
-        mask = mask[mask_slice[0]]
-    return mask

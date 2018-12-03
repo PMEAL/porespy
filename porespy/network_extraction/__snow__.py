@@ -1,7 +1,7 @@
 from porespy.network_extraction import regions_to_network, add_boundary_regions
 from porespy.filters import snow_partitioning
 from porespy.tools import make_contiguous
-from porespy.metrics import extract_regions_area
+from porespy.metrics import region_surface_areas
 import scipy as sp
 
 
@@ -82,7 +82,8 @@ def snow(im,
     # -------------------------------------------------------------------------
     # Extract marching cube surface area and interfacial area of regions
     if extract_MC_area is True:
-        mc_area = extract_regions_area(label_image=regions, voxel_size=voxel_size,
+        mc_area = region_surface_areas(label_image=regions,
+                                       voxel_size=voxel_size,
                                        interfacial_area=True)
         net = {**net, **mc_area}
     # -------------------------------------------------------------------------
