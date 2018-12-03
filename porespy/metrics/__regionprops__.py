@@ -1,10 +1,10 @@
 import scipy as sp
 import scipy.ndimage as spim
 from tqdm import tqdm
-from porespy.tools import extract_subsection, bbox_to_slices
+from porespy.tools import extract_subsection, bbox_to_slices, extend_slice
 from skimage.measure import regionprops
 from skimage.measure import mesh_surface_area, marching_cubes_lewiner
-from skimage.morphology import skeletonize_3d
+from skimage.morphology import skeletonize_3d, ball, disk
 from sklearn.feature_extraction.image import grid_to_graph
 from pandas import DataFrame
 
@@ -88,7 +88,7 @@ def props_to_image(regionprops, shape, prop):
     """
     im = sp.zeros(shape=shape)
     for r in regionprops:
-        if 'convex' in prop:
+        if prop == 'convex':
             mask = r.convex_image
         else:
             mask = r.image
@@ -160,6 +160,7 @@ def regionprops_3D(im):
         # ---------------------------------------------------------------------
         # Find surface area using marching cubes and analyze the mesh
         tmp = sp.pad(sp.atleast_3d(mask), pad_width=1, mode='constant')
+        tmp = spim.convolve(tmp, weights=ball(1))/5
         verts, faces, norms, vals = marching_cubes_lewiner(volume=tmp, level=0)
         results[i].surface_mesh_vertices = verts
         results[i].surface_mesh_simplices = faces

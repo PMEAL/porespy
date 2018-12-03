@@ -1,6 +1,6 @@
 import porespy as ps
 import numpy as np
-from scipy.stats import itemfreq
+import pytest
 
 
 class NetExtractTest():
@@ -38,6 +38,14 @@ class NetExtractTest():
                 found_nans = True
         assert found_nans is False
 
+    def test_snow(self):
+        net = ps.network_extraction.snow(self.im3d)
+        found_nans = False
+        for key in net.keys():
+            if np.any(np.isnan(net[key])):
+                found_nans = True
+        assert found_nans is False
+
 #    def test_snow_dual_2d(self):
 #        net = ps.network_extraction.snow_dual(self.im)
 #        found_nans = False
@@ -53,6 +61,87 @@ class NetExtractTest():
             if np.any(np.isnan(net[key])):
                 found_nans = True
         assert found_nans is False
+
+    def test_add_bounadary_regions_2D(self):
+        im = self.im
+        regions = ps.filters.snow_partitioning(im)
+        f = ['left', 'right']
+        bd = ps.network_extraction.add_boundary_regions(regions, faces=f)
+        assert bd.shape[0] > regions.shape[0]
+        f = ['bottom', 'top']
+        bd = ps.network_extraction.add_boundary_regions(regions, faces=f)
+        assert bd.shape[1] > regions.shape[1]
+        f = ['front', 'back']
+        bd = ps.network_extraction.add_boundary_regions(regions, faces=f)
+        assert bd.shape[1] > regions.shape[1]
+        f = ['bottom', 'top', 'left', 'right', 'front', 'back']
+        bd = ps.network_extraction.add_boundary_regions(regions, faces=f)
+        assert bd.shape[0] > regions.shape[0]
+        assert bd.shape[1] > regions.shape[1]
+
+    def test_add_bounadary_regions_3D(self):
+        im = self.im3d
+        regions = ps.filters.snow_partitioning(im)
+        f = ['left', 'right']
+        bd = ps.network_extraction.add_boundary_regions(regions, faces=f)
+        assert bd.shape[0] > regions.shape[0]
+        f = ['front', 'back']
+        bd = ps.network_extraction.add_boundary_regions(regions, faces=f)
+        assert bd.shape[1] > regions.shape[1]
+        f = ['bottom', 'top']
+        bd = ps.network_extraction.add_boundary_regions(regions, faces=f)
+        assert bd.shape[2] > regions.shape[2]
+        f = ['bottom', 'top', 'left', 'right', 'front', 'back']
+        bd = ps.network_extraction.add_boundary_regions(regions, faces=f)
+        assert bd.shape[0] > regions.shape[0]
+        assert bd.shape[1] > regions.shape[1]
+        assert bd.shape[2] > regions.shape[2]
+
+    def test_map_to_regions(self):
+        im = self.im
+        regions = ps.filters.snow_partitioning(im)
+        values = np.random.rand(regions.max() + 1)
+        mapped = ps.network_extraction.map_to_regions(regions, values)
+        assert mapped.max() < 1
+        # Some failures
+        values = np.random.rand(regions.max())
+        with pytest.raises(Exception):
+            mapped = ps.network_extraction.map_to_regions(regions, values)
+        values = np.random.rand(regions.max()+2)
+        with pytest.raises(Exception):
+            mapped = ps.network_extraction.map_to_regions(regions, values)
+
+    def test_planar_2d_image(self):
+        np.random.seed(1)
+        im1 = ps.generators.blobs([100, 100, 1])
+        np.random.seed(1)
+        im2 = ps.generators.blobs([100, 1, 100])
+        np.random.seed(1)
+        im3 = ps.generators.blobs([1, 100, 100])
+        np.random.seed(1)
+        snow_out1 = ps.filters.snow_partitioning(im1, return_all=True)
+        pore_map1 = snow_out1.im * snow_out1.regions
+        net1 = ps.network_extraction.regions_to_network(im=pore_map1,
+                                                        dt=snow_out1.dt,
+                                                        voxel_size=1)
+        np.random.seed(1)
+        snow_out2 = ps.filters.snow_partitioning(im2, return_all=True)
+        pore_map2 = snow_out2.im * snow_out2.regions
+        net2 = ps.network_extraction.regions_to_network(im=pore_map2,
+                                                        dt=snow_out2.dt,
+                                                        voxel_size=1)
+        np.random.seed(1)
+        snow_out3 = ps.filters.snow_partitioning(im3, return_all=True)
+        pore_map3 = snow_out3.im * snow_out3.regions
+        net3 = ps.network_extraction.regions_to_network(im=pore_map3,
+                                                        dt=snow_out3.dt,
+                                                        voxel_size=1)
+        assert np.allclose(net1['pore.coords'][:, 0],
+                           net2['pore.coords'][:, 0])
+        assert np.allclose(net1['pore.coords'][:, 1],
+                           net2['pore.coords'][:, 2])
+        assert np.allclose(net1['pore.coords'][:, 0],
+                           net3['pore.coords'][:, 1])
 
 
 if __name__ == '__main__':

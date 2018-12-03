@@ -1,32 +1,68 @@
 import pickle
 import numpy as np
 from scipy import ndimage as spim
-from porespy.io.evtk import hl as bp
+from pyevtk.hl import imageToVTK
 import scipy.ndimage as nd
 import skimage.io as io
 from pathlib import Path
 
 
+def dict_to_vtk(data, path='./dictvtk', voxel_size=1, origin=(0, 0, 0)):
+    r"""
+    Accepts multiple images as a dictionary and compiles them into a vtk file
+
+    Parameters
+    ----------
+    data : dict
+        A dictionary of *key: value* pairs, where the *key* is the name of the
+        scalar property stored in each voxel of the array stored in the
+        corresponding *value*.
+    path : string
+        Path to output file
+    voxel_size : int
+        The side length of the voxels (voxels  are cubic)
+    origin : float
+        data origin (according to selected voxel size)
+
+    Output
+    ------
+    File: vtk, vtp or vti file that can opened in ParaView
+    """
+    vs = voxel_size
+    for entry in data:
+        if data[entry].dtype == bool:
+            data[entry] = data[entry].astype(np.int8)
+        if data[entry].flags['C_CONTIGUOUS']:
+            data[entry] = np.ascontiguousarray(data[entry])
+    imageToVTK(path, cellData=data, spacing=(vs, vs, vs), origin=origin)
+
+
 def to_openpnm(net, filename):
     r"""
-    Save the result of the `extract_pore_network` function to a file that is
+    Save the result of the `snow` network extraction function in a format
     suitable for opening in OpenPNM.
 
     Parameters
     ----------
     net : dict
         The dictionary object produced by `extract_pore_network`
-
     filename : string or path object
         The name and location to save the file, which will have `.net` file
         extension.
 
     """
-    p = Path(filename)
-    p = p.resolve()
-    # If extension not part of filename
-    if p.suffix == '':
-        p = p.with_suffix('.net')
+
+    try:
+        p = Path(filename)
+        p = p.resolve()
+        # If extension not part of filename
+        if p.suffix == '':
+            p = p.with_suffix('.net')
+    except FileNotFoundError:
+        p = filename.split('.')
+        if p[-1] != 'net':
+            p.append('net')
+        p = '.'.join(p)
     with open(p, 'wb') as f:
         pickle.dump(net, f)
 
@@ -34,30 +70,23 @@ def to_openpnm(net, filename):
 def to_vtk(im, path='./voxvtk', divide=False, downsample=False, voxel_size=1,
            vox=False):
     r"""
-    Wrapper for the pyevtk
-    Copyright 2010 - 2016 Paulo A. Herrera. All rights reserved. (see /evtk
-    folder for complete license information)
+    Converts an array to a vtk file.
 
     Parameters
     ----------
     im : 3D image
         The image of the porous material
-
     path : string
         Path to output file
-
     divide : bool
         vtk files can get very large, this option allows you for two output
         files, divided at z = half. This allows for large data sets to be
         imaged without loss of information
-
     downsample : bool
         very large images acan be downsampled to half the size in each
         dimension, this doubles the effective voxel size
-
     voxel_size : int
         The side length of the voxels (voxels  are cubic)
-
     vox : bool
         For an image that is binary (1's and 0's) this reduces the file size by
         using int8 format (can also be used to reduce file size when accuracy
@@ -67,6 +96,8 @@ def to_vtk(im, path='./voxvtk', divide=False, downsample=False, voxel_size=1,
     ------
     File: vtk, vtp or vti file that can opened in paraview
     """
+    if im.dtype == bool:
+        vox = True
     if vox:
         im = im.astype(np.int8)
     vs = voxel_size
@@ -74,18 +105,18 @@ def to_vtk(im, path='./voxvtk', divide=False, downsample=False, voxel_size=1,
         split = np.round(im.shape[2]/2).astype(np.int)
         im1 = im[:, :, 0:split]
         im2 = im[:, :, split:]
-        bp.imageToVTK(path+'1', cellData={'im': np.ascontiguousarray(im1)},
-                      spacing=(vs, vs, vs))
-        bp.imageToVTK(path+'2', origin=(0.0, 0.0, split*vs),
-                      cellData={'im': np.ascontiguousarray(im2)},
-                      spacing=(vs, vs, vs))
+        imageToVTK(path+'1', cellData={'im': np.ascontiguousarray(im1)},
+                   spacing=(vs, vs, vs))
+        imageToVTK(path+'2', origin=(0.0, 0.0, split*vs),
+                   cellData={'im': np.ascontiguousarray(im2)},
+                   spacing=(vs, vs, vs))
     elif downsample:
         im = spim.interpolation.zoom(im, zoom=0.5, order=0, mode='reflect')
-        bp.imageToVTK(path, cellData={'im': np.ascontiguousarray(im)},
-                      spacing=(2*vs, 2*vs, 2*vs))
+        imageToVTK(path, cellData={'im': np.ascontiguousarray(im)},
+                   spacing=(2*vs, 2*vs, 2*vs))
     else:
-        bp.imageToVTK(path, cellData={'im': np.ascontiguousarray(im)},
-                      spacing=(vs, vs, vs))
+        imageToVTK(path, cellData={'im': np.ascontiguousarray(im)},
+                   spacing=(vs, vs, vs))
 
 
 def to_palabos(im, filename, solid=0):
@@ -110,6 +141,8 @@ def to_palabos(im, filename, solid=0):
     Output
     -------
     File produced contains 3 values: 2 = Solid, 1 = Interface, 0 = Pore
+    Palabos will run the simulation applying the specified pressure drop from
+    x = 0 to x = -1.
 
     """
     # Create binary image for fluid and solid phases
