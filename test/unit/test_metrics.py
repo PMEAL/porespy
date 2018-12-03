@@ -20,7 +20,7 @@ class MetricsTest():
                                                   lattice='cubic')
         self.blobs = ps.generators.blobs(shape=[101, 101, 101], porosity=0.5,
                                          blobiness=[1, 2, 3])
-        path = '../../test/fixtures/partitioned_regions.tif'
+        path = '../fixtures/partitioned_regions.tif'
         self.regions = sp.array(io.imread(path))
 
     def test_porosity(self):
