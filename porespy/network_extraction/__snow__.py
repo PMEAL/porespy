@@ -1,14 +1,13 @@
 from porespy.network_extraction import regions_to_network, add_boundary_regions
 from porespy.filters import snow_partitioning
 from porespy.tools import make_contiguous
-from porespy.metrics import region_surface_areas
+from porespy.metrics import region_surface_areas, region_interface_areas
 import scipy as sp
 
 
-def snow(im,
-         voxel_size=1,
+def snow(im, voxel_size=1,
          boundary_faces=['top', 'bottom', 'left', 'right', 'front', 'back'],
-         extract_MC_area=False):
+         marching_cubes_area=False):
     r"""
     Analyzes an image that has been partitioned into void and solid regions
     and extracts the void and solid phase geometry as well as network
@@ -19,13 +18,11 @@ def snow(im,
     im : ND-array
         Binary image in the Boolean form with True’s as void phase and False’s
         as solid phase.
-
     voxel_size : scalar
         The resolution of the image, expressed as the length of one side of a
         voxel, so the volume of a voxel would be **voxel_size**-cubed.  The
         default is 1, which is useful when overlaying the PNM on the original
         image since the scale of the image is alway 1 unit lenth per voxel.
-
     boundary_faces : list of strings
         Boundary faces labels are provided to assign hypothetical boundary
         nodes having zero resistance to transport process. For cubical
@@ -33,11 +30,12 @@ def snow(im,
         ‘front’ and ‘back’ face labels to assign boundary nodes. If no label is
         assigned then all six faces will be selected as boundary nodes
         automatically which can be trimmed later on based on user requirements.
-
-    extract_MC_area: bool
-        If True extract surface area and interfacial area of regions using
-        marching cube algorithm. This is a more accurate representation of area
-        in extracted network.
+    marching_cubes_area : bool
+        If ``True`` then the surface area and interfacial area between regions
+        will be using the marching cube algorithm. This is a more accurate
+        representation of area in extracted network, but is quite slow, so
+        it is ``False`` by default.  The default method simply counts voxels
+        so does not correctly account for the voxelated nature of the images.
 
     Returns
     -------
@@ -81,11 +79,12 @@ def snow(im,
     net = regions_to_network(im=regions, dt=dt, voxel_size=voxel_size)
     # -------------------------------------------------------------------------
     # Extract marching cube surface area and interfacial area of regions
-    if extract_MC_area is True:
-        mc_area = region_surface_areas(label_image=regions,
-                                       voxel_size=voxel_size,
-                                       interfacial_area=True)
-        net = {**net, **mc_area}
+    if marching_cubes_area:
+        areas = region_surface_areas(regions=regions, voxel_size=voxel_size)
+        net['pore.surface_area'] = areas
+        interface_area = region_interface_areas(regions=regions, areas=areas,
+                                                voxel_size=voxel_size)
+        net['throat.area'] = interface_area.area
     # -------------------------------------------------------------------------
     # Find void to void connections of boundary and internal voids
     boundary_labels = net['pore.label'] > b_num

@@ -2,13 +2,12 @@ import scipy as sp
 from porespy.network_extraction import regions_to_network
 from porespy.network_extraction import add_boundary_regions
 from porespy.filters import snow_partitioning
-from porespy.metrics import region_surface_areas
+from porespy.metrics import region_surface_areas, region_interface_areas
 
 
-def snow_dual(im,
-              voxel_size=1,
+def snow_dual(im, voxel_size=1,
               boundary_faces=['top', 'bottom', 'left', 'right', 'front', 'back'],
-              extract_MC_area=False):
+              marching_cubes_area=False):
 
     r"""
     Analyzes an image that has been partitioned into void and solid regions
@@ -23,13 +22,11 @@ def snow_dual(im,
         boolean image as well, but output labelling of phases will be inverted
         and solid phase properties will be assigned to void phase properties
         labels which will cause confusion while performing the simulation.
-
     voxel_size : scalar
         The resolution of the image, expressed as the length of one side of a
         voxel, so the volume of a voxel would be **voxel_size**-cubed.  The
         default is 1, which is useful when overlaying the PNM on the original
         image since the scale of the image is alway 1 unit lenth per voxel.
-
     boundary_faces : list of strings
         Boundary faces labels are provided to assign hypothetical boundary
         nodes having zero resistance to transport process. For cubical
@@ -37,11 +34,12 @@ def snow_dual(im,
         ‘front’ and ‘back’ face labels to assign boundary nodes. If no label is
         assigned then all six faces will be selected as boundary nodes
         automatically which can be trimmed later on based on user requirements.
-
-    extract_MC_area: bool
-        If True extract surface area and interfacial area of regions using
-        marching cube algorithm. This is a more accurate representation of area
-        in extracted network.
+    marching_cubes_area : bool
+        If ``True`` then the surface area and interfacial area between regions
+        will be using the marching cube algorithm. This is a more accurate
+        representation of area in extracted network, but is quite slow, so
+        it is ``False`` by default.  The default method simply counts voxels
+        so does not correctly account for the voxelated nature of the images.
 
     Returns
     -------
@@ -92,11 +90,14 @@ def snow_dual(im,
     # Extract void,solid and throat information from image
     net = regions_to_network(im=regions, dt=dt, voxel_size=voxel_size)
     # -------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     # Extract marching cube surface area and interfacial area of regions
-    if extract_MC_area is True:
-        mc_area = extract_regions_area(label_image=regions, voxel_size=voxel_size,
-                                       interfacial_area=True)
-        net = {**net, **mc_area}
+    if marching_cubes_area:
+        areas = region_surface_areas(regions=regions, voxel_size=voxel_size)
+        net['pore.surface_area'] = areas
+        interface_area = region_interface_areas(regions=regions, areas=areas,
+                                                voxel_size=voxel_size)
+        net['throat.area'] = interface_area.area
     # -------------------------------------------------------------------------
     # Find void to void, void to solid and solid to solid throat conns
     loc1 = net['throat.conns'][:, 0] < solid_num
@@ -129,16 +130,15 @@ def snow_dual(im,
     p_solid_surf = sp.concatenate((p_sa, s_pa, b_sa))
     # -------------------------------------------------------------------------
     # Calculates interfacial area using marching cube method
-    if extract_MC_area is True:
-        ps_c = net['throat.interfacial_area'][pore_solid_labels]
+    if marching_cubes_area:
+        ps_c = net['throat.area'][pore_solid_labels]
         p_sa_c = sp.bincount(p_conns, ps_c)
         s_pa_c = sp.bincount(s_conns, ps_c)
         s_pa_c = sp.trim_zeros(s_pa_c)  # remove pore surface area labels
-        p_solid_surf_c = sp.concatenate((p_sa_c, s_pa_c, b_sa))
-        net['pore.solid_IFA_mc'] = (p_solid_surf_c * voxel_size**2)
+        p_solid_surf = sp.concatenate((p_sa_c, s_pa_c, b_sa))
     # -------------------------------------------------------------------------
     # Adding additional information of dual network
-    net['pore.solid_IFA'] = p_solid_surf * voxel_size**2
+    net['pore.solid_void_area'] = (p_solid_surf * voxel_size**2)
     net['throat.void'] = pore_pore_labels
     net['throat.interconnect'] = pore_solid_labels
     net['throat.solid'] = solid_solid_labels
