@@ -98,7 +98,7 @@ class MetricsTest():
         region = self.regions == 1
         mesh = ps.tools.mesh_region(region)
         a = ps.metrics.mesh_surface_area(mesh)
-        assert sp.around(a, decimals=2) == 895.94
+        assert sp.around(a, decimals=2) == 777.18
         b = ps.metrics.mesh_surface_area(verts=mesh.verts, faces=mesh.faces)
         assert sp.around(b, decimals=2) == sp.around(a, decimals=2)
 
@@ -111,8 +111,8 @@ class MetricsTest():
         regions = self.regions
         areas = ps.metrics.region_surface_areas(regions)
         ia = ps.metrics.region_interface_areas(regions, areas)
-        assert sp.all(ia.conns[0] == [0, 34])
-        assert sp.around(ia.area[0], decimals=2) == 116.42
+        assert sp.all(ia.conns[0] == [0, 1])
+        assert sp.around(ia.area[0], decimals=2) == 8.85
 
 
 if __name__ == '__main__':
