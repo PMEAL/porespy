@@ -4,7 +4,6 @@ import scipy.ndimage as spim
 import imageio
 import pytest
 from pathlib import Path
-import os
 
 
 class MetricsTest():
@@ -22,8 +21,7 @@ class MetricsTest():
                                                   lattice='cubic')
         self.blobs = ps.generators.blobs(shape=[101, 101, 101], porosity=0.5,
                                          blobiness=[1, 2, 3])
-        self.path = Path(os.path.realpath(__file__),
-                         '../../fixtures/partitioned_regions.tif').resolve()
+        self.path = Path('./../fixtures/partitioned_regions.tif').resolve()
         self.regions = sp.array(imageio.mimread(self.path))
 
     def test_porosity(self):
