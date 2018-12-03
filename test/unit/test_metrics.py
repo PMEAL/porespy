@@ -1,7 +1,7 @@
 import porespy as ps
 import scipy as sp
 import scipy.ndimage as spim
-import imageio
+from skimage import io
 import pytest
 
 
@@ -20,8 +20,8 @@ class MetricsTest():
                                                   lattice='cubic')
         self.blobs = ps.generators.blobs(shape=[101, 101, 101], porosity=0.5,
                                          blobiness=[1, 2, 3])
-        path = '../fixtures/partitioned_regions.tif'
-        self.regions = sp.array(imageio.mimread(path, memtest=False))
+        path = '../../test/fixtures/partitioned_regions.tif'
+        self.regions = sp.array(io.imread(path))
 
     def test_porosity(self):
         phi = ps.metrics.porosity(im=self.im2D)
