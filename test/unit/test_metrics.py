@@ -8,19 +8,18 @@ class MetricsTest():
 
     def setup_class(self):
         sp.random.seed(0)
-        im2D = ps.generators.lattice_spheres(shape=[100, 100],
-                                             radius=5, offset=2,
-                                             lattice='square')
-        im2D_big = ps.generators.lattice_spheres(shape=[500, 500],
-                                                 radius=10, offset=10,
-                                                 lattice='square')
-        self.im2D = im2D
-        self.im2D_big = im2D_big
+        self.im2D = ps.generators.lattice_spheres(shape=[100, 100],
+                                                  radius=5, offset=2,
+                                                  lattice='square')
+        self.im2D_big = ps.generators.lattice_spheres(shape=[500, 500],
+                                                      radius=10, offset=10,
+                                                      lattice='square')
         self.im3D = ps.generators.lattice_spheres(shape=[51, 51, 51],
                                                   radius=4, offset=2,
                                                   lattice='cubic')
         self.blobs = ps.generators.blobs(shape=[101, 101, 101], porosity=0.5,
                                          blobiness=[1, 2, 3])
+        self.regions = ps.filters.snow_partitioning(self.im3D)
 
     def test_porosity(self):
         phi = ps.metrics.porosity(im=self.im2D)
@@ -91,25 +90,24 @@ class MetricsTest():
         ps.metrics.chord_length_distribution(chords, normalization='length')
 
     def test_mesh_surface_area(self):
-        regions = ps.filters.snow_partitioning(self.im3D)
-        region = regions == 1
+        region = self.regions == 1
         mesh = ps.tools.mesh_region(region)
         a = ps.metrics.mesh_surface_area(mesh)
-        assert sp.around(a, decimals=0) == 1017.0
+        assert sp.around(a, decimals=2) == 968.06
         b = ps.metrics.mesh_surface_area(verts=mesh.verts, faces=mesh.faces)
-        assert sp.around(b, decimals=0) == sp.around(a, decimals=0)
+        assert sp.around(b, decimals=2) == sp.around(a, decimals=2)
 
     def test_region_surface_areas(self):
-        regions = ps.filters.snow_partitioning(self.im3D)
+        regions = self.regions
         areas = ps.metrics.region_surface_areas(regions)
         assert not sp.any(sp.isnan(areas))
 
     def test_region_interface_areas(self):
-        regions = ps.filters.snow_partitioning(self.im3D)
+        regions = self.regions
         areas = ps.metrics.region_surface_areas(regions)
         ia = ps.metrics.region_interface_areas(regions, areas)
-        assert sp.all(ia.conns[0] == [0, 9])
-        assert sp.around(ia.area[0], decimals=2) == 7.55
+        assert sp.all(ia.conns[0] == [0, 17])
+        assert sp.around(ia.area[0], decimals=2) == 175.27
 
 
 if __name__ == '__main__':
