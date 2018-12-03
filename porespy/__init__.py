@@ -82,11 +82,11 @@ offered by the Python environment.
 
 '''
 __version__ = "0.3.9"
-from . import metrics
 from . import tools
-from . import filters
-from . import generators
-from . import simulations
 from . import network_extraction
 from . import visualization
+from . import simulations
+from . import metrics
+from . import generators
+from . import filters
 from . import io
