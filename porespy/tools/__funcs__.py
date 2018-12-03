@@ -1,6 +1,8 @@
 import scipy as sp
 import scipy.ndimage as spim
+from collections import namedtuple
 from skimage.morphology import ball, disk, square, cube
+from skimage.measure import marching_cubes_lewiner
 from array_split import shape_split
 from scipy.signal import fftconvolve
 
@@ -744,7 +746,7 @@ def mesh_region(region: bool, r=1):
     else:
         padded_mask = sp.reshape(im, (1,) + im.shape)
         padded_mask = sp.pad(padded_mask, pad_width=1, mode='constant')
-    verts, faces, norm, val = measure.marching_cubes_lewiner(padded_mask)
+    verts, faces, norm, val = marching_cubes_lewiner(padded_mask)
     result = namedtuple('mesh', ('verts', 'faces', 'norm', 'val'))
     result.verts = verts
     result.faces = faces
