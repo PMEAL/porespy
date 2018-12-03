@@ -3,6 +3,8 @@ import scipy as sp
 import scipy.ndimage as spim
 import imageio
 import pytest
+from pathlib import Path
+import os
 
 
 class MetricsTest():
@@ -20,7 +22,9 @@ class MetricsTest():
                                                   lattice='cubic')
         self.blobs = ps.generators.blobs(shape=[101, 101, 101], porosity=0.5,
                                          blobiness=[1, 2, 3])
-        self.regions = imageio.mimread('../fixtures/partitioned_regions.tif')
+        path = Path(os.path.realpath(__file__),
+                    '../../fixtures/partitioned_regions.tif')
+        self.regions = sp.array(imageio.mimread(path))
 
     def test_porosity(self):
         phi = ps.metrics.porosity(im=self.im2D)
@@ -94,7 +98,7 @@ class MetricsTest():
         region = self.regions == 1
         mesh = ps.tools.mesh_region(region)
         a = ps.metrics.mesh_surface_area(mesh)
-        assert sp.around(a, decimals=2) == 968.06
+        assert sp.around(a, decimals=2) == 895.94
         b = ps.metrics.mesh_surface_area(verts=mesh.verts, faces=mesh.faces)
         assert sp.around(b, decimals=2) == sp.around(a, decimals=2)
 
@@ -107,8 +111,8 @@ class MetricsTest():
         regions = self.regions
         areas = ps.metrics.region_surface_areas(regions)
         ia = ps.metrics.region_interface_areas(regions, areas)
-        assert sp.all(ia.conns[0] == [0, 17])
-        assert sp.around(ia.area[0], decimals=2) == 175.27
+        assert sp.all(ia.conns[0] == [0, 34])
+        assert sp.around(ia.area[0], decimals=2) == 116.42
 
 
 if __name__ == '__main__':
