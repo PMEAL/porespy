@@ -589,7 +589,7 @@ def make_contiguous(im, keep_zeros=True):
     return im_new
 
 
-def get_border(shape, thickness=1, mode='edges'):
+def get_border(shape, thickness=1, mode='edges', asmask=True):
     r"""
     Creates an array of specified size with corners, edges or faces labelled as
     True.  This can be used as mask to manipulate values laying on the
@@ -607,10 +607,15 @@ def get_border(shape, thickness=1, mode='edges'):
         The type of border to create.  Options are 'faces', 'edges' (default)
         and 'corners'.  In 2D 'faces' and 'edges' give the same result.
 
+    asmask : Boolean
+        If ``True`` (default) then an image of the specified ``shape`` is
+        returned, otherwise indices of the border voxels are returned.
+
     Returns
     -------
-    An ND-array of specified shape with True values at the perimeter and False
-    elsewhere.
+    If ``asmask`` is ``True``, then an ND-array of specified shape with
+    ``True` values at the perimeter and ``False`` elsewhere.  If ``asmask``
+    is ``False`` then tuple containing indices is returned.
 
     Examples
     --------
@@ -626,6 +631,7 @@ def get_border(shape, thickness=1, mode='edges'):
     [[ True  True  True]
      [ True False  True]
      [ True  True  True]]
+
     """
     ndims = len(shape)
     t = thickness
@@ -650,6 +656,8 @@ def get_border(shape, thickness=1, mode='edges'):
             border[t:-t, 0::, 0::] = False
             border[0::, t:-t, 0::] = False
             border[0::, 0::, t:-t] = False
+    if not asmask:
+        border = sp.where(border)
     return border
 
 
@@ -682,9 +690,8 @@ def in_hull(points, hull):
 
 def norm_to_uniform(im, scale=None):
     r"""
-    Take an image with normally distributed greyscale values and converts it to
-    a uniform (i.e. flat) distribution.  It's also possible to specify the
-    lower and upper limits of the uniform distribution.
+    Take an image with normally distributed greyscale values and convert it to
+    a uniform (i.e. flat) distribution.
 
     Parameters
     ----------
