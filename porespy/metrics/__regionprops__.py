@@ -158,10 +158,6 @@ def regionprops_3D(im):
         inv_dt = spim.distance_transform_edt(dt < r)
         results[i].inscribed_sphere = inv_dt < r
         # ---------------------------------------------------------------------
-        s = extend_slice(results[i].slice, shape=im.shape, pad=1)
-        neighbor_mask = spim.binary_dilation(mask_padded, structure=ball[3])
-        results[i].neighbors = sp.unique(im[s][neighbor_mask])
-        # ---------------------------------------------------------------------
         # Find surface area using marching cubes and analyze the mesh
         tmp = sp.pad(sp.atleast_3d(mask), pad_width=1, mode='constant')
         tmp = spim.convolve(tmp, weights=ball(1))/5

@@ -713,7 +713,7 @@ def norm_to_uniform(im, scale=None):
     return im
 
 
-def mesh_region(region: bool, r=1):
+def mesh_region(region: bool, strel=None):
     r"""
     Creates a tri-mesh of the provided region using the marching cubes
     algorithm
@@ -723,12 +723,13 @@ def mesh_region(region: bool, r=1):
     im : ND-array
         A boolean image with ``True`` values indicating the region of interest
 
-    r : scalar (default = 1)
-        The radius of the round structuring element used to blur the binary
-        image.  This is necessary to allow the marching cubes algorithm to
-        properly fit the contour of the region.  If ``r=0`` then the
-        boolean mask is used, and as ``r`` increases the region is more
-        blurred, to the point of losing features.  A default of 1 is used.
+    strel : ND-array
+        The structuring element to use when blurring the region.  The blur is
+        perfomed using a simple convolution filter.  The point is to create a
+        greyscale region to allow the marching cubes algorithm some freedom
+        to conform the mesh to the surface.  As the size of ``strel`` increases
+        the region will become increasingly blurred and inaccurate. The default
+        is a spherical element with a radius of 1.
 
     Returns
     -------
@@ -736,16 +737,20 @@ def mesh_region(region: bool, r=1):
     returned by ``scikit-image.measure.marching_cubes`` function.
 
     """
-
-    from skimage.morphology import ball
+    if strel is None:
+        if region.ndim == 3:
+            strel = ball(1)
+        if region.ndim == 2:
+            strel = disk(1)
+    pad_width = sp.amax(strel.shape)
     im = region
     if im.ndim == 3:
-        padded_mask = sp.pad(im, pad_width=1, mode='constant')
+        padded_mask = sp.pad(im, pad_width=pad_width, mode='constant')
         padded_mask = spim.convolve(padded_mask*1.0,
-                                    weights=ball(r))/sp.sum(ball(r))
+                                    weights=strel)/sp.sum(strel)
     else:
         padded_mask = sp.reshape(im, (1,) + im.shape)
-        padded_mask = sp.pad(padded_mask, pad_width=1, mode='constant')
+        padded_mask = sp.pad(padded_mask, pad_width=pad_width, mode='constant')
     verts, faces, norm, val = marching_cubes_lewiner(padded_mask)
     result = namedtuple('mesh', ('verts', 'faces', 'norm', 'val'))
     result.verts = verts

@@ -718,8 +718,8 @@ def region_surface_areas(regions, voxel_size=1, strel=None):
         s = extend_slice(slices[reg], im.shape)
         sub_im = im[s]
         mask_im = sub_im == i
-        mesh = mesh_region(region=mask_im)
-        sa[reg] = mesh_surface_area(mesh, strel=strel)
+        mesh = mesh_region(region=mask_im, strel=strel)
+        sa[reg] = mesh_surface_area(mesh)
     result = sa * voxel_size**2
     return result
 

@@ -90,23 +90,27 @@ class MetricsTest():
         chords = ps.filters.apply_chords(self.im3D)
         ps.metrics.chord_length_distribution(chords, normalization='length')
 
-    def test_get_surface_area(self):
-        surface_area = ps.metrics.get_surface_area(self.im3D)
-        assert int(surface_area) == 27108
-
-    def test_combine_region(self):
-        mask = ps.metrics.combine_region(self.im3D, labels=[1],
-                                         compress_border=True)
-        assert sp.sum(mask) == 116587
-
-    def test_extract_regions_area(self):
+    def test_mesh_surface_area(self):
         regions = ps.filters.snow_partitioning(self.im3D)
-        net = ps.metrics.extract_regions_area(label_image=regions)
-        found_nans = False
-        for key in net.keys():
-            if sp.any(sp.isnan(net[key])):
-                found_nans = True
-        assert found_nans is False
+        region = regions == 1
+        mesh = ps.tools.mesh_region(region)
+        a = ps.metrics.mesh_surface_area(mesh)
+        assert sp.around(a, decimals=0) == 1017.0
+        b = ps.metrics.mesh_surface_area(verts=mesh.verts, faces=mesh.faces)
+        assert sp.around(b, decimals=0) == sp.around(a, decimals=0)
+
+    def test_region_surface_areas(self):
+        regions = ps.filters.snow_partitioning(self.im3D)
+        areas = ps.metrics.region_surface_areas(regions)
+        assert not sp.any(sp.isnan(areas))
+
+    def test_region_interface_areas(self):
+        regions = ps.filters.snow_partitioning(self.im3D)
+        areas = ps.metrics.region_surface_areas(regions)
+        ia = ps.metrics.region_interface_areas(regions, areas)
+        assert sp.all(ia.conns[0] == [0, 9])
+        assert sp.around(ia.area[0], decimals=2) == 7.55
+
 
 if __name__ == '__main__':
     t = MetricsTest()
