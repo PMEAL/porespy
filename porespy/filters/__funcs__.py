@@ -86,7 +86,7 @@ def snow_partitioning(im, r_max=4, sigma=0.4, return_all=False):
         is faster if a distance transform is already available.
 
     r_max : scalar
-        The radius of there spherical structuring element to use in the Maximum
+        The radius of the spherical structuring element to use in the Maximum
         filter stage that is used to find peaks.  The default is 4
 
     sigma : scalar
@@ -143,7 +143,7 @@ def snow_partitioning(im, r_max=4, sigma=0.4, return_all=False):
         print('Applying Gaussian blur with sigma =', str(sigma))
         dt = spim.gaussian_filter(input=dt, sigma=sigma)
 
-    peaks = find_peaks(dt=dt)
+    peaks = find_peaks(dt=dt, r_max=r_max)
     print('Initial number of peaks: ', spim.label(peaks)[1])
     peaks = trim_saddle_points(peaks=peaks, dt=dt, max_iters=500)
     print('Peaks after trimming saddle points: ', spim.label(peaks)[1])
@@ -160,7 +160,7 @@ def snow_partitioning(im, r_max=4, sigma=0.4, return_all=False):
         return regions
 
 
-def find_peaks(dt, r=4, footprint=None):
+def find_peaks(dt, r_max=4, footprint=None):
     r"""
     Returns all local maxima in the distance transform
 
@@ -170,7 +170,7 @@ def find_peaks(dt, r=4, footprint=None):
         The distance transform of the pore space.  This may be calculated and
         filtered using any means desired.
 
-    r : scalar
+    r_max : scalar
         The size of the structuring element used in the maximum filter.  This
         controls the localness of any maxima. The default is 4 voxels.
 
@@ -203,7 +203,7 @@ def find_peaks(dt, r=4, footprint=None):
             footprint = ball
         else:
             raise Exception("only 2-d and 3-d images are supported")
-    mx = spim.maximum_filter(dt + 2*(~im), footprint=footprint(r))
+    mx = spim.maximum_filter(dt + 2*(~im), footprint=footprint(r_max))
     peaks = (dt == mx)*im
     return peaks
 
