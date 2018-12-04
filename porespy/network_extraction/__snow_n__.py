@@ -129,7 +129,6 @@ def snow_n(im, voxel_size=1,
         for j in phases_num:
             if j > i:
                 pi_pj_sa = sp.zeros_like(label)
-#                pi_pj_sa_mc = sp.zeros_like(label)
                 loc6 = sp.logical_and(conns2 >= num[j-1], conns2 < num[j])
                 pi_pj_conns = loc1 * loc6
                 net['throat.phase{}_{}'.format(i, j)] = pi_pj_conns
@@ -161,8 +160,6 @@ def snow_n(im, voxel_size=1,
                         pi_pj_sa[j_index] = s_pa_c
                     net['pore.p{}_{}_area'.format(i, j)] = (pi_pj_sa *
                                                            voxel_size**2)
-#                    net['pore.p{}_{}_IFA_mc'.format(i, j)] = (pi_pj_sa_mc *
-#                                                              voxel_size**2)
     # -------------------------------------------------------------------------
     # label boundary cells
     net = label_boundary_cells(network=net, boundary_faces=f)
