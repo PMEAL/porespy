@@ -29,6 +29,12 @@ class ToolsTest():
         cont_im = ps.tools.make_contiguous(self.im)
         assert sp.all(sp.arange(sp.unique(self.im).size) == sp.unique(cont_im))
 
+    def test_make_contiguous_negs(self):
+        im = sp.array([[0, 0, 1, 3], [-2, -4, 1, 3], [-4, 3, 5, 0]])
+        a = ps.tools.make_contiguous(im, keep_zeros=True).max()
+        b = ps.tools.make_contiguous(im, keep_zeros=False).max()
+        assert a == b
+
     def test_get_slice(self):
         one_lab = self.labels == 10
         my_slice = ps.tools.get_slice(one_lab, center=[75, 9], size=10)

@@ -86,7 +86,7 @@ def snow_partitioning(im, r_max=4, sigma=0.4, return_all=False):
         is faster if a distance transform is already available.
 
     r_max : scalar
-        The radius of there spherical structuring element to use in the Maximum
+        The radius of the spherical structuring element to use in the Maximum
         filter stage that is used to find peaks.  The default is 4
 
     sigma : scalar
@@ -121,13 +121,17 @@ def snow_partitioning(im, r_max=4, sigma=0.4, return_all=False):
 
     """
     tup = namedtuple('results', field_names=['im', 'dt', 'peaks', 'regions'])
-    im = im.squeeze()
     print('_'*60)
     print("Beginning SNOW Algorithm")
-
+    im_shape = sp.array(im.shape)
     if im.dtype == 'bool':
         print('Peforming Distance Transform')
-        dt = spim.distance_transform_edt(input=im)
+        if sp.any(im_shape == 1):
+            ax = sp.where(im_shape == 1)[0][0]
+            dt = spim.distance_transform_edt(input=im.squeeze())
+            dt = sp.expand_dims(dt, ax)
+        else:
+            dt = spim.distance_transform_edt(input=im)
     else:
         dt = im
         im = dt > 0
@@ -139,7 +143,7 @@ def snow_partitioning(im, r_max=4, sigma=0.4, return_all=False):
         print('Applying Gaussian blur with sigma =', str(sigma))
         dt = spim.gaussian_filter(input=dt, sigma=sigma)
 
-    peaks = find_peaks(dt=dt)
+    peaks = find_peaks(dt=dt, r_max=r_max)
     print('Initial number of peaks: ', spim.label(peaks)[1])
     peaks = trim_saddle_points(peaks=peaks, dt=dt, max_iters=500)
     print('Peaks after trimming saddle points: ', spim.label(peaks)[1])
@@ -156,7 +160,7 @@ def snow_partitioning(im, r_max=4, sigma=0.4, return_all=False):
         return regions
 
 
-def find_peaks(dt, r=4, footprint=None):
+def find_peaks(dt, r_max=4, footprint=None):
     r"""
     Returns all local maxima in the distance transform
 
@@ -166,7 +170,7 @@ def find_peaks(dt, r=4, footprint=None):
         The distance transform of the pore space.  This may be calculated and
         filtered using any means desired.
 
-    r : scalar
+    r_max : scalar
         The size of the structuring element used in the maximum filter.  This
         controls the localness of any maxima. The default is 4 voxels.
 
@@ -191,7 +195,6 @@ def find_peaks(dt, r=4, footprint=None):
     This automatically uses a square structuring element which is significantly
     faster than using a circular or spherical element.
     """
-    dt = dt.squeeze()
     im = dt > 0
     if footprint is None:
         if im.ndim == 2:
@@ -200,7 +203,7 @@ def find_peaks(dt, r=4, footprint=None):
             footprint = ball
         else:
             raise Exception("only 2-d and 3-d images are supported")
-    mx = spim.maximum_filter(dt + 2*(~im), footprint=footprint(r))
+    mx = spim.maximum_filter(dt + 2*(~im), footprint=footprint(r_max))
     peaks = (dt == mx)*im
     return peaks
 
@@ -237,9 +240,9 @@ def reduce_peaks(peaks):
                                             index=sp.arange(1, N+1))
     inds = sp.floor(inds).astype(int)
     # Centroid may not be on old pixel, so create a new peaks image
-    peaks = sp.zeros_like(peaks, dtype=bool)
-    peaks[tuple(inds.T)] = True
-    return peaks
+    peaks_new = sp.zeros_like(peaks, dtype=bool)
+    peaks_new[tuple(inds.T)] = True
+    return peaks_new
 
 
 def trim_saddle_points(peaks, dt, max_iters=10):
@@ -268,6 +271,7 @@ def trim_saddle_points(peaks, dt, max_iters=10):
     -------
     An image with fewer peaks than was received.
     """
+    peaks = sp.copy(peaks)
     if dt.ndim == 2:
         from skimage.morphology import square as cube
     else:
@@ -325,6 +329,7 @@ def trim_nearby_peaks(peaks, dt):
     each pair is considered.  This ensures that only the single peak that is
     furthest from the solid is kept.  No iteration is required.
     """
+    peaks = sp.copy(peaks)
     if dt.ndim == 2:
         from skimage.morphology import square as cube
     else:
@@ -418,6 +423,7 @@ def fill_blind_pores(im):
     find_disconnected_voxels
 
     """
+    im = sp.copy(im)
     holes = find_disconnected_voxels(im)
     im[holes] = False
     return im
@@ -441,6 +447,7 @@ def trim_floating_solid(im):
     find_disconnected_voxels
 
     """
+    im = sp.copy(im)
     holes = find_disconnected_voxels(~im)
     im[holes] = True
     return im

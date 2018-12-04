@@ -1,6 +1,8 @@
 import scipy as sp
 import scipy.ndimage as spim
+from collections import namedtuple
 from skimage.morphology import ball, disk, square, cube
+from skimage.measure import marching_cubes_lewiner
 from array_split import shape_split
 from scipy.signal import fftconvolve
 
@@ -538,15 +540,25 @@ def randomize_colors(im, keep_vals=[0]):
     return im_new
 
 
-def make_contiguous(im):
+def make_contiguous(im, keep_zeros=True):
     r"""
     Take an image with arbitrary greyscale values and adjust them to ensure
     all values fall in a contiguous range starting at 0.
+
+    This function will handle negative numbers such that most negative number
+    will become 0, *unless* ``keep_zeros`` is ``True`` in which case it will
+    become 1, and all 0's in the original image remain 0.
 
     Parameters
     ----------
     im : array_like
         An ND array containing greyscale values
+
+    keep_zeros : Boolean
+        If ``True`` (default) then 0 values remain 0, regardless of how the
+        other numbers are adjusted.  This is mostly relevant when the array
+        contains negative numbers, and means that -1 will become +1, while
+        0 values remain 0.
 
     Returns
     -------
@@ -564,6 +576,11 @@ def make_contiguous(im):
      [3 4 2]]
 
     """
+    im = sp.copy(im)
+    if keep_zeros:
+        mask = (im == 0)
+        im[mask] = im.min() - 1
+    im = im - im.min()
     im_flat = im.flatten()
     im_vals = sp.unique(im_flat)
     im_map = sp.zeros(shape=sp.amax(im_flat)+1)
@@ -694,3 +711,50 @@ def norm_to_uniform(im, scale=None):
     im = (im - im.min()) / (im.max() - im.min())
     im = im*(scale[1] - scale[0]) + scale[0]
     return im
+
+
+def mesh_region(region: bool, strel=None):
+    r"""
+    Creates a tri-mesh of the provided region using the marching cubes
+    algorithm
+
+    Parameters
+    ----------
+    im : ND-array
+        A boolean image with ``True`` values indicating the region of interest
+
+    strel : ND-array
+        The structuring element to use when blurring the region.  The blur is
+        perfomed using a simple convolution filter.  The point is to create a
+        greyscale region to allow the marching cubes algorithm some freedom
+        to conform the mesh to the surface.  As the size of ``strel`` increases
+        the region will become increasingly blurred and inaccurate. The default
+        is a spherical element with a radius of 1.
+
+    Returns
+    -------
+    A named-tuple containing ``faces``, ``verts``, ``norm``, and ``val`` as
+    returned by ``scikit-image.measure.marching_cubes`` function.
+
+    """
+    if strel is None:
+        if region.ndim == 3:
+            strel = ball(1)
+        if region.ndim == 2:
+            strel = disk(1)
+    pad_width = sp.amax(strel.shape)
+    im = region
+    if im.ndim == 3:
+        padded_mask = sp.pad(im, pad_width=pad_width, mode='constant')
+        padded_mask = spim.convolve(padded_mask*1.0,
+                                    weights=strel)/sp.sum(strel)
+    else:
+        padded_mask = sp.reshape(im, (1,) + im.shape)
+        padded_mask = sp.pad(padded_mask, pad_width=pad_width, mode='constant')
+    verts, faces, norm, val = marching_cubes_lewiner(padded_mask)
+    result = namedtuple('mesh', ('verts', 'faces', 'norm', 'val'))
+    result.verts = verts
+    result.faces = faces
+    result.norm = norm
+    result.val = val
+    return result
