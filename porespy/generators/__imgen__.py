@@ -169,7 +169,7 @@ def bundle_of_tubes(shape: List[int], spacing: int):
 
 
 def polydisperse_spheres(shape: List[int], porosity: float, dist,
-                         nbins: int=5):
+                         nbins: int = 5):
     r"""
     Create an image of spheres with a distribution of radii.
 
@@ -218,7 +218,7 @@ def polydisperse_spheres(shape: List[int], porosity: float, dist,
 
 
 def voronoi_edges(shape: List[int], radius: int, ncells: int,
-                  flat_faces: bool=True):
+                  flat_faces: bool = True):
     r"""
     Create an image of the edges in a Voronoi tessellation
 
@@ -310,8 +310,8 @@ def _get_Voronoi_edges(vor):
     return edges
 
 
-def lattice_spheres(shape: List[int], radius: int, offset: int=0,
-                    lattice: str='sc'):
+def lattice_spheres(shape: List[int], radius: int, offset: int = 0,
+                    lattice: str = 'sc'):
     r"""
     Generates a cubic packing of spheres in a specified lattice arrangement
 
@@ -456,8 +456,8 @@ def overlapping_spheres(shape: List[int], radius: int, porosity: float):
     return ~im
 
 
-def noise(shape: List[int], porosity=None, octaves: int=3, frequency: int=32,
-          mode: str='simplex'):
+def noise(shape: List[int], porosity=None, octaves: int = 3,
+          frequency: int = 32, mode: str = 'simplex'):
     r"""
     Generate a field of spatially correlated random noise using the Perlin
     noise algorithm, or the updated Simplex noise algorithm.
@@ -540,7 +540,7 @@ def noise(shape: List[int], porosity=None, octaves: int=3, frequency: int=32,
     return im
 
 
-def blobs(shape: List[int], porosity: float=0.5, blobiness: int=1):
+def blobs(shape: List[int], porosity: float = 0.5, blobiness: int = 1):
     """
     Generates an image containing amorphous blobs
 
@@ -584,8 +584,8 @@ def blobs(shape: List[int], porosity: float=0.5, blobiness: int=1):
     return im
 
 
-def cylinders(shape: List[int], radius: int, nfibers: int, phi_max: float=0,
-              theta_max: float=90):
+def cylinders(shape: List[int], radius: int, nfibers: int, phi_max: float = 0,
+              theta_max: float = 90):
     r"""
     Generates a binary image of overlapping cylinders.  This is a good
     approximation of a fibrous mat.

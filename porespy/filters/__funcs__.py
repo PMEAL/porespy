@@ -8,9 +8,62 @@ from numba import jit
 from skimage.segmentation import clear_border
 from skimage.morphology import ball, disk, square, cube
 from skimage.morphology import reconstruction, watershed
-from porespy.tools import randomize_colors
+from porespy.tools import randomize_colors, fftmorphology
 from porespy.tools import get_border, extend_slice
-from porespy.tools import fftmorphology
+
+
+def distance_transform_lin(im, axis=0, mode='both'):
+    r"""
+    Replaces each void voxel with the linear distance to the nearest solid
+    voxel along the specified axis.
+
+    Parameters
+    ----------
+    im : ND-array
+        The image of the porous material with ``True`` values indicating the
+        void phase (or phase of interest)
+
+    axis : scalar
+        The direction along which the distance should be measured, the default
+        is 0 (i.e. along the x-direction)
+
+    mode : string
+        Controls how the distance is measured.  Options are:
+
+        *'forward'* - Distances are measured in the increasing direction along
+        the specified axis
+
+        *'reverse'* - Distances are measured in the reverse direction.
+        *'backward'* is also accepted.
+
+        *'both'* - Distances are calculated in both directions (by recursively
+        calling itself), then reporting the minimum value of the two results.
+    """
+    if mode in ['backward', 'reverse']:
+        im = sp.flip(im, axis)
+        im = distance_transform_lin(im=im, axis=axis, mode='forward')
+        im = sp.flip(im, axis)
+        return im
+    elif mode in ['both']:
+        im_f = distance_transform_lin(im=im, axis=axis, mode='forward')
+        im_b = distance_transform_lin(im=im, axis=axis, mode='backward')
+        return sp.minimum(im_f, im_b)
+    else:
+        b = sp.cumsum(im > 0, axis=axis)
+        c = sp.diff(b*(im == 0), axis=axis)
+        d = sp.minimum.accumulate(c, axis=axis)
+        if im.ndim == 1:
+            e = sp.pad(d, pad_width=[1, 0], mode='constant', constant_values=0)
+        elif im.ndim == 2:
+            ax = [[[1, 0], [0, 0]], [[0, 0], [1, 0]]]
+            e = sp.pad(d, pad_width=ax[axis], mode='constant', constant_values=0)
+        elif im.ndim == 3:
+            ax = [[[1, 0], [0, 0], [0, 0]],
+                  [[0, 0], [1, 0], [0, 0]],
+                  [[0, 0], [0, 0], [1, 0]]]
+            e = sp.pad(d, pad_width=ax[axis], mode='constant', constant_values=0)
+        f = im*(b + e)
+        return f
 
 
 def snow_partitioning(im, r_max=4, sigma=0.4, return_all=False):
@@ -33,7 +86,7 @@ def snow_partitioning(im, r_max=4, sigma=0.4, return_all=False):
         is faster if a distance transform is already available.
 
     r_max : scalar
-        The radius of there spherical structuring element to use in the Maximum
+        The radius of the spherical structuring element to use in the Maximum
         filter stage that is used to find peaks.  The default is 4
 
     sigma : scalar
@@ -68,13 +121,17 @@ def snow_partitioning(im, r_max=4, sigma=0.4, return_all=False):
 
     """
     tup = namedtuple('results', field_names=['im', 'dt', 'peaks', 'regions'])
-    im = im.squeeze()
     print('_'*60)
     print("Beginning SNOW Algorithm")
-
+    im_shape = sp.array(im.shape)
     if im.dtype == 'bool':
         print('Peforming Distance Transform')
-        dt = spim.distance_transform_edt(input=im)
+        if sp.any(im_shape == 1):
+            ax = sp.where(im_shape == 1)[0][0]
+            dt = spim.distance_transform_edt(input=im.squeeze())
+            dt = sp.expand_dims(dt, ax)
+        else:
+            dt = spim.distance_transform_edt(input=im)
     else:
         dt = im
         im = dt > 0
@@ -86,7 +143,7 @@ def snow_partitioning(im, r_max=4, sigma=0.4, return_all=False):
         print('Applying Gaussian blur with sigma =', str(sigma))
         dt = spim.gaussian_filter(input=dt, sigma=sigma)
 
-    peaks = find_peaks(dt=dt)
+    peaks = find_peaks(dt=dt, r_max=r_max)
     print('Initial number of peaks: ', spim.label(peaks)[1])
     peaks = trim_saddle_points(peaks=peaks, dt=dt, max_iters=500)
     print('Peaks after trimming saddle points: ', spim.label(peaks)[1])
@@ -103,7 +160,7 @@ def snow_partitioning(im, r_max=4, sigma=0.4, return_all=False):
         return regions
 
 
-def find_peaks(dt, r=4, footprint=None):
+def find_peaks(dt, r_max=4, footprint=None):
     r"""
     Returns all local maxima in the distance transform
 
@@ -113,7 +170,7 @@ def find_peaks(dt, r=4, footprint=None):
         The distance transform of the pore space.  This may be calculated and
         filtered using any means desired.
 
-    r : scalar
+    r_max : scalar
         The size of the structuring element used in the maximum filter.  This
         controls the localness of any maxima. The default is 4 voxels.
 
@@ -138,7 +195,6 @@ def find_peaks(dt, r=4, footprint=None):
     This automatically uses a square structuring element which is significantly
     faster than using a circular or spherical element.
     """
-    dt = dt.squeeze()
     im = dt > 0
     if footprint is None:
         if im.ndim == 2:
@@ -147,7 +203,7 @@ def find_peaks(dt, r=4, footprint=None):
             footprint = ball
         else:
             raise Exception("only 2-d and 3-d images are supported")
-    mx = spim.maximum_filter(dt + 2*(~im), footprint=footprint(r))
+    mx = spim.maximum_filter(dt + 2*(~im), footprint=footprint(r_max))
     peaks = (dt == mx)*im
     return peaks
 
@@ -181,12 +237,12 @@ def reduce_peaks(peaks):
     markers, N = spim.label(input=peaks, structure=strel(3))
     inds = spim.measurements.center_of_mass(input=peaks,
                                             labels=markers,
-                                            index=sp.arange(1, N))
+                                            index=sp.arange(1, N+1))
     inds = sp.floor(inds).astype(int)
     # Centroid may not be on old pixel, so create a new peaks image
-    peaks = sp.zeros_like(peaks, dtype=bool)
-    peaks[tuple(inds.T)] = True
-    return peaks
+    peaks_new = sp.zeros_like(peaks, dtype=bool)
+    peaks_new[tuple(inds.T)] = True
+    return peaks_new
 
 
 def trim_saddle_points(peaks, dt, max_iters=10):
@@ -215,6 +271,7 @@ def trim_saddle_points(peaks, dt, max_iters=10):
     -------
     An image with fewer peaks than was received.
     """
+    peaks = sp.copy(peaks)
     if dt.ndim == 2:
         from skimage.morphology import square as cube
     else:
@@ -272,6 +329,7 @@ def trim_nearby_peaks(peaks, dt):
     each pair is considered.  This ensures that only the single peak that is
     furthest from the solid is kept.  No iteration is required.
     """
+    peaks = sp.copy(peaks)
     if dt.ndim == 2:
         from skimage.morphology import square as cube
     else:
@@ -286,7 +344,7 @@ def trim_nearby_peaks(peaks, dt):
     nearest_neighbor = temp[1][:, 1]
     dist_to_neighbor = temp[0][:, 1]
     del temp, tree  # Free-up memory
-    dist_to_solid = dt[list(crds.T)]  # Get distance to solid for each peak
+    dist_to_solid = dt[tuple(crds.T)]  # Get distance to solid for each peak
     hits = sp.where(dist_to_neighbor < dist_to_solid)[0]
     # Drop peak that is closer to the solid than it's neighbor
     drop_peaks = []
@@ -365,6 +423,7 @@ def fill_blind_pores(im):
     find_disconnected_voxels
 
     """
+    im = sp.copy(im)
     holes = find_disconnected_voxels(im)
     im[holes] = False
     return im
@@ -388,6 +447,7 @@ def trim_floating_solid(im):
     find_disconnected_voxels
 
     """
+    im = sp.copy(im)
     holes = find_disconnected_voxels(~im)
     im[holes] = True
     return im
@@ -561,7 +621,65 @@ def flood(im, regions=None, mode='max'):
     return im_flooded
 
 
-def apply_chords(im, spacing=0, axis=0, trim_edges=True):
+def find_dt_artifacts(dt):
+    r"""
+    Finds points in a distance transform that are closer to wall than solid.
+
+    These points could *potentially* be erroneously high since their distance
+    values do not reflect the possibility that solid may have been present
+    beyond the border of the image but lost by trimming.
+
+    Parameters
+    ----------
+    dt : ND-array
+        The distance transform of the phase of interest
+
+    Returns
+    -------
+    An ND-array the same shape as ``dt`` with numerical values indicating
+    the maximum amount of error in each volxel, which is found by subtracting
+    the distance to nearest edge of image from the distance transform value.
+    In other words, this is the error that would be found if there were a solid
+    voxel lurking just beyond the nearest edge of the image.  Obviously,
+    voxels with a value of zero have no error.
+
+    """
+    temp = sp.ones(shape=dt.shape)*sp.inf
+    for ax in range(dt.ndim):
+        dt_lin = distance_transform_lin(sp.ones_like(temp, dtype=bool),
+                                        axis=ax, mode='both')
+        temp = sp.minimum(temp, dt_lin)
+    result = sp.clip(dt - temp, a_min=0, a_max=sp.inf)
+    return result
+
+
+def region_size(im):
+    r"""
+    Replace each voxel with size of region to which it belongs
+
+    Parameters
+    ----------
+    im : ND-array
+        Either a boolean image wtih ``True`` indicating the features of
+        interest, in which case ``scipy.ndimage.label`` will be applied to
+        find regions, or a greyscale image with integer values indicating
+        regions.
+
+    Returns
+    -------
+    An ND array with each voxel value indicating the size of the region to
+    which is belongs.  This is particularly useful for finding chord sizes
+    on the image produced by ``apply_chords``.
+    """
+    if im.dtype == bool:
+        im = spim.label(im)[0]
+    counts = sp.bincount(im.flatten())
+    counts[0] = 0
+    chords = counts[im]
+    return chords
+
+
+def apply_chords(im, spacing=1, axis=0, trim_edges=True, label=False):
     r"""
     Adds chords to the void space in the specified direction.  The chords are
     separated by 1 voxel plus the provided spacing.
@@ -569,11 +687,12 @@ def apply_chords(im, spacing=0, axis=0, trim_edges=True):
     Parameters
     ----------
     im : ND-array
-        An image of the porous material with void marked as True.
+        An image of the porous material with void marked as ``True``.
 
-    spacing : int (default = 0)
-        Chords are automatically separated by 1 voxel and this argument
-        increases the separation.
+    spacing : int
+        Separation between chords.  The default is 1 voxel.  This can be
+        decreased to 0, meaning that the chords all touch each other, which
+        automatically sets to the ``label`` argument to ``True``.
 
     axis : int (default = 0)
         The axis along which the chords are drawn.
@@ -581,12 +700,18 @@ def apply_chords(im, spacing=0, axis=0, trim_edges=True):
     trim_edges : bool (default = True)
         Whether or not to remove chords that touch the edges of the image.
         These chords are artifically shortened, so skew the chord length
-        distribution
+        distribution.
+
+    label : bool
+        If ``True`` the chords in the returned image are each given a unique
+        label, such that all voxels lying on the same chord have the same
+        value.  This is automatically set to ``True`` if spacing is 0, but is
+        ``False`` otherwise.
 
     Returns
     -------
-    An ND-array of the same size as ```im``` with True values indicating the
-    chords.
+    An ND-array of the same size as ```im``` with non-zero values indicating
+    the chords.
 
     See Also
     --------
@@ -595,24 +720,24 @@ def apply_chords(im, spacing=0, axis=0, trim_edges=True):
     """
     if spacing < 0:
         raise Exception('Spacing cannot be less than 0')
-    dims1 = sp.arange(0, im.ndim)
-    dims2 = sp.copy(dims1)
-    dims2[axis] = 0
-    dims2[0] = axis
-    im = sp.moveaxis(a=im, source=dims1, destination=dims2)
-    im = sp.atleast_3d(im)
-    ch = sp.zeros_like(im, dtype=bool)
-    if im.ndim == 2:
-        ch[:, ::2+spacing, ::2+spacing] = 1
-    if im.ndim == 3:
-        ch[:, ::4+2*spacing, ::4+2*spacing] = 1
-    chords = im*ch
-    chords = sp.squeeze(chords)
-    if trim_edges:
-        temp = clear_border(spim.label(chords == 1)[0]) > 0
-        chords = temp*chords
-    chords = sp.moveaxis(a=chords, source=dims1, destination=dims2)
-    return chords
+    if spacing == 0:
+        label = True
+    result = sp.zeros(im.shape, dtype=int)  # Will receive chords at end
+    slxyz = [slice(None, None, spacing*(axis != i) + 1) for i in [0, 1, 2]]
+    slices = tuple(slxyz[:im.ndim])
+    s = [[0, 1, 0], [0, 1, 0], [0, 1, 0]]  # Straight-line structuring element
+    if im.ndim == 3:  # Make structuring element 3D if necessary
+        s = sp.pad(sp.atleast_3d(s), pad_width=((0, 0), (0, 0), (1, 1)),
+                   mode='constant', constant_values=0)
+    im = im[slices]
+    s = sp.swapaxes(s, 0, axis)
+    chords = spim.label(im, structure=s)[0]
+    if trim_edges:  # Label on border chords will be set to 0
+        chords = clear_border(chords)
+    result[slices] = chords  # Place chords into empty image created at top
+    if label is False:  # Remove label if not requested
+        result = result > 0
+    return result
 
 
 def apply_chords_3D(im, spacing=0, trim_edges=True):
