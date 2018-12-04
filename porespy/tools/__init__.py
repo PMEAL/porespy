@@ -17,6 +17,7 @@ that do NOT return a modified version of the original image.
 .. autofunction:: get_slice
 .. autofunction:: in_hull
 .. autofunction:: make_contiguous
+.. autofunction:: mesh_region
 .. autofunction:: norm_to_uniform
 .. autofunction:: randomize_colors
 .. autofunction:: subdivide
@@ -34,6 +35,7 @@ from .__funcs__ import get_planes
 from .__funcs__ import get_slice
 from .__funcs__ import in_hull
 from .__funcs__ import make_contiguous
+from .__funcs__ import mesh_region
 from .__funcs__ import norm_to_uniform
 from .__funcs__ import randomize_colors
 from .__funcs__ import subdivide

@@ -1,17 +1,14 @@
 import scipy as sp
 import numpy as np
-from skimage.segmentation import clear_border
-from skimage.feature import peak_local_max
 from skimage.measure import regionprops
 import scipy.ndimage as spim
 import scipy.spatial as sptl
-from porespy.tools import extract_subsection, extend_slice
-from porespy.filters import apply_chords, distance_transform_lin
+from porespy.tools import extend_slice, mesh_region
 from porespy.filters import find_dt_artifacts
-from porespy.metrics import props_to_image
 from collections import namedtuple
 from tqdm import tqdm
 from scipy import fftpack as sp_ft
+from skimage import measure
 
 
 def representative_elementary_volume(im, npoints=1000):
@@ -459,13 +456,14 @@ def chord_counts(im):
 def linear_density(im, bins=25, voxel_size=1, log=False):
     r"""
     Determines the probability that a point lies within a certain distance
-    of the opposite phase *along a specified distance*
+    of the opposite phase *along a specified direction*
 
     This relates directly the radial density function defined by Torquato [1],
     but instead of reporting the probability of lying within a stated distance
-    to the nearest solid in any direciton, it considers only linear distances.
-    The benefit of this is that anisotropy can be detected in materials by
-    performing the analysis in multiple orthogonal directions.
+    to the nearest solid in any direciton, it considers only linear distances
+    along orthogonal directions.The benefit of this is that anisotropy can be
+    detected in materials by performing the analysis in multiple orthogonal
+    directions.
 
     Parameters
     ----------
@@ -586,3 +584,168 @@ def chord_length_distribution(im, bins=None, log=False, voxel_size=1,
                       'bin_centers', 'bin_edges', 'bin_widths'))
     return cld(h.bin_centers, h.pdf, h.cdf, h.relfreq,
                h.bin_centers, h.bin_edges, h.bin_widths)
+
+
+def region_interface_areas(regions, areas, voxel_size=1, strel=None):
+    r"""
+    Calculates the interfacial area between all pairs of adjecent regions
+
+    Parameters
+    ----------
+    regions : ND-array
+        An image of the pore space partitioned into individual pore regions.
+        Note that zeros in the image will not be considered for area
+        calculation.
+    areas : array_like
+        A list containing the areas of each regions, as determined by
+        ``region_surface_area``.  Note that the region number and list index
+        are offset by 1, such that the area for region 1 is stored in
+        ``areas[0]``.
+    voxel_size : scalar
+        The resolution of the image, expressed as the length of one side of a
+        voxel, so the volume of a voxel would be **voxel_size**-cubed.  The
+        default is 1.
+    strel : array_like
+        The structuring element used to blur the region.  If not provided,
+        then a spherical element (or disk) with radius 1 is used.  See the
+        docstring for ``mesh_region`` for more details, as this argument is
+        passed to there.
+
+    Returns
+    -------
+    A named-tuple containing 2 arrays. ``conns`` holds the connectivity
+    information and ``area`` holds the result for each pair.  ``conns`` is a
+    N-regions by 2 array with each row containing the region number of an
+    adjacent pair of regions.  For instance, if ``conns[0, 0]`` is 0 and
+    ``conns[0, 1]`` is 5, then row 0 of ``area`` contains the interfacial
+    area shared by regions 0 and 5.
+
+    """
+    print('_'*60)
+    print('Finding interfacial areas between each region')
+    from skimage.morphology import disk, square, ball, cube
+    im = regions.copy()
+    if im.ndim == 2:
+        cube = square
+        ball = disk
+    # Get 'slices' into im for each region
+    slices = spim.find_objects(im)
+    # Initialize arrays
+    Ps = sp.arange(1, sp.amax(im)+1)
+    sa = sp.zeros_like(Ps, dtype=float)
+    sa_combined = []  # Difficult to preallocate since number of conns unknown
+    cn = []
+    # Start extracting area from im
+    for i in tqdm(Ps):
+        reg = i - 1
+        s = extend_slice(slices[reg], im.shape)
+        sub_im = im[s]
+        mask_im = sub_im == i
+        sa[reg] = areas[reg]
+        im_w_throats = spim.binary_dilation(input=mask_im, structure=ball(1))
+        im_w_throats = im_w_throats*sub_im
+        Pn = sp.unique(im_w_throats)[1:] - 1
+        for j in Pn:
+            if j > reg:
+                cn.append([reg, j])
+                merged_region = im[(min(slices[reg][0].start,
+                                        slices[j][0].start)):
+                                   max(slices[reg][0].stop,
+                                       slices[j][0].stop),
+                                   (min(slices[reg][1].start,
+                                        slices[j][1].start)):
+                                   max(slices[reg][1].stop,
+                                       slices[j][1].stop)]
+                merged_region = ((merged_region == reg + 1) +
+                                 (merged_region == j + 1))
+                mesh = mesh_region(region=merged_region, strel=strel)
+                sa_combined.append(mesh_surface_area(mesh))
+    # Interfacial area calculation
+    cn = sp.array(cn)
+    ia = 0.5 * (sa[cn[:, 0]] + sa[cn[:, 1]] - sa_combined)
+    ia[ia < 0] = 1
+    result = namedtuple('interfacial_areas', ('conns', 'area'))
+    result.conns = cn
+    result.area = ia * voxel_size**2
+    return result
+
+
+def region_surface_areas(regions, voxel_size=1, strel=None):
+    r"""
+    Extracts the surface area of each region in a labeled image.
+
+    Optionally, it can also find the the interfacial area between all
+    adjoining regions.
+
+    Parameters
+    ----------
+    regions : ND-array
+        An image of the pore space partitioned into individual pore regions.
+        Note that zeros in the image will not be considered for area
+        calculation.
+    voxel_size : scalar
+        The resolution of the image, expressed as the length of one side of a
+        voxel, so the volume of a voxel would be **voxel_size**-cubed.  The
+        default is 1.
+    strel : array_like
+        The structuring element used to blur the region.  If not provided,
+        then a spherical element (or disk) with radius 1 is used.  See the
+        docstring for ``mesh_region`` for more details, as this argument is
+        passed to there.
+
+    Returns
+    -------
+    A list containing the surface area of each region, offset by 1, such that
+    the surface area of region 1 is stored in element 0 of the list.
+
+    """
+    print('_'*60)
+    print('Finding surface area of each region')
+    im = regions.copy()
+    # Get 'slices' into im for each pore region
+    slices = spim.find_objects(im)
+    # Initialize arrays
+    Ps = sp.arange(1, sp.amax(im)+1)
+    sa = sp.zeros_like(Ps, dtype=float)
+    # Start extracting marching cube area from im
+    for i in tqdm(Ps):
+        reg = i - 1
+        s = extend_slice(slices[reg], im.shape)
+        sub_im = im[s]
+        mask_im = sub_im == i
+        mesh = mesh_region(region=mask_im, strel=strel)
+        sa[reg] = mesh_surface_area(mesh)
+    result = sa * voxel_size**2
+    return result
+
+
+def mesh_surface_area(mesh=None, verts=None, faces=None):
+    r"""
+    Calculates the surface area of a meshed region
+
+    Parameters
+    ----------
+    mesh : tuple
+        The tuple returned from the ``mesh_region`` function
+
+    verts : array
+        An N-by-ND array containing the coordinates of each mesh vertex
+
+    faces : array
+        An N-by-ND array indicating which elements in ``verts`` form a mesh
+        element.
+
+    Notes
+    -----
+    This function simply calls ``scikit-image.measure.mesh_surface_area``, but
+    it allows for the passing of the ``mesh`` tuple returned by the
+    ``mesh_region`` function, entirely for convenience.
+    """
+    if mesh:
+        verts = mesh.verts
+        faces = mesh.faces
+    else:
+        if (verts is None) or (faces is None):
+            raise Exception('Either mesh or verts and faces must be given')
+    surface_area = measure.mesh_surface_area(verts, faces)
+    return surface_area
