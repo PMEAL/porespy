@@ -15,6 +15,14 @@ from porespy.tools import get_border, extend_slice
 
 
 def hold_peaks(im, axis=-1):
+    r"""
+    Replaces each voxel with the highest value along the given axis
+
+    Parameters
+    ----------
+    im : ND-image
+        A greyscale image whose peaks are to
+    """
     A = im
     B = np.swapaxes(A, axis, -1)
     updown = np.empty((*B.shape[:-1], B.shape[-1]+1), B.dtype)
@@ -28,7 +36,8 @@ def hold_peaks(im, axis=-1):
     aux = out.swapaxes(axis, -1)
     aux[(*map(op.itemgetter(slice(1, None)), pkidx),)] = np.diff(B[pkidx])
     aux[..., 0] = B[..., 0]
-    return out.cumsum(axis=axis)
+    result = out.cumsum(axis=axis)
+    return result
 
 
 def distance_transform_lin(im, axis=0, mode='both'):
