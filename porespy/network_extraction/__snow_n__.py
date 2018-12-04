@@ -3,10 +3,13 @@ from porespy.network_extraction import regions_to_network
 from porespy.network_extraction import add_boundary_regions
 from porespy.filters import snow_partitioning
 from porespy.tools import make_contiguous
+from porespy.metrics import region_surface_areas, region_interface_areas
 
 
-def snow_n(im, voxel_size=1, boundary_faces=['top', 'bottom', 'left',
-                                             'right', 'front', 'back']):
+def snow_n(im, voxel_size=1,
+           boundary_faces=['top', 'bottom', 'left', 'right', 'front', 'back'],
+           marching_cubes_area=False):
+
     r"""
     Analyzes an image that has been partitioned into N phase regions
     and extracts all N phases geometerical information alongwith
@@ -32,6 +35,13 @@ def snow_n(im, voxel_size=1, boundary_faces=['top', 'bottom', 'left',
         ‘front’ and ‘back’ face labels to assign boundary nodes. If no label is
         assigned then all six faces will be selected as boundary nodes
         automatically which can be trimmed later on based on user requirements.
+
+    marching_cubes_area : bool
+        If ``True`` then the surface area and interfacial area between regions
+        will be using the marching cube algorithm. This is a more accurate
+        representation of area in extracted network, but is quite slow, so
+        it is ``False`` by default.  The default method simply counts voxels
+        so does not correctly account for the voxelated nature of the images.
 
     Returns
     -------
@@ -92,6 +102,14 @@ def snow_n(im, voxel_size=1, boundary_faces=['top', 'bottom', 'left',
     # Extract N phases sites and bond information from image
     net = regions_to_network(im=regions, dt=combined_dt, voxel_size=voxel_size)
     # -------------------------------------------------------------------------
+    # Extract marching cube surface area and interfacial area of regions
+    if marching_cubes_area:
+        areas = region_surface_areas(regions=regions, voxel_size=voxel_size)
+        net['pore.surface_area'] = areas
+        interface_area = region_interface_areas(regions=regions, areas=areas,
+                                                voxel_size=voxel_size)
+        net['throat.area'] = interface_area.area
+    # -------------------------------------------------------------------------
     # Find interconnection and interfacial area between ith and jth phases
     conns1 = net['throat.conns'][:, 0]
     conns2 = net['throat.conns'][:, 1]
@@ -111,7 +129,7 @@ def snow_n(im, voxel_size=1, boundary_faces=['top', 'bottom', 'left',
         for j in phases_num:
             if j > i:
                 pi_pj_sa = sp.zeros_like(label)
-                pi_pj_sa_mc = sp.zeros_like(label)
+#                pi_pj_sa_mc = sp.zeros_like(label)
                 loc6 = sp.logical_and(conns2 >= num[j-1], conns2 < num[j])
                 pi_pj_conns = loc1 * loc6
                 net['throat.phase{}_{}'.format(i, j)] = pi_pj_conns
@@ -133,17 +151,18 @@ def snow_n(im, voxel_size=1, boundary_faces=['top', 'bottom', 'left',
                     pi_pj_sa[j_index] = s_pa
                     # ---------------------------------------------------------
                     # Calculates interfacial area using marching cube method
-                    ps_c = net['throat.area_mc'][pi_pj_conns]
-                    p_sa_c = sp.bincount(p_conns, ps_c)
-                    p_sa_c = sp.trim_zeros(p_sa_c)
-                    s_pa_c = sp.bincount(s_conns, ps_c)
-                    s_pa_c = sp.trim_zeros(s_pa_c)
-                    pi_pj_sa_mc[i_index] = p_sa_c
-                    pi_pj_sa_mc[j_index] = s_pa_c
-                    net['pore.p{}_{}_IFA'.format(i, j)] = (pi_pj_sa *
+                    if marching_cubes_area:
+                        ps_c = net['throat.area'][pi_pj_conns]
+                        p_sa_c = sp.bincount(p_conns, ps_c)
+                        p_sa_c = sp.trim_zeros(p_sa_c)
+                        s_pa_c = sp.bincount(s_conns, ps_c)
+                        s_pa_c = sp.trim_zeros(s_pa_c)
+                        pi_pj_sa[i_index] = p_sa_c
+                        pi_pj_sa[j_index] = s_pa_c
+                    net['pore.p{}_{}_area'.format(i, j)] = (pi_pj_sa *
                                                            voxel_size**2)
-                    net['pore.p{}_{}_IFA_mc'.format(i, j)] = (pi_pj_sa_mc *
-                                                              voxel_size**2)
+#                    net['pore.p{}_{}_IFA_mc'.format(i, j)] = (pi_pj_sa_mc *
+#                                                              voxel_size**2)
     # -------------------------------------------------------------------------
     # label boundary cells
     net = label_boundary_cells(network=net, boundary_faces=f)
