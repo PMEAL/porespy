@@ -107,7 +107,6 @@ def snow(im, voxel_size=1,
         if all(coords[:, 2] == 0):
             dic['top'] = 1
             dic['bottom'] = 1
-        print(dic)
         for i in f:
             if i in ['left', 'front', 'bottom']:
                 net['pore.{}'.format(i)] = (coords[:, dic[i]] <
