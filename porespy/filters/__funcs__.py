@@ -1,5 +1,7 @@
 from collections import namedtuple
 import scipy as sp
+import numpy as np
+import operator as op
 import scipy.ndimage as spim
 import scipy.spatial as sptl
 from scipy.signal import fftconvolve
@@ -10,6 +12,23 @@ from skimage.morphology import ball, disk, square, cube
 from skimage.morphology import reconstruction, watershed
 from porespy.tools import randomize_colors, fftmorphology
 from porespy.tools import get_border, extend_slice
+
+
+def hold_peaks(im, axis=-1):
+    A = im
+    B = np.swapaxes(A, axis, -1)
+    updown = np.empty((*B.shape[:-1], B.shape[-1]+1), B.dtype)
+    updown[..., 0], updown[..., -1] = -1, -1
+    np.subtract(B[..., 1:], B[..., :-1], out=updown[..., 1:-1])
+    chnidx = np.where(updown)
+    chng = updown[chnidx]
+    pkidx, = np.where((chng[:-1] > 0) & (chng[1:] < 0) | (chnidx[-1][:-1] == 0))
+    pkidx = (*map(op.itemgetter(pkidx), chnidx),)
+    out = np.zeros_like(A)
+    aux = out.swapaxes(axis, -1)
+    aux[(*map(op.itemgetter(slice(1, None)), pkidx),)] = np.diff(B[pkidx])
+    aux[..., 0] = B[..., 0]
+    return out.cumsum(axis=axis)
 
 
 def distance_transform_lin(im, axis=0, mode='both'):
