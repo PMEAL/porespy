@@ -792,7 +792,7 @@ def apply_chords_3D(im, spacing=0, trim_edges=True):
     return chords
 
 
-def local_thickness(im, sizes=25):
+def local_thickness(im, sizes=25, mode='fft'):
     r"""
     For each voxel, this functions calculates the radius of the largest sphere
     that both engulfs the voxel and fits entirely within the foreground. This
@@ -809,6 +809,24 @@ def local_thickness(im, sizes=25):
         directly.  If a scalar is provided then that number of points spanning
         the min and max of the distance transform are used.
 
+    mode : string
+        Controls with method is used to compute the result.  Options are:
+
+        *'fft'* - (default) Performs a distance tranform of the void space,
+        thresholds to find voxels larger than ``sizes[i]``, trims the resulting
+        mask if ``access_limitations`` is ``True``, then dilates it using the
+        efficient fft-method to obtain the non-wetting fluid configuration.
+
+        *'dt'* - Same as 'fft', except uses a second distance transform,
+        relative to the thresholded mask, to find the invading fluid
+        configuration.  The choice of 'dt' or 'fft' depends on speed, which
+        is system and installation specific.
+
+        *'mio'* - Using a single morphological image opening step to obtain the
+        invading fluid confirguration directly, *then* trims if
+        ``access_limitations`` is ``True``.  This method is not ideal and is
+        included mostly for comparison purposes.
+
     Returns
     -------
     An image with the pore size values in each voxel
@@ -819,10 +837,10 @@ def local_thickness(im, sizes=25):
     pore space or the solid, whichever is set to True.
 
     This function is identical to porosimetry with ``access_limited`` set to
-    False.
+    ``False``.
 
     """
-    im_new = porosimetry(im=im, sizes=sizes, access_limited=False)
+    im_new = porosimetry(im=im, sizes=sizes, access_limited=False, mode=mode)
     return im_new
 
 
