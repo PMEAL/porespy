@@ -753,7 +753,7 @@ def mesh_region(region: bool, strel=None):
         padded_mask = sp.pad(padded_mask, pad_width=pad_width, mode='constant')
     verts, faces, norm, val = marching_cubes_lewiner(padded_mask)
     result = namedtuple('mesh', ('verts', 'faces', 'norm', 'val'))
-    result.verts = verts
+    result.verts = verts - pad_width
     result.faces = faces
     result.norm = norm
     result.val = val
