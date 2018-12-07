@@ -235,6 +235,47 @@ class FilterTest():
         peaks = ps.filters.reduce_peaks(im)
         assert spim.label(im)[1] == spim.label(peaks)[1]
 
+    def test_nphase_border_2d_no_diagonals(self):
+        im = np.zeros([110, 110])
+        for i in range(6):
+            im[int(10*2*i):int(10*(2*i+1)), :] += 2
+            im[:, int(10*2*i):int(10*(2*i+1))] += 4
+        borders = ps.filters.nphase_border(im, include_diagonals=False)
+        nb, counts = np.unique(borders, return_counts=True)
+        assert nb.tolist() == [0.0, 1.0, 2.0, 3.0]
+        assert counts.tolist() == [1600, 8100, 2300, 100]
+
+    def test_nphase_border_2d_diagonals(self):
+        im = np.zeros([110, 110])
+        for i in range(6):
+            im[int(10*2*i):int(10*(2*i+1)), :] += 2
+            im[:, int(10*2*i):int(10*(2*i+1))] += 4
+        borders = ps.filters.nphase_border(im, include_diagonals=True)
+        nb, counts = np.unique(borders, return_counts=True)
+        assert nb.tolist() == [0.0, 1.0, 2.0, 3.0]
+        assert counts.tolist() == [1600, 8100, 2000, 400]
+
+    def test_nphase_border_3d_no_diagonals(self):
+        im3d = np.zeros([110, 110, 110])
+        for i in range(6):
+            im3d[int(10*2*i):int(10*(2*i+1)), :, :] += 2
+            im3d[:, int(10*2*i):int(10*(2*i+1)), :] += 4
+            im3d[:, :, int(10*2*i):int(10*(2*i+1))] += 8
+        borders = ps.filters.nphase_border(im3d, include_diagonals=False)
+        nb, counts = np.unique(borders, return_counts=True)
+        assert nb.tolist() == [0.0, 1.0, 2.0, 3.0, 4.0]
+        assert counts.tolist() == [64000, 761000, 426000, 76000, 4000]
+
+    def test_nphase_border_3d_diagonals(self):
+        im3d = np.zeros([110, 110, 110])
+        for i in range(6):
+            im3d[int(10*2*i):int(10*(2*i+1)), :, :] += 2
+            im3d[:, int(10*2*i):int(10*(2*i+1)), :] += 4
+            im3d[:, :, int(10*2*i):int(10*(2*i+1))] += 8
+        borders = ps.filters.nphase_border(im3d, include_diagonals=True)
+        nb, counts = np.unique(borders, return_counts=True)
+        assert nb.tolist() == [0.0, 1.0, 2.0, 3.0, 4.0, 7.0]
+        assert counts.tolist() == [64000, 761000, 390000, 48000, 60000, 8000]
 
 if __name__ == '__main__':
     t = FilterTest()
