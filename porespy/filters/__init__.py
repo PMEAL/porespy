@@ -48,3 +48,5 @@ from .__funcs__ import trim_nonpercolating_paths
 from .__funcs__ import trim_nearby_peaks
 from .__funcs__ import trim_saddle_points
 from .__funcs__ import nphase_border
+from .__funcs__ import nphase_neighbors
+from .__funcs__ import adjacency_triplets

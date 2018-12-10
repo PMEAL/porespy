@@ -11,6 +11,8 @@ from skimage.morphology import ball, disk, square, cube, diamond, octahedron
 from skimage.morphology import reconstruction, watershed
 from porespy.tools import randomize_colors, fftmorphology
 from porespy.tools import get_border, extend_slice
+from scipy.sparse import dok_matrix
+from itertools import permutations
 
 
 def distance_transform_lin(im, axis=0, mode='both'):
@@ -67,7 +69,7 @@ def distance_transform_lin(im, axis=0, mode='both'):
         return f
 
 
-def snow_partitioning(im, r_max=4, sigma=0.4, return_all=False):
+def snow_partitioning(im, r_max=4, sigma=0.4, return_all=False, mask=True):
     r"""
     This function partitions the void space into pore regions using a
     marker-based watershed algorithm.  The key to this function is that true
@@ -100,6 +102,9 @@ def snow_partitioning(im, r_max=4, sigma=0.4, return_all=False):
         If set to ``True`` a named tuple is returned containing the original
         image, the distance transform, the filtered peaks, and the final
         pore regions.
+
+    mask : boolean (default is True)
+        Apply a mask to the regions where the solid phase is.
 
     Returns
     -------
@@ -152,7 +157,11 @@ def snow_partitioning(im, r_max=4, sigma=0.4, return_all=False):
     peaks, N = spim.label(peaks)
     print('Peaks after trimming nearby peaks: ', N)
     tup.peaks = peaks
-    regions = watershed(image=-dt, markers=peaks, mask=dt > 0)
+    if mask:
+        mask_solid = dt > 0
+    else:
+        mask_solid = None
+    regions = watershed(image=-dt, markers=peaks, mask=mask_solid)
     regions = randomize_colors(regions)
     if return_all:
         tup.regions = regions
@@ -959,6 +968,67 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
     return imresults
 
 
+def _get_axial_shifts(ndim=2, include_diagonals=False):
+    r'''
+    Helper function to generate the axial shifts that will be performed on
+    the image to identify bordering pixels/voxels
+    '''
+    if ndim == 2:
+        if include_diagonals:
+            neighbors = square(3)
+        else:
+            neighbors = diamond(1)
+        neighbors[1, 1] = 0
+        x, y = np.where(neighbors)
+        x -= 1
+        y -= 1
+        return np.vstack((x, y)).T
+    else:
+        if include_diagonals:
+            neighbors = cube(3)
+        else:
+            neighbors = octahedron(1)
+        neighbors[1, 1, 1] = 0
+        x, y, z = np.where(neighbors)
+        x -= 1
+        y -= 1
+        z -= 1
+        return np.vstack((x, y, z)).T
+
+
+def _make_stack(im, include_diagonals=False):
+    r'''
+    Creates a stack of images with one extra dimension to the input image
+    with length equal to the number of borders to search + 1.
+    Image is rolled along the axial shifts so that the border pixel is
+    overlapping the original pixel. First image in stack is the original.
+    Stacking makes direct vectorized array comparisons possible.
+    '''
+    ndim = len(np.shape(im))
+    axial_shift = _get_axial_shifts(ndim, include_diagonals)
+    if ndim == 2:
+        stack = np.zeros([np.shape(im)[0],
+                          np.shape(im)[1],
+                          len(axial_shift)+1])
+        stack[:, :, 0] = im
+        for i in range(len(axial_shift)):
+            ax0, ax1 = axial_shift[i]
+            temp = np.roll(np.roll(im, ax0, 0), ax1, 1)
+            stack[:, :, i+1] = temp
+        return stack
+    elif ndim == 3:
+        stack = np.zeros([np.shape(im)[0],
+                          np.shape(im)[1],
+                          np.shape(im)[2],
+                          len(axial_shift)+1])
+        stack[:, :, :, 0] = im
+        for i in range(len(axial_shift)):
+            ax0, ax1, ax2 = axial_shift[i]
+            temp = np.roll(np.roll(np.roll(im, ax0, 0), ax1, 1), ax2, 2)
+            stack[:, :, :, i+1] = temp
+        return stack
+
+
 def nphase_border(im, include_diagonals=False):
     r'''
     Image filter to identify the voxels in regions that border n other regions.
@@ -981,74 +1051,17 @@ def nphase_border(im, include_diagonals=False):
     An ND-image with voxel values equal to the number of uniquely different
     bordering values
     '''
-    def get_axial_shifts(ndim=2, include_diagonals=False):
-        r'''
-        Helper function to generate the axial shifts that will be performed on
-        the image to identify bordering pixels/voxels
-        '''
-        if ndim == 2:
-            if include_diagonals:
-                neighbors = square(3)
-            else:
-                neighbors = diamond(1)
-            neighbors[1, 1] = 0
-            x, y = np.where(neighbors)
-            x -= 1
-            y -= 1
-            return np.vstack((x, y)).T
-        else:
-            if include_diagonals:
-                neighbors = cube(3)
-            else:
-                neighbors = octahedron(1)
-            neighbors[1, 1, 1] = 0
-            x, y, z = np.where(neighbors)
-            x -= 1
-            y -= 1
-            z -= 1
-            return np.vstack((x, y, z)).T
-
-    def make_stack(im, include_diagonals=False):
-        r'''
-        Creates a stack of images with one extra dimension to the input image
-        with length equal to the number of borders to search + 1.
-        Image is rolled along the axial shifts so that the border pixel is
-        overlapping the original pixel. First image in stack is the original.
-        Stacking makes direct vectorized array comparisons possible.
-        '''
-        ndim = len(np.shape(im))
-        axial_shift = get_axial_shifts(ndim, include_diagonals)
-        if ndim == 2:
-            stack = np.zeros([np.shape(im)[0],
-                              np.shape(im)[1],
-                              len(axial_shift)+1])
-            stack[:, :, 0] = im
-            for i in range(len(axial_shift)):
-                ax0, ax1 = axial_shift[i]
-                temp = np.roll(np.roll(im, ax0, 0), ax1, 1)
-                stack[:, :, i] = temp
-            return stack
-        elif ndim == 3:
-            stack = np.zeros([np.shape(im)[0],
-                              np.shape(im)[1],
-                              np.shape(im)[2],
-                              len(axial_shift)+1])
-            stack[:, :, :, 0] = im
-            for i in range(len(axial_shift)):
-                ax0, ax1, ax2 = axial_shift[i]
-                temp = np.roll(np.roll(np.roll(im, ax0, 0), ax1, 1), ax2, 2)
-                stack[:, :, :, i] = temp
-            return stack
-
     # Get dimension of image
     ndim = len(np.shape(im))
     if ndim not in [2, 3]:
         raise NotImplementedError("Function only works for 2d and 3d images")
+    # Pad image to handle edges
+    im = np.pad(im, pad_width=1, mode='edge')
     # Stack rolled images for each neighbor to be inspected
-    stack = make_stack(im, include_diagonals)
+    stack = _make_stack(im, include_diagonals)
     # Sort the stack along the last axis
     stack.sort()
-    out = np.zeros_like(im)
+    out = np.ones_like(im)
     # Run through stack recording when neighbor id changes
     # Number of changes is number of unique bordering regions
     for k in range(np.shape(stack)[ndim])[1:]:
@@ -1057,4 +1070,74 @@ def nphase_border(im, include_diagonals=False):
         elif ndim == 3:
             mask = stack[:, :, :, k] != stack[:, :, :, k-1]
         out += mask
-    return out
+    # Un-pad
+    if ndim == 2:
+        return out[1:-1, 1:-1].copy()
+    else:
+        return out[1:-1, 1:-1, 1:-1].copy()
+
+
+def nphase_neighbors(im, nphase_mask, include_diagonals=False):
+    r'''
+    Image filter to identify the region id for the nphase boundary.
+    Works for 2d and 3d images.
+    Useful for finding triple-phase boundaries.
+
+    Parameters
+    ----------
+    im : ND-array
+        An ND image of the porous material containing discrete values in the
+        pore space identifying different regions. e.g. the result of a
+        snow-partition
+
+    nphase_mask : ND-array
+        An ND image of the porous material containing discrete values in the
+        pore space identifying the nphase boundaries, masked for the nth value
+        or values of interest.
+
+    include_diagonals : boolean
+        When identifying bordering pixels (2d) and voxels (3d) include those
+        shifted along more than one axis
+
+    Returns
+    -------
+    An ND-image with voxel values equal to the number of uniquely different
+    bordering values
+    '''
+    # Get dimension of image
+    ndim = len(np.shape(im))
+    if ndim not in [2, 3]:
+        raise NotImplementedError("Function only works for 2d and 3d images")
+    # Pad image to handle edges
+    temp = im[nphase_mask].copy()
+    out = temp.astype(int)
+    im = np.pad(im, pad_width=1, mode='edge')
+    # Stack rolled images for each neighbor to be inspected
+    stack = _make_stack(im, include_diagonals)
+    # Run through stack recording when neighbor ids
+    for k in range(np.shape(stack)[ndim])[1:]:
+        if ndim == 2:
+            temp = stack[1:-1, 1:-1, k][nphase_mask].astype(int)
+        elif ndim == 3:
+            temp = stack[1:-1, 1:-1, 1:-1, k][nphase_mask].astype(int)
+        out = np.dstack((out, temp))
+
+    return out.squeeze()
+
+
+def adjacency_triplets(regions):
+    r'''
+    Return the neighboring regions as triplets that share a triple phase
+    boundary
+    '''
+    nphase = nphase_border(regions)
+    neighbors = nphase_neighbors(regions, nphase == 3)
+    N = np.max(neighbors)+1
+    adj_mat = dok_matrix((N, N), dtype=int)
+    for n in range(neighbors.shape[0]):
+        js = np.unique(neighbors[n, :]).astype(int)
+        js.sort()
+        js = js.tolist()
+        for perm in permutations(range(3)):
+            adj_mat[js[perm[0]], js[perm[1]]] = js[perm[2]]
+    return adj_mat
