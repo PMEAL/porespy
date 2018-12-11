@@ -231,7 +231,8 @@ class FilterTest():
         im = ~ps.generators.lattice_spheres(shape=[50, 50], radius=5, offset=3)
         peaks = ps.filters.reduce_peaks(im)
         assert spim.label(im)[1] == spim.label(peaks)[1]
-        im = ~ps.generators.lattice_spheres(shape=[50, 50, 50], radius=5, offset=3)
+        im = ~ps.generators.lattice_spheres(shape=[50, 50, 50], radius=5,
+                                            offset=3)
         peaks = ps.filters.reduce_peaks(im)
         assert spim.label(im)[1] == spim.label(peaks)[1]
 
@@ -242,8 +243,8 @@ class FilterTest():
             im[:, int(10*2*i):int(10*(2*i+1))] += 4
         borders = ps.filters.nphase_border(im, include_diagonals=False)
         nb, counts = np.unique(borders, return_counts=True)
-        assert nb.tolist() == [0.0, 1.0, 2.0, 3.0]
-        assert counts.tolist() == [1600, 8100, 2300, 100]
+        assert nb.tolist() == [1.0, 2.0, 3.0]
+        assert counts.tolist() == [8100, 3600, 400]
 
     def test_nphase_border_2d_diagonals(self):
         im = np.zeros([110, 110])
@@ -252,8 +253,8 @@ class FilterTest():
             im[:, int(10*2*i):int(10*(2*i+1))] += 4
         borders = ps.filters.nphase_border(im, include_diagonals=True)
         nb, counts = np.unique(borders, return_counts=True)
-        assert nb.tolist() == [0.0, 1.0, 2.0, 3.0]
-        assert counts.tolist() == [1600, 8100, 2000, 400]
+        assert nb.tolist() == [1.0, 2.0, 4.0]
+        assert counts.tolist() == [8100, 3600, 400]
 
     def test_nphase_border_3d_no_diagonals(self):
         im3d = np.zeros([110, 110, 110])
@@ -263,8 +264,8 @@ class FilterTest():
             im3d[:, :, int(10*2*i):int(10*(2*i+1))] += 8
         borders = ps.filters.nphase_border(im3d, include_diagonals=False)
         nb, counts = np.unique(borders, return_counts=True)
-        assert nb.tolist() == [0.0, 1.0, 2.0, 3.0, 4.0]
-        assert counts.tolist() == [64000, 761000, 426000, 76000, 4000]
+        assert nb.tolist() == [1.0, 2.0, 3.0, 4.0]
+        assert counts.tolist() == [729000, 486000, 108000, 8000]
 
     def test_nphase_border_3d_diagonals(self):
         im3d = np.zeros([110, 110, 110])
@@ -274,8 +275,9 @@ class FilterTest():
             im3d[:, :, int(10*2*i):int(10*(2*i+1))] += 8
         borders = ps.filters.nphase_border(im3d, include_diagonals=True)
         nb, counts = np.unique(borders, return_counts=True)
-        assert nb.tolist() == [0.0, 1.0, 2.0, 3.0, 4.0, 7.0]
-        assert counts.tolist() == [64000, 761000, 390000, 48000, 60000, 8000]
+        assert nb.tolist() == [1.0, 2.0, 4.0, 8.0]
+        assert counts.tolist() == [729000, 486000, 108000, 8000]
+
 
 if __name__ == '__main__':
     t = FilterTest()
