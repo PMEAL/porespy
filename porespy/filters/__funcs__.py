@@ -10,6 +10,7 @@ from skimage.morphology import ball, disk, square, cube
 from skimage.morphology import reconstruction, watershed
 from porespy.tools import randomize_colors, fftmorphology
 from porespy.tools import get_border, extend_slice
+from porespy.tools import ps_disk, ps_ball
 
 
 def distance_transform_lin(im, axis=0, mode='both'):
@@ -927,18 +928,25 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
         sizes = sp.sort(a=sizes)[-1::-1]
 
     if im.ndim == 2:
-        strel = disk
+        strel = ps_disk
     else:
-        strel = ball
+        strel = ps_ball
 
     imresults = sp.zeros(sp.shape(im))
     if mode == 'mio':
+        pw = int(sp.floor(dt.max()))
+        impad = sp.pad(im, mode='symmetric', pad_width=pw)
+        imresults = sp.zeros(sp.shape(impad))
         for r in tqdm(sizes):
-            imtemp = fftmorphology(im, strel(r), mode='opening')
+            imtemp = fftmorphology(impad, strel(r), mode='opening')
             if access_limited:
                 imtemp = trim_blobs(imtemp, inlets)
             if sp.any(imtemp):
                 imresults[(imresults == 0)*imtemp] = r
+        if im.ndim == 2:
+            imresults = imresults[pw:-pw, pw:-pw]
+        else:
+            imresults = imresults[pw:-pw, pw:-pw, pw:-pw]
     if mode == 'dt':
         for r in tqdm(sizes):
             imtemp = dt >= r
@@ -949,10 +957,10 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
                 imresults[(imresults == 0)*imtemp] = r
     if mode == 'fft':
         for r in tqdm(sizes):
-            imtemp = dt >= r
+            imtemp = dt > r
             if access_limited:
                 imtemp = trim_blobs(imtemp, inlets)
             if sp.any(imtemp):
-                imtemp = fftconvolve(imtemp, strel(r), mode='same') > 0.1
+                imtemp = fftconvolve(imtemp, strel(r), mode='same') > 0.0001
                 imresults[(imresults == 0)*imtemp] = r
     return imresults

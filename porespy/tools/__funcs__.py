@@ -758,3 +758,43 @@ def mesh_region(region: bool, strel=None):
     result.norm = norm
     result.val = val
     return result
+
+
+def ps_disk(radius):
+    r"""
+    Creates circular disk structuring element for morphological operations
+
+    Parameters
+    ----------
+    radius : float or int
+        The desired radius of the structuring element
+
+    Returns
+    -------
+    A 2D numpy bool array of the structring element
+    """
+    rad = int(sp.ceil(radius))
+    other = sp.ones((2*rad+1, 2*rad+1), dtype=bool)
+    other[rad, rad] = False
+    disk = spim.distance_transform_edt(other) < radius
+    return disk
+
+
+def ps_ball(radius):
+    r"""
+    Creates spherical ball structuring element for morphological operations
+
+    Parameters
+    ----------
+    radius : float or int
+        The desired radius of the structuring element
+
+    Returns
+    -------
+    A 2D numpy array of the structuring element
+    """
+    rad = int(sp.ceil(radius))
+    other = sp.ones((2*rad+1, 2*rad+1, 2*rad+1), dtype=bool)
+    other[rad, rad, rad] = False
+    ball = spim.distance_transform_edt(other) < radius
+    return ball

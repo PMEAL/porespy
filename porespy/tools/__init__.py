@@ -39,3 +39,5 @@ from .__funcs__ import mesh_region
 from .__funcs__ import norm_to_uniform
 from .__funcs__ import randomize_colors
 from .__funcs__ import subdivide
+from .__funcs__ import ps_disk
+from .__funcs__ import ps_ball
