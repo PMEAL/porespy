@@ -12,7 +12,6 @@ from skimage.morphology import reconstruction, watershed
 from porespy.tools import randomize_colors, fftmorphology
 from porespy.tools import get_border, extend_slice
 from scipy.sparse import dok_matrix
-from itertools import permutations
 
 
 def distance_transform_lin(im, axis=0, mode='both'):
@@ -1079,7 +1078,7 @@ def nphase_border(im, include_diagonals=False):
 
 def nphase_neighbors(im, nphase_mask, include_diagonals=False):
     r'''
-    Image filter to identify the region id for the nphase boundary.
+    Image filter to identify the region ids for the nphase boundary.
     Works for 2d and 3d images.
     Useful for finding triple-phase boundaries.
 
@@ -1125,19 +1124,50 @@ def nphase_neighbors(im, nphase_mask, include_diagonals=False):
     return out.squeeze()
 
 
-def adjacency_triplets(regions):
+def _unique_triplets(n):
+    r'''
+    For a set of n neighboring regions return the permutations for triplets
+    e.g. [[0, 1, 2], [0, 2, 1], [1, 2, 0]]
+    Where the first two indices are both connected to the last
+    '''
+    units = range(n)
+    permutations = []
+    for i in range(len(units)):
+        for j in range(len(units[i+1:])):
+            temp = [units[i], units[j+i+1]]
+            for z in units:
+                if z not in temp:
+                    permutations.append(temp+[z])
+    return permutations
+
+
+def adjacency_triplets(regions, network, include_diagonals=False):
     r'''
     Return the neighboring regions as triplets that share a triple phase
     boundary
     '''
-    nphase = nphase_border(regions)
-    neighbors = nphase_neighbors(regions, nphase == 3)
-    N = np.max(neighbors)+1
-    adj_mat = dok_matrix((N, N), dtype=int)
+    nphase = nphase_border(regions, include_diagonals)
+    neighbors = nphase_neighbors(regions, nphase > 2, include_diagonals)
+    Nt = network.Nt
+    adj_mat = dok_matrix((Nt, Nt), dtype=int)
     for n in range(neighbors.shape[0]):
         js = np.unique(neighbors[n, :]).astype(int)
         js.sort()
         js = js.tolist()
-        for perm in permutations(range(3)):
-            adj_mat[js[perm[0]], js[perm[1]]] = js[perm[2]]
+        # Find the pore triplet combinations from an nphase junction
+        permutations = _unique_triplets(len(js))
+        for perm in permutations:
+            # Pore indices are 1 less than region indices
+            p0 = js[perm[0]]-1
+            p1 = js[perm[1]]-1
+            p2 = js[perm[2]]-1
+            # Find the connecting throats
+            t02 = network.find_connecting_throat(p0, p2)[0]
+            t12 = network.find_connecting_throat(p1, p2)[0]
+            # This triplet of pores connected by the two throats can invade
+            # the common pore by cooperative pore filling
+            # These regions may be connected in the watershed but not
+            # Necessarilly in the network. Only records ones that are.
+            if t02 is not None and t12 is not None:
+                adj_mat[t02, t12] = 1
     return adj_mat
