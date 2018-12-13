@@ -28,8 +28,8 @@ class ExportTest():
 
     def test_to_openpnm(self):
         im = ps.generators.blobs(shape=[100, 100])
-        net = ps.network_extraction.snow(im, boundary_faces=None)
-        ps.io.to_openpnm(net, 'test.net')
+        tup = ps.network_extraction.snow(im, boundary_faces=None)
+        ps.io.to_openpnm(tup.net, 'test.net')
         os.remove('test.net')
         with pytest.raises(FileNotFoundError):
             os.remove('test.net')
