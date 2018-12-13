@@ -1,9 +1,9 @@
 import porespy as ps
-import scipy as sp
 import git
 
 
 class PackageTest():
+
     def setup_class(self):
         pass
 
@@ -13,3 +13,8 @@ class PackageTest():
         tag = tag.strip('vV')  # Remove 'v' or 'V' from tag if present
         tag = tag.split('-')[0]  # Remove hash from tag number if present
         assert ps.__version__ == tag
+
+
+if __name__ == '__main__':
+    t = PackageTest()
+    t.test_version_number_and_git_tag_agree()

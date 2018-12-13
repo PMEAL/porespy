@@ -1,6 +1,8 @@
 import scipy as sp
 import scipy.ndimage as spim
+from collections import namedtuple
 from skimage.morphology import ball, disk, square, cube
+from skimage.measure import marching_cubes_lewiner
 from array_split import shape_split
 from scipy.signal import fftconvolve
 
@@ -82,7 +84,8 @@ def fftmorphology(im, strel, mode='opening'):
 
     >>> result = ps.filters.fftmorphology(im, strel=disk(5), mode='closing')
     >>> temp = spim.binary_closing(im, structure=disk(5))
-    >>> # This one does not work yet!!
+    >>> array_equal(result, temp)
+    True
 
     """
     def erode(im, strel):
@@ -172,7 +175,7 @@ def subdivide(im, divs=2):
     (100, 100)
     """
     # Expand scalar divs
-    if sp.array(divs, ndmin=1).size == 1:
+    if isinstance(divs, int):
         divs = [divs for i in range(im.ndim)]
     s = shape_split(im.shape, axis=divs)
     return s
@@ -679,6 +682,93 @@ def norm_to_uniform(im, scale=None):
     im = (im - im.min()) / (im.max() - im.min())
     im = im*(scale[1] - scale[0]) + scale[0]
     return im
+
+
+def mesh_region(region: bool, strel=None):
+    r"""
+    Creates a tri-mesh of the provided region using the marching cubes
+    algorithm
+
+    Parameters
+    ----------
+    im : ND-array
+        A boolean image with ``True`` values indicating the region of interest
+
+    strel : ND-array
+        The structuring element to use when blurring the region.  The blur is
+        perfomed using a simple convolution filter.  The point is to create a
+        greyscale region to allow the marching cubes algorithm some freedom
+        to conform the mesh to the surface.  As the size of ``strel`` increases
+        the region will become increasingly blurred and inaccurate. The default
+        is a spherical element with a radius of 1.
+
+    Returns
+    -------
+    A named-tuple containing ``faces``, ``verts``, ``norm``, and ``val`` as
+    returned by ``scikit-image.measure.marching_cubes`` function.
+
+    """
+    if strel is None:
+        if region.ndim == 3:
+            strel = ball(1)
+        if region.ndim == 2:
+            strel = disk(1)
+    pad_width = sp.amax(strel.shape)
+    im = region
+    if im.ndim == 3:
+        padded_mask = sp.pad(im, pad_width=pad_width, mode='constant')
+        padded_mask = spim.convolve(padded_mask*1.0,
+                                    weights=strel)/sp.sum(strel)
+    else:
+        padded_mask = sp.reshape(im, (1,) + im.shape)
+        padded_mask = sp.pad(padded_mask, pad_width=pad_width, mode='constant')
+    verts, faces, norm, val = marching_cubes_lewiner(padded_mask)
+    result = namedtuple('mesh', ('verts', 'faces', 'norm', 'val'))
+    result.verts = verts - pad_width
+    result.faces = faces
+    result.norm = norm
+    result.val = val
+    return result
+
+
+def ps_disk(radius):
+    r"""
+    Creates circular disk structuring element for morphological operations
+
+    Parameters
+    ----------
+    radius : float or int
+        The desired radius of the structuring element
+
+    Returns
+    -------
+    A 2D numpy bool array of the structring element
+    """
+    rad = int(sp.ceil(radius))
+    other = sp.ones((2*rad+1, 2*rad+1), dtype=bool)
+    other[rad, rad] = False
+    disk = spim.distance_transform_edt(other) < radius
+    return disk
+
+
+def ps_ball(radius):
+    r"""
+    Creates spherical ball structuring element for morphological operations
+
+    Parameters
+    ----------
+    radius : float or int
+        The desired radius of the structuring element
+
+    Returns
+    -------
+    A 2D numpy array of the structuring element
+    """
+    rad = int(sp.ceil(radius))
+    other = sp.ones((2*rad+1, 2*rad+1, 2*rad+1), dtype=bool)
+    other[rad, rad, rad] = False
+    ball = spim.distance_transform_edt(other) < radius
+    return ball
 
 
 def extract_regions(regions, labels: list, trim=True):

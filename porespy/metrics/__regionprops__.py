@@ -1,10 +1,10 @@
 import scipy as sp
 import scipy.ndimage as spim
 from tqdm import tqdm
-from porespy.tools import extract_subsection, bbox_to_slices
+from porespy.tools import extract_subsection, bbox_to_slices, extend_slice
 from skimage.measure import regionprops
 from skimage.measure import mesh_surface_area, marching_cubes_lewiner
-from skimage.morphology import skeletonize_3d, ball
+from skimage.morphology import skeletonize_3d, ball, disk
 from sklearn.feature_extraction.image import grid_to_graph
 from pandas import DataFrame
 
@@ -134,7 +134,7 @@ def regionprops_3D(im):
     print('_'*60)
     print('Calculating regionprops')
 
-    results = regionprops(im)
+    results = regionprops(im, coordinates='xy')
     for i in tqdm(range(len(results))):
         mask = results[i].image
         mask_padded = sp.pad(mask, pad_width=1, mode='constant')
