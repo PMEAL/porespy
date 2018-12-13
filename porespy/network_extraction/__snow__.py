@@ -3,6 +3,7 @@ from porespy.filters import snow_partitioning
 from porespy.tools import make_contiguous
 from porespy.metrics import region_surface_areas, region_interface_areas
 import scipy as sp
+from collections import namedtuple
 
 
 def snow(im, voxel_size=1,
@@ -39,15 +40,22 @@ def snow(im, voxel_size=1,
 
     Returns
     -------
-    A dictionary containing the void phase size data, as well as the network
-    topological information.  The dictionary names use the OpenPNM
-    convention (i.e. 'pore.coords', 'throat.conns') so it may be converted
-    directly to an OpenPNM network object using the ``update`` command.
+    * ``net``: A network dictionary containing pore size data, as well as the 
+        network topological information.  The dictionary names use the OpenPNM
+        convention (i.e. 'pore.coords', 'throat.conns') so it may be converted
+        directly to an OpenPNM network object using the ``update`` command.
+    * ``im``: The binary image of the void space
+    * ``dt``: The distance transform of the image
+    * ``peaks``: The peaks of the distance transform after applying the
+        steps of the SNOW algorithm
+    * ``regions``: The void space partitioned into pores using a marker
+        based watershed with the peaks found by the SNOW algorithm
     """
 
     # -------------------------------------------------------------------------
     # SNOW void phase
     regions = snow_partitioning(im=im, return_all=True)
+    peaks = regions.peaks
     im = regions.im
     dt = regions.dt
     regions = regions.regions
@@ -114,4 +122,13 @@ def snow(im, voxel_size=1,
             elif i in ['right', 'back', 'top']:
                 net['pore.{}'.format(i)] = (coords[:, dic[i]] >
                                             max(condition[:, dic[i]]))
-    return net
+    # -------------------------------------------------------------------------
+    # Assign to namedtuple
+    tup = namedtuple('results', field_names=['net', 'im', 'dt', 'regions', 'peaks'])
+    tup.net = net
+    tup.im = im.copy()
+    tup.dt = dt
+    tup.regions = regions
+    tup.peaks = peaks
+    return tup
+
