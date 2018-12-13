@@ -48,18 +48,18 @@ def snow_dual(im, voxel_size=1,
     the network topological information.  The dictionary names use the OpenPNM
     convention (i.e. 'pore.coords', 'throat.conns') so it may be converted
     directly to an OpenPNM network object using the ``update`` command.
-    * ``net``: A dictionary containing all the void and solid phase size data, 
-        as well as the network topological information.  The dictionary names 
-        use the OpenPNM convention (i.e. 'pore.coords', 'throat.conns') so it 
-        may be converted directly to an OpenPNM network object using the 
+    * ``net``: A dictionary containing all the void and solid phase size data,
+        as well as the network topological information.  The dictionary names
+        use the OpenPNM convention (i.e. 'pore.coords', 'throat.conns') so it
+        may be converted directly to an OpenPNM network object using the
         ``update`` command.
     * ``im``: The binary image of the void space
     * ``dt``: The combined distance transform of the image
-    * ``peaks``: The combined peaks of the distance transform after applying 
+    * ``peaks``: The combined peaks of the distance transform after applying
         the steps of the SNOW algorithm
-    * ``regions``: The void and solid space partitioned into pores and solids 
-        phases using a marker based watershed with the peaks found by the 
-        SNOW Algorithm. 
+    * ``regions``: The void and solid space partitioned into pores and solids
+        phases using a marker based watershed with the peaks found by the
+        SNOW Algorithm.
     """
     # -------------------------------------------------------------------------
     # SNOW void phase
@@ -70,7 +70,7 @@ def snow_dual(im, voxel_size=1,
     # Get combined peaks
     solid_peaks_num =  sp.amax(pore_regions.peaks)
     s_peaks = solid_regions.peaks
-    solid_peaks = s_peaks + solid_peaks_num * (s_peaks != solid_peaks_num)
+    solid_peaks = s_peaks + solid_peaks_num
     solid_peaks = solid_peaks * (solid_peaks != solid_peaks_num)
     peaks = solid_peaks + pore_regions.peaks
     # -------------------------------------------------------------------------
