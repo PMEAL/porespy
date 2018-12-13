@@ -3,6 +3,7 @@ from porespy.network_extraction import regions_to_network
 from porespy.network_extraction import add_boundary_regions
 from porespy.filters import snow_partitioning
 from porespy.metrics import region_surface_areas, region_interface_areas
+from collections import namedtuple
 
 
 def snow_dual(im, voxel_size=1,
@@ -47,12 +48,29 @@ def snow_dual(im, voxel_size=1,
     the network topological information.  The dictionary names use the OpenPNM
     convention (i.e. 'pore.coords', 'throat.conns') so it may be converted
     directly to an OpenPNM network object using the ``update`` command.
+    * ``net``: A dictionary containing all the void and solid phase size data, 
+        as well as the network topological information.  The dictionary names 
+        use the OpenPNM convention (i.e. 'pore.coords', 'throat.conns') so it 
+        may be converted directly to an OpenPNM network object using the 
+        ``update`` command.
+    * ``im``: The binary image of the void space
+    * ``dt``: The combined distance transform of the image
+    * ``peaks``: The combined peaks of the distance transform after applying 
+        the steps of the SNOW algorithm
+    * ``regions``: The void and solid space partitioned into pores and solids 
+        phases using a marker based watershed with the peaks found by the 
+        SNOW Algorithm. 
     """
     # -------------------------------------------------------------------------
     # SNOW void phase
     pore_regions = snow_partitioning(im, return_all=True)
     # SNOW solid phase
     solid_regions = snow_partitioning(~im, return_all=True)
+    # -------------------------------------------------------------------------
+    # Get combined peaks
+    solid_peaks_num =  sp.amax(pore_regions.peaks)
+    solid_peaks = (solid_regions.peaks + solid_peaks_num) * ~im
+    peaks = solid_peaks + pore_regions.peaks
     # -------------------------------------------------------------------------
     # Combined Distance transform of two phases.
     pore_dt = pore_regions.dt
@@ -146,4 +164,12 @@ def snow_dual(im, voxel_size=1,
     net['pore.void'] = net['pore.label'] <= solid_num
     net['pore.solid'] = solid_labels
     net['pore.boundary'] = boundary_labels
-    return net
+    # -------------------------------------------------------------------------
+    # Assign to namedtuple
+    tup = namedtuple('results', field_names=['net', 'im', 'dt', 'regions', 'peaks'])
+    tup.net = net
+    tup.im = im.copy()
+    tup.dt = dt
+    tup.regions = regions
+    tup.peaks = peaks
+    return tup
