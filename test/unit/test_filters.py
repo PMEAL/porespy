@@ -26,10 +26,10 @@ class FilterTest():
 
     def test_porosimetry_npts_10(self):
         mip = ps.filters.porosimetry(im=self.im, sizes=10)
-        ans = sp.array([0.00000000, 1.00000000, 1.37871571, 1.61887041,
-                        1.90085700, 2.23196205, 2.62074139, 3.07724114,
-                        3.61325732])
-        assert sp.allclose(sp.unique(mip), ans)
+        steps = sp.unique(mip)
+        ans = sp.array([0.00000000, 1.37871571, 1.61887041, 1.90085700,
+                        2.23196205, 2.62074139, 3.07724114, 3.61325732])
+        assert sp.allclose(steps, ans)
 
     def test_porosimetry_compare_modes_3D(self):
         im = self.im
@@ -167,7 +167,11 @@ class FilterTest():
         assert max1 > max2
 
     def test_local_thickness(self):
-        lt = ps.filters.local_thickness(self.im)
+        lt = ps.filters.local_thickness(self.im, mode='dt')
+        assert lt.max() == self.im_dt.max()
+        lt = ps.filters.local_thickness(self.im, mode='mio')
+        assert lt.max() == self.im_dt.max()
+        lt = ps.filters.local_thickness(self.im, mode='fft')
         assert lt.max() == self.im_dt.max()
 
     def test_porosimetry(self):
