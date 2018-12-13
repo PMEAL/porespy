@@ -793,7 +793,7 @@ def apply_chords_3D(im, spacing=0, trim_edges=True):
     return chords
 
 
-def local_thickness(im, sizes=25, mode='fft'):
+def local_thickness(im, sizes=25, mode='hybrid'):
     r"""
     For each voxel, this functions calculates the radius of the largest sphere
     that both engulfs the voxel and fits entirely within the foreground. This
@@ -813,14 +813,14 @@ def local_thickness(im, sizes=25, mode='fft'):
     mode : string
         Controls with method is used to compute the result.  Options are:
 
-        *'fft'* - (default) Performs a distance tranform of the void space,
+        *'hybrid'* - (default) Performs a distance tranform of the void space,
         thresholds to find voxels larger than ``sizes[i]``, trims the resulting
         mask if ``access_limitations`` is ``True``, then dilates it using the
         efficient fft-method to obtain the non-wetting fluid configuration.
 
-        *'dt'* - Same as 'fft', except uses a second distance transform,
+        *'dt'* - Same as 'hybrid', except uses a second distance transform,
         relative to the thresholded mask, to find the invading fluid
-        configuration.  The choice of 'dt' or 'fft' depends on speed, which
+        configuration.  The choice of 'dt' or 'hybrid' depends on speed, which
         is system and installation specific.
 
         *'mio'* - Using a single morphological image opening step to obtain the
@@ -846,7 +846,7 @@ def local_thickness(im, sizes=25, mode='fft'):
 
 
 def porosimetry(im, sizes=25, inlets=None, access_limited=True,
-                mode='fft'):
+                mode='hybrid'):
     r"""
     Performs a porosimetry simulution on the image
 
@@ -880,20 +880,21 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
     mode : string
         Controls with method is used to compute the result.  Options are:
 
-        *'fft'* - (default) Performs a distance tranform of the void space,
+        *'hybrid'* - (default) Performs a distance tranform of the void space,
         thresholds to find voxels larger than ``sizes[i]``, trims the resulting
         mask if ``access_limitations`` is ``True``, then dilates it using the
         efficient fft-method to obtain the non-wetting fluid configuration.
 
-        *'dt'* - Same as 'fft', except uses a second distance transform,
+        *'dt'* - Same as 'hybrid', except uses a second distance transform,
         relative to the thresholded mask, to find the invading fluid
-        configuration.  The choice of 'dt' or 'fft' depends on speed, which
+        configuration.  The choice of 'dt' or 'hybrid' depends on speed, which
         is system and installation specific.
 
         *'mio'* - Using a single morphological image opening step to obtain the
         invading fluid confirguration directly, *then* trims if
         ``access_limitations`` is ``True``.  This method is not ideal and is
-        included mostly for comparison purposes.
+        included mostly for comparison purposes.  The morphological operations
+        are done using fft-based method implementations.
 
     Returns
     -------
@@ -947,7 +948,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
             imresults = imresults[pw:-pw, pw:-pw]
         else:
             imresults = imresults[pw:-pw, pw:-pw, pw:-pw]
-    if mode == 'dt':
+    elif mode == 'dt':
         for r in tqdm(sizes):
             imtemp = dt >= r
             if access_limited:
@@ -955,7 +956,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
             if sp.any(imtemp):
                 imtemp = spim.distance_transform_edt(~imtemp) < r
                 imresults[(imresults == 0)*imtemp] = r
-    if mode == 'fft':
+    elif mode == 'hybrid':
         for r in tqdm(sizes):
             imtemp = dt >= r
             if access_limited:
@@ -963,4 +964,6 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
             if sp.any(imtemp):
                 imtemp = fftconvolve(imtemp, strel(r), mode='same') > 0.0001
                 imresults[(imresults == 0)*imtemp] = r
+    else:
+        raise Exception('Unreckognized mode '+ mode)
     return imresults
