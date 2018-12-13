@@ -71,8 +71,8 @@ def regions_to_network(im, dt=None, voxel_size=1):
 
     for i in tqdm(Ps):
         pore = i - 1
-    #        if slices[pore] is None:
-    #            continue
+        if slices[pore] is None:
+            continue
         s = extend_slice(slices[pore], im.shape)
         sub_im = im[s]
         sub_dt = dt[s]
