@@ -1135,6 +1135,7 @@ def _unique_triplets(n):
     for i in range(len(units)):
         for j in range(len(units[i+1:])):
             temp = [units[i], units[j+i+1]]
+            temp.sort()
             for z in units:
                 if z not in temp:
                     permutations.append(temp+[z])
