@@ -1127,7 +1127,7 @@ def nphase_neighbors(im, nphase_mask, include_diagonals=False):
 def _unique_triplets(n):
     r'''
     For a set of n neighboring regions return the permutations for triplets
-    e.g. [[0, 1, 2], [0, 2, 1], [1, 2, 0]]
+    e.g. [[0, 1, 2], [0, 2, 1], [1, 2, 0]] + reverse of elements 0 and 1
     Where the first two indices are both connected to the last
     '''
     units = range(n)
@@ -1137,6 +1137,8 @@ def _unique_triplets(n):
             temp = [units[i], units[j+i+1]]
             for z in units:
                 if z not in temp:
+                    permutations.append(temp+[z])
+                    temp.reverse()
                     permutations.append(temp+[z])
     return permutations
 
@@ -1158,12 +1160,12 @@ def adjacency_triplets(regions, network, include_diagonals=False):
         permutations = _unique_triplets(len(js))
         for perm in permutations:
             # Pore indices are 1 less than region indices
-            p0 = js[perm[0]]-1
-            p1 = js[perm[1]]-1
-            p2 = js[perm[2]]-1
+            p0 = js[perm[0]]
+            p1 = js[perm[1]]
+            p2 = js[perm[2]]
             # Find the connecting throats
-            t02 = network.find_connecting_throat(p0, p2)[0]
-            t12 = network.find_connecting_throat(p1, p2)[0]
+            t02 = network.find_connecting_throat(p0-1, p2-1)[0]
+            t12 = network.find_connecting_throat(p1-1, p2-1)[0]
             # This triplet of pores connected by the two throats can invade
             # the common pore by cooperative pore filling
             # These regions may be connected in the watershed but not
