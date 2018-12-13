@@ -1169,5 +1169,5 @@ def adjacency_triplets(regions, network, include_diagonals=False):
             # These regions may be connected in the watershed but not
             # Necessarilly in the network. Only records ones that are.
             if t02 is not None and t12 is not None:
-                adj_mat[t02, t12] = 1
+                adj_mat[t02, t12] = p2
     return adj_mat
