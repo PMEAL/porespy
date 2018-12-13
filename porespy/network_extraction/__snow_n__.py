@@ -4,11 +4,13 @@ from porespy.network_extraction import add_boundary_regions
 from porespy.filters import snow_partitioning
 from porespy.tools import make_contiguous
 from porespy.metrics import region_surface_areas, region_interface_areas
+from collections import namedtuple
 
 
 def snow_n(im, voxel_size=1,
            boundary_faces=['top', 'bottom', 'left', 'right', 'front', 'back'],
-           marching_cubes_area=False):
+           marching_cubes_area=False,
+           return_all=False):
 
     r"""
     Analyzes an image that has been partitioned into N phase regions
@@ -42,6 +44,11 @@ def snow_n(im, voxel_size=1,
         representation of area in extracted network, but is quite slow, so
         it is ``False`` by default.  The default method simply counts voxels
         so does not correctly account for the voxelated nature of the images.
+
+    return_all : boolean (default is False)
+        If set to ``True`` a named tuple is returned containing network dict,
+        the original image, the distance transform, the final segmented regions.
+        If set to ``False`` it returns network dictionary for all phases.
 
     Returns
     -------
@@ -163,7 +170,17 @@ def snow_n(im, voxel_size=1,
     # -------------------------------------------------------------------------
     # label boundary cells
     net = label_boundary_cells(network=net, boundary_faces=f)
-    return net
+    # -------------------------------------------------------------------------
+    # This code handles the return_all option
+    if return_all:
+        tup = namedtuple('results', field_names=['net', 'im', 'dt', 'regions'])
+        tup.net = net
+        tup.im = im.copy()
+        tup.dt = combined_dt
+        tup.regions = regions
+        return tup
+    else:
+        return net
 
 
 def label_boundary_cells(network=None, boundary_faces=None):
