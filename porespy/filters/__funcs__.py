@@ -875,6 +875,70 @@ def local_thickness(im, sizes=25, mode='hybrid'):
 
 def porosimetry(im, sizes=25, inlets=None, access_limited=True,
                 mode='hybrid'):
+def prune_branches(skel, branch_points=None, iterations=1):
+    r"""
+    Removes all dangling ends or tails of a skeleton.
+
+    Parameters
+    ----------
+    skel : ND-image
+        A image of a full or partial skeleton from which the tails should be
+        trimmed.
+
+    branch_points : ND-image, optional
+        An image the same size ``skel`` with True values indicating the branch
+        points of the skeleton.  If this is not provided it is calculated
+        automatically.
+
+    Returns
+    -------
+    An ND-image containing the skeleton with tails removed.
+
+    """
+    skel = skel > 0
+    if skel.ndim == 2:
+        from skimage.morphology import square as cube
+    else:
+        from skimage.morphology import cube
+    # Create empty image to house results
+    im_result = sp.zeros_like(skel)
+    # If branch points are not supplied, attempt to find them
+    if branch_points is None:
+        branch_points = spim.convolve(skel*1.0, weights=cube(3)) > 3
+        branch_points = branch_points*skel
+    # Store original branch points before dilating
+    pts_orig = branch_points
+    # Find arcs of skeleton by deleting branch points
+    arcs = skel*(~branch_points)
+    # Label arcs
+    arc_labels = spim.label(arcs, structure=cube(3))[0]
+    # Dilate branch points so they overlap with the arcs
+    branch_points = spim.binary_dilation(branch_points, structure=cube(3))
+    pts_labels = spim.label(branch_points, structure=cube(3))[0]
+    # Now scan through each arc to see if it's connected to two branch points
+    slices = spim.find_objects(arc_labels)
+    label_num = 0
+    for s in slices:
+        label_num += 1
+        # Find branch point labels the overlap current arc
+        hits = pts_labels[s]*(arc_labels[s] == label_num)
+        # If image contains 2 branch points, then it's not a tail.
+        if len(sp.unique(hits)) == 3:
+            im_result[s] += arc_labels[s] == label_num
+    # Add missing branch points back to arc image to make complete skeleton
+    im_result += skel*pts_orig
+    if iterations > 1:
+        iterations -= 1
+        im_temp = sp.copy(im_result)
+        im_result = prune_branches(skel=im_result,
+                                   branch_points=None,
+                                   iterations=iterations)
+        if sp.all(im_temp == im_result):
+            iterations = 0
+    return im_result
+
+
+def porosimetry(im, npts=25, sizes=None, inlets=None, access_limited=True):
     r"""
     Performs a porosimetry simulution on the image
 
