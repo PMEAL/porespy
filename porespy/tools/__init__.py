@@ -21,6 +21,8 @@ that do NOT return a modified version of the original image.
 .. autofunction:: norm_to_uniform
 .. autofunction:: randomize_colors
 .. autofunction:: subdivide
+.. autofunction:: ps_disk
+.. autofunction:: ps_ball
 
 '''
 from .__funcs__ import align_image_with_openpnm

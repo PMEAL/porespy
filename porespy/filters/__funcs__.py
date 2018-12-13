@@ -957,7 +957,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
                 imresults[(imresults == 0)*imtemp] = r
     if mode == 'fft':
         for r in tqdm(sizes):
-            imtemp = dt > r
+            imtemp = dt >= r
             if access_limited:
                 imtemp = trim_blobs(imtemp, inlets)
             if sp.any(imtemp):
