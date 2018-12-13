@@ -84,7 +84,8 @@ def fftmorphology(im, strel, mode='opening'):
 
     >>> result = ps.filters.fftmorphology(im, strel=disk(5), mode='closing')
     >>> temp = spim.binary_closing(im, structure=disk(5))
-    >>> # This one does not work yet!!
+    >>> array_equal(result, temp)
+    True
 
     """
     def erode(im, strel):
@@ -174,7 +175,7 @@ def subdivide(im, divs=2):
     (100, 100)
     """
     # Expand scalar divs
-    if sp.array(divs, ndmin=1).size == 1:
+    if isinstance(divs, int):
         divs = [divs for i in range(im.ndim)]
     s = shape_split(im.shape, axis=divs)
     return s
