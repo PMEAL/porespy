@@ -965,5 +965,5 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
                 imtemp = fftconvolve(imtemp, strel(r), mode='same') > 0.0001
                 imresults[(imresults == 0)*imtemp] = r
     else:
-        raise Exception('Unreckognized mode '+ mode)
+        raise Exception('Unreckognized mode ' + mode)
     return imresults
