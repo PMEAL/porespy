@@ -40,7 +40,7 @@ def snow(im, voxel_size=1,
 
     Returns
     -------
-    * ``net``: A network dictionary containing pore size data, as well as the 
+    * ``net``: A network dictionary containing pore size data, as well as the
         network topological information.  The dictionary names use the OpenPNM
         convention (i.e. 'pore.coords', 'throat.conns') so it may be converted
         directly to an OpenPNM network object using the ``update`` command.
@@ -124,11 +124,11 @@ def snow(im, voxel_size=1,
                                             max(condition[:, dic[i]]))
     # -------------------------------------------------------------------------
     # Assign to namedtuple
-    tup = namedtuple('results', field_names=['net', 'im', 'dt', 'regions', 'peaks'])
+    tup = namedtuple('results', field_names=['net', 'im', 'dt', 'regions',
+                                             'peaks'])
     tup.net = net
     tup.im = im.copy()
     tup.dt = dt
     tup.regions = regions
     tup.peaks = peaks
     return tup
-

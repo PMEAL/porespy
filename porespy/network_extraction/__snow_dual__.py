@@ -68,7 +68,7 @@ def snow_dual(im, voxel_size=1,
     solid_regions = snow_partitioning(~im, return_all=True)
     # -------------------------------------------------------------------------
     # Get combined peaks
-    solid_peaks_num =  sp.amax(pore_regions.peaks)
+    solid_peaks_num = sp.amax(pore_regions.peaks)
     s_peaks = solid_regions.peaks
     solid_peaks = s_peaks + solid_peaks_num
     solid_peaks = solid_peaks * (solid_peaks != solid_peaks_num)
@@ -168,7 +168,8 @@ def snow_dual(im, voxel_size=1,
     net['pore.boundary'] = boundary_labels
     # -------------------------------------------------------------------------
     # Assign to namedtuple
-    tup = namedtuple('results', field_names=['net', 'im', 'dt', 'regions', 'peaks'])
+    tup = namedtuple('results', field_names=['net', 'im', 'dt', 'regions',
+                                             'peaks'])
     tup.net = net
     tup.im = im.copy()
     tup.dt = dt
