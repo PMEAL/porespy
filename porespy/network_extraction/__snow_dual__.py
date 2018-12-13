@@ -70,7 +70,7 @@ def snow_dual(im, voxel_size=1,
     # Get combined peaks
     solid_peaks_num =  sp.amax(pore_regions.peaks)
     s_peaks = solid_regions.peaks
-    solid_peaks = (s_peaks + solid_peaks_num) * (s_peaks > 0)
+    solid_peaks = (s_peaks + solid_peaks_num) * (s_peaks != solid_peaks_num)
     peaks = solid_peaks + pore_regions.peaks
     # -------------------------------------------------------------------------
     # Combined Distance transform of two phases.
