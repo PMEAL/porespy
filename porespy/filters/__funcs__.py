@@ -10,6 +10,7 @@ from skimage.morphology import ball, disk, square, cube
 from skimage.morphology import reconstruction, watershed
 from porespy.tools import randomize_colors, fftmorphology
 from porespy.tools import get_border, extend_slice
+from porespy.tools import ps_disk, ps_ball
 
 
 def distance_transform_lin(im, axis=0, mode='both'):
@@ -792,7 +793,7 @@ def apply_chords_3D(im, spacing=0, trim_edges=True):
     return chords
 
 
-def local_thickness(im, sizes=25, mode='fft'):
+def local_thickness(im, sizes=25, mode='hybrid'):
     r"""
     For each voxel, this functions calculates the radius of the largest sphere
     that both engulfs the voxel and fits entirely within the foreground. This
@@ -812,14 +813,14 @@ def local_thickness(im, sizes=25, mode='fft'):
     mode : string
         Controls with method is used to compute the result.  Options are:
 
-        *'fft'* - (default) Performs a distance tranform of the void space,
+        *'hybrid'* - (default) Performs a distance tranform of the void space,
         thresholds to find voxels larger than ``sizes[i]``, trims the resulting
         mask if ``access_limitations`` is ``True``, then dilates it using the
         efficient fft-method to obtain the non-wetting fluid configuration.
 
-        *'dt'* - Same as 'fft', except uses a second distance transform,
+        *'dt'* - Same as 'hybrid', except uses a second distance transform,
         relative to the thresholded mask, to find the invading fluid
-        configuration.  The choice of 'dt' or 'fft' depends on speed, which
+        configuration.  The choice of 'dt' or 'hybrid' depends on speed, which
         is system and installation specific.
 
         *'mio'* - Using a single morphological image opening step to obtain the
@@ -845,7 +846,7 @@ def local_thickness(im, sizes=25, mode='fft'):
 
 
 def porosimetry(im, sizes=25, inlets=None, access_limited=True,
-                mode='fft'):
+                mode='hybrid'):
     r"""
     Performs a porosimetry simulution on the image
 
@@ -879,20 +880,21 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
     mode : string
         Controls with method is used to compute the result.  Options are:
 
-        *'fft'* - (default) Performs a distance tranform of the void space,
+        *'hybrid'* - (default) Performs a distance tranform of the void space,
         thresholds to find voxels larger than ``sizes[i]``, trims the resulting
         mask if ``access_limitations`` is ``True``, then dilates it using the
         efficient fft-method to obtain the non-wetting fluid configuration.
 
-        *'dt'* - Same as 'fft', except uses a second distance transform,
+        *'dt'* - Same as 'hybrid', except uses a second distance transform,
         relative to the thresholded mask, to find the invading fluid
-        configuration.  The choice of 'dt' or 'fft' depends on speed, which
+        configuration.  The choice of 'dt' or 'hybrid' depends on speed, which
         is system and installation specific.
 
         *'mio'* - Using a single morphological image opening step to obtain the
         invading fluid confirguration directly, *then* trims if
         ``access_limitations`` is ``True``.  This method is not ideal and is
-        included mostly for comparison purposes.
+        included mostly for comparison purposes.  The morphological operations
+        are done using fft-based method implementations.
 
     Returns
     -------
@@ -927,19 +929,26 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
         sizes = sp.sort(a=sizes)[-1::-1]
 
     if im.ndim == 2:
-        strel = disk
+        strel = ps_disk
     else:
-        strel = ball
+        strel = ps_ball
 
     imresults = sp.zeros(sp.shape(im))
     if mode == 'mio':
+        pw = int(sp.floor(dt.max()))
+        impad = sp.pad(im, mode='symmetric', pad_width=pw)
+        imresults = sp.zeros(sp.shape(impad))
         for r in tqdm(sizes):
-            imtemp = fftmorphology(im, strel(r), mode='opening')
+            imtemp = fftmorphology(impad, strel(r), mode='opening')
             if access_limited:
                 imtemp = trim_blobs(imtemp, inlets)
             if sp.any(imtemp):
                 imresults[(imresults == 0)*imtemp] = r
-    if mode == 'dt':
+        if im.ndim == 2:
+            imresults = imresults[pw:-pw, pw:-pw]
+        else:
+            imresults = imresults[pw:-pw, pw:-pw, pw:-pw]
+    elif mode == 'dt':
         for r in tqdm(sizes):
             imtemp = dt >= r
             if access_limited:
@@ -947,12 +956,14 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
             if sp.any(imtemp):
                 imtemp = spim.distance_transform_edt(~imtemp) < r
                 imresults[(imresults == 0)*imtemp] = r
-    if mode == 'fft':
+    elif mode == 'hybrid':
         for r in tqdm(sizes):
             imtemp = dt >= r
             if access_limited:
                 imtemp = trim_blobs(imtemp, inlets)
             if sp.any(imtemp):
-                imtemp = fftconvolve(imtemp, strel(r), mode='same') > 0.1
+                imtemp = fftconvolve(imtemp, strel(r), mode='same') > 0.0001
                 imresults[(imresults == 0)*imtemp] = r
+    else:
+        raise Exception('Unreckognized mode ' + mode)
     return imresults
