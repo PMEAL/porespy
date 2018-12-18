@@ -84,7 +84,8 @@ def fftmorphology(im, strel, mode='opening'):
 
     >>> result = ps.filters.fftmorphology(im, strel=disk(5), mode='closing')
     >>> temp = spim.binary_closing(im, structure=disk(5))
-    >>> # This one does not work yet!!
+    >>> array_equal(result, temp)
+    True
 
     """
     def erode(im, strel):
@@ -174,7 +175,7 @@ def subdivide(im, divs=2):
     (100, 100)
     """
     # Expand scalar divs
-    if sp.array(divs, ndmin=1).size == 1:
+    if isinstance(divs, int):
         divs = [divs for i in range(im.ndim)]
     s = shape_split(im.shape, axis=divs)
     return s
@@ -758,3 +759,43 @@ def mesh_region(region: bool, strel=None):
     result.norm = norm
     result.val = val
     return result
+
+
+def ps_disk(radius):
+    r"""
+    Creates circular disk structuring element for morphological operations
+
+    Parameters
+    ----------
+    radius : float or int
+        The desired radius of the structuring element
+
+    Returns
+    -------
+    A 2D numpy bool array of the structring element
+    """
+    rad = int(sp.ceil(radius))
+    other = sp.ones((2*rad+1, 2*rad+1), dtype=bool)
+    other[rad, rad] = False
+    disk = spim.distance_transform_edt(other) < radius
+    return disk
+
+
+def ps_ball(radius):
+    r"""
+    Creates spherical ball structuring element for morphological operations
+
+    Parameters
+    ----------
+    radius : float or int
+        The desired radius of the structuring element
+
+    Returns
+    -------
+    A 2D numpy array of the structuring element
+    """
+    rad = int(sp.ceil(radius))
+    other = sp.ones((2*rad+1, 2*rad+1, 2*rad+1), dtype=bool)
+    other[rad, rad, rad] = False
+    ball = spim.distance_transform_edt(other) < radius
+    return ball
