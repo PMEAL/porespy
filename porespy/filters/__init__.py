@@ -47,3 +47,4 @@ from .__funcs__ import trim_floating_solid
 from .__funcs__ import trim_nonpercolating_paths
 from .__funcs__ import trim_nearby_peaks
 from .__funcs__ import trim_saddle_points
+from .__funcs__ import nphase_border
