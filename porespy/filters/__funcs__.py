@@ -86,7 +86,8 @@ def snow_partitioning(im, r_max=4, sigma=0.4, return_all=False):
         print('Applying Gaussian blur with sigma =', str(sigma))
         dt = spim.gaussian_filter(input=dt, sigma=sigma)
 
-    peaks = find_peaks(dt=dt)
+    print('Look for peaks with r: ', r_max)
+    peaks = find_peaks(dt=dt, r=r_max)
     print('Initial number of peaks: ', spim.label(peaks)[1])
     peaks = trim_saddle_points(peaks=peaks, dt=dt, max_iters=500)
     print('Peaks after trimming saddle points: ', spim.label(peaks)[1])
