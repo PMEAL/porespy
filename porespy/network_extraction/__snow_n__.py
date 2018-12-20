@@ -7,9 +7,11 @@ from porespy.metrics import region_surface_areas, region_interface_areas
 from collections import namedtuple
 
 
-def snow_n(im, voxel_size=1,
+def snow_n(im,
+           voxel_size=1,
            boundary_faces=['top', 'bottom', 'left', 'right', 'front', 'back'],
-           marching_cubes_area=False):
+           marching_cubes_area=False,
+           alias=None):
 
     r"""
     Analyzes an image that has been partitioned into N phase regions
@@ -44,6 +46,12 @@ def snow_n(im, voxel_size=1,
         it is ``False`` by default.  The default method simply counts voxels
         so does not correctly account for the voxelated nature of the images.
 
+    alias : dict (Optional)
+        A dictionary that assigns unique image label to specific phase.
+        For example {1: 'Solid'} will show all structural properties associated
+        with label 1 as Solid phase properties.
+        If ``None`` then default labelling will be used i.e {1: 'Phase1',..}.
+
     Returns
     -------
     A dictionary containing all N phases size data, as well as the
@@ -52,15 +60,30 @@ def snow_n(im, voxel_size=1,
     directly to an OpenPNM network object using the ``update`` command.
     """
     # -------------------------------------------------------------------------
+    # Get alias if provided by user
+    phases_num = sp.unique(im*1)
+    phases_num = sp.trim_zeros(phases_num)
+    al = {}
+    for values in phases_num:
+        al[values] = 'phase{}'.format(values)
+    if alias is not None:
+        alias_sort = dict(sorted(alias.items()))
+        phase_labels = sp.array([*alias_sort])
+        al = alias
+        if set(phase_labels) != set(phases_num):
+            raise Exception('Alias labels does not match with image labels '
+                            'please provide correct image labels')
+    # -------------------------------------------------------------------------
     # Perform snow on each phase and merge all segmentation and dt together
     combined_dt = 0
     combined_region = 0
     num = [0]
-    phases_num = sp.unique(im*1)
-    phases_num = sp.trim_zeros(phases_num)
     for i in phases_num:
         print('_'*60)
-        print('### Processing Phase {} ###'.format(i))
+        if alias is None:
+            print('### Processing Phase {} ###'.format(i))
+        else:
+            print('### Processing {} phase ###'.format(al[i]))
         phase_snow = snow_partitioning(im == i, return_all=True)
         if len(phases_num) == 1 and phases_num == 1:
             combined_dt = phase_snow.dt
@@ -120,8 +143,8 @@ def snow_n(im, voxel_size=1,
         loc1 = sp.logical_and(conns1 >= num[i-1], conns1 < num[i])
         loc2 = sp.logical_and(conns2 >= num[i-1], conns2 < num[i])
         loc3 = sp.logical_and(label >= num[i-1], label < num[i])
-        net['throat.phase{}'.format(i)] = loc1 * loc2
-        net['pore.phase{}'.format(i)] = loc3
+        net['throat.{}'.format(al[i])] = loc1 * loc2
+        net['pore.{}'.format(al[i])] = loc3
         if i == phases_num[-1]:
             loc4 = sp.logical_and(conns1 < num[-1], conns2 >= num[-1])
             loc5 = label >= num[-1]
@@ -132,7 +155,7 @@ def snow_n(im, voxel_size=1,
                 pi_pj_sa = sp.zeros_like(label)
                 loc6 = sp.logical_and(conns2 >= num[j-1], conns2 < num[j])
                 pi_pj_conns = loc1 * loc6
-                net['throat.phase{}_{}'.format(i, j)] = pi_pj_conns
+                net['throat.{}_{}'.format(al[i], al[j])] = pi_pj_conns
                 if any(pi_pj_conns):
                     # ---------------------------------------------------------
                     # Calculates phase[i] interfacial area that connects with
@@ -159,8 +182,8 @@ def snow_n(im, voxel_size=1,
                         s_pa_c = sp.trim_zeros(s_pa_c)
                         pi_pj_sa[i_index] = p_sa_c
                         pi_pj_sa[j_index] = s_pa_c
-                    net['pore.p{}_{}_area'.format(i, j)] = (pi_pj_sa *
-                                                            voxel_size**2)
+                    net['pore.{}_{}_area'.format(al[i], al[j])] = (pi_pj_sa *
+                                                                   voxel_size**2)
     # -------------------------------------------------------------------------
     # label boundary cells
     net = label_boundary_cells(network=net, boundary_faces=f)
