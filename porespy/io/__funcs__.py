@@ -30,6 +30,8 @@ def dict_to_vtk(data, path='./dictvtk', voxel_size=1, origin=(0, 0, 0)):
     """
     vs = voxel_size
     for entry in data:
+        if data[entry].dtype == bool:
+            data[entry] = data[entry].astype(np.int8)
         if data[entry].flags['C_CONTIGUOUS']:
             data[entry] = np.ascontiguousarray(data[entry])
     imageToVTK(path, cellData=data, spacing=(vs, vs, vs), origin=origin)
@@ -37,7 +39,7 @@ def dict_to_vtk(data, path='./dictvtk', voxel_size=1, origin=(0, 0, 0)):
 
 def to_openpnm(net, filename):
     r"""
-    Save the result of the `extract_pore_network` function to a file that is
+    Save the result of the `snow` network extraction function in a format
     suitable for opening in OpenPNM.
 
     Parameters
@@ -49,11 +51,18 @@ def to_openpnm(net, filename):
         extension.
 
     """
-    p = Path(filename)
-    p = p.resolve()
-    # If extension not part of filename
-    if p.suffix == '':
-        p = p.with_suffix('.net')
+
+    try:
+        p = Path(filename)
+        p = p.resolve()
+        # If extension not part of filename
+        if p.suffix == '':
+            p = p.with_suffix('.net')
+    except FileNotFoundError:
+        p = filename.split('.')
+        if p[-1] != 'net':
+            p.append('net')
+        p = '.'.join(p)
     with open(p, 'wb') as f:
         pickle.dump(net, f)
 
@@ -87,6 +96,8 @@ def to_vtk(im, path='./voxvtk', divide=False, downsample=False, voxel_size=1,
     ------
     File: vtk, vtp or vti file that can opened in paraview
     """
+    if im.dtype == bool:
+        vox = True
     if vox:
         im = im.astype(np.int8)
     vs = voxel_size

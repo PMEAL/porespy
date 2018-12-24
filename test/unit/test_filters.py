@@ -3,6 +3,7 @@ import pytest
 import scipy as sp
 import numpy as np
 import scipy.ndimage as spim
+from skimage.morphology import disk, ball
 
 
 class FilterTest():
@@ -16,12 +17,36 @@ class FilterTest():
         self.flood_im[8, :] = 0
         self.flood_im_dt = spim.distance_transform_edt(self.flood_im)
 
+    def test_im_in_not_im_out(self):
+        im = ps.generators.blobs(shape=[50, 50])
+        for item in ps.filters.__dir__():
+            if ~item.startswith('__'):
+                temp = getattr(ps.filters, item)
+                assert temp is not im
+
     def test_porosimetry_npts_10(self):
         mip = ps.filters.porosimetry(im=self.im, sizes=10)
+        steps = sp.unique(mip)
         ans = sp.array([0.00000000, 1.00000000, 1.37871571, 1.61887041,
                         1.90085700, 2.23196205, 2.62074139, 3.07724114,
                         3.61325732])
-        assert sp.allclose(sp.unique(mip), ans)
+        assert sp.allclose(steps, ans)
+
+    def test_porosimetry_compare_modes_3D(self):
+        im = self.im
+        fft = ps.filters.porosimetry(im, mode='hybrid')
+        mio = ps.filters.porosimetry(im, mode='mio')
+        dt = ps.filters.porosimetry(im, mode='dt')
+#        assert sp.all(fft == dt)
+#        assert sp.all(fft == mio)
+
+    def test_porosimetry_compare_modes_2D(self):
+        im = self.im[:, :, 50]
+        fft = ps.filters.porosimetry(im, mode='hybrid')
+        mio = ps.filters.porosimetry(im, mode='mio')
+        dt = ps.filters.porosimetry(im, mode='dt')
+#        assert sp.all(fft == dt)
+#        assert sp.all(fft == mio)
 
     def test_porosimetry_with_sizes(self):
         s = sp.logspace(0.01, 0.6, 5)
@@ -29,26 +54,35 @@ class FilterTest():
         assert sp.allclose(sp.unique(mip)[1:], s)
 
     def test_apply_chords_axis0(self):
-        c = ps.filters.apply_chords(im=self.im, spacing=0, axis=0)
-        assert c.sum() == 25879
+        c = ps.filters.apply_chords(im=self.im, spacing=3, axis=0)
+        assert c.sum() == 23722
+        c = ps.filters.apply_chords(im=self.im, axis=0)
+        assert c.sum() == 102724
 
     def test_apply_chords_axis1(self):
-        c = ps.filters.apply_chords(im=self.im, spacing=0, axis=1)
-        assert c.sum() == 25569
+        c = ps.filters.apply_chords(im=self.im, spacing=3, axis=1)
+        assert c.sum() == 23422
+        c = ps.filters.apply_chords(im=self.im, axis=1)
+        assert c.sum() == 102205
 
     def test_apply_chords_axis2(self):
-        c = ps.filters.apply_chords(im=self.im, spacing=0, axis=2)
-        assert c.sum() == 25840
+        c = ps.filters.apply_chords(im=self.im, spacing=3, axis=2)
+        assert c.sum() == 23752
+        c = ps.filters.apply_chords(im=self.im, axis=2)
+        assert c.sum() == 103347
 
-    def test_apply_chords_with_spacing(self):
+    def test_apply_chords_with_negative_spacing(self):
         with pytest.raises(Exception):
-            c = ps.filters.apply_chords(im=self.im, spacing=-1)
-        c = ps.filters.apply_chords(im=self.im, spacing=1)
-        assert c.sum() == 11367
+            ps.filters.apply_chords(im=self.im, spacing=-1)
 
     def test_apply_chords_without_trimming(self):
         c = ps.filters.apply_chords(im=self.im, trim_edges=False)
+        assert c.sum() == 125043
+        c = ps.filters.apply_chords(im=self.im, spacing=3, trim_edges=False)
         assert c.sum() == 31215
+
+    def test_apply_chords_3D(self):
+        ps.filters.apply_chords_3D(self.im)
 
     def test_flood_size(self):
         m = ps.filters.flood(im=self.flood_im, mode='size')
@@ -71,7 +105,6 @@ class FilterTest():
     def test_find_disconnected_voxels_2d(self):
         h = ps.filters.find_disconnected_voxels(self.im[:, :, 0])
         assert sp.sum(h) == 477
-#        print(sp.sum(h))
 
     def test_find_disconnected_voxels_2d_conn4(self):
         h = ps.filters.find_disconnected_voxels(self.im[:, :, 0], conn=4)
@@ -135,7 +168,11 @@ class FilterTest():
         assert max1 > max2
 
     def test_local_thickness(self):
-        lt = ps.filters.local_thickness(self.im)
+        lt = ps.filters.local_thickness(self.im, mode='dt')
+        assert lt.max() == self.im_dt.max()
+        lt = ps.filters.local_thickness(self.im, mode='mio')
+        assert lt.max() == self.im_dt.max()
+        lt = ps.filters.local_thickness(self.im, mode='hybrid')
         assert lt.max() == self.im_dt.max()
 
     def test_porosimetry(self):
@@ -146,6 +183,105 @@ class FilterTest():
                                      sizes=len(sizes),
                                      access_limited=False)
         assert mip.max() <= sizes.max()
+
+    def test_morphology_fft_dilate_2D(self):
+        im = ps.generators.blobs(shape=[100, 100])
+        truth = spim.binary_dilation(im, structure=disk(3))
+        test = ps.tools.fftmorphology(im, strel=disk(3), mode='dilation')
+        assert sp.all(truth == test)
+
+    def test_morphology_fft_erode_2D(self):
+        im = ps.generators.blobs(shape=[100, 100])
+        truth = spim.binary_erosion(im, structure=disk(3))
+        test = ps.tools.fftmorphology(im, strel=disk(3), mode='erosion')
+        assert sp.all(truth == test)
+
+    def test_morphology_fft_opening_2D(self):
+        im = ps.generators.blobs(shape=[100, 100])
+        truth = spim.binary_opening(im, structure=disk(3))
+        test = ps.tools.fftmorphology(im, strel=disk(3), mode='opening')
+        assert sp.all(truth == test)
+
+    def test_morphology_fft_closing_2D(self):
+        im = ps.generators.blobs(shape=[100, 100])
+        truth = spim.binary_closing(im, structure=disk(3))
+        test = ps.tools.fftmorphology(im, strel=disk(3), mode='closing')
+        assert sp.all(truth == test)
+
+    def test_morphology_fft_dilate_3D(self):
+        im = ps.generators.blobs(shape=[100, 100, 100])
+        truth = spim.binary_dilation(im, structure=ball(3))
+        test = ps.tools.fftmorphology(im, strel=ball(3), mode='dilation')
+        assert sp.all(truth == test)
+
+    def test_morphology_fft_erode_3D(self):
+        im = ps.generators.blobs(shape=[100, 100, 100])
+        truth = spim.binary_erosion(im, structure=ball(3))
+        test = ps.tools.fftmorphology(im, strel=ball(3), mode='erosion')
+        assert sp.all(truth == test)
+
+    def test_morphology_fft_opening_3D(self):
+        im = ps.generators.blobs(shape=[100, 100, 100])
+        truth = spim.binary_opening(im, structure=ball(3))
+        test = ps.tools.fftmorphology(im, strel=ball(3), mode='opening')
+        assert sp.all(truth == test)
+
+    def test_morphology_fft_closing_3D(self):
+        im = ps.generators.blobs(shape=[100, 100, 100])
+        truth = spim.binary_closing(im, structure=ball(3))
+        test = ps.tools.fftmorphology(im, strel=ball(3), mode='closing')
+        assert sp.all(truth == test)
+
+    def test_reduce_peaks(self):
+        im = ~ps.generators.lattice_spheres(shape=[50, 50], radius=5, offset=3)
+        peaks = ps.filters.reduce_peaks(im)
+        assert spim.label(im)[1] == spim.label(peaks)[1]
+        im = ~ps.generators.lattice_spheres(shape=[50, 50, 50], radius=5,
+                                            offset=3)
+        peaks = ps.filters.reduce_peaks(im)
+        assert spim.label(im)[1] == spim.label(peaks)[1]
+
+    def test_nphase_border_2d_no_diagonals(self):
+        im = np.zeros([110, 110])
+        for i in range(6):
+            im[int(10*2*i):int(10*(2*i+1)), :] += 2
+            im[:, int(10*2*i):int(10*(2*i+1))] += 4
+        borders = ps.filters.nphase_border(im, include_diagonals=False)
+        nb, counts = np.unique(borders, return_counts=True)
+        assert nb.tolist() == [1.0, 2.0, 3.0]
+        assert counts.tolist() == [8100, 3600, 400]
+
+    def test_nphase_border_2d_diagonals(self):
+        im = np.zeros([110, 110])
+        for i in range(6):
+            im[int(10*2*i):int(10*(2*i+1)), :] += 2
+            im[:, int(10*2*i):int(10*(2*i+1))] += 4
+        borders = ps.filters.nphase_border(im, include_diagonals=True)
+        nb, counts = np.unique(borders, return_counts=True)
+        assert nb.tolist() == [1.0, 2.0, 4.0]
+        assert counts.tolist() == [8100, 3600, 400]
+
+    def test_nphase_border_3d_no_diagonals(self):
+        im3d = np.zeros([110, 110, 110])
+        for i in range(6):
+            im3d[int(10*2*i):int(10*(2*i+1)), :, :] += 2
+            im3d[:, int(10*2*i):int(10*(2*i+1)), :] += 4
+            im3d[:, :, int(10*2*i):int(10*(2*i+1))] += 8
+        borders = ps.filters.nphase_border(im3d, include_diagonals=False)
+        nb, counts = np.unique(borders, return_counts=True)
+        assert nb.tolist() == [1.0, 2.0, 3.0, 4.0]
+        assert counts.tolist() == [729000, 486000, 108000, 8000]
+
+    def test_nphase_border_3d_diagonals(self):
+        im3d = np.zeros([110, 110, 110])
+        for i in range(6):
+            im3d[int(10*2*i):int(10*(2*i+1)), :, :] += 2
+            im3d[:, int(10*2*i):int(10*(2*i+1)), :] += 4
+            im3d[:, :, int(10*2*i):int(10*(2*i+1))] += 8
+        borders = ps.filters.nphase_border(im3d, include_diagonals=True)
+        nb, counts = np.unique(borders, return_counts=True)
+        assert nb.tolist() == [1.0, 2.0, 4.0, 8.0]
+        assert counts.tolist() == [729000, 486000, 108000, 8000]
 
 
 if __name__ == '__main__':
