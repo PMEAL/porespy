@@ -749,3 +749,33 @@ def mesh_surface_area(mesh=None, verts=None, faces=None):
             raise Exception('Either mesh or verts and faces must be given')
     surface_area = measure.mesh_surface_area(verts, faces)
     return surface_area
+
+
+def phase_fraction(im, normed=True):
+    r"""
+    Calculates the number (or fraction) of each phase in an image
+
+    Parameters
+    ----------
+    im : ND-array
+        An ND-array containing integer values
+    normed : Boolean
+        If ``True`` (default) the returned values are normalized by the total
+        number of voxels in image, otherwise the voxel count of each phase is
+        returned.
+
+    Returns
+    -------
+    A array of length max(im) with each element containing the number of voxels
+    found with the corresponding label.
+
+    """
+    if im.dtype != int:
+        raise Exception('Image must contain integer values for each phase')
+    labels = sp.arange(0, sp.amax(im)+1)
+    results = sp.zeros_like(labels)
+    for i in labels:
+        results[i] = sp.sum(im == i)
+    if normed:
+        results = results/im.size
+    return results
