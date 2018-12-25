@@ -195,6 +195,10 @@ def porosity(im):
     porosity : float
         Calculated as the sum of all 1's divided by the sum of all 1's and 0's.
 
+    See Also
+    --------
+    phase_fraction
+
     Notes
     -----
     This function assumes void is represented by 1 and solid by 0, and all
@@ -769,8 +773,14 @@ def phase_fraction(im, normed=True):
     A array of length max(im) with each element containing the number of voxels
     found with the corresponding label.
 
+    See Also
+    --------
+    porosity
+
     """
-    if im.dtype != int:
+    if im.dtype == bool:
+        im = im.astype(int)
+    elif im.dtype != int:
         raise Exception('Image must contain integer values for each phase')
     labels = sp.arange(0, sp.amax(im)+1)
     results = sp.zeros_like(labels)
