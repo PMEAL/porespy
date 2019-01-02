@@ -157,7 +157,7 @@ def snow_partitioning(im, r_max=4, sigma=0.4, return_all=False, mask=True):
     print('Peaks after trimming nearby peaks: ', N)
     tup.peaks = peaks
     if mask:
-        mask_solid = dt > 0
+        mask_solid = im > 0
     else:
         mask_solid = None
     regions = watershed(image=-dt, markers=peaks, mask=mask_solid)
