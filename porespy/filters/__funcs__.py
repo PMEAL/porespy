@@ -128,6 +128,7 @@ def snow_partitioning(im, r_max=4, sigma=0.4, return_all=False, mask=True):
     print('_'*60)
     print("Beginning SNOW Algorithm")
     im_shape = sp.array(im.shape)
+    
     if im.dtype == 'bool':
         print('Peforming Distance Transform')
         if sp.any(im_shape == 1):
@@ -166,6 +167,7 @@ def snow_partitioning(im, r_max=4, sigma=0.4, return_all=False, mask=True):
         return tup
     else:
         return regions
+    
 def try_sigma_R(im, r_max_arr, sigma_arr,plot_all=False, mask=True):
     r"""
     This function investigates the effect of prefiltering parameters in network
@@ -226,21 +228,22 @@ def try_sigma_R(im, r_max_arr, sigma_arr,plot_all=False, mask=True):
                     dt = spim.distance_transform_edt(input=im.squeeze())
                     dt = sp.expand_dims(dt, ax)
                 else:
-                        dt = spim.distance_transform_edt(input=im)
+                    dt = spim.distance_transform_edt(input=im)
             else:
-             dt = im
-             im = dt > 0
-        if sigma > 0:
-            dt = spim.gaussian_filter(input=dt, sigma=sigma)
-        peaks = find_peaks(dt=dt, r_max=r_max) 
-        res.init_num_peaks.append=spim.label(peaks)[1]
-        peaks = trim_saddle_points(peaks=peaks, dt=dt, max_iters=500)
-        peaks = trim_nearby_peaks(peaks=peaks, dt=dt)
-        peaks, N = spim.label(peaks)
-        res.final_num_peaks.append=N
+                dt = im
+                im = dt > 0
+            if sigma > 0:
+                dt = spim.gaussian_filter(input=dt, sigma=sigma)
+            peaks = find_peaks(dt=dt, r_max=r_max) 
+            res.init_num_peaks.append(spim.label(peaks)[1])
+            peaks = trim_saddle_points(peaks=peaks, dt=dt, max_iters=500)
+            peaks = trim_nearby_peaks(peaks=peaks, dt=dt)
+            peaks, N = spim.label(peaks)
+            res.final_num_peaks.append(N)
     res.r_max_arr=r_max_arr
     res.sigma_arr=sigma_arr
     if plot_all:
+        plt.figure(1)
         for i in range(len(sigma_arr)):
             x=res.r_max_arr
             y=res.final_num_peaks[(i)*len(r_max_arr):(i+1)*len(r_max_arr)]
@@ -252,7 +255,8 @@ def try_sigma_R(im, r_max_arr, sigma_arr,plot_all=False, mask=True):
         plt.show()
         x=res.sigma_arr
         y=res.init_num_peaks[0:len(res.init_num_peaks):len(r_max_arr)]
-        plt.plot(x,y,'*')
+        plt.figure(2)
+        plt.plot(x,y,'*-')
         plt.title('Impact of Gaussian filter parameter')
         plt.xlabel('Sigma of Gaussian filter')
         plt.ylabel('Initial number of local maxima')
