@@ -65,7 +65,7 @@ def distance_transform_lin(im, axis=0, mode='both'):
             e = sp.pad(d, pad_width=ax[axis], mode='constant', constant_values=0)
         f = im*(b+e)
         return f
-
+    
 def snow_partitioning(im, r_max=4, sigma=0.4, return_all=False, mask=True):
     r"""
     This function partitions the void space into pore regions using a
