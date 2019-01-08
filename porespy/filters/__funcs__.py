@@ -12,13 +12,13 @@ from skimage.morphology import reconstruction, watershed
 from porespy.tools import randomize_colors, fftmorphology
 from porespy.tools import get_border, extend_slice
 from porespy.tools import ps_disk, ps_ball
+import matplotlib.pyplot as plt
 
 
 def distance_transform_lin(im, axis=0, mode='both'):
     r"""
     Replaces each void voxel with the linear distance to the nearest solid
     voxel along the specified axis.
-
     Parameters
     ----------
     im : ND-array
@@ -64,9 +64,8 @@ def distance_transform_lin(im, axis=0, mode='both'):
                   [[0, 0], [1, 0], [0, 0]],
                   [[0, 0], [0, 0], [1, 0]]]
             e = sp.pad(d, pad_width=ax[axis], mode='constant', constant_values=0)
-        f = im*(b + e)
+        f = im*(b+e)
         return f
-
 
 def snow_partitioning(im, r_max=4, sigma=0.4, return_all=False, mask=True):
     r"""
@@ -167,6 +166,100 @@ def snow_partitioning(im, r_max=4, sigma=0.4, return_all=False, mask=True):
         return tup
     else:
         return regions
+def try_sigma_R(im, r_max_arr, sigma_arr,plot_all=False, mask=True):
+    r"""
+    This function investigates the effect of prefiltering parameters in network
+    extraction by SNOW algorithm as following:
+    Impact of Gaussian filter parameter sigma on the number of local maxima in
+    the image.
+    Impact of structuring element size on number of final peaks found after 
+    applying a maximum filter.
+    
+    Sigma or standard deviation of the convolution kernel is an adjustable 
+    parameter. Another parameter to be considered is the radius R. Choosing the
+    right value affects the smoothness of the resulting partitioned regions.
+    In other words, this will prevent oversmoothing and loss of a great amount
+    of data from the original image. There is a trade off between preserving 
+    the data and filtering. We should find an optimum point for this parameters.
+    Parameters
+    ----------
+    im : array_like
+        Can be either (a) a boolean image of the domain, with ``True``
+        indicating the pore space and ``False`` elsewhere, or (b) a distance
+        transform of the domain calculated externally by the user.  Option (b)
+        is faster if a distance transform is already available.
+    r_max_arr : array_like
+        Ann array containing a range of r_max values to find an optimum
+        structuring element size. r_max is the radius of the spherical
+        structuring element to use in the Maximum ilter stage that is used to
+        find peaks.
+    sigma_arr : array_like
+        An array containing a range (between 0 and 1) of the standard deviation
+        of the Gaussian filter used in prefiltering step of SNOW (step1).       
+    mask : boolean (default is True)
+        Apply a mask to the regions where the solid phase is.
+    Returns
+    -------
+    res : named tuple
+        A named tuple for number of local maxima in the image and number of 
+        final peaks for different combination of r_max and sigma. The Results
+        can be used to plot the abovementioned parameters, thereby 
+        investigating the optimum value of the parameters.
+    References
+    ----------
+    [1] Gostick, J. "A versatile and efficient network extraction algorithm
+    using marker-based watershed segmenation".  Physical Review E. (2017)
+    """
+    res = namedtuple('results', field_names=['r_max_arr', 'sigma_arr', 'init_num_peaks', 'final_num_peaks'])
+    res.init_num_peaks=[0]
+    res.init_num_peaks.remove(0)
+    res.final_num_peaks=[0]
+    res.final_num_peaks.remove(0)
+    for j in range(len(sigma_arr)):
+        for i in range(len(r_max_arr)):
+            r_max=r_max_arr[i]
+            sigma=sigma_arr[j]
+            im_shape = sp.array(im.shape)
+            if im.dtype == 'bool':
+                if sp.any(im_shape == 1):
+                    ax = sp.where(im_shape == 1)[0][0]
+                    dt = spim.distance_transform_edt(input=im.squeeze())
+                    dt = sp.expand_dims(dt, ax)
+                else:
+                        dt = spim.distance_transform_edt(input=im)
+            else:
+             dt = im
+             im = dt > 0
+        if sigma > 0:
+            dt = spim.gaussian_filter(input=dt, sigma=sigma)
+        peaks = find_peaks(dt=dt, r_max=r_max) 
+        res.init_num_peaks.append=spim.label(peaks)[1]
+        peaks = trim_saddle_points(peaks=peaks, dt=dt, max_iters=500)
+        peaks = trim_nearby_peaks(peaks=peaks, dt=dt)
+        peaks, N = spim.label(peaks)
+        res.final_num_peaks.append=N
+    res.r_max_arr=r_max_arr
+    res.sigma_arr=sigma_arr
+    if plot_all:
+        for i in range(len(sigma_arr)):
+            x=res.r_max_arr
+            y=res.final_num_peaks[(i)*len(r_max_arr):(i+1)*len(r_max_arr)]
+            plt.plot(x,y)
+        plt.title('Impact of structuring element size')
+        plt.xlabel('Radius of structuring element')
+        plt.ylabel('Final number of local maxima')
+        plt.legend(sigma_arr)
+        plt.show()
+        x=res.sigma_arr
+        y=res.init_num_peaks[0:len(res.init_num_peaks):len(r_max_arr)]
+        plt.plot(x,y,'*')
+        plt.title('Impact of Gaussian filter parameter')
+        plt.xlabel('Sigma of Gaussian filter')
+        plt.ylabel('Initial number of local maxima')
+        plt.legend(sigma_arr)
+        plt.show()
+        ##plots fig 4, fig 5 
+    return res
 
 
 def find_peaks(dt, r_max=4, footprint=None):
