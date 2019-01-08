@@ -14,7 +14,6 @@ from porespy.tools import get_border, extend_slice
 from porespy.tools import ps_disk, ps_ball
 import matplotlib.pyplot as plt
 
-
 def distance_transform_lin(im, axis=0, mode='both'):
     r"""
     Replaces each void voxel with the linear distance to the nearest solid
@@ -264,8 +263,6 @@ def try_sigma_R(im, r_max_arr, sigma_arr,plot_all=False, mask=True):
         plt.show()
         ##plots fig 4, fig 5 
     return res
-
-
 def find_peaks(dt, r_max=4, footprint=None):
     r"""
     Returns all local maxima in the distance transform
@@ -312,8 +309,6 @@ def find_peaks(dt, r_max=4, footprint=None):
     mx = spim.maximum_filter(dt + 2*(~im), footprint=footprint(r_max))
     peaks = (dt == mx)*im
     return peaks
-
-
 def reduce_peaks(peaks):
     r"""
     Any peaks that are broad or elongated are replaced with a single voxel
