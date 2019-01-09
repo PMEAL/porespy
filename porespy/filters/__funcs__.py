@@ -68,7 +68,8 @@ def distance_transform_lin(im, axis=0, mode='both'):
         return f
 
 
-def snow_partitioning(im, r_max=4, sigma=0.4, return_all=False, mask=True):
+def snow_partitioning(im, r_max=4, sigma=0.4, return_all=False, mask=True,
+                      randomize=True):
     r"""
     This function partitions the void space into pore regions using a
     marker-based watershed algorithm.  The key to this function is that true
@@ -86,24 +87,24 @@ def snow_partitioning(im, r_max=4, sigma=0.4, return_all=False, mask=True):
         indicating the pore space and ``False`` elsewhere, or (b) a distance
         transform of the domain calculated externally by the user.  Option (b)
         is faster if a distance transform is already available.
-
     r_max : scalar
         The radius of the spherical structuring element to use in the Maximum
         filter stage that is used to find peaks.  The default is 4
-
     sigma : scalar
         The standard deviation of the Gaussian filter used in step 1.  The
         default is 0.4.  If 0 is given then the filter is not applied, which is
         useful if a distance transform is supplied as the ``im`` argument that
         has already been processed.
-
     return_all : boolean (default is False)
         If set to ``True`` a named tuple is returned containing the original
         image, the distance transform, the filtered peaks, and the final
         pore regions.
-
     mask : boolean (default is True)
         Apply a mask to the regions where the solid phase is.
+    randomize : boolean
+        If ``True`` (default), then the region colors will be randomized before
+        returning.  This is helpful for visualizing otherwise neighboring
+        regions have simlar coloring are are hard to distinguish.
 
     Returns
     -------
@@ -161,7 +162,8 @@ def snow_partitioning(im, r_max=4, sigma=0.4, return_all=False, mask=True):
     else:
         mask_solid = None
     regions = watershed(image=-dt, markers=peaks, mask=mask_solid)
-    regions = randomize_colors(regions)
+    if randomize:
+        regions = randomize_colors(regions)
     if return_all:
         tup.regions = regions
         return tup
