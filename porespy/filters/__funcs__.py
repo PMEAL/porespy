@@ -1044,8 +1044,8 @@ def _make_stack(im, include_diagonals=False):
 
 def nphase_border(im, include_diagonals=False):
     r'''
-    Image filter to identify the voxels in regions that border n other regions.
-    Works for 2d and 3d images.
+    Identifies the voxels in regions that border *N* other regions.
+
     Useful for finding triple-phase boundaries.
 
     Parameters
