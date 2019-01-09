@@ -164,7 +164,6 @@ def snow_partitioning(im, r_max=4, sigma=0.4, return_all=False, mask=True):
         return tup
     else:
         return regions
-    
 def try_sigma_R(im, r_max_arr, sigma_arr,plot_all=False, mask=True):
     r"""
     This function investigates the effect of prefiltering parameters in network
