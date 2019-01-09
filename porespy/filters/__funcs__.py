@@ -68,7 +68,7 @@ def distance_transform_lin(im, axis=0, mode='both'):
         return f
 
 
-def snow_partitioning(im, r_max=4, sigma=0.4, return_all=False, mask=True,
+def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, return_all=False, mask=True,
                       randomize=True):
     r"""
     This function partitions the void space into pore regions using a
@@ -83,10 +83,12 @@ def snow_partitioning(im, r_max=4, sigma=0.4, return_all=False, mask=True,
     Parameters
     ----------
     im : array_like
-        Can be either (a) a boolean image of the domain, with ``True``
-        indicating the pore space and ``False`` elsewhere, or (b) a distance
-        transform of the domain calculated externally by the user.  Option (b)
-        is faster if a distance transform is already available.
+        A boolean image of the domain, with ``True`` indicating the pore space
+        and ``False`` elsewhere.
+    dt : array_like, optional
+        The distance transform of the pore space.  This is done automatically
+        if not provided, but if the distance transform has already been
+        computed then supplying it can save some time.
     r_max : scalar
         The radius of the spherical structuring element to use in the Maximum
         filter stage that is used to find peaks.  The default is 4
@@ -130,7 +132,10 @@ def snow_partitioning(im, r_max=4, sigma=0.4, return_all=False, mask=True,
     print('_'*60)
     print("Beginning SNOW Algorithm")
     im_shape = sp.array(im.shape)
-    if im.dtype == 'bool':
+    if im.dtype is not bool:
+        print('Converting supplied image (im) to boolean')
+        im = im > 0
+    if dt is None:
         print('Peforming Distance Transform')
         if sp.any(im_shape == 1):
             ax = sp.where(im_shape == 1)[0][0]
@@ -138,9 +143,6 @@ def snow_partitioning(im, r_max=4, sigma=0.4, return_all=False, mask=True,
             dt = sp.expand_dims(dt, ax)
         else:
             dt = spim.distance_transform_edt(input=im)
-    else:
-        dt = im
-        im = dt > 0
 
     tup.im = im
     tup.dt = dt
