@@ -116,12 +116,10 @@ def snow_partitioning(im, r_max=4, sigma=0.4, return_all=False, mask=True):
         steps of the SNOW algorithm
         * ``regions``: The void space partitioned into pores using a marker
         based watershed with the peaks found by the SNOW algorithm
-
     References
     ----------
     [1] Gostick, J. "A versatile and efficient network extraction algorithm
     using marker-based watershed segmenation".  Physical Review E. (2017)
-
     """
     tup = namedtuple('results', field_names=['im', 'dt', 'peaks', 'regions'])
     print('_'*60)
