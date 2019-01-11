@@ -677,7 +677,7 @@ def region_size(im):
     Returns
     -------
     An ND array with each voxel value indicating the size of the region to
-    which is belongs.  This is particularly useful for finding chord sizes
+    which it belongs.  This is particularly useful for finding chord sizes
     on the image produced by ``apply_chords``.
     """
     if im.dtype == bool:
