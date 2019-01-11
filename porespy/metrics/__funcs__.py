@@ -443,11 +443,8 @@ def chord_counts(im):
     function is ``sp.bincount`` which gives the number of chords of each
     length in a format suitable for ``plt.plot``.
     """
-    # Determine if image has been labelled as regions yet
-    if (im.dtype == bool) or (im.max() == 1):
-        labels, N = spim.label(im > 0)
-    else:
-        labels = im
+    
+    labels, N = spim.label(im > 0)
     props = regionprops(labels)
     chord_lens = sp.array([i.filled_area for i in props])
     return chord_lens
