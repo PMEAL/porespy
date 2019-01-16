@@ -55,7 +55,7 @@ class RandomWalk(pytrax.__RandomWalk__.RandomWalk):
         >>> import pytrax as pt
         >>> im = ps.generators.blobs([100, 100])
         >>> rw = pt.RandomWalk(im)
-        >>> rw.run(nt=1000, nw=100)
+        >>> rw.run(nt=1000, nw=1)
         '''
         if image is not None:
             super().__init__(image, seed)

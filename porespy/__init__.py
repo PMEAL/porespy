@@ -81,7 +81,7 @@ transforms and image morphology.  The advantage of PoreSpy is the flexibility
 offered by the Python environment.
 
 '''
-__version__ = "0.3.9"
+__version__ = "0.4.0"
 from . import metrics
 from . import tools
 from . import filters
