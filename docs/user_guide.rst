@@ -4,5 +4,7 @@
 User Guide
 ==========
 
+.. contents::
+  :local:
+  
 .. automodule:: porespy
-    

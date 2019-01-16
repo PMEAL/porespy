@@ -4,7 +4,7 @@ PoreSpy
 =======
 
 PoreSpy is a collection of functions that are especially useful for analyzing
-binary images of porous materials, typically produced by X-ray tomography.
+3D, binary images of porous materials, typically produced by X-ray tomography.
 The functions in this collection are often simple combinations of other
 standard image analysis functions, so really only offer the convenience of
 organizing the functions into one place, and sparing you the trouble of working
@@ -37,13 +37,48 @@ This package consists of several modules, the purposes of which are given below:
 -------------
 Example Usage
 -------------
+Below is a basic workflow that one my use PoreSpy for.  Start by importing
+PoreSpy and Matplotlib for visualizing:
 
 >>> import porespy as ps
 >>> import matplotlib.pyplot as plt
->>> im = ps.generators.blobs([100, 100])
+>>> fig, ax = plt.subplots(1, 3)
+
+PoreSpy includes a ``generators`` module, which has several functions for
+generating images useful for testing and demonstration.  Let's create an image
+of *blobs* wtih 50% porosity and blobiness of 1:
+
+>>> im = ps.generators.blobs([600, 300], porosity=0.5, blobiness=1)
+>>> ax[0].imshow(im)
+
+This image can now be subjected to various filters from the ``filters``
+sub-module.  Let's simulate a non-wetting phase invasion, experimentally
+knonw as porosimetry. The image returned by the ``porosimetry`` function
+replaces each voxel in the void space with a numerical value representing
+the radius that the fluid menisci must adopt in order to penetrate to portion
+of the image.
+
 >>> mip = ps.filters.porosimetry(im)
+>>> ax[1].imshow(mip)
+
+This image can be passed to a function in the ``metrics`` module that analyzes
+the numerical values in the image and creates a pore-size distribution suitable
+for plotting:
+
 >>> PcSw = ps.metrics.pore_size_distribution(mip)
->>> fig = plt.plot(PcSw.logR, PcSw.satn)
+>>> ax[2].plot(PcSw.logR, PcSw.satn)
+
+Finally, the results look like:
+
+.. image::  ./_static/example_porosimetry.png
+
+
+More detailed examples of the various functions are included in the package
+itself under the ``examples`` folder.  Instead of navigating to the source
+code on your computer, it is much better to visit the Github website where
+the examples are rendered in nicely formated Jupyter notebooks:
+
+https://github.com/PMEAL/porespy/tree/master/examples
 
 ----------------
 Related Packages

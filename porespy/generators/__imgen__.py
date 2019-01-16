@@ -555,9 +555,9 @@ def blobs(shape: List[int], porosity: float = 0.5, blobiness: int = 1):
         prior to returning.  If no value is given (the default), then the
         scalar noise field is returned.
 
-    blobiness : array_like (default = 1)
+    blobiness : int or list of ints(default = 1)
         Controls the morphology of the blobs.  A higher number results in
-        a larger number of small blobs.  If a vector is supplied then the blobs
+        a larger number of small blobs.  If a list is supplied then the blobs
         are anisotropic.
 
     Returns

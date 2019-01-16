@@ -18,16 +18,16 @@ Installation
 
 PoreSpy is available on the Python Package Index (PyPI) and can be installed with the usual ``pip`` command as follows:
 
-.. code-block:: none
+::
 
     pip install porespy
 
 When installing in this way, the source code is stored somewhere deep within the Python installation folder, so it's not convenient to play with or alter the code.  If you wish to customize the code, then it might be better to download the source code from github into a personal directory (e.g C:\\PoreSpy) then install as follows:
 
 
-.. code-block:: none
+::
 
-    pip install -e C:\\PoreSpy
+    pip install -e 'C:\PoreSpy'
 
 The '-e' argument means that the package is 'editable' so any changes you make to the code will be available the next time that porespy is imported.
 
