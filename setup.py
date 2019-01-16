@@ -16,6 +16,9 @@ with open(ver_path) as f:
         if line.startswith('__version__'):
             exec(line, main_)
 
+with open("README.md", "r") as fh:
+    long_description = fh.read()
+
 setup(
     name='porespy',
     description='A set of tools for analyzing 3D images of porous materials',
