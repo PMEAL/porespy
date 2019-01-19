@@ -153,7 +153,7 @@ class NetExtractTest():
         im = ps.network_extraction.generate_voxel_image(network=net,
                                                         pore_shape="cube",
                                                         throat_shape="cylinder",
-                                                        rtol=0.1)
+                                                        rtol=0.01)
         porosity_actual = im.astype(bool).sum() / np.prod(im.shape)
 
         volume_void = net["pore.volume"].sum() + net["throat.volume"].sum()
@@ -161,7 +161,7 @@ class NetExtractTest():
         porosity_desired = volume_void / volume_total
 
         assert_allclose(actual=porosity_actual, desired=porosity_desired,
-                        rtol=0.1)
+                        rtol=0.05)
 
 
 if __name__ == '__main__':
