@@ -138,21 +138,18 @@ class NetExtractTest():
         net3 = ps.network_extraction.regions_to_network(im=pore_map3,
                                                         dt=snow_out3.dt,
                                                         voxel_size=1)
-        assert np.allclose(net1['pore.coords'][:, 0],
-                            net2['pore.coords'][:, 0])
-        assert np.allclose(net1['pore.coords'][:, 1],
-                            net2['pore.coords'][:, 2])
-        assert np.allclose(net1['pore.coords'][:, 0],
-                            net3['pore.coords'][:, 1])
+        assert np.allclose(net1['pore.coords'][:, 0], net2['pore.coords'][:, 0])
+        assert np.allclose(net1['pore.coords'][:, 1], net2['pore.coords'][:, 2])
+        assert np.allclose(net1['pore.coords'][:, 0], net3['pore.coords'][:, 1])
 
     def test_generate_voxel_image(self):
         net = op.network.Cubic(shape=[5, 5, 5])
         geom = op.geometry.StickAndBall(network=net,
                                         pores=net.Ps, throats=net.Ts)
         geom.add_model(propname="pore.volume",
-                        model=op.models.geometry.pore_volume.cube)
+                       model=op.models.geometry.pore_volume.cube)
         geom.add_model(propname="throat.volume",
-                        model=op.models.geometry.throat_volume.cylinder)
+                       model=op.models.geometry.throat_volume.cylinder)
         im = ps.network_extraction.generate_voxel_image(network=net,
                                                         pore_shape="cube",
                                                         throat_shape="cylinder",
