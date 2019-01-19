@@ -1,4 +1,3 @@
-import sys
 import scipy as sp
 import numpy as np
 import openpnm as op
@@ -302,7 +301,7 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200,
     im_throats[im_throats > 0] = 1
 
     # Subtract pore-throat overlap from throats
-    im_throats = (im_throats.astype(bool) * (~im_pores.astype(bool))).astype(sp.uint8)
+    im_throats = (im_throats.astype(bool) * ~im_pores.astype(bool)).astype(sp.uint8)
     im = im_pores * 1 + im_throats * 2
 
     return im[delta_bounds//2:-delta_bounds//2,

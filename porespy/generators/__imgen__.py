@@ -2,9 +2,7 @@ import porespy as ps
 import scipy as sp
 import scipy.spatial as sptl
 import scipy.ndimage as spim
-from skimage.segmentation import find_boundaries
-from skimage.morphology import ball, disk, square, cube
-from tqdm import tqdm
+from skimage.morphology import ball, disk
 from porespy.tools import norm_to_uniform
 from typing import List
 from numpy import array
@@ -14,9 +12,9 @@ def insert_shape(im, center, element, value=1):
     r"""
     """
     if im.ndim != element.ndim:
-        raise Exception('Image shape ' + str(im.shape) +
-                        ' and element shape ' + str(element.shape) +
-                        ' do not match')
+        raise Exception('Image shape ' + str(im.shape)
+                        + ' and element shape ' + str(element.shape)
+                        + ' do not match')
     s_im = []
     s_el = []
     for dim in range(im.ndim):
@@ -257,18 +255,18 @@ def voronoi_edges(shape: List[int], radius: int, ncells: int,
         # Reflect base points
         Nx, Ny, Nz = shape
         orig_pts = base_pts
-        base_pts = sp.vstack((base_pts, [-1, 1, 1]*orig_pts +
-                                        [2.0*Nx, 0, 0]))
-        base_pts = sp.vstack((base_pts, [1, -1, 1]*orig_pts +
-                                        [0, 2.0*Ny, 0]))
-        base_pts = sp.vstack((base_pts, [1, 1, -1]*orig_pts +
-                                        [0, 0, 2.0*Nz]))
-        base_pts = sp.vstack((base_pts, [-1, 1, 1]*orig_pts))
-        base_pts = sp.vstack((base_pts, [1, -1, 1]*orig_pts))
-        base_pts = sp.vstack((base_pts, [1, 1, -1]*orig_pts))
+        base_pts = sp.vstack((base_pts,
+                              [-1, 1, 1] * orig_pts + [2.0*Nx, 0, 0]))
+        base_pts = sp.vstack((base_pts,
+                              [1, -1, 1] * orig_pts + [0, 2.0*Ny, 0]))
+        base_pts = sp.vstack((base_pts,
+                              [1, 1, -1] * orig_pts + [0, 0, 2.0*Nz]))
+        base_pts = sp.vstack((base_pts, [-1, 1, 1] * orig_pts))
+        base_pts = sp.vstack((base_pts, [1, -1, 1] * orig_pts))
+        base_pts = sp.vstack((base_pts, [1, 1, -1] * orig_pts))
     vor = sptl.Voronoi(points=base_pts)
     vor.vertices = sp.around(vor.vertices)
-    vor.vertices *= (sp.array(im.shape)-1)/sp.array(im.shape)
+    vor.vertices *= (sp.array(im.shape)-1) / sp.array(im.shape)
     vor.edges = _get_Voronoi_edges(vor)
     for row in vor.edges:
         pts = vor.vertices[row].astype(int)

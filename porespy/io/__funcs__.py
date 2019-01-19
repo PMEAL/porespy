@@ -3,7 +3,6 @@ import numpy as np
 from scipy import ndimage as spim
 from pyevtk.hl import imageToVTK
 import scipy.ndimage as nd
-import skimage.io as io
 from pathlib import Path
 
 

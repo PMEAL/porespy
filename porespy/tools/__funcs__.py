@@ -1,7 +1,7 @@
 import scipy as sp
 import scipy.ndimage as spim
 from collections import namedtuple
-from skimage.morphology import ball, disk, square, cube
+from skimage.morphology import ball, disk
 from skimage.measure import marching_cubes_lewiner
 from array_split import shape_split
 from scipy.signal import fftconvolve

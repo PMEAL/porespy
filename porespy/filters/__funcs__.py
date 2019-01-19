@@ -311,8 +311,8 @@ def trim_saddle_points(peaks, dt, max_iters=10):
                 break  # Found a saddle point
         peaks[s] = peaks_i
         if iters >= max_iters:
-            print('Maximum number of iterations reached, consider' +
-                  'running again with a larger value of max_iters')
+            print('Maximum number of iterations reached, consider'
+                  + 'running again with a larger value of max_iters')
     return peaks
 
 
