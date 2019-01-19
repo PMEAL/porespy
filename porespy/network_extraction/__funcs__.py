@@ -211,14 +211,14 @@ def add_cylinder_to(im, xyz0, xyz1, r):
     return im
 
 
-def _generate_voxel_image(net, pore_shape, throat_shape, max_dim=200,
+def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200,
                           verbose=1):
     r"""
     Generates a 3d numpy array from a network model.
 
     Parameters
     ----------
-    net : OpenPNM GenericNetwork
+    network : OpenPNM GenericNetwork
         Network from which voxel image is to be generated
 
     pore_shape : str
@@ -241,13 +241,13 @@ def _generate_voxel_image(net, pore_shape, throat_shape, max_dim=200,
     solid phase, pores, and throats respectively.
 
     """
-    xyz = net["pore.coords"]
-    cn = net["throat.conns"]
+    xyz = network["pore.coords"]
+    cn = network["throat.conns"]
 
     # Distance bounding box from the network by a fixed amount
-    delta = net["pore.diameter"].mean() / 2
-    if isinstance(net, op.network.Cubic):
-        delta = net._spacing.mean() / 2
+    delta = network["pore.diameter"].mean() / 2
+    if isinstance(network, op.network.Cubic):
+        delta = network._spacing.mean() / 2
 
     # Shift everything to avoid out-of-bounds
     delta_bounds = int(max_dim * 0.1)
@@ -260,8 +260,8 @@ def _generate_voxel_image(net, pore_shape, throat_shape, max_dim=200,
 
     # Transforming from real coords to matrix coords
     xyz = np.rint(xyz / res).astype(int) + delta_bounds // 2
-    pore_radi = np.rint(net["pore.diameter"] * 0.5 / res).astype(int)
-    throat_radi = np.rint(net["throat.diameter"] * 0.5 / res).astype(int)
+    pore_radi = np.rint(network["pore.diameter"] * 0.5 / res).astype(int)
+    throat_radi = np.rint(network["throat.diameter"] * 0.5 / res).astype(int)
 
     im_pores = np.zeros(shape, dtype=np.uint8)
     im_throats = np.zeros_like(im_pores)
@@ -278,8 +278,8 @@ def _generate_voxel_image(net, pore_shape, throat_shape, max_dim=200,
         raise Exception("Not yet implemented, try 'cylinder'.")
 
     # Generating voxels for pores
-    for i, pore in enumerate(tqdm(net.pores(), desc="Generating pores  ",
-                                  disable=not verbose)):
+    for i, pore in enumerate(tqdm(network.pores(), disable=not verbose,
+                                  desc="Generating pores  ")):
         elem = pore_elem(rp[i])
         try:
             im_pores = overlay(im1=im_pores, im2=elem, c=xyz[i])
@@ -290,8 +290,8 @@ def _generate_voxel_image(net, pore_shape, throat_shape, max_dim=200,
     im_pores[im_pores > 0] = 1
 
     # Generating voxels for throats
-    for i, throat in enumerate(tqdm(net.throats(), desc="Generating throats",
-                                    disable=not verbose)):
+    for i, throat in enumerate(tqdm(network.throats(), disable=not verbose,
+                                    desc="Generating throats")):
         try:
             im_throats = add_cylinder_to(im_throats, r=throat_radi[i],
                                          xyz0=xyz[cn[i, 0]], xyz1=xyz[cn[i, 1]])
@@ -312,14 +312,14 @@ def _generate_voxel_image(net, pore_shape, throat_shape, max_dim=200,
     return im
 
 
-def generate_voxel_image(net, pore_shape="sphere", throat_shape="cylinder",
-                         max_dim=None, verbose=1, tol_percent=5):
+def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
+                         max_dim=None, verbose=1, rtol=0.1):
     r"""
     Generates a 3d numpy array from a network model.
 
     Parameters
     ----------
-    net : OpenPNM GenericNetwork
+    network : OpenPNM GenericNetwork
         Network from which voxel image is to be generated
 
     pore_shape : str
@@ -349,12 +349,13 @@ def generate_voxel_image(net, pore_shape="sphere", throat_shape="cylinder",
     further increasing it doesn't change porosity by much.
 
     """
-    print("Generating voxel image from pore network", flush=True)
-    print("-" * 40, flush=True)
+    print("\n" + "-" * 44, flush=True)
+    print("| Generating voxel image from pore network |", flush=True)
+    print("-" * 44, flush=True)
 
     # If max_dim is provided, generate voxel image using max_dim
     if max_dim is not None:
-        return _generate_voxel_image(net, pore_shape, throat_shape,
+        return _generate_voxel_image(network, pore_shape, throat_shape,
                                      max_dim=max_dim, verbose=verbose)
     else:
         max_dim = 200
@@ -363,16 +364,16 @@ def generate_voxel_image(net, pore_shape="sphere", throat_shape="cylinder",
     eps_old = 200
     err = 100  # percent
 
-    while err > 5:
-        im = _generate_voxel_image(net, pore_shape, throat_shape,
+    while err > rtol:
+        im = _generate_voxel_image(network, pore_shape, throat_shape,
                                    max_dim=max_dim, verbose=verbose)
         eps = im.astype(bool).sum() / sp.prod(im.shape)
 
-        err = (1 - eps/eps_old) * 100
+        err = abs(1 - eps/eps_old)
         eps_old = eps
         max_dim = int(max_dim * 1.25)
 
     if verbose:
-        print(f"\nConverged at max_dim = {max_dim} voxels.")
+        print(f"\nConverged at max_dim = {max_dim} voxels.\n")
 
     return im
