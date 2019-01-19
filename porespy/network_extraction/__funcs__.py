@@ -314,7 +314,7 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200,
 def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
                          max_dim=None, verbose=1, rtol=0.1):
     r"""
-    Generates a 3d numpy array from a network model.
+    Generates voxel image from an OpenPNM network object.
 
     Parameters
     ----------
@@ -330,9 +330,10 @@ def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
     max_dim : int
         Number of voxels in the largest dimension of the network
 
-    tol_percent : int
-        Relative percent change in porosity if increasing the size of the voxel
-        image by 25%. See Notes.
+    rtol : float
+        Stopping criteria for finding the smallest voxel image such that further
+        increasing the number of voxels in each dimension by 25% would improve
+        the predicted porosity of the image by less that ``rtol``
 
     Returns
     -------
