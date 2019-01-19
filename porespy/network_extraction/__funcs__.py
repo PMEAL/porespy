@@ -249,16 +249,16 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200,
         delta = network._spacing.mean() / 2
 
     # Shift everything to avoid out-of-bounds
-    delta_bounds = int(max_dim * 0.1)
+    extra_clearance = int(max_dim * 0.05)
 
     # Transform points to satisfy origin at (0, 0, 0)
     xyz0 = xyz.min(axis=0) - delta
     xyz += -xyz0
-    res = xyz.max(axis=0).max() / max_dim
-    shape = np.rint((xyz.max(axis=0) + delta) / res).astype(int) + delta_bounds
+    res = (xyz.ptp(axis=0).max() + 2*delta) / max_dim
+    shape = np.rint((xyz.max(axis=0) + delta) / res).astype(int) + 2*extra_clearance
 
     # Transforming from real coords to matrix coords
-    xyz = np.rint(xyz / res).astype(int) + delta_bounds // 2
+    xyz = np.rint(xyz / res).astype(int) + extra_clearance
     pore_radi = np.rint(network["pore.diameter"] * 0.5 / res).astype(int)
     throat_radi = np.rint(network["throat.diameter"] * 0.5 / res).astype(int)
 
@@ -304,9 +304,9 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200,
     im_throats = (im_throats.astype(bool) * ~im_pores.astype(bool)).astype(sp.uint8)
     im = im_pores * 1 + im_throats * 2
 
-    return im[delta_bounds//2:-delta_bounds//2,
-              delta_bounds//2:-delta_bounds//2,
-              delta_bounds//2:-delta_bounds//2]
+    return im[extra_clearance:-extra_clearance,
+              extra_clearance:-extra_clearance,
+              extra_clearance:-extra_clearance]
 
     return im
 
