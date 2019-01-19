@@ -1,6 +1,8 @@
-import porespy as ps
-import numpy as np
 import pytest
+import numpy as np
+import porespy as ps
+import openpnm as op
+from numpy.testing import assert_allclose
 
 
 class NetExtractTest():
@@ -46,13 +48,13 @@ class NetExtractTest():
                 found_nans = True
         assert found_nans is False
 
-#    def test_snow_dual_2d(self):
-#        net = ps.network_extraction.snow_dual(self.im)
-#        found_nans = False
-#        for key in net.keys():
-#            if np.any(np.isnan(net[key])):
-#                found_nans = True
-#        assert found_nans is False
+    # def test_snow_dual_2d(self):
+    #     net = ps.network_extraction.snow_dual(self.im)
+    #     found_nans = False
+    #     for key in net.keys():
+    #         if np.any(np.isnan(net[key])):
+    #             found_nans = True
+    #     assert found_nans is False
 
     def test_snow_dual_3d(self):
         net = ps.network_extraction.snow_dual(self.im3d)
@@ -137,11 +139,32 @@ class NetExtractTest():
                                                         dt=snow_out3.dt,
                                                         voxel_size=1)
         assert np.allclose(net1['pore.coords'][:, 0],
-                           net2['pore.coords'][:, 0])
+                            net2['pore.coords'][:, 0])
         assert np.allclose(net1['pore.coords'][:, 1],
-                           net2['pore.coords'][:, 2])
+                            net2['pore.coords'][:, 2])
         assert np.allclose(net1['pore.coords'][:, 0],
-                           net3['pore.coords'][:, 1])
+                            net3['pore.coords'][:, 1])
+
+    def test_generate_voxel_image(self):
+        net = op.network.Cubic(shape=[5, 5, 5])
+        geom = op.geometry.StickAndBall(network=net,
+                                        pores=net.Ps, throats=net.Ts)
+        geom.add_model(propname="pore.volume",
+                        model=op.models.geometry.pore_volume.cube)
+        geom.add_model(propname="throat.volume",
+                        model=op.models.geometry.throat_volume.cylinder)
+        im = ps.network_extraction.generate_voxel_image(network=net,
+                                                        pore_shape="cube",
+                                                        throat_shape="cylinder",
+                                                        rtol=0.1)
+        porosity_actual = im.astype(bool).sum() / np.prod(im.shape)
+
+        volume_void = net["pore.volume"].sum() + net["throat.volume"].sum()
+        volume_total = np.prod(net.spacing * net.shape)
+        porosity_desired = volume_void / volume_total
+
+        assert_allclose(actual=porosity_actual, desired=porosity_desired,
+                        rtol=0.1)
 
 
 if __name__ == '__main__':
