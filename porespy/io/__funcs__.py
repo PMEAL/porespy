@@ -3,8 +3,8 @@ import numpy as np
 from scipy import ndimage as spim
 from pyevtk.hl import imageToVTK
 import scipy.ndimage as nd
-import skimage.io as io
 from pathlib import Path
+from porespy.network_extraction import generate_voxel_image
 
 
 def dict_to_vtk(data, path='./dictvtk', voxel_size=1, origin=(0, 0, 0)):
@@ -159,3 +159,46 @@ def to_palabos(im, filename, solid=0):
     with open(filename, 'w') as f:
         out_data = dt.flatten().tolist()
         f.write('\n'.join(map(repr, out_data)))
+
+
+def openpnm_to_im(network, pore_shape="sphere", throat_shape="cylinder",
+                  max_dim=None, verbose=1, rtol=0.1):
+    r"""
+    Generates voxel image from an OpenPNM network object.
+
+    Parameters
+    ----------
+    network : OpenPNM GenericNetwork
+        Network from which voxel image is to be generated
+
+    pore_shape : str
+        Shape of pores in the network, valid choices are "sphere", "cube"
+
+    throat_shape : str
+        Shape of throats in the network, valid choices are "cylinder", "cuboid"
+
+    max_dim : int
+        Number of voxels in the largest dimension of the network
+
+    rtol : float
+        Stopping criteria for finding the smallest voxel image such that further
+        increasing the number of voxels in each dimension by 25% would improve
+        the predicted porosity of the image by less that ``rtol``
+
+    Returns
+    -------
+    im : 3D numpy array
+        Voxelated image corresponding to the given pore network model
+
+    Notes
+    -----
+    (1) The generated voxelated image is labeled with 0s, 1s and 2s signifying
+    solid phase, pores, and throats respectively.
+
+    (2) If max_dim is not provided, the method calculates it such that the
+    further increasing it doesn't change porosity by much.
+
+    """
+    return generate_voxel_image(network, pore_shape=pore_shape,
+                                throat_shape=throat_shape, max_dim=max_dim,
+                                verbose=verbose, rtol=rtol)
