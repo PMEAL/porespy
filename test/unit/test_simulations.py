@@ -30,6 +30,7 @@ class SimulationTest():
         rw.run()
         assert rw.im is not None
 
+
 if __name__ == '__main__':
     t = SimulationTest()
     t.setup_class()
