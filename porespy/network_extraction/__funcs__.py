@@ -2,6 +2,8 @@ import scipy as sp
 import numpy as np
 import openpnm as op
 from porespy.tools import make_contiguous
+from porespy.filters import snow_partitioning
+from collections import namedtuple
 from skimage.segmentation import find_boundaries
 from skimage.morphology import ball, cube, disk
 from scipy.ndimage import distance_transform_edt
@@ -380,7 +382,7 @@ def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
 
 
 def snow_partitioning_n(im, r_max=4, sigma=0.4, return_all=True,
-                        mask=True, randomize=True, alias=None):
+                        mask=True, randomize=False, alias=None):
     r"""
     This function partitions the n_phases into regions using a
     marker-based watershed algorithm. Its an extension of snow_partitioning
