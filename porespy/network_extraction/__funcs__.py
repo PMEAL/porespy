@@ -377,3 +377,349 @@ def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
         print(f"\nConverged at max_dim = {max_dim} voxels.\n")
 
     return im
+
+
+def snow_partitioning_n(im, r_max=4, sigma=0.4, return_all=True,
+                        mask=True, randomize=True, alias=None):
+    r"""
+    This function partitions the n_phases into regions using a
+    marker-based watershed algorithm. Its an extension of snow_partitioning
+    function with all phases partitioned altogether.
+
+    Parameters
+    ----------
+    im : ND-array
+        Image of porous material where each phase is represented by unique
+        integer. Phase integer should start from 1. Boolean image will extract
+        only one network labeled with True's only.
+    r_max : scalar
+        The radius of the spherical structuring element to use in the Maximum
+        filter stage that is used to find peaks.  The default is 4
+    sigma : scalar
+        The standard deviation of the Gaussian filter used in step 1.  The
+        default is 0.4.  If 0 is given then the filter is not applied, which is
+        useful if a distance transform is supplied as the ``im`` argument that
+        has already been processed.
+    return_all : boolean (default is False)
+        If set to ``True`` a named tuple is returned containing the original
+        image, the combined distance transform, list of each phase max label,
+        and the final combined regions of all phases.
+    mask : boolean (default is True)
+        Apply a mask to the regions which are not under concern.
+    randomize : boolean
+        If ``True`` (default), then the region colors will be randomized before
+        returning.  This is helpful for visualizing otherwise neighboring
+        regions have similar coloring and are hard to distinguish.
+    alias : dict (Optional)
+        A dictionary that assigns unique image label to specific phase.
+        For example {1: 'Solid'} will show all structural properties associated
+        with label 1 as Solid phase properties.
+        If ``None`` then default labelling will be used i.e {1: 'Phase1',..}.
+
+    Returns
+    -------
+    An image the same shape as ``im`` with the all phases partitioned into
+    regions using a marker based watershed with the peaks found by the
+    SNOW algorithm [1].  If ``return_all`` is ``True`` then a **named tuple**
+    is returned with the following attribute:
+
+        * ``im``: The actual image of the porous material
+        * ``dt``: The combined distance transform of the image
+        * ``phase_max_label``: The list of max label of each phase in order to
+        distinguish between each other
+        * ``regions``: The partitioned regions of n phases using a marker
+        based watershed with the peaks found by the SNOW algorithm
+
+    References
+    ----------
+    [1] Gostick, J. "A versatile and efficient network extraction algorithm
+    using marker-based watershed segmentation".  Physical Review E. (2017)
+
+    See Also
+    ----------
+    snow_partitioning
+
+    """
+    # -------------------------------------------------------------------------
+    # Get alias if provided by user
+    al = assign_alias(im=im, alias=alias)
+    # -------------------------------------------------------------------------
+    # Perform snow on each phase and merge all segmentation and dt together
+    phases_num = sp.unique(im * 1)
+    phases_num = sp.trim_zeros(phases_num)
+    combined_dt = 0
+    combined_region = 0
+    num = [0]
+    for i in phases_num:
+        print('_' * 60)
+        if alias is None:
+            print('### Processing Phase {} ###'.format(i))
+        else:
+            print('### Processing {} phase ###'.format(al[i]))
+        phase_snow = snow_partitioning(im == i,
+                                       dt=None, r_max=r_max, sigma=sigma,
+                                       return_all=return_all, mask=mask,
+                                       randomize=randomize)
+        if len(phases_num) == 1 and phases_num == 1:
+            combined_dt = phase_snow.dt
+            combined_region = phase_snow.regions
+        else:
+            combined_dt += phase_snow.dt
+            phase_snow.regions *= phase_snow.im
+            phase_snow.regions += num[i - 1]
+            phase_ws = phase_snow.regions * phase_snow.im
+            phase_ws[phase_ws == num[i - 1]] = 0
+            combined_region += phase_ws
+        num.append(sp.amax(combined_region))
+    if return_all:
+        tup = namedtuple('results', field_names=['im', 'dt', 'phase_max_label',
+                                                 'regions'])
+        tup.im = im
+        tup.dt = combined_dt
+        tup.phase_max_label = num[1:]
+        tup.regions = combined_region
+        return tup
+    else:
+        return combined_region
+
+
+def pad_distance_transform(dt, boundary_faces):
+    r"""
+    This function pad the distance transform at specified boundary faces. This
+    shape of distance transform is the same as the output image of
+    add_boundary_nodes function.
+
+    Parameters
+    ----------
+    dt : ND_array
+        The distance transform of the image for which netwrok extraction is
+        performed. If two or more than two phases are present then combine
+        distance transform all phases should be used.
+
+    boundary_faces : list of strings
+        Boundary faces labels are provided to assign hypothetical boundary
+        nodes having zero resistance to transport process. For cubical
+        geometry, the user can choose ‘left’, ‘right’, ‘top’, ‘bottom’,
+        ‘front’ and ‘back’ face labels to assign boundary nodes. If no label is
+        assigned then all six faces will be selected as boundary nodes
+        automatically which can be trimmed later on based on user requirements.
+
+    Returns
+    -------
+    A padded distance transform with shape equal to the shape of image after
+    adding boundary nodes.
+
+    """
+    # -------------------------------------------------------------------------
+    # Padding distance transform to extract geometrical properties
+    f = boundary_faces
+    if f is not None:
+        if dt.ndim == 2:
+            faces = [(int('left' in f) * 3, int('right' in f) * 3),
+                     (int(('front') in f) * 3 or int(('bottom') in f) * 3,
+                      int(('back') in f) * 3 or int(('top') in f) * 3)]
+
+        if dt.ndim == 3:
+            faces = [(int('left' in f) * 3, int('right' in f) * 3),
+                     (int('front' in f) * 3, int('back' in f) * 3),
+                     (int('top' in f) * 3, int('bottom' in f) * 3)]
+        dt = sp.pad(dt, pad_width=faces, mode='edge')
+    else:
+        dt = dt
+    return dt
+
+
+def connect_network_phases(net, snow_partitioning_n, voxel_size=1,
+                           alias=None,
+                           marching_cubes_area=False):
+    r"""
+    This function connects networks of two or more than two phases together by
+    interconnecting negibouring nodes inside different phases. The resulting
+    network can be used for the study of transport and kinetics at interphase
+    of two phases.
+
+    Parameters
+    ----------
+    network : 2D or 3D network
+        A dictoionary containing structural information of two or more than two
+        phases networks. The dictonary format must be same as porespy
+        region_to_network function.
+
+    snow_partitioning_n : tuple
+        The output generated by snow_partitioning_n function. The tuple should
+        have phases_max_labels and orginal image of material.
+
+    voxel_size : scalar
+        The resolution of the image, expressed as the length of one side of a
+        voxel, so the volume of a voxel would be **voxel_size**-cubed.  The
+        default is 1, which is useful when overlaying the PNM on the original
+        image since the scale of the image is alway 1 unit lenth per voxel.
+
+    alias : dict (Optional)
+        A dictionary that assigns unique image label to specific phase.
+        For example {1: 'Solid'} will show all structural properties associated
+        with label 1 as Solid phase properties.
+        If ``None`` then default labelling will be used i.e {1: 'Phase1',..}.
+
+    marching_cubes_area : bool
+        If ``True`` then the surface area and interfacial area between regions
+        will be using the marching cube algorithm. This is a more accurate
+        representation of area in extracted network, but is quite slow, so
+        it is ``False`` by default.  The default method simply counts voxels
+        so does not correctly account for the voxelated nature of the images.
+
+    Returns
+    -------
+    A dictionary containing network information of individual and connected
+    networks. The dictionary names use the OpenPNM convention so it may be
+    converted directly to an OpenPNM network object using the ``update`` command.
+
+    """
+    # -------------------------------------------------------------------------
+    # Get alias if provided by user
+    im = snow_partitioning_n.im
+    al = assign_alias(im, alias=alias)
+    # -------------------------------------------------------------------------
+    # Find interconnection and interfacial area between ith and jth phases
+    conns1 = net['throat.conns'][:, 0]
+    conns2 = net['throat.conns'][:, 1]
+    label = net['pore.label'] - 1
+
+    num = snow_partitioning_n.phase_max_label
+    num = [0, *num]
+    phases_num = sp.unique(im * 1)
+    phases_num = sp.trim_zeros(phases_num)
+    for i in phases_num:
+        loc1 = sp.logical_and(conns1 >= num[i - 1], conns1 < num[i])
+        loc2 = sp.logical_and(conns2 >= num[i - 1], conns2 < num[i])
+        loc3 = sp.logical_and(label >= num[i - 1], label < num[i])
+        net['throat.{}'.format(al[i])] = loc1 * loc2
+        net['pore.{}'.format(al[i])] = loc3
+        if i == phases_num[-1]:
+            loc4 = sp.logical_and(conns1 < num[-1], conns2 >= num[-1])
+            loc5 = label >= num[-1]
+            net['throat.boundary'] = loc4
+            net['pore.boundary'] = loc5
+        for j in phases_num:
+            if j > i:
+                pi_pj_sa = sp.zeros_like(label)
+                loc6 = sp.logical_and(conns2 >= num[j - 1], conns2 < num[j])
+                pi_pj_conns = loc1 * loc6
+                net['throat.{}_{}'.format(al[i], al[j])] = pi_pj_conns
+                if any(pi_pj_conns):
+                    # ---------------------------------------------------------
+                    # Calculates phase[i] interfacial area that connects with
+                    # phase[j] and vice versa
+                    p_conns = net['throat.conns'][:, 0][pi_pj_conns]
+                    s_conns = net['throat.conns'][:, 1][pi_pj_conns]
+                    ps = net['throat.area'][pi_pj_conns]
+                    p_sa = sp.bincount(p_conns, ps)
+                    # trim zeros at head/tail position to avoid extra bins
+                    p_sa = sp.trim_zeros(p_sa)
+                    i_index = sp.arange(min(p_conns), max(p_conns) + 1)
+                    j_index = sp.arange(min(s_conns), max(s_conns) + 1)
+                    s_pa = sp.bincount(s_conns, ps)
+                    s_pa = sp.trim_zeros(s_pa)
+                    pi_pj_sa[i_index] = p_sa
+                    pi_pj_sa[j_index] = s_pa
+                    # ---------------------------------------------------------
+                    # Calculates interfacial area using marching cube method
+                    if marching_cubes_area:
+                        ps_c = net['throat.area'][pi_pj_conns]
+                        p_sa_c = sp.bincount(p_conns, ps_c)
+                        p_sa_c = sp.trim_zeros(p_sa_c)
+                        s_pa_c = sp.bincount(s_conns, ps_c)
+                        s_pa_c = sp.trim_zeros(s_pa_c)
+                        pi_pj_sa[i_index] = p_sa_c
+                        pi_pj_sa[j_index] = s_pa_c
+                    net['pore.{}_{}_area'.format(al[i], al[j])] = (
+                            pi_pj_sa *
+                            voxel_size ** 2)
+    return net
+
+
+def label_boundary_cells(network=None, boundary_faces=None):
+    r"""
+    Takes 2D or 3D network and assign labels to boundary pores
+
+    Parameters
+    ----------
+    network : 2D or 3D network
+        Network should contains nodes coordinates for phase under consideration
+
+    boundary_faces : list of strings
+        The user can choose ‘left’, ‘right’, ‘top’, ‘bottom’, ‘front’ and
+        ‘back’ face labels to assign boundary nodes. If no label is
+        assigned then all six faces will be selected as boundary nodes
+        automatically which can be trimmed later on based on user requirements.
+
+    Returns
+    -------
+    A dictionary containing boundary nodes labels for example
+    network['pore.left'], network['pore.right'], network['pore.top'],
+    network['pore.bottom'] etc.
+    The dictionary names use the OpenPNM convention so it may be converted
+    directly to an OpenPNM network object using the ``update`` command.
+
+    """
+    f = boundary_faces
+    if f is not None:
+        coords = network['pore.coords']
+        condition = coords[~network['pore.boundary']]
+        dic = {'left': 0, 'right': 0, 'front': 1, 'back': 1,
+               'top': 2, 'bottom': 2}
+        if all(coords[:, 2] == 0):
+            dic['top'] = 1
+            dic['bottom'] = 1
+        for i in f:
+            if i in ['left', 'front', 'bottom']:
+                network['pore.{}'.format(i)] = (coords[:, dic[i]] <
+                                                min(condition[:, dic[i]]))
+            elif i in ['right', 'back', 'top']:
+                network['pore.{}'.format(i)] = (coords[:, dic[i]] >
+                                                max(condition[:, dic[i]]))
+
+    return network
+
+
+def assign_alias(im, alias=None):
+    r"""
+    The function assigns unique label to specific phase in original image. This
+    alias can be used to distinguish two phase interconnection and properties
+    easily when we have two or more than two phase network during network
+    extraction process.
+
+    Parameters
+    ----------
+    im : ND-array
+        Image of porous material where each phase is represented by unique
+        integer. Phase integer should start from 1. Boolean image will extract
+        only one network labeled with True's only.
+
+    alias : dict (Optional)
+        A dictionary that assigns unique image label to specific phase.
+        For example {1: 'Solid'} will show all structural properties associated
+        with label 1 as Solid phase properties.
+        If ``None`` then default labelling will be used i.e {1: 'Phase1',..}.
+
+    Returns
+    -------
+    A dictionary which assigns unique name to all unique labels of phases in
+    original image. If no alias is provided then default labelling is used
+    i.e {1: 'Phase1',..}
+    """
+    # -------------------------------------------------------------------------
+    # Get alias if provided by user
+    phases_num = sp.unique(im * 1)
+    phases_num = sp.trim_zeros(phases_num)
+    al = {}
+    for values in phases_num:
+        al[values] = 'phase{}'.format(values)
+    if alias is not None:
+        alias_sort = dict(sorted(alias.items()))
+        phase_labels = sp.array([*alias_sort])
+        al = alias
+        if set(phase_labels) != set(phases_num):
+            raise Exception('Alias labels does not match with image labels '
+                            'please provide correct image labels')
+    return al
