@@ -20,3 +20,4 @@ from .__funcs__ import connect_network_phases
 from .__getnet__ import regions_to_network
 from .__snow__ import snow
 from .__snow_dual__ import snow_dual
+from .__snow_n__ import snow_n
