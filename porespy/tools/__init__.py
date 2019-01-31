@@ -23,6 +23,7 @@ that do NOT return a modified version of the original image.
 .. autofunction:: subdivide
 .. autofunction:: ps_disk
 .. autofunction:: ps_ball
+.. autofunction:: pad_faces
 
 '''
 from .__funcs__ import align_image_with_openpnm
@@ -43,3 +44,4 @@ from .__funcs__ import randomize_colors
 from .__funcs__ import subdivide
 from .__funcs__ import ps_disk
 from .__funcs__ import ps_ball
+from .__funcs__ import pad_faces

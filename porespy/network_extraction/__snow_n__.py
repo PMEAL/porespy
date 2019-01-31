@@ -2,8 +2,8 @@ import scipy as sp
 from porespy.network_extraction import regions_to_network
 from porespy.network_extraction import add_boundary_regions, label_boundary_cells
 from porespy.network_extraction import assign_alias, snow_partitioning_n
-from porespy.network_extraction import pad_faces, connect_network_phases
-from porespy.tools import make_contiguous
+from porespy.network_extraction import connect_network_phases
+from porespy.tools import make_contiguous, pad_faces
 from porespy.metrics import region_surface_areas, region_interface_areas
 
 

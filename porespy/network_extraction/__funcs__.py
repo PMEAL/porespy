@@ -485,49 +485,6 @@ def snow_partitioning_n(im, r_max=4, sigma=0.4, return_all=True,
         return combined_region
 
 
-def pad_faces(im, faces):
-    r"""
-    This function pad the input image at specified faces. This shape of image is
-    same as the output image of add_boundary_regions function.
-
-    Parameters
-    ----------
-    im : ND_array
-        The image that needs to be padded
-
-    faces : list of strings
-        The faces labels where image needs to be padded. For cubical image six
-        labels namely 'left', 'right', 'top', 'bottom', 'front', 'back' is
-        incorporated.
-
-    Returns
-    -------
-    A padded image at specified face. The shape of the image is same as
-    add_boundary_regions.
-
-    See also
-    --------
-    add_boundary_regions
-    """
-    # -------------------------------------------------------------------------
-    # Padding distance transform to extract geometrical properties
-    f = faces
-    if f is not None:
-        if im.ndim == 2:
-            faces = [(int('left' in f) * 3, int('right' in f) * 3),
-                     (int(('front') in f) * 3 or int(('bottom') in f) * 3,
-                      int(('back') in f) * 3 or int(('top') in f) * 3)]
-
-        if im.ndim == 3:
-            faces = [(int('left' in f) * 3, int('right' in f) * 3),
-                     (int('front' in f) * 3, int('back' in f) * 3),
-                     (int('top' in f) * 3, int('bottom' in f) * 3)]
-        im = sp.pad(im, pad_width=faces, mode='edge')
-    else:
-        im = im
-    return im
-
-
 def connect_network_phases(net, snow_partitioning_n, voxel_size=1,
                            alias=None,
                            marching_cubes_area=False):

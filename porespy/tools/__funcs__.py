@@ -88,6 +88,7 @@ def fftmorphology(im, strel, mode='opening'):
     True
 
     """
+
     def erode(im, strel):
         t = fftconvolve(im, strel, mode='same') > (strel.sum() - 0.1)
         return t
@@ -241,8 +242,8 @@ def get_slice(im, center, size, pad=0):
     -------
     A list of slice objects, each indexing into one dimension of the image.
     """
-    p = sp.ones(shape=im.ndim, dtype=int)*sp.array(pad)
-    s = sp.ones(shape=im.ndim, dtype=int)*sp.array(size)
+    p = sp.ones(shape=im.ndim, dtype=int) * sp.array(pad)
+    s = sp.ones(shape=im.ndim, dtype=int) * sp.array(size)
     slc = []
     for dim in range(im.ndim):
         lower_im = sp.amax((center[dim] - s[dim] - p[dim], 0))
@@ -280,7 +281,7 @@ def find_outer_region(im, r=0):
     """
     if r == 0:
         dt = spim.distance_transform_edt(input=im)
-        r = int(sp.amax(dt))*2
+        r = int(sp.amax(dt)) * 2
     im_padded = sp.pad(array=im, pad_width=r, mode='constant',
                        constant_values=True)
     dt = spim.distance_transform_edt(input=im_padded)
@@ -323,10 +324,10 @@ def extract_cylinder(im, r=None, axis=0):
     if r is None:
         a = list(im.shape)
         a.pop(axis)
-        r = sp.floor(sp.amin(a)/2)
-    dim = [range(int(-s/2), int(s/2) + s % 2) for s in im.shape]
+        r = sp.floor(sp.amin(a) / 2)
+    dim = [range(int(-s / 2), int(s / 2) + s % 2) for s in im.shape]
     inds = sp.meshgrid(*dim, indexing='ij')
-    inds[axis] = inds[axis]*0
+    inds[axis] = inds[axis] * 0
     d = sp.sqrt(sp.sum(sp.square(inds), axis=0))
     mask = d <= r
     im[~mask] = True
@@ -370,13 +371,13 @@ def extract_subsection(im, shape):
     # Check if shape was given as a fraction
     shape = sp.array(shape)
     if shape[0] < 1:
-        shape = sp.array(im.shape)*shape
-    center = sp.array(im.shape)/2
+        shape = sp.array(im.shape) * shape
+    center = sp.array(im.shape) / 2
     s_im = []
     for dim in range(im.ndim):
-        r = shape[dim]/2
-        lower_im = sp.amax((center[dim]-r, 0))
-        upper_im = sp.amin((center[dim]+r, im.shape[dim]))
+        r = shape[dim] / 2
+        lower_im = sp.amax((center[dim] - r, 0))
+        upper_im = sp.amin((center[dim] + r, im.shape[dim]))
         s_im.append(slice(int(lower_im), int(upper_im)))
     return im[tuple(s_im)]
 
@@ -396,7 +397,7 @@ def get_planes(im, squeeze=True):
         False, the images are 1 element deep along the axis where the slice
         was obtained.
     """
-    x, y, z = (sp.array(im.shape)/2).astype(int)
+    x, y, z = (sp.array(im.shape) / 2).astype(int)
     planes = [im[x, :, :], im[:, y, :], im[:, :, z]]
     if not squeeze:
         imx = planes[0]
@@ -584,7 +585,7 @@ def make_contiguous(im, keep_zeros=True):
     im = im - im.min()
     im_flat = im.flatten()
     im_vals = sp.unique(im_flat)
-    im_map = sp.zeros(shape=sp.amax(im_flat)+1)
+    im_map = sp.zeros(shape=sp.amax(im_flat) + 1)
     im_map[im_vals] = sp.arange(0, sp.size(sp.unique(im_flat)))
     im_new = im_map[im_flat]
     im_new = sp.reshape(im_new, newshape=sp.shape(im))
@@ -721,10 +722,10 @@ def norm_to_uniform(im, scale=None):
     """
     if scale is None:
         scale = [im.min(), im.max()]
-    im = (im - sp.mean(im))/sp.std(im)
-    im = 1/2*sp.special.erfc(-im/sp.sqrt(2))
+    im = (im - sp.mean(im)) / sp.std(im)
+    im = 1 / 2 * sp.special.erfc(-im / sp.sqrt(2))
     im = (im - im.min()) / (im.max() - im.min())
-    im = im*(scale[1] - scale[0]) + scale[0]
+    im = im * (scale[1] - scale[0]) + scale[0]
     return im
 
 
@@ -761,8 +762,8 @@ def mesh_region(region: bool, strel=None):
     im = region
     if im.ndim == 3:
         padded_mask = sp.pad(im, pad_width=pad_width, mode='constant')
-        padded_mask = spim.convolve(padded_mask*1.0,
-                                    weights=strel)/sp.sum(strel)
+        padded_mask = spim.convolve(padded_mask * 1.0,
+                                    weights=strel) / sp.sum(strel)
     else:
         padded_mask = sp.reshape(im, (1,) + im.shape)
         padded_mask = sp.pad(padded_mask, pad_width=pad_width, mode='constant')
@@ -789,7 +790,7 @@ def ps_disk(radius):
     A 2D numpy bool array of the structring element
     """
     rad = int(sp.ceil(radius))
-    other = sp.ones((2*rad+1, 2*rad+1), dtype=bool)
+    other = sp.ones((2 * rad + 1, 2 * rad + 1), dtype=bool)
     other[rad, rad] = False
     disk = spim.distance_transform_edt(other) < radius
     return disk
@@ -809,7 +810,50 @@ def ps_ball(radius):
     A 2D numpy array of the structuring element
     """
     rad = int(sp.ceil(radius))
-    other = sp.ones((2*rad+1, 2*rad+1, 2*rad+1), dtype=bool)
+    other = sp.ones((2 * rad + 1, 2 * rad + 1, 2 * rad + 1), dtype=bool)
     other[rad, rad, rad] = False
     ball = spim.distance_transform_edt(other) < radius
     return ball
+
+
+def pad_faces(im, faces):
+    r"""
+    This function pad the input image at specified faces. This shape of image is
+    same as the output image of add_boundary_regions function.
+
+    Parameters
+    ----------
+    im : ND_array
+        The image that needs to be padded
+
+    faces : list of strings
+        The faces labels where image needs to be padded. For cubical image six
+        labels namely 'left', 'right', 'top', 'bottom', 'front', 'back' is
+        incorporated.
+
+    Returns
+    -------
+    A padded image at specified face. The shape of the image is same as
+    add_boundary_regions.
+
+    See also
+    --------
+    add_boundary_regions
+    """
+    # -------------------------------------------------------------------------
+    # Padding distance transform to extract geometrical properties
+    f = faces
+    if f is not None:
+        if im.ndim == 2:
+            faces = [(int('left' in f) * 3, int('right' in f) * 3),
+                     (int(('front') in f) * 3 or int(('bottom') in f) * 3,
+                      int(('back') in f) * 3 or int(('top') in f) * 3)]
+
+        if im.ndim == 3:
+            faces = [(int('left' in f) * 3, int('right' in f) * 3),
+                     (int('front' in f) * 3, int('back' in f) * 3),
+                     (int('top' in f) * 3, int('bottom' in f) * 3)]
+        im = sp.pad(im, pad_width=faces, mode='edge')
+    else:
+        im = im
+    return im
