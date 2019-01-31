@@ -76,12 +76,12 @@ def snow_n(im,
     dt = pad_distance_transform(dt=snow.dt, boundary_faces=f)
     # -------------------------------------------------------------------------
     # For only one phase extraction with boundary regions
-    phases_num = sp.unique(im * 1)
+    phases_num = sp.unique(im).astype(int)
     phases_num = sp.trim_zeros(phases_num)
-    if len(phases_num) == 1 and phases_num == 1:
+    if len(phases_num) == 1:
         if f is not None:
             snow.im = pad_distance_transform(dt=snow.im, boundary_faces=f)
-        regions = regions*snow.im
+        regions = regions*(snow.im.astype(bool))
         regions = make_contiguous(regions)
     # -------------------------------------------------------------------------
     # Extract N phases sites and bond information from image
@@ -102,10 +102,13 @@ def snow_n(im,
     # label boundary cells
     net = label_boundary_cells(network=net, boundary_faces=f)
     # -------------------------------------------------------------------------
-    # assign out values to namedtuple
-    tup = namedtuple('results', field_names=['net', 'im', 'dt', 'regions'])
-    tup.net = net
-    tup.im = im.copy()
-    tup.dt = dt
-    tup.regions = regions
-    return tup
+
+    # assign out values to dummy dict
+
+    class net_dict(dict):
+        pass
+    temp = net_dict(net)
+    temp.im = im.copy()
+    temp.dt = dt
+    temp.regions = regions
+    return temp
