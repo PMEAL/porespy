@@ -114,6 +114,17 @@ class MetricsTest():
         assert sp.all(ia.conns[0] == [0, 1])
         assert sp.around(ia.area[0], decimals=2) == 8.85
 
+    def test_phase_fraction(self):
+        im = sp.reshape(sp.random.randint(0, 10, 1000), [10, 10, 10])
+        labels = sp.unique(im, return_counts=True)[1]
+        counts = ps.metrics.phase_fraction(im, normed=False)
+        assert sp.all(labels == counts)
+        fractions = ps.metrics.phase_fraction(im, normed=True)
+        assert fractions.sum() == 1
+        assert sp.allclose(fractions, counts/counts.sum())
+        with pytest.raises(Exception):
+            ps.metrics.phase_fraction(sp.rand(10, 10, 10), normed=True)
+
 
 if __name__ == '__main__':
     t = MetricsTest()
