@@ -93,10 +93,10 @@ def snow_dual(im, voxel_size=1,
     # -------------------------------------------------------------------------
     # Extract marching cube surface area and interfacial area of regions
     if marching_cubes_area:
-        areas = region_surface_areas(regions=regions, voxel_size=voxel_size)
-        net['pore.surface_area'] = areas
+        areas = region_surface_areas(regions=regions)
         interface_area = region_interface_areas(regions=regions, areas=areas,
                                                 voxel_size=voxel_size)
+        net['pore.surface_area'] = areas * voxel_size**2
         net['throat.area'] = interface_area.area
     # -------------------------------------------------------------------------
     # Find void to void, void to solid and solid to solid throat conns

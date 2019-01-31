@@ -659,7 +659,7 @@ def region_interface_areas(regions, areas, voxel_size=1, strel=None):
     # Interfacial area calculation
     cn = sp.array(cn)
     ia = 0.5 * (sa[cn[:, 0]] + sa[cn[:, 1]] - sa_combined)
-    ia[ia < 0] = 1
+    ia[ia <= 0] = 1
     result = namedtuple('interfacial_areas', ('conns', 'area'))
     result.conns = cn
     result.area = ia * voxel_size**2
