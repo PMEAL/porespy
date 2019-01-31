@@ -487,9 +487,8 @@ def snow_partitioning_n(im, r_max=4, sigma=0.4, return_all=True,
 
 def pad_faces(im, faces):
     r"""
-    This function pad the distance transform at specified boundary faces. This
-    shape of distance transform is the same as the output image of
-    add_boundary_nodes function.
+    This function pad the input image at specified faces. This shape of image is
+    same as the output image of add_boundary_regions function.
 
     Parameters
     ----------
@@ -497,18 +496,18 @@ def pad_faces(im, faces):
         The image that needs to be padded
 
     faces : list of strings
-        Boundary faces labels are provided to assign hypothetical boundary
-        nodes having zero resistance to transport process. For cubical
-        geometry, the user can choose ‘left’, ‘right’, ‘top’, ‘bottom’,
-        ‘front’ and ‘back’ face labels to assign boundary nodes. If no label is
-        assigned then all six faces will be selected as boundary nodes
-        automatically which can be trimmed later on based on user requirements.
+        The faces labels where image needs to be padded. For cubical image six
+        labels namely 'left', 'right', 'top', 'bottom', 'front', 'back' is
+        incorporated.
 
     Returns
     -------
-    A padded distance transform with shape equal to the shape of image after
-    adding boundary nodes.
+    A padded image at specified face. The shape of the image is same as
+    add_boundary_regions.
 
+    See also
+    --------
+    add_boundary_regions
     """
     # -------------------------------------------------------------------------
     # Padding distance transform to extract geometrical properties

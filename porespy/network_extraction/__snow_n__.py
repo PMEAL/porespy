@@ -2,7 +2,7 @@ import scipy as sp
 from porespy.network_extraction import regions_to_network
 from porespy.network_extraction import add_boundary_regions, label_boundary_cells
 from porespy.network_extraction import assign_alias, snow_partitioning_n
-from porespy.network_extraction import pad_distance_transform, connect_network_phases
+from porespy.network_extraction import pad_faces, connect_network_phases
 from porespy.tools import make_contiguous
 from porespy.metrics import region_surface_areas, region_interface_areas
 
@@ -72,14 +72,14 @@ def snow_n(im,
     regions = add_boundary_regions(regions=snow.regions, faces=f)
     # -------------------------------------------------------------------------
     # Padding distance transform to extract geometrical properties
-    dt = pad_distance_transform(dt=snow.dt, boundary_faces=f)
+    dt = pad_faces(im=snow.dt, faces=f)
     # -------------------------------------------------------------------------
     # For only one phase extraction with boundary regions
     phases_num = sp.unique(im).astype(int)
     phases_num = sp.trim_zeros(phases_num)
     if len(phases_num) == 1:
         if f is not None:
-            snow.im = pad_distance_transform(dt=snow.im, boundary_faces=f)
+            snow.im = pad_faces(im=snow.im, faces=f)
         regions = regions*(snow.im.astype(bool))
         regions = make_contiguous(regions)
     # -------------------------------------------------------------------------

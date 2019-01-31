@@ -1,6 +1,6 @@
 from porespy.network_extraction import regions_to_network, add_boundary_regions
 from porespy.network_extraction import label_boundary_cells
-from porespy.network_extraction import pad_distance_transform
+from porespy.network_extraction import pad_faces
 from porespy.filters import snow_partitioning
 from porespy.tools import make_contiguous
 from porespy.metrics import region_surface_areas, region_interface_areas
@@ -70,8 +70,8 @@ def snow(im, voxel_size=1,
     regions = add_boundary_regions(regions=regions, faces=boundary_faces)
     # -------------------------------------------------------------------------
     # Padding distance transform and image to extract geometrical properties
-    dt = pad_distance_transform(dt=dt, boundary_faces=boundary_faces)
-    im = pad_distance_transform(dt=im, boundary_faces=boundary_faces)
+    dt = pad_faces(im=dt, faces=boundary_faces)
+    im = pad_faces(im=im, faces=boundary_faces)
     regions = regions*im
     regions = make_contiguous(regions)
     # -------------------------------------------------------------------------

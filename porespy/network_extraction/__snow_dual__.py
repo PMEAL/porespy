@@ -1,7 +1,7 @@
 import scipy as sp
 from porespy.network_extraction import regions_to_network
 from porespy.network_extraction import add_boundary_regions, label_boundary_cells
-from porespy.network_extraction import pad_distance_transform
+from porespy.network_extraction import pad_faces
 from porespy.filters import snow_partitioning
 from porespy.metrics import region_surface_areas, region_interface_areas
 from collections import namedtuple
@@ -85,7 +85,7 @@ def snow_dual(im, voxel_size=1,
     regions = add_boundary_regions(regions=regions, faces=boundary_faces)
     # -------------------------------------------------------------------------
     # Padding distance transform to extract geometrical properties
-    dt = pad_distance_transform(dt=dt, boundary_faces=boundary_faces)
+    dt = pad_faces(im=dt, faces=boundary_faces)
     # -------------------------------------------------------------------------
     # Extract void,solid and throat information from image
     net = regions_to_network(im=regions, dt=dt, voxel_size=voxel_size)
