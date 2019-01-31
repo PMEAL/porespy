@@ -101,10 +101,12 @@ def snow(im, voxel_size=1,
     # label boundary cells
     net = label_boundary_cells(network=net, boundary_faces=boundary_faces)
     # -------------------------------------------------------------------------
-    # Assign to namedtuple
-    tup = namedtuple('results', field_names=['net', 'im', 'dt', 'regions'])
-    tup.net = net
-    tup.im = im.copy()
-    tup.dt = dt
-    tup.regions = regions
-    return tup
+    # assign out values to dummy dict
+
+    class net_dict(dict):
+        pass
+    temp = net_dict(net)
+    temp.im = im.copy()
+    temp.dt = dt
+    temp.regions = regions
+    return temp

@@ -485,7 +485,7 @@ def snow_partitioning_n(im, r_max=4, sigma=0.4, return_all=True,
         return combined_region
 
 
-def pad_distance_transform(dt, boundary_faces):
+def pad_faces(im, faces):
     r"""
     This function pad the distance transform at specified boundary faces. This
     shape of distance transform is the same as the output image of
@@ -493,12 +493,10 @@ def pad_distance_transform(dt, boundary_faces):
 
     Parameters
     ----------
-    dt : ND_array
-        The distance transform of the image for which netwrok extraction is
-        performed. If two or more than two phases are present then combine
-        distance transform all phases should be used.
+    im : ND_array
+        The image that needs to be padded
 
-    boundary_faces : list of strings
+    faces : list of strings
         Boundary faces labels are provided to assign hypothetical boundary
         nodes having zero resistance to transport process. For cubical
         geometry, the user can choose ‘left’, ‘right’, ‘top’, ‘bottom’,
@@ -514,21 +512,21 @@ def pad_distance_transform(dt, boundary_faces):
     """
     # -------------------------------------------------------------------------
     # Padding distance transform to extract geometrical properties
-    f = boundary_faces
+    f = faces
     if f is not None:
-        if dt.ndim == 2:
+        if im.ndim == 2:
             faces = [(int('left' in f) * 3, int('right' in f) * 3),
                      (int(('front') in f) * 3 or int(('bottom') in f) * 3,
                       int(('back') in f) * 3 or int(('top') in f) * 3)]
 
-        if dt.ndim == 3:
+        if im.ndim == 3:
             faces = [(int('left' in f) * 3, int('right' in f) * 3),
                      (int('front' in f) * 3, int('back' in f) * 3),
                      (int('top' in f) * 3, int('bottom' in f) * 3)]
-        dt = sp.pad(dt, pad_width=faces, mode='edge')
+        im = sp.pad(im, pad_width=faces, mode='edge')
     else:
-        dt = dt
-    return dt
+        im = im
+    return im
 
 
 def connect_network_phases(net, snow_partitioning_n, voxel_size=1,

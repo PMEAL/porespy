@@ -102,6 +102,7 @@ def snow_n(im,
     net = label_boundary_cells(network=net, boundary_faces=f)
     # -------------------------------------------------------------------------
     # assign out values to dummy dict
+
     class net_dict(dict):
         pass
     temp = net_dict(net)
