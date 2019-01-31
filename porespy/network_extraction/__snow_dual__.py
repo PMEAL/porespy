@@ -4,7 +4,6 @@ from porespy.network_extraction import add_boundary_regions, label_boundary_cell
 from porespy.network_extraction import pad_faces
 from porespy.filters import snow_partitioning
 from porespy.metrics import region_surface_areas, region_interface_areas
-from collections import namedtuple
 
 
 def snow_dual(im, voxel_size=1,
