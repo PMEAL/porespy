@@ -6,7 +6,7 @@ from porespy.filters import snow_partitioning
 from porespy.metrics import region_surface_areas, region_interface_areas
 
 
-def snow_dual(im, 
+def snow_dual(im,
               voxel_size=1,
               boundary_faces=['top', 'bottom', 'left', 'right', 'front', 'back'],
               marching_cubes_area=False):
