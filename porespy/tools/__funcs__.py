@@ -818,7 +818,7 @@ def ps_ball(radius):
 
 def pad_faces(im, faces):
     r"""
-    This function pad the input image at specified faces. This shape of image is
+    Pads the input image at specified faces. This shape of image is
     same as the output image of add_boundary_regions function.
 
     Parameters
@@ -827,21 +827,25 @@ def pad_faces(im, faces):
         The image that needs to be padded
 
     faces : list of strings
-        The faces labels where image needs to be padded. For cubical image six
-        labels namely 'left', 'right', 'top', 'bottom', 'front', 'back' is
-        incorporated.
+        The faces labels where image needs to be padded. Given a 3D image
+        of shape ``[x, y, z] = [i, j, k]``, the following conventions are used
+        to indicate along which axis the padding should be applied:
+
+        * 'left' -> ``x = 0``
+        * 'right' -> ``x = i``
+        * 'front' -> ``y = 0``
+        * 'back' -> ``y = j``
+        * 'bottom' -> ``z = 0``
+        * 'top' -> ``z = k``
 
     Returns
     -------
-    A padded image at specified face. The shape of the image is same as
-    add_boundary_regions.
+    A image padded at specified face(s)
 
     See also
     --------
     add_boundary_regions
     """
-    # -------------------------------------------------------------------------
-    # Padding distance transform to extract geometrical properties
     f = faces
     if f is not None:
         if im.ndim == 2:
