@@ -382,26 +382,25 @@ def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
 
 
 def snow_partitioning_n(im, r_max=4, sigma=0.4, return_all=True,
-                        mask=True, randomize=False, alias=None):
+                        mask=True, randomize=False):
     r"""
-    This function partitions the n_phases into regions using a
-    marker-based watershed algorithm. Its an extension of snow_partitioning
-    function with all phases partitioned altogether.
+    This function partitions the n_phases into regions using a marker-based
+    watershed algorithm. Its an extension of snow_partitioning function with
+    all phases partitioned together.
 
     Parameters
     ----------
     im : ND-array
         Image of porous material where each phase is represented by unique
-        integer. Phase integer should start from 1. Boolean image will extract
-        only one network labeled with True's only.
+        integer starting from 1 (0's are ignored).
     r_max : scalar
         The radius of the spherical structuring element to use in the Maximum
-        filter stage that is used to find peaks.  The default is 4
+        filter stage that is used to find peaks.  The default is 4.
     sigma : scalar
-        The standard deviation of the Gaussian filter used in step 1.  The
-        default is 0.4.  If 0 is given then the filter is not applied, which is
-        useful if a distance transform is supplied as the ``im`` argument that
-        has already been processed.
+        The standard deviation of the Gaussian filter used.  The default is
+        0.4. If 0 is given then the filter is not applied, which is useful if a
+        distance transform is supplied as the ``im`` argument that has already
+        been processed.
     return_all : boolean (default is False)
         If set to ``True`` a named tuple is returned containing the original
         image, the combined distance transform, list of each phase max label,
@@ -412,11 +411,6 @@ def snow_partitioning_n(im, r_max=4, sigma=0.4, return_all=True,
         If ``True`` (default), then the region colors will be randomized before
         returning.  This is helpful for visualizing otherwise neighboring
         regions have similar coloring and are hard to distinguish.
-    alias : dict (Optional)
-        A dictionary that assigns unique image label to specific phase.
-        For example {1: 'Solid'} will show all structural properties associated
-        with label 1 as Solid phase properties.
-        If ``None`` then default labelling will be used i.e {1: 'Phase1',..}.
 
     Returns
     -------
@@ -437,15 +431,16 @@ def snow_partitioning_n(im, r_max=4, sigma=0.4, return_all=True,
     [1] Gostick, J. "A versatile and efficient network extraction algorithm
     using marker-based watershed segmentation".  Physical Review E. (2017)
 
+    [2] Khan, ZA et al. "Dual network extraction algorithm to investigate
+    multiple transport processes in porous materials: Image-based modeling
+    of pore and grain-scale processes".  Computers in Chemical Engineering.
+    (2019)
+
     See Also
     ----------
     snow_partitioning
 
     """
-    # -------------------------------------------------------------------------
-    # Get alias if provided by user
-    al = assign_alias(im=im, alias=alias)
-    # -------------------------------------------------------------------------
     # Perform snow on each phase and merge all segmentation and dt together
     phases_num = sp.unique(im * 1)
     phases_num = sp.trim_zeros(phases_num)
@@ -454,10 +449,7 @@ def snow_partitioning_n(im, r_max=4, sigma=0.4, return_all=True,
     num = [0]
     for i in phases_num:
         print('_' * 60)
-        if alias is None:
-            print('### Processing Phase {} ###'.format(i))
-        else:
-            print('### Processing {} phase ###'.format(al[i]))
+        print('Processing Phase {}'.format(i))
         phase_snow = snow_partitioning(im == i,
                                        dt=None, r_max=r_max, sigma=sigma,
                                        return_all=return_all, mask=mask,

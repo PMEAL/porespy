@@ -1,17 +1,17 @@
 r"""
 This module contains functions for extracting pore networks from images.
 
-.. autofunction:: snow
-.. autofunction:: snow_dual
-.. autofunction:: regions_to_network
 .. autofunction:: add_boundary_regions
-.. autofunction:: map_to_regions
-.. autofunction:: snow_n
+.. autofunction:: assign_alias
+.. autofunction:: connect_network_phases
 .. autofunction:: generate_voxel_image
 .. autofunction:: label_boundary_cells
-.. autofunction:: assign_alias
+.. autofunction:: map_to_regions
+.. autofunction:: regions_to_network
+.. autofunction:: snow
+.. autofunction:: snow_dual
+.. autofunction:: snow_n
 .. autofunction:: snow_partitioning_n
-.. autofunction:: connect_network_phases
 
 """
 
