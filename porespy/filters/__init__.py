@@ -12,20 +12,22 @@ structural characteristics, such as pore sizes.  A definition of a *filter* is
 .. autofunction:: apply_chords_3D
 .. autofunction:: distance_transform_lin
 .. autofunction:: fftmorphology
+.. autofunction:: fill_blind_pores
 .. autofunction:: find_disconnected_voxels
 .. autofunction:: find_dt_artifacts
-.. autofunction:: fill_blind_pores
-.. autofunction:: trim_floating_solid
-.. autofunction:: trim_nonpercolating_paths
-.. autofunction:: porosimetry
-.. autofunction:: local_thickness
-.. autofunction:: trim_extrema
-.. autofunction:: flood
 .. autofunction:: find_peaks
-.. autofunction:: trim_saddle_points
-.. autofunction:: trim_nearby_peaks
+.. autofunction:: flood
+.. autofunction:: local_thickness
+.. autofunction:: nphase_border
+.. autofunction:: porosimetry
+.. autofunction:: reduce_peaks
 .. autofunction:: region_size
 .. autofunction:: snow_partitioning
+.. autofunction:: trim_extrema
+.. autofunction:: trim_floating_solid
+.. autofunction:: trim_nearby_peaks
+.. autofunction:: trim_nonpercolating_paths
+.. autofunction:: trim_saddle_points
 
 """
 from .__funcs__ import apply_chords
@@ -38,6 +40,7 @@ from .__funcs__ import find_dt_artifacts
 from .__funcs__ import find_peaks
 from .__funcs__ import flood
 from .__funcs__ import local_thickness
+from .__funcs__ import nphase_border
 from .__funcs__ import porosimetry
 from .__funcs__ import reduce_peaks
 from .__funcs__ import region_size
@@ -47,4 +50,3 @@ from .__funcs__ import trim_floating_solid
 from .__funcs__ import trim_nonpercolating_paths
 from .__funcs__ import trim_nearby_peaks
 from .__funcs__ import trim_saddle_points
-from .__funcs__ import nphase_border
