@@ -23,6 +23,7 @@ structural characteristics, such as pore sizes.  A definition of a *filter* is
 .. autofunction:: reduce_peaks
 .. autofunction:: region_size
 .. autofunction:: snow_partitioning
+.. autofunction:: snow_partitioning_n
 .. autofunction:: trim_extrema
 .. autofunction:: trim_floating_solid
 .. autofunction:: trim_nearby_peaks
@@ -45,6 +46,7 @@ from .__funcs__ import porosimetry
 from .__funcs__ import reduce_peaks
 from .__funcs__ import region_size
 from .__funcs__ import snow_partitioning
+from .__funcs__ import snow_partitioning_n
 from .__funcs__ import trim_extrema
 from .__funcs__ import trim_floating_solid
 from .__funcs__ import trim_nonpercolating_paths
