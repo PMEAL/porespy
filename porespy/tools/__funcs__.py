@@ -2,7 +2,7 @@ import inspect
 import scipy as sp
 import scipy.ndimage as spim
 from collections import namedtuple
-from skimage.morphology import ball, disk, square, cube
+from skimage.morphology import ball, disk
 from skimage.measure import marching_cubes_lewiner
 from array_split import shape_split
 from scipy.signal import fftconvolve
@@ -593,7 +593,7 @@ def make_contiguous(im, keep_zeros=True):
     return im_new
 
 
-def get_border(shape, thickness=1, mode='edges'):
+def get_border(shape, thickness=1, mode='edges', return_indices=False):
     r"""
     Creates an array of specified size with corners, edges or faces labelled as
     True.  This can be used as mask to manipulate values laying on the
@@ -603,18 +603,30 @@ def get_border(shape, thickness=1, mode='edges'):
     ----------
     shape : array_like
         The shape of the array to return.  Can be either 2D or 3D.
-
     thickness : scalar (default is 1)
         The number of pixels/voxels to place along perimeter.
-
     mode : string
         The type of border to create.  Options are 'faces', 'edges' (default)
         and 'corners'.  In 2D 'faces' and 'edges' give the same result.
+    return_indices : boolean
+        If ``False`` (default) an image is returned with the border voxels set
+        to ``True``.  If ``True``, then a tuple with the x, y, z (if ``im`` is
+        3D) indices is returned.  This tuple can be used directly to index into
+        the image, such as ``im[tup] = 2``.
 
     Returns
     -------
     An ND-array of specified shape with True values at the perimeter and False
     elsewhere.
+
+    Notes
+    -----
+    TODO: This function uses brute force to create an image then fill the
+    edges using location-based logic, and if the user requests
+    ``return_indices`` it finds them using ``np.where``.  Since these arrays
+    are cubic it should be possible to use more elegant and efficient
+    index-based logic to find the indices, then use them to fill an empty
+    image with ``True`` using these     indices.
 
     Examples
     --------
@@ -654,6 +666,8 @@ def get_border(shape, thickness=1, mode='edges'):
             border[t:-t, 0::, 0::] = False
             border[0::, t:-t, 0::] = False
             border[0::, 0::, t:-t] = False
+    if return_indices:
+        border = sp.where(border)
     return border
 
 

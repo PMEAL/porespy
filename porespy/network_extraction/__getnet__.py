@@ -1,9 +1,8 @@
 import scipy as sp
+import openpnm as op
+from tqdm import tqdm
 import scipy.ndimage as spim
 from porespy.tools import extend_slice
-from tqdm import tqdm
-from skimage import measure
-import openpnm as op
 import openpnm.models.geometry as op_gm
 
 
@@ -34,16 +33,15 @@ def regions_to_network(im, dt=None, voxel_size=1):
     network topological information.  The dictionary names use the OpenPNM
     convention (i.e. 'pore.coords', 'throat.conns') so it may be converted
     directly to an OpenPNM network object using the ``update`` command.
+
     """
     print('_'*60)
     print('Extracting pore and throat information from image')
-    from skimage.morphology import disk, square, ball, cube
-    if im.ndim == 2:
-        cube = square
-        ball = disk
+    from skimage.morphology import disk, ball
+    struc_elem = disk if im.ndim == 2 else ball
 
-#    if ~sp.any(im == 0):
-#        raise Exception('The received image has no solid phase (0\'s)')
+    # if ~sp.any(im == 0):
+    #     raise Exception('The received image has no solid phase (0\'s)')
 
     if dt is None:
         dt = spim.distance_transform_edt(im > 0)
@@ -66,9 +64,9 @@ def regions_to_network(im, dt=None, voxel_size=1):
     t_area = []
     t_perimeter = []
     t_coords = []
-    dt_shape = sp.array(dt.shape)
-    # Start extracting size information for pores and throats
+    # dt_shape = sp.array(dt.shape)
 
+    # Start extracting size information for pores and throats
     for i in tqdm(Ps):
         pore = i - 1
         if slices[pore] is None:
@@ -81,12 +79,14 @@ def regions_to_network(im, dt=None, voxel_size=1):
         pore_dt = spim.distance_transform_edt(padded_mask)
         s_offset = sp.array([i.start for i in s])
         p_label[pore] = i
-        p_coords[pore, :] = spim.center_of_mass(pore_im) + s_offset
+        # p_coords[pore, :] = spim.center_of_mass(pore_im) + s_offset
+        peaks = sp.vstack(sp.where(pore_dt == pore_dt.max())).T
+        p_coords[pore, :] = peaks[0] + s_offset
         p_volume[pore] = sp.sum(pore_im)
         p_dia_local[pore] = 2*sp.amax(pore_dt)
         p_dia_global[pore] = 2*sp.amax(sub_dt)
         p_area_surf[pore] = sp.sum(pore_dt == 1)
-        im_w_throats = spim.binary_dilation(input=pore_im, structure=ball(1))
+        im_w_throats = spim.binary_dilation(input=pore_im, structure=struc_elem(1))
         im_w_throats = im_w_throats*sub_im
         Pn = sp.unique(im_w_throats)[1:] - 1
         for j in Pn:
@@ -130,13 +130,10 @@ def regions_to_network(im, dt=None, voxel_size=1):
     net['throat.inscribed_diameter'] = sp.array(t_dia_inscribed)*voxel_size
     net['throat.area'] = sp.array(t_area)*(voxel_size**2)
     net['throat.perimeter'] = sp.array(t_perimeter)*voxel_size
-    net['throat.equivalent_diameter'] = ((sp.array(t_area) *
-                                          (voxel_size**2))**(0.5))
+    net['throat.equivalent_diameter'] = (sp.array(t_area) * (voxel_size**2))**0.5
     P12 = net['throat.conns']
-    PT1 = (sp.sqrt(sp.sum(((p_coords[P12[:, 0]]-t_coords) *
-                           voxel_size)**2, axis=1)))
-    PT2 = (sp.sqrt(sp.sum(((p_coords[P12[:, 1]]-t_coords) *
-                           voxel_size)**2, axis=1)))
+    PT1 = sp.sqrt(sp.sum(((p_coords[P12[:, 0]]-t_coords) * voxel_size)**2, axis=1))
+    PT2 = sp.sqrt(sp.sum(((p_coords[P12[:, 1]]-t_coords) * voxel_size)**2, axis=1))
     net['throat.total_length'] = PT1 + PT2
     PT1 = PT1-p_dia_local[P12[:, 0]]/2*voxel_size
     PT2 = PT2-p_dia_local[P12[:, 1]]/2*voxel_size

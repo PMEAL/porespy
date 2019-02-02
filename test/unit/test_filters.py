@@ -283,6 +283,13 @@ class FilterTest():
         assert nb.tolist() == [1.0, 2.0, 4.0, 8.0]
         assert counts.tolist() == [729000, 486000, 108000, 8000]
 
+    def test_find_dt_artifacts(self):
+        im = ps.generators.lattice_spheres(shape=[50, 50], radius=4, offset=5)
+        dt = spim.distance_transform_edt(im)
+        ar = ps.filters.find_dt_artifacts(dt)
+        inds = sp.where(ar == ar.max())
+        assert sp.all(dt[inds] - ar[inds] == 1)
+
 
 if __name__ == '__main__':
     t = FilterTest()

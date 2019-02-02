@@ -47,7 +47,8 @@ setup(
                       'array_split',
                       'pytrax',
                       'pyevtk',
-                      'numba'],
+                      'numba',
+                      'openpnm'],
     author='Jeff Gostick',
     author_email='jgostick@gmail.com',
     url='http://porespy.org'

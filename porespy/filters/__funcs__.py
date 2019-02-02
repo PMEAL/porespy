@@ -68,7 +68,8 @@ def distance_transform_lin(im, axis=0, mode='both'):
         return f
 
 
-def snow_partitioning(im, r_max=4, sigma=0.4, return_all=False, mask=True):
+def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, return_all=False, mask=True,
+                      randomize=True):
     r"""
     Partitions the void space into pore regions using a marker-based watershed
     algorithm, with specially filtered peaks as markers.
@@ -80,28 +81,30 @@ def snow_partitioning(im, r_max=4, sigma=0.4, return_all=False, mask=True):
     Parameters
     ----------
     im : array_like
-        Can be either (a) a boolean image of the domain, with ``True``
-        indicating the pore space and ``False`` elsewhere, or (b) a distance
-        transform of the domain calculated externally by the user.  Option (b)
-        is faster if a distance transform is already available.
-
+        A boolean image of the domain, with ``True`` indicating the pore space
+        and ``False`` elsewhere.
+    dt : array_like, optional
+        The distance transform of the pore space.  This is done automatically
+        if not provided, but if the distance transform has already been
+        computed then supplying it can save some time.
     r_max : scalar
         The radius of the spherical structuring element to use in the Maximum
         filter stage that is used to find peaks.  The default is 4
-
     sigma : scalar
         The standard deviation of the Gaussian filter used in step 1.  The
         default is 0.4.  If 0 is given then the filter is not applied, which is
         useful if a distance transform is supplied as the ``im`` argument that
         has already been processed.
-
     return_all : boolean (default is False)
         If set to ``True`` a named tuple is returned containing the original
         image, the distance transform, the filtered peaks, and the final
         pore regions.
-
     mask : boolean (default is True)
         Apply a mask to the regions where the solid phase is.
+    randomize : boolean
+        If ``True`` (default), then the region colors will be randomized before
+        returning.  This is helpful for visualizing otherwise neighboring
+        regions have simlar coloring are are hard to distinguish.
 
     Returns
     -------
@@ -129,7 +132,10 @@ def snow_partitioning(im, r_max=4, sigma=0.4, return_all=False, mask=True):
     print('_'*60)
     print("Beginning SNOW Algorithm")
     im_shape = sp.array(im.shape)
-    if im.dtype == 'bool':
+    if im.dtype is not bool:
+        print('Converting supplied image (im) to boolean')
+        im = im > 0
+    if dt is None:
         print('Peforming Distance Transform')
         if sp.any(im_shape == 1):
             ax = sp.where(im_shape == 1)[0][0]
@@ -137,9 +143,6 @@ def snow_partitioning(im, r_max=4, sigma=0.4, return_all=False, mask=True):
             dt = sp.expand_dims(dt, ax)
         else:
             dt = spim.distance_transform_edt(input=im)
-    else:
-        dt = im
-        im = dt > 0
 
     tup.im = im
     tup.dt = dt
@@ -157,11 +160,12 @@ def snow_partitioning(im, r_max=4, sigma=0.4, return_all=False, mask=True):
     print('Peaks after trimming nearby peaks: ', N)
     tup.peaks = peaks
     if mask:
-        mask_solid = dt > 0
+        mask_solid = im > 0
     else:
         mask_solid = None
     regions = watershed(image=-dt, markers=peaks, mask=mask_solid)
-    regions = randomize_colors(regions)
+    if randomize:
+        regions = randomize_colors(regions)
     if return_all:
         tup.regions = regions
         return tup
@@ -307,8 +311,8 @@ def trim_saddle_points(peaks, dt, max_iters=10):
                 break  # Found a saddle point
         peaks[s] = peaks_i
         if iters >= max_iters:
-            print('Maximum number of iterations reached, consider' +
-                  'running again with a larger value of max_iters')
+            print('Maximum number of iterations reached, consider'
+                  + 'running again with a larger value of max_iters')
     return peaks
 
 
@@ -678,7 +682,7 @@ def region_size(im):
     Returns
     -------
     An ND array with each voxel value indicating the size of the region to
-    which is belongs.  This is particularly useful for finding chord sizes
+    which it belongs.  This is particularly useful for finding chord sizes
     on the image produced by ``apply_chords``.
     """
     if im.dtype == bool:
@@ -1041,8 +1045,8 @@ def _make_stack(im, include_diagonals=False):
 
 def nphase_border(im, include_diagonals=False):
     r'''
-    Image filter to identify the voxels in regions that border n other regions.
-    Works for 2d and 3d images.
+    Identifies the voxels in regions that border *N* other regions.
+
     Useful for finding triple-phase boundaries.
 
     Parameters

@@ -11,6 +11,7 @@ directly to the binary image.
 .. autofunction:: chord_length_distribution
 .. autofunction:: linear_density
 .. autofunction:: mesh_surface_area
+.. autofunction:: phase_fraction
 .. autofunction:: pore_size_distribution
 .. autofunction:: porosity
 .. autofunction:: porosity_profile
@@ -42,3 +43,4 @@ from .__funcs__ import two_point_correlation_fft
 from .__funcs__ import region_surface_areas
 from .__funcs__ import region_interface_areas
 from .__funcs__ import mesh_surface_area
+from .__funcs__ import phase_fraction

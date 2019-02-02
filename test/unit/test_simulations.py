@@ -25,6 +25,11 @@ class SimulationTest():
         fig, counts, bins, bars = self.mip.plot_size_histogram()
         assert sp.sum(counts) == int(sp.sum(self.mip.result > 0))
 
+    def test_random_walk(self):
+        rw = ps.simulations.RandomWalk(self.im)
+        rw.run()
+        assert rw.im is not None
+
 
 if __name__ == '__main__':
     t = SimulationTest()
