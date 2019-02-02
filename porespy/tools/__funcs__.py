@@ -827,7 +827,7 @@ def pad_faces(im, faces):
         The image that needs to be padded
 
     faces : list of strings
-        The faces labels where image needs to be padded. Given a 3D image
+        Labels indicating where image needs to be padded. Given a 3D image
         of shape ``[x, y, z] = [i, j, k]``, the following conventions are used
         to indicate along which axis the padding should be applied:
 

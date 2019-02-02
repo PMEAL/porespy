@@ -1,7 +1,7 @@
 import scipy as sp
 from porespy.network_extraction import regions_to_network
 from porespy.network_extraction import add_boundary_regions, label_boundary_cells
-from porespy.network_extraction import assign_alias
+from porespy.network_extraction import _create_alias_map
 from porespy.network_extraction import connect_network_phases
 from porespy.filters import snow_partitioning_n
 from porespy.tools import make_contiguous, pad_faces
@@ -15,22 +15,21 @@ def snow_n(im,
            alias=None):
 
     r"""
-    Analyzes an image that has been partitioned into N phase regions
-    and extracts all N phases geometerical information alongwith
-    network connectivity between any ith and jth phase.
+    Analyzes an image that has been segemented into N phases and extracts all
+    a network for each of the N phases, including geometerical information as
+    well as network connectivity between each phase.
 
     Parameters
     ----------
     im : ND-array
         Image of porous material where each phase is represented by unique
-        integer. Phase integer should start from 1. Boolean image will extract
-        only one network labeled with True's only.
+        integer. Phase integer should start from 1 (0 is ignored)
 
     voxel_size : scalar
         The resolution of the image, expressed as the length of one side of a
         voxel, so the volume of a voxel would be **voxel_size**-cubed.  The
         default is 1, which is useful when overlaying the PNM on the original
-        image since the scale of the image is alway 1 unit lenth per voxel.
+        image since the scale of the image is always 1 unit lenth per voxel.
 
     boundary_faces : list of strings
         Boundary faces labels are provided to assign hypothetical boundary
@@ -42,16 +41,17 @@ def snow_n(im,
 
     marching_cubes_area : bool
         If ``True`` then the surface area and interfacial area between regions
-        will be using the marching cube algorithm. This is a more accurate
-        representation of area in extracted network, but is quite slow, so
-        it is ``False`` by default.  The default method simply counts voxels
-        so does not correctly account for the voxelated nature of the images.
+        will be calculated using the marching cube algorithm. This is a more
+        accurate representation of area in extracted network, but is quite
+        slow, so it is ``False`` by default.  The default method simply counts
+        voxels so does not correctly account for the voxelated nature of the
+        images.
 
     alias : dict (Optional)
-        A dictionary that assigns unique image label to specific phase.
-        For example {1: 'Solid'} will show all structural properties associated
-        with label 1 as Solid phase properties.
-        If ``None`` then default labelling will be used i.e {1: 'Phase1',..}.
+        A dictionary that assigns unique image label to specific phases. For
+        example {1: 'Solid'} will show all structural properties associated
+        with label 1 as Solid phase properties. If ``None`` then default
+        labelling will be used i.e {1: 'Phase1',..}.
 
     Returns
     -------
@@ -62,7 +62,7 @@ def snow_n(im,
     """
     # -------------------------------------------------------------------------
     # Get alias if provided by user
-    al = assign_alias(im, alias=alias)
+    al = _create_alias_map(im, alias=alias)
     # -------------------------------------------------------------------------
     # Perform snow on each phase and merge all segmentation and dt together
     snow = snow_partitioning_n(im, r_max=4, sigma=0.4, return_all=True,
@@ -102,9 +102,8 @@ def snow_n(im,
     # label boundary cells
     net = label_boundary_cells(network=net, boundary_faces=f)
     # -------------------------------------------------------------------------
-    # assign out values to dummy dict
 
-    class net_dict(dict):
+    class net_dict(dict):  # assign out values to dummy dict
         pass
     temp = net_dict(net)
     temp.im = im.copy()

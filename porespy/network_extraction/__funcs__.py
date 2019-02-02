@@ -46,6 +46,28 @@ def map_to_regions(regions, values):
 
 def add_boundary_regions(regions=None, faces=['front', 'back', 'left',
                                               'right', 'top', 'bottom']):
+    r"""
+    Add boundary cells to the specified edge of a partitioned image
+
+    Parameters
+    ----------
+    regions : array_like
+        An image containing labelled regions, such as the result from a SNOW
+        algorithm or a watershed segmentation.
+
+    faces : list of strings
+        Labels indicating where image needs to be padded. Given a 3D image
+        of shape ``[x, y, z] = [i, j, k]``, the following conventions are used
+        to indicate along which axis the padding should be applied:
+
+        * 'left' -> ``x = 0``
+        * 'right' -> ``x = i``
+        * 'front' -> ``y = 0``
+        * 'back' -> ``y = j``
+        * 'bottom' -> ``z = 0``
+        * 'top' -> ``z = k``
+
+    """
     # -------------------------------------------------------------------------
     # Edge pad segmentation and distance transform
     if faces is not None:
@@ -137,8 +159,8 @@ def overlay(im1, im2, c):
     im2 : 3D numpy array
         Template voxelated image
 
-    r : int
-        Radius of the cylinder
+    c : array_like
+        ``[x, y, z]`` coordinates into ``im1`` where ``im2`` should be centered
 
     Returns
     -------
@@ -333,9 +355,9 @@ def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
         Number of voxels in the largest dimension of the network
 
     rtol : float
-        Stopping criteria for finding the smallest voxel image such that further
-        increasing the number of voxels in each dimension by 25% would improve
-        the predicted porosity of the image by less that ``rtol``
+        Stopping criteria for finding the smallest voxel image such that
+        further increasing the number of voxels in each dimension by 25% would
+        improve the predicted porosity of the image by less that ``rtol``
 
     Returns
     -------
@@ -385,15 +407,16 @@ def connect_network_phases(net, snow_partitioning_n, voxel_size=1,
                            alias=None,
                            marching_cubes_area=False):
     r"""
-    This function connects networks of two or more than two phases together by
-    interconnecting negibouring nodes inside different phases. The resulting
-    network can be used for the study of transport and kinetics at interphase
-    of two phases.
+    This function connects networks of two or more phases together by
+    interconnecting neighbouring nodes inside different phases.
+
+    The resulting network can be used for the study of transport and kinetics
+    at interphase of two phases.
 
     Parameters
     ----------
     network : 2D or 3D network
-        A dictoionary containing structural information of two or more than two
+        A dictoionary containing structural information of two or more
         phases networks. The dictonary format must be same as porespy
         region_to_network function.
 
@@ -415,7 +438,7 @@ def connect_network_phases(net, snow_partitioning_n, voxel_size=1,
 
     marching_cubes_area : bool
         If ``True`` then the surface area and interfacial area between regions
-        will be using the marching cube algorithm. This is a more accurate
+        will be causing the marching cube algorithm. This is a more accurate
         representation of area in extracted network, but is quite slow, so
         it is ``False`` by default.  The default method simply counts voxels
         so does not correctly account for the voxelated nature of the images.
@@ -424,13 +447,14 @@ def connect_network_phases(net, snow_partitioning_n, voxel_size=1,
     -------
     A dictionary containing network information of individual and connected
     networks. The dictionary names use the OpenPNM convention so it may be
-    converted directly to an OpenPNM network object using the ``update`` command.
+    converted directly to an OpenPNM network object using the ``update``
+    command.
 
     """
     # -------------------------------------------------------------------------
     # Get alias if provided by user
     im = snow_partitioning_n.im
-    al = assign_alias(im, alias=alias)
+    al = _create_alias_map(im, alias=alias)
     # -------------------------------------------------------------------------
     # Find interconnection and interfacial area between ith and jth phases
     conns1 = net['throat.conns'][:, 0]
@@ -496,8 +520,9 @@ def label_boundary_cells(network=None, boundary_faces=None):
 
     Parameters
     ----------
-    network : 2D or 3D network
-        Network should contains nodes coordinates for phase under consideration
+    network : dictionary
+        A dictionary as produced by the SNOW network extraction algorithms
+        containing edge/vertex, site/bond, node/link information.
 
     boundary_faces : list of strings
         The user can choose ‘left’, ‘right’, ‘top’, ‘bottom’, ‘front’ and
@@ -507,9 +532,12 @@ def label_boundary_cells(network=None, boundary_faces=None):
 
     Returns
     -------
-    A dictionary containing boundary nodes labels for example
-    network['pore.left'], network['pore.right'], network['pore.top'],
+    The same dictionar s pass ing, but containing boundary nodes labels.  For
+    example network['pore.left'], network['pore.right'], network['pore.top'],
     network['pore.bottom'] etc.
+
+    Notes
+    -----
     The dictionary names use the OpenPNM convention so it may be converted
     directly to an OpenPNM network object using the ``update`` command.
 
@@ -534,12 +562,11 @@ def label_boundary_cells(network=None, boundary_faces=None):
     return network
 
 
-def assign_alias(im, alias=None):
+def _create_alias_map(im, alias=None):
     r"""
-    The function assigns unique label to specific phase in original image. This
-    alias can be used to distinguish two phase interconnection and properties
-    easily when we have two or more than two phase network during network
-    extraction process.
+    Creates an alias mapping between phases in original image and identifyable
+    names. This mapping is used during network extraction to label
+    interconnection between and properties of each phase.
 
     Parameters
     ----------
@@ -556,8 +583,8 @@ def assign_alias(im, alias=None):
 
     Returns
     -------
-    A dictionary which assigns unique name to all unique labels of phases in
-    original image. If no alias is provided then default labelling is used
+    A dictionary with numerical phase labels as key, and readable phase names
+    as valuies. If no alias is provided then default labelling is used
     i.e {1: 'Phase1',..}
     """
     # -------------------------------------------------------------------------
