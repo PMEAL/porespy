@@ -2,7 +2,7 @@
 Module Reference
 ================
 
-PoreSpy consists of a number of sub-modules for manipulating and analyzing images.  Links to the detailed documentation for each sub-module are provided below.
+The functions contained in PoreSpy are organized into categories, with fairly self-descriptive names.  Links to the detailed documentation for each sub-module are provided below.
 
 .. toctree::
     :maxdepth: 3
