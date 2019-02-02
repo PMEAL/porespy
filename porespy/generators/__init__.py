@@ -10,6 +10,20 @@ This module contains a variety of functions for generating artificial images
 of porous materials, generally for testing, validation, debugging, and
 illustration purposes.
 
+.. autosummary::
+
+    porespy.generators.blobs
+    porespy.generators.bundle_of_tubes
+    porespy.generators.cylinders
+    porespy.generators.insert_shape
+    porespy.generators.lattice_spheres
+    porespy.generators.line_segment
+    porespy.generators.noise
+    porespy.generators.overlapping_spheres
+    porespy.generators.polydisperse_spheres
+    porespy.generators.RSA
+    porespy.generators.voronoi_edges
+
 .. autofunction:: blobs
 .. autofunction:: bundle_of_tubes
 .. autofunction:: cylinders

@@ -8,6 +8,13 @@ visualization
 
 This module contains functions for quickly visualizing 3D images in 2D views.
 
+.. autosummary::
+
+    porespy.visualization.sem
+    porespy.visualization.xray
+    porespy.visualization.set_mpl_style
+    porespy.visualization.show_mesh
+
 .. autofunction:: sem
 .. autofunction:: xray
 .. autofunction:: set_mpl_style

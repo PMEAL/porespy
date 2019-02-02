@@ -6,6 +6,14 @@ io
 
 **Convert Between Formats**
 
+.. autosummary::
+
+    porespy.io.to_vtk
+    porespy.io.dict_to_vtk
+    porespy.io.to_palabos
+    porespy.io.to_openpnm
+    porespy.io.openpnm_to_im
+
 .. autofunction:: to_vtk
 .. autofunction:: dict_to_vtk
 .. autofunction:: to_palabos
