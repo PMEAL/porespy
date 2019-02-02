@@ -2,20 +2,19 @@ import porespy as ps
 import scipy as sp
 import scipy.spatial as sptl
 import scipy.ndimage as spim
-from skimage.segmentation import find_boundaries
-from skimage.morphology import ball, disk, square, cube
-from tqdm import tqdm
+from skimage.morphology import ball, disk
 from porespy.tools import norm_to_uniform
 from typing import List
+from numpy import array
 
 
 def insert_shape(im, center, element, value=1):
     r"""
     """
     if im.ndim != element.ndim:
-        raise Exception('Image shape ' + str(im.shape) +
-                        ' and element shape ' + str(element.shape) +
-                        ' do not match')
+        raise Exception('Image shape ' + str(im.shape)
+                        + ' and element shape ' + str(element.shape)
+                        + ' do not match')
     s_im = []
     s_el = []
     for dim in range(im.ndim):
@@ -30,7 +29,8 @@ def insert_shape(im, center, element, value=1):
     return im
 
 
-def RSA(im, radius, volume_fraction=1, mode='extended'):
+def RSA(im: array, radius: int, volume_fraction: int = 1,
+        mode: str = 'extended'):
     r"""
     Generates a sphere or disk packing using Random Sequential Addition, which
     ensures that spheres do not overlap but does not guarantee they are
@@ -171,7 +171,8 @@ def bundle_of_tubes(shape: List[int], spacing: int):
 def polydisperse_spheres(shape: List[int], porosity: float, dist,
                          nbins: int = 5):
     r"""
-    Create an image of spheres with a distribution of radii.
+    Create an image of randomly place, overlapping spheres with a distribution
+    of radii.
 
     Parameters
     ----------
@@ -187,10 +188,10 @@ def polydisperse_spheres(shape: List[int], porosity: float, dist,
         after the image is generated.
 
     dist : scipy.stats distribution object
-        This should be an initialized distribution the large number of options
-        in the scipy.stats submodule.  For instance, a normal distribution with
-        a mean of 20 and a standard deviation of 10 can be obtain with
-        ``dist = scipy.stats.norm(loc=20, scale=10)``
+        This should be an initialized distribution chosen from the large number
+        of options in the ``scipy.stats`` submodule.  For instance, a normal
+        distribution with a mean of 20 and a standard deviation of 10 can be
+        obtained with ``dist = scipy.stats.norm(loc=20, scale=10)``
 
     nbins : scalar
         The number of discrete sphere sizes that will be used to generate the
@@ -254,18 +255,18 @@ def voronoi_edges(shape: List[int], radius: int, ncells: int,
         # Reflect base points
         Nx, Ny, Nz = shape
         orig_pts = base_pts
-        base_pts = sp.vstack((base_pts, [-1, 1, 1]*orig_pts +
-                                        [2.0*Nx, 0, 0]))
-        base_pts = sp.vstack((base_pts, [1, -1, 1]*orig_pts +
-                                        [0, 2.0*Ny, 0]))
-        base_pts = sp.vstack((base_pts, [1, 1, -1]*orig_pts +
-                                        [0, 0, 2.0*Nz]))
-        base_pts = sp.vstack((base_pts, [-1, 1, 1]*orig_pts))
-        base_pts = sp.vstack((base_pts, [1, -1, 1]*orig_pts))
-        base_pts = sp.vstack((base_pts, [1, 1, -1]*orig_pts))
+        base_pts = sp.vstack((base_pts,
+                              [-1, 1, 1] * orig_pts + [2.0*Nx, 0, 0]))
+        base_pts = sp.vstack((base_pts,
+                              [1, -1, 1] * orig_pts + [0, 2.0*Ny, 0]))
+        base_pts = sp.vstack((base_pts,
+                              [1, 1, -1] * orig_pts + [0, 0, 2.0*Nz]))
+        base_pts = sp.vstack((base_pts, [-1, 1, 1] * orig_pts))
+        base_pts = sp.vstack((base_pts, [1, -1, 1] * orig_pts))
+        base_pts = sp.vstack((base_pts, [1, 1, -1] * orig_pts))
     vor = sptl.Voronoi(points=base_pts)
     vor.vertices = sp.around(vor.vertices)
-    vor.vertices *= (sp.array(im.shape)-1)/sp.array(im.shape)
+    vor.vertices *= (sp.array(im.shape)-1) / sp.array(im.shape)
     vor.edges = _get_Voronoi_edges(vor)
     for row in vor.edges:
         pts = vor.vertices[row].astype(int)

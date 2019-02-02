@@ -3,12 +3,11 @@ import scipy as sp
 import scipy.ndimage as spim
 import matplotlib.pyplot as plt
 import pytest
-from skimage.morphology import disk, ball
-plt.close('all')
 
 
 class ToolsTest():
     def setup_class(self):
+        plt.close('all')
         self.im = sp.random.randint(0, 10, 20)
         sp.random.seed(0)
         self.blobs = ps.generators.blobs(shape=[101, 101])
@@ -51,8 +50,8 @@ class ToolsTest():
         sec = ps.tools.extract_subsection(self.blobs, [0.5])
         assert sp.all(sp.array(sp.shape(sec)) == 50)
 
-    def test_extract_cylinder(self):
-        cyl = ps.tools.extract_cylinder(self.im3D)
+    # def test_extract_cylinder(self):
+    #     cylinder = ps.tools.extract_cylinder(self.im3D)
 
     def test_bbox_to_slices(self):
         s = ps.tools.bbox_to_slices([0, 0, 0, 10, 10, 10])

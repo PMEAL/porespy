@@ -1,11 +1,10 @@
 import scipy as sp
 import scipy.ndimage as spim
 from tqdm import tqdm
-from porespy.tools import extract_subsection, bbox_to_slices, extend_slice
+from porespy.tools import extract_subsection, bbox_to_slices
 from skimage.measure import regionprops
 from skimage.measure import mesh_surface_area, marching_cubes_lewiner
-from skimage.morphology import skeletonize_3d, ball, disk
-from sklearn.feature_extraction.image import grid_to_graph
+from skimage.morphology import skeletonize_3d, ball
 from pandas import DataFrame
 
 
@@ -179,9 +178,5 @@ def regionprops_3D(im):
         # ---------------------------------------------------------------------
         # Volume of convex image, equal to area in 2D, so just translating
         results[i].convex_volume = results[i].convex_area
-        # ---------------------------------------------------------------------
-        # Convert region grid to a graph
-        am = grid_to_graph(*mask.shape, mask=mask)
-        results[i].graph = am
 
     return results
