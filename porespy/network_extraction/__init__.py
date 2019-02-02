@@ -1,12 +1,17 @@
 r"""
 
 ===============================================================================
-networks
+network extraction
 ===============================================================================
 
 **Obtain Network Representations**
 
 Contains functions for extracting pore networks from images.
+
+.. autosummary::
+
+    porespy.network_extraction.snow
+    porespy.network_extraction.snow_dual
 
 .. autofunction:: snow
 .. autofunction:: snow_dual

@@ -15,7 +15,7 @@ them out.
     porespy.filters
     porespy.metrics
     porespy.generators
-    porespy.networks
+    porespy.network_extraction
     porespy.tools
     porespy.io
     porespy.visualization
@@ -111,6 +111,6 @@ from . import tools
 from . import filters
 from . import generators
 from . import simulations
-from . import networks
+from . import network_extraction
 from . import visualization
 from . import io

@@ -1,8 +1,8 @@
 .. _networks:
 
 --------------------------------------------------------------------------------
-networks
+network_extraction
 --------------------------------------------------------------------------------
-
-.. automodule:: porespy.networks
+  
+.. automodule:: porespy.network_extraction
    :members:
