@@ -1,7 +1,7 @@
-.. _io:
+.. _visualization:
 
 --------------------------------------------------------------------------------
-**visualization** - Create Basic Views
+visualization
 --------------------------------------------------------------------------------
 
 .. automodule:: porespy.visualization

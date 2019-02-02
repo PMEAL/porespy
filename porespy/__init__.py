@@ -10,33 +10,20 @@ standard image analysis functions, so really only offer the convenience of
 organizing the functions into one place, and sparing you the trouble of working
 them out.
 
--------
-Modules
--------
+.. autosummary::
 
-This package consists of several modules, the purposes of which are given below:
-
-+------------------------+----------------------------------------------------+
-| **filters**            | Process images based on structural features        |
-+------------------------+----------------------------------------------------+
-| **generators**         | Make artificial images for testing & illustration  |
-+------------------------+----------------------------------------------------+
-| **metrics**            | Obtain quantitative information from images        |
-+------------------------+----------------------------------------------------+
-| **network_extraction** | Extract pore network models from images            |
-+------------------------+----------------------------------------------------+
-| **simulations**        | Performing complex simulations directly on an image|
-+------------------------+----------------------------------------------------+
-| **tools**              | Utilities for altering & manipulating images       |
-+------------------------+----------------------------------------------------+
-| **visualization**      | Quickly but rough visualization of 3D images       |
-+------------------------+----------------------------------------------------+
-| **io**                 | Import and export image data in various formats    |
-+------------------------+----------------------------------------------------+
+    porespy.filters
+    porespy.metrics
+    porespy.generators
+    porespy.networks
+    porespy.tools
+    porespy.io
+    porespy.visualization
 
 -------------
 Example Usage
 -------------
+
 Below is a basic workflow that one my use PoreSpy for.  Start by importing
 PoreSpy and Matplotlib for visualizing:
 
@@ -116,12 +103,14 @@ transforms and image morphology.  The advantage of PoreSpy is the flexibility
 offered by the Python environment.
 
 '''
+
 __version__ = "0.4.1"
+
 from . import metrics
 from . import tools
 from . import filters
 from . import generators
 from . import simulations
-from . import network_extraction
+from . import networks
 from . import visualization
 from . import io

@@ -1,6 +1,5 @@
 import scipy as sp
-from porespy.network_extraction import regions_to_network
-from porespy.network_extraction import add_boundary_regions
+from porespy.networks import regions_to_network, add_boundary_regions
 from porespy.filters import snow_partitioning
 from porespy.metrics import region_surface_areas, region_interface_areas
 

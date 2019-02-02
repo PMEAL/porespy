@@ -4,9 +4,4 @@
 User Guide
 ==========
 
-.. currentmodule:: porespy
-
-.. autosummary::
-
-
 .. automodule:: porespy

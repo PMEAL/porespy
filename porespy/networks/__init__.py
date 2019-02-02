@@ -1,11 +1,19 @@
 r"""
-This module contains functions for extracting pore networks from images.
+
+===============================================================================
+networks
+===============================================================================
+
+**Obtain Network Representations**
+
+Contains functions for extracting pore networks from images.
 
 .. autofunction:: snow
 .. autofunction:: snow_dual
 .. autofunction:: regions_to_network
 .. autofunction:: add_boundary_regions
 .. autofunction:: map_to_regions
+.. autofunction:: generate_voxel_image
 
 """
 

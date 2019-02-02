@@ -10,8 +10,7 @@ PoreSpy consists of a number of sub-modules for manipulating and analyzing image
     generators.rst
     filters.rst
     metrics.rst
-    network_extraction.rst
+    networks.rst
     tools.rst
     io.rst
     visualization.rst
-    simulations.rst

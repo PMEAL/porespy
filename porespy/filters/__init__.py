@@ -1,7 +1,10 @@
 r"""
-=======
-Filters
-=======
+
+===============================================================================
+filters
+===============================================================================
+
+*Highlight Features of Interest*
 
 This module contains a variety of functions for altering images based on the
 structural characteristics, such as pore sizes.  A definition of a *filter* is

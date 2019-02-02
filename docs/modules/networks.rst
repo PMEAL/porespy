@@ -1,8 +1,8 @@
-.. _simulations:
+.. _networks:
 
 --------------------------------------------------------------------------------
-**simulations** - Perform Physics-Based Analysis
+networks
 --------------------------------------------------------------------------------
 
-.. automodule:: porespy.simulations
+.. automodule:: porespy.networks
    :members:

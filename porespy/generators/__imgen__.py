@@ -423,7 +423,7 @@ def overlapping_spheres(shape: List[int], radius: int, porosity: float):
     ----------
     shape : list
         The size of the image to generate in [Nx, Ny, Nz] where Ni is the
-        number of voxels in the *i*th direction.
+        number of voxels in the i-th direction.
 
     radius : scalar
         The radius of spheres in the packing.
@@ -435,7 +435,7 @@ def overlapping_spheres(shape: List[int], radius: int, porosity: float):
 
     Returns
     -------
-    A boolean array with True values denoting the pore space
+    A boolean array with ``True`` values denoting the pore space
 
     Notes
     -----

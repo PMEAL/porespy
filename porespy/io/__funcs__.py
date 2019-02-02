@@ -4,7 +4,7 @@ from scipy import ndimage as spim
 from pyevtk.hl import imageToVTK
 import scipy.ndimage as nd
 from pathlib import Path
-from porespy.network_extraction import generate_voxel_image
+from porespy.networks import generate_voxel_image
 
 
 def dict_to_vtk(data, path='./dictvtk', voxel_size=1, origin=(0, 0, 0)):

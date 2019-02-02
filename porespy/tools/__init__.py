@@ -1,7 +1,10 @@
 r'''
-=====
+
+===============================================================================
 Tools
-=====
+===============================================================================
+
+**Helper Functions**
 
 This module contains a variety of functions for manipulating images in ways
 that do NOT return a modified version of the original image.

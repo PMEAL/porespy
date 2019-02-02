@@ -118,7 +118,7 @@ def radial_density(im, bins=10, voxel_size=1):
             F(r) = \int_r^\infty P(r)dr
 
     which gives the fraction of pore-space with a radius larger than *r*. This
-    is equivalent as the cumulative distribution function (*cdf*).
+    is equivalent to the cumulative distribution function (*cdf*).
 
     Parameters
     ----------
@@ -152,10 +152,10 @@ def radial_density(im, bins=10, voxel_size=1):
     values near the solid walls.  Nonetheless, it does provide a useful
     indicator and it's mathematical formalism is handy.
 
-    Torquato refers to this as the pore-size density function, and mentions
-    that it is also known as the pore-size distribution function.  These
-    terms are avoided here since they have very specific connotations, and
-    this function does not satisfy them.
+    Torquato refers to this as the *pore-size density function*, and mentions
+    that it is also known as the *pore-size distribution function*.  These
+    terms are avoided here since they have specific connotations in porous
+    media analysis.
 
     References
     ----------

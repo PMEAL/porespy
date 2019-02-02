@@ -1,11 +1,14 @@
 r"""
-=======
-Metrics
-=======
 
-A suite of tools for determine key metrics about an image.  Typically these are
-applied to an image after applying a filter, but a few functions can be applied
-directly to the binary image.
+===============================================================================
+metrics
+===============================================================================
+
+**Extract Quantitative Information**
+
+This submodule contains functions for determining key metrics about an image.
+Typically these are applied to an image after applying a filter, but a few
+functions can be applied directly to the binary image.
 
 .. autofunction:: chord_counts
 .. autofunction:: chord_length_distribution
