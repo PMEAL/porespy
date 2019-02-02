@@ -1,6 +1,0 @@
-porespy.tools.extend\_slice
-===========================
-
-.. currentmodule:: porespy.tools
-
-.. autofunction:: extend_slice

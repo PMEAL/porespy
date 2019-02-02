@@ -1,10 +1,8 @@
-.. _metrics:
+.. _io:
 
 --------------------------------------------------------------------------------
-**metrics** - Extract Quantitative Information
+**visualization** - Create Basic Views
 --------------------------------------------------------------------------------
 
-
-
-.. automodule:: porespy.metrics
+.. automodule:: porespy.visualization
    :members:

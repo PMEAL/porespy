@@ -1,10 +1,8 @@
-.. _metrics:
+.. _simulations:
 
 --------------------------------------------------------------------------------
-**metrics** - Extract Quantitative Information
+**simulations** - Perform Physics-Based Analysis
 --------------------------------------------------------------------------------
 
-
-
-.. automodule:: porespy.metrics
+.. automodule:: porespy.simulations
    :members:

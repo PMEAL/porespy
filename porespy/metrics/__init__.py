@@ -20,7 +20,7 @@ directly to the binary image.
 .. autofunction:: radial_density
 .. autofunction:: region_interface_areas
 .. autofunction:: region_surface_areas
-.. autofunction:: regionprops_3d
+.. autofunction:: regionprops_3D
 .. autofunction:: representative_elementary_volume
 .. autofunction:: two_point_correlation_bf
 .. autofunction:: two_point_correlation_fft
