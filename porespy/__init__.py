@@ -5,16 +5,18 @@ PoreSpy
 
 PoreSpy is a collection of functions that are especially useful for analyzing
 3D, binary images of porous materials, typically produced by X-ray tomography.
-The functions in this collection are often simple combinations of other
+The functions in this collection are mostly simple combinations of other
 standard image analysis functions, so really only offer the convenience of
 organizing the functions into one place, and sparing you the trouble of working
 them out.
 
+PoreSpy consists of the following sub-modules:
+
 .. autosummary::
 
+    porespy.generators
     porespy.filters
     porespy.metrics
-    porespy.generators
     porespy.network_extraction
     porespy.tools
     porespy.io
@@ -24,8 +26,8 @@ them out.
 Example Usage
 -------------
 
-Below is a basic workflow that one my use PoreSpy for.  Start by importing
-PoreSpy and Matplotlib for visualizing:
+Below is a basic workflow that one may use PoreSpy for.  Start by importing
+PoreSpy, and Matplotlib for visualizing:
 
 >>> import porespy as ps
 >>> import matplotlib.pyplot as plt
@@ -42,15 +44,15 @@ This image can now be subjected to various filters from the ``filters``
 sub-module.  Let's simulate a non-wetting phase invasion, experimentally
 knonw as porosimetry. The image returned by the ``porosimetry`` function
 replaces each voxel in the void space with a numerical value representing
-the radius that the fluid menisci must adopt in order to penetrate to portion
-of the image.
+the radius that the fluid menisci must adopt in order to penetrate to the
+corresponding portion of the image.
 
 >>> mip = ps.filters.porosimetry(im)
 >>> ax[1].imshow(mip)
 
-This image can be passed to a function in the ``metrics`` module that analyzes
-the numerical values in the image and creates a pore-size distribution suitable
-for plotting:
+This fitered image can be passed to a function in the ``metrics`` module that
+analyzes the numerical values in the image and creates a pore-size
+distribution suitable for plotting:
 
 >>> PcSw = ps.metrics.pore_size_distribution(mip)
 >>> ax[2].plot(PcSw.logR, PcSw.satn)
