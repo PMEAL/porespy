@@ -71,10 +71,8 @@ def distance_transform_lin(im, axis=0, mode='both'):
 def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, return_all=False, mask=True,
                       randomize=True):
     r"""
-    This function partitions the void space into pore regions using a
-    marker-based watershed algorithm.  The key to this function is that true
-    local maximum of the distance transform are found by trimming various
-    types of extraneous peaks.
+    Partitions the void space into pore regions using a marker-based watershed
+    algorithm, with specially filtered peaks as markers.
 
     The SNOW network extraction algorithm (Sub-Network of an Over-segmented
     Watershed) was designed to handle to perculiarities of high porosity
@@ -112,8 +110,10 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, return_all=False, mask=Tr
     -------
     An image the same shape as ``im`` with the void space partitioned into
     pores using a marker based watershed with the peaks found by the
-    SNOW algorithm [1].  If ``return_all`` is ``True`` then a **named tuple**
-    is returned with the following attribute:
+    SNOW algorithm [1].
+
+    If ``return_all`` is ``True`` then a **named tuple** is returned with the
+    following attribute:
 
         * ``im``: The binary image of the void space
         * ``dt``: The distance transform of the image
@@ -539,8 +539,9 @@ def trim_nonpercolating_paths(im, inlet_axis=0, outlet_axis=0):
 
 def trim_extrema(im, h, mode='maxima'):
     r"""
-    This trims local extrema in greyscale values by a specified amount,
-    essentially decapitating peaks or flooding valleys, or both.
+    Trims local extrema in greyscale values by a specified amount.
+
+    This essentially decapitates peaks and/or floods valleys.
 
     Parameters
     ----------

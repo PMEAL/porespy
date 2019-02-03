@@ -8,29 +8,29 @@ Getting Started
 Requirements
 ------------
 
-**Software:** PoreSpy relies on the Scipy stack, which includes Numpy, Matplotlib, and Scikit-Image, among others.  These packages are difficult to install from source, so it's highly recommended to download the Anaconda Python Distrubution install for your platform, which will install all of these packages for you (and many more!).  Once this is done, you can then run the installation of PoreSpy as described in the next section.
+**Software:** PoreSpy relies on the Scipy stack, which includes Numpy, Matplotlib, and Scikit-Image, among others.  These packages are difficult to install from source, so it's highly recommended to download the Anaconda Python Distribution installer for your platform, which will install all of these packages for you (and many more!).  Once this is done, you can then run the installation of PoreSpy as described in the next section.
 
-**Hardware:** Although there are no technical requirements, it must be noted that working with large images (>500**3) requires a substantial computer, with perhaps 16 or 32 GB of RAM.  You can work on small images using normal computers to develop work flows, then size up to a larger computer for application on larger images.
+**Hardware:** Although there are no technical requirements, it must be noted that working with large images (>500\*\*3) requires a substantial computer, with perhaps 16 or 32 GB of RAM.  You can work on small images using normal computers to develop work flows, then size up to a larger computer for application on larger images.
 
 ------------
-Installation    
+Installation
 ------------
 
 PoreSpy is available on the Python Package Index (PyPI) and can be installed with the usual ``pip`` command as follows:
 
-.. code-block:: none
+::
 
     pip install porespy
 
 When installing in this way, the source code is stored somewhere deep within the Python installation folder, so it's not convenient to play with or alter the code.  If you wish to customize the code, then it might be better to download the source code from github into a personal directory (e.g C:\\PoreSpy) then install as follows:
 
 
-.. code-block:: none
+::
 
-    pip install -e C:\PoreSpy
+    pip install -e 'C:\PoreSpy'
 
 The '-e' argument means that the package is 'editable' so any changes you make to the code will be available the next time that porespy is imported.
-    
+
 -----------
 Basic Usage
 -----------
