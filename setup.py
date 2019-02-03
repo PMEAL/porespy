@@ -22,6 +22,8 @@ with open("README.md", "r") as fh:
 setup(
     name='porespy',
     description='A set of tools for analyzing 3D images of porous materials',
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     version=main_['__version__'],
     classifiers=['Development Status :: 3 - Alpha',
                  'License :: OSI Approved :: MIT License',
