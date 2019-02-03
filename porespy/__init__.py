@@ -38,7 +38,7 @@ generating images useful for testing and demonstration.  Let's create an image
 of *blobs* wtih 50% porosity and blobiness of 1:
 
 >>> im = ps.generators.blobs([600, 300], porosity=0.5, blobiness=1)
->>> ax[0].imshow(im)
+>>> fig = ax[0].imshow(im)
 
 This image can now be subjected to various filters from the ``filters``
 sub-module.  Let's simulate a non-wetting phase invasion, experimentally
@@ -48,14 +48,14 @@ the radius that the fluid menisci must adopt in order to penetrate to the
 corresponding portion of the image.
 
 >>> mip = ps.filters.porosimetry(im)
->>> ax[1].imshow(mip)
+>>> fig = ax[1].imshow(mip)
 
 This fitered image can be passed to a function in the ``metrics`` module that
 analyzes the numerical values in the image and creates a pore-size
 distribution suitable for plotting:
 
 >>> PcSw = ps.metrics.pore_size_distribution(mip)
->>> ax[2].plot(PcSw.logR, PcSw.satn)
+>>> fig = ax[2].plot(PcSw.logR, PcSw.satn)
 
 Finally, the results look like:
 
