@@ -1,10 +1,33 @@
 r'''
-=====
+
+===============================================================================
 Tools
-=====
+===============================================================================
+
+**Helper Functions**
 
 This module contains a variety of functions for manipulating images in ways
 that do NOT return a modified version of the original image.
+
+.. autosummary::
+
+    porespy.tools.bbox_to_slices
+    porespy.tools.extend_slice
+    porespy.tools.extract_subsection
+    porespy.tools.extract_cylinder
+    porespy.tools.fftmorphology
+    porespy.tools.find_outer_region
+    porespy.tools.get_border
+    porespy.tools.get_planes
+    porespy.tools.get_slice
+    porespy.tools.in_hull
+    porespy.tools.make_contiguous
+    porespy.tools.mesh_region
+    porespy.tools.norm_to_uniform
+    porespy.tools.randomize_colors
+    porespy.tools.subdivide
+    porespy.tools.ps_disk
+    porespy.tools.ps_ball
 
 .. autofunction:: bbox_to_slices
 .. autofunction:: extend_slice

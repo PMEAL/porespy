@@ -5,4 +5,3 @@ User Guide
 ==========
 
 .. automodule:: porespy
-    

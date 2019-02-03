@@ -118,7 +118,7 @@ def radial_density(im, bins=10, voxel_size=1):
             F(r) = \int_r^\infty P(r)dr
 
     which gives the fraction of pore-space with a radius larger than *r*. This
-    is equivalent as the cumulative distribution function (*cdf*).
+    is equivalent to the cumulative distribution function (*cdf*).
 
     Parameters
     ----------
@@ -152,10 +152,10 @@ def radial_density(im, bins=10, voxel_size=1):
     values near the solid walls.  Nonetheless, it does provide a useful
     indicator and it's mathematical formalism is handy.
 
-    Torquato refers to this as the pore-size density function, and mentions
-    that it is also known as the pore-size distribution function.  These
-    terms are avoided here since they have very specific connotations, and
-    this function does not satisfy them.
+    Torquato refers to this as the *pore-size density function*, and mentions
+    that it is also known as the *pore-size distribution function*.  These
+    terms are avoided here since they have specific connotations in porous
+    media analysis.
 
     References
     ----------
@@ -194,6 +194,10 @@ def porosity(im):
     -------
     porosity : float
         Calculated as the sum of all 1's divided by the sum of all 1's and 0's.
+
+    See Also
+    --------
+    phase_fraction
 
     Notes
     -----
@@ -659,7 +663,7 @@ def region_interface_areas(regions, areas, voxel_size=1, strel=None):
     # Interfacial area calculation
     cn = sp.array(cn)
     ia = 0.5 * (sa[cn[:, 0]] + sa[cn[:, 1]] - sa_combined)
-    ia[ia < 0] = 1
+    ia[ia <= 0] = 1
     result = namedtuple('interfacial_areas', ('conns', 'area'))
     result.conns = cn
     result.area = ia * voxel_size**2
@@ -745,3 +749,39 @@ def mesh_surface_area(mesh=None, verts=None, faces=None):
             raise Exception('Either mesh or verts and faces must be given')
     surface_area = measure.mesh_surface_area(verts, faces)
     return surface_area
+
+
+def phase_fraction(im, normed=True):
+    r"""
+    Calculates the number (or fraction) of each phase in an image
+
+    Parameters
+    ----------
+    im : ND-array
+        An ND-array containing integer values
+    normed : Boolean
+        If ``True`` (default) the returned values are normalized by the total
+        number of voxels in image, otherwise the voxel count of each phase is
+        returned.
+
+    Returns
+    -------
+    A array of length max(im) with each element containing the number of voxels
+    found with the corresponding label.
+
+    See Also
+    --------
+    porosity
+
+    """
+    if im.dtype == bool:
+        im = im.astype(int)
+    elif im.dtype != int:
+        raise Exception('Image must contain integer values for each phase')
+    labels = sp.arange(0, sp.amax(im)+1)
+    results = sp.zeros_like(labels)
+    for i in labels:
+        results[i] = sp.sum(im == i)
+    if normed:
+        results = results/im.size
+    return results

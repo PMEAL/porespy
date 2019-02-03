@@ -79,7 +79,9 @@ def regions_to_network(im, dt=None, voxel_size=1):
         pore_dt = spim.distance_transform_edt(padded_mask)
         s_offset = sp.array([i.start for i in s])
         p_label[pore] = i
-        p_coords[pore, :] = spim.center_of_mass(pore_im) + s_offset
+        # p_coords[pore, :] = spim.center_of_mass(pore_im) + s_offset
+        peaks = sp.vstack(sp.where(pore_dt == pore_dt.max())).T
+        p_coords[pore, :] = peaks[0] + s_offset
         p_volume[pore] = sp.sum(pore_im)
         p_dia_local[pore] = 2*sp.amax(pore_dt)
         p_dia_global[pore] = 2*sp.amax(sub_dt)

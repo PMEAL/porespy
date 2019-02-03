@@ -1,8 +1,8 @@
 import scipy as sp
-from porespy.network_extraction import regions_to_network
-from porespy.network_extraction import add_boundary_regions
+from porespy.network_extraction import regions_to_network, add_boundary_regions
 from porespy.filters import snow_partitioning
 from porespy.metrics import region_surface_areas, region_interface_areas
+# pass
 
 
 def snow_dual(im, voxel_size=1,
@@ -10,9 +10,8 @@ def snow_dual(im, voxel_size=1,
               marching_cubes_area=False):
 
     r"""
-    Analyzes an image that has been partitioned into void and solid regions
-    and extracts the void and solid phase geometry as well as network
-    connectivity.
+    Extracts a dual pore and solid network from a binary image using a modified
+    version of the SNOW algorithm
 
     Parameters
     ----------
@@ -47,6 +46,17 @@ def snow_dual(im, voxel_size=1,
     the network topological information.  The dictionary names use the OpenPNM
     convention (i.e. 'pore.coords', 'throat.conns') so it may be converted
     directly to an OpenPNM network object using the ``update`` command.
+
+    References
+    ----------
+    [1] Gostick, J. "A versatile and efficient network extraction algorithm
+    using marker-based watershed segmenation".  Phys. Rev. E 96, 023307 (2017)
+
+    [2] Khan, ZA et al.  "Dual network extraction algorithm to investigate
+    multiple transport processes in porous materials: Image-based modeling
+    of pore and grain-scale processes. Computers and Chemical Engineering.
+    123(6), 64-77 (2019)
+
     """
     # -------------------------------------------------------------------------
     # SNOW void phase
@@ -93,10 +103,10 @@ def snow_dual(im, voxel_size=1,
     # -------------------------------------------------------------------------
     # Extract marching cube surface area and interfacial area of regions
     if marching_cubes_area:
-        areas = region_surface_areas(regions=regions, voxel_size=voxel_size)
-        net['pore.surface_area'] = areas
+        areas = region_surface_areas(regions=regions)
         interface_area = region_interface_areas(regions=regions, areas=areas,
                                                 voxel_size=voxel_size)
+        net['pore.surface_area'] = areas * voxel_size**2
         net['throat.area'] = interface_area.area
     # -------------------------------------------------------------------------
     # Find void to void, void to solid and solid to solid throat conns

@@ -4,46 +4,70 @@ PoreSpy
 =======
 
 PoreSpy is a collection of functions that are especially useful for analyzing
-binary images of porous materials, typically produced by X-ray tomography.
-The functions in this collection are often simple combinations of other
+3D, binary images of porous materials, typically produced by X-ray tomography.
+The functions in this collection are mostly simple combinations of other
 standard image analysis functions, so really only offer the convenience of
 organizing the functions into one place, and sparing you the trouble of working
 them out.
 
--------
-Modules
--------
+PoreSpy consists of the following sub-modules:
 
-This package consists of several modules, the purposes of which are given below:
+.. autosummary::
 
-+------------------------+----------------------------------------------------+
-| **filters**            | Process images based on structural features        |
-+------------------------+----------------------------------------------------+
-| **generators**         | Make artificial images for testing & illustration  |
-+------------------------+----------------------------------------------------+
-| **metrics**            | Obtain quantitative information from images        |
-+------------------------+----------------------------------------------------+
-| **network_extraction** | Extract pore network models from images            |
-+------------------------+----------------------------------------------------+
-| **simulations**        | Performing complex simulations directly on an image|
-+------------------------+----------------------------------------------------+
-| **tools**              | Utilities for altering & manipulating images       |
-+------------------------+----------------------------------------------------+
-| **visualization**      | Quickly but rough visualization of 3D images       |
-+------------------------+----------------------------------------------------+
-| **io**                 | Import and export image data in various formats    |
-+------------------------+----------------------------------------------------+
+    porespy.generators
+    porespy.filters
+    porespy.metrics
+    porespy.network_extraction
+    porespy.tools
+    porespy.io
+    porespy.visualization
 
 -------------
 Example Usage
 -------------
 
+Below is a basic workflow that one may use PoreSpy for.  Start by importing
+PoreSpy, and Matplotlib for visualizing:
+
 >>> import porespy as ps
 >>> import matplotlib.pyplot as plt
->>> im = ps.generators.blobs([100, 100])
+>>> fig, ax = plt.subplots(1, 3)
+
+PoreSpy includes a ``generators`` module, which has several functions for
+generating images useful for testing and demonstration.  Let's create an image
+of *blobs* wtih 50% porosity and blobiness of 1:
+
+>>> im = ps.generators.blobs([600, 300], porosity=0.5, blobiness=1)
+>>> fig = ax[0].imshow(im)
+
+This image can now be subjected to various filters from the ``filters``
+sub-module.  Let's simulate a non-wetting phase invasion, experimentally
+knonw as porosimetry. The image returned by the ``porosimetry`` function
+replaces each voxel in the void space with a numerical value representing
+the radius that the fluid menisci must adopt in order to penetrate to the
+corresponding portion of the image.
+
 >>> mip = ps.filters.porosimetry(im)
+>>> fig = ax[1].imshow(mip)
+
+This fitered image can be passed to a function in the ``metrics`` module that
+analyzes the numerical values in the image and creates a pore-size
+distribution suitable for plotting:
+
 >>> PcSw = ps.metrics.pore_size_distribution(mip)
->>> fig = plt.plot(PcSw.logR, PcSw.satn)
+>>> fig = ax[2].plot(PcSw.logR, PcSw.satn)
+
+Finally, the results look like:
+
+.. image::  ./_static/example_porosimetry.png
+
+
+More detailed examples of the various functions are included in the package
+itself under the ``examples`` folder.  Instead of navigating to the source
+code on your computer, it is much better to visit the Github website where
+the examples are rendered in nicely formated Jupyter notebooks:
+
+https://github.com/PMEAL/porespy/tree/master/examples
 
 ----------------
 Related Packages
@@ -64,11 +88,11 @@ natively, but only when necessary.
 Image Types
 -----------
 
-PoreSpy is meant to work on single-channel, binary images.  Such images are
-conveniently represented by Numpy arrays, hence all references to an *image* is
-equivalent to an *array*.  It is further assumed that the arrays are binarized,
-meaning 1's or True values indicating the void space, and 0's or False values
-for the solid.
+PoreSpy is meant to work on single-channel, binary or greyscale images.  Such
+images are conveniently represented by Numpy arrays, hence all references to an
+*image* is equivalent to an *array*.  It is further assumed that the arrays are
+binarized, meaning 1's or ``True`` values indicating the void space, and 0's or
+``False`` values for the solid.
 
 -----------
 Limitations
@@ -81,7 +105,9 @@ transforms and image morphology.  The advantage of PoreSpy is the flexibility
 offered by the Python environment.
 
 '''
-__version__ = "0.4.1"
+
+__version__ = "0.4.2"
+
 from . import metrics
 from . import tools
 from . import filters
