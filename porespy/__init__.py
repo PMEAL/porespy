@@ -106,7 +106,7 @@ offered by the Python environment.
 
 '''
 
-__version__ = "0.4.1"
+__version__ = "0.4.2"
 
 from . import metrics
 from . import tools
