@@ -61,7 +61,6 @@ from .__funcs__ import find_disconnected_voxels
 from .__funcs__ import find_dt_artifacts
 from .__funcs__ import find_peaks
 from .__funcs__ import flood
-#from .__funcs__ import hold_peaks
 from .__funcs__ import local_thickness
 from .__funcs__ import porosimetry
 from .__funcs__ import reduce_peaks
