@@ -1,10 +1,13 @@
 import pickle
 import numpy as np
 from scipy import ndimage as spim
-from pyevtk.hl import imageToVTK
 import scipy.ndimage as nd
 from pathlib import Path
 from porespy.network_extraction import generate_voxel_image
+try:
+    from pyevtk.hl import imageToVTK
+except ImportError:
+    print("warning: pyevtk must be install manually")
 
 
 def dict_to_vtk(data, path='./dictvtk', voxel_size=1, origin=(0, 0, 0)):
