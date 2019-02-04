@@ -19,6 +19,8 @@
 
 import os
 import sys
+import datetime
+
 sys.path.insert(0, os.path.abspath('.'))
 sys.path.insert(0, os.path.abspath('../'))
 print(sys.path)
@@ -33,15 +35,14 @@ print(sys.path)
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
+
 extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.napoleon',
               'sphinx.ext.autosummary',
               'sphinx.ext.ifconfig',
-              'sphinx.ext.mathjax',
               'sphinx.ext.viewcode',
-              'numpydoc']
+              'sphinx.ext.mathjax',]
 
-autosummary_generate = True
 exclude_patterns = ['_build', '_templates']
 
 # Add any paths that contain templates here, relative to this directory.
@@ -57,8 +58,10 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
+
 project = 'PoreSpy'
-copyright = '2018, PMEAL Team'
+year = datetime.datetime.now().year
+copyright = '%d PoreSpy Team' % year
 author = 'PMEAL Team'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -88,6 +91,23 @@ pygments_style = 'sphinx'
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = False
 
+# A list of ignored prefixes for module index sorting.
+modindex_common_prefix = ['porespy']
+
+# If false, no module index is generated.
+html_domain_indices = True
+
+# If false, no index is generated.
+html_use_index = True
+
+# If true, the index is split into individual pages for each letter.
+html_split_index = True
+
+# If true, links to the reST sources are added to the pages.
+html_show_sourcelink = False
+
+# If true, "Created using Sphinx" is shown in the HTML footer. Default is True.
+html_show_sphinx = False
 
 # -- Options for HTML output ----------------------------------------------
 
