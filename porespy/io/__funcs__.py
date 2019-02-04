@@ -6,7 +6,7 @@ from pathlib import Path
 from porespy.network_extraction import generate_voxel_image
 try:
     from pyevtk.hl import imageToVTK
-except ImportError:
+except ModuleNotFoundError:
     print("warning: pyevtk must be install manually")
 
 
