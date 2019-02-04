@@ -374,6 +374,6 @@ def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
         max_dim = int(max_dim * 1.25)
 
     if verbose:
-        print(f"\nConverged at max_dim = {max_dim} voxels.\n")
+        print("\nConverged at max_dim = {max_dim} voxels.\n")
 
     return im
