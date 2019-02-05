@@ -23,6 +23,7 @@ import datetime
 
 sys.path.insert(0, os.path.abspath('.'))
 sys.path.insert(0, os.path.abspath('../'))
+sys.path.insert(0, os.path.abspath('../../'))
 print(sys.path)
 
 
@@ -41,7 +42,8 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.autosummary',
               'sphinx.ext.ifconfig',
               'sphinx.ext.viewcode',
-              'sphinx.ext.mathjax',]
+              'sphinx.ext.mathjax',
+              'recommonmark']
 
 exclude_patterns = ['_build', '_templates']
 
