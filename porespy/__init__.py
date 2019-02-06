@@ -9,7 +9,8 @@ PoreSpy consists of the following modules:
 
 ----
 
-**generators**: Routines for generating artificial images of porous materials useful for testing and illustration
+**generators**: Routines for generating artificial images of porous materials
+useful for testing and illustration
 
 ----
 
@@ -29,7 +30,8 @@ PoreSpy consists of the following modules:
 
 ----
 
-**io**: Functions for output image data in various formats for use in common software
+**io**: Functions for output image data in various formats for use in common
+software
 
 ----
 
