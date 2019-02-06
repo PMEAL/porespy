@@ -2,13 +2,14 @@
 PoreSpy
 ###############################################################################
 
-`|travis_badge| <https://travis-ci.org/PMEAL/porespy>`_
-`|codecov_badge| <https://codecov.io/gh/PMEAL/PoreSpy>`_
-`|rtd_badge| <http://porespy.readthedocs.io/en/master/>`_
+.. image:: https://travis-ci.org/PMEAL/porespy.svg?branch=master
+   :target: https://travis-ci.org/PMEAL/porespy
 
-.. |travis_badge| image:: https://travis-ci.org/PMEAL/porespy.svg?branch=master
-.. |codecov_badge| image:: https://codecov.io/gh/PMEAL/PoreSpy/branch/master/graph/badge.svg
-.. |rtd_badge| image:: https://img.shields.io/badge/ReadTheDocs-GO-blue.svg
+.. image:: https://codecov.io/gh/PMEAL/PoreSpy/branch/master/graph/badge.svg
+   :target: https://codecov.io/gh/PMEAL/PoreSpy
+
+.. image:: https://img.shields.io/badge/ReadTheDocs-GO-blue.svg
+   :target: http://porespy.readthedocs.io/en/master/
 
 ===============================================================================
 What is PoreSpy?
@@ -61,7 +62,7 @@ A Github repository of examples is [available here](https://github.com/PMEAL/por
 Generating an image
 -------------------------------------------------------------------------------
 
-..code-block:: python
+.. code-block:: python
 
     import porespy as ps
     import matplotlib.pyplot as plt
@@ -74,13 +75,13 @@ Generating an image
 Applying filters
 -------------------------------------------------------------------------------
 
-..code-block:: python
+.. code-block:: python
     lt = ps.filters.local_thickness(im)
     plt.imshow(lt)
 
 .. image:: https://i.imgur.com/l9tNG60m.png
 
-..code-block:: python
+.. code-block:: python
 
     cr = ps.filters.apply_chords(im)
     cr = ps.filters.flood(cr, mode='size')
@@ -92,14 +93,14 @@ Applying filters
 Calculating metrics
 -------------------------------------------------------------------------------
 
-..code-block:: python
+.. code-block:: python
 
     data = ps.metrics.two_point_correlation_fft(im)
     plt.plot(*data, 'b.-')
 
 .. image:: https://i.imgur.com/DShBB5Am.png
 
-..code-block:: python
+.. code-block:: python
 
     mip = ps.filters.porosimetry(im)
     data = ps.metrics.pore_size_distribution(mip)
