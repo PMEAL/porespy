@@ -12,7 +12,26 @@
 What is PoreSpy?
 -------------------------------------------------------------------------------
 
-PoreSpy is a collection of image analysis tool used to extract information from 3D images of porous materials (typically obtained from X-ray tomography).  There are many packages that offer generalized image analysis tools (i.e Skimage and Scipy.NDimage in the Python environment, ImageJ, MatLab's Image Processing Toolbox), but the all require building up complex scripts or macros to accomplish tasks of specific use to porous media.  The aim of PoreSpy is to provide a set of pre-written tools for all the common porous media measurements.
+PoreSpy is a collection of image analysis tool used to extract information
+from 3D images of porous materials (typically obtained from X-ray tomography).
+There are many packages that offer generalized image analysis tools (i.e
+Skimage and Scipy.NDimage in the Python environment, ImageJ, MatLab's Image
+Processing Toolbox), but the all require building up complex scripts or macros
+to accomplish tasks of specific use to porous media.  The aim of PoreSpy is to
+provide a set of pre-written tools for all the common porous media
+measurements.
+
+PoreSpy relies heavily on two general image analysis packages:
+`scipy.ndimage <https://docs.scipy.org/doc/scipy/reference/ndimage.html>`_
+and `scikit-image <https://scikit-image.org/>`_ also known as **skimage**.
+The former contains an assortment of general image analysis tools such as image
+morphology filters, while the latter offers more complex but still general
+functions such as watershed segmentation.  PoreSpy does not duplicate any of
+these general functions so you will also have to install and learn how to
+use them to get the most from PoreSpy.  The functions in PoreSpy are generally
+built up using several of the more general functions offered by **skimage**
+and **scipy**.  There are a few functions in PoreSpy that are implemented
+natively, but only when necessary.
 
 -------------------------------------------------------------------------------
 Capabilities
@@ -33,17 +52,24 @@ PoreSpy consists of the following modules:
 Installation
 -------------------------------------------------------------------------------
 
-PoreSpy depends heavily on the Scipy Stack.  The best way to get a fully functional environment is the [Anaconda distribution](https://www.anaconda.com/download/).  Be sure to get the Python 3.6+ version.
+PoreSpy depends heavily on the Scipy Stack.  The best way to get a fully
+functional environment is the
+`Anaconda distribution <https://www.anaconda.com/download/>`_.
+Be sure to get the Python 3.6+ version.
 
-PoreSpy is available on the [Python Package Index](https://pypi.org/project/porespy/) and can be installed using PIP as follows:
+PoreSpy is available on the
+`Python Package Index <https://pypi.org/project/porespy/>`_ and can be
+installed using PIP as follows:
 
 ::
 
     C:\> pip install porespy
 
 
-If you think you may be interested in contributing to PoreSpy and wish to both *use* and *edit* the source code, then you should clone the [repository](https://github.com/PMEAL/porespy) to your local machine, and install it using the following PIP command:
-
+If you think you may be interested in contributing to PoreSpy and wish to
+both *use* and *edit* the source code, then you should clone the
+`repository <https://github.com/PMEAL/porespy>`_ to your local machine,
+and install it using the following PIP command:
 
 ::
 
@@ -53,13 +79,18 @@ If you think you may be interested in contributing to PoreSpy and wish to both *
 Examples
 -------------------------------------------------------------------------------
 
-A Github repository of examples is [available here](https://github.com/PMEAL/porespy-examples).  The following code snippets illustrate generating a 2D image, applying several filters, and calculating some common metrics.
+The following code snippets illustrate generating a 2D image, applying
+several filters, and calculating some common metrics.
+A Github repository of examples is
+`available here <https://github.com/PMEAL/porespy-examples>`_.
 
 ...............................................................................
 Generating an image
 ...............................................................................
 
-PoreSpy offers several ways to generate artificial images, for quick testing and developmnet of work flows, instead of dealing with reading/writing/storing of large tomograms.
+PoreSpy offers several ways to generate artificial images, for quick testing
+and developmnet of work flows, instead of dealing with reading/writing/storing
+of large tomograms.
 
 .. code-block:: python
 
@@ -74,7 +105,9 @@ PoreSpy offers several ways to generate artificial images, for quick testing and
 Applying filters
 ...............................................................................
 
-A common filter to apply is the local thickness, which replaces every voxel with the radius of a sphere that overlaps it.  Analysis of the histogram of the voxel values provides information about the pore size distribution.
+A common filter to apply is the local thickness, which replaces every voxel
+with the radius of a sphere that overlaps it.  Analysis of the histogram of
+the voxel values provides information about the pore size distribution.
 
 .. code-block:: python
 
@@ -83,7 +116,10 @@ A common filter to apply is the local thickness, which replaces every voxel with
 
 .. image:: https://i.imgur.com/l9tNG60m.png
 
-A less common filter is the application of chords that span the pore space in a given direction.  It is possible to gain information about anisotropy of the material by looking at the distributions of chords lengths in each principle direction.
+A less common filter is the application of chords that span the pore space in
+a given direction.  It is possible to gain information about anisotropy of the
+material by looking at the distributions of chords lengths in each principle
+direction.
 
 .. code-block:: python
 
@@ -97,7 +133,9 @@ A less common filter is the application of chords that span the pore space in a 
 Calculating metrics
 ...............................................................................
 
-The metrics sub-module contains several common functions that analyze binary tomogram directly.  Examples are simple porosity, as well as two-point correlation function.
+The metrics sub-module contains several common functions that analyze binary
+tomogram directly.  Examples are simple porosity, as well as two-point
+correlation function.
 
 .. code-block:: python
 
@@ -106,7 +144,9 @@ The metrics sub-module contains several common functions that analyze binary tom
 
 .. image:: https://i.imgur.com/DShBB5Am.png
 
-The metrics sub-module also contains a suite of functions that produce plots based on values in images that have passed through a filter, such as local thickness.
+The metrics sub-module also contains a suite of functions that produce plots
+based on values in images that have passed through a filter, such as local
+thickness.
 
 .. code-block:: python
 
@@ -117,38 +157,3 @@ The metrics sub-module also contains a suite of functions that produce plots bas
 
 .. image:: https://i.imgur.com/BOTFxaUm.png
 .. image:: https://i.imgur.com/6oaQ0grm.png
-
--------------------------------------------------------------------------------
-Related Packages
--------------------------------------------------------------------------------
-
-PoreSpy relies heavily on two general image analysis packages:
-**scipy.ndimage** and **scikit-image** also known as **skimage**.  The former
-contains an assortment of general image analysis tools such as image
-morphology filters, while the latter offers more complex but still general
-functions such as watershed segmentation.  PoreSpy does not duplicate any of
-these general functions so you will also have to install and learn how to
-use them to get the most from PoreSpy.  The functions in PoreSpy are generally
-built up using several of the more general functions offered by **skimage**
-and **scipy**.  There are a few functions in PoreSpy that are implemented
-natively, but only when necessary.
-
--------------------------------------------------------------------------------
-Image Types
--------------------------------------------------------------------------------
-
-PoreSpy is meant to work on single-channel, binary or greyscale images.  Such
-images are conveniently represented by Numpy arrays, hence all references to an
-*image* is equivalent to an *array*.  It is further assumed that the arrays are
-binarized, meaning 1's or ``True`` values indicating the void space, and 0's or
-``False`` values for the solid.
-
--------------------------------------------------------------------------------
-Limitations
--------------------------------------------------------------------------------
-
-Although *scikit-image* and *scipy.ndimage* have a wide assortment of
-functions, they are not always the fastest implementation.  It is often faster
-to use other packages (e.g. ImageJ) for many things, such as distance
-transforms and image morphology.  The advantage of PoreSpy is the flexibility
-offered by the Python environment.

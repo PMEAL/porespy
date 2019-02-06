@@ -20,5 +20,3 @@ The functions contained in PoreSpy are organized into categories, with fairly se
 **Function Reference**
 
 * :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
