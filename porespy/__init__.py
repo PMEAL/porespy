@@ -3,6 +3,10 @@ r'''
 PoreSpy
 ===============================================================================
 
+-------------------------------------------------------------------------------
+Overview
+-------------------------------------------------------------------------------
+
 PoreSpy is a collection of functions that are especially useful for analyzing
 3D, binary images of porous materials, typically produced by X-ray tomography.
 The functions in this collection are mostly simple combinations of other
@@ -22,9 +26,9 @@ PoreSpy consists of the following sub-modules:
     porespy.io
     porespy.visualization
 
--------------
+-------------------------------------------------------------------------------
 Example Usage
--------------
+-------------------------------------------------------------------------------
 
 Below is a basic workflow that one may use PoreSpy for.  Start by importing
 PoreSpy, and Matplotlib for visualizing:
@@ -77,9 +81,9 @@ the examples are rendered in nicely formated Jupyter notebooks:
 
 https://github.com/PMEAL/porespy/tree/master/examples
 
-----------------
+-------------------------------------------------------------------------------
 Related Packages
-----------------
+-------------------------------------------------------------------------------
 
 PoreSpy relies heavily on two general image analysis packages:
 **scipy.ndimage** and **scikit-image** also known as **skimage**.  The former
@@ -92,9 +96,9 @@ built up using several of the more general functions offered by **skimage**
 and **scipy**.  There are a few functions in PoreSpy that are implemented
 natively, but only when necessary.
 
------------
+-------------------------------------------------------------------------------
 Image Types
------------
+-------------------------------------------------------------------------------
 
 PoreSpy is meant to work on single-channel, binary or greyscale images.  Such
 images are conveniently represented by Numpy arrays, hence all references to an
@@ -102,9 +106,9 @@ images are conveniently represented by Numpy arrays, hence all references to an
 binarized, meaning 1's or ``True`` values indicating the void space, and 0's or
 ``False`` values for the solid.
 
------------
+-------------------------------------------------------------------------------
 Limitations
------------
+-------------------------------------------------------------------------------
 
 Although *scikit-image* and *scipy.ndimage* have a wide assortment of
 functions, they are not always the fastest implementation.  It is often faster
