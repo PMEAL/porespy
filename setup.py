@@ -35,7 +35,7 @@ setup(
               'porespy.generators',
               'porespy.metrics',
               'porespy.filters',
-              'porespy.network_extraction',
+              'porespy.networks',
               'porespy.visualization',
               'porespy.simulations',
               'porespy.io'],

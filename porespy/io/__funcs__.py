@@ -3,7 +3,7 @@ import numpy as np
 from scipy import ndimage as spim
 import scipy.ndimage as nd
 from pathlib import Path
-from porespy.network_extraction import generate_voxel_image
+from porespy.networks import generate_voxel_image
 try:
     from pyevtk.hl import imageToVTK
 except:

@@ -7,7 +7,7 @@ rootdir = os.path.split(os.path.split(ps.__file__)[0])[0]
 examples_dir = os.path.join(rootdir, 'examples')
 filters_dir = os.path.join(examples_dir, 'filters')
 metrics_dir = os.path.join(examples_dir, 'metrics')
-netex_dir = os.path.join(examples_dir, 'network_extraction')
+netex_dir = os.path.join(examples_dir, 'networks')
 
 
 class ExamplesTest():

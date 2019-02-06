@@ -21,7 +21,7 @@ PoreSpy consists of the following modules:
 
 ----
 
-**network_extraction**: Tools for obtaining pore network representations of images
+**networks**: Tools for obtaining pore network representations of images
 
 ----
 
@@ -77,12 +77,12 @@ Use some filters from PoreSpy:
 
 '''
 
-__version__ = "0.4.2"
+__version__ = "1.0.0"
 
 from . import metrics
 from . import tools
 from . import filters
 from . import generators
-from . import network_extraction
+from . import networks
 from . import visualization
 from . import io

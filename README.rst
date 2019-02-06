@@ -43,7 +43,7 @@ PoreSpy consists of the following modules:
 * ``filters``: Functions that accept an image and return an altered image
 * ``metrics``: Tools for quantifying properties of images
 * ``simulations``: More complex calculations based on physical processes
-* ``network_extraction``: Tools for obtaining pore network representations of images
+* ``networks``: Tools for analyzing images as pore networks
 * ``visualization``: Helper functions for creating useful views of the image
 * ``io``: Functions for output image data in various formats for use in common software
 * ``tools``: Various useful tools for working with images
