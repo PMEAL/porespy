@@ -41,7 +41,6 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.ifconfig',
               'sphinx.ext.viewcode',
               'sphinx.ext.mathjax',
-              'recommonmark',
               ]
 
 exclude_patterns = ['_build', '_templates']
@@ -51,12 +50,6 @@ templates_path = ['_templates']
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
-#
-source_suffix = {
-    '.rst': 'restructuredtext',
-    '.txt': 'markdown',
-    '.md': 'markdown',
-}
 
 # The master toctree document.
 master_doc = 'index'
