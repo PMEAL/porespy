@@ -1,6 +1,10 @@
-================
-Module Reference
-================
+===============================================================================
+Module and Function Reference
+===============================================================================
+
+-------------------------------------------------------------------------------
+Sub-Modules
+-------------------------------------------------------------------------------
 
 The functions contained in PoreSpy are organized into categories, with fairly self-descriptive names.  Links to the detailed documentation for each sub-module are provided below.
 
@@ -15,8 +19,8 @@ The functions contained in PoreSpy are organized into categories, with fairly se
     io.rst
     visualization.rst
 
-----
-
-**Function Reference**
+-------------------------------------------------------------------------------
+Functions
+-------------------------------------------------------------------------------
 
 * :ref:`genindex`
