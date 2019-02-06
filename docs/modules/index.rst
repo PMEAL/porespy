@@ -14,3 +14,11 @@ The functions contained in PoreSpy are organized into categories, with fairly se
     tools.rst
     io.rst
     visualization.rst
+
+----
+
+**Function Reference**
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`

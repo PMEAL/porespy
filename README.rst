@@ -111,9 +111,44 @@ The metrics sub-module also contains a suite of functions that produce plots bas
 .. code-block:: python
 
     mip = ps.filters.porosimetry(im)
-    data = ps.metrics.pore_size_distribution(mip)
+    data = ps.metrics.pore_size_distribution(mip, log=False)
     plt.imshow(mip)
-    plt.plot(*data, 'b.-')  # Note: small image results in noisy curve
+    plt.plot(data.R, data.cdf, 'b.-')  # Note: small image results in noisy curve
 
 .. image:: https://i.imgur.com/BOTFxaUm.png
 .. image:: https://i.imgur.com/6oaQ0grm.png
+
+-------------------------------------------------------------------------------
+Related Packages
+-------------------------------------------------------------------------------
+
+PoreSpy relies heavily on two general image analysis packages:
+**scipy.ndimage** and **scikit-image** also known as **skimage**.  The former
+contains an assortment of general image analysis tools such as image
+morphology filters, while the latter offers more complex but still general
+functions such as watershed segmentation.  PoreSpy does not duplicate any of
+these general functions so you will also have to install and learn how to
+use them to get the most from PoreSpy.  The functions in PoreSpy are generally
+built up using several of the more general functions offered by **skimage**
+and **scipy**.  There are a few functions in PoreSpy that are implemented
+natively, but only when necessary.
+
+-------------------------------------------------------------------------------
+Image Types
+-------------------------------------------------------------------------------
+
+PoreSpy is meant to work on single-channel, binary or greyscale images.  Such
+images are conveniently represented by Numpy arrays, hence all references to an
+*image* is equivalent to an *array*.  It is further assumed that the arrays are
+binarized, meaning 1's or ``True`` values indicating the void space, and 0's or
+``False`` values for the solid.
+
+-------------------------------------------------------------------------------
+Limitations
+-------------------------------------------------------------------------------
+
+Although *scikit-image* and *scipy.ndimage* have a wide assortment of
+functions, they are not always the fastest implementation.  It is often faster
+to use other packages (e.g. ImageJ) for many things, such as distance
+transforms and image morphology.  The advantage of PoreSpy is the flexibility
+offered by the Python environment.
