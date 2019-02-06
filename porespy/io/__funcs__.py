@@ -54,7 +54,8 @@ def to_openpnm(net, filename):
         extension.
 
     """
-
+    # Ensure net is just a standard dict, with no images attatched
+    net = dict(net)
     try:
         p = Path(filename)
         p = p.resolve()
