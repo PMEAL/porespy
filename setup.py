@@ -16,14 +16,14 @@ with open(ver_path) as f:
         if line.startswith('__version__'):
             exec(line, main_)
 
-with open("README.md", "r") as fh:
+with open("README.rst", "r") as fh:
     long_description = fh.read()
 
 setup(
     name='porespy',
     description='A set of tools for analyzing 3D images of porous materials',
     long_description=long_description,
-    long_description_content_type="text/markdown",
+    long_description_content_type="text/rest",
     version=main_['__version__'],
     classifiers=['Development Status :: 3 - Alpha',
                  'License :: OSI Approved :: MIT License',
