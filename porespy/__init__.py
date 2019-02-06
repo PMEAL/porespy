@@ -70,9 +70,9 @@ Use some filters from PoreSpy:
     Beginning SNOW Algorithm
     Converting supplied image (im) to boolean
     Applying Gaussian blur with sigma = 0.4
-    Initial number of peaks:  82
-    Peaks after trimming saddle points:  72
-    Peaks after trimming nearby peaks:  59
+    Initial number of peaks:  77
+    Peaks after trimming saddle points:  71
+    Peaks after trimming nearby peaks:  70
 
 
 '''
