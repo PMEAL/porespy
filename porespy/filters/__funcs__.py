@@ -282,7 +282,8 @@ def trim_saddle_points(peaks, dt, max_iters=10):
 
     Returns
     -------
-    An image with fewer peaks than was received.
+    image : ND-array
+        An image with fewer peaks than was received
     """
     peaks = sp.copy(peaks)
     if dt.ndim == 2:
@@ -333,8 +334,9 @@ def trim_nearby_peaks(peaks, dt):
 
     Returns
     -------
-    An array the same size as ``peaks`` containing a subset of the peaks in
-    the original image.
+    image : ND-array
+        An array the same size as ``peaks`` containing a subset of the peaks
+        in the original image.
 
     Notes
     -----
@@ -393,14 +395,16 @@ def find_disconnected_voxels(im, conn=None):
 
     Returns
     -------
-    An ND-image the same size as ``im``, with True values indicating voxels of
-    the phase of interest (i.e. True values in the original image) that are
-    not connected to the outer edges.
+    image : ND-array
+        An ND-image the same size as ``im``, with True values indicating
+        voxels of the phase of interest (i.e. True values in the original
+        image) that are not connected to the outer edges.
 
     Notes
     -----
-    The returned array (e.g. ``holes``) be used to trim blind pores from
-    ``im`` using: ``im[holes] = False``
+    image : ND-array
+        The returned array (e.g. ``holes``) be used to trim blind pores from
+        ``im`` using: ``im[holes] = False``
 
     """
     if im.ndim == 2:
@@ -429,6 +433,7 @@ def fill_blind_pores(im):
 
     Returns
     -------
+    image : ND-array
         A version of ``im`` but with all the disconnected pores removed.
 
     See Also
@@ -453,6 +458,7 @@ def trim_floating_solid(im):
 
     Returns
     -------
+    image : ND-array
         A version of ``im`` but with all the disconnected solid removed.
 
     See Also
@@ -492,7 +498,8 @@ def trim_nonpercolating_paths(im, inlet_axis=0, outlet_axis=0):
 
     Returns
     -------
-    A copy of ``im`` but with all the nonpercolating paths removed
+    image : ND-array
+        A copy of ``im`` with all the nonpercolating paths removed
 
     See Also
     --------
@@ -556,7 +563,8 @@ def trim_extrema(im, h, mode='maxima'):
 
     Returns
     -------
-    A copy of the input image with all the peaks and/or valleys removed.
+    image : ND-array
+        A copy of the input image with all the peaks and/or valleys removed.
 
     Notes
     -----
@@ -600,8 +608,9 @@ def flood(im, regions=None, mode='max'):
 
     Returns
     -------
-    An ND-array the same size as ``im`` with new values placed in each
-    forground voxel based on the ``mode``.
+    image : ND-array
+        A copy of ``im`` with new values placed in each forground voxel based
+        on the ``mode``.
 
     See Also
     --------
@@ -650,12 +659,13 @@ def find_dt_artifacts(dt):
 
     Returns
     -------
-    An ND-array the same shape as ``dt`` with numerical values indicating
-    the maximum amount of error in each volxel, which is found by subtracting
-    the distance to nearest edge of image from the distance transform value.
-    In other words, this is the error that would be found if there were a solid
-    voxel lurking just beyond the nearest edge of the image.  Obviously,
-    voxels with a value of zero have no error.
+    image : ND-array
+        An ND-array the same shape as ``dt`` with numerical values indicating
+        the maximum amount of error in each volxel, which is found by
+        subtracting the distance to nearest edge of image from the distance
+        transform value. In other words, this is the error that would be found
+        if there were a solid voxel lurking just beyond the nearest edge of
+        the image.  Obviously, voxels with a value of zero have no error.
 
     """
     temp = sp.ones(shape=dt.shape)*sp.inf
@@ -681,9 +691,10 @@ def region_size(im):
 
     Returns
     -------
-    An ND array with each voxel value indicating the size of the region to
-    which it belongs.  This is particularly useful for finding chord sizes
-    on the image produced by ``apply_chords``.
+    image : ND-array
+        A copy of ``im`` with each voxel value indicating the size of the
+        region to which it belongs.  This is particularly useful for finding
+        chord sizes on the image produced by ``apply_chords``.
     """
     if im.dtype == bool:
         im = spim.label(im)[0]
@@ -724,8 +735,8 @@ def apply_chords(im, spacing=1, axis=0, trim_edges=True, label=False):
 
     Returns
     -------
-    An ND-array of the same size as ```im``` with non-zero values indicating
-    the chords.
+    image : ND-array
+        A copy of ``im`` with non-zero values indicating the chords.
 
     See Also
     --------
@@ -776,9 +787,9 @@ def apply_chords_3D(im, spacing=0, trim_edges=True):
 
     Returns
     -------
-    An ND-array of the same size as ```im``` with values of 1 indicating
-    x-direction chords, 2 indicating y-direction chords, and 3 indicating
-    z-direction chords.
+    image : ND-array
+        A copy of ``im`` with values of 1 indicating x-direction chords,
+        2 indicating y-direction chords, and 3 indicating z-direction chords.
 
     Notes
     -----
@@ -843,7 +854,8 @@ def local_thickness(im, sizes=25, mode='hybrid'):
 
     Returns
     -------
-    An image with the pore size values in each voxel
+    image : ND-array
+        A copy of ``im`` with the pore size values in each voxel
 
     Notes
     -----
@@ -911,12 +923,14 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
 
     Returns
     -------
-    An ND-image with voxel values indicating the sphere radius at which it
-    becomes accessible from the inlets.  This image can be used to find
-    invading fluid configurations as a function of applied capillary pressure
-    by applying a boolean comparison: ``inv_phase = im > r`` where ``r`` is
-    the radius (in voxels) of the invading sphere.  Of course, ``r`` can be
-    converted to capillary pressure using your favorite model.
+    image : ND-array
+        A copy of ``im`` with voxel values indicating the sphere radius at
+        which it becomes accessible from the inlets.  This image can be used
+        to find invading fluid configurations as a function of applied
+        capillary pressure by applying a boolean comparison:
+        ``inv_phase = im > r`` where ``r`` is the radius (in voxels) of the
+        invading sphere.  Of course, ``r`` can be converted to capillary
+        pressure using your favorite model.
 
     See Also
     --------
@@ -1062,8 +1076,9 @@ def nphase_border(im, include_diagonals=False):
 
     Returns
     -------
-    An ND-image with voxel values equal to the number of uniquely different
-    bordering values
+    image : ND-array
+        A copy of ``im`` with voxel values equal to the number of uniquely
+        different bordering values
     '''
     # Get dimension of image
     ndim = len(np.shape(im))
