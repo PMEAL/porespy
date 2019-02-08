@@ -28,11 +28,13 @@ def representative_elementary_volume(im, npoints=1000):
 
     Returns
     -------
-    A tuple containing the ND-arrays: The subdomain *volume* and its
-    *porosity*.  Each of these arrays is ``npoints`` long.  They can be
-    conveniently plotted by passing the tuple to matplotlib's ``plot`` function
-    using the \* notation: ``plt.plot(*the_tuple, 'b.')``.  The resulting plot
-    is similar to the sketch given by Bachmat and Bear [1]
+    rev : named_tuple
+        A tuple containing the *volume* and *porosity* of each subdomain
+        tested in arrays ``npoints`` long.  They can be accessed as
+        attributes of the tuple.  They can be conveniently plotted
+        by passing the tuple to matplotlib's ``plot`` function using the
+        \* notation: ``plt.plot(*the_tuple, 'b.')``.  The resulting plot is
+        similar to the sketch given by Bachmat and Bear [1]
 
     Notes
     -----
