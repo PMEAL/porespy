@@ -448,7 +448,7 @@ def chord_counts(im):
     length in a format suitable for ``plt.plot``.
     """
     labels, N = spim.label(im > 0)
-    props = regionprops(labels)
+    props = regionprops(labels, coordinates='xy')
     chord_lens = sp.array([i.filled_area for i in props])
     return chord_lens
 
