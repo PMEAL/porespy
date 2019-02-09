@@ -951,6 +951,7 @@ def insert_sphere(im, c, r):
     blank[tuple(c - bbox[0:im.ndim])] = 0
     blank = spim.distance_transform_edt(blank) < r
     im[s] = blank
+    return im
 
 
 def insert_cylinder(im, xyz0, xyz1, r):
