@@ -1,5 +1,5 @@
 import scipy as sp
-from porespy.network_extraction import regions_to_network, add_boundary_regions
+from porespy.networks import regions_to_network, add_boundary_regions
 from porespy.filters import snow_partitioning
 from porespy.metrics import region_surface_areas, region_interface_areas
 # pass
@@ -68,6 +68,9 @@ def snow_dual(im, voxel_size=1,
     pore_dt = pore_regions.dt
     solid_dt = solid_regions.dt
     dt = pore_dt + solid_dt
+    pore_peaks = pore_regions.peaks
+    solid_peaks = solid_regions.peaks
+    peaks = pore_peaks + solid_peaks
     # Calculates combined void and solid regions for dual network extraction
     pore_regions = pore_regions.regions
     solid_regions = solid_regions.regions
@@ -156,4 +159,19 @@ def snow_dual(im, voxel_size=1,
     net['pore.void'] = net['pore.label'] <= solid_num
     net['pore.solid'] = solid_labels
     net['pore.boundary'] = boundary_labels
+
+    class network_dict(dict):
+        pass
+    net = network_dict(net)
+    net.im = im
+    net.dt = dt
+    net.regions = regions
+    net.peaks = peaks
+    net.pore_dt = pore_dt
+    net.pore_regions = pore_region
+    net.pore_peaks = pore_peaks
+    net.solid_dt = solid_dt
+    net.solid_regions = solid_region
+    net.solid_peaks = solid_peaks
+
     return net

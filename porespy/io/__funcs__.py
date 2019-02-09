@@ -1,10 +1,13 @@
 import pickle
 import numpy as np
 from scipy import ndimage as spim
-from pyevtk.hl import imageToVTK
 import scipy.ndimage as nd
 from pathlib import Path
-from porespy.network_extraction import generate_voxel_image
+from porespy.networks import generate_voxel_image
+try:
+    from pyevtk.hl import imageToVTK
+except:
+    print("warning: pyevtk must be install manually")
 
 
 def dict_to_vtk(data, path='./dictvtk', voxel_size=1, origin=(0, 0, 0)):
@@ -24,9 +27,9 @@ def dict_to_vtk(data, path='./dictvtk', voxel_size=1, origin=(0, 0, 0)):
     origin : float
         data origin (according to selected voxel size)
 
-    Output
-    ------
-    File: vtk, vtp or vti file that can opened in ParaView
+    Notes
+    -----
+    Outputs a vtk, vtp or vti file that can opened in ParaView
     """
     vs = voxel_size
     for entry in data:
@@ -51,7 +54,8 @@ def to_openpnm(net, filename):
         extension.
 
     """
-
+    # Ensure net is just a standard dict, with no images attatched
+    net = dict(net)
     try:
         p = Path(filename)
         p = p.resolve()
@@ -92,9 +96,9 @@ def to_vtk(im, path='./voxvtk', divide=False, downsample=False, voxel_size=1,
         using int8 format (can also be used to reduce file size when accuracy
         is not necessary ie: just visulization)
 
-    Output
-    ------
-    File: vtk, vtp or vti file that can opened in paraview
+    Notes
+    -----
+    Outputs a vtk, vtp or vti file that can opened in paraview
     """
     if im.dtype == bool:
         vox = True
@@ -138,8 +142,8 @@ def to_palabos(im, filename, solid=0):
         The value of the solid voxels in the image used to convert image to
         binary with all other voxels assumed to be fluid.
 
-    Output
-    -------
+    Notes
+    -----
     File produced contains 3 values: 2 = Solid, 1 = Interface, 0 = Pore
     Palabos will run the simulation applying the specified pressure drop from
     x = 0 to x = -1.
@@ -181,13 +185,13 @@ def openpnm_to_im(network, pore_shape="sphere", throat_shape="cylinder",
         Number of voxels in the largest dimension of the network
 
     rtol : float
-        Stopping criteria for finding the smallest voxel image such that further
-        increasing the number of voxels in each dimension by 25% would improve
-        the predicted porosity of the image by less that ``rtol``
+        Stopping criteria for finding the smallest voxel image such that
+        further increasing the number of voxels in each dimension by 25% would
+        improve the predicted porosity of the image by less that ``rtol``
 
     Returns
     -------
-    im : 3D numpy array
+    im : ND-array
         Voxelated image corresponding to the given pore network model
 
     Notes
