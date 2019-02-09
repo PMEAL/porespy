@@ -28,12 +28,12 @@ def representative_elementary_volume(im, npoints=1000):
 
     Returns
     -------
-    rev : named_tuple
+    result : named_tuple
         A tuple containing the *volume* and *porosity* of each subdomain
         tested in arrays ``npoints`` long.  They can be accessed as
         attributes of the tuple.  They can be conveniently plotted
         by passing the tuple to matplotlib's ``plot`` function using the
-        \* notation: ``plt.plot(*the_tuple, 'b.')``.  The resulting plot is
+        \* notation: ``plt.plot(*result, 'b.')``.  The resulting plot is
         similar to the sketch given by Bachmat and Bear [1]
 
     Notes
@@ -42,8 +42,8 @@ def representative_elementary_volume(im, npoints=1000):
     is spent on scipy's ``sum`` function which is needed to sum the number of
     void voxels (1's) in each subdomain.
 
-    Also, this function is primed for parallelization since the ``npoints`` are
-    calculated independenlty.
+    Also, this function is a prime target for parallelization since the
+    ``npoints`` are calculated independenlty.
 
     References
     ----------
@@ -89,6 +89,10 @@ def porosity_profile(im, axis):
         instance, if `axis` is 0, then the porosity in each YZ plane is
         calculated and returned as 1D array with 1 value for each X position.
 
+    Returns
+    -------
+    result : 1D-array
+        A 1D-array of porosity along the specified axis
     """
     if axis >= im.ndim:
         raise Exception('axis out of range')
@@ -141,10 +145,22 @@ def radial_density(im, bins=10, voxel_size=1):
 
     Returns
     -------
-    A named-tuple containing several 1D arrays: ``R `` is the radius of the
-    voxels (or x-axis of a pore-size density plot).  ``pdf`` is the radial
-    probability density function, and ``cdf`` is the complementary cumulative
-    distribution function.
+    result : named_tuple
+        A named-tuple containing several 1D arrays:
+
+        *R* - radius, equivalent to ``bin_centers``
+
+        *pdf* - probability density function
+
+        *cdf* - cumulative density function
+
+        *bin_centers* - the center point of each bin
+
+        *bin_edges* - locations of bin divisions, including 1 more value than
+        the number of bins
+
+        *bin_widths* - useful for passing to the ``width`` argument of
+        ``matplotlib.pyplot.bar``
 
     Notes
     -----
@@ -235,13 +251,12 @@ def two_point_correlation_bf(im, spacing=10):
 
     Returns
     -------
-    A tuple containing the x and y data for plotting the two-point correlation
-    function, using the *args feature of matplotlib's plot function.  The x
-    array is the distances between points and the y array is corresponding
-    probabilities that points of a given distance both lie in the void space.
-
-    The distance values are binned as follows:
-
+    result : named_tuple
+        A tuple containing the x and y data for plotting the two-point
+        correlation function, using the *args feature of matplotlib's plot
+        function.  The x array is the distances between points and the y array
+        is corresponding probabilities that points of a given distance both
+        lie in the void space. The distance values are binned as follows:
         ``bins = range(start=0, stop=sp.amin(im.shape)/2, stride=spacing)``
 
     Notes
@@ -325,10 +340,12 @@ def two_point_correlation_fft(im):
 
     Returns
     -------
-    A tuple containing the x and y data for plotting the two-point correlation
-    function, using the *args feature of matplotlib's plot function.  The x
-    array is the distances between points and the y array is corresponding
-    probabilities that points of a given distance both lie in the void space.
+    result : named_tuple
+        A tuple containing the x and y data for plotting the two-point
+        correlation function, using the *args feature of matplotlib's plot
+        function.  The x array is the distances between points and the y array
+        is corresponding probabilities that points of a given distance both
+        lie in the void space.
 
     Notes
     -----
@@ -375,7 +392,8 @@ def pore_size_distribution(im, bins=10, log=True, voxel_size=1):
 
     Returns
     -------
-    A named-tuple containing several values:
+    result : named_tuple
+        A named-tuple containing several values:
 
         *R* or *logR* - radius, equivalent to ``bin_centers``
 
@@ -440,7 +458,8 @@ def chord_counts(im):
 
     Returns
     -------
-    A 1D array with one element for each chord, containing its length.
+    result : 1D-array
+        A 1D array with one element for each chord, containing its length.
 
     Notes
     ----
@@ -480,6 +499,10 @@ def linear_density(im, bins=25, voxel_size=1, log=False):
         The side length of a voxel.  This is used to scale the chord lengths
         into real units.  Note this is applied *after* the binning, so
         ``bins``, if supplied, should be in terms of voxels, not length units.
+
+    Returns
+    -------
+    result : named_tuple
 
     References
     ----------
@@ -540,8 +563,9 @@ def chord_length_distribution(im, bins=None, log=False, voxel_size=1,
 
     Returns
     -------
-    A tuple containing the following elements, which can be retrieved by
-    attribute name:
+    result : named_tuple
+        A tuple containing the following elements, which can be retrieved by
+        attribute name:
 
         *L* or *logL* - chord length, equivalent to ``bin_centers``
 
@@ -615,12 +639,13 @@ def region_interface_areas(regions, areas, voxel_size=1, strel=None):
 
     Returns
     -------
-    A named-tuple containing 2 arrays. ``conns`` holds the connectivity
-    information and ``area`` holds the result for each pair.  ``conns`` is a
-    N-regions by 2 array with each row containing the region number of an
-    adjacent pair of regions.  For instance, if ``conns[0, 0]`` is 0 and
-    ``conns[0, 1]`` is 5, then row 0 of ``area`` contains the interfacial
-    area shared by regions 0 and 5.
+    result : named_tuple
+        A named-tuple containing 2 arrays. ``conns`` holds the connectivity
+        information and ``area`` holds the result for each pair.  ``conns`` is
+        a N-regions by 2 array with each row containing the region number of an
+        adjacent pair of regions.  For instance, if ``conns[0, 0]`` is 0 and
+        ``conns[0, 1]`` is 5, then row 0 of ``area`` contains the interfacial
+        area shared by regions 0 and 5.
 
     """
     print('_'*60)
@@ -697,8 +722,9 @@ def region_surface_areas(regions, voxel_size=1, strel=None):
 
     Returns
     -------
-    A list containing the surface area of each region, offset by 1, such that
-    the surface area of region 1 is stored in element 0 of the list.
+    result : list
+        A list containing the surface area of each region, offset by 1, such
+        that the surface area of region 1 is stored in element 0 of the list.
 
     """
     print('_'*60)
@@ -737,6 +763,12 @@ def mesh_surface_area(mesh=None, verts=None, faces=None):
         An N-by-ND array indicating which elements in ``verts`` form a mesh
         element.
 
+    Returns
+    -------
+    surface_area : float
+        The surface area of the mesh, calculated by
+        ``skimage.measure.mesh_surface_area``
+
     Notes
     -----
     This function simply calls ``scikit-image.measure.mesh_surface_area``, but
@@ -768,8 +800,9 @@ def phase_fraction(im, normed=True):
 
     Returns
     -------
-    A array of length max(im) with each element containing the number of voxels
-    found with the corresponding label.
+    result : 1D-array
+        A array of length max(im) with each element containing the number of
+        voxels found with the corresponding label.
 
     See Also
     --------
