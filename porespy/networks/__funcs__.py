@@ -27,6 +27,12 @@ def map_to_regions(regions, values):
         in the ``regions`` image is assumed to be the backgroung phase, while
         pore index 0 is valid.
 
+    Returns
+    -------
+    image : ND-array
+        A copy of the ``regions`` image, with with values in each region
+        replaced by those specified by ``values``
+
     Notes
     -----
     This function assumes that the array of pore values are indexed starting
@@ -44,6 +50,39 @@ def map_to_regions(regions, values):
 
 def add_boundary_regions(regions=None, faces=['front', 'back', 'left',
                                               'right', 'top', 'bottom']):
+    r"""
+    Given an image partitioned into regions, pads specified faces with new
+    regions
+
+    Parameters
+    ----------
+    regions : ND-array
+        An image of the pore space partitioned into regions and labeled
+    faces : list of strings
+        The faces of ``regions`` which should have boundaries added.  Options
+        are:
+
+        *'right'* : Adds boundaries to the x=0 face (``im[0, :, :]``)
+
+        *'left'* : Adds boundaries to the x=X face (``im[-1, :, :]``)
+
+        *'front'* : Adds boundaries to the y=0 face (``im[:, ), :]``)
+
+        *'back'* : Adds boundaries to the x=0 face (``im[:, -1, :]``)
+
+        *'bottom'* : Adds boundaries to the x=0 face (``im[:, :, 0]``)
+
+        *'top'* : Adds boundaries to the x=0 face (``im[:, :, -1]``)
+
+        The default is all faces.
+
+    Returns
+    -------
+    image : ND-array
+        A copy of ``regions`` with the specified boundaries added, so will be
+        slightly larger in each direction where boundaries were added.
+
+    """
     # -------------------------------------------------------------------------
     # Edge pad segmentation and distance transform
     if faces is not None:
@@ -125,23 +164,23 @@ def add_boundary_regions(regions=None, faces=['front', 'back', 'left',
 
 def overlay(im1, im2, c):
     r"""
-    Overlays im2 onto im1, given voxel coords of center of im2 in im1.
+    Overlays ``im2`` onto ``im1``, given voxel coords of center of im2 in im1.
 
     Parameters
     ----------
-    im1 : 3D numpy array
+    im1 : ND-array
         Original voxelated image
 
-    im2 : 3D numpy array
+    im2 : ND-array
         Template voxelated image
 
-    r : int
-        Radius of the cylinder
+    c : array_like
+        [x, y, z] coordinates in ``im1`` where ``im2`` will be centered
 
     Returns
     -------
-    im1 : 3D numpy array
-        Original voxelated image overlayed with the template
+    image : ND-array
+        A copy of ``im1``, with ``im2`` overlaid at specified location
 
     """
     shape = im2.shape
@@ -164,10 +203,10 @@ def add_cylinder_to(im, xyz0, xyz1, r):
 
     Parameters
     ----------
-    im : 3D numpy array
+    im : array_like
         Original voxelated image
 
-    xyz0, xyz1 : 3 by 1 numpy array-like
+    xyz0, xyz1 : 3-by-1 array_like
         Voxel coordinates of the two end points of the cylinder
 
     r : int
@@ -175,7 +214,7 @@ def add_cylinder_to(im, xyz0, xyz1, r):
 
     Returns
     -------
-    im : 3D numpy array
+    im : ND-array
         Original voxelated image overlayed with the cylinder
 
     """
@@ -231,7 +270,7 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200,
 
     Returns
     -------
-    im : 3D numpy array
+    im : ND-array
         Voxelated image corresponding to the given pore network model
 
     Notes
@@ -331,13 +370,13 @@ def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
         Number of voxels in the largest dimension of the network
 
     rtol : float
-        Stopping criteria for finding the smallest voxel image such that further
-        increasing the number of voxels in each dimension by 25% would improve
-        the predicted porosity of the image by less that ``rtol``
+        Stopping criteria for finding the smallest voxel image such that
+        further increasing the number of voxels in each dimension by 25% would
+        improve the predicted porosity of the image by less that ``rtol``
 
     Returns
     -------
-    im : 3D numpy array
+    im : ND-array
         Voxelated image corresponding to the given pore network model
 
     Notes
