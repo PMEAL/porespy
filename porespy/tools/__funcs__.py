@@ -1007,4 +1007,3 @@ def insert_cylinder(im, xyz0, xyz1, r):
        xyz_min[2]:xyz_max[2]+1] += template
 
     return im
-
