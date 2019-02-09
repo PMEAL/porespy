@@ -1,4 +1,4 @@
 .. _networks:
 
-.. automodule:: porespy.network_extraction
+.. automodule:: porespy.networks
    :members:

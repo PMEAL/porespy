@@ -32,8 +32,9 @@ def sem(im, direction='X'):
 
     Returns
     -------
-    A 2D greyscale image suitable for use in matplotlib\'s ```imshow```
-    function.
+    image : 2D-array
+        A 2D greyscale image suitable for use in matplotlib\'s ```imshow```
+        function.
     """
     im = sp.array(~im, dtype=int)
     if direction in ['Y', 'y']:
@@ -66,8 +67,9 @@ def xray(im, direction='X'):
 
     Returns
     -------
-    A 2D greyscale image suitable for use in matplotlib\'s ```imshow```
-    function.
+    image : 2D-array
+        A 2D greyscale image suitable for use in matplotlib\'s ```imshow```
+        function.
     """
     im = sp.array(~im, dtype=int)
     if direction in ['Y', 'y']:

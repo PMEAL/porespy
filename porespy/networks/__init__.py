@@ -1,20 +1,21 @@
 r"""
 
 ===============================================================================
-network extraction
+networks
 ===============================================================================
 
 **Obtain Network Representations**
 
-Contains functions for extracting pore networks from images.
+Contains functions for analysing images as pore networks
 
 .. autosummary::
 
-    porespy.network_extraction.snow
-    porespy.network_extraction.snow_dual
-    porespy.network_extraction.regions_to_network
-    porespy.network_extraction.map_to_regions
-    porespy.network_extraction.generate_voxel_image
+    porespy.networks.add_boundary_regions
+    porespy.networks.snow
+    porespy.networks.snow_dual
+    porespy.networks.regions_to_network
+    porespy.networks.map_to_regions
+    porespy.networks.generate_voxel_image
 
 .. autofunction:: snow
 .. autofunction:: snow_dual

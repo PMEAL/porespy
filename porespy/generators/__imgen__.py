@@ -32,13 +32,10 @@ def insert_shape(im, center, element, value=1):
 def RSA(im: array, radius: int, volume_fraction: int = 1,
         mode: str = 'extended'):
     r"""
-    Generates a sphere or disk packing using Random Sequential Addition, which
-    ensures that spheres do not overlap but does not guarantee they are
-    tightly packed.
+    Generates a sphere or disk packing using Random Sequential Addition
 
-    Each sphere is filled with 1's, and the center is marked with a 2.  This
-    allows easy boolean masking to extract only the centers, which can be
-    converted to coordinates using ``scipy.where`` and used for other purposes.
+    This which ensures that spheres do not overlap but does not guarantee they
+    are tightly packed.
 
     Parameters
     ----------
@@ -62,6 +59,22 @@ def RSA(im: array, radius: int, volume_fraction: int = 1,
 
         'periodic' - The portion of a sphere that extends beyond the image is
         inserted into the opposite edge of the image (Not Implemented Yet!)
+
+    Returns
+    -------
+    image : ND-array
+        A copy of ``im`` with spheres of specified radius *added* to the
+        background.
+
+    Notes
+    -----
+    Each sphere is filled with 1's, but the center is marked with a 2.  This
+    allows easy boolean masking to extract only the centers, which can be
+    converted to coordinates using ``scipy.where`` and used for other purposes.
+    The obtain only the spheres, use``im = im == 1``.
+
+    This function adds spheres to the background of the received ``im``, which
+    allows iteratively adding spheres of different radii to the unfilled space.
 
     References
     ----------
@@ -137,7 +150,8 @@ def bundle_of_tubes(shape: List[int], spacing: int):
 
     Returns
     -------
-    A boolean array with True values denoting the pore space
+    image : ND-array
+        A boolean array with ``True`` values denoting the pore space
     """
     shape = sp.array(shape)
     if sp.size(shape) == 1:
@@ -201,7 +215,8 @@ def polydisperse_spheres(shape: List[int], porosity: float, dist,
 
     Returns
     -------
-    A boolean array with True values denoting the pore space
+    image : ND-array
+        A boolean array with ``True`` values denoting the pore space
     """
     shape = sp.array(shape)
     if sp.size(shape) == 1:
@@ -241,7 +256,8 @@ def voronoi_edges(shape: List[int], radius: int, ncells: int,
 
     Returns
     -------
-    A boolean array with True values denoting the pore space
+    image : ND-array
+        A boolean array with ``True`` values denoting the pore space
 
     """
     print(78*'―')
@@ -331,16 +347,19 @@ def lattice_spheres(shape: List[int], radius: int, offset: int = 0,
     lattice : string
         Specifies the type of lattice to create.  Options are:
 
-        'sc' : Simple Cubic (default)
-        'fcc' : Face Centered Cubic
-        'bcc' : Body Centered Cubic
+        'sc' - Simple Cubic (default)
+
+        'fcc' - Face Centered Cubic
+
+        'bcc' - Body Centered Cubic
 
         For 2D images, 'sc' gives a square lattice and both 'fcc' and 'bcc'
         give a triangular lattice.
 
     Returns
     -------
-    A boolean array with True values denoting the pore space
+    image : ND-array
+        A boolean array with ``True`` values denoting the pore space
     """
     print(78*'―')
     print('lattice_spheres: Generating ' + lattice + ' lattice')
@@ -435,7 +454,8 @@ def overlapping_spheres(shape: List[int], radius: int, porosity: float):
 
     Returns
     -------
-    A boolean array with ``True`` values denoting the pore space
+    image : ND-array
+        A boolean array with ``True`` values denoting the pore space
 
     Notes
     -----
@@ -485,14 +505,15 @@ def noise(shape: List[int], porosity=None, octaves: int = 3,
         apply the specified values along each axis to create anisotropy.
 
     mode : string
-        Which noise algorithm to use, either \'simplex\' (default) or
-        \'perlin\'.
+        Which noise algorithm to use, either ``'simplex'`` (default) or
+        ``'perlin'``.
 
     Returns
     -------
-    If porosity is given, then a boolean array with ``True`` values denoting
-    the pore space is returned.  If not, then normally distributed and
-    spatially correlated randomly noise is returned.
+    image : ND-array
+        If porosity is given, then a boolean array with ``True`` values
+        denoting the pore space is returned.  If not, then normally
+        distributed and spatially correlated randomly noise is returned.
 
     Notes
     -----
@@ -502,7 +523,7 @@ def noise(shape: List[int], porosity=None, octaves: int = 3,
 
     See Also
     --------
-    norm_to_uniform
+    porespy.tools.norm_to_uniform
 
     """
     try:
@@ -563,9 +584,8 @@ def blobs(shape: List[int], porosity: float = 0.5, blobiness: int = 1):
 
     Returns
     -------
-    If porosity is given, then a boolean array with ``True`` values denoting
-    the pore space is returned.  If not, then normally distributed and
-    spatially correlated randomly noise is returned.
+    image : ND-array
+        A boolean array with ``True`` values denoting the pore space
 
     See Also
     --------
@@ -607,7 +627,8 @@ def cylinders(shape: List[int], radius: int, nfibers: int, phi_max: float = 0,
 
     Returns
     -------
-    A boolean array with True values denoting the pore space
+    image : ND-array
+        A boolean array with ``True`` values denoting the pore space
     """
     shape = sp.array(shape)
     if sp.size(shape) == 1:
@@ -649,6 +670,7 @@ def line_segment(X0, X1):
 
     Returns
     -------
+    coords : list of lists
         A list of lists containing the X, Y, and Z coordinates of all voxels
         that should be drawn between the start and end points to create a solid
         line.

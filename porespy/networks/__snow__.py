@@ -1,4 +1,4 @@
-from porespy.network_extraction import regions_to_network, add_boundary_regions
+from porespy.networks import regions_to_network, add_boundary_regions
 from porespy.filters import snow_partitioning
 from porespy.tools import make_contiguous
 from porespy.metrics import region_surface_areas, region_interface_areas
@@ -47,10 +47,11 @@ def snow(im, voxel_size=1,
 
     # -------------------------------------------------------------------------
     # SNOW void phase
-    regions = snow_partitioning(im=im, return_all=True)
-    im = regions.im
-    dt = regions.dt
-    regions = regions.regions
+    tup = snow_partitioning(im=im, return_all=True)
+    im = tup.im
+    dt = tup.dt
+    regions = tup.regions
+    peaks = tup.peaks
     b_num = sp.amax(regions)
     # -------------------------------------------------------------------------
     # Boundary Conditions
@@ -114,4 +115,12 @@ def snow(im, voxel_size=1,
             elif i in ['right', 'back', 'top']:
                 net['pore.{}'.format(i)] = (coords[:, dic[i]] >
                                             max(condition[:, dic[i]]))
+
+    class network_dict(dict):
+        pass
+    net = network_dict(net)
+    net.im = im
+    net.dt = dt
+    net.regions = regions
+    net.peaks = peaks
     return net
