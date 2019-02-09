@@ -22,8 +22,10 @@ def align_image_with_openpnm(im):
 
     Returns
     -------
-    Returns the image rotated accordingly.
+    image : ND-array
+        Returns a copy of ``im`` rotated accordingly.
     """
+    im = sp.copy(im)
     if im.ndim == 2:
         im = (sp.swapaxes(im, 1, 0))
         im = im[-1::-1, :]
@@ -49,6 +51,12 @@ def fftmorphology(im, strel, mode='opening'):
     mode : string
         The type of operation to perform.  Options are 'dilation', 'erosion',
         'opening' and 'closing'.
+
+    Returns
+    -------
+    image : ND-array
+        A copy of the image with the specified moropholgical operation applied
+        using the fft-based methods available in scipy.fftconvolve.
 
     Notes
     -----
@@ -141,8 +149,9 @@ def subdivide(im, divs=2):
 
     Returns
     -------
-    An ND-array containing slice objects for indexing into ``im`` that extract
-    the sub-divided arrays.
+    slices : 1D-array
+        A 1-D array containing slice objects for indexing into ``im`` that
+        extract the sub-divided arrays.
 
     Notes
     -----
@@ -201,8 +210,9 @@ def bbox_to_slices(bbox):
 
     Returns
     -------
-    A tuple of slice objects that can be used to directly index into a larger
-    image.
+    slices : tuple
+        A tuple of slice objects that can be used to directly index into a
+        larger image.
     """
     if len(bbox) == 4:
         ret = (slice(bbox[0], bbox[2]),
@@ -240,7 +250,8 @@ def get_slice(im, center, size, pad=0):
 
     Returns
     -------
-    A list of slice objects, each indexing into one dimension of the image.
+    slices : list
+        A list of slice objects, each indexing into one dimension of the image.
     """
     p = sp.ones(shape=im.ndim, dtype=int)*sp.array(pad)
     s = sp.ones(shape=im.ndim, dtype=int)*sp.array(size)
@@ -254,8 +265,9 @@ def get_slice(im, center, size, pad=0):
 
 def find_outer_region(im, r=0):
     r"""
-    Finds regions of the image that are outside of the solid matrix.  This
-    function uses the rolling ball method to define where the outer region
+    Finds regions of the image that are outside of the solid matrix.
+
+    This function uses the rolling ball method to define where the outer region
     ends and the void space begins.
 
     This function is particularly useful for samples that do not fill the
@@ -275,8 +287,9 @@ def find_outer_region(im, r=0):
 
     Returns
     -------
-    A boolean mask the same shape as ``im``, containing True in all voxels
-    identified as *outside* the sample.
+    image : ND-array
+        A boolean mask the same shape as ``im``, containing True in all voxels
+        identified as *outside* the sample.
 
     """
     if r == 0:
@@ -316,10 +329,11 @@ def extract_cylinder(im, r=None, axis=0):
 
     Returns
     -------
-    An ND-image the same size ``im`` with True values indicating the void space
-    but with the sample trimmed to a cylindrical section in the center of the
-    image.  The region outside the cylindrical section is labeled with True
-    values since it is open space.
+    image : ND-array
+        A copy of ``im`` with True values indicating the void space but with
+        the sample trimmed to a cylindrical section in the center of the
+        image.  The region outside the cylindrical section is labeled with
+        ``True`` values since it is open space.
     """
     if r is None:
         a = list(im.shape)
@@ -349,8 +363,9 @@ def extract_subsection(im, shape):
 
     Returns
     -------
-    An ND-array of size given by the ``shape`` argument, taken from the center
-    of the image.
+    image : ND-array
+        An ND-array of size given by the ``shape`` argument, taken from the
+        center of the image.
 
     Examples
     --------
@@ -396,6 +411,11 @@ def get_planes(im, squeeze=True):
         If True (default) the returned images are 2D (i.e. squeezed).  If
         False, the images are 1 element deep along the axis where the slice
         was obtained.
+
+    Returns
+    -------
+    planes : list
+        A list of 2D-images
     """
     x, y, z = (sp.array(im.shape)/2).astype(int)
     planes = [im[x, :, :], im[:, y, :], im[:, :, z]]
@@ -430,9 +450,10 @@ def extend_slice(s, shape, pad=1):
 
     Returns
     -------
-    A list slice objects with the start and stop attributes respectively
-    incremented and decremented by 1, without extending beyond the image
-    boundaries.
+    slices : list
+        A list slice of objects with the start and stop attributes respectively
+        incremented and decremented by 1, without extending beyond the image
+        boundaries.
 
     Examples
     --------
@@ -498,9 +519,10 @@ def randomize_colors(im, keep_vals=[0]):
 
     Returns
     -------
-    An image the same size and type as `im` but with the greyscale values
-    reassigned.  The unique values in both the input and output images will
-    be identical.
+    image : ND-array
+        An image the same size and type as ``im`` but with the greyscale values
+        reassigned.  The unique values in both the input and output images will
+        be identical.
 
     Notes
     -----
@@ -564,8 +586,9 @@ def make_contiguous(im, keep_zeros=True):
 
     Returns
     -------
-    An ND-array the same size as ``im`` but with all values in contiguous
-    orders.
+    image : ND-array
+        An ND-array the same size as ``im`` but with all values in contiguous
+        orders.
 
     Example
     -------
@@ -616,8 +639,9 @@ def get_border(shape, thickness=1, mode='edges', return_indices=False):
 
     Returns
     -------
-    An ND-array of specified shape with True values at the perimeter and False
-    elsewhere.
+    image : ND-array
+        An ND-array of specified shape with ``True`` values at the perimeter
+        and ``False`` elsewhere
 
     Notes
     -----
@@ -687,8 +711,9 @@ def in_hull(points, hull):
 
     Returns
     -------
-    A Boolean array of length *N* indicating whether or not the given points
-    in ``points`` lies within the provided ``hull``.
+    result : 1D-array
+        A 1D-array Boolean array of length *N* indicating whether or not the
+        given points in ``points`` lies within the provided ``hull``.
 
     """
     from scipy.spatial import Delaunay, ConvexHull
@@ -717,8 +742,9 @@ def norm_to_uniform(im, scale=None):
 
     Returns
     -------
-    An ND-image the same size as ``im`` with uniformly distributed greyscale
-    values spanning the specified range, if given.
+    image : ND-array
+        A copy of ``im`` with uniformly distributed greyscale values spanning
+        the specified range, if given.
     """
     if scale is None:
         scale = [im.min(), im.max()]
@@ -790,8 +816,9 @@ def mesh_region(region: bool, strel=None):
 
     Returns
     -------
-    A named-tuple containing ``faces``, ``verts``, ``norm``, and ``val`` as
-    returned by ``scikit-image.measure.marching_cubes`` function.
+    mesh : tuple
+        A named-tuple containing ``faces``, ``verts``, ``norm``, and ``val``
+        as returned by ``scikit-image.measure.marching_cubes`` function.
 
     """
     if strel is None:
@@ -828,7 +855,8 @@ def ps_disk(radius):
 
     Returns
     -------
-    A 2D numpy bool array of the structring element
+    strel : 2D-array
+        A 2D numpy bool array of the structring element
     """
     rad = int(sp.ceil(radius))
     other = sp.ones((2*rad+1, 2*rad+1), dtype=bool)
@@ -848,7 +876,8 @@ def ps_ball(radius):
 
     Returns
     -------
-    A 2D numpy array of the structuring element
+    strel : 3D-array
+        A 3D numpy array of the structuring element
     """
     rad = int(sp.ceil(radius))
     other = sp.ones((2*rad+1, 2*rad+1, 2*rad+1), dtype=bool)
