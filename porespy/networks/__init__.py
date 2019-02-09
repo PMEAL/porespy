@@ -10,6 +10,7 @@ Contains functions for analysing images as pore networks
 
 .. autosummary::
 
+    porespy.networks.add_boundary_regions
     porespy.networks.snow
     porespy.networks.snow_dual
     porespy.networks.regions_to_network

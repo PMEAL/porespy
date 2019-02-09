@@ -1,4 +1,3 @@
-import inspect
 import scipy as sp
 import scipy.ndimage as spim
 from collections import namedtuple

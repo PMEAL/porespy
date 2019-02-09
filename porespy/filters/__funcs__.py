@@ -32,13 +32,13 @@ def distance_transform_lin(im, axis=0, mode='both'):
     mode : string
         Controls how the distance is measured.  Options are:
 
-        *'forward'* - Distances are measured in the increasing direction along
+        'forward' - Distances are measured in the increasing direction along
         the specified axis
 
-        *'reverse'* - Distances are measured in the reverse direction.
+        'reverse' - Distances are measured in the reverse direction.
         *'backward'* is also accepted.
 
-        *'both'* - Distances are calculated in both directions (by recursively
+        'both' - Distances are calculated in both directions (by recursively
         calling itself), then reporting the minimum value of the two results.
 
     Returns
@@ -74,8 +74,8 @@ def distance_transform_lin(im, axis=0, mode='both'):
         return f
 
 
-def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, return_all=False, mask=True,
-                      randomize=True):
+def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, return_all=False,
+                      mask=True, randomize=True):
     r"""
     Partitions the void space into pore regions using a marker-based watershed
     algorithm, with specially filtered peaks as markers.
@@ -613,11 +613,11 @@ def flood(im, regions=None, mode='max'):
         Specifies how to determine which value should be used to flood each
         region.  Options are:
 
-        *'max'* : Floods each region with the local maximum in that region
+        'max' - Floods each region with the local maximum in that region
 
-        *'min'* : Floods each region the local minimum in that region
+        'min' - Floods each region the local minimum in that region
 
-        *'size'* : Floods each region with the size of that region
+        'size' - Floods each region with the size of that region
 
     Returns
     -------
@@ -850,17 +850,17 @@ def local_thickness(im, sizes=25, mode='hybrid'):
     mode : string
         Controls with method is used to compute the result.  Options are:
 
-        *'hybrid'* - (default) Performs a distance tranform of the void space,
+        'hybrid' - (default) Performs a distance tranform of the void space,
         thresholds to find voxels larger than ``sizes[i]``, trims the resulting
         mask if ``access_limitations`` is ``True``, then dilates it using the
         efficient fft-method to obtain the non-wetting fluid configuration.
 
-        *'dt'* - Same as 'hybrid', except uses a second distance transform,
+        'dt' - Same as 'hybrid', except uses a second distance transform,
         relative to the thresholded mask, to find the invading fluid
         configuration.  The choice of 'dt' or 'hybrid' depends on speed, which
         is system and installation specific.
 
-        *'mio'* - Using a single morphological image opening step to obtain the
+        'mio' - Using a single morphological image opening step to obtain the
         invading fluid confirguration directly, *then* trims if
         ``access_limitations`` is ``True``.  This method is not ideal and is
         included mostly for comparison purposes.
@@ -918,17 +918,17 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
     mode : string
         Controls with method is used to compute the result.  Options are:
 
-        *'hybrid'* - (default) Performs a distance tranform of the void space,
+        'hybrid' - (default) Performs a distance tranform of the void space,
         thresholds to find voxels larger than ``sizes[i]``, trims the resulting
         mask if ``access_limitations`` is ``True``, then dilates it using the
         efficient fft-method to obtain the non-wetting fluid configuration.
 
-        *'dt'* - Same as 'hybrid', except uses a second distance transform,
+        'dt' - Same as 'hybrid', except uses a second distance transform,
         relative to the thresholded mask, to find the invading fluid
         configuration.  The choice of 'dt' or 'hybrid' depends on speed, which
         is system and installation specific.
 
-        *'mio'* - Using a single morphological image opening step to obtain the
+        'mio' - Using a single morphological image opening step to obtain the
         invading fluid confirguration directly, *then* trims if
         ``access_limitations`` is ``True``.  This method is not ideal and is
         included mostly for comparison purposes.  The morphological operations
@@ -1084,7 +1084,7 @@ def nphase_border(im, include_diagonals=False):
         snow-partition
 
     include_diagonals : boolean
-        When identifying bordering pixels (2d) and voxels (3d) include those
+        When identifying bordering pixels (2D) and voxels (3D) include those
         shifted along more than one axis
 
     Returns

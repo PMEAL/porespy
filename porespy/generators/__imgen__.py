@@ -347,9 +347,11 @@ def lattice_spheres(shape: List[int], radius: int, offset: int = 0,
     lattice : string
         Specifies the type of lattice to create.  Options are:
 
-        'sc' : Simple Cubic (default)
-        'fcc' : Face Centered Cubic
-        'bcc' : Body Centered Cubic
+        'sc' - Simple Cubic (default)
+
+        'fcc' - Face Centered Cubic
+
+        'bcc' - Body Centered Cubic
 
         For 2D images, 'sc' gives a square lattice and both 'fcc' and 'bcc'
         give a triangular lattice.
@@ -503,8 +505,8 @@ def noise(shape: List[int], porosity=None, octaves: int = 3,
         apply the specified values along each axis to create anisotropy.
 
     mode : string
-        Which noise algorithm to use, either \'simplex\' (default) or
-        \'perlin\'.
+        Which noise algorithm to use, either ``'simplex'`` (default) or
+        ``'perlin'``.
 
     Returns
     -------

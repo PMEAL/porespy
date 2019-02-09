@@ -62,17 +62,17 @@ def add_boundary_regions(regions=None, faces=['front', 'back', 'left',
         The faces of ``regions`` which should have boundaries added.  Options
         are:
 
-        *'right'* : Adds boundaries to the x=0 face (``im[0, :, :]``)
+        *'right'* - Adds boundaries to the x=0 face (``im[0, :, :]``)
 
-        *'left'* : Adds boundaries to the x=X face (``im[-1, :, :]``)
+        *'left'* - Adds boundaries to the x=X face (``im[-1, :, :]``)
 
-        *'front'* : Adds boundaries to the y=0 face (``im[:, ), :]``)
+        *'front'* - Adds boundaries to the y=0 face (``im[:, ), :]``)
 
-        *'back'* : Adds boundaries to the x=0 face (``im[:, -1, :]``)
+        *'back'* - Adds boundaries to the x=0 face (``im[:, -1, :]``)
 
-        *'bottom'* : Adds boundaries to the x=0 face (``im[:, :, 0]``)
+        *'bottom'* - Adds boundaries to the x=0 face (``im[:, :, 0]``)
 
-        *'top'* : Adds boundaries to the x=0 face (``im[:, :, -1]``)
+        *'top'* - Adds boundaries to the x=0 face (``im[:, :, -1]``)
 
         The default is all faces.
 

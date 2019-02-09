@@ -21,7 +21,6 @@ def representative_elementary_volume(im, npoints=1000):
     ----------
     im : ND-array
         The image of the porous material
-
     npoints : int
         The number of randomly located and sized boxes to sample.  The default
         is 1000.
@@ -83,7 +82,6 @@ def porosity_profile(im, axis):
     ----------
     im : ND-array
         The volumetric image for which to calculate the porosity profile
-
     axis : int
         The axis (0, 1, or 2) along which to calculate the profile.  For
         instance, if `axis` is 0, then the porosity in each YZ plane is
@@ -132,13 +130,11 @@ def radial_density(im, bins=10, voxel_size=1):
         Either a binary image of the pore space with ``True`` indicating the
         pore phase (or phase of interest), or a pre-calculated distance
         transform which can save time.
-
     bins : int or array_like
         This number of bins (if int) or the location of the bins (if array).
         This argument is passed directly to Scipy's ``histogram`` function so
         see that docstring for more information.  The default is 10 bins, which
         reduces produces a relatively smooth distribution.
-
     voxel_size : scalar
         The size of a voxel side in preferred units.  The default is 1, so the
         user can apply the scaling to the returned results after the fact.
@@ -244,7 +240,6 @@ def two_point_correlation_bf(im, spacing=10):
     ----------
     im : ND-array
         The image of the void space on which the 2-point correlation is desired
-
     spacing : int
         The space between points on the regular grid that is used to generate
         the correlation (see Notes)
@@ -301,9 +296,14 @@ def _radial_profile(autocorr, r_max, nbins=100):
     ----------
     autocorr : ND-array
         The image of autocorrelation produced by FFT
-
     r_max : int or float
         The maximum radius in pixels to sum the image over
+
+    Returns
+    -------
+    result : named_tuple
+        A named tupling containing an array of ``bins`` of radial position
+        and an array of ``counts`` in each bin.
     """
     if len(autocorr.shape) == 2:
         adj = sp.reshape(autocorr.shape, [2, 1, 1])
@@ -377,15 +377,12 @@ def pore_size_distribution(im, bins=10, log=True, voxel_size=1):
         The array of containing the sizes of the largest sphere that overlaps
         each voxel.  Obtained from either ``porosimetry`` or
         ``local_thickness``.
-
     bins : scalar or array_like
         Either an array of bin sizes to use, or the number of bins that should
         be automatically generated that span the data range.
-
     log : boolean
         If ``True`` (default) the size data is converted to log (base-10)
         values before processing.  This can help
-
     voxel_size : scalar
         The size of a voxel side in preferred units.  The default is 1, so the
         user can apply the scaling to the returned results after the fact.
@@ -491,10 +488,8 @@ def linear_density(im, bins=25, voxel_size=1, log=False):
     im : ND-array
         An image with each voxel containing the distance to the nearest solid
         along a linear path, as produced by ``distance_transform_lin``.
-
     bins : int or array_like
         The number of bins or a list of specific bins to use
-
     voxel_size : scalar
         The side length of a voxel.  This is used to scale the chord lengths
         into real units.  Note this is applied *after* the binning, so
@@ -755,10 +750,8 @@ def mesh_surface_area(mesh=None, verts=None, faces=None):
     ----------
     mesh : tuple
         The tuple returned from the ``mesh_region`` function
-
     verts : array
         An N-by-ND array containing the coordinates of each mesh vertex
-
     faces : array
         An N-by-ND array indicating which elements in ``verts`` form a mesh
         element.
