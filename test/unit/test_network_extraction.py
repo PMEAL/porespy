@@ -138,9 +138,12 @@ class NetExtractTest():
         net3 = ps.networks.regions_to_network(im=pore_map3,
                                               dt=snow_out3.dt,
                                               voxel_size=1)
-        assert np.allclose(net1['pore.coords'][:, 0], net2['pore.coords'][:, 0])
-        assert np.allclose(net1['pore.coords'][:, 1], net2['pore.coords'][:, 2])
-        assert np.allclose(net1['pore.coords'][:, 0], net3['pore.coords'][:, 1])
+        assert np.allclose(net1['pore.coords'][:, 0],
+                           net2['pore.coords'][:, 0])
+        assert np.allclose(net1['pore.coords'][:, 1],
+                           net2['pore.coords'][:, 2])
+        assert np.allclose(net1['pore.coords'][:, 0],
+                           net3['pore.coords'][:, 1])
 
     def test_generate_voxel_image(self):
         net = op.network.Cubic(shape=[5, 5, 5])

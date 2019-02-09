@@ -20,10 +20,13 @@ that do NOT return a modified version of the original image.
     porespy.tools.get_border
     porespy.tools.get_planes
     porespy.tools.get_slice
+    porespy.tools.insert_cylinder
+    porespy.tools.insert_sphere
     porespy.tools.in_hull
     porespy.tools.make_contiguous
     porespy.tools.mesh_region
     porespy.tools.norm_to_uniform
+    porespy.tools.overlay
     porespy.tools.randomize_colors
     porespy.tools.subdivide
     porespy.tools.ps_disk
@@ -38,10 +41,13 @@ that do NOT return a modified version of the original image.
 .. autofunction:: get_border
 .. autofunction:: get_planes
 .. autofunction:: get_slice
+.. autofunction:: insert_cylinder
+.. autofunction:: insert_sphere
 .. autofunction:: in_hull
 .. autofunction:: make_contiguous
 .. autofunction:: mesh_region
 .. autofunction:: norm_to_uniform
+.. autofunction:: overlay
 .. autofunction:: randomize_colors
 .. autofunction:: subdivide
 .. autofunction:: ps_disk
@@ -58,9 +64,12 @@ from .__funcs__ import find_outer_region
 from .__funcs__ import get_border
 from .__funcs__ import get_planes
 from .__funcs__ import get_slice
+from .__funcs__ import insert_cylinder
+from .__funcs__ import insert_sphere
 from .__funcs__ import in_hull
 from .__funcs__ import make_contiguous
 from .__funcs__ import mesh_region
+from .__funcs__ import overlay
 from .__funcs__ import norm_to_uniform
 from .__funcs__ import randomize_colors
 from .__funcs__ import subdivide

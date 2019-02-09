@@ -883,3 +883,128 @@ def ps_ball(radius):
     other[rad, rad, rad] = False
     ball = spim.distance_transform_edt(other) < radius
     return ball
+
+
+def overlay(im1, im2, c):
+    r"""
+    Overlays ``im2`` onto ``im1``, given voxel coords of center of ``im2``
+    in ``im1``.
+
+    Parameters
+    ----------
+    im1 : ND-array
+        Original voxelated image
+    im2 : ND-array
+        Template voxelated image
+    c : array_like
+        [x, y, z] coordinates in ``im1`` where ``im2`` will be centered
+
+    Returns
+    -------
+    image : ND-array
+        A modified version of ``im1``, with ``im2`` overlaid at the specified
+        location
+
+    """
+    shape = im2.shape
+    for ni in shape:
+        if ni % 2 == 0:
+            raise Exception("Structuring element must be odd-voxeled...")
+
+    nx, ny, nz = [(ni - 1) // 2 for ni in shape]
+    cx, cy, cz = c
+
+    im1[cx-nx:cx+nx+1, cy-ny:cy+ny+1, cz-nz:cz+nz+1] += im2
+
+    return im1
+
+
+def insert_sphere(im, c, r):
+    r"""
+    Inserts a sphere of a specified radius into a given image
+
+    Parameters
+    ----------
+    im : array_like
+        Image into which the sphere should be inserted
+    c : array_like
+        The [x, y, z] coordinate indicating the center of the sphere
+    r : int
+        The radius of sphere to insert
+
+    Returns
+    -------
+    image : ND-array
+        The original image with a sphere inerted at the specified location
+    """
+    c = sp.array(c, dtype=int)
+    if c.size != im.ndim:
+        raise Exception('Coordinates do not match dimensionality of image')
+
+    bbox = []
+    [bbox.append(sp.clip(c[i] - r, 0, im.shape[i])) for i in range(im.ndim)]
+    [bbox.append(sp.clip(c[i] + r, 0, im.shape[i])) for i in range(im.ndim)]
+    bbox = sp.ravel(bbox)
+    s = bbox_to_slices(bbox)
+    temp = im[s]
+    blank = sp.ones_like(temp)
+    blank[tuple(c - bbox[0:im.ndim])] = 0
+    blank = spim.distance_transform_edt(blank) < r
+    im[s] = blank
+
+
+def insert_cylinder(im, xyz0, xyz1, r):
+    r"""
+    Inserts a cylinder of given radius onto a given image
+
+    Parameters
+    ----------
+    im : array_like
+        Original voxelated image
+    xyz0, xyz1 : 3-by-1 array_like
+        Voxel coordinates of the two end points of the cylinder
+    r : int
+        Radius of the cylinder
+
+    Returns
+    -------
+    im : ND-array
+        Original voxelated image overlayed with the cylinder
+
+    Notes
+    -----
+    This function is only implemented for 3D images
+
+    """
+    if im.ndim != 3:
+        raise Exception('This function is only implemented for 3D images')
+    # Converting coordinates to numpy array
+    xyz0, xyz1 = [sp.array(xyz).astype(int) for xyz in (xyz0, xyz1)]
+    r = int(r)
+    L = sp.absolute(xyz0 - xyz1).max() + 1
+    xyz_line = [sp.linspace(xyz0[i], xyz1[i], L).astype(int) for i in range(3)]
+
+    xyz_min = sp.amin(xyz_line, axis=1) - r
+    xyz_max = sp.amax(xyz_line, axis=1) + r
+    shape_template = xyz_max - xyz_min + 1
+    template = sp.zeros(shape=shape_template)
+
+    # Shortcut for orthogonal cylinders
+    if (xyz0 == xyz1).sum() == 2:
+        unique_dim = [xyz0[i] != xyz1[i] for i in range(3)].index(True)
+        shape_template[unique_dim] = 1
+        template_2D = disk(radius=r).reshape(shape_template)
+        template = sp.repeat(template_2D, repeats=L, axis=unique_dim)
+        xyz_min[unique_dim] += r
+        xyz_max[unique_dim] += -r
+    else:
+        xyz_line_in_template_coords = [xyz_line[i] - xyz_min[i] for i in range(3)]
+        template[tuple(xyz_line_in_template_coords)] = 1
+        template = spim.distance_transform_edt(template == 0) <= r
+
+    im[xyz_min[0]:xyz_max[0]+1,
+       xyz_min[1]:xyz_max[1]+1,
+       xyz_min[2]:xyz_max[2]+1] += template
+
+    return im
+
