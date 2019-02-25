@@ -1,10 +1,12 @@
 ---
 title: 'PoreSpy: A Python Toolkit for Quantitative Analysis of Porous Media Images'
+
 tags:
   - Python
   - porous media
   - tomography
   - image analysis
+
 authors:
   - name: Jeff T. Gostick
     orcid: 0000-0001-7736-7124
@@ -31,14 +33,15 @@ authors:
 affiliations:
  - name: Department of Chemical Engineering, University of Waterloo, Waterloo, ON, Canada
    index: 1
-   - name: Department of Chemical Engineering, University College London, London, United Kingdom
+ - name: Department of Chemical Engineering, University College London, London, United Kingdom
    index: 2
  - name: Department of Chemical Engineering, McGill University, Montreal, QC, Canada
    index: 3
- - name: Division of Orthopedic Surgery, McGill University Health Centre, Montreal, QC, Canada
-   index: 4
+
 date: 12 February 2019
+
 bibliography: paper.bib
+
 ---
 
 # Summary
@@ -62,6 +65,6 @@ Being implemented in Python means it can be installed with a single command (``p
 
 # Acknowledgements
 
-MDRK acknowledges support from EPSRC under grant EP/R020973/1.  MDRK and RJ acknowledge the support of the Faraday Institution Degradation and Multi scale Modelling projects.  ZA  express his appreciation to the University of Engineering and Technology Lahore, Pakistan for their funding and support.   
+MDRK acknowledges support from EPSRC under grant EP/R020973/1.  MDRK and RJ acknowledge the support of the Faraday Institution Degradation and Multi scale Modelling projects.  ZA  express his appreciation to the University of Engineering and Technology Lahore, Pakistan for their funding and support.
 
 # References
