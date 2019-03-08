@@ -1,4 +1,5 @@
 from porespy.networks import regions_to_network, add_boundary_regions
+from porespy.networks import _net_dict
 from porespy.filters import snow_partitioning
 from porespy.tools import make_contiguous
 from porespy.metrics import region_surface_areas, region_interface_areas
@@ -116,9 +117,7 @@ def snow(im, voxel_size=1,
                 net['pore.{}'.format(i)] = (coords[:, dic[i]] >
                                             max(condition[:, dic[i]]))
 
-    class network_dict(dict):
-        pass
-    net = network_dict(net)
+    net = _net_dict(net)
     net.im = im
     net.dt = dt
     net.regions = regions
