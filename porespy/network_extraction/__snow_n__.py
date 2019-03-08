@@ -1,8 +1,10 @@
 import scipy as sp
 from porespy.network_extraction import regions_to_network
-from porespy.network_extraction import add_boundary_regions, label_boundary_cells
+from porespy.network_extraction import label_boundary_cells
+from porespy.network_extraction import add_boundary_regions
 from porespy.network_extraction import _create_alias_map
 from porespy.network_extraction import connect_network_phases
+from porespy.network_extraction import _net_dict
 from porespy.filters import snow_partitioning_n
 from porespy.tools import make_contiguous, pad_faces
 from porespy.metrics import region_surface_areas, region_interface_areas
@@ -103,9 +105,7 @@ def snow_n(im,
     net = label_boundary_cells(network=net, boundary_faces=f)
     # -------------------------------------------------------------------------
 
-    class net_dict(dict):  # assign out values to dummy dict
-        pass
-    temp = net_dict(net)
+    temp = _net_dict(net)
     temp.im = im.copy()
     temp.dt = dt
     temp.regions = regions

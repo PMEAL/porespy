@@ -21,6 +21,7 @@ from .__funcs__ import label_boundary_cells
 from .__funcs__ import _create_alias_map
 from .__funcs__ import connect_network_phases
 from .__getnet__ import regions_to_network
+from .__utils__ import _net_dict
 from .__snow__ import snow
 from .__snow_dual__ import snow_dual
 from .__snow_n__ import snow_n

@@ -1,4 +1,5 @@
 from porespy.network_extraction import regions_to_network, add_boundary_regions
+from porespy.network_extraction import _net_dict
 from porespy.network_extraction import label_boundary_cells
 from porespy.tools import pad_faces
 from porespy.filters import snow_partitioning
@@ -102,9 +103,7 @@ def snow(im, voxel_size=1,
     # -------------------------------------------------------------------------
     # assign out values to dummy dict
 
-    class net_dict(dict):
-        pass
-    temp = net_dict(net)
+    temp = _net_dict(net)
     temp.im = im.copy()
     temp.dt = dt
     temp.regions = regions

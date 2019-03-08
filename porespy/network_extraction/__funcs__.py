@@ -289,15 +289,15 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200,
     im_pores = np.zeros(shape, dtype=np.uint8)
     im_throats = np.zeros_like(im_pores)
 
-    if pore_shape is "cube":
+    if pore_shape == "cube":
         pore_elem = cube
         rp = pore_radi * 2 + 1  # +1 since num_voxel must be odd
         rp_max = int(2 * round(delta / res)) + 1
-    if pore_shape is "sphere":
+    if pore_shape == "sphere":
         pore_elem = ball
         rp = pore_radi
         rp_max = int(round(delta / res))
-    if throat_shape is "cuboid":
+    if throat_shape == "cuboid":
         raise Exception("Not yet implemented, try 'cylinder'.")
 
     # Generating voxels for pores
@@ -508,9 +508,9 @@ def connect_network_phases(net, snow_partitioning_n, voxel_size=1,
                         s_pa_c = sp.trim_zeros(s_pa_c)
                         pi_pj_sa[i_index] = p_sa_c
                         pi_pj_sa[j_index] = s_pa_c
-                    net['pore.{}_{}_area'.format(al[i], al[j])] = (
-                            pi_pj_sa *
-                            voxel_size ** 2)
+                    net['pore.{}_{}_area'.format(al[i],
+                                                 al[j])] = (pi_pj_sa *
+                                                            voxel_size**2)
     return net
 
 

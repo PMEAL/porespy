@@ -1,6 +1,8 @@
 import scipy as sp
 from porespy.network_extraction import regions_to_network
-from porespy.network_extraction import add_boundary_regions, label_boundary_cells
+from porespy.network_extraction import add_boundary_regions
+from porespy.network_extraction import label_boundary_cells
+from porespy.network_extraction import _net_dict
 from porespy.tools import pad_faces
 from porespy.filters import snow_partitioning
 from porespy.metrics import region_surface_areas, region_interface_areas
@@ -151,10 +153,7 @@ def snow_dual(im,
     # -------------------------------------------------------------------------
     # assign out values to dummy dict
 
-    class net_dict(dict):
-        pass
-
-    temp = net_dict(net)
+    temp = _net_dict(net)
     temp.im = im.copy()
     temp.dt = dt
     temp.regions = regions
