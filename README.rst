@@ -82,7 +82,7 @@ Examples
 The following code snippets illustrate generating a 2D image, applying
 several filters, and calculating some common metrics.
 A Github repository of examples is
-`available here <https://github.com/PMEAL/porespy-examples>`_.
+`available here <https://github.com/PMEAL/porespy/tree/master/examples>`_.
 
 ...............................................................................
 Generating an image
