@@ -434,7 +434,8 @@ def lattice_spheres(shape: List[int], radius: int, offset: int = 0,
     return im
 
 
-def overlapping_spheres(shape: List[int], radius: int, porosity: float):
+def overlapping_spheres(shape: List[int], radius: int, porosity: float,
+                        iter_max: int = 10, tol: float = 0.01):
     r"""
     Generate a packing of overlapping mono-disperse spheres
 
@@ -448,9 +449,14 @@ def overlapping_spheres(shape: List[int], radius: int, porosity: float):
         The radius of spheres in the packing.
 
     porosity : scalar
-        The porosity of the final image.  This number is approximated by
-        the method so the returned result may not have exactly the
-        specified value.
+        The porosity of the final image, accurate to the given tolerance.
+
+    iter_max : int
+        Maximum number of iterations for the iterative algorithm that improves
+        the porosity of the final image to match the given value.
+
+    tol : float
+        Tolerance for porosity of the final image compared to the given value.
 
     Returns
     -------
@@ -462,6 +468,7 @@ def overlapping_spheres(shape: List[int], radius: int, porosity: float):
     This method can also be used to generate a dispersion of hollows by
     treating ``porosity`` as solid volume fraction and inverting the
     returned image.
+
     """
     shape = sp.array(shape)
     if sp.size(shape) == 1:
@@ -470,11 +477,26 @@ def overlapping_spheres(shape: List[int], radius: int, porosity: float):
         s_vol = sp.sum(disk(radius))
     if sp.size(shape) == 3:
         s_vol = sp.sum(ball(radius))
+
     bulk_vol = sp.prod(shape)
     N = int(sp.ceil((1 - porosity)*bulk_vol/s_vol))
-    im = sp.random.random(size=shape) > (N/bulk_vol)
-    im = spim.distance_transform_edt(im) < radius
-    return ~im
+    im = sp.random.random(size=shape)
+
+    # Newton's method for getting image porosity match the given
+    f = lambda N: spim.distance_transform_edt(im > N/bulk_vol) < radius
+    g = lambda im: 1 - im.sum() / sp.prod(shape)
+    # Perturbation in N for calculating df in Newton's algorithm
+    dN = int(0.05**im.ndim * bulk_vol)
+    w = 0.5  # Damping factor
+    for i in range(iter_max):
+        err = g(f(N)) - porosity
+        d_err = (g(f(N+dN)) - g(f(N))) / dN
+        if abs(err) <= tol:
+            break
+        N2 = N - int(err/d_err)   # xnew = xold - f/df
+        N = w * N2 + (1-w) * N
+
+    return ~f(N)
 
 
 def noise(shape: List[int], porosity=None, octaves: int = 3,
