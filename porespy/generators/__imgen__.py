@@ -183,7 +183,7 @@ def bundle_of_tubes(shape: List[int], spacing: int):
 
 
 def polydisperse_spheres(shape: List[int], porosity: float, dist,
-                         nbins: int = 5):
+                         nbins: int = 5, r_min: int = 5):
     r"""
     Create an image of randomly place, overlapping spheres with a distribution
     of radii.
@@ -224,12 +224,14 @@ def polydisperse_spheres(shape: List[int], porosity: float, dist,
     Rs = dist.interval(sp.linspace(0.05, 0.95, nbins))
     Rs = sp.vstack(Rs).T
     Rs = (Rs[:-1] + Rs[1:])/2
-    Rs = Rs.flatten()
-    phi = 1 - (1 - porosity)/(len(Rs))
+    Rs = sp.clip(Rs.flatten(), a_min=r_min, a_max=None)
+    phi_desired = 1 - (1 - porosity)/(len(Rs))
     im = sp.ones(shape, dtype=bool)
     for r in Rs:
-        temp = overlapping_spheres(shape=shape, radius=r, porosity=phi)
-        im = im*temp
+        phi_im = im.sum() / sp.prod(shape)
+        phi_corrected = 1 - (1 - phi_desired) / phi_im
+        temp = overlapping_spheres(shape=shape, radius=r, porosity=phi_corrected)
+        im = im * temp
     return im
 
 
