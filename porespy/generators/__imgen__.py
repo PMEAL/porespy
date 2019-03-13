@@ -25,7 +25,7 @@ def insert_shape(im, center, element, value=1):
         lower_el = sp.amax((lower_im - center[dim] + r, 0))
         upper_el = sp.amin((upper_im - center[dim] + r, element.shape[dim]))
         s_el.append(slice(lower_el, upper_el))
-    im[s_im] = im[s_im] + element[s_el]*value
+    im[tuple(s_im)] = im[tuple(s_im)] + element[tuple(s_el)]*value
     return im
 
 
@@ -167,7 +167,7 @@ def bundle_of_tubes(shape: List[int], spacing: int):
                              shape[1]-(spacing/2)-1,
                              shape[1]/spacing))
     Yi = sp.array(Yi, dtype=int)
-    temp[sp.meshgrid(Xi, Yi)] = 1
+    temp[tuple(sp.meshgrid(Xi, Yi))] = 1
     inds = sp.where(temp)
     for i in range(len(inds[0])):
         r = sp.random.randint(1, (spacing/2))
@@ -261,7 +261,7 @@ def voronoi_edges(shape: List[int], radius: int, ncells: int,
 
     """
     print(78*'―')
-    print('voronoi_edges: Generating', ncells, ' cells')
+    print('voronoi_edges: Generating', ncells, 'cells')
     shape = sp.array(shape)
     if sp.size(shape) == 1:
         shape = sp.full((3, ), int(shape))
@@ -288,7 +288,7 @@ def voronoi_edges(shape: List[int], radius: int, ncells: int,
         pts = vor.vertices[row].astype(int)
         if sp.all(pts >= 0) and sp.all(pts < im.shape):
             line_pts = line_segment(pts[0], pts[1])
-            im[line_pts] = True
+            im[tuple(line_pts)] = True
     im = spim.distance_transform_edt(~im) > radius
     return im
 
