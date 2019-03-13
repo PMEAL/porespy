@@ -9,7 +9,7 @@ plt.close('all')
 class GeneratorTest():
 
     def setup_class(self):
-        sp.random.seed(0)
+        sp.random.seed(10)
 
     def test_cylinders(self):
         X = 100
@@ -36,70 +36,70 @@ class GeneratorTest():
         assert N == 100
 
     def test_overlapping_spheres_2d(self):
-        im = ps.generators.overlapping_spheres(shape=[101, 101], radius=5,
-                                               porosity=0.5)
-        poro = sp.sum(im)/sp.size(im)
-        print(poro)
-        plt.figure()
-        plt.imshow(im[:, :])
-        assert (poro-0.5)**2 < 0.1
+        phis = sp.arange(0.1, 0.9, 0.2)
+        for phi in phis:
+            im = ps.generators.overlapping_spheres(shape=[101, 101], radius=6,
+                                                    porosity=phi)
+            phi_actual = im.sum() / sp.size(im)
+            assert abs(phi_actual - phi) < 0.01
 
     def test_overlapping_spheres_3d(self):
-        target = 0.5
-        im = ps.generators.overlapping_spheres(shape=[50, 50, 50], radius=5,
-                                               porosity=target)
-        poro = sp.sum(im)/sp.size(im)
-        assert (poro-target)**2 < 0.15
+        phis = sp.arange(0.1, 0.9, 0.2)
+        for phi in phis:
+            im = ps.generators.overlapping_spheres(shape=[100, 100, 50],
+                                                    radius=8, porosity=phi)
+            phi_actual = im.sum() / sp.size(im)
+            assert abs(phi_actual - phi) < 0.01
 
     def test_polydisperse_spheres(self):
-        target = 0.5
-        dist = sp.stats.norm(loc=5, scale=1)
-        im = ps.generators.polydisperse_spheres(shape=[50, 50, 50],
-                                                porosity=target,
-                                                dist=dist,
-                                                nbins=10)
-        poro = sp.sum(im)/sp.size(im)
-        assert (poro-target)**2 < 0.15
+        phis = sp.arange(0.1, 0.9, 0.2)
+        dist = sp.stats.norm(loc=7, scale=2)
+        for phi in phis:
+            im = ps.generators.polydisperse_spheres(shape=[100, 100, 50],
+                                                    porosity=phi, dist=dist,
+                                                    nbins=10)
+            phi_actual = im.sum() / sp.size(im)
+            assert abs(phi_actual - phi) < 0.03
 
     def test_voronoi_edges(self):
         sp.random.seed(0)
         im = ps.generators.voronoi_edges(shape=[50, 50, 50],
-                                         radius=2,
-                                         ncells=25,
-                                         flat_faces=True)
+                                          radius=2,
+                                          ncells=25,
+                                          flat_faces=True)
         top_slice = im[:, :, 0]
         assert sp.sum(top_slice) == 1409
 
     def test_lattice_spheres_square(self):
         im = ps.generators.lattice_spheres(shape=[101, 101], radius=5,
-                                           offset=0, lattice='sc')
+                                            offset=0, lattice='sc')
         labels, N = spim.label(input=~im)
         assert N == 100
 
     def test_lattice_spheres_triangular(self):
         im = ps.generators.lattice_spheres(shape=[101, 101], radius=5,
-                                           lattice='triangular')
+                                            lattice='triangular')
         labels, N = spim.label(input=~im)
         assert N == 85
 
     def test_lattice_spheres_sc(self):
         im = ps.generators.lattice_spheres(shape=[101, 101, 101],
-                                           radius=4, offset=1,
-                                           lattice='sc')
+                                            radius=4, offset=1,
+                                            lattice='sc')
         labels, N = spim.label(input=~im)
         assert N == 1000
 
     def test_lattice_spheres_fcc(self):
         im = ps.generators.lattice_spheres(shape=[101, 101, 101],
-                                           radius=4, offset=2,
-                                           lattice='fcc')
+                                            radius=4, offset=2,
+                                            lattice='fcc')
         labels, N = spim.label(input=~im)
         assert N == 392
 
     def test_lattice_spheres_bcc(self):
         im = ps.generators.lattice_spheres(shape=[101, 101, 101],
-                                           radius=4, offset=2,
-                                           lattice='bcc')
+                                            radius=4, offset=2,
+                                            lattice='bcc')
         labels, N = spim.label(input=~im)
         assert N == 1024
 
@@ -138,7 +138,7 @@ class GeneratorTest():
     def test_RSA_mask_edge_2d(self):
         im = sp.zeros([100, 100], dtype=int)
         im = ps.generators.RSA(im, radius=10, volume_fraction=0.5,
-                               mode='contained')
+                                mode='contained')
         coords = sp.argwhere(im == 2)
         assert ~sp.any(coords < 10)
         assert ~sp.any(coords > 90)
@@ -146,7 +146,7 @@ class GeneratorTest():
     def test_RSA_mask_edge_3d(self):
         im = sp.zeros([50, 50, 50], dtype=int)
         im = ps.generators.RSA(im, radius=5, volume_fraction=0.5,
-                               mode='contained')
+                                mode='contained')
         coords = sp.argwhere(im == 2)
         assert ~sp.any(coords < 5)
         assert ~sp.any(coords > 45)
