@@ -437,7 +437,7 @@ def lattice_spheres(shape: List[int], radius: int, offset: int = 0,
 
 
 def overlapping_spheres(shape: List[int], radius: int, porosity: float,
-                        iter_max: int = 10, tol: float = 0.02):
+                        iter_max: int = 10, tol: float = 0.01):
     r"""
     Generate a packing of overlapping mono-disperse spheres
 
@@ -488,7 +488,7 @@ def overlapping_spheres(shape: List[int], radius: int, porosity: float,
     f = lambda N: spim.distance_transform_edt(im > N/bulk_vol) < radius
     g = lambda im: 1 - im.sum() / sp.prod(shape)
     # Perturbation in N for calculating df in Newton's algorithm
-    dN = int(0.025**im.ndim * bulk_vol)
+    dN = int(0.04**im.ndim * bulk_vol)
     w = 0.5  # Damping factor
     for i in range(iter_max):
         err = g(f(N)) - porosity
