@@ -437,7 +437,7 @@ def lattice_spheres(shape: List[int], radius: int, offset: int = 0,
 
 
 def overlapping_spheres(shape: List[int], radius: int, porosity: float,
-                        iter_max: int = 10, tol: float = 0.01):
+                        iter_max: int = 10, tol: float = 0.02):
     r"""
     Generate a packing of overlapping mono-disperse spheres
 
