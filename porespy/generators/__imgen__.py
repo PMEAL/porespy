@@ -500,6 +500,18 @@ def overlapping_spheres(shape: List[int], radius: int, porosity: float,
         N2 = N - int(err/d_err)   # xnew = xold - f/df
         N = w * N2 + (1-w) * N
 
+    # # Bisection search: N is always undershoot (bc. of overlaps)
+    # N_low, N_high = N, 4*N
+    # for i in range(iter_max):
+    #     N = sp.mean([N_high, N_low], dtype=int)
+    #     err = g(f(N)) - porosity
+    #     if err > 0:
+    #         N_low = N
+    #     else:
+    #         N_high = N
+    #     if abs(err) <= tol:
+    #         break
+
     return ~f(N)
 
 
