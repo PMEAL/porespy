@@ -488,11 +488,13 @@ def overlapping_spheres(shape: List[int], radius: int, porosity: float,
     f = lambda N: spim.distance_transform_edt(im > N/bulk_vol) < radius
     g = lambda im: 1 - im.sum() / sp.prod(shape)
     # Perturbation in N for calculating df in Newton's algorithm
-    dN = int(0.05**im.ndim * bulk_vol)
+    dN = int(0.025**im.ndim * bulk_vol)
     w = 0.5  # Damping factor
     for i in range(iter_max):
         err = g(f(N)) - porosity
         d_err = (g(f(N+dN)) - g(f(N))) / dN
+        if d_err == 0:
+            break
         if abs(err) <= tol:
             break
         N2 = N - int(err/d_err)   # xnew = xold - f/df
