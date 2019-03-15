@@ -489,7 +489,7 @@ def overlapping_spheres(shape: List[int], radius: int, porosity: float,
     g = lambda im: 1 - im.sum() / sp.prod(shape)
 
     # Newton's method for getting image porosity match the given
-    w, dN = 1.0, 25  # Damping factor, perturbation
+    w, dN = 1.0, 10  # Damping factor, perturbation
     for i in range(iter_max):
         err = g(f(N)) - porosity
         d_err = (g(f(N+dN)) - g(f(N))) / dN
