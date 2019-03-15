@@ -99,7 +99,7 @@ of large tomograms.
     im = ps.generators.blobs(shape=[200, 200], porosity=0.5, blobiness=2)
     plt.imshow(im)
 
-.. image:: https://i.imgur.com/Jo9Mus8m.png
+.. image:: https://github.com/PMEAL/porespy/raw/master/docs/_static/fig1.png
 
 ...............................................................................
 Applying filters
@@ -114,7 +114,7 @@ the voxel values provides information about the pore size distribution.
     lt = ps.filters.local_thickness(im)
     plt.imshow(lt)
 
-.. image:: https://i.imgur.com/l9tNG60m.png
+.. image:: https://github.com/PMEAL/porespy/raw/master/docs/_static/fig2.png
 
 A less common filter is the application of chords that span the pore space in
 a given direction.  It is possible to gain information about anisotropy of the
@@ -127,7 +127,7 @@ direction.
     cr = ps.filters.flood(cr, mode='size')
     plt.imshow(cr)
 
-.. image:: https://i.imgur.com/Glt6NzMm.png
+.. image:: https://github.com/PMEAL/porespy/raw/master/docs/_static/fig3.png
 
 ...............................................................................
 Calculating metrics
@@ -140,9 +140,9 @@ correlation function.
 .. code-block:: python
 
     data = ps.metrics.two_point_correlation_fft(im)
-    plt.plot(*data, 'b.-')
+    plt.plot(*data, 'bo-')
 
-.. image:: https://i.imgur.com/DShBB5Am.png
+.. image:: https://github.com/PMEAL/porespy/raw/master/docs/_static/fig4.png
 
 The metrics sub-module also contains a suite of functions that produce plots
 based on values in images that have passed through a filter, such as local
@@ -153,7 +153,7 @@ thickness.
     mip = ps.filters.porosimetry(im)
     data = ps.metrics.pore_size_distribution(mip, log=False)
     plt.imshow(mip)
-    plt.plot(data.R, data.cdf, 'b.-')  # Note: small image results in noisy curve
+    plt.plot(data.R, data.cdf, 'bo-')  # Note: small image results in noisy curve
 
-.. image:: https://i.imgur.com/BOTFxaUm.png
-.. image:: https://i.imgur.com/6oaQ0grm.png
+.. image:: https://github.com/PMEAL/porespy/raw/master/docs/_static/fig5.png
+.. image:: https://github.com/PMEAL/porespy/raw/master/docs/_static/fig6.png
