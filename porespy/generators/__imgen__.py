@@ -475,10 +475,8 @@ def overlapping_spheres(shape: List[int], radius: int, porosity: float,
     shape = sp.array(shape)
     if sp.size(shape) == 1:
         shape = sp.full((3, ), int(shape))
-    if sp.size(shape) == 2:
-        s_vol = sp.sum(disk(radius))
-    if sp.size(shape) == 3:
-        s_vol = sp.sum(ball(radius))
+    ndim = (shape!=1).sum()
+    s_vol = disk(radius).sum() if ndim == 2 else ball(radius).sum()
 
     bulk_vol = sp.prod(shape)
     N = int(sp.ceil((1 - porosity)*bulk_vol/s_vol))
@@ -489,7 +487,7 @@ def overlapping_spheres(shape: List[int], radius: int, porosity: float,
     g = lambda im: 1 - im.sum() / sp.prod(shape)
 
     # Newton's method for getting image porosity match the given
-    w, dN = 1.0, 25  # Damping factor, perturbation
+    w, dN = 1.0, 10  # Damping factor, perturbation
     for i in range(iter_max):
         err = g(f(N)) - porosity
         d_err = (g(f(N+dN)) - g(f(N))) / dN
