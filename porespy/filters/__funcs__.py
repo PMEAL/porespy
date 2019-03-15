@@ -297,6 +297,12 @@ def trim_saddle_points(peaks, dt, max_iters=10):
     -------
     image : ND-array
         An image with fewer peaks than the input image
+
+    References
+    ----------
+    [1] Gostick, J. "A versatile and efficient network extraction algorithm
+    using marker-based watershed segmenation".  Physical Review E. (2017)
+
     """
     peaks = sp.copy(peaks)
     if dt.ndim == 2:
@@ -356,6 +362,11 @@ def trim_nearby_peaks(peaks, dt):
     Each pair of peaks is considered simultaneously, so for a triplet of peaks
     each pair is considered.  This ensures that only the single peak that is
     furthest from the solid is kept.  No iteration is required.
+
+    References
+    ----------
+    [1] Gostick, J. "A versatile and efficient network extraction algorithm
+    using marker-based watershed segmenation".  Physical Review E. (2017)
     """
     peaks = sp.copy(peaks)
     if dt.ndim == 2:
@@ -870,13 +881,24 @@ def local_thickness(im, sizes=25, mode='hybrid'):
     image : ND-array
         A copy of ``im`` with the pore size values in each voxel
 
+    See Also
+    --------
+    porosimetry
+
     Notes
     -----
     The term *foreground* is used since this function can be applied to both
-    pore space or the solid, whichever is set to True.
+    pore space or the solid, whichever is set to ``True``.
 
-    This function is identical to porosimetry with ``access_limited`` set to
-    ``False``.
+    This function is identical to ``porosimetry`` with ``access_limited`` set
+    to ``False``.
+
+    The way local thickness is found in PoreSpy differs from the traditional
+    method (i.e. `used in ImageJ <https://imagej.net/Local_Thickness>`_).
+    Our approach is probably slower, but it allows for the same code to be
+    used for ``local_thickness`` and ``porosimetry``, since we can 'trim'
+    invaded regions that are not connected to the inlets in the ``porosimetry``
+    function.  This is not needed in ``local_thickness`` however.
 
     """
     im_new = porosimetry(im=im, sizes=sizes, access_limited=False, mode=mode)
@@ -945,9 +967,17 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
         invading sphere.  Of course, ``r`` can be converted to capillary
         pressure using your favorite model.
 
+    Notes
+    -----
+    There are many ways to perform this filter, and PoreSpy offer 3, which
+    users can choose between via the ``mode`` argument.  These methods all
+    work in a similar way by finding which foreground voxels can accomodate
+    a sphere of a given radius, then repeating for smaller radii.
+
     See Also
     --------
     fftmorphology
+    local_thickness
 
     """
     def trim_blobs(im, inlets):
