@@ -140,7 +140,9 @@ correlation function.
 .. code-block:: python
 
     data = ps.metrics.two_point_correlation_fft(im)
-    plt.plot(*data, 'bo-')
+    fig = plt.plot(*data, 'bo-')
+    plt.ylabel('probability')
+    plt.xlabel('correlation length [voxels]')
 
 .. image:: https://github.com/PMEAL/porespy/raw/master/docs/_static/fig4.png
 
@@ -153,7 +155,10 @@ thickness.
     mip = ps.filters.porosimetry(im)
     data = ps.metrics.pore_size_distribution(mip, log=False)
     plt.imshow(mip)
-    plt.plot(data.R, data.cdf, 'bo-')  # Note: small image results in noisy curve
+    # Now show intrusion curve
+    plt.plot(data.R, data.cdf, 'bo-')
+    plt.xlabel('invasion size [voxels]')
+    plt.ylabel('volume fraction invaded [voxels]')
 
 .. image:: https://github.com/PMEAL/porespy/raw/master/docs/_static/fig5.png
 .. image:: https://github.com/PMEAL/porespy/raw/master/docs/_static/fig6.png
