@@ -55,15 +55,27 @@ Installation
 PoreSpy depends heavily on the Scipy Stack.  The best way to get a fully
 functional environment is the
 `Anaconda distribution <https://www.anaconda.com/download/>`_.
-Be sure to get the Python 3.6+ version.
+Be sure to get the **Python 3.6+ version**.
 
-PoreSpy is available on the
+
+Once you've installed *Conda*, you can then install PoreSpy.  It is available on the
 `Python Package Index <https://pypi.org/project/porespy/>`_ and can be
-installed using PIP as follows:
+installed by typing the following at the *conda* prompt:
 
 ::
 
-    C:\> pip install porespy
+    pip install porespy
+
+
+.. note::
+
+    On Windows, you should have a shortcut to the "anaconda prompt" in the Anaconda program group.  This will open a Windows command console with access to the Python features added by *Conda*, such as installing things via ``pip``.
+
+    On Mac or Linux, you need to open a normal terminal window, then type
+    ``source activate {env}`` where you replace ``{env}`` with the name of the
+    environment you want to install PoreSpy.  If you don't know what this means,
+    then use ``source activate root``, which will install PoreSpy in the root
+    environment which is the default.
 
 
 If you think you may be interested in contributing to PoreSpy and wish to
@@ -73,7 +85,9 @@ and install it using the following PIP command:
 
 ::
 
-    C:\> pip install -e "C:\path\to\the\local\files\"
+    pip install -e "C:\path\to\the\local\files\"
+
+For information about contributing, refer to the `contributors guide <https://github.com/PMEAL/porespy/blob/master/CONTRIBUTING.md>`_
 
 -------------------------------------------------------------------------------
 Examples
@@ -81,8 +95,7 @@ Examples
 
 The following code snippets illustrate generating a 2D image, applying
 several filters, and calculating some common metrics.
-A Github repository of examples is
-`available here <https://github.com/PMEAL/porespy-examples>`_.
+A set of examples is included in this repo, and can be `browsed here <https://github.com/PMEAL/porespy/tree/master/examples>`_.
 
 ...............................................................................
 Generating an image

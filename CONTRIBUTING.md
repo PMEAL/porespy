@@ -36,8 +36,7 @@ g) This will trigger several things on our repo, including most importantly a co
 
 ### Adding Examples
 
-We also have a set of examples in a separate [repository for examples][link_examples], all done in Jupyter notebooks.  This is also an excellent place to contribute, by showing users how to build a "pipeline" of functions to accomplish certain tasks, or perhaps to reproduce some results in a published paper.  The fork and pull request workflow mentioned above still applies, however, if you wish to contribute a Notebook without all the hassle, you can just email the file to one of the PoreSpy developers and we can add it to the repo for you.
-
+We also have a set of examples included in the [PoreSpy source code][link_examples], all done in Jupyter notebooks.  This is also an excellent place to contribute, by showing users how to build a "pipeline" of functions to accomplish certain tasks, or perhaps to reproduce some results in a published paper.  The fork and pull request workflow mentioned above still applies; however, if you wish to contribute a Notebook without all the hassle, you can just email the file to one of the PoreSpy developers and we can add it to the repo for you.
 
 
 
@@ -50,5 +49,5 @@ We also have a set of examples in a separate [repository for examples][link_exam
 [link_pullrequest]: https://help.github.com/articles/creating-a-pull-request/
 
 [link_using_git]: http://try.github.io/
-[link_examples]: https://github.com/PMEAL/porespy-examples
+[link_examples]: https://github.com/PMEAL/porespy/tree/master/examples
 [link_scipy]: https://www.scipy.org/
