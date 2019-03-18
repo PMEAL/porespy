@@ -24,6 +24,15 @@ class FilterTest():
                 temp = getattr(ps.filters, item)
                 assert temp is not im
 
+    def test_porosimetry_compare_modes_2D(self):
+        im = self.im[:, :, 50]
+        sizes = sp.arange(25, 1, -1)
+        fft = ps.filters.porosimetry(im, mode='hybrid', sizes=sizes)
+        mio = ps.filters.porosimetry(im, mode='mio', sizes=sizes)
+        dt = ps.filters.porosimetry(im, mode='dt', sizes=sizes)
+        assert sp.all(fft == dt)
+        assert sp.all(fft == mio)
+
     def test_porosimetry_npts_10(self):
         mip = ps.filters.porosimetry(im=self.im, sizes=10)
         steps = sp.unique(mip)
@@ -34,19 +43,12 @@ class FilterTest():
 
     def test_porosimetry_compare_modes_3D(self):
         im = self.im
-        fft = ps.filters.porosimetry(im, mode='hybrid')
-        mio = ps.filters.porosimetry(im, mode='mio')
-        dt = ps.filters.porosimetry(im, mode='dt')
-#        assert sp.all(fft == dt)
-#        assert sp.all(fft == mio)
-
-    def test_porosimetry_compare_modes_2D(self):
-        im = self.im[:, :, 50]
-        fft = ps.filters.porosimetry(im, mode='hybrid')
-        mio = ps.filters.porosimetry(im, mode='mio')
-        dt = ps.filters.porosimetry(im, mode='dt')
-#        assert sp.all(fft == dt)
-#        assert sp.all(fft == mio)
+        sizes = sp.arange(25, 1, -1)
+        fft = ps.filters.porosimetry(im, sizes=sizes, mode='hybrid')
+        mio = ps.filters.porosimetry(im, sizes=sizes, mode='mio')
+        dt = ps.filters.porosimetry(im, sizes=sizes, mode='dt')
+        assert sp.all(fft == dt)
+        assert sp.all(fft == mio)
 
     def test_porosimetry_with_sizes(self):
         s = sp.logspace(0.01, 0.6, 5)

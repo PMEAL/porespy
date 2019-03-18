@@ -10,7 +10,7 @@ from skimage.segmentation import clear_border
 from skimage.morphology import ball, disk, square, cube, diamond, octahedron
 from skimage.morphology import reconstruction, watershed
 from porespy.tools import randomize_colors, fftmorphology
-from porespy.tools import get_border, extend_slice
+from porespy.tools import get_border, extend_slice, extract_subsection
 from porespy.tools import ps_disk, ps_ball
 
 
@@ -980,63 +980,83 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
     local_thickness
 
     """
-    def trim_blobs(im, inlets):
-        temp = sp.zeros_like(im)
-        temp[inlets] = True
-        labels, N = spim.label(im + temp)
-        im = im ^ (clear_border(labels=labels) > 0)
-        return im
 
     dt = spim.distance_transform_edt(im > 0)
 
     if inlets is None:
         inlets = get_border(im.shape, mode='faces')
-    inlets = sp.where(inlets)
 
     if isinstance(sizes, int):
         sizes = sp.logspace(start=sp.log10(sp.amax(dt)), stop=0, num=sizes)
     else:
-        sizes = sp.sort(a=sizes)[-1::-1]
+        sizes = sp.unique(sizes)[-1::-1]
 
     if im.ndim == 2:
         strel = ps_disk
     else:
         strel = ps_ball
 
-    imresults = sp.zeros(sp.shape(im))
     if mode == 'mio':
         pw = int(sp.floor(dt.max()))
         impad = sp.pad(im, mode='symmetric', pad_width=pw)
+        inletspad = sp.pad(inlets, mode='symmetric', pad_width=pw)
+        inlets = sp.where(inletspad)
+        sizes = sp.unique(sp.around(sizes, decimals=0).astype(int))[-1::-1]
         imresults = sp.zeros(sp.shape(impad))
         for r in tqdm(sizes):
-            imtemp = fftmorphology(impad, strel(r), mode='opening')
+            imtemp = fftmorphology(impad, strel(r), mode='erosion')
             if access_limited:
-                imtemp = trim_blobs(imtemp, inlets)
+                imtemp = trim_disconnected_blobs(imtemp, inlets)
+            imtemp = fftmorphology(imtemp, strel(r), mode='dilation')
             if sp.any(imtemp):
                 imresults[(imresults == 0)*imtemp] = r
-        if im.ndim == 2:
-            imresults = imresults[pw:-pw, pw:-pw]
-        else:
-            imresults = imresults[pw:-pw, pw:-pw, pw:-pw]
+        imresults = extract_subsection(imresults, shape=im.shape)
     elif mode == 'dt':
+        inlets = sp.where(inlets)
+        imresults = sp.zeros(sp.shape(im))
         for r in tqdm(sizes):
             imtemp = dt >= r
             if access_limited:
-                imtemp = trim_blobs(imtemp, inlets)
+                imtemp = trim_disconnected_blobs(imtemp, inlets)
             if sp.any(imtemp):
                 imtemp = spim.distance_transform_edt(~imtemp) < r
                 imresults[(imresults == 0)*imtemp] = r
     elif mode == 'hybrid':
+        inlets = sp.where(inlets)
+        imresults = sp.zeros(sp.shape(im))
         for r in tqdm(sizes):
             imtemp = dt >= r
             if access_limited:
-                imtemp = trim_blobs(imtemp, inlets)
+                imtemp = trim_disconnected_blobs(imtemp, inlets)
             if sp.any(imtemp):
                 imtemp = fftconvolve(imtemp, strel(r), mode='same') > 0.0001
                 imresults[(imresults == 0)*imtemp] = r
     else:
         raise Exception('Unreckognized mode ' + mode)
     return imresults
+
+
+def trim_disconnected_blobs(im, inlets):
+    r"""
+    Removes foreground voxels not connected to specified inlets
+
+    Parameters
+    ----------
+    im : ND-array
+        The array to be trimmed
+    inlets : ND-array of tuple of indices
+        The locations of the inlets.  Any voxels *not* connected directly to
+        the inlets will be trimmed
+
+    Returns
+    -------
+
+    """
+    temp = sp.zeros_like(im)
+    temp[inlets] = True
+    labels, N = spim.label(im + temp)
+    im = im ^ (clear_border(labels=labels) > 0)
+    return im
 
 
 def _get_axial_shifts(ndim=2, include_diagonals=False):
