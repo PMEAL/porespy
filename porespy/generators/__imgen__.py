@@ -477,7 +477,7 @@ def overlapping_spheres(shape: List[int], radius: int, porosity: float,
     if sp.size(shape) == 1:
         shape = sp.full((3, ), int(shape))
     ndim = (shape != 1).sum()
-    s_vol = disk(radius).sum() if ndim == 2 else ball(radius).sum()
+    s_vol = ps_disk(radius).sum() if ndim == 2 else ps_ball(radius).sum()
 
     bulk_vol = sp.prod(shape)
     N = int(sp.ceil((1 - porosity)*bulk_vol/s_vol))

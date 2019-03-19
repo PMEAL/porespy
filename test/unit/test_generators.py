@@ -117,23 +117,23 @@ class GeneratorTest():
         sp.random.seed(0)
         im = sp.zeros([100, 100], dtype=int)
         im = ps.generators.RSA(im, radius=10, volume_fraction=0.5)
-        assert sp.sum(im > 0) == 5299
-        assert sp.sum(im > 1) == 19
+        assert sp.sum(im > 0) == 5095
+        assert sp.sum(im > 1) == 20
 
     def test_RSA_2d_multi(self):
         sp.random.seed(0)
         im = sp.zeros([100, 100], dtype=int)
         im = ps.generators.RSA(im, radius=10, volume_fraction=0.5)
         im = ps.generators.RSA(im, radius=5, volume_fraction=0.75)
-        assert sp.sum(im > 0) == 6682
-        assert sp.sum(im > 1) == 38
+        assert sp.sum(im > 0) == 6520
+        assert sp.sum(im > 1) == 44
 
     def test_RSA_3d_single(self):
         sp.random.seed(0)
         im = sp.zeros([50, 50, 50], dtype=int)
         im = ps.generators.RSA(im, radius=5, volume_fraction=0.5)
-        assert sp.sum(im > 0) == 38172
-        assert sp.sum(im > 1) == 96
+        assert sp.sum(im > 0) == 45602
+        assert sp.sum(im > 1) == 121
 
     def test_RSA_mask_edge_2d(self):
         im = sp.zeros([100, 100], dtype=int)
