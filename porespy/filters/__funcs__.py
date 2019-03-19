@@ -1001,7 +1001,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
         impad = sp.pad(im, mode='symmetric', pad_width=pw)
         inletspad = sp.pad(inlets, mode='symmetric', pad_width=pw)
         inlets = sp.where(inletspad)
-        sizes = sp.unique(sp.around(sizes, decimals=0).astype(int))[-1::-1]
+#        sizes = sp.unique(sp.around(sizes, decimals=0).astype(int))[-1::-1]
         imresults = sp.zeros(sp.shape(impad))
         for r in tqdm(sizes):
             imtemp = fftmorphology(impad, strel(r), mode='erosion')
@@ -1050,7 +1050,9 @@ def trim_disconnected_blobs(im, inlets):
 
     Returns
     -------
-
+    image : ND-array
+        An array of the same shape as ``im``, but with all foreground
+        voxels not connected to the ``inlets`` removed.
     """
     temp = sp.zeros_like(im)
     temp[inlets] = True
