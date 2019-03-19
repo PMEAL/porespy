@@ -177,6 +177,14 @@ class FilterTest():
         lt = ps.filters.local_thickness(self.im, mode='hybrid')
         assert lt.max() == self.im_dt.max()
 
+    def test_local_thickness_known_sizes(self):
+        im = sp.zeros(shape=[300, 300])
+        im = ps.generators.RSA(im=im, radius=20)
+        im = ps.generators.RSA(im=im, radius=10)
+        im = im > 0
+        lt = ps.filters.local_thickness(im, sizes=[20, 10])
+        assert sp.all(sp.unique(lt) == [0, 10, 20])
+
     def test_porosimetry(self):
         im2d = self.im[:, :, 50]
         lt = ps.filters.local_thickness(im2d)
