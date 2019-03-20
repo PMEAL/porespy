@@ -73,7 +73,9 @@ class ExamplesTest():
         assert rc
 
     def test_network_extraction_snow_advanced(self):
-        pass
+        nbook = os.path.join(netex_dir, 'snow_advanced.ipynb')
+        rc = self._notebook_run(nbook)
+        assert rc
 
 
 if __name__ == '__main__':
@@ -81,6 +83,6 @@ if __name__ == '__main__':
     self = t
     t.setup_class()
     for item in t.__dir__():
-        if item.startswith('test'):
+        if item.startswith('test_network_extraction_snow_advanced'):
             print('running test: '+item)
             t.__getattribute__(item)()
