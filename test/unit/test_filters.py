@@ -10,6 +10,8 @@ class FilterTest():
     def setup_class(self):
         sp.random.seed(0)
         self.im = ps.generators.blobs(shape=[100, 100, 100], blobiness=2)
+        # Ensure that im was generated as expeccted
+        assert ps.metrics.porosity(self.im) == 0.499829
         self.im_dt = spim.distance_transform_edt(self.im)
         self.flood_im = np.zeros([21, 21])
         self.flood_im[1:20, 1:20] = 1
@@ -18,7 +20,7 @@ class FilterTest():
         self.flood_im_dt = spim.distance_transform_edt(self.flood_im)
 
     def test_im_in_not_im_out(self):
-        im = ps.generators.blobs(shape=[50, 50])
+        im = self.im[:, :, 50]
         for item in ps.filters.__dir__():
             if ~item.startswith('__'):
                 temp = getattr(ps.filters, item)
@@ -195,49 +197,49 @@ class FilterTest():
         assert mip.max() <= sizes.max()
 
     def test_morphology_fft_dilate_2D(self):
-        im = ps.generators.blobs(shape=[100, 100])
+        im = self.im[:, :, 50]
         truth = spim.binary_dilation(im, structure=disk(3))
         test = ps.tools.fftmorphology(im, strel=disk(3), mode='dilation')
         assert sp.all(truth == test)
 
     def test_morphology_fft_erode_2D(self):
-        im = ps.generators.blobs(shape=[100, 100])
+        im = self.im[:, :, 50]
         truth = spim.binary_erosion(im, structure=disk(3))
         test = ps.tools.fftmorphology(im, strel=disk(3), mode='erosion')
         assert sp.all(truth == test)
 
     def test_morphology_fft_opening_2D(self):
-        im = ps.generators.blobs(shape=[100, 100])
+        im = self.im[:, :, 50]
         truth = spim.binary_opening(im, structure=disk(3))
         test = ps.tools.fftmorphology(im, strel=disk(3), mode='opening')
         assert sp.all(truth == test)
 
     def test_morphology_fft_closing_2D(self):
-        im = ps.generators.blobs(shape=[100, 100])
+        im = self.im[:, :, 50]
         truth = spim.binary_closing(im, structure=disk(3))
         test = ps.tools.fftmorphology(im, strel=disk(3), mode='closing')
         assert sp.all(truth == test)
 
     def test_morphology_fft_dilate_3D(self):
-        im = ps.generators.blobs(shape=[100, 100, 100])
+        im = self.im
         truth = spim.binary_dilation(im, structure=ball(3))
         test = ps.tools.fftmorphology(im, strel=ball(3), mode='dilation')
         assert sp.all(truth == test)
 
     def test_morphology_fft_erode_3D(self):
-        im = ps.generators.blobs(shape=[100, 100, 100])
+        im = self.im
         truth = spim.binary_erosion(im, structure=ball(3))
         test = ps.tools.fftmorphology(im, strel=ball(3), mode='erosion')
         assert sp.all(truth == test)
 
     def test_morphology_fft_opening_3D(self):
-        im = ps.generators.blobs(shape=[100, 100, 100])
+        im = self.im
         truth = spim.binary_opening(im, structure=ball(3))
         test = ps.tools.fftmorphology(im, strel=ball(3), mode='opening')
         assert sp.all(truth == test)
 
     def test_morphology_fft_closing_3D(self):
-        im = ps.generators.blobs(shape=[100, 100, 100])
+        im = self.im
         truth = spim.binary_closing(im, structure=ball(3))
         test = ps.tools.fftmorphology(im, strel=ball(3), mode='closing')
         assert sp.all(truth == test)
