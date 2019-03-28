@@ -12,7 +12,7 @@ from skimage.morphology import reconstruction, watershed
 from porespy.tools import randomize_colors, fftmorphology
 from porespy.tools import get_border, extend_slice, extract_subsection
 from porespy.tools import ps_disk, ps_ball
-from porespy.networks import _create_alias_map
+from porespy.tools import _create_alias_map
 
 
 def distance_transform_lin(im, axis=0, mode='both'):
