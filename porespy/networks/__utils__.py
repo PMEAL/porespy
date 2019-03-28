@@ -1,2 +1,2 @@
-class _net_dict(dict):  # assign out values to dummy dict
+class _net_dict(dict):
     pass

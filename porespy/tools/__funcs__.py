@@ -21,8 +21,10 @@ def align_image_with_openpnm(im):
 
     Returns
     -------
-    Returns the image rotated accordingly.
+    image : ND-array
+        Returns a copy of ``im`` rotated accordingly.
     """
+    im = sp.copy(im)
     if im.ndim == 2:
         im = (sp.swapaxes(im, 1, 0))
         im = im[-1::-1, :]
@@ -48,6 +50,12 @@ def fftmorphology(im, strel, mode='opening'):
     mode : string
         The type of operation to perform.  Options are 'dilation', 'erosion',
         'opening' and 'closing'.
+
+    Returns
+    -------
+    image : ND-array
+        A copy of the image with the specified moropholgical operation applied
+        using the fft-based methods available in scipy.fftconvolve.
 
     Notes
     -----
@@ -141,8 +149,9 @@ def subdivide(im, divs=2):
 
     Returns
     -------
-    An ND-array containing slice objects for indexing into ``im`` that extract
-    the sub-divided arrays.
+    slices : 1D-array
+        A 1-D array containing slice objects for indexing into ``im`` that
+        extract the sub-divided arrays.
 
     Notes
     -----
@@ -160,9 +169,9 @@ def subdivide(im, divs=2):
 
     ``s`` contains an array with the shape given by ``divs``.  To access the
     first and last quadrants of ``im`` use:
-    >>> print(im[s[0, 0]].shape)
+    >>> print(im[tuple(s[0, 0])].shape)
     (100, 100)
-    >>> print(im[s[1, 1]].shape)
+    >>> print(im[tuple(s[1, 1])].shape)
     (100, 100)
 
     It can be easier to index the array with the slices by applying ``flatten``
@@ -201,8 +210,9 @@ def bbox_to_slices(bbox):
 
     Returns
     -------
-    A tuple of slice objects that can be used to directly index into a larger
-    image.
+    slices : tuple
+        A tuple of slice objects that can be used to directly index into a
+        larger image.
     """
     if len(bbox) == 4:
         ret = (slice(bbox[0], bbox[2]),
@@ -240,7 +250,8 @@ def get_slice(im, center, size, pad=0):
 
     Returns
     -------
-    A list of slice objects, each indexing into one dimension of the image.
+    slices : list
+        A list of slice objects, each indexing into one dimension of the image.
     """
     p = sp.ones(shape=im.ndim, dtype=int) * sp.array(pad)
     s = sp.ones(shape=im.ndim, dtype=int) * sp.array(size)
@@ -254,8 +265,9 @@ def get_slice(im, center, size, pad=0):
 
 def find_outer_region(im, r=0):
     r"""
-    Finds regions of the image that are outside of the solid matrix.  This
-    function uses the rolling ball method to define where the outer region
+    Finds regions of the image that are outside of the solid matrix.
+
+    This function uses the rolling ball method to define where the outer region
     ends and the void space begins.
 
     This function is particularly useful for samples that do not fill the
@@ -275,8 +287,9 @@ def find_outer_region(im, r=0):
 
     Returns
     -------
-    A boolean mask the same shape as ``im``, containing True in all voxels
-    identified as *outside* the sample.
+    image : ND-array
+        A boolean mask the same shape as ``im``, containing True in all voxels
+        identified as *outside* the sample.
 
     """
     if r == 0:
@@ -316,10 +329,11 @@ def extract_cylinder(im, r=None, axis=0):
 
     Returns
     -------
-    An ND-image the same size ``im`` with True values indicating the void space
-    but with the sample trimmed to a cylindrical section in the center of the
-    image.  The region outside the cylindrical section is labeled with True
-    values since it is open space.
+    image : ND-array
+        A copy of ``im`` with True values indicating the void space but with
+        the sample trimmed to a cylindrical section in the center of the
+        image.  The region outside the cylindrical section is labeled with
+        ``True`` values since it is open space.
     """
     if r is None:
         a = list(im.shape)
@@ -349,8 +363,9 @@ def extract_subsection(im, shape):
 
     Returns
     -------
-    An ND-array of size given by the ``shape`` argument, taken from the center
-    of the image.
+    image : ND-array
+        An ND-array of size given by the ``shape`` argument, taken from the
+        center of the image.
 
     Examples
     --------
@@ -396,6 +411,11 @@ def get_planes(im, squeeze=True):
         If True (default) the returned images are 2D (i.e. squeezed).  If
         False, the images are 1 element deep along the axis where the slice
         was obtained.
+
+    Returns
+    -------
+    planes : list
+        A list of 2D-images
     """
     x, y, z = (sp.array(im.shape) / 2).astype(int)
     planes = [im[x, :, :], im[:, y, :], im[:, :, z]]
@@ -430,9 +450,10 @@ def extend_slice(s, shape, pad=1):
 
     Returns
     -------
-    A list slice objects with the start and stop attributes respectively
-    incremented and decremented by 1, without extending beyond the image
-    boundaries.
+    slices : list
+        A list slice of objects with the start and stop attributes respectively
+        incremented and decremented by 1, without extending beyond the image
+        boundaries.
 
     Examples
     --------
@@ -498,9 +519,10 @@ def randomize_colors(im, keep_vals=[0]):
 
     Returns
     -------
-    An image the same size and type as `im` but with the greyscale values
-    reassigned.  The unique values in both the input and output images will
-    be identical.
+    image : ND-array
+        An image the same size and type as ``im`` but with the greyscale values
+        reassigned.  The unique values in both the input and output images will
+        be identical.
 
     Notes
     -----
@@ -564,8 +586,9 @@ def make_contiguous(im, keep_zeros=True):
 
     Returns
     -------
-    An ND-array the same size as ``im`` but with all values in contiguous
-    orders.
+    image : ND-array
+        An ND-array the same size as ``im`` but with all values in contiguous
+        orders.
 
     Example
     -------
@@ -616,8 +639,9 @@ def get_border(shape, thickness=1, mode='edges', return_indices=False):
 
     Returns
     -------
-    An ND-array of specified shape with True values at the perimeter and False
-    elsewhere.
+    image : ND-array
+        An ND-array of specified shape with ``True`` values at the perimeter
+        and ``False`` elsewhere
 
     Notes
     -----
@@ -687,8 +711,9 @@ def in_hull(points, hull):
 
     Returns
     -------
-    A Boolean array of length *N* indicating whether or not the given points
-    in ``points`` lies within the provided ``hull``.
+    result : 1D-array
+        A 1D-array Boolean array of length *N* indicating whether or not the
+        given points in ``points`` lies within the provided ``hull``.
 
     """
     from scipy.spatial import Delaunay, ConvexHull
@@ -717,8 +742,9 @@ def norm_to_uniform(im, scale=None):
 
     Returns
     -------
-    An ND-image the same size as ``im`` with uniformly distributed greyscale
-    values spanning the specified range, if given.
+    image : ND-array
+        A copy of ``im`` with uniformly distributed greyscale values spanning
+        the specified range, if given.
     """
     if scale is None:
         scale = [im.min(), im.max()]
@@ -727,6 +753,47 @@ def norm_to_uniform(im, scale=None):
     im = (im - im.min()) / (im.max() - im.min())
     im = im * (scale[1] - scale[0]) + scale[0]
     return im
+
+
+def functions_to_table(mod, colwidth=[27, 48]):
+    r"""
+    Given a module of functions, returns a ReST formatted text string that
+    outputs a table when printed.
+
+    Parameters
+    ----------
+    mod : module
+        The module containing the functions to be included in the table, such
+        as 'porespy.filters'.
+
+    colwidths : list of ints
+        The width of the first and second columns.  Note that because of the
+        vertical lines separating columns and define the edges of the table,
+        the total table width will be 3 characters wider than the total sum
+        of the specified column widths.
+    """
+    temp = mod.__dir__()
+    funcs = [i for i in temp if not i[0].startswith('_')]
+    funcs.sort()
+    row = '+' + '-'*colwidth[0] + '+' + '-'*colwidth[1] + '+'
+    fmt = '{0:1s} {1:' + str(colwidth[0]-2) + 's} {2:1s} {3:' \
+          + str(colwidth[1]-2) + 's} {4:1s}'
+    lines = []
+    lines.append(row)
+    lines.append(fmt.format('|', 'Method', '|', 'Description', '|'))
+    lines.append(row.replace('-', '='))
+    for i, item in enumerate(funcs):
+        try:
+            s = getattr(mod, item).__doc__.strip()
+            end = s.find('\n')
+            if end > colwidth[1] - 2:
+                s = s[:colwidth[1] - 5] + '...'
+            lines.append(fmt.format('|', item, '|', s[:end], '|'))
+            lines.append(row)
+        except AttributeError:
+            pass
+    s = '\n'.join(lines)
+    return s
 
 
 def mesh_region(region: bool, strel=None):
@@ -749,8 +816,9 @@ def mesh_region(region: bool, strel=None):
 
     Returns
     -------
-    A named-tuple containing ``faces``, ``verts``, ``norm``, and ``val`` as
-    returned by ``scikit-image.measure.marching_cubes`` function.
+    mesh : tuple
+        A named-tuple containing ``faces``, ``verts``, ``norm``, and ``val``
+        as returned by ``scikit-image.measure.marching_cubes`` function.
 
     """
     if strel is None:
@@ -787,7 +855,8 @@ def ps_disk(radius):
 
     Returns
     -------
-    A 2D numpy bool array of the structring element
+    strel : 2D-array
+        A 2D numpy bool array of the structring element
     """
     rad = int(sp.ceil(radius))
     other = sp.ones((2 * rad + 1, 2 * rad + 1), dtype=bool)
@@ -807,13 +876,139 @@ def ps_ball(radius):
 
     Returns
     -------
-    A 2D numpy array of the structuring element
+    strel : 3D-array
+        A 3D numpy array of the structuring element
     """
     rad = int(sp.ceil(radius))
     other = sp.ones((2 * rad + 1, 2 * rad + 1, 2 * rad + 1), dtype=bool)
     other[rad, rad, rad] = False
     ball = spim.distance_transform_edt(other) < radius
     return ball
+
+
+def overlay(im1, im2, c):
+    r"""
+    Overlays ``im2`` onto ``im1``, given voxel coords of center of ``im2``
+    in ``im1``.
+
+    Parameters
+    ----------
+    im1 : ND-array
+        Original voxelated image
+    im2 : ND-array
+        Template voxelated image
+    c : array_like
+        [x, y, z] coordinates in ``im1`` where ``im2`` will be centered
+
+    Returns
+    -------
+    image : ND-array
+        A modified version of ``im1``, with ``im2`` overlaid at the specified
+        location
+
+    """
+    shape = im2.shape
+    for ni in shape:
+        if ni % 2 == 0:
+            raise Exception("Structuring element must be odd-voxeled...")
+
+    nx, ny, nz = [(ni - 1) // 2 for ni in shape]
+    cx, cy, cz = c
+
+    im1[cx-nx:cx+nx+1, cy-ny:cy+ny+1, cz-nz:cz+nz+1] += im2
+
+    return im1
+
+
+def insert_sphere(im, c, r):
+    r"""
+    Inserts a sphere of a specified radius into a given image
+
+    Parameters
+    ----------
+    im : array_like
+        Image into which the sphere should be inserted
+    c : array_like
+        The [x, y, z] coordinate indicating the center of the sphere
+    r : int
+        The radius of sphere to insert
+
+    Returns
+    -------
+    image : ND-array
+        The original image with a sphere inerted at the specified location
+    """
+    c = sp.array(c, dtype=int)
+    if c.size != im.ndim:
+        raise Exception('Coordinates do not match dimensionality of image')
+
+    bbox = []
+    [bbox.append(sp.clip(c[i] - r, 0, im.shape[i])) for i in range(im.ndim)]
+    [bbox.append(sp.clip(c[i] + r, 0, im.shape[i])) for i in range(im.ndim)]
+    bbox = sp.ravel(bbox)
+    s = bbox_to_slices(bbox)
+    temp = im[s]
+    blank = sp.ones_like(temp)
+    blank[tuple(c - bbox[0:im.ndim])] = 0
+    blank = spim.distance_transform_edt(blank) < r
+    im[s] = blank
+    return im
+
+
+def insert_cylinder(im, xyz0, xyz1, r):
+    r"""
+    Inserts a cylinder of given radius onto a given image
+
+    Parameters
+    ----------
+    im : array_like
+        Original voxelated image
+    xyz0, xyz1 : 3-by-1 array_like
+        Voxel coordinates of the two end points of the cylinder
+    r : int
+        Radius of the cylinder
+
+    Returns
+    -------
+    im : ND-array
+        Original voxelated image overlayed with the cylinder
+
+    Notes
+    -----
+    This function is only implemented for 3D images
+
+    """
+    if im.ndim != 3:
+        raise Exception('This function is only implemented for 3D images')
+    # Converting coordinates to numpy array
+    xyz0, xyz1 = [sp.array(xyz).astype(int) for xyz in (xyz0, xyz1)]
+    r = int(r)
+    L = sp.absolute(xyz0 - xyz1).max() + 1
+    xyz_line = [sp.linspace(xyz0[i], xyz1[i], L).astype(int) for i in range(3)]
+
+    xyz_min = sp.amin(xyz_line, axis=1) - r
+    xyz_max = sp.amax(xyz_line, axis=1) + r
+    shape_template = xyz_max - xyz_min + 1
+    template = sp.zeros(shape=shape_template)
+
+    # Shortcut for orthogonal cylinders
+    if (xyz0 == xyz1).sum() == 2:
+        unique_dim = [xyz0[i] != xyz1[i] for i in range(3)].index(True)
+        shape_template[unique_dim] = 1
+        template_2D = disk(radius=r).reshape(shape_template)
+        template = sp.repeat(template_2D, repeats=L, axis=unique_dim)
+        xyz_min[unique_dim] += r
+        xyz_max[unique_dim] += -r
+    else:
+        xyz_line_in_template_coords = [xyz_line[i] - xyz_min[i] for i in range(3)]
+        template[tuple(xyz_line_in_template_coords)] = 1
+        template = spim.distance_transform_edt(template == 0) <= r
+
+    im[xyz_min[0]:xyz_max[0]+1,
+       xyz_min[1]:xyz_max[1]+1,
+       xyz_min[2]:xyz_max[2]+1] += template
+
+    return im
 
 
 def pad_faces(im, faces):

@@ -10,7 +10,7 @@ from skimage.segmentation import clear_border
 from skimage.morphology import ball, disk, square, cube, diamond, octahedron
 from skimage.morphology import reconstruction, watershed
 from porespy.tools import randomize_colors, fftmorphology
-from porespy.tools import get_border, extend_slice
+from porespy.tools import get_border, extend_slice, extract_subsection
 from porespy.tools import ps_disk, ps_ball
 
 
@@ -25,21 +25,27 @@ def distance_transform_lin(im, axis=0, mode='both'):
         The image of the porous material with ``True`` values indicating the
         void phase (or phase of interest)
 
-    axis : scalar
+    axis : int
         The direction along which the distance should be measured, the default
         is 0 (i.e. along the x-direction)
 
     mode : string
         Controls how the distance is measured.  Options are:
 
-        *'forward'* - Distances are measured in the increasing direction along
+        'forward' - Distances are measured in the increasing direction along
         the specified axis
 
-        *'reverse'* - Distances are measured in the reverse direction.
+        'reverse' - Distances are measured in the reverse direction.
         *'backward'* is also accepted.
 
-        *'both'* - Distances are calculated in both directions (by recursively
+        'both' - Distances are calculated in both directions (by recursively
         calling itself), then reporting the minimum value of the two results.
+
+    Returns
+    -------
+    image : ND-array
+        A copy of ``im`` with each foreground voxel containing the distance to
+        the nearest background along the specified axis.
     """
     if mode in ['backward', 'reverse']:
         im = sp.flip(im, axis)
@@ -68,13 +74,11 @@ def distance_transform_lin(im, axis=0, mode='both'):
         return f
 
 
-def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, return_all=False, mask=True,
-                      randomize=True):
+def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, return_all=False,
+                      mask=True, randomize=True):
     r"""
-    This function partitions the void space into pore regions using a
-    marker-based watershed algorithm.  The key to this function is that true
-    local maximum of the distance transform are found by trimming various
-    types of extraneous peaks.
+    Partitions the void space into pore regions using a marker-based watershed
+    algorithm, with specially filtered peaks as markers.
 
     The SNOW network extraction algorithm (Sub-Network of an Over-segmented
     Watershed) was designed to handle to perculiarities of high porosity
@@ -89,20 +93,21 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, return_all=False, mask=Tr
         The distance transform of the pore space.  This is done automatically
         if not provided, but if the distance transform has already been
         computed then supplying it can save some time.
-    r_max : scalar
+    r_max : int
         The radius of the spherical structuring element to use in the Maximum
         filter stage that is used to find peaks.  The default is 4
-    sigma : scalar
+    sigma : float
         The standard deviation of the Gaussian filter used in step 1.  The
         default is 0.4.  If 0 is given then the filter is not applied, which is
         useful if a distance transform is supplied as the ``im`` argument that
         has already been processed.
-    return_all : boolean (default is False)
+    return_all : boolean
         If set to ``True`` a named tuple is returned containing the original
         image, the distance transform, the filtered peaks, and the final
-        pore regions.
-    mask : boolean (default is True)
-        Apply a mask to the regions where the solid phase is.
+        pore regions.  The default is ``False``
+    mask : boolean
+        Apply a mask to the regions where the solid phase is.  Default is
+        ``True``
     randomize : boolean
         If ``True`` (default), then the region colors will be randomized before
         returning.  This is helpful for visualizing otherwise neighboring
@@ -110,10 +115,16 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, return_all=False, mask=Tr
 
     Returns
     -------
-    An image the same shape as ``im`` with the void space partitioned into
-    pores using a marker based watershed with the peaks found by the
-    SNOW algorithm [1].  If ``return_all`` is ``True`` then a **named tuple**
-    is returned with the following attribute:
+    image : ND-array
+        An image the same shape as ``im`` with the void space partitioned into
+        pores using a marker based watershed with the peaks found by the
+        SNOW algorithm [1].
+
+    Notes
+    -----
+    If ``return_all`` is ``True`` then a **named tuple** is returned containing
+    all of the images used during the process.  They can be access as
+    attriutes with the following names:
 
         * ``im``: The binary image of the void space
         * ``dt``: The distance transform of the image
@@ -300,8 +311,9 @@ def find_peaks(dt, r_max=4, footprint=None):
 
     Returns
     -------
-    An ND-array of booleans with ``True`` values at the location of any local
-    maxima.
+    image : ND-array
+        An array of booleans with ``True`` values at the location of any
+        local maxima.
 
     Notes
     -----
@@ -340,8 +352,9 @@ def reduce_peaks(peaks):
 
     Returns
     -------
-    An array with the same number of isolated peaks as the original image, but
-    fewer total voxels.
+    image : ND-array
+        An array with the same number of isolated peaks as the original image,
+        but fewer total voxels.
 
     Notes
     -----
@@ -388,7 +401,14 @@ def trim_saddle_points(peaks, dt, max_iters=10):
 
     Returns
     -------
-    An image with fewer peaks than was received.
+    image : ND-array
+        An image with fewer peaks than the input image
+
+    References
+    ----------
+    [1] Gostick, J. "A versatile and efficient network extraction algorithm
+    using marker-based watershed segmenation".  Physical Review E. (2017)
+
     """
     peaks = sp.copy(peaks)
     if dt.ndim == 2:
@@ -439,14 +459,20 @@ def trim_nearby_peaks(peaks, dt):
 
     Returns
     -------
-    An array the same size as ``peaks`` containing a subset of the peaks in
-    the original image.
+    image : ND-array
+        An array the same size as ``peaks`` containing a subset of the peaks
+        in the original image.
 
     Notes
     -----
     Each pair of peaks is considered simultaneously, so for a triplet of peaks
     each pair is considered.  This ensures that only the single peak that is
     furthest from the solid is kept.  No iteration is required.
+
+    References
+    ----------
+    [1] Gostick, J. "A versatile and efficient network extraction algorithm
+    using marker-based watershed segmenation".  Physical Review E. (2017)
     """
     peaks = sp.copy(peaks)
     if dt.ndim == 2:
@@ -499,14 +525,16 @@ def find_disconnected_voxels(im, conn=None):
 
     Returns
     -------
-    An ND-image the same size as ``im``, with True values indicating voxels of
-    the phase of interest (i.e. True values in the original image) that are
-    not connected to the outer edges.
+    image : ND-array
+        An ND-image the same size as ``im``, with True values indicating
+        voxels of the phase of interest (i.e. True values in the original
+        image) that are not connected to the outer edges.
 
     Notes
     -----
-    The returned array (e.g. ``holes``) be used to trim blind pores from
-    ``im`` using: ``im[holes] = False``
+    image : ND-array
+        The returned array (e.g. ``holes``) be used to trim blind pores from
+        ``im`` using: ``im[holes] = False``
 
     """
     if im.ndim == 2:
@@ -535,6 +563,7 @@ def fill_blind_pores(im):
 
     Returns
     -------
+    image : ND-array
         A version of ``im`` but with all the disconnected pores removed.
 
     See Also
@@ -559,6 +588,7 @@ def trim_floating_solid(im):
 
     Returns
     -------
+    image : ND-array
         A version of ``im`` but with all the disconnected solid removed.
 
     See Also
@@ -598,7 +628,8 @@ def trim_nonpercolating_paths(im, inlet_axis=0, outlet_axis=0):
 
     Returns
     -------
-    A copy of ``im`` but with all the nonpercolating paths removed
+    image : ND-array
+        A copy of ``im`` with all the nonpercolating paths removed
 
     See Also
     --------
@@ -645,15 +676,16 @@ def trim_nonpercolating_paths(im, inlet_axis=0, outlet_axis=0):
 
 def trim_extrema(im, h, mode='maxima'):
     r"""
-    This trims local extrema in greyscale values by a specified amount,
-    essentially decapitating peaks or flooding valleys, or both.
+    Trims local extrema in greyscale values by a specified amount.
+
+    This essentially decapitates peaks and/or floods valleys.
 
     Parameters
     ----------
     im : ND-array
         The image whose extrema are to be removed
 
-    h : scalar
+    h : float
         The height to remove from each peak or fill in each valley
 
     mode : string {'maxima' | 'minima' | 'extrema'}
@@ -661,7 +693,8 @@ def trim_extrema(im, h, mode='maxima'):
 
     Returns
     -------
-    A copy of the input image with all the peaks and/or valleys removed.
+    image : ND-array
+        A copy of the input image with all the peaks and/or valleys removed.
 
     Notes
     -----
@@ -697,16 +730,17 @@ def flood(im, regions=None, mode='max'):
         Specifies how to determine which value should be used to flood each
         region.  Options are:
 
-    *'max'* : Floods each region with the local maximum in that region
+        'max' - Floods each region with the local maximum in that region
 
-    *'min'* : Floods each region the local minimum in that region
+        'min' - Floods each region the local minimum in that region
 
-    *'size'* : Floods each region with the size of that region
+        'size' - Floods each region with the size of that region
 
     Returns
     -------
-    An ND-array the same size as ``im`` with new values placed in each
-    forground voxel based on the ``mode``.
+    image : ND-array
+        A copy of ``im`` with new values placed in each forground voxel based
+        on the ``mode``.
 
     See Also
     --------
@@ -755,12 +789,13 @@ def find_dt_artifacts(dt):
 
     Returns
     -------
-    An ND-array the same shape as ``dt`` with numerical values indicating
-    the maximum amount of error in each volxel, which is found by subtracting
-    the distance to nearest edge of image from the distance transform value.
-    In other words, this is the error that would be found if there were a solid
-    voxel lurking just beyond the nearest edge of the image.  Obviously,
-    voxels with a value of zero have no error.
+    image : ND-array
+        An ND-array the same shape as ``dt`` with numerical values indicating
+        the maximum amount of error in each volxel, which is found by
+        subtracting the distance to nearest edge of image from the distance
+        transform value. In other words, this is the error that would be found
+        if there were a solid voxel lurking just beyond the nearest edge of
+        the image.  Obviously, voxels with a value of zero have no error.
 
     """
     temp = sp.ones(shape=dt.shape)*sp.inf
@@ -786,9 +821,10 @@ def region_size(im):
 
     Returns
     -------
-    An ND array with each voxel value indicating the size of the region to
-    which it belongs.  This is particularly useful for finding chord sizes
-    on the image produced by ``apply_chords``.
+    image : ND-array
+        A copy of ``im`` with each voxel value indicating the size of the
+        region to which it belongs.  This is particularly useful for finding
+        chord sizes on the image produced by ``apply_chords``.
     """
     if im.dtype == bool:
         im = spim.label(im)[0]
@@ -816,12 +852,12 @@ def apply_chords(im, spacing=1, axis=0, trim_edges=True, label=False):
     axis : int (default = 0)
         The axis along which the chords are drawn.
 
-    trim_edges : bool (default = True)
+    trim_edges : bool (default = ``True``)
         Whether or not to remove chords that touch the edges of the image.
         These chords are artifically shortened, so skew the chord length
         distribution.
 
-    label : bool
+    label : bool (default is ``False``)
         If ``True`` the chords in the returned image are each given a unique
         label, such that all voxels lying on the same chord have the same
         value.  This is automatically set to ``True`` if spacing is 0, but is
@@ -829,8 +865,8 @@ def apply_chords(im, spacing=1, axis=0, trim_edges=True, label=False):
 
     Returns
     -------
-    An ND-array of the same size as ```im``` with non-zero values indicating
-    the chords.
+    image : ND-array
+        A copy of ``im`` with non-zero values indicating the chords.
 
     See Also
     --------
@@ -874,16 +910,16 @@ def apply_chords_3D(im, spacing=0, trim_edges=True):
         Chords are automatically separed by 1 voxel on all sides, and this
         argument increases the separation.
 
-    trim_edges : bool (default = True)
+    trim_edges : bool (default is ``True``)
         Whether or not to remove chords that touch the edges of the image.
         These chords are artifically shortened, so skew the chord length
         distribution
 
     Returns
     -------
-    An ND-array of the same size as ```im``` with values of 1 indicating
-    x-direction chords, 2 indicating y-direction chords, and 3 indicating
-    z-direction chords.
+    image : ND-array
+        A copy of ``im`` with values of 1 indicating x-direction chords,
+        2 indicating y-direction chords, and 3 indicating z-direction chords.
 
     Notes
     -----
@@ -931,32 +967,44 @@ def local_thickness(im, sizes=25, mode='hybrid'):
     mode : string
         Controls with method is used to compute the result.  Options are:
 
-        *'hybrid'* - (default) Performs a distance tranform of the void space,
+        'hybrid' - (default) Performs a distance tranform of the void space,
         thresholds to find voxels larger than ``sizes[i]``, trims the resulting
         mask if ``access_limitations`` is ``True``, then dilates it using the
         efficient fft-method to obtain the non-wetting fluid configuration.
 
-        *'dt'* - Same as 'hybrid', except uses a second distance transform,
+        'dt' - Same as 'hybrid', except uses a second distance transform,
         relative to the thresholded mask, to find the invading fluid
         configuration.  The choice of 'dt' or 'hybrid' depends on speed, which
         is system and installation specific.
 
-        *'mio'* - Using a single morphological image opening step to obtain the
+        'mio' - Using a single morphological image opening step to obtain the
         invading fluid confirguration directly, *then* trims if
         ``access_limitations`` is ``True``.  This method is not ideal and is
         included mostly for comparison purposes.
 
     Returns
     -------
-    An image with the pore size values in each voxel
+    image : ND-array
+        A copy of ``im`` with the pore size values in each voxel
+
+    See Also
+    --------
+    porosimetry
 
     Notes
     -----
     The term *foreground* is used since this function can be applied to both
-    pore space or the solid, whichever is set to True.
+    pore space or the solid, whichever is set to ``True``.
 
-    This function is identical to porosimetry with ``access_limited`` set to
-    ``False``.
+    This function is identical to ``porosimetry`` with ``access_limited`` set
+    to ``False``.
+
+    The way local thickness is found in PoreSpy differs from the traditional
+    method (i.e. `used in ImageJ <https://imagej.net/Local_Thickness>`_).
+    Our approach is probably slower, but it allows for the same code to be
+    used for ``local_thickness`` and ``porosimetry``, since we can 'trim'
+    invaded regions that are not connected to the inlets in the ``porosimetry``
+    function.  This is not needed in ``local_thickness`` however.
 
     """
     im_new = porosimetry(im=im, sizes=sizes, access_limited=False, mode=mode)
@@ -998,17 +1046,17 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
     mode : string
         Controls with method is used to compute the result.  Options are:
 
-        *'hybrid'* - (default) Performs a distance tranform of the void space,
+        'hybrid' - (default) Performs a distance tranform of the void space,
         thresholds to find voxels larger than ``sizes[i]``, trims the resulting
         mask if ``access_limitations`` is ``True``, then dilates it using the
         efficient fft-method to obtain the non-wetting fluid configuration.
 
-        *'dt'* - Same as 'hybrid', except uses a second distance transform,
+        'dt' - Same as 'hybrid', except uses a second distance transform,
         relative to the thresholded mask, to find the invading fluid
         configuration.  The choice of 'dt' or 'hybrid' depends on speed, which
         is system and installation specific.
 
-        *'mio'* - Using a single morphological image opening step to obtain the
+        'mio' - Using a single morphological image opening step to obtain the
         invading fluid confirguration directly, *then* trims if
         ``access_limitations`` is ``True``.  This method is not ideal and is
         included mostly for comparison purposes.  The morphological operations
@@ -1016,75 +1064,107 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
 
     Returns
     -------
-    An ND-image with voxel values indicating the sphere radius at which it
-    becomes accessible from the inlets.  This image can be used to find
-    invading fluid configurations as a function of applied capillary pressure
-    by applying a boolean comparison: ``inv_phase = im > r`` where ``r`` is
-    the radius (in voxels) of the invading sphere.  Of course, ``r`` can be
-    converted to capillary pressure using your favorite model.
+    image : ND-array
+        A copy of ``im`` with voxel values indicating the sphere radius at
+        which it becomes accessible from the inlets.  This image can be used
+        to find invading fluid configurations as a function of applied
+        capillary pressure by applying a boolean comparison:
+        ``inv_phase = im > r`` where ``r`` is the radius (in voxels) of the
+        invading sphere.  Of course, ``r`` can be converted to capillary
+        pressure using your favorite model.
+
+    Notes
+    -----
+    There are many ways to perform this filter, and PoreSpy offer 3, which
+    users can choose between via the ``mode`` argument.  These methods all
+    work in a similar way by finding which foreground voxels can accomodate
+    a sphere of a given radius, then repeating for smaller radii.
 
     See Also
     --------
     fftmorphology
+    local_thickness
 
     """
-    def trim_blobs(im, inlets):
-        temp = sp.zeros_like(im)
-        temp[inlets] = True
-        labels, N = spim.label(im + temp)
-        im = im ^ (clear_border(labels=labels) > 0)
-        return im
 
     dt = spim.distance_transform_edt(im > 0)
 
     if inlets is None:
         inlets = get_border(im.shape, mode='faces')
-    inlets = sp.where(inlets)
 
     if isinstance(sizes, int):
         sizes = sp.logspace(start=sp.log10(sp.amax(dt)), stop=0, num=sizes)
     else:
-        sizes = sp.sort(a=sizes)[-1::-1]
+        sizes = sp.unique(sizes)[-1::-1]
 
     if im.ndim == 2:
         strel = ps_disk
     else:
         strel = ps_ball
 
-    imresults = sp.zeros(sp.shape(im))
     if mode == 'mio':
         pw = int(sp.floor(dt.max()))
         impad = sp.pad(im, mode='symmetric', pad_width=pw)
+        inletspad = sp.pad(inlets, mode='symmetric', pad_width=pw)
+        inlets = sp.where(inletspad)
+#        sizes = sp.unique(sp.around(sizes, decimals=0).astype(int))[-1::-1]
         imresults = sp.zeros(sp.shape(impad))
         for r in tqdm(sizes):
-            imtemp = fftmorphology(impad, strel(r), mode='opening')
+            imtemp = fftmorphology(impad, strel(r), mode='erosion')
             if access_limited:
-                imtemp = trim_blobs(imtemp, inlets)
+                imtemp = trim_disconnected_blobs(imtemp, inlets)
+            imtemp = fftmorphology(imtemp, strel(r), mode='dilation')
             if sp.any(imtemp):
                 imresults[(imresults == 0)*imtemp] = r
-        if im.ndim == 2:
-            imresults = imresults[pw:-pw, pw:-pw]
-        else:
-            imresults = imresults[pw:-pw, pw:-pw, pw:-pw]
+        imresults = extract_subsection(imresults, shape=im.shape)
     elif mode == 'dt':
+        inlets = sp.where(inlets)
+        imresults = sp.zeros(sp.shape(im))
         for r in tqdm(sizes):
             imtemp = dt >= r
             if access_limited:
-                imtemp = trim_blobs(imtemp, inlets)
+                imtemp = trim_disconnected_blobs(imtemp, inlets)
             if sp.any(imtemp):
                 imtemp = spim.distance_transform_edt(~imtemp) < r
                 imresults[(imresults == 0)*imtemp] = r
     elif mode == 'hybrid':
+        inlets = sp.where(inlets)
+        imresults = sp.zeros(sp.shape(im))
         for r in tqdm(sizes):
             imtemp = dt >= r
             if access_limited:
-                imtemp = trim_blobs(imtemp, inlets)
+                imtemp = trim_disconnected_blobs(imtemp, inlets)
             if sp.any(imtemp):
                 imtemp = fftconvolve(imtemp, strel(r), mode='same') > 0.0001
                 imresults[(imresults == 0)*imtemp] = r
     else:
         raise Exception('Unreckognized mode ' + mode)
     return imresults
+
+
+def trim_disconnected_blobs(im, inlets):
+    r"""
+    Removes foreground voxels not connected to specified inlets
+
+    Parameters
+    ----------
+    im : ND-array
+        The array to be trimmed
+    inlets : ND-array of tuple of indices
+        The locations of the inlets.  Any voxels *not* connected directly to
+        the inlets will be trimmed
+
+    Returns
+    -------
+    image : ND-array
+        An array of the same shape as ``im``, but with all foreground
+        voxels not connected to the ``inlets`` removed.
+    """
+    temp = sp.zeros_like(im)
+    temp[inlets] = True
+    labels, N = spim.label(im + temp)
+    im = im ^ (clear_border(labels=labels) > 0)
+    return im
 
 
 def _get_axial_shifts(ndim=2, include_diagonals=False):
@@ -1162,13 +1242,14 @@ def nphase_border(im, include_diagonals=False):
         snow-partition
 
     include_diagonals : boolean
-        When identifying bordering pixels (2d) and voxels (3d) include those
+        When identifying bordering pixels (2D) and voxels (3D) include those
         shifted along more than one axis
 
     Returns
     -------
-    An ND-image with voxel values equal to the number of uniquely different
-    bordering values
+    image : ND-array
+        A copy of ``im`` with voxel values equal to the number of uniquely
+        different bordering values
     '''
     # Get dimension of image
     ndim = len(np.shape(im))

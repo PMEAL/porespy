@@ -47,25 +47,36 @@ def map_to_regions(regions, values):
 def add_boundary_regions(regions=None, faces=['front', 'back', 'left',
                                               'right', 'top', 'bottom']):
     r"""
-    Add boundary cells to the specified edge of a partitioned image
+    Given an image partitioned into regions, pads specified faces with new
+    regions
 
     Parameters
     ----------
-    regions : array_like
-        An image containing labelled regions, such as the result from a SNOW
-        algorithm or a watershed segmentation.
-
+    regions : ND-array
+        An image of the pore space partitioned into regions and labeled
     faces : list of strings
-        Labels indicating where image needs to be padded. Given a 3D image
-        of shape ``[x, y, z] = [i, j, k]``, the following conventions are used
-        to indicate along which axis the padding should be applied:
+        The faces of ``regions`` which should have boundaries added.  Options
+        are:
 
-        * 'left' -> ``x = 0``
-        * 'right' -> ``x = i``
-        * 'front' -> ``y = 0``
-        * 'back' -> ``y = j``
-        * 'bottom' -> ``z = 0``
-        * 'top' -> ``z = k``
+        *'right'* - Adds boundaries to the x=0 face (``im[0, :, :]``)
+
+        *'left'* - Adds boundaries to the x=X face (``im[-1, :, :]``)
+
+        *'front'* - Adds boundaries to the y=0 face (``im[:, ), :]``)
+
+        *'back'* - Adds boundaries to the x=0 face (``im[:, -1, :]``)
+
+        *'bottom'* - Adds boundaries to the x=0 face (``im[:, :, 0]``)
+
+        *'top'* - Adds boundaries to the x=0 face (``im[:, :, -1]``)
+
+        The default is all faces.
+
+    Returns
+    -------
+    image : ND-array
+        A copy of ``regions`` with the specified boundaries added, so will be
+        slightly larger in each direction where boundaries were added.
 
     """
     # -------------------------------------------------------------------------
@@ -147,93 +158,6 @@ def add_boundary_regions(regions=None, faces=['front', 'back', 'left',
     return regions
 
 
-def overlay(im1, im2, c):
-    r"""
-    Overlays im2 onto im1, given voxel coords of center of im2 in im1.
-
-    Parameters
-    ----------
-    im1 : 3D numpy array
-        Original voxelated image
-
-    im2 : 3D numpy array
-        Template voxelated image
-
-    c : array_like
-        ``[x, y, z]`` coordinates into ``im1`` where ``im2`` should be centered
-
-    Returns
-    -------
-    im1 : 3D numpy array
-        Original voxelated image overlayed with the template
-
-    """
-    shape = im2.shape
-
-    for ni in shape:
-        if ni % 2 == 0:
-            raise Exception("Structuring element must be odd-voxeled...")
-
-    nx, ny, nz = [(ni - 1) // 2 for ni in shape]
-    cx, cy, cz = c
-
-    im1[cx-nx:cx+nx+1, cy-ny:cy+ny+1, cz-nz:cz+nz+1] += im2
-
-    return im1
-
-
-def add_cylinder_to(im, xyz0, xyz1, r):
-    r"""
-    Overlays a cylinder of given radius onto a given 3d image.
-
-    Parameters
-    ----------
-    im : 3D numpy array
-        Original voxelated image
-
-    xyz0, xyz1 : 3 by 1 numpy array-like
-        Voxel coordinates of the two end points of the cylinder
-
-    r : int
-        Radius of the cylinder
-
-    Returns
-    -------
-    im : 3D numpy array
-        Original voxelated image overlayed with the cylinder
-
-    """
-    # Converting coordinates to numpy array
-    xyz0, xyz1 = [np.array(xyz).astype(int) for xyz in (xyz0, xyz1)]
-    r = int(r)
-    L = np.abs(xyz0 - xyz1).max() + 1
-    xyz_line = [np.linspace(xyz0[i], xyz1[i], L).astype(int) for i in range(3)]
-
-    xyz_min = np.min(xyz_line, axis=1) - r
-    xyz_max = np.max(xyz_line, axis=1) + r
-    shape_template = xyz_max - xyz_min + 1
-    template = np.zeros(shape=shape_template)
-
-    # Shortcut for orthogonal cylinders
-    if (xyz0 == xyz1).sum() == 2:
-        unique_dim = [xyz0[i] != xyz1[i] for i in range(3)].index(True)
-        shape_template[unique_dim] = 1
-        template_2D = disk(radius=r).reshape(shape_template)
-        template = np.repeat(template_2D, repeats=L, axis=unique_dim)
-        xyz_min[unique_dim] += r
-        xyz_max[unique_dim] += -r
-    else:
-        xyz_line_in_template_coords = [xyz_line[i] - xyz_min[i] for i in range(3)]
-        template[tuple(xyz_line_in_template_coords)] = 1
-        template = distance_transform_edt(template == 0) <= r
-
-    im[xyz_min[0]:xyz_max[0]+1,
-       xyz_min[1]:xyz_max[1]+1,
-       xyz_min[2]:xyz_max[2]+1] += template
-
-    return im
-
-
 def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200,
                           verbose=1):
     r"""
@@ -255,7 +179,7 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200,
 
     Returns
     -------
-    im : 3D numpy array
+    im : ND-array
         Voxelated image corresponding to the given pore network model
 
     Notes
@@ -289,15 +213,15 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200,
     im_pores = np.zeros(shape, dtype=np.uint8)
     im_throats = np.zeros_like(im_pores)
 
-    if pore_shape == "cube":
+    if pore_shape is "cube":
         pore_elem = cube
         rp = pore_radi * 2 + 1  # +1 since num_voxel must be odd
         rp_max = int(2 * round(delta / res)) + 1
-    if pore_shape == "sphere":
+    if pore_shape is "sphere":
         pore_elem = ball
         rp = pore_radi
         rp_max = int(round(delta / res))
-    if throat_shape == "cuboid":
+    if throat_shape is "cuboid":
         raise Exception("Not yet implemented, try 'cylinder'.")
 
     # Generating voxels for pores
@@ -316,11 +240,13 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200,
     for i, throat in enumerate(tqdm(network.throats(), disable=not verbose,
                                     desc="Generating throats")):
         try:
-            im_throats = add_cylinder_to(im_throats, r=throat_radi[i],
-                                         xyz0=xyz[cn[i, 0]], xyz1=xyz[cn[i, 1]])
+            im_throats = insert_cylinder(im_throats, r=throat_radi[i],
+                                         xyz0=xyz[cn[i, 0]],
+                                         xyz1=xyz[cn[i, 1]])
         except ValueError:
-            im_throats = add_cylinder_to(im_throats, r=rp_max,
-                                         xyz0=xyz[cn[i, 0]], xyz1=xyz[cn[i, 1]])
+            im_throats = insert_cylinder(im_throats, r=rp_max,
+                                         xyz0=xyz[cn[i, 0]],
+                                         xyz1=xyz[cn[i, 1]])
     # Get rid of throat overlaps
     im_throats[im_throats > 0] = 1
 
@@ -361,7 +287,7 @@ def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
 
     Returns
     -------
-    im : 3D numpy array
+    im : ND-array
         Voxelated image corresponding to the given pore network model
 
     Notes
@@ -398,7 +324,7 @@ def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
         max_dim = int(max_dim * 1.25)
 
     if verbose:
-        print(f"\nConverged at max_dim = {max_dim} voxels.\n")
+        print("\nConverged at max_dim = {max_dim} voxels.\n")
 
     return im
 

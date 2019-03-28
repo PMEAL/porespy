@@ -61,6 +61,17 @@ def snow_dual(im,
     * ``regions``: The void and solid space partitioned into pores and solids
         phases using a marker based watershed with the peaks found by the
         SNOW Algorithm.
+
+    References
+    ----------
+    [1] Gostick, J. "A versatile and efficient network extraction algorithm
+    using marker-based watershed segmenation".  Phys. Rev. E 96, 023307 (2017)
+
+    [2] Khan, ZA et al.  "Dual network extraction algorithm to investigate
+    multiple transport processes in porous materials: Image-based modeling
+    of pore and grain-scale processes. Computers and Chemical Engineering.
+    123(6), 64-77 (2019)
+
     """
     # -------------------------------------------------------------------------
     # SNOW void phase

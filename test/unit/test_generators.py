@@ -9,7 +9,7 @@ plt.close('all')
 class GeneratorTest():
 
     def setup_class(self):
-        sp.random.seed(0)
+        sp.random.seed(10)
 
     def test_cylinders(self):
         X = 100
@@ -36,30 +36,30 @@ class GeneratorTest():
         assert N == 100
 
     def test_overlapping_spheres_2d(self):
-        im = ps.generators.overlapping_spheres(shape=[101, 101], radius=5,
-                                               porosity=0.5)
-        poro = sp.sum(im)/sp.size(im)
-        print(poro)
-        plt.figure()
-        plt.imshow(im[:, :])
-        assert (poro-0.5)**2 < 0.1
+        phis = sp.arange(0.1, 0.9, 0.2)
+        for phi in phis:
+            im = ps.generators.overlapping_spheres(shape=[101, 101], radius=5,
+                                                   porosity=phi)
+            phi_actual = im.sum() / sp.size(im)
+            assert abs(phi_actual - phi) < 0.02
 
     def test_overlapping_spheres_3d(self):
-        target = 0.5
-        im = ps.generators.overlapping_spheres(shape=[50, 50, 50], radius=5,
-                                               porosity=target)
-        poro = sp.sum(im)/sp.size(im)
-        assert (poro-target)**2 < 0.15
+        phis = sp.arange(0.1, 0.9, 0.2)
+        for phi in phis:
+            im = ps.generators.overlapping_spheres(shape=[100, 100, 50],
+                                                   radius=8, porosity=phi)
+            phi_actual = im.sum() / sp.size(im)
+            assert abs(phi_actual - phi) < 0.02
 
     def test_polydisperse_spheres(self):
-        target = 0.5
-        dist = sp.stats.norm(loc=5, scale=1)
-        im = ps.generators.polydisperse_spheres(shape=[50, 50, 50],
-                                                porosity=target,
-                                                dist=dist,
-                                                nbins=10)
-        poro = sp.sum(im)/sp.size(im)
-        assert (poro-target)**2 < 0.15
+        phis = sp.arange(0.1, 0.9, 0.2)
+        dist = sp.stats.norm(loc=7, scale=2)
+        for phi in phis:
+            im = ps.generators.polydisperse_spheres(shape=[100, 100, 50],
+                                                    porosity=phi, dist=dist,
+                                                    nbins=10)
+            phi_actual = im.sum() / sp.size(im)
+            assert abs(phi_actual - phi) < 0.05
 
     def test_voronoi_edges(self):
         sp.random.seed(0)
@@ -117,23 +117,23 @@ class GeneratorTest():
         sp.random.seed(0)
         im = sp.zeros([100, 100], dtype=int)
         im = ps.generators.RSA(im, radius=10, volume_fraction=0.5)
-        assert sp.sum(im > 0) == 5299
-        assert sp.sum(im > 1) == 19
+        assert sp.sum(im > 0) == 5095
+        assert sp.sum(im > 1) == 20
 
     def test_RSA_2d_multi(self):
         sp.random.seed(0)
         im = sp.zeros([100, 100], dtype=int)
         im = ps.generators.RSA(im, radius=10, volume_fraction=0.5)
         im = ps.generators.RSA(im, radius=5, volume_fraction=0.75)
-        assert sp.sum(im > 0) == 6682
-        assert sp.sum(im > 1) == 38
+        assert sp.sum(im > 0) == 6520
+        assert sp.sum(im > 1) == 44
 
     def test_RSA_3d_single(self):
         sp.random.seed(0)
         im = sp.zeros([50, 50, 50], dtype=int)
         im = ps.generators.RSA(im, radius=5, volume_fraction=0.5)
-        assert sp.sum(im > 0) == 38172
-        assert sp.sum(im > 1) == 96
+        assert sp.sum(im > 0) == 45602
+        assert sp.sum(im > 1) == 121
 
     def test_RSA_mask_edge_2d(self):
         im = sp.zeros([100, 100], dtype=int)

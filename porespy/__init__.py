@@ -1,92 +1,90 @@
 r'''
-=======
+===============================================================================
 PoreSpy
-=======
+===============================================================================
 
-PoreSpy is a collection of functions that are especially useful for analyzing
-binary images of porous materials, typically produced by X-ray tomography.
-The functions in this collection are often simple combinations of other
-standard image analysis functions, so really only offer the convenience of
-organizing the functions into one place, and sparing you the trouble of working
-them out.
+**Porous Media Image Analysis in Python**
 
--------
-Modules
--------
+PoreSpy consists of the following modules:
 
-This package consists of several modules, the purposes of which are given below:
+----
 
-+------------------------+----------------------------------------------------+
-| **filters**            | Process images based on structural features        |
-+------------------------+----------------------------------------------------+
-| **generators**         | Make artificial images for testing & illustration  |
-+------------------------+----------------------------------------------------+
-| **metrics**            | Obtain quantitative information from images        |
-+------------------------+----------------------------------------------------+
-| **network_extraction** | Extract pore network models from images            |
-+------------------------+----------------------------------------------------+
-| **simulations**        | Performing complex simulations directly on an image|
-+------------------------+----------------------------------------------------+
-| **tools**              | Utilities for altering & manipulating images       |
-+------------------------+----------------------------------------------------+
-| **visualization**      | Quickly but rough visualization of 3D images       |
-+------------------------+----------------------------------------------------+
-| **io**                 | Import and export image data in various formats    |
-+------------------------+----------------------------------------------------+
+**generators**: Routines for generating artificial images of porous materials
+useful for testing and illustration
 
--------------
+----
+
+**filters**: Functions that accept an image and return an altered image
+
+----
+
+**metrics**: Tools for quantifying properties of images
+
+----
+
+**networks**: Tools for obtaining pore network representations of images
+
+----
+
+**visualization**: Helper functions for creating useful views of the image
+
+----
+
+**io**: Functions for output image data in various formats for use in common
+software
+
+----
+
+**tools**: Various useful tools for working with images
+
+----
+
+
+-------------------------------------------------------------------------------
 Example Usage
--------------
+-------------------------------------------------------------------------------
 
->>> import porespy as ps
->>> import matplotlib.pyplot as plt
->>> im = ps.generators.blobs([100, 100])
->>> mip = ps.filters.porosimetry(im)
->>> PcSw = ps.metrics.pore_size_distribution(mip)
->>> fig = plt.plot(PcSw.logR, PcSw.satn)
+Working with PoreSpy was designed to be a series of function calls, similar to
+building a macro in ImageJ or using Matlab.  A sample workflow is as follows:
 
-----------------
-Related Packages
-----------------
+Create a test image (or load one using ``skimage.io.imread``)
 
-PoreSpy relies heavily on two general image analysis packages:
-**scipy.ndimage** and **scikit-image** also known as **skimage**.  The former
-contains an assortment of general image analysis tools such as image
-morphology filters, while the latter offers more complex but still general
-functions such as watershed segmentation.  PoreSpy does not duplicate any of
-these general functions so you will also have to install and learn how to
-use them to get the most from PoreSpy.  The functions in PoreSpy are generally
-built up using several of the more general functions offered by **skimage**
-and **scipy**.  There are a few functions in PoreSpy that are implemented
-natively, but only when necessary.
+.. code-block:: python
 
------------
-Image Types
------------
+    >>> import porespy as ps
+    >>> import scipy as sp
+    >>> import scipy.ndimage as spim
+    >>> sp.random.seed(0)  # Set number generator for same image each time
+    >>> im = ps.generators.blobs(shape=[250, 250])
 
-PoreSpy is meant to work on single-channel, binary images.  Such images are
-conveniently represented by Numpy arrays, hence all references to an *image* is
-equivalent to an *array*.  It is further assumed that the arrays are binarized,
-meaning 1's or True values indicating the void space, and 0's or False values
-for the solid.
+Apply a filter to the image using tools from ``scipy.ndimage``:
 
------------
-Limitations
------------
+.. code-block:: python
 
-Although *scikit-image* and *scipy.ndimage* have a wide assortment of
-functions, they are not always the fastest implementation.  It is often faster
-to use other packages (e.g. ImageJ) for many things, such as distance
-transforms and image morphology.  The advantage of PoreSpy is the flexibility
-offered by the Python environment.
+    >>> dt = spim.distance_transform_edt(im)
+
+Use some filters from PoreSpy:
+
+.. code-block:: python
+
+    >>> peaks = ps.filters.snow_partitioning(im=im, dt=dt)
+    ____________________________________________________________
+    Beginning SNOW Algorithm
+    Converting supplied image (im) to boolean
+    Applying Gaussian blur with sigma = 0.4
+    Initial number of peaks:  77
+    Peaks after trimming saddle points:  71
+    Peaks after trimming nearby peaks:  70
+
 
 '''
-__version__ = "0.4.1"
+
+__version__ = "1.0.1"
+
 from . import metrics
 from . import tools
 from . import filters
 from . import generators
-from . import simulations
-from . import network_extraction
+from . import networks
 from . import visualization
 from . import io
