@@ -94,23 +94,17 @@ def add_boundary_regions(regions=None, faces=['front', 'back', 'left',
             regions[:, 0, :] = regions[:, 0, :] + regions.max()
             regions[:, -1, :] = regions[:, -1, :] + regions.max()
             regions[:, :, 0] = (~find_boundaries(regions[:, :, 0],
-                                                 mode='outer')) * regions[:, :,
-                                                                  0]
+                                                 mode='outer')) * regions[:, :, 0]
             regions[:, :, -1] = (~find_boundaries(regions[:, :, -1],
-                                                  mode='outer')) * regions[:, :,
-                                                                   -1]
+                                                  mode='outer')) * regions[:, :, -1]
             regions[0, :, :] = (~find_boundaries(regions[0, :, :],
-                                                 mode='outer')) * regions[0, :,
-                                                                  :]
+                                                 mode='outer')) * regions[0, :, :]
             regions[-1, :, :] = (~find_boundaries(regions[-1, :, :],
-                                                  mode='outer')) * regions[-1,
-                                                                   :, :]
+                                                  mode='outer')) * regions[-1, :, :]
             regions[:, 0, :] = (~find_boundaries(regions[:, 0, :],
-                                                 mode='outer')) * regions[:, 0,
-                                                                  :]
+                                                 mode='outer')) * regions[:, 0, :]
             regions[:, -1, :] = (~find_boundaries(regions[:, -1, :],
-                                                  mode='outer')) * regions[:,
-                                                                   -1, :]
+                                                  mode='outer')) * regions[:, -1, :]
             # -----------------------------------------------------------------
             regions = sp.pad(regions, 2, 'edge')
 
@@ -264,8 +258,8 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200,
     im = im_pores * 1 + im_throats * 2
 
     return im[extra_clearance:-extra_clearance,
-           extra_clearance:-extra_clearance,
-           extra_clearance:-extra_clearance]
+              extra_clearance:-extra_clearance,
+              extra_clearance:-extra_clearance]
 
     return im
 

@@ -1098,4 +1098,3 @@ def _create_alias_map(im, alias=None):
             raise Exception('Alias labels does not match with image labels '
                             'please provide correct image labels')
     return al
-
