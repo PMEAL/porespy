@@ -12,6 +12,7 @@ from skimage.morphology import reconstruction, watershed
 from porespy.tools import randomize_colors, fftmorphology
 from porespy.tools import get_border, extend_slice, extract_subsection
 from porespy.tools import ps_disk, ps_ball
+from porespy.networks import _create_alias_map
 
 
 def distance_transform_lin(im, axis=0, mode='both'):
@@ -185,7 +186,7 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, return_all=False,
 
 
 def snow_partitioning_n(im, r_max=4, sigma=0.4, return_all=True,
-                        mask=True, randomize=False):
+                        mask=True, randomize=False, alias=None):
     r"""
     This function partitions an imaging oontain an arbitrary number of phases
     into regions using a marker-based watershed segmentation. Its an extension
@@ -254,6 +255,8 @@ def snow_partitioning_n(im, r_max=4, sigma=0.4, return_all=True,
     regions back into a single image.
 
     """
+    # Get alias if provided by user
+    al = _create_alias_map(im=im, alias=alias)
     # Perform snow on each phase and merge all segmentation and dt together
     phases_num = sp.unique(im * 1)
     phases_num = sp.trim_zeros(phases_num)
@@ -262,7 +265,10 @@ def snow_partitioning_n(im, r_max=4, sigma=0.4, return_all=True,
     num = [0]
     for i in phases_num:
         print('_' * 60)
-        print('Processing Phase {}'.format(i))
+        if alias is None:
+            print('Processing Phase {}'.format(i))
+        else:
+            print('Processing Phase {}'.format(al[i]))
         phase_snow = snow_partitioning(im == i,
                                        dt=None, r_max=r_max, sigma=sigma,
                                        return_all=return_all, mask=mask,
