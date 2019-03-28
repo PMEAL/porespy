@@ -94,17 +94,23 @@ def add_boundary_regions(regions=None, faces=['front', 'back', 'left',
             regions[:, 0, :] = regions[:, 0, :] + regions.max()
             regions[:, -1, :] = regions[:, -1, :] + regions.max()
             regions[:, :, 0] = (~find_boundaries(regions[:, :, 0],
-                                                 mode='outer'))*regions[:, :, 0]
+                                                 mode='outer')) * regions[:, :,
+                                                                  0]
             regions[:, :, -1] = (~find_boundaries(regions[:, :, -1],
-                                                  mode='outer'))*regions[:, :, -1]
+                                                  mode='outer')) * regions[:, :,
+                                                                   -1]
             regions[0, :, :] = (~find_boundaries(regions[0, :, :],
-                                                 mode='outer'))*regions[0, :, :]
+                                                 mode='outer')) * regions[0, :,
+                                                                  :]
             regions[-1, :, :] = (~find_boundaries(regions[-1, :, :],
-                                                  mode='outer'))*regions[-1, :, :]
+                                                  mode='outer')) * regions[-1,
+                                                                   :, :]
             regions[:, 0, :] = (~find_boundaries(regions[:, 0, :],
-                                                 mode='outer'))*regions[:, 0, :]
+                                                 mode='outer')) * regions[:, 0,
+                                                                  :]
             regions[:, -1, :] = (~find_boundaries(regions[:, -1, :],
-                                                  mode='outer'))*regions[:, -1, :]
+                                                  mode='outer')) * regions[:,
+                                                                   -1, :]
             # -----------------------------------------------------------------
             regions = sp.pad(regions, 2, 'edge')
 
@@ -129,13 +135,13 @@ def add_boundary_regions(regions=None, faces=['front', 'back', 'left',
             regions[:, 0] = regions[:, 0] + regions.max()
             regions[:, -1] = regions[:, -1] + regions.max()
             regions[0, :] = (~find_boundaries(regions[0, :],
-                                              mode='outer'))*regions[0, :]
+                                              mode='outer')) * regions[0, :]
             regions[-1, :] = (~find_boundaries(regions[-1, :],
-                                               mode='outer'))*regions[-1, :]
+                                               mode='outer')) * regions[-1, :]
             regions[:, 0] = (~find_boundaries(regions[:, 0],
-                                              mode='outer'))*regions[:, 0]
+                                              mode='outer')) * regions[:, 0]
             regions[:, -1] = (~find_boundaries(regions[:, -1],
-                                               mode='outer'))*regions[:, -1]
+                                               mode='outer')) * regions[:, -1]
             # -----------------------------------------------------------------
             regions = sp.pad(regions, 2, 'edge')
 
@@ -203,8 +209,9 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200,
     # Transform points to satisfy origin at (0, 0, 0)
     xyz0 = xyz.min(axis=0) - delta
     xyz += -xyz0
-    res = (xyz.ptp(axis=0).max() + 2*delta) / max_dim
-    shape = np.rint((xyz.max(axis=0) + delta) / res).astype(int) + 2*extra_clearance
+    res = (xyz.ptp(axis=0).max() + 2 * delta) / max_dim
+    shape = np.rint((xyz.max(axis=0) + delta) / res).astype(
+        int) + 2 * extra_clearance
 
     # Transforming from real coords to matrix coords
     xyz = np.rint(xyz / res).astype(int) + extra_clearance
@@ -252,12 +259,13 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200,
     im_throats[im_throats > 0] = 1
 
     # Subtract pore-throat overlap from throats
-    im_throats = (im_throats.astype(bool) * ~im_pores.astype(bool)).astype(sp.uint8)
+    im_throats = (im_throats.astype(bool) * ~im_pores.astype(bool)).astype(
+        sp.uint8)
     im = im_pores * 1 + im_throats * 2
 
     return im[extra_clearance:-extra_clearance,
-              extra_clearance:-extra_clearance,
-              extra_clearance:-extra_clearance]
+           extra_clearance:-extra_clearance,
+           extra_clearance:-extra_clearance]
 
     return im
 
@@ -320,7 +328,7 @@ def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
                                    max_dim=max_dim, verbose=verbose)
         eps = im.astype(bool).sum() / sp.prod(im.shape)
 
-        err = abs(1 - eps/eps_old)
+        err = abs(1 - eps / eps_old)
         eps_old = eps
         max_dim = int(max_dim * 1.25)
 
@@ -330,9 +338,9 @@ def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
     return im
 
 
-def connect_network_phases(net, snow_partitioning_n, voxel_size=1,
-                           alias=None,
-                           marching_cubes_area=False):
+def add_phase_interconnections(net, snow_partitioning_n, voxel_size=1,
+                               marching_cubes_area=False,
+                               alias=None):
     r"""
     This function connects networks of two or more phases together by
     interconnecting neighbouring nodes inside different phases.
@@ -357,18 +365,18 @@ def connect_network_phases(net, snow_partitioning_n, voxel_size=1,
         default is 1, which is useful when overlaying the PNM on the original
         image since the scale of the image is alway 1 unit lenth per voxel.
 
-    alias : dict (Optional)
-        A dictionary that assigns unique image label to specific phase.
-        For example {1: 'Solid'} will show all structural properties associated
-        with label 1 as Solid phase properties.
-        If ``None`` then default labelling will be used i.e {1: 'Phase1',..}.
-
     marching_cubes_area : bool
         If ``True`` then the surface area and interfacial area between regions
         will be causing the marching cube algorithm. This is a more accurate
         representation of area in extracted network, but is quite slow, so
         it is ``False`` by default.  The default method simply counts voxels
         so does not correctly account for the voxelated nature of the images.
+
+    alias : dict (Optional)
+        A dictionary that assigns unique image label to specific phase.
+        For example {1: 'Solid'} will show all structural properties associated
+        with label 1 as Solid phase properties.
+        If ``None`` then default labelling will be used i.e {1: 'Phase1',..}.
 
     Returns
     -------
@@ -437,7 +445,7 @@ def connect_network_phases(net, snow_partitioning_n, voxel_size=1,
                         pi_pj_sa[j_index] = s_pa_c
                     net['pore.{}_{}_area'.format(al[i],
                                                  al[j])] = (pi_pj_sa *
-                                                            voxel_size**2)
+                                                            voxel_size ** 2)
     return net
 
 

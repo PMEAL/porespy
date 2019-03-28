@@ -2,8 +2,8 @@ import scipy as sp
 from porespy.networks import regions_to_network
 from porespy.networks import label_boundary_cells
 from porespy.networks import add_boundary_regions
-from porespy.networks import _create_alias_map
-from porespy.networks import connect_network_phases
+from porespy.networks import add_phase_interconnections
+from porespy.tools import _create_alias_map
 from porespy.networks import _net_dict
 from porespy.filters import snow_partitioning_n
 from porespy.tools import make_contiguous, pad_faces
@@ -15,7 +15,6 @@ def snow_n(im,
            boundary_faces=['top', 'bottom', 'left', 'right', 'front', 'back'],
            marching_cubes_area=False,
            alias=None):
-
     r"""
     Analyzes an image that has been segemented into N phases and extracts all
     a network for each of the N phases, including geometerical information as
@@ -83,7 +82,7 @@ def snow_n(im,
     if len(phases_num) == 1:
         if f is not None:
             snow.im = pad_faces(im=snow.im, faces=f)
-        regions = regions*(snow.im.astype(bool))
+        regions = regions * (snow.im.astype(bool))
         regions = make_contiguous(regions)
     # -------------------------------------------------------------------------
     # Extract N phases sites and bond information from image
@@ -94,12 +93,13 @@ def snow_n(im,
         areas = region_surface_areas(regions=regions)
         interface_area = region_interface_areas(regions=regions, areas=areas,
                                                 voxel_size=voxel_size)
-        net['pore.surface_area'] = areas * voxel_size**2
+        net['pore.surface_area'] = areas * voxel_size ** 2
         net['throat.area'] = interface_area.area
     # -------------------------------------------------------------------------
     # Find interconnection and interfacial area between ith and jth phases
-    net = connect_network_phases(net=net, snow_partitioning_n=snow, alias=al,
-                                 marching_cubes_area=marching_cubes_area)
+    net = add_phase_interconnections(net=net, snow_partitioning_n=snow,
+                                     marching_cubes_area=marching_cubes_area,
+                                     alias=al)
     # -------------------------------------------------------------------------
     # label boundary cells
     net = label_boundary_cells(network=net, boundary_faces=f)
