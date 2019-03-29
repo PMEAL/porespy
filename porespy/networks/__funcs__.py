@@ -2,13 +2,11 @@ import scipy as sp
 import numpy as np
 import openpnm as op
 from porespy.tools import make_contiguous
-from porespy.filters import snow_partitioning
-from collections import namedtuple
 from skimage.segmentation import find_boundaries
-from skimage.morphology import ball, cube, disk
-from scipy.ndimage import distance_transform_edt
+from skimage.morphology import ball, cube
 from tqdm import tqdm
-from porespy.tools import _create_alias_map
+from porespy.tools import _create_alias_map, overlay
+from porespy.tools import insert_sphere, insert_cylinder
 
 
 def map_to_regions(regions, values):
@@ -215,15 +213,15 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200,
     im_pores = np.zeros(shape, dtype=np.uint8)
     im_throats = np.zeros_like(im_pores)
 
-    if pore_shape is "cube":
+    if pore_shape == "cube":
         pore_elem = cube
         rp = pore_radi * 2 + 1  # +1 since num_voxel must be odd
         rp_max = int(2 * round(delta / res)) + 1
-    if pore_shape is "sphere":
+    if pore_shape == "sphere":
         pore_elem = ball
         rp = pore_radi
         rp_max = int(round(delta / res))
-    if throat_shape is "cuboid":
+    if throat_shape == "cuboid":
         raise Exception("Not yet implemented, try 'cylinder'.")
 
     # Generating voxels for pores
