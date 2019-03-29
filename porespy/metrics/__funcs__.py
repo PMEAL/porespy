@@ -276,7 +276,7 @@ def two_point_correlation_bf(im, spacing=10):
                           pts[1].flatten(),
                           pts[2].flatten()]).T
     dmat = sptl.distance.cdist(XA=crds, XB=crds)
-    hits = im[pts].flatten()
+    hits = im[tuple(pts)].flatten()
     dmat = dmat[hits, :]
     h1 = sp.histogram(dmat, bins=range(0, int(sp.amin(im.shape)/2), spacing))
     dmat = dmat[:, hits]

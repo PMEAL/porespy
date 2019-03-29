@@ -24,7 +24,7 @@ def insert_shape(im, center, element, value=1):
         lower_el = sp.amax((lower_im - center[dim] + r, 0))
         upper_el = sp.amin((upper_im - center[dim] + r, element.shape[dim]))
         s_el.append(slice(lower_el, upper_el))
-    im[s_im] = im[s_im] + element[s_el]*value
+    im[tuple(s_im)] = im[tuple(s_im)] + element[tuple(s_el)]*value
     return im
 
 
@@ -162,13 +162,13 @@ def bundle_of_tubes(shape: List[int], spacing: int):
     temp = sp.zeros(shape=shape[:2])
     Xi = sp.ceil(sp.linspace(spacing/2,
                              shape[0]-(spacing/2)-1,
-                             shape[0]/spacing))
+                             int(shape[0]/spacing)))
     Xi = sp.array(Xi, dtype=int)
     Yi = sp.ceil(sp.linspace(spacing/2,
                              shape[1]-(spacing/2)-1,
-                             shape[1]/spacing))
+                             int(shape[1]/spacing)))
     Yi = sp.array(Yi, dtype=int)
-    temp[sp.meshgrid(Xi, Yi)] = 1
+    temp[tuple(sp.meshgrid(Xi, Yi))] = 1
     inds = sp.where(temp)
     for i in range(len(inds[0])):
         r = sp.random.randint(1, (spacing/2))
@@ -184,7 +184,7 @@ def bundle_of_tubes(shape: List[int], spacing: int):
 
 
 def polydisperse_spheres(shape: List[int], porosity: float, dist,
-                         nbins: int = 5):
+                         nbins: int = 5, r_min: int = 5):
     r"""
     Create an image of randomly place, overlapping spheres with a distribution
     of radii.
@@ -225,12 +225,14 @@ def polydisperse_spheres(shape: List[int], porosity: float, dist,
     Rs = dist.interval(sp.linspace(0.05, 0.95, nbins))
     Rs = sp.vstack(Rs).T
     Rs = (Rs[:-1] + Rs[1:])/2
-    Rs = Rs.flatten()
-    phi = 1 - (1 - porosity)/(len(Rs))
+    Rs = sp.clip(Rs.flatten(), a_min=r_min, a_max=None)
+    phi_desired = 1 - (1 - porosity)/(len(Rs))
     im = sp.ones(shape, dtype=bool)
     for r in Rs:
-        temp = overlapping_spheres(shape=shape, radius=r, porosity=phi)
-        im = im*temp
+        phi_im = im.sum() / sp.prod(shape)
+        phi_corrected = 1 - (1 - phi_desired) / phi_im
+        temp = overlapping_spheres(shape=shape, radius=r, porosity=phi_corrected)
+        im = im * temp
     return im
 
 
@@ -262,7 +264,7 @@ def voronoi_edges(shape: List[int], radius: int, ncells: int,
 
     """
     print(78*'―')
-    print('voronoi_edges: Generating', ncells, ' cells')
+    print('voronoi_edges: Generating', ncells, 'cells')
     shape = sp.array(shape)
     if sp.size(shape) == 1:
         shape = sp.full((3, ), int(shape))
@@ -289,7 +291,7 @@ def voronoi_edges(shape: List[int], radius: int, ncells: int,
         pts = vor.vertices[row].astype(int)
         if sp.all(pts >= 0) and sp.all(pts < im.shape):
             line_pts = line_segment(pts[0], pts[1])
-            im[line_pts] = True
+            im[tuple(line_pts)] = True
     im = spim.distance_transform_edt(~im) > radius
     return im
 
@@ -435,7 +437,8 @@ def lattice_spheres(shape: List[int], radius: int, offset: int = 0,
     return im
 
 
-def overlapping_spheres(shape: List[int], radius: int, porosity: float):
+def overlapping_spheres(shape: List[int], radius: int, porosity: float,
+                        iter_max: int = 10, tol: float = 0.01):
     r"""
     Generate a packing of overlapping mono-disperse spheres
 
@@ -449,9 +452,14 @@ def overlapping_spheres(shape: List[int], radius: int, porosity: float):
         The radius of spheres in the packing.
 
     porosity : scalar
-        The porosity of the final image.  This number is approximated by
-        the method so the returned result may not have exactly the
-        specified value.
+        The porosity of the final image, accurate to the given tolerance.
+
+    iter_max : int
+        Maximum number of iterations for the iterative algorithm that improves
+        the porosity of the final image to match the given value.
+
+    tol : float
+        Tolerance for porosity of the final image compared to the given value.
 
     Returns
     -------
@@ -463,19 +471,47 @@ def overlapping_spheres(shape: List[int], radius: int, porosity: float):
     This method can also be used to generate a dispersion of hollows by
     treating ``porosity`` as solid volume fraction and inverting the
     returned image.
+
     """
     shape = sp.array(shape)
     if sp.size(shape) == 1:
         shape = sp.full((3, ), int(shape))
-    if sp.size(shape) == 2:
-        s_vol = sp.sum(ps_disk(radius))
-    if sp.size(shape) == 3:
-        s_vol = sp.sum(ps_ball(radius))
+    ndim = (shape != 1).sum()
+    s_vol = ps_disk(radius).sum() if ndim == 2 else ps_ball(radius).sum()
+
     bulk_vol = sp.prod(shape)
     N = int(sp.ceil((1 - porosity)*bulk_vol/s_vol))
-    im = sp.random.random(size=shape) > (N/bulk_vol)
-    im = spim.distance_transform_edt(im) < radius
-    return ~im
+    im = sp.random.random(size=shape)
+
+    # Helper functions for calculating porosity: phi = g(f(N))
+    f = lambda N: spim.distance_transform_edt(im > N/bulk_vol) < radius
+    g = lambda im: 1 - im.sum() / sp.prod(shape)
+
+    # Newton's method for getting image porosity match the given
+    w, dN = 1.0, 10  # Damping factor, perturbation
+    for i in range(iter_max):
+        err = g(f(N)) - porosity
+        d_err = (g(f(N+dN)) - g(f(N))) / dN
+        if d_err == 0:
+            break
+        if abs(err) <= tol:
+            break
+        N2 = N - int(err/d_err)   # xnew = xold - f/df
+        N = w * N2 + (1-w) * N
+
+    # # Bisection search: N is always undershoot (bc. of overlaps)
+    # N_low, N_high = N, 4*N
+    # for i in range(iter_max):
+    #     N = sp.mean([N_high, N_low], dtype=int)
+    #     err = g(f(N)) - porosity
+    #     if err > 0:
+    #         N_low = N
+    #     else:
+    #         N_high = N
+    #     if abs(err) <= tol:
+    #         break
+
+    return ~f(N)
 
 
 def noise(shape: List[int], porosity=None, octaves: int = 3,
@@ -676,8 +712,8 @@ def line_segment(X0, X1):
         that should be drawn between the start and end points to create a solid
         line.
     """
-    X0 = sp.around(X0)
-    X1 = sp.around(X1)
+    X0 = sp.around(X0).astype(int)
+    X1 = sp.around(X1).astype(int)
     L = sp.amax(sp.absolute([[X1[0]-X0[0]], [X1[1]-X0[1]], [X1[2]-X0[2]]])) + 1
     x = sp.rint(sp.linspace(X0[0], X1[0], L)).astype(int)
     y = sp.rint(sp.linspace(X0[1], X1[1], L)).astype(int)

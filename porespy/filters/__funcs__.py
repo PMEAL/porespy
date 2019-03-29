@@ -10,8 +10,9 @@ from skimage.segmentation import clear_border
 from skimage.morphology import ball, disk, square, cube, diamond, octahedron
 from skimage.morphology import reconstruction, watershed
 from porespy.tools import randomize_colors, fftmorphology
-from porespy.tools import get_border, extend_slice
+from porespy.tools import get_border, extend_slice, extract_subsection
 from porespy.tools import ps_disk, ps_ball
+from porespy.tools import _create_alias_map
 
 
 def distance_transform_lin(im, axis=0, mode='both'):
@@ -184,6 +185,117 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, return_all=False,
         return regions
 
 
+def snow_partitioning_n(im, r_max=4, sigma=0.4, return_all=True,
+                        mask=True, randomize=False, alias=None):
+    r"""
+    This function partitions an imaging oontain an arbitrary number of phases
+    into regions using a marker-based watershed segmentation. Its an extension
+    of snow_partitioning function with all phases partitioned together.
+
+    Parameters
+    ----------
+    im : ND-array
+        Image of porous material where each phase is represented by unique
+        integer starting from 1 (0's are ignored).
+    r_max : scalar
+        The radius of the spherical structuring element to use in the Maximum
+        filter stage that is used to find peaks.  The default is 4.
+    sigma : scalar
+        The standard deviation of the Gaussian filter used.  The default is
+        0.4. If 0 is given then the filter is not applied, which is useful if a
+        distance transform is supplied as the ``im`` argument that has already
+        been processed.
+    return_all : boolean (default is False)
+        If set to ``True`` a named tuple is returned containing the original
+        image, the combined distance transform, list of each phase max label,
+        and the final combined regions of all phases.
+    mask : boolean (default is True)
+        Apply a mask to the regions which are not under concern.
+    randomize : boolean
+        If ``True`` (default), then the region colors will be randomized before
+        returning.  This is helpful for visualizing otherwise neighboring
+        regions have similar coloring and are hard to distinguish.
+
+    Returns
+    -------
+    An image the same shape as ``im`` with the all phases partitioned into
+    regions using a marker based watershed with the peaks found by the
+    SNOW algorithm [1].  If ``return_all`` is ``True`` then a **named tuple**
+    is returned with the following attribute:
+
+        * ``im`` : The actual image of the porous material
+        * ``dt`` : The combined distance transform of the image
+        * ``phase_max_label`` : The list of max label of each phase in order to
+        distinguish between each other
+        * ``regions`` : The partitioned regions of n phases using a marker
+        based watershed with the peaks found by the SNOW algorithm
+
+    References
+    ----------
+    [1] Gostick, J. "A versatile and efficient network extraction algorithm
+    using marker-based watershed segmentation".  Physical Review E. (2017)
+
+    [2] Khan, ZA et al. "Dual network extraction algorithm to investigate
+    multiple transport processes in porous materials: Image-based modeling
+    of pore and grain-scale processes".  Computers in Chemical Engineering.
+    (2019)
+
+    See Also
+    ----------
+    snow_partitioning
+
+    Notes
+    -----
+    In principle it is possible to perform a distance transform on each
+    phase separately, merge these into a single image, then apply the
+    watershed only once. This, however, has been found to create edge artifacts
+    between regions arising from the way watershed handles plateaus in the
+    distance transform. To overcome this, this function applies the watershed
+    to each of the distance transforms separately, then merges the segmented
+    regions back into a single image.
+
+    """
+    # Get alias if provided by user
+    al = _create_alias_map(im=im, alias=alias)
+    # Perform snow on each phase and merge all segmentation and dt together
+    phases_num = sp.unique(im * 1)
+    phases_num = sp.trim_zeros(phases_num)
+    combined_dt = 0
+    combined_region = 0
+    num = [0]
+    for i in phases_num:
+        print('_' * 60)
+        if alias is None:
+            print('Processing Phase {}'.format(i))
+        else:
+            print('Processing Phase {}'.format(al[i]))
+        phase_snow = snow_partitioning(im == i,
+                                       dt=None, r_max=r_max, sigma=sigma,
+                                       return_all=return_all, mask=mask,
+                                       randomize=randomize)
+        if len(phases_num) == 1 and phases_num == 1:
+            combined_dt = phase_snow.dt
+            combined_region = phase_snow.regions
+        else:
+            combined_dt += phase_snow.dt
+            phase_snow.regions *= phase_snow.im
+            phase_snow.regions += num[i - 1]
+            phase_ws = phase_snow.regions * phase_snow.im
+            phase_ws[phase_ws == num[i - 1]] = 0
+            combined_region += phase_ws
+        num.append(sp.amax(combined_region))
+    if return_all:
+        tup = namedtuple('results', field_names=['im', 'dt', 'phase_max_label',
+                                                 'regions'])
+        tup.im = im
+        tup.dt = combined_dt
+        tup.phase_max_label = num[1:]
+        tup.regions = combined_region
+        return tup
+    else:
+        return combined_region
+
+
 def find_peaks(dt, r_max=4, footprint=None):
     r"""
     Returns all local maxima in the distance transform
@@ -297,6 +409,12 @@ def trim_saddle_points(peaks, dt, max_iters=10):
     -------
     image : ND-array
         An image with fewer peaks than the input image
+
+    References
+    ----------
+    [1] Gostick, J. "A versatile and efficient network extraction algorithm
+    using marker-based watershed segmenation".  Physical Review E. (2017)
+
     """
     peaks = sp.copy(peaks)
     if dt.ndim == 2:
@@ -356,6 +474,11 @@ def trim_nearby_peaks(peaks, dt):
     Each pair of peaks is considered simultaneously, so for a triplet of peaks
     each pair is considered.  This ensures that only the single peak that is
     furthest from the solid is kept.  No iteration is required.
+
+    References
+    ----------
+    [1] Gostick, J. "A versatile and efficient network extraction algorithm
+    using marker-based watershed segmenation".  Physical Review E. (2017)
     """
     peaks = sp.copy(peaks)
     if dt.ndim == 2:
@@ -870,13 +993,24 @@ def local_thickness(im, sizes=25, mode='hybrid'):
     image : ND-array
         A copy of ``im`` with the pore size values in each voxel
 
+    See Also
+    --------
+    porosimetry
+
     Notes
     -----
     The term *foreground* is used since this function can be applied to both
-    pore space or the solid, whichever is set to True.
+    pore space or the solid, whichever is set to ``True``.
 
-    This function is identical to porosimetry with ``access_limited`` set to
-    ``False``.
+    This function is identical to ``porosimetry`` with ``access_limited`` set
+    to ``False``.
+
+    The way local thickness is found in PoreSpy differs from the traditional
+    method (i.e. `used in ImageJ <https://imagej.net/Local_Thickness>`_).
+    Our approach is probably slower, but it allows for the same code to be
+    used for ``local_thickness`` and ``porosimetry``, since we can 'trim'
+    invaded regions that are not connected to the inlets in the ``porosimetry``
+    function.  This is not needed in ``local_thickness`` however.
 
     """
     im_new = porosimetry(im=im, sizes=sizes, access_limited=False, mode=mode)
@@ -945,68 +1079,98 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
         invading sphere.  Of course, ``r`` can be converted to capillary
         pressure using your favorite model.
 
+    Notes
+    -----
+    There are many ways to perform this filter, and PoreSpy offer 3, which
+    users can choose between via the ``mode`` argument.  These methods all
+    work in a similar way by finding which foreground voxels can accomodate
+    a sphere of a given radius, then repeating for smaller radii.
+
     See Also
     --------
     fftmorphology
+    local_thickness
 
     """
-    def trim_blobs(im, inlets):
-        temp = sp.zeros_like(im)
-        temp[inlets] = True
-        labels, N = spim.label(im + temp)
-        im = im ^ (clear_border(labels=labels) > 0)
-        return im
 
     dt = spim.distance_transform_edt(im > 0)
 
     if inlets is None:
         inlets = get_border(im.shape, mode='faces')
-    inlets = sp.where(inlets)
 
     if isinstance(sizes, int):
         sizes = sp.logspace(start=sp.log10(sp.amax(dt)), stop=0, num=sizes)
     else:
-        sizes = sp.sort(a=sizes)[-1::-1]
+        sizes = sp.unique(sizes)[-1::-1]
 
     if im.ndim == 2:
         strel = ps_disk
     else:
         strel = ps_ball
 
-    imresults = sp.zeros(sp.shape(im))
     if mode == 'mio':
         pw = int(sp.floor(dt.max()))
         impad = sp.pad(im, mode='symmetric', pad_width=pw)
+        inletspad = sp.pad(inlets, mode='symmetric', pad_width=pw)
+        inlets = sp.where(inletspad)
+#        sizes = sp.unique(sp.around(sizes, decimals=0).astype(int))[-1::-1]
         imresults = sp.zeros(sp.shape(impad))
         for r in tqdm(sizes):
-            imtemp = fftmorphology(impad, strel(r), mode='opening')
+            imtemp = fftmorphology(impad, strel(r), mode='erosion')
             if access_limited:
-                imtemp = trim_blobs(imtemp, inlets)
+                imtemp = trim_disconnected_blobs(imtemp, inlets)
+            imtemp = fftmorphology(imtemp, strel(r), mode='dilation')
             if sp.any(imtemp):
                 imresults[(imresults == 0)*imtemp] = r
-        if im.ndim == 2:
-            imresults = imresults[pw:-pw, pw:-pw]
-        else:
-            imresults = imresults[pw:-pw, pw:-pw, pw:-pw]
+        imresults = extract_subsection(imresults, shape=im.shape)
     elif mode == 'dt':
+        inlets = sp.where(inlets)
+        imresults = sp.zeros(sp.shape(im))
         for r in tqdm(sizes):
             imtemp = dt >= r
             if access_limited:
-                imtemp = trim_blobs(imtemp, inlets)
+                imtemp = trim_disconnected_blobs(imtemp, inlets)
             if sp.any(imtemp):
                 imtemp = spim.distance_transform_edt(~imtemp) < r
                 imresults[(imresults == 0)*imtemp] = r
     elif mode == 'hybrid':
+        inlets = sp.where(inlets)
+        imresults = sp.zeros(sp.shape(im))
         for r in tqdm(sizes):
             imtemp = dt >= r
             if access_limited:
-                imtemp = trim_blobs(imtemp, inlets)
+                imtemp = trim_disconnected_blobs(imtemp, inlets)
             if sp.any(imtemp):
                 imtemp = fftconvolve(imtemp, strel(r), mode='same') > 0.0001
                 imresults[(imresults == 0)*imtemp] = r
     else:
         raise Exception('Unreckognized mode ' + mode)
     return imresults
+
+
+def trim_disconnected_blobs(im, inlets):
+    r"""
+    Removes foreground voxels not connected to specified inlets
+
+    Parameters
+    ----------
+    im : ND-array
+        The array to be trimmed
+    inlets : ND-array of tuple of indices
+        The locations of the inlets.  Any voxels *not* connected directly to
+        the inlets will be trimmed
+
+    Returns
+    -------
+    image : ND-array
+        An array of the same shape as ``im``, but with all foreground
+        voxels not connected to the ``inlets`` removed.
+    """
+    temp = sp.zeros_like(im)
+    temp[inlets] = True
+    labels, N = spim.label(im + temp)
+    im = im ^ (clear_border(labels=labels) > 0)
+    return im
 
 
 def _get_axial_shifts(ndim=2, include_diagonals=False):

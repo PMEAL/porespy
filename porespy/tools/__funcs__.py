@@ -96,6 +96,7 @@ def fftmorphology(im, strel, mode='opening'):
     True
 
     """
+
     def erode(im, strel):
         t = fftconvolve(im, strel, mode='same') > (strel.sum() - 0.1)
         return t
@@ -168,9 +169,9 @@ def subdivide(im, divs=2):
 
     ``s`` contains an array with the shape given by ``divs``.  To access the
     first and last quadrants of ``im`` use:
-    >>> print(im[s[0, 0]].shape)
+    >>> print(im[tuple(s[0, 0])].shape)
     (100, 100)
-    >>> print(im[s[1, 1]].shape)
+    >>> print(im[tuple(s[1, 1])].shape)
     (100, 100)
 
     It can be easier to index the array with the slices by applying ``flatten``
@@ -252,8 +253,8 @@ def get_slice(im, center, size, pad=0):
     slices : list
         A list of slice objects, each indexing into one dimension of the image.
     """
-    p = sp.ones(shape=im.ndim, dtype=int)*sp.array(pad)
-    s = sp.ones(shape=im.ndim, dtype=int)*sp.array(size)
+    p = sp.ones(shape=im.ndim, dtype=int) * sp.array(pad)
+    s = sp.ones(shape=im.ndim, dtype=int) * sp.array(size)
     slc = []
     for dim in range(im.ndim):
         lower_im = sp.amax((center[dim] - s[dim] - p[dim], 0))
@@ -293,7 +294,7 @@ def find_outer_region(im, r=0):
     """
     if r == 0:
         dt = spim.distance_transform_edt(input=im)
-        r = int(sp.amax(dt))*2
+        r = int(sp.amax(dt)) * 2
     im_padded = sp.pad(array=im, pad_width=r, mode='constant',
                        constant_values=True)
     dt = spim.distance_transform_edt(input=im_padded)
@@ -337,10 +338,10 @@ def extract_cylinder(im, r=None, axis=0):
     if r is None:
         a = list(im.shape)
         a.pop(axis)
-        r = sp.floor(sp.amin(a)/2)
-    dim = [range(int(-s/2), int(s/2) + s % 2) for s in im.shape]
+        r = sp.floor(sp.amin(a) / 2)
+    dim = [range(int(-s / 2), int(s / 2) + s % 2) for s in im.shape]
     inds = sp.meshgrid(*dim, indexing='ij')
-    inds[axis] = inds[axis]*0
+    inds[axis] = inds[axis] * 0
     d = sp.sqrt(sp.sum(sp.square(inds), axis=0))
     mask = d <= r
     im[~mask] = True
@@ -385,13 +386,13 @@ def extract_subsection(im, shape):
     # Check if shape was given as a fraction
     shape = sp.array(shape)
     if shape[0] < 1:
-        shape = sp.array(im.shape)*shape
-    center = sp.array(im.shape)/2
+        shape = sp.array(im.shape) * shape
+    center = sp.array(im.shape) / 2
     s_im = []
     for dim in range(im.ndim):
-        r = shape[dim]/2
-        lower_im = sp.amax((center[dim]-r, 0))
-        upper_im = sp.amin((center[dim]+r, im.shape[dim]))
+        r = shape[dim] / 2
+        lower_im = sp.amax((center[dim] - r, 0))
+        upper_im = sp.amin((center[dim] + r, im.shape[dim]))
         s_im.append(slice(int(lower_im), int(upper_im)))
     return im[tuple(s_im)]
 
@@ -416,7 +417,7 @@ def get_planes(im, squeeze=True):
     planes : list
         A list of 2D-images
     """
-    x, y, z = (sp.array(im.shape)/2).astype(int)
+    x, y, z = (sp.array(im.shape) / 2).astype(int)
     planes = [im[x, :, :], im[:, y, :], im[:, :, z]]
     if not squeeze:
         imx = planes[0]
@@ -607,7 +608,7 @@ def make_contiguous(im, keep_zeros=True):
     im = im - im.min()
     im_flat = im.flatten()
     im_vals = sp.unique(im_flat)
-    im_map = sp.zeros(shape=sp.amax(im_flat)+1)
+    im_map = sp.zeros(shape=sp.amax(im_flat) + 1)
     im_map[im_vals] = sp.arange(0, sp.size(sp.unique(im_flat)))
     im_new = im_map[im_flat]
     im_new = sp.reshape(im_new, newshape=sp.shape(im))
@@ -747,10 +748,10 @@ def norm_to_uniform(im, scale=None):
     """
     if scale is None:
         scale = [im.min(), im.max()]
-    im = (im - sp.mean(im))/sp.std(im)
-    im = 1/2*sp.special.erfc(-im/sp.sqrt(2))
+    im = (im - sp.mean(im)) / sp.std(im)
+    im = 1 / 2 * sp.special.erfc(-im / sp.sqrt(2))
     im = (im - im.min()) / (im.max() - im.min())
-    im = im*(scale[1] - scale[0]) + scale[0]
+    im = im * (scale[1] - scale[0]) + scale[0]
     return im
 
 
@@ -829,8 +830,8 @@ def mesh_region(region: bool, strel=None):
     im = region
     if im.ndim == 3:
         padded_mask = sp.pad(im, pad_width=pad_width, mode='constant')
-        padded_mask = spim.convolve(padded_mask*1.0,
-                                    weights=strel)/sp.sum(strel)
+        padded_mask = spim.convolve(padded_mask * 1.0,
+                                    weights=strel) / sp.sum(strel)
     else:
         padded_mask = sp.reshape(im, (1,) + im.shape)
         padded_mask = sp.pad(padded_mask, pad_width=pad_width, mode='constant')
@@ -858,7 +859,7 @@ def ps_disk(radius):
         A 2D numpy bool array of the structring element
     """
     rad = int(sp.ceil(radius))
-    other = sp.ones((2*rad+1, 2*rad+1), dtype=bool)
+    other = sp.ones((2 * rad + 1, 2 * rad + 1), dtype=bool)
     other[rad, rad] = False
     disk = spim.distance_transform_edt(other) < radius
     return disk
@@ -879,7 +880,7 @@ def ps_ball(radius):
         A 3D numpy array of the structuring element
     """
     rad = int(sp.ceil(radius))
-    other = sp.ones((2*rad+1, 2*rad+1, 2*rad+1), dtype=bool)
+    other = sp.ones((2 * rad + 1, 2 * rad + 1, 2 * rad + 1), dtype=bool)
     other[rad, rad, rad] = False
     ball = spim.distance_transform_edt(other) < radius
     return ball
@@ -1008,3 +1009,92 @@ def insert_cylinder(im, xyz0, xyz1, r):
        xyz_min[2]:xyz_max[2]+1] += template
 
     return im
+
+
+def pad_faces(im, faces):
+    r"""
+    Pads the input image at specified faces. This shape of image is
+    same as the output image of add_boundary_regions function.
+
+    Parameters
+    ----------
+    im : ND_array
+        The image that needs to be padded
+
+    faces : list of strings
+        Labels indicating where image needs to be padded. Given a 3D image
+        of shape ``[x, y, z] = [i, j, k]``, the following conventions are used
+        to indicate along which axis the padding should be applied:
+
+        * 'left' -> ``x = 0``
+        * 'right' -> ``x = i``
+        * 'front' -> ``y = 0``
+        * 'back' -> ``y = j``
+        * 'bottom' -> ``z = 0``
+        * 'top' -> ``z = k``
+
+    Returns
+    -------
+    A image padded at specified face(s)
+
+    See also
+    --------
+    add_boundary_regions
+    """
+    f = faces
+    if f is not None:
+        if im.ndim == 2:
+            faces = [(int('left' in f) * 3, int('right' in f) * 3),
+                     (int(('front') in f) * 3 or int(('bottom') in f) * 3,
+                      int(('back') in f) * 3 or int(('top') in f) * 3)]
+
+        if im.ndim == 3:
+            faces = [(int('left' in f) * 3, int('right' in f) * 3),
+                     (int('front' in f) * 3, int('back' in f) * 3),
+                     (int('top' in f) * 3, int('bottom' in f) * 3)]
+        im = sp.pad(im, pad_width=faces, mode='edge')
+    else:
+        im = im
+    return im
+
+
+def _create_alias_map(im, alias=None):
+    r"""
+    Creates an alias mapping between phases in original image and identifyable
+    names. This mapping is used during network extraction to label
+    interconnection between and properties of each phase.
+
+    Parameters
+    ----------
+    im : ND-array
+        Image of porous material where each phase is represented by unique
+        integer. Phase integer should start from 1. Boolean image will extract
+        only one network labeled with True's only.
+
+    alias : dict (Optional)
+        A dictionary that assigns unique image label to specific phase.
+        For example {1: 'Solid'} will show all structural properties associated
+        with label 1 as Solid phase properties.
+        If ``None`` then default labelling will be used i.e {1: 'Phase1',..}.
+
+    Returns
+    -------
+    A dictionary with numerical phase labels as key, and readable phase names
+    as valuies. If no alias is provided then default labelling is used
+    i.e {1: 'Phase1',..}
+    """
+    # -------------------------------------------------------------------------
+    # Get alias if provided by user
+    phases_num = sp.unique(im * 1)
+    phases_num = sp.trim_zeros(phases_num)
+    al = {}
+    for values in phases_num:
+        al[values] = 'phase{}'.format(values)
+    if alias is not None:
+        alias_sort = dict(sorted(alias.items()))
+        phase_labels = sp.array([*alias_sort])
+        al = alias
+        if set(phase_labels) != set(phases_num):
+            raise Exception('Alias labels does not match with image labels '
+                            'please provide correct image labels')
+    return al
