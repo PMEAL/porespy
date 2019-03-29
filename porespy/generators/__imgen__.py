@@ -162,11 +162,11 @@ def bundle_of_tubes(shape: List[int], spacing: int):
     temp = sp.zeros(shape=shape[:2])
     Xi = sp.ceil(sp.linspace(spacing/2,
                              shape[0]-(spacing/2)-1,
-                             shape[0]/spacing))
+                             int(shape[0]/spacing)))
     Xi = sp.array(Xi, dtype=int)
     Yi = sp.ceil(sp.linspace(spacing/2,
                              shape[1]-(spacing/2)-1,
-                             shape[1]/spacing))
+                             int(shape[1]/spacing)))
     Yi = sp.array(Yi, dtype=int)
     temp[tuple(sp.meshgrid(Xi, Yi))] = 1
     inds = sp.where(temp)
@@ -712,8 +712,8 @@ def line_segment(X0, X1):
         that should be drawn between the start and end points to create a solid
         line.
     """
-    X0 = sp.around(X0)
-    X1 = sp.around(X1)
+    X0 = sp.around(X0).astype(int)
+    X1 = sp.around(X1).astype(int)
     L = sp.amax(sp.absolute([[X1[0]-X0[0]], [X1[1]-X0[1]], [X1[2]-X0[2]]])) + 1
     x = sp.rint(sp.linspace(X0[0], X1[0], L)).astype(int)
     y = sp.rint(sp.linspace(X0[1], X1[1], L)).astype(int)
