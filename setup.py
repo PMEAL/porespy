@@ -47,7 +47,7 @@ setup(
                       'tqdm',
                       'array_split',
                       'pytrax',
-                      # 'pyevtk',
+                      'pyevtk',
                       'numba',
                       'openpnm'],
     author='Jeff Gostick',

@@ -2,8 +2,7 @@ import porespy as ps
 import scipy as sp
 import scipy.spatial as sptl
 import scipy.ndimage as spim
-from skimage.morphology import ball, disk
-from porespy.tools import norm_to_uniform
+from porespy.tools import norm_to_uniform, ps_ball, ps_disk
 from typing import List
 from numpy import array
 
@@ -87,14 +86,16 @@ def RSA(im: array, radius: int, volume_fraction: int = 1,
     print(78*'―')
     print('RSA: Adding spheres of size ' + str(radius))
     d2 = len(im.shape) == 2
-    mrad = 2*radius + 1
+    mrad = 2*radius
     if d2:
-        im_strel = disk(radius)
-        mask_strel = disk(mrad)
+        im_strel = ps_disk(radius)
+        mask_strel = ps_disk(mrad)
     else:
-        im_strel = ball(radius)
-        mask_strel = ball(mrad)
+        im_strel = ps_ball(radius)
+        mask_strel = ps_ball(mrad)
     if sp.any(im > 0):
+        # Dilate existing objects by im_strel to remove pixels near them
+        # from consideration for sphere placement
         mask = ps.tools.fftmorphology(im > 0, im_strel > 0, mode='dilate')
         mask = mask.astype(int)
     else:
@@ -161,11 +162,11 @@ def bundle_of_tubes(shape: List[int], spacing: int):
     temp = sp.zeros(shape=shape[:2])
     Xi = sp.ceil(sp.linspace(spacing/2,
                              shape[0]-(spacing/2)-1,
-                             shape[0]/spacing))
+                             int(shape[0]/spacing)))
     Xi = sp.array(Xi, dtype=int)
     Yi = sp.ceil(sp.linspace(spacing/2,
                              shape[1]-(spacing/2)-1,
-                             shape[1]/spacing))
+                             int(shape[1]/spacing)))
     Yi = sp.array(Yi, dtype=int)
     temp[tuple(sp.meshgrid(Xi, Yi))] = 1
     inds = sp.where(temp)
@@ -174,10 +175,10 @@ def bundle_of_tubes(shape: List[int], spacing: int):
         try:
             s1 = slice(inds[0][i]-r, inds[0][i]+r+1)
             s2 = slice(inds[1][i]-r, inds[1][i]+r+1)
-            temp[s1, s2] = disk(r)
+            temp[s1, s2] = ps_disk(r)
         except ValueError:
             odd_shape = sp.shape(temp[s1, s2])
-            temp[s1, s2] = disk(r)[:odd_shape[0], :odd_shape[1]]
+            temp[s1, s2] = ps_disk(r)[:odd_shape[0], :odd_shape[1]]
     im = sp.broadcast_to(array=sp.atleast_3d(temp), shape=shape)
     return im
 
@@ -475,8 +476,8 @@ def overlapping_spheres(shape: List[int], radius: int, porosity: float,
     shape = sp.array(shape)
     if sp.size(shape) == 1:
         shape = sp.full((3, ), int(shape))
-    ndim = (shape!=1).sum()
-    s_vol = disk(radius).sum() if ndim == 2 else ball(radius).sum()
+    ndim = (shape != 1).sum()
+    s_vol = ps_disk(radius).sum() if ndim == 2 else ps_ball(radius).sum()
 
     bulk_vol = sp.prod(shape)
     N = int(sp.ceil((1 - porosity)*bulk_vol/s_vol))
@@ -711,8 +712,8 @@ def line_segment(X0, X1):
         that should be drawn between the start and end points to create a solid
         line.
     """
-    X0 = sp.around(X0)
-    X1 = sp.around(X1)
+    X0 = sp.around(X0).astype(int)
+    X1 = sp.around(X1).astype(int)
     L = sp.amax(sp.absolute([[X1[0]-X0[0]], [X1[1]-X0[1]], [X1[2]-X0[2]]])) + 1
     x = sp.rint(sp.linspace(X0[0], X1[0], L)).astype(int)
     y = sp.rint(sp.linspace(X0[1], X1[1], L)).astype(int)

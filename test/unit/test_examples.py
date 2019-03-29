@@ -73,7 +73,9 @@ class ExamplesTest():
         assert rc
 
     def test_network_extraction_snow_advanced(self):
-        pass
+        nbook = os.path.join(netex_dir, 'snow_advanced.ipynb')
+        rc = self._notebook_run(nbook)
+        assert rc
 
 
 if __name__ == '__main__':

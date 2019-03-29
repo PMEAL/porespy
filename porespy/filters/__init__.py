@@ -25,6 +25,7 @@ altered values.
     porespy.filters.porosimetry
     porespy.filters.region_size
     porespy.filters.snow_partitioning
+    porespy.filters.trim_disconnected_blobs
     porespy.filters.trim_extrema
     porespy.filters.trim_floating_solid
     porespy.filters.trim_nearby_peaks
@@ -36,16 +37,20 @@ altered values.
 .. autofunction:: apply_chords_3D
 .. autofunction:: distance_transform_lin
 .. autofunction:: fftmorphology
+.. autofunction:: fill_blind_pores
 .. autofunction:: find_disconnected_voxels
 .. autofunction:: find_dt_artifacts
 .. autofunction:: find_peaks
-.. autofunction:: fill_blind_pores
 .. autofunction:: flood
 .. autofunction:: local_thickness
+.. autofunction:: nphase_border
 .. autofunction:: porosimetry
 .. autofunction:: region_size
 .. autofunction:: snow_partitioning
+.. autofunction:: snow_partitioning_n
 .. autofunction:: trim_extrema
+.. autofunction:: reduce_peaks
+.. autofunction:: trim_disconnected_blobs
 .. autofunction:: trim_floating_solid
 .. autofunction:: trim_nearby_peaks
 .. autofunction:: trim_nonpercolating_paths
@@ -62,13 +67,15 @@ from .__funcs__ import find_dt_artifacts
 from .__funcs__ import find_peaks
 from .__funcs__ import flood
 from .__funcs__ import local_thickness
+from .__funcs__ import nphase_border
 from .__funcs__ import porosimetry
 from .__funcs__ import reduce_peaks
 from .__funcs__ import region_size
 from .__funcs__ import snow_partitioning
+from .__funcs__ import snow_partitioning_n
+from .__funcs__ import trim_disconnected_blobs
 from .__funcs__ import trim_extrema
 from .__funcs__ import trim_floating_solid
 from .__funcs__ import trim_nonpercolating_paths
 from .__funcs__ import trim_nearby_peaks
 from .__funcs__ import trim_saddle_points
-from .__funcs__ import nphase_border

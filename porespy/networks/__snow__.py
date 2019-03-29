@@ -1,5 +1,7 @@
 from porespy.networks import regions_to_network, add_boundary_regions
 from porespy.networks import _net_dict
+from porespy.networks import label_boundary_cells
+from porespy.tools import pad_faces
 from porespy.filters import snow_partitioning
 from porespy.tools import make_contiguous
 from porespy.metrics import region_surface_areas, region_interface_areas
@@ -44,36 +46,32 @@ def snow(im, voxel_size=1,
     topological information.  The dictionary names use the OpenPNM
     convention (i.e. 'pore.coords', 'throat.conns') so it may be converted
     directly to an OpenPNM network object using the ``update`` command.
+    * ``net``: A dictionary containing all the void and solid phase size data,
+        as well as the network topological information.  The dictionary names
+        use the OpenPNM convention (i.e. 'pore.coords', 'throat.conns') so it
+        may be converted directly to an OpenPNM network object using the
+        ``update`` command.
+    * ``im``: The binary image of the void space
+    * ``dt``: The combined distance transform of the image
+    * ``regions``: The void and solid space partitioned into pores and solids
+        phases using a marker based watershed with the peaks found by the
+        SNOW Algorithm.
     """
 
     # -------------------------------------------------------------------------
     # SNOW void phase
-    tup = snow_partitioning(im=im, return_all=True)
-    im = tup.im
-    dt = tup.dt
-    regions = tup.regions
-    peaks = tup.peaks
+    regions = snow_partitioning(im=im, return_all=True)
+    im = regions.im
+    dt = regions.dt
+    regions = regions.regions
     b_num = sp.amax(regions)
     # -------------------------------------------------------------------------
     # Boundary Conditions
     regions = add_boundary_regions(regions=regions, faces=boundary_faces)
     # -------------------------------------------------------------------------
-    # Padding distance transform to extract geometrical properties
-    f = boundary_faces
-    if f is not None:
-        if im.ndim == 2:
-            faces = [(int('left' in f)*3, int('right' in f)*3),
-                     (int(('front') in f)*3 or int(('bottom') in f)*3,
-                      int(('back') in f)*3 or int(('top') in f)*3)]
-
-        if im.ndim == 3:
-            faces = [(int('left' in f)*3, int('right' in f)*3),
-                     (int('front' in f)*3, int('back' in f)*3),
-                     (int('top' in f)*3, int('bottom' in f)*3)]
-        dt = sp.pad(dt, pad_width=faces, mode='edge')
-        im = sp.pad(im, pad_width=faces, mode='edge')
-    else:
-        dt = dt
+    # Padding distance transform and image to extract geometrical properties
+    dt = pad_faces(im=dt, faces=boundary_faces)
+    im = pad_faces(im=im, faces=boundary_faces)
     regions = regions*im
     regions = make_contiguous(regions)
     # -------------------------------------------------------------------------
@@ -100,26 +98,13 @@ def snow(im, voxel_size=1,
     net['pore.internal'] = pore_labels
     net['throat.internal'] = loc3 * loc4
     # -------------------------------------------------------------------------
-    # label boundary pore faces
-    if f is not None:
-        coords = net['pore.coords']
-        condition = coords[net['pore.internal']]
-        dic = {'left': 0, 'right': 0, 'front': 1, 'back': 1,
-               'top': 2, 'bottom': 2}
-        if all(coords[:, 2] == 0):
-            dic['top'] = 1
-            dic['bottom'] = 1
-        for i in f:
-            if i in ['left', 'front', 'bottom']:
-                net['pore.{}'.format(i)] = (coords[:, dic[i]] <
-                                            min(condition[:, dic[i]]))
-            elif i in ['right', 'back', 'top']:
-                net['pore.{}'.format(i)] = (coords[:, dic[i]] >
-                                            max(condition[:, dic[i]]))
+    # label boundary cells
+    net = label_boundary_cells(network=net, boundary_faces=boundary_faces)
+    # -------------------------------------------------------------------------
+    # assign out values to dummy dict
 
-    net = _net_dict(net)
-    net.im = im
-    net.dt = dt
-    net.regions = regions
-    net.peaks = peaks
-    return net
+    temp = _net_dict(net)
+    temp.im = im.copy()
+    temp.dt = dt
+    temp.regions = regions
+    return temp

@@ -4,10 +4,7 @@ from scipy import ndimage as spim
 import scipy.ndimage as nd
 from pathlib import Path
 from porespy.networks import generate_voxel_image
-try:
-    from pyevtk.hl import imageToVTK
-except:
-    print("warning: pyevtk must be install manually")
+from pyevtk.hl import imageToVTK
 
 
 def dict_to_vtk(data, path='./dictvtk', voxel_size=1, origin=(0, 0, 0)):
@@ -100,6 +97,8 @@ def to_vtk(im, path='./voxvtk', divide=False, downsample=False, voxel_size=1,
     -----
     Outputs a vtk, vtp or vti file that can opened in paraview
     """
+    if len(im.shape) == 2:
+        im = im[:, :, np.newaxis]
     if im.dtype == bool:
         vox = True
     if vox:
