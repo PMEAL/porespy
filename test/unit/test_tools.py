@@ -119,6 +119,21 @@ class ToolsTest():
         im = ps.tools.insert_sphere(im, [10, 100, 100], 50)
         im = ps.tools.insert_sphere(im, [180, 100, 100], 50)
 
+    def test_subdivide_3D(self):
+        im = sp.ones([50, 100, 150])
+        ims = ps.tools.subdivide(im, divs=1)
+        assert ims.shape == (1, 1, 1)
+        assert sp.all(im[tuple(ims[0, 0, 0])] == im)
+        ims = ps.tools.subdivide(im, divs=2)
+        assert ims.shape == (2, 2, 2)
+        assert im[tuple(ims[0, 0, 0])].sum() == sp.prod(im.shape)/8
+
+    def test_subdivide_2D(self):
+        im = sp.ones([50, 100])
+        ims = ps.tools.subdivide(im, divs=2)
+        assert ims.shape == (2, 2)
+        assert im[tuple(ims[0, 0])].sum() == sp.prod(im.shape)/4
+
 
 if __name__ == '__main__':
     t = ToolsTest()
