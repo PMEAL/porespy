@@ -5,6 +5,7 @@ from skimage import io
 import pytest
 from pathlib import Path
 import os
+from numpy.testing import assert_allclose
 
 
 class MetricsTest():
@@ -124,6 +125,17 @@ class MetricsTest():
         assert sp.allclose(fractions, counts/counts.sum())
         with pytest.raises(Exception):
             ps.metrics.phase_fraction(sp.rand(10, 10, 10), normed=True)
+
+    def test_representative_elementary_volume(self):
+        im = ps.generators.lattice_spheres(shape=[999, 999],
+                                           radius=15, offset=4)
+        rev = ps.metrics.representative_elementary_volume(im)
+        assert_allclose(sp.average(rev.porosity), im.sum()/im.size, rtol=1e-2)
+
+        im = ps.generators.lattice_spheres(shape=[151, 151, 151],
+                                           radius=9, offset=4)
+        rev = ps.metrics.representative_elementary_volume(im)
+        assert_allclose(sp.average(rev.porosity), im.sum()/im.size, rtol=1e-2)
 
 
 if __name__ == '__main__':
