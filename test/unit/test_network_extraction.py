@@ -48,13 +48,16 @@ class NetExtractTest():
                 found_nans = True
         assert found_nans is False
 
-    # def test_snow_dual_2d(self):
-    #     net = ps.networks.snow_dual(self.im)
-    #     found_nans = False
-    #     for key in net.keys():
-    #         if np.any(np.isnan(net[key])):
-    #             found_nans = True
-    #     assert found_nans is False
+    def test_snow_n(self):
+        net = ps.networks.snow_n(self.im3d+1,voxel_size=1,
+                                 boundary_faces=['left', 'right', 'front',
+                                                 'back', 'top', 'bottom'],
+                                 marching_cubes_area=True)
+        found_nans = False
+        for key in net.keys():
+            if np.any(np.isnan(net[key])):
+                found_nans = True
+        assert found_nans is False
 
     def test_snow_dual_3d(self):
         net = ps.networks.snow_dual(self.im3d)
