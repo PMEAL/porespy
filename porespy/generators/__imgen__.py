@@ -763,7 +763,8 @@ def line_segment(X0, X1):
     Parameters
     ----------
     X0 and X1 : array_like
-        The [x, y, z] coordinates of the start and end points of the line.
+        The [x, y] or [x, y, z] coordinates of the start and end points of
+        the line.
 
     Returns
     -------
@@ -774,11 +775,17 @@ def line_segment(X0, X1):
     """
     X0 = sp.around(X0).astype(int)
     X1 = sp.around(X1).astype(int)
-    L = sp.amax(sp.absolute([[X1[0]-X0[0]], [X1[1]-X0[1]], [X1[2]-X0[2]]])) + 1
-    x = sp.rint(sp.linspace(X0[0], X1[0], L)).astype(int)
-    y = sp.rint(sp.linspace(X0[1], X1[1], L)).astype(int)
-    z = sp.rint(sp.linspace(X0[2], X1[2], L)).astype(int)
-    return [x, y, z]
+    if len(X0) == 3:
+        L = sp.amax(sp.absolute([[X1[0]-X0[0]], [X1[1]-X0[1]], [X1[2]-X0[2]]])) + 1
+        x = sp.rint(sp.linspace(X0[0], X1[0], L)).astype(int)
+        y = sp.rint(sp.linspace(X0[1], X1[1], L)).astype(int)
+        z = sp.rint(sp.linspace(X0[2], X1[2], L)).astype(int)
+        return [x, y, z]
+    else:
+        L = sp.amax(sp.absolute([[X1[0]-X0[0]], [X1[1]-X0[1]]])) + 1
+        x = sp.rint(sp.linspace(X0[0], X1[0], L)).astype(int)
+        y = sp.rint(sp.linspace(X0[1], X1[1], L)).astype(int)
+        return [x, y]
 
 
 def _fit_strel_to_im_2d(im, strel, r, x, y):

@@ -239,6 +239,20 @@ class GeneratorTest():
         assert ~sp.any(coords < 5)
         assert ~sp.any(coords > 45)
 
+    def test_line_segment(self):
+        X0 = [3, 4]
+        X1 = [5, 9]
+        L1, L2 = ps.generators.line_segment(X0, X1)
+        assert sp.all(L1 == [3, 3, 4, 4, 5, 5])
+        assert sp.all(L2 == [4, 5, 6, 7, 8, 9])
+
+        X0 = [3, 4, 5]
+        X1 = [5, 9, 13]
+        L1, L2, L3 = ps.generators.line_segment(X0, X1)
+        assert sp.all(L1 == [3, 3, 4, 4, 4, 4, 4, 5, 5])
+        assert sp.all(L2 == [4, 5, 5, 6, 6, 7, 8, 8, 9])
+        assert sp.all(L3 == [5, 6, 7, 8, 9, 10, 11, 12, 13])
+
 
 if __name__ == '__main__':
     t = GeneratorTest()
