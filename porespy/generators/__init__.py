@@ -15,10 +15,10 @@ illustration purposes.
     porespy.generators.blobs
     porespy.generators.bundle_of_tubes
     porespy.generators.cylinders
+    porespy.generators.generate_noise
     porespy.generators.insert_shape
     porespy.generators.lattice_spheres
     porespy.generators.line_segment
-    porespy.generators.noise
     porespy.generators.overlapping_spheres
     porespy.generators.polydisperse_spheres
     porespy.generators.RSA
@@ -27,10 +27,10 @@ illustration purposes.
 .. autofunction:: blobs
 .. autofunction:: bundle_of_tubes
 .. autofunction:: cylinders
+.. autofunction:: generate_noise
 .. autofunction:: insert_shape
 .. autofunction:: lattice_spheres
 .. autofunction:: line_segment
-.. autofunction:: noise
 .. autofunction:: overlapping_spheres
 .. autofunction:: polydisperse_spheres
 .. autofunction:: RSA
@@ -41,10 +41,10 @@ illustration purposes.
 from .__imgen__ import blobs
 from .__imgen__ import bundle_of_tubes
 from .__imgen__ import cylinders
+from .__imgen__ import generate_noise
 from .__imgen__ import insert_shape
 from .__imgen__ import lattice_spheres
 from .__imgen__ import line_segment
-from .__imgen__ import noise
 from .__imgen__ import overlapping_spheres
 from .__imgen__ import polydisperse_spheres
 from .__imgen__ import RSA

@@ -514,8 +514,8 @@ def overlapping_spheres(shape: List[int], radius: int, porosity: float,
     return ~f(N)
 
 
-def noise(shape: List[int], porosity=None, octaves: int = 3,
-          frequency: int = 32, mode: str = 'simplex'):
+def generate_noise(shape: List[int], porosity=None, octaves: int = 3,
+                   frequency: int = 32, mode: str = 'simplex'):
     r"""
     Generate a field of spatially correlated random noise using the Perlin
     noise algorithm, or the updated Simplex noise algorithm.
