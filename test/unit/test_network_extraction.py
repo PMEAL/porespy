@@ -170,7 +170,6 @@ class NetExtractTest():
                         rtol=0.05)
 
 
-
 if __name__ == '__main__':
     t = NetExtractTest()
     self = t
