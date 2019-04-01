@@ -353,8 +353,8 @@ def extract_cylinder(im, r=None, axis=0):
     inds = sp.meshgrid(*dim, indexing='ij')
     inds[axis] = inds[axis] * 0
     d = sp.sqrt(sp.sum(sp.square(inds), axis=0))
-    mask = d <= r
-    im[~mask] = True
+    mask = d < r
+    im = im*mask
     return im
 
 

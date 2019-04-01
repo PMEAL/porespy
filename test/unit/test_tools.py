@@ -50,8 +50,14 @@ class ToolsTest():
         sec = ps.tools.extract_subsection(self.blobs, [0.5])
         assert sp.all(sp.array(sp.shape(sec)) == 50)
 
-    # def test_extract_cylinder(self):
-    #     cylinder = ps.tools.extract_cylinder(self.im3D)
+    def test_extract_cylinder(self):
+        im = sp.ones([100, 150, 200])
+        c = ps.tools.extract_cylinder(im, axis=0)
+        assert c.sum() == 1764500
+        c = ps.tools.extract_cylinder(im, axis=1)
+        assert c.sum() == 1173750
+        c = ps.tools.extract_cylinder(im, axis=2)
+        assert c.sum() == 1565000
 
     def test_bbox_to_slices(self):
         s = ps.tools.bbox_to_slices([0, 0, 0, 10, 10, 10])
