@@ -7,24 +7,83 @@ from typing import List
 from numpy import array
 
 
-def insert_shape(im, center, element, value=1):
+def insert_shape(im, element, center=None, corner=None, value=1,
+                 mode='overwrite'):
     r"""
+    Inserts sub-image into a larger image at the specified location.
+
+    If the inserted image extends beyond the boundaries of the image it will
+    be cropped accordingly.
+
+    Parameters
+    ----------
+    im : ND-array
+        The image into which the sub-image will be inserted
+    element : ND-array
+        The sub-image to insert
+    center : tuple
+        Coordinates indicating the position in the main image where the
+        inserted imaged will be centered.  If ``center`` is given then
+        ``corner`` cannot be specified.  Note that ``center`` can only be
+        used if all dimensions of ``element`` are odd, otherwise the meaning
+        of center is not defined.
+    corner : tuple
+        Coordinates indicating the position in the main image where the
+        lower corner (i.e. [0, 0, 0]) of the inserted image should be anchored.
+        If ``corner`` is given then ``corner`` cannot be specified.
+    value : scalar
+        A scalar value to apply to the sub-image.  The default is 1.
+    mode : string
+        If 'overwrite' (default) the inserted image replaces the values in the
+        main image.  If 'overlay' the inserted image is added to the main
+        image.  In both cases the inserted image is multiplied by ``value``
+        first.
+
+    Returns
+    -------
+    im : ND-array
+        A copy of ``im`` with the supplied element inserted.
+
     """
+    im = im.copy()
     if im.ndim != element.ndim:
         raise Exception('Image shape ' + str(im.shape)
                         + ' and element shape ' + str(element.shape)
                         + ' do not match')
     s_im = []
     s_el = []
-    for dim in range(im.ndim):
-        r = int(element.shape[dim]/2)
-        lower_im = sp.amax((center[dim] - r, 0))
-        upper_im = sp.amin((center[dim] + r + 1, im.shape[dim]))
-        s_im.append(slice(lower_im, upper_im))
-        lower_el = sp.amax((lower_im - center[dim] + r, 0))
-        upper_el = sp.amin((upper_im - center[dim] + r, element.shape[dim]))
-        s_el.append(slice(lower_el, upper_el))
-    im[tuple(s_im)] = im[tuple(s_im)] + element[tuple(s_el)]*value
+    if (center is not None) and (corner is None):
+        for dim in range(im.ndim):
+            r, d = sp.divmod(element.shape[dim], 2)
+            if d == 0:
+                raise Exception('Cannot specify center point when element ' +
+                                'has one or more even dimension')
+            lower_im = sp.amax((center[dim] - r, 0))
+            upper_im = sp.amin((center[dim] + r + 1, im.shape[dim]))
+            s_im.append(slice(lower_im, upper_im))
+            lower_el = sp.amax((lower_im - center[dim] + r, 0))
+            upper_el = sp.amin((upper_im - center[dim] + r,
+                                element.shape[dim]))
+            s_el.append(slice(lower_el, upper_el))
+    elif (corner is not None) and (center is None):
+        for dim in range(im.ndim):
+            L = int(element.shape[dim])
+            lower_im = sp.amax((corner[dim], 0))
+            upper_im = sp.amin((corner[dim] + L, im.shape[dim]))
+            s_im.append(slice(lower_im, upper_im))
+            lower_el = sp.amax((lower_im - corner[dim], 0))
+            upper_el = sp.amin((upper_im - corner[dim],
+                                element.shape[dim]))
+            s_el.append(slice(min(lower_el, upper_el), upper_el))
+    else:
+        raise Exception('Cannot specify both corner and center')
+
+    if mode == 'overlay':
+        im[tuple(s_im)] = im[tuple(s_im)] + element[tuple(s_el)]*value
+    elif mode == 'overwrite':
+        im[tuple(s_im)] = element[tuple(s_el)]*value
+    else:
+        raise Exception('Invalid mode ' + mode)
     return im
 
 

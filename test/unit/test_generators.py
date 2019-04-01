@@ -24,11 +24,84 @@ class GeneratorTest():
         im = ps.generators.cylinders(shape=[50, 50, 50], radius=1, nfibers=20)
         assert sp.shape(im.squeeze()) == (50, 50, 50)
 
-    def test_insert_shape(self):
+    def test_insert_shape_center_defaults(self):
         im = sp.zeros([11, 11])
         shape = sp.ones([3, 3])
-        im = ps.generators.insert_shape(im, [5, 5], shape)
-        assert sp.sum(im) == 9
+        im = ps.generators.insert_shape(im, element=shape, center=[5, 5])
+        assert sp.sum(im) == sp.prod(shape.shape)
+
+        im = sp.zeros([11, 11])
+        shape = sp.ones([4, 4])
+        with pytest.raises(Exception):
+            im = ps.generators.insert_shape(im, element=shape, center=[5, 5])
+
+    def test_insert_shape_center_overlay(self):
+        im = sp.ones([10, 10])
+        shape = sp.ones([3, 3])
+        im = ps.generators.insert_shape(im, element=shape, center=[5, 5],
+                                        value=1.0, mode='overlay')
+        assert sp.sum(im) == (sp.prod(im.shape) + sp.prod(shape.shape))
+
+    def test_insert_shape_corner_overwrite(self):
+        im = sp.ones([10, 10])
+        shape = sp.ones([3, 3])
+        im = ps.generators.insert_shape(im, element=shape, corner=[5, 5],
+                                        value=1.0, mode='overlay')
+        assert sp.sum(im) == (sp.prod(im.shape) + sp.prod(shape.shape))
+        assert im[5, 5] == 2
+        assert im[4, 5] == 1 and im[5, 4] == 1
+
+    def test_insert_shape_center_outside_im(self):
+        im = sp.zeros([11, 11])
+        shape = sp.ones([3, 3])
+        im = ps.generators.insert_shape(im, element=shape, center=[-1, -1])
+        assert sp.sum(im) == 1
+
+        im = sp.zeros([11, 11])
+        shape = sp.ones([3, 3])
+        im = ps.generators.insert_shape(im, element=shape, center=[0, -1])
+        assert sp.sum(im) == 2
+
+        im = sp.zeros([11, 11])
+        shape = sp.ones([3, 3])
+        im = ps.generators.insert_shape(im, element=shape, center=[10, 10])
+        assert sp.sum(im) == 4
+
+        im = sp.zeros([11, 11])
+        shape = sp.ones([3, 3])
+        im = ps.generators.insert_shape(im, element=shape, center=[14, 14])
+        assert sp.sum(im) == 0
+
+        im = sp.zeros([11, 11])
+        shape = sp.ones([4, 4])
+        with pytest.raises(Exception):
+            im = ps.generators.insert_shape(im, element=shape, center=[10, 10])
+
+    def test_insert_shape_corner_outside_im(self):
+        im = sp.zeros([11, 11])
+        shape = sp.ones([3, 3])
+        im = ps.generators.insert_shape(im, element=shape, corner=[-1, -1])
+        assert sp.sum(im) == 4
+
+        im = sp.zeros([11, 11])
+        shape = sp.ones([3, 3])
+        im = ps.generators.insert_shape(im, element=shape, corner=[-1, 1])
+        assert sp.sum(im) == 6
+
+        im = sp.zeros([11, 11])
+        shape = sp.ones([3, 3])
+        im = ps.generators.insert_shape(im, element=shape, corner=[-3, -3])
+        assert sp.sum(im) == 0
+
+        im = sp.zeros([11, 11])
+        shape = sp.ones([3, 3])
+        im = ps.generators.insert_shape(im, element=shape, corner=[10, 9])
+        assert sp.sum(im) == 2
+
+        im = sp.zeros([11, 11])
+        shape = sp.ones([3, 3])
+        im = ps.generators.insert_shape(im, element=shape, corner=[13, 13])
+        assert sp.sum(im) == 0
 
     def test_bundle_of_tubes(self):
         im = ps.generators.bundle_of_tubes(shape=[101, 101, 1], spacing=10)
