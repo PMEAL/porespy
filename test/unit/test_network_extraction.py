@@ -49,7 +49,7 @@ class NetExtractTest():
         assert found_nans is False
 
     def test_snow_n(self):
-        net = ps.networks.snow_n(self.im3d+1,voxel_size=1,
+        net = ps.networks.snow_n(self.im3d+1, voxel_size=1,
                                  boundary_faces=['left', 'right', 'front',
                                                  'back', 'top', 'bottom'],
                                  marching_cubes_area=True)
@@ -168,6 +168,7 @@ class NetExtractTest():
 
         assert_allclose(actual=porosity_actual, desired=porosity_desired,
                         rtol=0.05)
+
 
 
 if __name__ == '__main__':
