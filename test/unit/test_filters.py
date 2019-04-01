@@ -302,6 +302,15 @@ class FilterTest():
         inds = sp.where(ar == ar.max())
         assert sp.all(dt[inds] - ar[inds] == 1)
 
+    def test_snow_partitioning_n(self):
+        im = self.im
+        snow = ps.filters.snow_partitioning_n(im + 1, r_max=4, sigma=0.4,
+                                              return_all=True, mask=True,
+                                              randomize=False, alias=None)
+        assert sp.amax(snow.regions) == 44
+        assert not sp.any(sp.isnan(snow.regions))
+        assert not sp.any(sp.isnan(snow.dt))
+        assert not sp.any(sp.isnan(snow.im))
 
 if __name__ == '__main__':
     t = FilterTest()
