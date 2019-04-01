@@ -1,5 +1,6 @@
 import scipy as sp
 import numpy as np
+import warnings
 from skimage.measure import regionprops
 import scipy.ndimage as spim
 import scipy.spatial as sptl
@@ -263,6 +264,10 @@ def two_point_correlation_bf(im, spacing=10):
     This approach uses a distance matrix so can consume memory very quickly for
     large 3D images and/or close spacing.
     """
+    if im.ndim != im.squeeze().ndim:
+        warnings.warn('Input image conains a singleton axis:' + str(im.shape) +
+                      ' Reduce dimensionality with np.squeeze(im) to avoid' +
+                      ' unexpected behavior.')
     if im.ndim == 2:
         pts = sp.meshgrid(range(0, im.shape[0], spacing),
                           range(0, im.shape[1], spacing))
@@ -647,6 +652,10 @@ def region_interface_areas(regions, areas, voxel_size=1, strel=None):
     print('Finding interfacial areas between each region')
     from skimage.morphology import disk, square, ball, cube
     im = regions.copy()
+    if im.ndim != im.squeeze().ndim:
+        warnings.warn('Input image conains a singleton axis:' + str(im.shape) +
+                      ' Reduce dimensionality with np.squeeze(im) to avoid' +
+                      ' unexpected behavior.')
     if im.ndim == 2:
         cube = square
         ball = disk
