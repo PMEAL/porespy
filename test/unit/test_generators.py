@@ -77,6 +77,11 @@ class GeneratorTest():
         with pytest.raises(Exception):
             im = ps.generators.insert_shape(im, element=shape, center=[10, 10])
 
+        im = sp.zeros([11, 11])
+        shape = sp.ones([4, 3])
+        with pytest.raises(Exception):
+            im = ps.generators.insert_shape(im, element=shape, center=[10, 10])
+
     def test_insert_shape_corner_outside_im(self):
         im = sp.zeros([11, 11])
         shape = sp.ones([3, 3])
@@ -102,6 +107,16 @@ class GeneratorTest():
         shape = sp.ones([3, 3])
         im = ps.generators.insert_shape(im, element=shape, corner=[13, 13])
         assert sp.sum(im) == 0
+
+        im = sp.zeros([11, 11])
+        shape = sp.ones([3, 4])
+        im = ps.generators.insert_shape(im, element=shape, corner=[9, 9])
+        assert sp.sum(im) == 4
+
+        im = sp.zeros([11, 11])
+        shape = sp.ones([3, 4])
+        im = ps.generators.insert_shape(im, element=shape, corner=[0, -1])
+        assert sp.sum(im) == 9
 
     def test_bundle_of_tubes(self):
         im = ps.generators.bundle_of_tubes(shape=[101, 101, 1], spacing=10)
