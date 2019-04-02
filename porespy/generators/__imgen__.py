@@ -702,25 +702,33 @@ def blobs(shape: List[int], porosity: float = 0.5, blobiness: int = 1):
     return im
 
 
-def cylinders(shape: List[int], radius: int, nfibers: int, phi_max: float = 0,
-              theta_max: float = 90):
+def cylinders(shape: List[int], radius: int, ncylinders: int,
+              phi_max: float = 0, theta_max: float = 90):
     r"""
     Generates a binary image of overlapping cylinders.  This is a good
     approximation of a fibrous mat.
 
     Parameters
     ----------
-    phi_max : scalar
-        A value between 0 and 90 that controls the amount that the fibers
-        lie out of the XY plane, with 0 meaning all fibers lie in the XY
-        plane, and 90 meaning that fibers are randomly oriented out of the
-        plane by as much as +/- 90 degrees.
-
+    shape : list
+        The size of the image to generate in [Nx, Ny, Nz] where N is the
+        number of voxels. 2D images are not permitted.
+    radius : scalar
+        The radius of the cylinders in voxels
+    ncylinders : scalar
+        The number of cylinders to add to the domain. Adjust this value to
+        control the final porosity, which is not easily specified since
+        cylinders overlap and intersect different fractions of the domain.
     theta_max : scalar
-        A value between 0 and 90 that controls the amount rotation in the
+        A value between 0 and 90 that controls the amount of rotation *in the*
         XY plane, with 0 meaning all fibers point in the X-direction, and
         90 meaning they are randomly rotated about the Z axis by as much
         as +/- 90 degrees.
+    phi_max : scalar
+        A value between 0 and 90 that controls the amount that the fibers
+        lie *out of* the XY plane, with 0 meaning all fibers lie in the XY
+        plane, and 90 meaning that fibers are randomly oriented out of the
+        plane by as much as +/- 90 degrees.
 
     Returns
     -------
@@ -731,18 +739,26 @@ def cylinders(shape: List[int], radius: int, nfibers: int, phi_max: float = 0,
     if sp.size(shape) == 1:
         shape = sp.full((3, ), int(shape))
     elif sp.size(shape) == 2:
-        raise Exception("2D fibers don't make sense")
+        raise Exception("2D cylinders don't make sense")
+    R = sp.sqrt(sp.sum(sp.square(shape))).astype(int)
     im = sp.zeros(shape)
-    R = sp.sqrt(sp.sum(sp.square(shape)))
+    # Adjust max angles to be between 0 and 90
+    if (phi_max > 90) or (phi_max < 0):
+        raise Exception('phi_max must be betwen 0 and 90')
+    if (theta_max > 90) or (theta_max < 0):
+        raise Exception('theta_max must be betwen 0 and 90')
     n = 0
-    while n < nfibers:
+    while n < ncylinders:
+        # Choose a random starting point in domain
         x = sp.rand(3)*shape
-        phi = sp.deg2rad(90 + 90*(0.5 - sp.rand())*phi_max/90)
-        theta = sp.deg2rad(180 - 90*(0.5 - sp.rand())*2*theta_max/90)
-        X0 = R*sp.array([sp.sin(theta)*sp.cos(phi),
-                         sp.sin(theta)*sp.sin(phi),
-                         sp.cos(theta)])
-        [X0, X1] = [X0 + x, -X0 + x]
+        # Chose a random phi and theta within given ranges
+        phi = (sp.pi/2 - sp.pi*sp.rand())*phi_max/90
+        theta = (sp.pi/2 - sp.pi*sp.rand())*theta_max/90
+        # These are flipped to give correct behavior for phi and theta
+        X0 = R*sp.array([sp.cos(theta)*sp.sin(phi),
+                         sp.cos(theta)*sp.cos(phi),
+                         sp.sin(theta)])
+        [X0, X1] = [x + X0, x - X0]
         crds = line_segment(X0, X1)
         lower = ~sp.any(sp.vstack(crds).T < [0, 0, 0], axis=1)
         upper = ~sp.any(sp.vstack(crds).T >= shape, axis=1)
