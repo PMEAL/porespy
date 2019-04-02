@@ -754,10 +754,9 @@ def cylinders(shape: List[int], radius: int, ncylinders: int,
         # Chose a random phi and theta within given ranges
         phi = (sp.pi/2 - sp.pi*sp.rand())*phi_max/90
         theta = (sp.pi/2 - sp.pi*sp.rand())*theta_max/90
-        # These are flipped to give correct behavior for phi and theta
-        X0 = R*sp.array([sp.cos(theta)*sp.sin(phi),
-                         sp.cos(theta)*sp.cos(phi),
-                         sp.sin(theta)])
+        X0 = R*sp.array([sp.cos(phi)*sp.cos(theta),
+                         sp.cos(phi)*sp.sin(theta),
+                         sp.sin(phi)])
         [X0, X1] = [x + X0, x - X0]
         crds = line_segment(X0, X1)
         lower = ~sp.any(sp.vstack(crds).T < [0, 0, 0], axis=1)
