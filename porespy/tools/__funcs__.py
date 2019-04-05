@@ -431,9 +431,10 @@ def get_planes(im, squeeze=True):
 
 def extend_slice(s, shape, pad=1):
     r"""
-    Adjust slice indices to include additional voxles around the slice.  The
-    key to this function is that is does bounds checking to ensure the indices
-    don't extend outside the image.
+    Adjust slice indices to include additional voxles around the slice.
+
+    This function does bounds checking to ensure the indices don't extend
+    outside the image.
 
     Parameters
     ----------
@@ -450,7 +451,7 @@ def extend_slice(s, shape, pad=1):
 
     Returns
     -------
-    slices : list
+    slices : list of slice objects
         A list slice of objects with the start and stop attributes respectively
         incremented and decremented by 1, without extending beyond the image
         boundaries.
