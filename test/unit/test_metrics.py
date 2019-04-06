@@ -95,10 +95,10 @@ class MetricsTest():
         ps.metrics.chord_length_distribution(chords, normalization='length')
 
     def test_mesh_surface_area(self):
-        region = self.regions == 1
+        region = self.regions == self.regions.max()
         mesh = ps.tools.mesh_region(region)
         a = ps.metrics.mesh_surface_area(mesh)
-        assert sp.around(a, decimals=2) == 777.18
+        assert sp.around(a, decimals=2) == 258.3
         b = ps.metrics.mesh_surface_area(verts=mesh.verts, faces=mesh.faces)
         assert sp.around(b, decimals=2) == sp.around(a, decimals=2)
 
@@ -111,8 +111,8 @@ class MetricsTest():
         regions = self.regions
         areas = ps.metrics.region_surface_areas(regions)
         ia = ps.metrics.region_interface_areas(regions, areas)
-        assert sp.all(ia.conns[0] == [0, 1])
-        assert sp.around(ia.area[0], decimals=2) == 8.85
+        assert sp.all(ia.conns[0] == [2, 19])
+        assert sp.around(ia.area[0], decimals=2) == 3.59
 
     def test_phase_fraction(self):
         im = sp.reshape(sp.random.randint(0, 10, 1000), [10, 10, 10])
