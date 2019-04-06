@@ -5,6 +5,7 @@ from skimage import io
 import pytest
 from pathlib import Path
 import os
+from numpy.testing import assert_allclose
 
 
 class MetricsTest():
@@ -77,6 +78,13 @@ class MetricsTest():
         ps.metrics.props_to_image(rp, self.im2D.shape, 'solidity')
 
     def test_porosity_profile(self):
+        im = ps.generators.lattice_spheres(shape=[999, 999],
+                                           radius=15, offset=4)
+        p = ps.metrics.porosity_profile(im, axis=0)
+        assert p.max() == 100
+        assert_allclose(p.min(), 24.524524524524523)
+
+    def test_porosity_profile_ndim_check(self):
         ps.metrics.porosity_profile(self.im2D, axis=0)
         ps.metrics.porosity_profile(self.im2D, axis=1)
         with pytest.raises(Exception):
@@ -93,6 +101,15 @@ class MetricsTest():
     def test_chord_length_distribution_3D(self):
         chords = ps.filters.apply_chords(self.im3D)
         ps.metrics.chord_length_distribution(chords, normalization='length')
+
+    def test_chord_counts(self):
+        im = sp.ones([100, 50])
+        crds = ps.filters.apply_chords(im, spacing=1, trim_edges=False)
+        c = ps.metrics.chord_counts(crds)
+        assert sp.all(c == 100)
+        crds = ps.filters.apply_chords(im, spacing=1, trim_edges=False, axis=1)
+        c = ps.metrics.chord_counts(crds)
+        assert sp.all(c == 50)
 
     def test_mesh_surface_area(self):
         region = self.regions == self.regions.max()
@@ -124,6 +141,17 @@ class MetricsTest():
         assert sp.allclose(fractions, counts/counts.sum())
         with pytest.raises(Exception):
             ps.metrics.phase_fraction(sp.rand(10, 10, 10), normed=True)
+
+    def test_representative_elementary_volume(self):
+        im = ps.generators.lattice_spheres(shape=[999, 999],
+                                           radius=15, offset=4)
+        rev = ps.metrics.representative_elementary_volume(im)
+        assert_allclose(sp.average(rev.porosity), im.sum()/im.size, rtol=1e-1)
+
+        im = ps.generators.lattice_spheres(shape=[151, 151, 151],
+                                           radius=9, offset=4)
+        rev = ps.metrics.representative_elementary_volume(im)
+        assert_allclose(sp.average(rev.porosity), im.sum()/im.size, rtol=1e-1)
 
 
 if __name__ == '__main__':

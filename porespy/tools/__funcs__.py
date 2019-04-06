@@ -1,5 +1,6 @@
 import scipy as sp
 import scipy.ndimage as spim
+import warnings
 from collections import namedtuple
 from skimage.morphology import ball, disk
 from skimage.measure import marching_cubes_lewiner
@@ -24,6 +25,10 @@ def align_image_with_openpnm(im):
     image : ND-array
         Returns a copy of ``im`` rotated accordingly.
     """
+    if im.ndim != im.squeeze().ndim:
+        warnings.warn('Input image conains a singleton axis:' + str(im.shape) +
+                      ' Reduce dimensionality with np.squeeze(im) to avoid' +
+                      ' unexpected behavior.')
     im = sp.copy(im)
     if im.ndim == 2:
         im = (sp.swapaxes(im, 1, 0))
@@ -104,6 +109,11 @@ def fftmorphology(im, strel, mode='opening'):
     def dilate(im, strel):
         t = fftconvolve(im, strel, mode='same') > 0.1
         return t
+
+    if im.ndim != im.squeeze().ndim:
+        warnings.warn('Input image conains a singleton axis:' + str(im.shape) +
+                      ' Reduce dimensionality with np.squeeze(im) to avoid' +
+                      ' unexpected behavior.')
 
     # Perform erosion and dilation
     # The array must be padded with 0's so it works correctly at edges
@@ -343,7 +353,7 @@ def extract_cylinder(im, r=None, axis=0):
     inds = sp.meshgrid(*dim, indexing='ij')
     inds[axis] = inds[axis] * 0
     d = sp.sqrt(sp.sum(sp.square(inds), axis=0))
-    mask = d <= r
+    mask = d < r
     im_temp = im*mask
     return im_temp
 
@@ -822,13 +832,17 @@ def mesh_region(region: bool, strel=None):
         as returned by ``scikit-image.measure.marching_cubes`` function.
 
     """
+    im = region
+    if im.ndim != im.squeeze().ndim:
+        warnings.warn('Input image conains a singleton axis:' + str(im.shape) +
+                      ' Reduce dimensionality with np.squeeze(im) to avoid' +
+                      ' unexpected behavior.')
     if strel is None:
         if region.ndim == 3:
             strel = ball(1)
         if region.ndim == 2:
             strel = disk(1)
     pad_width = sp.amax(strel.shape)
-    im = region
     if im.ndim == 3:
         padded_mask = sp.pad(im, pad_width=pad_width, mode='constant')
         padded_mask = spim.convolve(padded_mask * 1.0,
@@ -1042,6 +1056,10 @@ def pad_faces(im, faces):
     --------
     add_boundary_regions
     """
+    if im.ndim != im.squeeze().ndim:
+        warnings.warn('Input image conains a singleton axis:' + str(im.shape) +
+                      ' Reduce dimensionality with np.squeeze(im) to avoid' +
+                      ' unexpected behavior.')
     f = faces
     if f is not None:
         if im.ndim == 2:

@@ -7,24 +7,83 @@ from typing import List
 from numpy import array
 
 
-def insert_shape(im, center, element, value=1):
+def insert_shape(im, element, center=None, corner=None, value=1,
+                 mode='overwrite'):
     r"""
+    Inserts sub-image into a larger image at the specified location.
+
+    If the inserted image extends beyond the boundaries of the image it will
+    be cropped accordingly.
+
+    Parameters
+    ----------
+    im : ND-array
+        The image into which the sub-image will be inserted
+    element : ND-array
+        The sub-image to insert
+    center : tuple
+        Coordinates indicating the position in the main image where the
+        inserted imaged will be centered.  If ``center`` is given then
+        ``corner`` cannot be specified.  Note that ``center`` can only be
+        used if all dimensions of ``element`` are odd, otherwise the meaning
+        of center is not defined.
+    corner : tuple
+        Coordinates indicating the position in the main image where the
+        lower corner (i.e. [0, 0, 0]) of the inserted image should be anchored.
+        If ``corner`` is given then ``corner`` cannot be specified.
+    value : scalar
+        A scalar value to apply to the sub-image.  The default is 1.
+    mode : string
+        If 'overwrite' (default) the inserted image replaces the values in the
+        main image.  If 'overlay' the inserted image is added to the main
+        image.  In both cases the inserted image is multiplied by ``value``
+        first.
+
+    Returns
+    -------
+    im : ND-array
+        A copy of ``im`` with the supplied element inserted.
+
     """
+    im = im.copy()
     if im.ndim != element.ndim:
         raise Exception('Image shape ' + str(im.shape)
                         + ' and element shape ' + str(element.shape)
                         + ' do not match')
     s_im = []
     s_el = []
-    for dim in range(im.ndim):
-        r = int(element.shape[dim]/2)
-        lower_im = sp.amax((center[dim] - r, 0))
-        upper_im = sp.amin((center[dim] + r + 1, im.shape[dim]))
-        s_im.append(slice(lower_im, upper_im))
-        lower_el = sp.amax((lower_im - center[dim] + r, 0))
-        upper_el = sp.amin((upper_im - center[dim] + r, element.shape[dim]))
-        s_el.append(slice(lower_el, upper_el))
-    im[tuple(s_im)] = im[tuple(s_im)] + element[tuple(s_el)]*value
+    if (center is not None) and (corner is None):
+        for dim in range(im.ndim):
+            r, d = sp.divmod(element.shape[dim], 2)
+            if d == 0:
+                raise Exception('Cannot specify center point when element ' +
+                                'has one or more even dimension')
+            lower_im = sp.amax((center[dim] - r, 0))
+            upper_im = sp.amin((center[dim] + r + 1, im.shape[dim]))
+            s_im.append(slice(lower_im, upper_im))
+            lower_el = sp.amax((lower_im - center[dim] + r, 0))
+            upper_el = sp.amin((upper_im - center[dim] + r,
+                                element.shape[dim]))
+            s_el.append(slice(lower_el, upper_el))
+    elif (corner is not None) and (center is None):
+        for dim in range(im.ndim):
+            L = int(element.shape[dim])
+            lower_im = sp.amax((corner[dim], 0))
+            upper_im = sp.amin((corner[dim] + L, im.shape[dim]))
+            s_im.append(slice(lower_im, upper_im))
+            lower_el = sp.amax((lower_im - corner[dim], 0))
+            upper_el = sp.amin((upper_im - corner[dim],
+                                element.shape[dim]))
+            s_el.append(slice(min(lower_el, upper_el), upper_el))
+    else:
+        raise Exception('Cannot specify both corner and center')
+
+    if mode == 'overlay':
+        im[tuple(s_im)] = im[tuple(s_im)] + element[tuple(s_el)]*value
+    elif mode == 'overwrite':
+        im[tuple(s_im)] = element[tuple(s_el)]*value
+    else:
+        raise Exception('Invalid mode ' + mode)
     return im
 
 
@@ -514,8 +573,8 @@ def overlapping_spheres(shape: List[int], radius: int, porosity: float,
     return ~f(N)
 
 
-def noise(shape: List[int], porosity=None, octaves: int = 3,
-          frequency: int = 32, mode: str = 'simplex'):
+def generate_noise(shape: List[int], porosity=None, octaves: int = 3,
+                   frequency: int = 32, mode: str = 'simplex'):
     r"""
     Generate a field of spatially correlated random noise using the Perlin
     noise algorithm, or the updated Simplex noise algorithm.
@@ -611,8 +670,9 @@ def blobs(shape: List[int], porosity: float = 0.5, blobiness: int = 1):
 
     porosity : float
         If specified, this will threshold the image to the specified value
-        prior to returning.  If ``None`` is given, then the scalar noise
-        field is returned.
+        prior to returning.  If ``None`` is specified, then the scalar noise
+        field is converted to a uniform distribution and returned without
+        thresholding.
 
     blobiness : int or list of ints(default = 1)
         Controls the morphology of the blobs.  A higher number results in
@@ -636,31 +696,39 @@ def blobs(shape: List[int], porosity: float = 0.5, blobiness: int = 1):
     sigma = sp.mean(shape)/(40*blobiness)
     im = sp.random.random(shape)
     im = spim.gaussian_filter(im, sigma=sigma)
+    im = norm_to_uniform(im, scale=[0, 1])
     if porosity:
-        im = norm_to_uniform(im, scale=[0, 1])
         im = im < porosity
     return im
 
 
-def cylinders(shape: List[int], radius: int, nfibers: int, phi_max: float = 0,
-              theta_max: float = 90):
+def cylinders(shape: List[int], radius: int, ncylinders: int,
+              phi_max: float = 0, theta_max: float = 90):
     r"""
     Generates a binary image of overlapping cylinders.  This is a good
     approximation of a fibrous mat.
 
     Parameters
     ----------
-    phi_max : scalar
-        A value between 0 and 90 that controls the amount that the fibers
-        lie out of the XY plane, with 0 meaning all fibers lie in the XY
-        plane, and 90 meaning that fibers are randomly oriented out of the
-        plane by as much as +/- 90 degrees.
-
+    shape : list
+        The size of the image to generate in [Nx, Ny, Nz] where N is the
+        number of voxels. 2D images are not permitted.
+    radius : scalar
+        The radius of the cylinders in voxels
+    ncylinders : scalar
+        The number of cylinders to add to the domain. Adjust this value to
+        control the final porosity, which is not easily specified since
+        cylinders overlap and intersect different fractions of the domain.
     theta_max : scalar
-        A value between 0 and 90 that controls the amount rotation in the
+        A value between 0 and 90 that controls the amount of rotation *in the*
         XY plane, with 0 meaning all fibers point in the X-direction, and
         90 meaning they are randomly rotated about the Z axis by as much
         as +/- 90 degrees.
+    phi_max : scalar
+        A value between 0 and 90 that controls the amount that the fibers
+        lie *out of* the XY plane, with 0 meaning all fibers lie in the XY
+        plane, and 90 meaning that fibers are randomly oriented out of the
+        plane by as much as +/- 90 degrees.
 
     Returns
     -------
@@ -671,18 +739,25 @@ def cylinders(shape: List[int], radius: int, nfibers: int, phi_max: float = 0,
     if sp.size(shape) == 1:
         shape = sp.full((3, ), int(shape))
     elif sp.size(shape) == 2:
-        raise Exception("2D fibers don't make sense")
+        raise Exception("2D cylinders don't make sense")
+    R = sp.sqrt(sp.sum(sp.square(shape))).astype(int)
     im = sp.zeros(shape)
-    R = sp.sqrt(sp.sum(sp.square(shape)))
+    # Adjust max angles to be between 0 and 90
+    if (phi_max > 90) or (phi_max < 0):
+        raise Exception('phi_max must be betwen 0 and 90')
+    if (theta_max > 90) or (theta_max < 0):
+        raise Exception('theta_max must be betwen 0 and 90')
     n = 0
-    while n < nfibers:
+    while n < ncylinders:
+        # Choose a random starting point in domain
         x = sp.rand(3)*shape
-        phi = sp.deg2rad(90 + 90*(0.5 - sp.rand())*phi_max/90)
-        theta = sp.deg2rad(180 - 90*(0.5 - sp.rand())*2*theta_max/90)
-        X0 = R*sp.array([sp.sin(theta)*sp.cos(phi),
-                         sp.sin(theta)*sp.sin(phi),
-                         sp.cos(theta)])
-        [X0, X1] = [X0 + x, -X0 + x]
+        # Chose a random phi and theta within given ranges
+        phi = (sp.pi/2 - sp.pi*sp.rand())*phi_max/90
+        theta = (sp.pi/2 - sp.pi*sp.rand())*theta_max/90
+        X0 = R*sp.array([sp.cos(phi)*sp.cos(theta),
+                         sp.cos(phi)*sp.sin(theta),
+                         sp.sin(phi)])
+        [X0, X1] = [x + X0, x - X0]
         crds = line_segment(X0, X1)
         lower = ~sp.any(sp.vstack(crds).T < [0, 0, 0], axis=1)
         upper = ~sp.any(sp.vstack(crds).T >= shape, axis=1)
@@ -703,7 +778,8 @@ def line_segment(X0, X1):
     Parameters
     ----------
     X0 and X1 : array_like
-        The [x, y, z] coordinates of the start and end points of the line.
+        The [x, y] or [x, y, z] coordinates of the start and end points of
+        the line.
 
     Returns
     -------
@@ -714,11 +790,17 @@ def line_segment(X0, X1):
     """
     X0 = sp.around(X0).astype(int)
     X1 = sp.around(X1).astype(int)
-    L = sp.amax(sp.absolute([[X1[0]-X0[0]], [X1[1]-X0[1]], [X1[2]-X0[2]]])) + 1
-    x = sp.rint(sp.linspace(X0[0], X1[0], L)).astype(int)
-    y = sp.rint(sp.linspace(X0[1], X1[1], L)).astype(int)
-    z = sp.rint(sp.linspace(X0[2], X1[2], L)).astype(int)
-    return [x, y, z]
+    if len(X0) == 3:
+        L = sp.amax(sp.absolute([[X1[0]-X0[0]], [X1[1]-X0[1]], [X1[2]-X0[2]]])) + 1
+        x = sp.rint(sp.linspace(X0[0], X1[0], L)).astype(int)
+        y = sp.rint(sp.linspace(X0[1], X1[1], L)).astype(int)
+        z = sp.rint(sp.linspace(X0[2], X1[2], L)).astype(int)
+        return [x, y, z]
+    else:
+        L = sp.amax(sp.absolute([[X1[0]-X0[0]], [X1[1]-X0[1]]])) + 1
+        x = sp.rint(sp.linspace(X0[0], X1[0], L)).astype(int)
+        y = sp.rint(sp.linspace(X0[1], X1[1], L)).astype(int)
+        return [x, y]
 
 
 def _fit_strel_to_im_2d(im, strel, r, x, y):
