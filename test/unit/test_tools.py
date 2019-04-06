@@ -53,13 +53,13 @@ class ToolsTest():
     def test_extract_cylinder(self):
         im = sp.ones([200, 300, 400], dtype=bool)
         cx = ps.tools.extract_cylinder(im)
-        assert cx.sum() == 14136000
+        assert cx.sum() == 14132200
         cy = ps.tools.extract_cylinder(im, axis=1)
-        assert cy.sum() == 9424800
+        assert cy.sum() == 9419100
         cz = ps.tools.extract_cylinder(im, axis=2)
-        assert cz.sum() == 12566400
+        assert cz.sum() == 12558800
         cr = ps.tools.extract_cylinder(im, r=100)
-        assert cr.sum() == 6283400
+        assert cr.sum() == 6279400
 
     def test_bbox_to_slices(self):
         s = ps.tools.bbox_to_slices([0, 0, 0, 10, 10, 10])

@@ -126,7 +126,8 @@ class GeneratorTest():
     def test_overlapping_spheres_2d(self):
         phis = sp.arange(0.1, 0.9, 0.2)
         for phi in phis:
-            im = ps.generators.overlapping_spheres(shape=[101, 101], radius=5,
+            im = ps.generators.overlapping_spheres(shape=[101, 101],
+                                                   radius=5,
                                                    porosity=phi)
             phi_actual = im.sum() / sp.size(im)
             assert abs(phi_actual - phi) < 0.02
