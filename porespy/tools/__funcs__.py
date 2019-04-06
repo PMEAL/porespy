@@ -318,11 +318,12 @@ def extract_cylinder(im, r=None, axis=0):
     Parameters
     ----------
     im : ND-array
-        The image of the porous material
+        The image of the porous material.  Can be any data type.
 
     r : scalr
-        The radius of the cylinder to extract.  If none if given then the
-        default is the largest cylinder that can fit inside the x-y plane.
+        The radius of the cylinder to extract.  If ``None`` is given then the
+        default is the largest cylinder that can fit inside the specified
+        plane.
 
     axis : scalar
         The axis along with the cylinder will be oriented.
@@ -330,10 +331,9 @@ def extract_cylinder(im, r=None, axis=0):
     Returns
     -------
     image : ND-array
-        A copy of ``im`` with True values indicating the void space but with
-        the sample trimmed to a cylindrical section in the center of the
-        image.  The region outside the cylindrical section is labeled with
-        ``True`` values since it is open space.
+        A copy of ``im`` with values outside the cylindrical area set to 0 or
+        ``False``.
+
     """
     if r is None:
         a = list(im.shape)
@@ -344,8 +344,8 @@ def extract_cylinder(im, r=None, axis=0):
     inds[axis] = inds[axis] * 0
     d = sp.sqrt(sp.sum(sp.square(inds), axis=0))
     mask = d <= r
-    im[~mask] = True
-    return im
+    im_temp = im*mask
+    return im_temp
 
 
 def extract_subsection(im, shape):
@@ -431,9 +431,10 @@ def get_planes(im, squeeze=True):
 
 def extend_slice(s, shape, pad=1):
     r"""
-    Adjust slice indices to include additional voxles around the slice.  The
-    key to this function is that is does bounds checking to ensure the indices
-    don't extend outside the image.
+    Adjust slice indices to include additional voxles around the slice.
+
+    This function does bounds checking to ensure the indices don't extend
+    outside the image.
 
     Parameters
     ----------
@@ -450,7 +451,7 @@ def extend_slice(s, shape, pad=1):
 
     Returns
     -------
-    slices : list
+    slices : list of slice objects
         A list slice of objects with the start and stop attributes respectively
         incremented and decremented by 1, without extending beyond the image
         boundaries.

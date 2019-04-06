@@ -13,11 +13,6 @@ class FilterTest():
         # Ensure that im was generated as expeccted
         assert ps.metrics.porosity(self.im) == 0.499829
         self.im_dt = spim.distance_transform_edt(self.im)
-        self.flood_im = np.zeros([21, 21])
-        self.flood_im[1:20, 1:20] = 1
-        self.flood_im[:, 4] = 0
-        self.flood_im[8, :] = 0
-        self.flood_im_dt = spim.distance_transform_edt(self.flood_im)
 
     def test_im_in_not_im_out(self):
         im = self.im[:, :, 50]
@@ -88,23 +83,15 @@ class FilterTest():
     def test_apply_chords_3D(self):
         ps.filters.apply_chords_3D(self.im)
 
-    def test_flood_size(self):
-        m = ps.filters.flood(im=self.flood_im, mode='size')
-        s = sp.unique(m)
-        assert len(s) == 5
-        assert max(s) == 165
-
-    def test_flood_max(self):
-        m = ps.filters.flood(im=self.flood_im_dt, mode='max')
-        s = sp.unique(m)
-        assert len(s) == 4
-        assert max(s) == 6.0
-
-    def test_flood_min(self):
-        m = ps.filters.flood(im=self.flood_im_dt, mode='min')
-        s = sp.unique(m)
-        assert len(s) == 2
-        assert max(s) == 1.0
+    def test_flood(self):
+        im = ~ps.generators.lattice_spheres(shape=[100, 100], offset=3,
+                                            radius=10)
+        sz = ps.filters.flood(im*2.0, mode='max')
+        assert sp.all(sp.unique(sz) == [0, 2])
+        sz = ps.filters.flood(im, mode='min')
+        assert sp.all(sp.unique(sz) == [0, 1])
+        sz = ps.filters.flood(im, mode='size')
+        assert sp.all(sp.unique(sz) == [0, 305])
 
     def test_find_disconnected_voxels_2d(self):
         h = ps.filters.find_disconnected_voxels(self.im[:, :, 0])
@@ -302,6 +289,15 @@ class FilterTest():
         inds = sp.where(ar == ar.max())
         assert sp.all(dt[inds] - ar[inds] == 1)
 
+    def test_snow_partitioning_n(self):
+        im = self.im
+        snow = ps.filters.snow_partitioning_n(im + 1, r_max=4, sigma=0.4,
+                                              return_all=True, mask=True,
+                                              randomize=False, alias=None)
+        assert sp.amax(snow.regions) == 44
+        assert not sp.any(sp.isnan(snow.regions))
+        assert not sp.any(sp.isnan(snow.dt))
+        assert not sp.any(sp.isnan(snow.im))
 
 if __name__ == '__main__':
     t = FilterTest()

@@ -215,6 +215,11 @@ def snow_partitioning_n(im, r_max=4, sigma=0.4, return_all=True,
         If ``True`` (default), then the region colors will be randomized before
         returning.  This is helpful for visualizing otherwise neighboring
         regions have similar coloring and are hard to distinguish.
+    alias : dict (Optional)
+        A dictionary that assigns unique image label to specific phases. For
+        example {1: 'Solid'} will show all structural properties associated
+        with label 1 as Solid phase properties. If ``None`` then default
+        labelling will be used i.e {1: 'Phase1',..}.
 
     Returns
     -------

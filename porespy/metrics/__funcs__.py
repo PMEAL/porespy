@@ -660,28 +660,30 @@ def region_interface_areas(regions, areas, voxel_size=1, strel=None):
     # Start extracting area from im
     for i in tqdm(Ps):
         reg = i - 1
-        s = extend_slice(slices[reg], im.shape)
-        sub_im = im[s]
-        mask_im = sub_im == i
-        sa[reg] = areas[reg]
-        im_w_throats = spim.binary_dilation(input=mask_im, structure=ball(1))
-        im_w_throats = im_w_throats*sub_im
-        Pn = sp.unique(im_w_throats)[1:] - 1
-        for j in Pn:
-            if j > reg:
-                cn.append([reg, j])
-                merged_region = im[(min(slices[reg][0].start,
-                                        slices[j][0].start)):
-                                   max(slices[reg][0].stop,
-                                       slices[j][0].stop),
-                                   (min(slices[reg][1].start,
-                                        slices[j][1].start)):
-                                   max(slices[reg][1].stop,
-                                       slices[j][1].stop)]
-                merged_region = ((merged_region == reg + 1) +
-                                 (merged_region == j + 1))
-                mesh = mesh_region(region=merged_region, strel=strel)
-                sa_combined.append(mesh_surface_area(mesh))
+        if slices[reg] is not None:
+            s = extend_slice(slices[reg], im.shape)
+            sub_im = im[s]
+            mask_im = sub_im == i
+            sa[reg] = areas[reg]
+            im_w_throats = spim.binary_dilation(input=mask_im,
+                                                structure=ball(1))
+            im_w_throats = im_w_throats*sub_im
+            Pn = sp.unique(im_w_throats)[1:] - 1
+            for j in Pn:
+                if j > reg:
+                    cn.append([reg, j])
+                    merged_region = im[(min(slices[reg][0].start,
+                                            slices[j][0].start)):
+                                       max(slices[reg][0].stop,
+                                           slices[j][0].stop),
+                                       (min(slices[reg][1].start,
+                                            slices[j][1].start)):
+                                       max(slices[reg][1].stop,
+                                           slices[j][1].stop)]
+                    merged_region = ((merged_region == reg + 1) +
+                                     (merged_region == j + 1))
+                    mesh = mesh_region(region=merged_region, strel=strel)
+                    sa_combined.append(mesh_surface_area(mesh))
     # Interfacial area calculation
     cn = sp.array(cn)
     ia = 0.5 * (sa[cn[:, 0]] + sa[cn[:, 1]] - sa_combined)
@@ -733,11 +735,12 @@ def region_surface_areas(regions, voxel_size=1, strel=None):
     # Start extracting marching cube area from im
     for i in tqdm(Ps):
         reg = i - 1
-        s = extend_slice(slices[reg], im.shape)
-        sub_im = im[s]
-        mask_im = sub_im == i
-        mesh = mesh_region(region=mask_im, strel=strel)
-        sa[reg] = mesh_surface_area(mesh)
+        if slices[reg] is not None:
+            s = extend_slice(slices[reg], im.shape)
+            sub_im = im[s]
+            mask_im = sub_im == i
+            mesh = mesh_region(region=mask_im, strel=strel)
+            sa[reg] = mesh_surface_area(mesh)
     result = sa * voxel_size**2
     return result
 
