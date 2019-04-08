@@ -148,7 +148,7 @@ class GeneratorTest():
                                                     porosity=phi, dist=dist,
                                                     nbins=10)
             phi_actual = im.sum() / sp.size(im)
-            assert abs(phi_actual - phi) < 0.05
+            assert abs(phi_actual - phi) < 0.1
 
     def test_voronoi_edges(self):
         sp.random.seed(0)
