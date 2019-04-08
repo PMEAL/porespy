@@ -1,13 +1,8 @@
-import pickle
 import numpy as np
 from scipy import ndimage as spim
 import scipy.ndimage as nd
-from pathlib import Path
 from porespy.networks import generate_voxel_image
-try:
-    from pyevtk.hl import imageToVTK
-except:
-    print("warning: pyevtk must be install manually")
+from pyevtk.hl import imageToVTK
 
 
 def dict_to_vtk(data, path='./dictvtk', voxel_size=1, origin=(0, 0, 0)):
@@ -48,27 +43,20 @@ def to_openpnm(net, filename):
     Parameters
     ----------
     net : dict
-        The dictionary object produced by `extract_pore_network`
+        The dictionary object produced by the network extraction functions
+
     filename : string or path object
         The name and location to save the file, which will have `.net` file
         extension.
 
     """
-    # Ensure net is just a standard dict, with no images attatched
-    net = dict(net)
-    try:
-        p = Path(filename)
-        p = p.resolve()
-        # If extension not part of filename
-        if p.suffix == '':
-            p = p.with_suffix('.net')
-    except FileNotFoundError:
-        p = filename.split('.')
-        if p[-1] != 'net':
-            p.append('net')
-        p = '.'.join(p)
-    with open(p, 'wb') as f:
-        pickle.dump(net, f)
+    from openpnm.network import GenericNetwork
+    # Convert net dict to an openpnm Network
+    pn = GenericNetwork()
+    pn.update(net)
+    pn.project.save_project(filename)
+    ws = pn.project.workspace
+    ws.close_project(pn.project)
 
 
 def to_vtk(im, path='./voxvtk', divide=False, downsample=False, voxel_size=1,
@@ -100,6 +88,8 @@ def to_vtk(im, path='./voxvtk', divide=False, downsample=False, voxel_size=1,
     -----
     Outputs a vtk, vtp or vti file that can opened in paraview
     """
+    if len(im.shape) == 2:
+        im = im[:, :, np.newaxis]
     if im.dtype == bool:
         vox = True
     if vox:

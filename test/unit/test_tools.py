@@ -37,12 +37,12 @@ class ToolsTest():
     def test_get_slice(self):
         one_lab = self.labels == 10
         my_slice = ps.tools.get_slice(one_lab, center=[75, 9], size=10)
-        assert sp.sum(one_lab) == sp.sum(one_lab[my_slice])
+        assert sp.sum(one_lab) == sp.sum(one_lab[tuple(my_slice)])
 
     def test_find_outer_region(self):
         one_lab = self.labels == 10
         my_slice = ps.tools.get_slice(one_lab, center=[75, 9], size=10)
-        small_slice = one_lab[my_slice]
+        small_slice = one_lab[tuple(my_slice)]
         outer = ps.tools.find_outer_region(small_slice)
         assert sp.sum(outer) == sp.sum(small_slice[:, 0])
 
@@ -50,8 +50,16 @@ class ToolsTest():
         sec = ps.tools.extract_subsection(self.blobs, [0.5])
         assert sp.all(sp.array(sp.shape(sec)) == 50)
 
-    # def test_extract_cylinder(self):
-    #     cylinder = ps.tools.extract_cylinder(self.im3D)
+    def test_extract_cylinder(self):
+        im = sp.ones([200, 300, 400], dtype=bool)
+        cx = ps.tools.extract_cylinder(im)
+        assert cx.sum() == 14132200
+        cy = ps.tools.extract_cylinder(im, axis=1)
+        assert cy.sum() == 9419100
+        cz = ps.tools.extract_cylinder(im, axis=2)
+        assert cz.sum() == 12558800
+        cr = ps.tools.extract_cylinder(im, r=100)
+        assert cr.sum() == 6279400
 
     def test_bbox_to_slices(self):
         s = ps.tools.bbox_to_slices([0, 0, 0, 10, 10, 10])
@@ -112,6 +120,21 @@ class ToolsTest():
         im = ps.tools.insert_sphere(im, [100, 100, 100], 50)
         im = ps.tools.insert_sphere(im, [10, 100, 100], 50)
         im = ps.tools.insert_sphere(im, [180, 100, 100], 50)
+
+    def test_subdivide_3D(self):
+        im = sp.ones([50, 100, 150])
+        ims = ps.tools.subdivide(im, divs=1)
+        assert ims.shape == (1, 1, 1)
+        assert sp.all(im[tuple(ims[0, 0, 0])] == im)
+        ims = ps.tools.subdivide(im, divs=2)
+        assert ims.shape == (2, 2, 2)
+        assert im[tuple(ims[0, 0, 0])].sum() == sp.prod(im.shape)/8
+
+    def test_subdivide_2D(self):
+        im = sp.ones([50, 100])
+        ims = ps.tools.subdivide(im, divs=2)
+        assert ims.shape == (2, 2)
+        assert im[tuple(ims[0, 0])].sum() == sp.prod(im.shape)/4
 
 
 if __name__ == '__main__':

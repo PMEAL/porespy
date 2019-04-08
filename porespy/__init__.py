@@ -79,12 +79,12 @@ Use some filters from PoreSpy:
 
 '''
 
-__version__ = "1.0.1"
+__version__ = "1.1.0"
 
-from . import metrics
 from . import tools
 from . import filters
-from . import generators
+from . import metrics
 from . import networks
+from . import generators
 from . import visualization
 from . import io

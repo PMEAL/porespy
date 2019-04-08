@@ -55,15 +55,27 @@ Installation
 PoreSpy depends heavily on the Scipy Stack.  The best way to get a fully
 functional environment is the
 `Anaconda distribution <https://www.anaconda.com/download/>`_.
-Be sure to get the Python 3.6+ version.
+Be sure to get the **Python 3.6+ version**.
 
-PoreSpy is available on the
+
+Once you've installed *Conda*, you can then install PoreSpy.  It is available on the
 `Python Package Index <https://pypi.org/project/porespy/>`_ and can be
-installed using PIP as follows:
+installed by typing the following at the *conda* prompt:
 
 ::
 
-    C:\> pip install porespy
+    pip install porespy
+
+
+.. note::
+
+    On Windows, you should have a shortcut to the "anaconda prompt" in the Anaconda program group.  This will open a Windows command console with access to the Python features added by *Conda*, such as installing things via ``pip``.
+
+    On Mac or Linux, you need to open a normal terminal window, then type
+    ``source activate {env}`` where you replace ``{env}`` with the name of the
+    environment you want to install PoreSpy.  If you don't know what this means,
+    then use ``source activate root``, which will install PoreSpy in the root
+    environment which is the default.
 
 
 If you think you may be interested in contributing to PoreSpy and wish to
@@ -73,7 +85,9 @@ and install it using the following PIP command:
 
 ::
 
-    C:\> pip install -e "C:\path\to\the\local\files\"
+    pip install -e "C:\path\to\the\local\files\"
+
+For information about contributing, refer to the `contributors guide <https://github.com/PMEAL/porespy/blob/master/CONTRIBUTING.md>`_
 
 -------------------------------------------------------------------------------
 Examples
@@ -81,8 +95,7 @@ Examples
 
 The following code snippets illustrate generating a 2D image, applying
 several filters, and calculating some common metrics.
-A Github repository of examples is
-`available here <https://github.com/PMEAL/porespy-examples>`_.
+A set of examples is included in this repo, and can be `browsed here <https://github.com/PMEAL/porespy/tree/master/examples>`_.
 
 ...............................................................................
 Generating an image
@@ -99,7 +112,7 @@ of large tomograms.
     im = ps.generators.blobs(shape=[200, 200], porosity=0.5, blobiness=2)
     plt.imshow(im)
 
-.. image:: https://i.imgur.com/Jo9Mus8m.png
+.. image:: https://github.com/PMEAL/porespy/raw/master/docs/_static/fig1.png
 
 ...............................................................................
 Applying filters
@@ -114,7 +127,7 @@ the voxel values provides information about the pore size distribution.
     lt = ps.filters.local_thickness(im)
     plt.imshow(lt)
 
-.. image:: https://i.imgur.com/l9tNG60m.png
+.. image:: https://github.com/PMEAL/porespy/raw/master/docs/_static/fig2.png
 
 A less common filter is the application of chords that span the pore space in
 a given direction.  It is possible to gain information about anisotropy of the
@@ -127,7 +140,7 @@ direction.
     cr = ps.filters.flood(cr, mode='size')
     plt.imshow(cr)
 
-.. image:: https://i.imgur.com/Glt6NzMm.png
+.. image:: https://github.com/PMEAL/porespy/raw/master/docs/_static/fig3.png
 
 ...............................................................................
 Calculating metrics
@@ -140,9 +153,11 @@ correlation function.
 .. code-block:: python
 
     data = ps.metrics.two_point_correlation_fft(im)
-    plt.plot(*data, 'b.-')
+    fig = plt.plot(*data, 'bo-')
+    plt.ylabel('probability')
+    plt.xlabel('correlation length [voxels]')
 
-.. image:: https://i.imgur.com/DShBB5Am.png
+.. image:: https://github.com/PMEAL/porespy/raw/master/docs/_static/fig4.png
 
 The metrics sub-module also contains a suite of functions that produce plots
 based on values in images that have passed through a filter, such as local
@@ -153,7 +168,10 @@ thickness.
     mip = ps.filters.porosimetry(im)
     data = ps.metrics.pore_size_distribution(mip, log=False)
     plt.imshow(mip)
-    plt.plot(data.R, data.cdf, 'b.-')  # Note: small image results in noisy curve
+    # Now show intrusion curve
+    plt.plot(data.R, data.cdf, 'bo-')
+    plt.xlabel('invasion size [voxels]')
+    plt.ylabel('volume fraction invaded [voxels]')
 
-.. image:: https://i.imgur.com/BOTFxaUm.png
-.. image:: https://i.imgur.com/6oaQ0grm.png
+.. image:: https://github.com/PMEAL/porespy/raw/master/docs/_static/fig5.png
+.. image:: https://github.com/PMEAL/porespy/raw/master/docs/_static/fig6.png

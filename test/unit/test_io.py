@@ -28,15 +28,28 @@ class ExportTest():
         assert np.sum(val == 0) + np.sum(val == 1) + np.sum(val == 2) == S
         os.remove(tmp)
 
-    def test_to_openpnm(self):
+    def test_to_openpnm_writing(self):
         im = ps.generators.blobs(shape=[100, 100])
         net = ps.networks.snow(im, boundary_faces=None)
-        ps.io.to_openpnm(net, 'test.net')
-        os.remove('test.net')
+        ps.io.to_openpnm(net, 'test.pnm')
+        # Now open it in openpnm
+        import openpnm as op
+        ws = op.Workspace()
+        len_ws = len(ws)
+        ws.load_project('test.pnm')
+        assert len(ws) == len_ws + 1
+        # Now remove file
+        os.remove('test.pnm')
         with pytest.raises(FileNotFoundError):
-            os.remove('test.net')
+            os.remove('test.pnm')
 
-    def test_to_vtk(self):
+    def test_to_vtk_2d(self):
+        im = ps.generators.blobs(shape=[20, 20])
+        ps.io.to_vtk(im, path='vtk_func_test')
+        assert os.stat('vtk_func_test.vti').st_size == 831
+        os.remove('vtk_func_test.vti')
+
+    def test_to_vtk_3d(self):
         im = ps.generators.blobs(shape=[20, 20, 20])
         ps.io.to_vtk(im, path='vtk_func_test')
         assert os.stat('vtk_func_test.vti').st_size == 8433
