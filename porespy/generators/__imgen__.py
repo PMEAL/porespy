@@ -546,29 +546,30 @@ def overlapping_spheres(shape: List[int], radius: int, porosity: float,
     f = lambda N: spim.distance_transform_edt(im > N/bulk_vol) < radius
     g = lambda im: 1 - im.sum() / sp.prod(shape)
 
-    # Newton's method for getting image porosity match the given
-    w, dN = 1.0, 10  # Damping factor, perturbation
-    for i in range(iter_max):
-        err = g(f(N)) - porosity
-        d_err = (g(f(N+dN)) - g(f(N))) / dN
-        if d_err == 0:
-            break
-        if abs(err) <= tol:
-            break
-        N2 = N - int(err/d_err)   # xnew = xold - f/df
-        N = w * N2 + (1-w) * N
-
-    # # Bisection search: N is always undershoot (bc. of overlaps)
-    # N_low, N_high = N, 4*N
+    # # Newton's method for getting image porosity match the given
+    # w = 1.0                         # Damping factor
+    # dN = 5 if ndim == 2 else 25     # Perturbation
     # for i in range(iter_max):
-    #     N = sp.mean([N_high, N_low], dtype=int)
     #     err = g(f(N)) - porosity
-    #     if err > 0:
-    #         N_low = N
-    #     else:
-    #         N_high = N
+    #     d_err = (g(f(N+dN)) - g(f(N))) / dN
+    #     if d_err == 0:
+    #         break
     #     if abs(err) <= tol:
     #         break
+    #     N2 = N - int(err/d_err)   # xnew = xold - f/df
+    #     N = w * N2 + (1-w) * N
+
+    # Bisection search: N is always undershoot (bc. of overlaps)
+    N_low, N_high = N, 4*N
+    for i in range(iter_max):
+        N = sp.mean([N_high, N_low], dtype=int)
+        err = g(f(N)) - porosity
+        if err > 0:
+            N_low = N
+        else:
+            N_high = N
+        if abs(err) <= tol:
+            break
 
     return ~f(N)
 
