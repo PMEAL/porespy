@@ -8,6 +8,9 @@
 .. image:: https://img.shields.io/badge/ReadTheDocs-GO-blue.svg
    :target: http://porespy.readthedocs.io/en/master/
 
+.. image:: https://zenodo.org/badge/35181546.svg
+   :target: https://zenodo.org/badge/latestdoi/35181546
+
 -------------------------------------------------------------------------------
 What is PoreSpy?
 -------------------------------------------------------------------------------
