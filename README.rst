@@ -14,7 +14,7 @@
 .. image:: https://img.shields.io/badge/DOI-10.5281%2Fzenodo.2633284-blue.svg
    :target: https://www.doi.org/10.5281/zenodo.2633284
 
-
+----
 
 **Cite as:**
 
