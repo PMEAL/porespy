@@ -8,8 +8,17 @@
 .. image:: https://img.shields.io/badge/ReadTheDocs-GO-blue.svg
    :target: http://porespy.readthedocs.io/en/master/
 
+.. image:: https://img.shields.io/pypi/v/porespy.svg
+   :target: https://pypi.python.org/pypi/porespy/
+
 .. image:: https://img.shields.io/badge/DOI-10.5281%2Fzenodo.2633284-blue.svg
    :target: https://www.doi.org/10.5281/zenodo.2633284
+
+
+::
+
+    Cite as: Gostick J, Khan ZA, Tranter TG, Kok MDR, Agnaou M, Sadeghi MA, Jervis R.  PoreSpy: A Python Toolkit for Quantitative Analysis of Porous Media Images.  Journal of Open Source Software, 2019.  doi:10.5281/zenodo.2633284
+
 
 -------------------------------------------------------------------------------
 What is PoreSpy?
@@ -61,8 +70,8 @@ functional environment is the
 Be sure to get the **Python 3.6+ version**.
 
 
-Once you've installed *Conda*, you can then install PoreSpy.  It is available on the
-`Python Package Index <https://pypi.org/project/porespy/>`_ and can be
+Once you've installed *Conda*, you can then install PoreSpy.  It is available
+on the `Python Package Index <https://pypi.org/project/porespy/>`_ and can be
 installed by typing the following at the *conda* prompt:
 
 ::
@@ -70,21 +79,22 @@ installed by typing the following at the *conda* prompt:
     pip install porespy
 
 
-.. note::
+On Windows, you should have a shortcut to the "anaconda prompt" in the
+Anaconda program group in the start menu.  This will open a Windows command
+console with access to the Python features added by *Conda*, such as
+installing things via ``pip``.
 
-    On Windows, you should have a shortcut to the "anaconda prompt" in the Anaconda program group.  This will open a Windows command console with access to the Python features added by *Conda*, such as installing things via ``pip``.
-
-    On Mac or Linux, you need to open a normal terminal window, then type
-    ``source activate {env}`` where you replace ``{env}`` with the name of the
-    environment you want to install PoreSpy.  If you don't know what this means,
-    then use ``source activate root``, which will install PoreSpy in the root
-    environment which is the default.
+On Mac or Linux, you need to open a normal terminal window, then type
+``source activate {env}`` where you replace ``{env}`` with the name of the
+environment you want to install PoreSpy.  If you don't know what this means,
+then use ``source activate root``, which will install PoreSpy in the root
+environment which is the default.
 
 
 If you think you may be interested in contributing to PoreSpy and wish to
 both *use* and *edit* the source code, then you should clone the
-`repository <https://github.com/PMEAL/porespy>`_ to your local machine,
-and install it using the following PIP command:
+`repository <https://github.com/PMEAL/porespy>`_ to your local machine, and
+install it using the following PIP command:
 
 ::
 

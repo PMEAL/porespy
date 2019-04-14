@@ -38,7 +38,7 @@ affiliations:
  - name: Department of Chemical Engineering, McGill University, Montreal, QC, Canada
    index: 3
 
-date: 12 February 2019
+date: 14 April 2019
 
 bibliography: paper.bib
 
@@ -65,6 +65,6 @@ Being implemented in Python means it can be installed with a single command (``p
 
 # Acknowledgements
 
-MDRK acknowledges support from EPSRC under grant EP/R020973/1.  MDRK and RJ acknowledge the support of the Faraday Institution Degradation and Multi scale Modelling projects.  ZA  express his appreciation to the University of Engineering and Technology Lahore, Pakistan for their funding and support.
+MDRK acknowledges support from EPSRC under grant EP/R020973/1.  MDRK and RJ acknowledge the support of the Faraday Institution Degradation and Multi scale Modelling projects.  ZA express his appreciation to the University of Engineering and Technology Lahore, Pakistan for their funding and support.
 
 # References
