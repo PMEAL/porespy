@@ -14,7 +14,7 @@ authors:
   - name: Zohaib A. Khan
     orcid: 0000-0003-2115-7798
     affiliation: 1
-  - name: Tom T.G. Tranter
+  - name: Thomas G. Tranter
     orcid: 0000-0003-4721-5941
     affiliation: "1, 2"
   - name: Matthew D.R. Kok
