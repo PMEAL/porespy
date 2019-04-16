@@ -11,6 +11,9 @@
 .. image:: https://img.shields.io/pypi/v/porespy.svg
    :target: https://pypi.python.org/pypi/porespy/
 
+.. image:: https://img.shields.io/badge/DOI-10.5281%2Fzenodo.2633284-blue.svg
+   :target: https://www.doi.org/10.5281/zenodo.2633284
+
 .. image:: https://img.shields.io/github/stars/PMEAL/porespy.svg?style=social&label=Star&maxAge=2592000
    :target: https://GitHub.com/PMEAL/porespy/stargazers/
 
