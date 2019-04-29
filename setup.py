@@ -55,7 +55,7 @@ setup(
     url='http://porespy.org',
     project_urls={
         'Documentation': 'https://porespy.readthedocs.io/en/master/',
-        'Source': 'https://porespy.readthedocs.io/en/master/',
+        'Source': 'https://github.com/PMEAL/porespy/',
         'Tracker': 'https://github.com/PMEAL/porespy/issues',
     },
 )
