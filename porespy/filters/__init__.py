@@ -23,6 +23,7 @@ altered values.
     porespy.filters.flood
     porespy.filters.local_thickness
     porespy.filters.porosimetry
+    porespy.filters.prune_branches
     porespy.filters.region_size
     porespy.filters.snow_partitioning
     porespy.filters.trim_disconnected_blobs

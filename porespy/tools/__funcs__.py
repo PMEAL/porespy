@@ -233,11 +233,14 @@ def bbox_to_slices(bbox):
                slice(bbox[2], bbox[5]))
     return ret
 
+'''
+slices : list
+    A list of slice objects, each indexing into one dimension of the image.
+'''
+p = sp.ones(shape=im.ndim, dtype=int) * sp.array(pad)
+s = sp.ones(shape=im.ndim, dtype=int) * sp.array(size)
 
-    slices : list
-        A list of slice objects, each indexing into one dimension of the image.
-    p = sp.ones(shape=im.ndim, dtype=int) * sp.array(pad)
-    s = sp.ones(shape=im.ndim, dtype=int) * sp.array(size)
+
 def find_outer_region(im, r=0):
     r"""
     Finds regions of the image that are outside of the solid matrix.
@@ -1086,3 +1089,45 @@ def _create_alias_map(im, alias=None):
             raise Exception('Alias labels does not match with image labels '
                             'please provide correct image labels')
     return al
+
+
+def extract_regions(regions, labels: list, trim=True):
+    r"""
+    Combine given regions into a single boolean mask
+
+    Parameters
+    -----------
+    regions : ND-array
+        An image containing an arbitrary number of labeled regions
+    labels : array_like or scalar
+        A list of labels indicating which region or regions to extract
+    trim : bool
+        If ``True`` then image shape will trimmed to a bounding box around the
+        given regions.
+
+    Returns
+    -------
+    im : ND-array
+        A boolean mask with ``True`` values indicating where the given labels
+        exist
+
+    """
+    if type(labels) is int:
+        labels = [labels]
+    s = spim.find_objects(regions)
+    im_new = sp.zeros_like(regions)
+    x_min, y_min, z_min = sp.inf, sp.inf, sp.inf
+    x_max, y_max, z_max = 0, 0, 0
+    for i in labels:
+        im_new[s[i-1]] = regions[s[i-1]] == i
+        x_min, x_max = min(s[i-1][0].start, x_min), max(s[i-1][0].stop, x_max)
+        y_min, y_max = min(s[i-1][1].start, y_min), max(s[i-1][1].stop, y_max)
+        if regions.ndim == 3:
+            z_min, z_max = min(s[i-1][2].start, z_min), max(s[i-1][2].stop, z_max)
+    if trim:
+        if regions.ndim == 3:
+            bbox = bbox_to_slices([x_min, y_min, z_min, x_max, y_max, z_max])
+        else:
+            bbox = bbox_to_slices([x_min, y_min, x_max, y_max])
+        im_new = im_new[bbox]
+    return im_new

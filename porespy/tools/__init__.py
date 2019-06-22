@@ -14,6 +14,7 @@ that do NOT return a modified version of the original image.
     porespy.tools.bbox_to_slices
     porespy.tools.extend_slice
     porespy.tools.extract_subsection
+    porespy.tools.extract_regions
     porespy.tools.extract_cylinder
     porespy.tools.fftmorphology
     porespy.tools.find_outer_region
