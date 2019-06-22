@@ -233,13 +233,6 @@ def bbox_to_slices(bbox):
                slice(bbox[2], bbox[5]))
     return ret
 
-'''
-slices : list
-    A list of slice objects, each indexing into one dimension of the image.
-'''
-p = sp.ones(shape=im.ndim, dtype=int) * sp.array(pad)
-s = sp.ones(shape=im.ndim, dtype=int) * sp.array(size)
-
 
 def find_outer_region(im, r=0):
     r"""
