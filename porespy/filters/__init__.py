@@ -35,6 +35,7 @@ altered values.
     porespy.filters.trim_nearby_peaks
     porespy.filters.trim_nonpercolating_paths
     porespy.filters.trim_saddle_points
+    porespy.filters.trim_small_cluster
 
 
 .. autofunction:: apply_chords
@@ -61,6 +62,7 @@ altered values.
 .. autofunction:: trim_nearby_peaks
 .. autofunction:: trim_nonpercolating_paths
 .. autofunction:: trim_saddle_points
+.. autofunction:: trim_small_clusters
 
 """
 
@@ -88,3 +90,4 @@ from .__funcs__ import trim_floating_solid
 from .__funcs__ import trim_nonpercolating_paths
 from .__funcs__ import trim_nearby_peaks
 from .__funcs__ import trim_saddle_points
+from .__funcs__ import trim_small_clusters

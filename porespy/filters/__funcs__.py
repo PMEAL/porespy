@@ -17,6 +17,40 @@ from porespy.tools import ps_disk, ps_ball
 from porespy.tools import _create_alias_map
 
 
+def trim_small_clusters(im, size=1):
+    r"""
+    Remove isolated voxels or clusters smaller than a given size
+
+    Parameters
+    ----------
+    im : ND-array
+        The binary image from which voxels are to be removed
+    size : scalar
+        The threshold size of clusters to trim.  As clusters with this many
+        voxels or fewer will be trimmed.  The default is 1 so only single
+        voxels are removed.
+
+    Returns
+    -------
+    im : ND-image
+        A copy of ``im`` with clusters of voxels smaller than the given
+        ``size`` removed.
+
+    """
+    if im.dims == 2:
+        strel = disk(1)
+    elif im.ndims == 3:
+        strel = ball(1)
+    else:
+        raise Exception('Only 2D or 3D images are accepted')
+    filtered_array = sp.copy(im)
+    labels, N = spim.label(filtered_array, structure=strel)
+    id_sizes = sp.array(spim.sum(im, labels, range(N + 1)))
+    area_mask = (id_sizes <= size)
+    filtered_array[area_mask[labels]] = 0
+    return filtered_array
+
+
 def hold_peaks(im, axis=-1):
     r"""
     Replaces each voxel with the highest value along the given axis
