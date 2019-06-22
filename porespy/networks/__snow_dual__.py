@@ -1,11 +1,15 @@
 import scipy as sp
-from porespy.network_extraction import regions_to_network
-from porespy.network_extraction import add_boundary_regions
+from porespy.networks import regions_to_network
+from porespy.networks import add_boundary_regions
+from porespy.networks import label_boundary_cells
+from porespy.networks import _net_dict
+from porespy.tools import pad_faces
 from porespy.filters import snow_partitioning
 from porespy.metrics import region_surface_areas, region_interface_areas
 
 
-def snow_dual(im, voxel_size=1,
+def snow_dual(im,
+              voxel_size=1,
               boundary_faces=['top', 'bottom', 'left', 'right', 'front', 'back'],
               marching_cubes_area=False):
 
@@ -47,6 +51,27 @@ def snow_dual(im, voxel_size=1,
     the network topological information.  The dictionary names use the OpenPNM
     convention (i.e. 'pore.coords', 'throat.conns') so it may be converted
     directly to an OpenPNM network object using the ``update`` command.
+    * ``net``: A dictionary containing all the void and solid phase size data,
+        as well as the network topological information.  The dictionary names
+        use the OpenPNM convention (i.e. 'pore.coords', 'throat.conns') so it
+        may be converted directly to an OpenPNM network object using the
+        ``update`` command.
+    * ``im``: The binary image of the void space
+    * ``dt``: The combined distance transform of the image
+    * ``regions``: The void and solid space partitioned into pores and solids
+        phases using a marker based watershed with the peaks found by the
+        SNOW Algorithm.
+
+    References
+    ----------
+    [1] Gostick, J. "A versatile and efficient network extraction algorithm
+    using marker-based watershed segmenation".  Phys. Rev. E 96, 023307 (2017)
+
+    [2] Khan, ZA et al.  "Dual network extraction algorithm to investigate
+    multiple transport processes in porous materials: Image-based modeling
+    of pore and grain-scale processes. Computers and Chemical Engineering.
+    123(6), 64-77 (2019)
+
     """
     # -------------------------------------------------------------------------
     # SNOW void phase
@@ -73,30 +98,17 @@ def snow_dual(im, voxel_size=1,
     regions = add_boundary_regions(regions=regions, faces=boundary_faces)
     # -------------------------------------------------------------------------
     # Padding distance transform to extract geometrical properties
-    f = boundary_faces
-    if f is not None:
-        if im.ndim == 2:
-            faces = [(int('left' in f)*3, int('right' in f)*3),
-                     (int(('front') in f)*3 or int(('bottom') in f)*3,
-                      int(('back') in f)*3 or int(('top') in f)*3)]
-        if im.ndim == 3:
-            faces = [(int('left' in f)*3, int('right' in f)*3),
-                     (int('front' in f)*3, int('back' in f)*3),
-                     (int('top' in f)*3, int('bottom' in f)*3)]
-        dt = sp.pad(dt, pad_width=faces, mode='edge')
-    else:
-        dt = dt
+    dt = pad_faces(im=dt, faces=boundary_faces)
     # -------------------------------------------------------------------------
     # Extract void,solid and throat information from image
     net = regions_to_network(im=regions, dt=dt, voxel_size=voxel_size)
     # -------------------------------------------------------------------------
-    # -------------------------------------------------------------------------
     # Extract marching cube surface area and interfacial area of regions
     if marching_cubes_area:
-        areas = region_surface_areas(regions=regions, voxel_size=voxel_size)
-        net['pore.surface_area'] = areas
+        areas = region_surface_areas(regions=regions)
         interface_area = region_interface_areas(regions=regions, areas=areas,
                                                 voxel_size=voxel_size)
+        net['pore.surface_area'] = areas * voxel_size**2
         net['throat.area'] = interface_area.area
     # -------------------------------------------------------------------------
     # Find void to void, void to solid and solid to solid throat conns
@@ -146,4 +158,14 @@ def snow_dual(im, voxel_size=1,
     net['pore.void'] = net['pore.label'] <= solid_num
     net['pore.solid'] = solid_labels
     net['pore.boundary'] = boundary_labels
-    return net
+    # -------------------------------------------------------------------------
+    # label boundary cells
+    net = label_boundary_cells(network=net, boundary_faces=boundary_faces)
+    # -------------------------------------------------------------------------
+    # assign out values to dummy dict
+
+    temp = _net_dict(net)
+    temp.im = im.copy()
+    temp.dt = dt
+    temp.regions = regions
+    return temp

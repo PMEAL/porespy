@@ -7,6 +7,16 @@ def show_mesh(mesh):
     r"""
     Visualizes the mesh of a region as obtained by ``get_mesh`` function in
     the ``metrics`` submodule.
+
+    Parameters
+    ----------
+    mesh : tuple
+        A mesh returned by ``skimage.measure.marching_cubes``
+
+    Returns
+    -------
+    fig : Matplotlib figure
+        A handle to a matplotlib 3D axis
     """
     lim_max = sp.amax(mesh.verts, axis=0)
     lim_min = sp.amin(mesh.verts, axis=0)

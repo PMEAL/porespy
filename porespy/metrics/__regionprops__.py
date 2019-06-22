@@ -1,11 +1,10 @@
 import scipy as sp
 import scipy.ndimage as spim
 from tqdm import tqdm
-from porespy.tools import extract_subsection, bbox_to_slices, extend_slice
+from porespy.tools import extract_subsection, bbox_to_slices
 from skimage.measure import regionprops
 from skimage.measure import mesh_surface_area, marching_cubes_lewiner
-from skimage.morphology import skeletonize_3d, ball, disk
-from sklearn.feature_extraction.image import grid_to_graph
+from skimage.morphology import skeletonize_3d, ball
 from pandas import DataFrame
 
 
@@ -19,14 +18,18 @@ def props_to_DataFrame(regionprops):
     ----------
     regionprops : list
         This is a list of properties for each region that is computed
-        by ``regionprops_3D``.
+        by ``regionprops_3D``.  Because ``regionprops_3D`` returns data in
+        the same ``list`` format as the ``regionprops`` function in **Skimage**
+        you can pass in either.
 
     Returns
     -------
-    A Pandas DataFrame with each region corresponding to a row and each column
-    corresponding to a key metric.  All the values for a given property (e.g.
-    'sphericity') can be obtained as ``val = df['sphericity']``.  Conversely,
-    all the key metrics for a given region can be found with ``df.iloc[1]``.
+    DataFrame : Pandas DataFrame
+        A Pandas DataFrame with each region corresponding to a row and each
+        column corresponding to a key metric.  All the values for a given
+        property (e.g. 'sphericity') can be obtained as
+        ``val = df['sphericity']``.  Conversely, all the key metrics for a
+        given region can be found with ``df.iloc[1]``.
 
     See Also
     --------
@@ -77,8 +80,9 @@ def props_to_image(regionprops, shape, prop):
 
     Returns
     -------
-    An ND-image the same size as the original image, with each region
-    represented by the values specified in ``prop``.
+    image : ND-array
+        An ND-image the same size as the original image, with each region
+        represented by the values specified in ``prop``.
 
     See Also
     --------
@@ -115,15 +119,56 @@ def regionprops_3D(im):
 
     Returns
     -------
-    An augmented version of the list returned by skimage's ``regionprops``.
-    Information, such as ``volume``, can be found for region A using the
-    following syntax: ``result[A-1].volume``.
+    props : list
+        An augmented version of the list returned by skimage's ``regionprops``.
+        Information, such as ``volume``, can be found for region A using the
+        following syntax: ``result[A-1].volume``.
+
+        The returned list contains all the metrics normally returned by
+        **skimage.measure.regionprops** plus the following:
+
+        'slice': Slice indices into the image that can be used to extract the
+        region
+
+        'volume': Volume of the region in number of voxels.
+
+        'bbox_volume': Volume of the bounding box that contains the region.
+
+        'border': The edges of the region, found as the locations where
+        the distance transform is 1.
+
+        'inscribed_sphere': An image containing the largest sphere can can
+        fit entirely inside the region.
+
+        'surface_mesh_vertices': Obtained by applying the marching cubes
+        algorithm on the region, AFTER first blurring the voxel image.  This
+        allows marching cubes more freedom to fit the surface contours. See
+        also ``surface_mesh_simplices``
+
+        'surface_mesh_simplices': This accompanies ``surface_mesh_vertices``
+        and together they can be used to define the region as a mesh.
+
+        'surface_area': Calculated using the mesh obtained as described above,
+        using the ``porespy.metrics.mesh_surface_area`` method.
+
+        'sphericity': Defined as the ratio of the area of a sphere with the
+        same volume as the region to the actual surface area of the region.
+
+        'skeleton': The medial axis of the region obtained using the
+        ``skeletonize_3D`` method from **skimage**.
+
+        'convex_volume': Same as convex_area, but translated to a more
+        meaningful name.
+
+    See Also
+    --------
+    snow_partitioning
 
     Notes
     -----
     This function may seem slow compared to the skimage version, but that is
     because they defer calculation of certain properties until they are
-    accessed while this one evalulates everything (inlcuding the deferred
+    accessed, while this one evalulates everything (inlcuding the deferred
     properties from skimage's ``regionprops``)
 
     Regions can be identified using a watershed algorithm, which can be a bit
@@ -179,9 +224,5 @@ def regionprops_3D(im):
         # ---------------------------------------------------------------------
         # Volume of convex image, equal to area in 2D, so just translating
         results[i].convex_volume = results[i].convex_area
-        # ---------------------------------------------------------------------
-        # Convert region grid to a graph
-        am = grid_to_graph(*mask.shape, mask=mask)
-        results[i].graph = am
 
     return results

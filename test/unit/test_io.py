@@ -1,8 +1,10 @@
-import porespy as ps
-import numpy as np
-import pytest
 import os
 import sys
+import pytest
+import numpy as np
+import porespy as ps
+import openpnm as op
+from numpy.testing import assert_allclose
 
 
 class ExportTest():
@@ -26,15 +28,28 @@ class ExportTest():
         assert np.sum(val == 0) + np.sum(val == 1) + np.sum(val == 2) == S
         os.remove(tmp)
 
-    def test_to_openpnm(self):
+    def test_to_openpnm_writing(self):
         im = ps.generators.blobs(shape=[100, 100])
-        net = ps.network_extraction.snow(im, boundary_faces=None)
-        ps.io.to_openpnm(net, 'test.net')
-        os.remove('test.net')
+        net = ps.networks.snow(im, boundary_faces=None)
+        ps.io.to_openpnm(net, 'test.pnm')
+        # Now open it in openpnm
+        import openpnm as op
+        ws = op.Workspace()
+        len_ws = len(ws)
+        ws.load_project('test.pnm')
+        assert len(ws) == len_ws + 1
+        # Now remove file
+        os.remove('test.pnm')
         with pytest.raises(FileNotFoundError):
-            os.remove('test.net')
+            os.remove('test.pnm')
 
-    def test_to_vtk(self):
+    def test_to_vtk_2d(self):
+        im = ps.generators.blobs(shape=[20, 20])
+        ps.io.to_vtk(im, path='vtk_func_test')
+        assert os.stat('vtk_func_test.vti').st_size == 831
+        os.remove('vtk_func_test.vti')
+
+    def test_to_vtk_3d(self):
         im = ps.generators.blobs(shape=[20, 20, 20])
         ps.io.to_vtk(im, path='vtk_func_test')
         assert os.stat('vtk_func_test.vti').st_size == 8433
@@ -50,6 +65,27 @@ class ExportTest():
         b = os.stat('dictvtk.vti').st_size
         assert a < b
         os.remove('dictvtk.vti')
+
+    def test_openpnm_to_im(self):
+        net = op.network.Cubic(shape=[5, 5, 5])
+        geom = op.geometry.StickAndBall(network=net,
+                                        pores=net.Ps, throats=net.Ts)
+        geom.add_model(propname="pore.volume",
+                       model=op.models.geometry.pore_volume.cube)
+        geom.add_model(propname="throat.volume",
+                       model=op.models.geometry.throat_volume.cylinder)
+        geom.regenerate_models()
+
+        im = ps.io.openpnm_to_im(network=net, pore_shape="cube",
+                                 throat_shape="cylinder", rtol=0.01)
+        porosity_actual = im.astype(bool).sum() / np.prod(im.shape)
+
+        volume_void = net["pore.volume"].sum() + net["throat.volume"].sum()
+        volume_total = np.prod(net.spacing * net.shape)
+        porosity_desired = volume_void / volume_total
+
+        assert_allclose(actual=porosity_actual, desired=porosity_desired,
+                        rtol=0.05)
 
 
 if __name__ == '__main__':

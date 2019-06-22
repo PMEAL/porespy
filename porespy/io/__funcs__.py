@@ -1,10 +1,8 @@
-import pickle
 import numpy as np
 from scipy import ndimage as spim
-from pyevtk.hl import imageToVTK
 import scipy.ndimage as nd
-import skimage.io as io
-from pathlib import Path
+from porespy.networks import generate_voxel_image
+from pyevtk.hl import imageToVTK
 
 
 def dict_to_vtk(data, path='./dictvtk', voxel_size=1, origin=(0, 0, 0)):
@@ -24,9 +22,9 @@ def dict_to_vtk(data, path='./dictvtk', voxel_size=1, origin=(0, 0, 0)):
     origin : float
         data origin (according to selected voxel size)
 
-    Output
-    ------
-    File: vtk, vtp or vti file that can opened in ParaView
+    Notes
+    -----
+    Outputs a vtk, vtp or vti file that can opened in ParaView
     """
     vs = voxel_size
     for entry in data:
@@ -45,26 +43,20 @@ def to_openpnm(net, filename):
     Parameters
     ----------
     net : dict
-        The dictionary object produced by `extract_pore_network`
+        The dictionary object produced by the network extraction functions
+
     filename : string or path object
         The name and location to save the file, which will have `.net` file
         extension.
 
     """
-
-    try:
-        p = Path(filename)
-        p = p.resolve()
-        # If extension not part of filename
-        if p.suffix == '':
-            p = p.with_suffix('.net')
-    except FileNotFoundError:
-        p = filename.split('.')
-        if p[-1] != 'net':
-            p.append('net')
-        p = '.'.join(p)
-    with open(p, 'wb') as f:
-        pickle.dump(net, f)
+    from openpnm.network import GenericNetwork
+    # Convert net dict to an openpnm Network
+    pn = GenericNetwork()
+    pn.update(net)
+    pn.project.save_project(filename)
+    ws = pn.project.workspace
+    ws.close_project(pn.project)
 
 
 def to_vtk(im, path='./voxvtk', divide=False, downsample=False, voxel_size=1,
@@ -92,10 +84,12 @@ def to_vtk(im, path='./voxvtk', divide=False, downsample=False, voxel_size=1,
         using int8 format (can also be used to reduce file size when accuracy
         is not necessary ie: just visulization)
 
-    Output
-    ------
-    File: vtk, vtp or vti file that can opened in paraview
+    Notes
+    -----
+    Outputs a vtk, vtp or vti file that can opened in paraview
     """
+    if len(im.shape) == 2:
+        im = im[:, :, np.newaxis]
     if im.dtype == bool:
         vox = True
     if vox:
@@ -138,8 +132,8 @@ def to_palabos(im, filename, solid=0):
         The value of the solid voxels in the image used to convert image to
         binary with all other voxels assumed to be fluid.
 
-    Output
-    -------
+    Notes
+    -----
     File produced contains 3 values: 2 = Solid, 1 = Interface, 0 = Pore
     Palabos will run the simulation applying the specified pressure drop from
     x = 0 to x = -1.
@@ -159,3 +153,46 @@ def to_palabos(im, filename, solid=0):
     with open(filename, 'w') as f:
         out_data = dt.flatten().tolist()
         f.write('\n'.join(map(repr, out_data)))
+
+
+def openpnm_to_im(network, pore_shape="sphere", throat_shape="cylinder",
+                  max_dim=None, verbose=1, rtol=0.1):
+    r"""
+    Generates voxel image from an OpenPNM network object.
+
+    Parameters
+    ----------
+    network : OpenPNM GenericNetwork
+        Network from which voxel image is to be generated
+
+    pore_shape : str
+        Shape of pores in the network, valid choices are "sphere", "cube"
+
+    throat_shape : str
+        Shape of throats in the network, valid choices are "cylinder", "cuboid"
+
+    max_dim : int
+        Number of voxels in the largest dimension of the network
+
+    rtol : float
+        Stopping criteria for finding the smallest voxel image such that
+        further increasing the number of voxels in each dimension by 25% would
+        improve the predicted porosity of the image by less that ``rtol``
+
+    Returns
+    -------
+    im : ND-array
+        Voxelated image corresponding to the given pore network model
+
+    Notes
+    -----
+    (1) The generated voxelated image is labeled with 0s, 1s and 2s signifying
+    solid phase, pores, and throats respectively.
+
+    (2) If max_dim is not provided, the method calculates it such that the
+    further increasing it doesn't change porosity by much.
+
+    """
+    return generate_voxel_image(network, pore_shape=pore_shape,
+                                throat_shape=throat_shape, max_dim=max_dim,
+                                verbose=verbose, rtol=rtol)
