@@ -11,6 +11,7 @@ that do NOT return a modified version of the original image.
 
 .. autosummary::
 
+    porespy.tools.align_image_with_openpnm
     porespy.tools.bbox_to_slices
     porespy.tools.extend_slice
     porespy.tools.extract_subsection
@@ -21,7 +22,6 @@ that do NOT return a modified version of the original image.
     porespy.tools.find_outer_region
     porespy.tools.get_border
     porespy.tools.get_planes
-    porespy.tools.get_slice
     porespy.tools.insert_cylinder
     porespy.tools.insert_sphere
     porespy.tools.in_hull
@@ -35,6 +35,7 @@ that do NOT return a modified version of the original image.
     porespy.tools.ps_ball
     porespy.tools.pad_faces
 
+.. autofunction:: align_image_with_openpnm
 .. autofunction:: bbox_to_slices
 .. autofunction:: extend_slice
 .. autofunction:: extract_cylinder
@@ -44,7 +45,6 @@ that do NOT return a modified version of the original image.
 .. autofunction:: find_outer_region
 .. autofunction:: get_border
 .. autofunction:: get_planes
-.. autofunction:: get_slices
 .. autofunction:: insert_cylinder
 .. autofunction:: insert_sphere
 .. autofunction:: in_hull
@@ -52,19 +52,20 @@ that do NOT return a modified version of the original image.
 .. autofunction:: mesh_region
 .. autofunction:: norm_to_uniform
 .. autofunction:: overlay
-.. autofunction:: randomize_colors
-.. autofunction:: subdivide
 .. autofunction:: ps_disk
 .. autofunction:: ps_ball
 .. autofunction:: pad_faces
+.. autofunction:: randomize_colors
+.. autofunction:: subdivide
 
 '''
+
 from .__funcs__ import align_image_with_openpnm
 from .__funcs__ import bbox_to_slices
 from .__funcs__ import _create_alias_map
 from .__funcs__ import extend_slice
-from .__funcs__ import extract_subsection
 from .__funcs__ import extract_cylinder
+from .__funcs__ import extract_subsection
 from .__funcs__ import extract_regions
 from .__funcs__ import fftmorphology
 from .__funcs__ import find_outer_region
@@ -75,10 +76,10 @@ from .__funcs__ import insert_sphere
 from .__funcs__ import in_hull
 from .__funcs__ import make_contiguous
 from .__funcs__ import mesh_region
-from .__funcs__ import overlay
 from .__funcs__ import norm_to_uniform
+from .__funcs__ import overlay
 from .__funcs__ import randomize_colors
-from .__funcs__ import subdivide
 from .__funcs__ import ps_disk
 from .__funcs__ import ps_ball
 from .__funcs__ import pad_faces
+from .__funcs__ import subdivide

@@ -34,12 +34,6 @@ class ToolsTest():
         b = ps.tools.make_contiguous(im, keep_zeros=False).max()
         assert a == b
 
-        assert sp.sum(one_lab) == sp.sum(one_lab[tuple(my_slice)])
-    def test_find_outer_region(self):
-        my_slice = ps.tools.extract_regions(regions=self.labels, labels=10)
-        outer = ps.tools.find_outer_region(my_slice)
-        small_slice = one_lab[tuple(my_slice)]
-
     def test_extract_subsection(self):
         sec = ps.tools.extract_subsection(self.blobs, [0.5])
         assert sp.all(sp.array(sp.shape(sec)) == 50)
