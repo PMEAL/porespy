@@ -16,6 +16,7 @@ that do NOT return a modified version of the original image.
     porespy.tools.extract_subsection
     porespy.tools.extract_regions
     porespy.tools.extract_cylinder
+    porespy.tools.extract_subsection
     porespy.tools.fftmorphology
     porespy.tools.find_outer_region
     porespy.tools.get_border
@@ -32,6 +33,7 @@ that do NOT return a modified version of the original image.
     porespy.tools.subdivide
     porespy.tools.ps_disk
     porespy.tools.ps_ball
+    porespy.tools.pad_faces
 
 .. autofunction:: bbox_to_slices
 .. autofunction:: extend_slice
@@ -42,6 +44,7 @@ that do NOT return a modified version of the original image.
 .. autofunction:: find_outer_region
 .. autofunction:: get_border
 .. autofunction:: get_planes
+.. autofunction:: get_slices
 .. autofunction:: insert_cylinder
 .. autofunction:: insert_sphere
 .. autofunction:: in_hull
