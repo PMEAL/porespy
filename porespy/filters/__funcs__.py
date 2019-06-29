@@ -1264,8 +1264,8 @@ def trim_disconnected_blobs(im, inlets):
     temp = sp.zeros_like(im)
     temp[inlets] = True
     labels, N = spim.label(im + temp)
-    im = im ^ (clear_border(labels=labels) > 0)
-    return im
+    im2 = im ^ (clear_border(labels=labels) > 0)
+    return im2
 
 
 def _get_axial_shifts(ndim=2, include_diagonals=False):
