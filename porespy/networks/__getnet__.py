@@ -119,7 +119,6 @@ def regions_to_network(im, dt=None, voxel_size=1):
     net['pore.label'] = sp.array(p_label)
     net['pore.volume'] = sp.copy(p_volume)*(voxel_size**3)
     net['throat.volume'] = sp.zeros((Nt, ), dtype=float)
-    net['pore.diameter'] = sp.copy(p_dia_local)*voxel_size
     net['pore.inscribed_diameter'] = sp.copy(p_dia_local)*voxel_size
     net['pore.equivalent_diameter'] = 2*((3/4*net['pore.volume']/sp.pi)**(1/3))
     net['pore.extended_diameter'] = sp.copy(p_dia_global)*voxel_size
@@ -133,9 +132,16 @@ def regions_to_network(im, dt=None, voxel_size=1):
     PT1 = sp.sqrt(sp.sum(((p_coords[P12[:, 0]]-t_coords) * voxel_size)**2, axis=1))
     PT2 = sp.sqrt(sp.sum(((p_coords[P12[:, 1]]-t_coords) * voxel_size)**2, axis=1))
     net['throat.total_length'] = PT1 + PT2
-    PT1 = PT1-p_dia_local[P12[:, 0]]/2*voxel_size
-    PT2 = PT2-p_dia_local[P12[:, 1]]/2*voxel_size
-    net['throat.length'] = PT1 + PT2
+    PT3 = PT1-p_dia_local[P12[:, 0]]/2*voxel_size
+    PT4 = PT2-p_dia_local[P12[:, 1]]/2*voxel_size
+    p_dia = sp.copy(p_dia_local) * voxel_size
+    p_dia[P12[:, 0][PT3 <= 0]] = PT1[PT3 <= 0]
+    p_dia[P12[:, 1][PT4 <= 0]] = PT2[PT4 <= 0]
+    t_len = PT3 + PT4
+    t_len[PT3 <= 0] = 1e-12
+    t_len[PT4 <= 0] = 1e-12
+    net['throat.length'] = t_len
+    net['pore.diameter'] = p_dia
     dist = (p_coords[P12[:, 0]]-p_coords[P12[:, 1]])*voxel_size
     net['throat.direct_length'] = sp.sqrt(sp.sum(dist**2, axis=1))
     # Make a dummy openpnm network to get the conduit lengths
