@@ -1,6 +1,35 @@
 import scipy as sp
+import scipy.ndimage as spim
 # import matplotlib.pyplot as plt
 # from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+
+
+def show_3D(im):
+    r"""
+    Rotates a 3D image and creates an angled view for quick 2D visualization
+
+    Parameters
+    ----------
+    im : 3D-array
+        The 3D array to be viewed from an angle
+
+    Returns
+    -------
+    image : 2D-array
+        A 2D veiw of the given 3D image
+    """
+    if im.ndim < 3:
+        raise Exception('show_3D only applies to 3D images')
+    im = spim.rotate(input=im, angle=22.5, axes=[0, 1], order=0)
+    im = spim.rotate(input=im, angle=45, axes=[2, 1], order=0)
+    im = spim.rotate(input=im, angle=-17, axes=[0, 1], order=0, reshape=False)
+    mask = im != 0
+    view = sp.where(mask.any(axis=2), mask.argmax(axis=2), 0)
+    view = view.max() - view
+    f = view.max()/5
+    view[view == view.max()] = -f
+    view = (view + f)**2
+    return view
 
 
 def show_planes(im):

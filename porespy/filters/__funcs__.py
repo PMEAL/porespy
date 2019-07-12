@@ -1207,6 +1207,7 @@ def trim_disconnected_blobs(im, inlets):
         im2 = sp.reshape(sp.in1d(labels, keep), newshape=im.shape)
     else:
         im2 = sp.zeros_like(im)
+    return im2
 
 
 def _get_axial_shifts(ndim=2, include_diagonals=False):
