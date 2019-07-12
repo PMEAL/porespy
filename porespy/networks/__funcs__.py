@@ -4,7 +4,7 @@ import openpnm as op
 from porespy.tools import make_contiguous
 from skimage.segmentation import find_boundaries
 from skimage.morphology import ball, cube
-from tqdm import tqdm
+from tqdm.autonotebook import tqdm
 from porespy.tools import _create_alias_map, overlay
 from porespy.tools import insert_sphere, insert_cylinder
 

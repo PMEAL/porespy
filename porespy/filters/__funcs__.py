@@ -5,7 +5,7 @@ import scipy.ndimage as spim
 import scipy.spatial as sptl
 import warnings
 from scipy.signal import fftconvolve
-from tqdm import tqdm
+from tqdm.autonotebook import tqdm
 from numba import jit
 from skimage.segmentation import clear_border
 from skimage.morphology import ball, disk, square, cube, diamond, octahedron
@@ -1190,7 +1190,7 @@ def trim_disconnected_blobs(im, inlets):
     ----------
     im : ND-array
         The array to be trimmed
-    inlets : ND-array of tuple of indices
+    inlets : ND-array or tuple of indices
         The locations of the inlets.  Any voxels *not* connected directly to
         the inlets will be trimmed
 
@@ -1200,11 +1200,13 @@ def trim_disconnected_blobs(im, inlets):
         An array of the same shape as ``im``, but with all foreground
         voxels not connected to the ``inlets`` removed.
     """
-    temp = sp.zeros_like(im)
-    temp[inlets] = True
-    labels, N = spim.label(im + temp)
-    im = im ^ (clear_border(labels=labels) > 0)
-    return im
+    labels = spim.label(im)[0]
+    keep = sp.unique(labels[inlets])
+    keep = keep[keep > 0]
+    if len(keep) > 0:
+        im2 = sp.reshape(sp.in1d(labels, keep), newshape=im.shape)
+    else:
+        im2 = sp.zeros_like(im)
 
 
 def _get_axial_shifts(ndim=2, include_diagonals=False):
