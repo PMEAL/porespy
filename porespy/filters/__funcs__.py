@@ -306,6 +306,45 @@ def snow_partitioning_n(im, r_max=4, sigma=0.4, return_all=True,
         return combined_region
 
 
+def ICE_peaks(dt):
+    r"""
+    Find peaks in the distance transform using iterative cluster expansion
+
+    Parameters
+    ----------
+    dt : ND-array
+        The distance transform of the pore space.  This may be calculated and
+        filtered using any means desired.
+
+    Returns
+    -------
+    image : ND-array
+        An array of booleans with ``True`` values at the location of any
+        local maxima.
+
+    """
+    if dt.ndim == 2:
+        cube = square
+        ball = disk
+    labels_prev = sp.zeros_like(dt, dtype=int)
+    sizes = sp.unique(dt)[-1:0:-1]
+    for r in tqdm(sizes):
+        dt_thresh = dt >= r
+        labels, N = spim.label(dt_thresh, structure=cube(3))
+        labels[labels > 0] += labels_prev.max()
+        slices = spim.find_objects(labels)
+        for i, s in enumerate(slices):
+            if s:
+                im_temp = labels[s] == (i + 1)
+                if len(sp.unique(labels_prev[s] * im_temp)) > 2:
+                    labels[s][im_temp] = 0
+                else:
+                    labels_prev[s][im_temp] = i + 1
+    labels_prev = spim.binary_dilation(labels_prev, structure=cube(3))
+    labels_prev = spim.binary_erosion(labels_prev, structure=ball(1))
+    return labels_prev > 0
+
+
 def find_peaks(dt, r_max=4, footprint=None):
     r"""
     Returns all local maxima in the distance transform

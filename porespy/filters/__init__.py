@@ -21,6 +21,7 @@ altered values.
     porespy.filters.find_dt_artifacts
     porespy.filters.find_peaks
     porespy.filters.flood
+    porespy.filters.ICE_peaks
     porespy.filters.local_thickness
     porespy.filters.porosimetry
     porespy.filters.region_size
@@ -42,6 +43,7 @@ altered values.
 .. autofunction:: find_dt_artifacts
 .. autofunction:: find_peaks
 .. autofunction:: flood
+.. autofunction:: ICE_peaks
 .. autofunction:: local_thickness
 .. autofunction:: nphase_border
 .. autofunction:: porosimetry
@@ -66,6 +68,7 @@ from .__funcs__ import find_disconnected_voxels
 from .__funcs__ import find_dt_artifacts
 from .__funcs__ import find_peaks
 from .__funcs__ import flood
+from .__funcs__ import ICE_peaks
 from .__funcs__ import local_thickness
 from .__funcs__ import nphase_border
 from .__funcs__ import porosimetry
