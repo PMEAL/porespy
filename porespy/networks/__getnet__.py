@@ -1,6 +1,6 @@
 import scipy as sp
 import openpnm as op
-from tqdm import tqdm
+from tqdm.autonotebook import tqdm
 import scipy.ndimage as spim
 from porespy.tools import extend_slice
 import openpnm.models.geometry as op_gm
