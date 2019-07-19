@@ -386,7 +386,6 @@ def ICE_peaks(dt):
     """
     if dt.ndim == 2:
         cube = square
-        ball = disk
     labels_prev = sp.zeros_like(dt, dtype=int)
     sizes = sp.unique(dt)[-1:0:-1]
     for r in tqdm(sizes):
@@ -400,9 +399,7 @@ def ICE_peaks(dt):
                 if len(sp.unique(labels_prev[s] * im_temp)) > 2:
                     labels[s][im_temp] = 0
                 else:
-                    labels_prev[s][im_temp] = i + 1
-    labels_prev = spim.binary_dilation(labels_prev, structure=cube(3))
-    labels_prev = spim.binary_erosion(labels_prev, structure=ball(1))
+                    labels_prev[s][im_temp] = i + 1 
     return labels_prev > 0
 
 
@@ -826,14 +823,21 @@ def trim_extrema(im, h, mode='maxima'):
 
     Notes
     -----
-    This function is referred to as **imhmax** or **imhmin** in Matlab.
+    (1) This function is referred to as **imhmax** or **imhmin** in Matlab.
+    
+    (2) If the provided ``h`` is larger than ALL peaks in the array, then the 
+    baseline values of the array are changed as well.
 
     """
-    result = im
-    if mode in ['maxima', 'extrema']:
-        result = reconstruction(seed=im - h, mask=im, method='dilation')
-    elif mode in ['minima', 'extrema']:
-        result = reconstruction(seed=im + h, mask=im, method='erosion')
+    mask = sp.copy(im)
+    im = sp.copy(im)
+    if mode == 'maxima':
+        result = reconstruction(seed=im - h, mask=mask, method='dilation')
+    elif mode == 'minima':
+        result = reconstruction(seed=im + h, mask=mask, method='erosion')
+    elif mode == 'extrema':
+        result = reconstruction(seed=im - h, mask=mask, method='dilation')
+        result = reconstruction(seed=result + h, mask=result, method='erosion')
     return result
 
 
