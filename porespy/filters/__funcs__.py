@@ -399,7 +399,7 @@ def ICE_peaks(dt):
                 if len(sp.unique(labels_prev[s] * im_temp)) > 2:
                     labels[s][im_temp] = 0
                 else:
-                    labels_prev[s][im_temp] = i + 1 
+                    labels_prev[s][im_temp] = i + 1
     return labels_prev > 0
 
 
@@ -824,8 +824,8 @@ def trim_extrema(im, h, mode='maxima'):
     Notes
     -----
     (1) This function is referred to as **imhmax** or **imhmin** in Matlab.
-    
-    (2) If the provided ``h`` is larger than ALL peaks in the array, then the 
+
+    (2) If the provided ``h`` is larger than ALL peaks in the array, then the
     baseline values of the array are changed as well.
 
     """
@@ -841,7 +841,6 @@ def trim_extrema(im, h, mode='maxima'):
     return result
 
 
-@jit(forceobj=True)
 def flood(im, regions=None, mode='max'):
     r"""
     Floods/fills each region in an image with a single value based on the

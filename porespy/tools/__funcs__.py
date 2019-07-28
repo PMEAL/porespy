@@ -8,6 +8,45 @@ from array_split import shape_split
 from scipy.signal import fftconvolve
 
 
+def marching_map(path, start):
+    r"""
+    Use the fast marching method to find distance of each voxel from a starting
+    point
+
+    Parameters
+    ----------
+    path : ND-image
+        A boolean image with ``True`` values demarcating the path along which
+        the march will occur
+    start : ND-image
+        A boolean image with ``True`` values indicating where the march should
+        start.
+
+    Returns
+    -------
+    distance : ND-image
+        An array the same size as ``path`` with numerical values in each voxel
+        indicating it's distance from the start point(s) along the given path.
+
+    Notes
+    -----
+    This function requires scikit-fmm is installed on your machine. This
+    package requires downloading and installing the binaries specific for your
+    platform.  Mac and Linux builds are available fron conda, while windows
+    builds can be downloaded from Christoph Gohlke website.
+
+    """
+    try:
+        import skfmm
+    except ModuleNotFoundError:
+        raise ModuleNotFoundError('scikit-fmm must be install to use this ' +
+                                  'function')
+    phi = start*2.0 - 1.0
+    speed = path*1.0
+    t = skfmm.travel_time(phi, speed)
+    return t.data
+
+
 def align_image_with_openpnm(im):
     r"""
     Rotates an image to agree with the coordinates used in OpenPNM.  It is
