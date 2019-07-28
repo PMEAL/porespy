@@ -905,6 +905,43 @@ def flood(im, regions=None, mode='max'):
     return im_flooded
 
 
+def flood_func(im, func, labels=None):
+    r"""
+    Flood each isolated region in an image with a constant value calculated by
+    the given function.
+
+    Parameters
+    ----------
+    im : ND-array
+        The image containing distinct regions which should each be flooded
+    func : Numpy function handle
+        The function to be applied to each region in the image.  Any Numpy
+        function that returns a scalar value can be passed, such as ``amin``,
+        ``amax``, ``sum``, ``mean``, ``median``, etc.
+    labels : ND-image, optional
+        An array containing labels identify each individual region to be
+        flooded. If not provided then ``scipy.ndimage.label`` is applied to
+        ``im > 0``.
+
+    Returns
+    -------
+    flooded : ND-array
+        An image the same size as ``im`` with each isolated region flooded
+        with a constant value based on the given ``func`` and the values
+        in ``im``.
+
+    """
+    if labels is None:
+        labels, N = spim.label(im > 0)
+    slices = spim.find_objects(labels)
+    new_im = sp.zeros_like(im, dtype=float)
+    for i, s in enumerate(slices):
+        sub_im = labels[s] == (i + 1)
+        val = func(im[s][sub_im])
+        new_im[s] += sub_im*val
+    return new_im
+
+
 def find_dt_artifacts(dt):
     r"""
     Finds points in a distance transform that are closer to wall than solid.
