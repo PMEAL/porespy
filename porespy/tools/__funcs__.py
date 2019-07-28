@@ -8,6 +8,35 @@ from array_split import shape_split
 from scipy.signal import fftconvolve
 
 
+def isolate_object(region, i, s=None):
+    r"""
+    Given an image containing labels, removes all labels except the specified
+    one.
+
+    Parameters
+    ----------
+    region : ND-array
+        An image containing labelled regions, as returned by
+        ``scipy.ndimage.label``.
+    i : int
+        The integer value
+    s : tuple of slice objects, optional
+        If provided, then a subsection of ``region`` will be extracted and the
+        function will be applied to this subsection only.
+
+    Returns
+    -------
+    label : ND-array
+        An ND-array the same size as ``region`` containing *only* the objects
+        with the given value ``i``.  If ``s`` is provided, the returned image
+        will be a subsection of ``region``.
+    """
+    if s is not None:
+        region = region[s]
+    im = (region == i)*i
+    return im
+
+
 def marching_map(path, start):
     r"""
     Use the fast marching method to find distance of each voxel from a starting

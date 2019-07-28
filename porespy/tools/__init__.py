@@ -25,6 +25,7 @@ that do NOT return a modified version of the original image.
     porespy.tools.insert_cylinder
     porespy.tools.insert_sphere
     porespy.tools.in_hull
+    porespy.tools.isolate_object
     porespy.tools.make_contiguous
     porespy.tools.marching_map
     porespy.tools.mesh_region
@@ -49,6 +50,7 @@ that do NOT return a modified version of the original image.
 .. autofunction:: insert_cylinder
 .. autofunction:: insert_sphere
 .. autofunction:: in_hull
+.. autofunction:: isolate_object
 .. autofunction:: marching_map
 .. autofunction:: make_contiguous
 .. autofunction:: mesh_region
@@ -76,6 +78,7 @@ from .__funcs__ import get_planes
 from .__funcs__ import insert_cylinder
 from .__funcs__ import insert_sphere
 from .__funcs__ import in_hull
+from .__funcs__ import isolate_object
 from .__funcs__ import marching_map
 from .__funcs__ import make_contiguous
 from .__funcs__ import mesh_region
