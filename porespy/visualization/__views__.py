@@ -4,7 +4,7 @@ import scipy.ndimage as spim
 # from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
 
-def show_3D(im):
+def view_3D(im):
     r"""
     Rotates a 3D image and creates an angled view for quick 2D visualization
 
@@ -17,6 +17,14 @@ def show_3D(im):
     -------
     image : 2D-array
         A 2D veiw of the given 3D image
+
+    Notes
+    -----
+    Although this is meant to be *quick* it can still take on the order of
+    minutes to render very large images.  It uses ``scipy.ndimage.rotate``
+    with no interpolation to view the 3D image from an angle, then casts the
+    result into a 2D projection.
+
     """
     if im.ndim < 3:
         raise Exception('show_3D only applies to 3D images')
