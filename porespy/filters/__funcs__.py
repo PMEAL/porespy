@@ -1,6 +1,7 @@
 from collections import namedtuple
 import scipy as sp
 import numpy as np
+import operator as op
 import scipy.ndimage as spim
 import scipy.spatial as sptl
 import warnings
@@ -14,6 +15,66 @@ from porespy.tools import randomize_colors, fftmorphology
 from porespy.tools import get_border, extend_slice, extract_subsection
 from porespy.tools import ps_disk, ps_ball
 from porespy.tools import _create_alias_map
+
+
+def trim_small_clusters(im, size=1):
+    r"""
+    Remove isolated voxels or clusters smaller than a given size
+
+    Parameters
+    ----------
+    im : ND-array
+        The binary image from which voxels are to be removed
+    size : scalar
+        The threshold size of clusters to trim.  As clusters with this many
+        voxels or fewer will be trimmed.  The default is 1 so only single
+        voxels are removed.
+
+    Returns
+    -------
+    im : ND-image
+        A copy of ``im`` with clusters of voxels smaller than the given
+        ``size`` removed.
+
+    """
+    if im.dims == 2:
+        strel = disk(1)
+    elif im.ndims == 3:
+        strel = ball(1)
+    else:
+        raise Exception('Only 2D or 3D images are accepted')
+    filtered_array = sp.copy(im)
+    labels, N = spim.label(filtered_array, structure=strel)
+    id_sizes = sp.array(spim.sum(im, labels, range(N + 1)))
+    area_mask = (id_sizes <= size)
+    filtered_array[area_mask[labels]] = 0
+    return filtered_array
+
+
+def hold_peaks(im, axis=-1):
+    r"""
+    Replaces each voxel with the highest value along the given axis
+
+    Parameters
+    ----------
+    im : ND-image
+        A greyscale image whose peaks are to
+    """
+    A = im
+    B = np.swapaxes(A, axis, -1)
+    updown = np.empty((*B.shape[:-1], B.shape[-1]+1), B.dtype)
+    updown[..., 0], updown[..., -1] = -1, -1
+    np.subtract(B[..., 1:], B[..., :-1], out=updown[..., 1:-1])
+    chnidx = np.where(updown)
+    chng = updown[chnidx]
+    pkidx, = np.where((chng[:-1] > 0) & (chng[1:] < 0) | (chnidx[-1][:-1] == 0))
+    pkidx = (*map(op.itemgetter(pkidx), chnidx),)
+    out = np.zeros_like(A)
+    aux = out.swapaxes(axis, -1)
+    aux[(*map(op.itemgetter(slice(1, None)), pkidx),)] = np.diff(B[pkidx])
+    aux[..., 0] = B[..., 0]
+    result = out.cumsum(axis=axis)
+    return result
 
 
 def distance_transform_lin(im, axis=0, mode='both'):
@@ -985,10 +1046,11 @@ def apply_chords_3D(im, spacing=0, trim_edges=True):
 
 def local_thickness(im, sizes=25, mode='hybrid'):
     r"""
-    For each voxel, this functions calculates the radius of the largest sphere
-    that both engulfs the voxel and fits entirely within the foreground. This
-    is not the same as a simple distance transform, which finds the largest
-    sphere that could be *centered* on each voxel.
+    For each voxel, this function calculates the radius of the largest sphere
+    that both engulfs the voxel and fits entirely within the foreground.
+
+    This is not the same as a simple distance transform, which finds the
+    largest sphere that could be *centered* on each voxel.
 
     Parameters
     ----------
@@ -1111,7 +1173,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
 
     Notes
     -----
-    There are many ways to perform this filter, and PoreSpy offer 3, which
+    There are many ways to perform this filter, and PoreSpy offers 3, which
     users can choose between via the ``mode`` argument.  These methods all
     work in a similar way by finding which foreground voxels can accomodate
     a sphere of a given radius, then repeating for smaller radii.
@@ -1190,7 +1252,7 @@ def trim_disconnected_blobs(im, inlets):
     ----------
     im : ND-array
         The array to be trimmed
-    inlets : ND-array of tuple of indices
+    inlets : ND-array or tuple of indices
         The locations of the inlets.  Any voxels *not* connected directly to
         the inlets will be trimmed
 
@@ -1200,11 +1262,14 @@ def trim_disconnected_blobs(im, inlets):
         An array of the same shape as ``im``, but with all foreground
         voxels not connected to the ``inlets`` removed.
     """
-    temp = sp.zeros_like(im)
-    temp[inlets] = True
-    labels, N = spim.label(im + temp)
-    im = im ^ (clear_border(labels=labels) > 0)
-    return im
+    labels = spim.label(im)[0]
+    keep = sp.unique(labels[inlets])
+    keep = keep[keep > 0]
+    if len(keep) > 0:
+        im2 = sp.reshape(sp.in1d(labels, keep), newshape=im.shape)
+    else:
+        im2 = sp.zeros_like(im)
+    return im2
 
 
 def _get_axial_shifts(ndim=2, include_diagonals=False):
@@ -1319,3 +1384,66 @@ def nphase_border(im, include_diagonals=False):
         return out[1:-1, 1:-1].copy()
     else:
         return out[1:-1, 1:-1, 1:-1].copy()
+
+
+def prune_branches(skel, branch_points=None, iterations=1):
+    r"""
+    Removes all dangling ends or tails of a skeleton.
+
+    Parameters
+    ----------
+    skel : ND-image
+        A image of a full or partial skeleton from which the tails should be
+        trimmed.
+
+    branch_points : ND-image, optional
+        An image the same size ``skel`` with True values indicating the branch
+        points of the skeleton.  If this is not provided it is calculated
+        automatically.
+
+    Returns
+    -------
+    An ND-image containing the skeleton with tails removed.
+
+    """
+    skel = skel > 0
+    if skel.ndim == 2:
+        from skimage.morphology import square as cube
+    else:
+        from skimage.morphology import cube
+    # Create empty image to house results
+    im_result = sp.zeros_like(skel)
+    # If branch points are not supplied, attempt to find them
+    if branch_points is None:
+        branch_points = spim.convolve(skel*1.0, weights=cube(3)) > 3
+        branch_points = branch_points*skel
+    # Store original branch points before dilating
+    pts_orig = branch_points
+    # Find arcs of skeleton by deleting branch points
+    arcs = skel*(~branch_points)
+    # Label arcs
+    arc_labels = spim.label(arcs, structure=cube(3))[0]
+    # Dilate branch points so they overlap with the arcs
+    branch_points = spim.binary_dilation(branch_points, structure=cube(3))
+    pts_labels = spim.label(branch_points, structure=cube(3))[0]
+    # Now scan through each arc to see if it's connected to two branch points
+    slices = spim.find_objects(arc_labels)
+    label_num = 0
+    for s in slices:
+        label_num += 1
+        # Find branch point labels the overlap current arc
+        hits = pts_labels[s]*(arc_labels[s] == label_num)
+        # If image contains 2 branch points, then it's not a tail.
+        if len(sp.unique(hits)) == 3:
+            im_result[s] += arc_labels[s] == label_num
+    # Add missing branch points back to arc image to make complete skeleton
+    im_result += skel*pts_orig
+    if iterations > 1:
+        iterations -= 1
+        im_temp = sp.copy(im_result)
+        im_result = prune_branches(skel=im_result,
+                                   branch_points=None,
+                                   iterations=iterations)
+        if sp.all(im_temp == im_result):
+            iterations = 0
+    return im_result

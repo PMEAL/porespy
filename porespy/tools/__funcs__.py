@@ -234,45 +234,6 @@ def bbox_to_slices(bbox):
     return ret
 
 
-def get_slice(im, center, size, pad=0):
-    r"""
-    Given a ``center`` location and ``radius`` of a feature, returns the slice
-    object into the ``im`` that bounds the feature but does not extend beyond
-    the image boundaries.
-
-    Parameters
-    ----------
-    im : ND-image
-        The image of the porous media
-
-    center : array_like
-        The coordinates of the center of the feature of interest
-
-    size : array_like or scalar
-        The size of the feature in each direction.  If a scalar is supplied,
-        this implies the same size in all directions.
-
-    pad : scalar or array_like
-        The amount to pad onto each side of the slice.  The default is 0.  A
-        scalar value will increase the slice size equally in all directions,
-        while an array the same shape as ``im.shape`` can be passed to pad
-        a specified amount in each direction.
-
-    Returns
-    -------
-    slices : list
-        A list of slice objects, each indexing into one dimension of the image.
-    """
-    p = sp.ones(shape=im.ndim, dtype=int) * sp.array(pad)
-    s = sp.ones(shape=im.ndim, dtype=int) * sp.array(size)
-    slc = []
-    for dim in range(im.ndim):
-        lower_im = sp.amax((center[dim] - s[dim] - p[dim], 0))
-        upper_im = sp.amin((center[dim] + s[dim] + 1 + p[dim], im.shape[dim]))
-        slc.append(slice(lower_im, upper_im))
-    return slc
-
-
 def find_outer_region(im, r=0):
     r"""
     Finds regions of the image that are outside of the solid matrix.
@@ -648,6 +609,10 @@ def get_border(shape, thickness=1, mode='edges', return_indices=False):
         3D) indices is returned.  This tuple can be used directly to index into
         the image, such as ``im[tup] = 2``.
 
+    asmask : Boolean
+        If ``True`` (default) then an image of the specified ``shape`` is
+        returned, otherwise indices of the border voxels are returned.
+
     Returns
     -------
     image : ND-array
@@ -677,6 +642,7 @@ def get_border(shape, thickness=1, mode='edges', return_indices=False):
     [[ True  True  True]
      [ True False  True]
      [ True  True  True]]
+
     """
     ndims = len(shape)
     t = thickness
@@ -736,9 +702,8 @@ def in_hull(points, hull):
 
 def norm_to_uniform(im, scale=None):
     r"""
-    Take an image with normally distributed greyscale values and converts it to
-    a uniform (i.e. flat) distribution.  It's also possible to specify the
-    lower and upper limits of the uniform distribution.
+    Take an image with normally distributed greyscale values and convert it to
+    a uniform (i.e. flat) distribution.
 
     Parameters
     ----------
@@ -1117,3 +1082,45 @@ def _create_alias_map(im, alias=None):
             raise Exception('Alias labels does not match with image labels '
                             'please provide correct image labels')
     return al
+
+
+def extract_regions(regions, labels: list, trim=True):
+    r"""
+    Combine given regions into a single boolean mask
+
+    Parameters
+    -----------
+    regions : ND-array
+        An image containing an arbitrary number of labeled regions
+    labels : array_like or scalar
+        A list of labels indicating which region or regions to extract
+    trim : bool
+        If ``True`` then image shape will trimmed to a bounding box around the
+        given regions.
+
+    Returns
+    -------
+    im : ND-array
+        A boolean mask with ``True`` values indicating where the given labels
+        exist
+
+    """
+    if type(labels) is int:
+        labels = [labels]
+    s = spim.find_objects(regions)
+    im_new = sp.zeros_like(regions)
+    x_min, y_min, z_min = sp.inf, sp.inf, sp.inf
+    x_max, y_max, z_max = 0, 0, 0
+    for i in labels:
+        im_new[s[i-1]] = regions[s[i-1]] == i
+        x_min, x_max = min(s[i-1][0].start, x_min), max(s[i-1][0].stop, x_max)
+        y_min, y_max = min(s[i-1][1].start, y_min), max(s[i-1][1].stop, y_max)
+        if regions.ndim == 3:
+            z_min, z_max = min(s[i-1][2].start, z_min), max(s[i-1][2].stop, z_max)
+    if trim:
+        if regions.ndim == 3:
+            bbox = bbox_to_slices([x_min, y_min, z_min, x_max, y_max, z_max])
+        else:
+            bbox = bbox_to_slices([x_min, y_min, x_max, y_max])
+        im_new = im_new[bbox]
+    return im_new
