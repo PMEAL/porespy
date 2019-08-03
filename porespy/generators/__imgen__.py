@@ -704,7 +704,7 @@ def blobs(shape: List[int], porosity: float = 0.5, blobiness: int = 1):
 
 
 def cylinders(shape: List[int], radius: int, ncylinders: int,
-              phi_max: float = 0, theta_max: float = 90):
+              phi_max: float = 0, theta_max: float = 90, length: float = None):
     r"""
     Generates a binary image of overlapping cylinders.  This is a good
     approximation of a fibrous mat.
@@ -722,14 +722,21 @@ def cylinders(shape: List[int], radius: int, ncylinders: int,
         cylinders overlap and intersect different fractions of the domain.
     theta_max : scalar
         A value between 0 and 90 that controls the amount of rotation *in the*
-        XY plane, with 0 meaning all fibers point in the X-direction, and
+        XY plane, with 0 meaning all cylinders point in the X-direction, and
         90 meaning they are randomly rotated about the Z axis by as much
         as +/- 90 degrees.
     phi_max : scalar
-        A value between 0 and 90 that controls the amount that the fibers
-        lie *out of* the XY plane, with 0 meaning all fibers lie in the XY
-        plane, and 90 meaning that fibers are randomly oriented out of the
+        A value between 0 and 90 that controls the amount that the cylinders
+        lie *out of* the XY plane, with 0 meaning all cylinders lie in the XY
+        plane, and 90 meaning that cylinders are randomly oriented out of the
         plane by as much as +/- 90 degrees.
+    length : scalar
+        The length of the cylinders to add.  If ``None`` (default) then the
+        cylinders will extend beyond the domain in both directions so no ends
+        will exist. If a scalar value is given it will be interpreted as the
+        Euclidean distance between the two ends of the cylinder.  Note that
+        one or both of the ends *may* still lie outside the domain, depending
+        on the randomly chosen center point of the cylinder.
 
     Returns
     -------
@@ -741,7 +748,10 @@ def cylinders(shape: List[int], radius: int, ncylinders: int,
         shape = sp.full((3, ), int(shape))
     elif sp.size(shape) == 2:
         raise Exception("2D cylinders don't make sense")
-    R = sp.sqrt(sp.sum(sp.square(shape))).astype(int)
+    if length is None:
+        R = sp.sqrt(sp.sum(sp.square(shape))).astype(int)
+    else:
+        R = length/2
     im = sp.zeros(shape)
     # Adjust max angles to be between 0 and 90
     if (phi_max > 90) or (phi_max < 0):
