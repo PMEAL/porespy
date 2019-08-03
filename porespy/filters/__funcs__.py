@@ -1046,10 +1046,11 @@ def apply_chords_3D(im, spacing=0, trim_edges=True):
 
 def local_thickness(im, sizes=25, mode='hybrid'):
     r"""
-    For each voxel, this functions calculates the radius of the largest sphere
-    that both engulfs the voxel and fits entirely within the foreground. This
-    is not the same as a simple distance transform, which finds the largest
-    sphere that could be *centered* on each voxel.
+    For each voxel, this function calculates the radius of the largest sphere
+    that both engulfs the voxel and fits entirely within the foreground.
+
+    This is not the same as a simple distance transform, which finds the
+    largest sphere that could be *centered* on each voxel.
 
     Parameters
     ----------
@@ -1172,7 +1173,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
 
     Notes
     -----
-    There are many ways to perform this filter, and PoreSpy offer 3, which
+    There are many ways to perform this filter, and PoreSpy offers 3, which
     users can choose between via the ``mode`` argument.  These methods all
     work in a similar way by finding which foreground voxels can accomodate
     a sphere of a given radius, then repeating for smaller radii.
