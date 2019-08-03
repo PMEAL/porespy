@@ -81,7 +81,7 @@ def regions_to_network(im, dt=None, voxel_size=1):
         p_label[pore] = i
         p_coords[pore, :] = spim.center_of_mass(pore_im) + s_offset
         p_volume[pore] = sp.sum(pore_im)
-        p_dia_local[pore] = 2*sp.amax(pore_dt)
+        p_dia_local[pore] = (2*sp.amax(pore_dt)) - sp.sqrt(3)
         p_dia_global[pore] = 2*sp.amax(sub_dt)
         p_area_surf[pore] = sp.sum(pore_dt == 1)
         im_w_throats = spim.binary_dilation(input=pore_im, structure=struc_elem(1))
