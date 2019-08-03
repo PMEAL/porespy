@@ -6,7 +6,7 @@ import scipy.ndimage as spim
 import scipy.spatial as sptl
 import warnings
 from scipy.signal import fftconvolve
-from tqdm.autonotebook import tqdm
+from tqdm import tqdm
 from numba import jit
 from skimage.segmentation import clear_border
 from skimage.morphology import ball, disk, square, cube, diamond, octahedron

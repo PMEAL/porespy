@@ -7,7 +7,7 @@ import scipy.spatial as sptl
 from porespy.tools import extend_slice, mesh_region
 from porespy.filters import find_dt_artifacts
 from collections import namedtuple
-from tqdm.autonotebook import tqdm
+from tqdm import tqdm
 from scipy import fftpack as sp_ft
 from skimage import measure
 
