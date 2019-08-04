@@ -7,7 +7,7 @@ import scipy.spatial as sptl
 from porespy.tools import extend_slice, mesh_region
 from porespy.filters import find_dt_artifacts
 from collections import namedtuple
-from tqdm.autonotebook import tqdm
+from tqdm import tqdm
 from scipy import fftpack as sp_ft
 from skimage import measure
 
@@ -197,12 +197,12 @@ def porosity(im):
     solid phase.
 
     All other values are ignored, so this can also return the relative
-    fraction of a phase of interest.
+    fraction of a phase of interest in trinary or multiphase images.
 
     Parameters
     ----------
     im : ND-array
-        Image of the void space with 1's indicating void space (or True) and
+        Image of the void space with 1's indicating void phase (or True) and
         0's indicating the solid phase (or False).
 
     Returns
@@ -387,7 +387,10 @@ def pore_size_distribution(im, bins=10, log=True, voxel_size=1):
         be automatically generated that span the data range.
     log : boolean
         If ``True`` (default) the size data is converted to log (base-10)
-        values before processing.  This can help
+        values before processing.  This can help to plot wide size
+        distributions or to better visualize the in the small size region.
+        Note that you can anti-log the radii values in the retunred ``tuple``,
+        but the binning is performed on the logged radii values.
     voxel_size : scalar
         The size of a voxel side in preferred units.  The default is 1, so the
         user can apply the scaling to the returned results after the fact.
@@ -416,8 +419,8 @@ def pore_size_distribution(im, bins=10, log=True, voxel_size=1):
 
     Notes
     -----
-    (1) To ensure the returned values represent actual sizes be sure to scale
-    the distance transform by the voxel size first (``dt *= voxel_size``)
+    (1) To ensure the returned values represent actual sizes you can manually
+    scale the input image by the voxel size first (``im *= voxel_size``)
 
     plt.bar(psd.R, psd.satn, width=psd.bin_widths, edgecolor='k')
 

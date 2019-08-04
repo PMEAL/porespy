@@ -6,7 +6,10 @@ import scipy.ndimage as spim
 
 def view_3D(im):
     r"""
-    Rotates a 3D image and creates an angled view for quick 2D visualization
+    Rotates a 3D image and creates an angled view for rough 2D visualization.
+
+    Because it rotates the image it can be slow for large image, so is
+    mostly meant for rough checking of small prototype images.
 
     Parameters
     ----------
@@ -26,6 +29,7 @@ def view_3D(im):
     result into a 2D projection.
 
     """
+    im = ~sp.copy(im)
     if im.ndim < 3:
         raise Exception('show_3D only applies to 3D images')
     im = spim.rotate(input=im, angle=22.5, axes=[0, 1], order=0)
