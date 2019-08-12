@@ -1265,18 +1265,21 @@ def trim_disconnected_blobs(im, inlets):
         voxels not connected to the ``inlets`` removed.
     """
     if type(inlets) == tuple:
-        pass
+        temp = sp.copy(inlets)
+        inlets = sp.zeros_like(im, dtype=bool)
+        inlets[temp] = True
     elif (inlets.shape == im.shape) and (inlets.max() == 1):
         inlets = inlets.astype(bool)
     else:
         raise Exception('inlets not valid, refer to docstring for info')
-    labels = spim.label(im)[0]
+    labels = spim.label(inlets + (im > 0))[0]
     keep = sp.unique(labels[inlets])
     keep = keep[keep > 0]
     if len(keep) > 0:
         im2 = sp.reshape(sp.in1d(labels, keep), newshape=im.shape)
     else:
         im2 = sp.zeros_like(im)
+    im2 = im2*im
     return im2
 
 
