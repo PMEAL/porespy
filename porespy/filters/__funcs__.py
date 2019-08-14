@@ -1458,3 +1458,76 @@ def prune_branches(skel, branch_points=None, iterations=1):
         if sp.all(im_temp == im_result):
             iterations = 0
     return im_result
+
+
+def chunked_morphology(im, strel, mode, divs=2):
+    r"""
+    Performs specfied binary morphology operation chunk-wise to save memory.
+
+    This function is particularly handy for very large images (1000-cubed)
+    which can easily fill the RAM on a normal PC.
+
+    Parameters
+    ----------
+    im : ND-image
+        The image to which the morphological operation should be applied
+    strel : ND-image
+        The structuring element to use in the morphological operation. Should
+        be the same dimensionality as ``im``
+    mode : string
+        The type of operation to apply.  Options are ``'dilation'``,
+        ``'erosion'``, ``'opening'``, ``'closing'``.
+    divs : scalar or list of scalars
+        The number of chunks to divide the image into in each direction.  The
+        default is 2 chunks in each direction essentially quartering the image.
+        Specifying a scalar is interpreted as applying to all directions, while
+        specifying a list of scalars is interpreted as applying to each
+        individual direction.
+
+    Returns
+    -------
+    result : ND-image
+        An image the same size as ``im`` with the morphological operation
+        applied.
+
+    Notes
+    -----
+    This function divides the image into the specified number of chunks, but
+    also applies a padding to each chunk to create an overlap with neighboring
+    chunks.  This way the morphological operation does not have any edge
+    artifacts.  The amount of padding is inferred from the size of ``strel``.
+
+    """
+    from array_split import shape_split, ARRAY_BOUNDS
+    if sp.isscalar(divs):
+        divs = sp.ones((im.ndim, ), dtype=int)*divs
+    divs = sp.array(divs)
+    halo = sp.array(strel.shape) * (divs > 1)
+    im2 = sp.zeros_like(im, dtype=bool)
+    slices = sp.ravel(shape_split(im.shape, axis=divs, halo=halo.tolist(),
+                                  tile_bounds_policy=ARRAY_BOUNDS))
+    for s in tqdm(slices):
+        # Perform morphology on sub-slice of overall image
+        res = fftmorphology(im=im[s], strel=strel, mode=mode)
+        # Prepare new slice objects into main and sub-sliced image
+        a = []  # Slices into main image
+        b = []  # Slices into chunked image
+        for dim in range(im.ndim):
+            if s[dim].start == 0:
+                ax = bx = 0
+            else:
+                ax = s[dim].start + halo[dim]
+                bx = halo[dim]
+            if s[dim].stop == im.shape[dim]:
+                ay = by = im.shape[dim]
+            else:
+                ay = s[dim].stop - halo[dim]
+                by = s[dim].stop - s[dim].start - halo[dim]
+            a.append(slice(ax, ay, None))
+            b.append(slice(bx, by, None))
+        # Convert lists of slices to tuples
+        a = tuple(a)
+        b = tuple(b)
+        # Insert image chunk into main image
+        im2[a] = res[b]
+    return im2
