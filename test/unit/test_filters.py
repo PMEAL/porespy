@@ -299,6 +299,39 @@ class FilterTest():
         assert not sp.any(sp.isnan(snow.dt))
         assert not sp.any(sp.isnan(snow.im))
 
+    def test_chunked_morphology_2D(self):
+        from skimage.morphology import disk
+        im = disk(50)
+        a = ps.filters.chunked_morphology(im, strel=disk(1), mode='erosion')
+        b = ps.filters.fftmorphology(im, strel=disk(1), mode='erosion')
+        assert sp.all(a == b)
+        a = ps.filters.chunked_morphology(im, strel=disk(1), mode='dilation')
+        b = ps.filters.fftmorphology(im, strel=disk(1), mode='dilation')
+        assert sp.all(a == b)
+        a = ps.filters.chunked_morphology(im, strel=disk(1), mode='opening')
+        b = ps.filters.fftmorphology(im, strel=disk(1), mode='opening')
+        assert sp.all(a == b)
+        a = ps.filters.chunked_morphology(im, strel=disk(1), mode='closing')
+        b = ps.filters.fftmorphology(im, strel=disk(1), mode='closing')
+        assert sp.all(a == b)
+
+    def test_chunked_morphology_3D(self):
+        from skimage.morphology import ball
+        im = ball(50)
+        a = ps.filters.chunked_morphology(im, strel=ball(1), mode='erosion')
+        b = ps.filters.fftmorphology(im, strel=ball(1), mode='erosion')
+        assert sp.all(a == b)
+        a = ps.filters.chunked_morphology(im, strel=ball(1), mode='dilation')
+        b = ps.filters.fftmorphology(im, strel=ball(1), mode='dilation')
+        assert sp.all(a == b)
+        a = ps.filters.chunked_morphology(im, strel=ball(1), mode='opening')
+        b = ps.filters.fftmorphology(im, strel=ball(1), mode='opening')
+        assert sp.all(a == b)
+        a = ps.filters.chunked_morphology(im, strel=ball(1), mode='closing')
+        b = ps.filters.fftmorphology(im, strel=ball(1), mode='closing')
+        assert sp.all(a == b)
+
+
 if __name__ == '__main__':
     t = FilterTest()
     self = t
