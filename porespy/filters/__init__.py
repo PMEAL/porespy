@@ -15,7 +15,7 @@ altered values.
 
     porespy.filters.apply_chords
     porespy.filters.apply_chords_3D
-    porespy.filters.chunked_morphology
+    porespy.filters.chunked_func
     porespy.filters.distance_transform_lin
     porespy.filters.fftmorphology
     porespy.filters.fill_blind_pores
@@ -41,7 +41,7 @@ altered values.
 
 .. autofunction:: apply_chords
 .. autofunction:: apply_chords_3D
-.. autofunction:: chunked_morphology
+.. autofunction:: chunked_func
 .. autofunction:: distance_transform_lin
 .. autofunction:: fftmorphology
 .. autofunction:: fill_blind_pores
@@ -70,7 +70,7 @@ altered values.
 
 from .__funcs__ import apply_chords
 from .__funcs__ import apply_chords_3D
-from .__funcs__ import chunked_morphology
+from .__funcs__ import chunked_func
 from .__funcs__ import distance_transform_lin
 from .__funcs__ import fftmorphology
 from .__funcs__ import fill_blind_pores

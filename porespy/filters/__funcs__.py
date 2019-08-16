@@ -1460,55 +1460,120 @@ def prune_branches(skel, branch_points=None, iterations=1):
     return im_result
 
 
-def chunked_morphology(im, strel, mode, divs=2):
+def chunked_func(func, divs=2, cores=1, im_arg=['input', 'image', 'im'],
+                 strel_arg=['structure', 'selem', 'strel', 'footprint',
+                            'size'], **kwargs):
     r"""
-    Performs specfied binary morphology operation chunk-wise to save memory.
+    Performs specfied operation "chunk-wise" to save memory, and can optionally
+    spread the work across multiple cores.
 
-    This function is particularly handy for very large images (1000-cubed)
-    which can easily fill the RAM on a normal PC.
+    This function can be used with any operation that requires a structuring
+    element of some sort, since these functions imply the operation is local
+    and can be chunked.  This function is particularly handy for very large
+    images (>500-cubed) which can easily fill the RAM on a normal PC and
+    take ages.
 
     Parameters
     ----------
-    im : ND-image
-        The image to which the morphological operation should be applied
-    strel : ND-image
-        The structuring element to use in the morphological operation. Should
-        be the same dimensionality as ``im``
-    mode : string
-        The type of operation to apply.  Options are ``'dilation'``,
-        ``'erosion'``, ``'opening'``, ``'closing'``.
-    divs : scalar or list of scalars
+    func : function handle
+        The function which should be applied to each chunk, such as
+        ``spipy.ndimage.binary_dilation``.
+    divs : scalar or list of scalars (default = [2, 2, 2])
         The number of chunks to divide the image into in each direction.  The
-        default is 2 chunks in each direction essentially quartering the image.
-        Specifying a scalar is interpreted as applying to all directions, while
-        specifying a list of scalars is interpreted as applying to each
-        individual direction.
+        default is 2 chunks in each direction, resulting in a quartering of
+        the image and 8 total chunks (in 3D).  A scalar is interpreted as
+        applying to all directions, while a list of scalars is interpreted
+        as applying to each individual direction.
+    cores : scalar (default = 1)
+        The number of cores which should be used.  (not implemented yet)
+    im_arg : string (or list of strings)
+        The keyword argument used by ``func`` for the image.  This argument
+        gives the flexibility to accomodate the different argument naming
+        conventions used by different packages.  By default this will consider:
+
+        - 'input'
+        - 'image'
+        - 'im'
+
+        which covers the conventions used by **ndimage**, **skimage**, and
+        **porespy**.
+    strel_arg : string (or list of strings)
+        The keyword argument used by ``func`` for the structuring element.
+        This argument gives the flexibility to accomodate the different
+        argument naming conventions used by different packages.  By default
+        this will consider:
+
+        - 'structure'
+        - 'strel'
+        - 'footprint'
+        - 'selem'
+        - 'size'
+
+        which covers the conventions used by **ndimage**, **skimage**, and
+        **porespy**.  Note that 'size' is accepted instead of a structuring
+        element in some ``scipy.ndimage`` functions.
+    kwargs
+        All other arguments are passed to ``func`` as keyword arguments. Note
+        that this must include the image and structuring element, for instance
+        ``input=im`` and ``structure=ball(3)``.  If ``func`` uses different
+        argument names, such as ``image=im`` and ``footprint=ball(3)`` then
+        you must specify these using the ``im_arg`` and ``strel_arg``
+        arguments (see above).
 
     Returns
     -------
     result : ND-image
-        An image the same size as ``im`` with the morphological operation
-        applied.
+        An image the same size as the input image.
 
     Notes
     -----
     This function divides the image into the specified number of chunks, but
     also applies a padding to each chunk to create an overlap with neighboring
-    chunks.  This way the morphological operation does not have any edge
-    artifacts.  The amount of padding is inferred from the size of ``strel``.
+    chunks.  This way the operation does not have any edge artifacts.  The
+    amount of padding is inferred from the size of the structuring element.
+
+    Examples
+    --------
+    >>> import scipy.ndimage as spim
+    >>> import porespy as ps
+    >>> from skimage.morphology import ball
+    >>> im = ps.generators.blobs(shape=[100, 100, 100])
+    >>> f = spim.binary_dilation
+    >>> im2 = ps.filters.chunked_func(func=f, input=im, structure=ball(3))
+    >>> im3 = spim.binary_dilation(input=im, structure=ball(3))
+    >>> sp.all(im2 == im3)
+    True
 
     """
+    if type(im_arg) == str:
+        im_arg = [im_arg]
+    for item in im_arg:
+        if item in kwargs.keys():
+            im = kwargs[item]
+            im_arg = item
+            break
+    if type(strel_arg) == str:
+        strel_arg = [strel_arg]
+    for item in strel_arg:
+        if item in kwargs.keys():
+            strel = kwargs[item]
+            strel_arg = item
+            break
     from array_split import shape_split, ARRAY_BOUNDS
-    if sp.isscalar(divs):
-        divs = sp.ones((im.ndim, ), dtype=int)*divs
-    divs = sp.array(divs)
-    halo = sp.array(strel.shape) * (divs > 1)
+    divs = sp.ones((im.ndim, ), dtype=int)*sp.array(divs)
+    # This covers the possibility that strel was given as size, which is
+    # possible in some ndimage functions
+    if sp.isscalar(strel):
+        halo = strel*(divs > 1)
+    else:
+        halo = sp.array(strel.shape) * (divs > 1)
     im2 = sp.zeros_like(im, dtype=bool)
     slices = sp.ravel(shape_split(im.shape, axis=divs, halo=halo.tolist(),
                                   tile_bounds_policy=ARRAY_BOUNDS))
     for s in tqdm(slices):
-        # Perform morphology on sub-slice of overall image
-        res = fftmorphology(im=im[s], strel=strel, mode=mode)
+        kwargs[im_arg] = im[tuple(s)]
+        # Apply function on sub-slice of overall image
+        res = func(**kwargs)
         # Prepare new slice objects into main and sub-sliced image
         a = []  # Slices into main image
         b = []  # Slices into chunked image
