@@ -5,6 +5,7 @@ import operator as op
 import scipy.ndimage as spim
 import scipy.spatial as sptl
 import warnings
+import dask
 from scipy.signal import fftconvolve
 from tqdm import tqdm
 from numba import jit
@@ -1545,6 +1546,11 @@ def chunked_func(func, divs=2, cores=1, im_arg=['input', 'image', 'im'],
     True
 
     """
+    @dask.delayed
+    def apply_func(func, **kwargs):
+        # Apply function on sub-slice of overall image
+        return func(**kwargs)
+
     if type(im_arg) == str:
         im_arg = [im_arg]
     for item in im_arg:
@@ -1568,12 +1574,16 @@ def chunked_func(func, divs=2, cores=1, im_arg=['input', 'image', 'im'],
     else:
         halo = sp.array(strel.shape) * (divs > 1)
     im2 = sp.zeros_like(im, dtype=bool)
-    slices = sp.ravel(shape_split(im.shape, axis=divs, halo=halo.tolist(),
+    slices = sp.ravel(shape_split(im.shape, axis=divs,
+                                  halo=halo.tolist(),
                                   tile_bounds_policy=ARRAY_BOUNDS))
-    for s in tqdm(slices):
+    res = []
+    for s in slices:
+        # Extract subsection from image and input into kwargs
         kwargs[im_arg] = im[tuple(s)]
-        # Apply function on sub-slice of overall image
-        res = func(**kwargs)
+        res.append(apply_func(func=func, **kwargs))
+    ims = dask.compute(res)[0]
+    for i, s in tqdm(enumerate(slices)):
         # Prepare new slice objects into main and sub-sliced image
         a = []  # Slices into main image
         b = []  # Slices into chunked image
@@ -1594,5 +1604,5 @@ def chunked_func(func, divs=2, cores=1, im_arg=['input', 'image', 'im'],
         a = tuple(a)
         b = tuple(b)
         # Insert image chunk into main image
-        im2[a] = res[b]
+        im2[a] = ims[i][b]
     return im2
