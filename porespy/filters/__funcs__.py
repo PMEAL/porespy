@@ -1515,7 +1515,7 @@ def chunked_func(func, divs=2, cores=None, im_arg=['input', 'image', 'im'],
         which covers the conventions used by **ndimage**, **skimage**, and
         **porespy**.  Note that 'size' is accepted instead of a structuring
         element in some ``scipy.ndimage`` functions.
-    kwargs
+    kwargs : additional keyword arguments
         All other arguments are passed to ``func`` as keyword arguments. Note
         that this must include the image and structuring element, for instance
         ``input=im`` and ``structure=ball(3)``.  If ``func`` uses different
@@ -1585,9 +1585,8 @@ def chunked_func(func, divs=2, cores=None, im_arg=['input', 'image', 'im'],
         kwargs[im_arg] = im[tuple(s)]
         res.append(apply_func(func=func, **kwargs))
     # Now has dask actually compute the function on each subsection in parallel
-    print('Applying function to ', str(len(slices)), ' subsections')
-    with ProgressBar():
-        ims = dask.compute(res, num_workers=cores)[0]
+    print('Applying function to', str(len(slices)), 'subsections')
+    ims = dask.compute(res, num_workers=cores)[0]
     # Finally, put the pieces back together into a single master image, im2
     im2 = sp.zeros_like(im, dtype=bool)
     for i, s in enumerate(slices):
