@@ -6,6 +6,7 @@ import scipy.ndimage as spim
 import scipy.spatial as sptl
 import warnings
 import dask
+from dask.diagnostics import ProgressBar
 from scipy.signal import fftconvolve
 from tqdm import tqdm
 from numba import jit
@@ -1461,7 +1462,7 @@ def prune_branches(skel, branch_points=None, iterations=1):
     return im_result
 
 
-def chunked_func(func, divs=2, cores=1, im_arg=['input', 'image', 'im'],
+def chunked_func(func, divs=2, cores=None, im_arg=['input', 'image', 'im'],
                  strel_arg=['structure', 'selem', 'strel', 'footprint',
                             'size'], **kwargs):
     r"""
@@ -1485,8 +1486,9 @@ def chunked_func(func, divs=2, cores=1, im_arg=['input', 'image', 'im'],
         the image and 8 total chunks (in 3D).  A scalar is interpreted as
         applying to all directions, while a list of scalars is interpreted
         as applying to each individual direction.
-    cores : scalar (default = 1)
-        The number of cores which should be used.  (not implemented yet)
+    cores : scalar
+        The number of cores which should be used.  By default, all available
+        cores are used.
     im_arg : string (or list of strings)
         The keyword argument used by ``func`` for the image.  This argument
         gives the flexibility to accomodate the different argument naming
@@ -1573,17 +1575,22 @@ def chunked_func(func, divs=2, cores=1, im_arg=['input', 'image', 'im'],
         halo = strel*(divs > 1)
     else:
         halo = sp.array(strel.shape) * (divs > 1)
-    im2 = sp.zeros_like(im, dtype=bool)
     slices = sp.ravel(shape_split(im.shape, axis=divs,
                                   halo=halo.tolist(),
                                   tile_bounds_policy=ARRAY_BOUNDS))
+    # Apply func to each subsection of the image
     res = []
     for s in slices:
         # Extract subsection from image and input into kwargs
         kwargs[im_arg] = im[tuple(s)]
         res.append(apply_func(func=func, **kwargs))
-    ims = dask.compute(res)[0]
-    for i, s in tqdm(enumerate(slices)):
+    # Now has dask actually compute the function on each subsection in parallel
+    print('Applying function to ', str(len(slices)), ' subsections')
+    with ProgressBar():
+        ims = dask.compute(res, num_workers=cores)[0]
+    # Finally, put the pieces back together into a single master image, im2
+    im2 = sp.zeros_like(im, dtype=bool)
+    for i, s in enumerate(slices):
         # Prepare new slice objects into main and sub-sliced image
         a = []  # Slices into main image
         b = []  # Slices into chunked image
