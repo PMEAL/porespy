@@ -49,7 +49,8 @@ setup(
                       'pytrax',
                       'pyevtk',
                       'numba',
-                      'openpnm'],
+                      'openpnm',
+                      'dask'],
     author='Jeff Gostick',
     author_email='jgostick@gmail.com',
     url='http://porespy.org'
