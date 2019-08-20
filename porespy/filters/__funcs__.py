@@ -1586,9 +1586,10 @@ def chunked_func(func, divs=2, cores=None, im_arg=['input', 'image', 'im'],
         res.append(apply_func(func=func, **kwargs))
     # Now has dask actually compute the function on each subsection in parallel
     print('Applying function to', str(len(slices)), 'subsections')
-    ims = dask.compute(res, num_workers=cores)[0]
+    with ProgressBar():
+        ims = dask.compute(res, num_workers=cores)[0]
     # Finally, put the pieces back together into a single master image, im2
-    im2 = sp.zeros_like(im, dtype=bool)
+    im2 = sp.zeros_like(im, dtype=im.dtype)
     for i, s in enumerate(slices):
         # Prepare new slice objects into main and sub-sliced image
         a = []  # Slices into main image
