@@ -57,6 +57,11 @@ class ExamplesTest():
         rc = self._notebook_run(nbook)
         assert rc
 
+    def test_metrics_porosity_profiles(self):
+        nbook = os.path.join(metrics_dir, 'porosity_profiles.ipynb')
+        rc = self._notebook_run(nbook)
+        assert rc
+
     def test_metrics_regionprops_3d(self):
         nbook = os.path.join(metrics_dir, 'regionprops_3d.ipynb')
         rc = self._notebook_run(nbook)
