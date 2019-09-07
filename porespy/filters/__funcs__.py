@@ -1542,7 +1542,10 @@ def chunked_func(func, divs=2, cores=None, im_arg=['input', 'image', 'im'],
     >>> from skimage.morphology import ball
     >>> im = ps.generators.blobs(shape=[100, 100, 100])
     >>> f = spim.binary_dilation
-    >>> im2 = ps.filters.chunked_func(func=f, input=im, structure=ball(3))
+    >>> im2 = ps.filters.chunked_func(func=f,
+    ...                               input=im,
+    ...                               structure=ball(3))  #doctest: +ELLIPSIS
+    Applying function to 8 subsections ...
     >>> im3 = spim.binary_dilation(input=im, structure=ball(3))
     >>> sp.all(im2 == im3)
     True
