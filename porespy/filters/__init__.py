@@ -35,7 +35,7 @@ altered values.
     porespy.filters.trim_nearby_peaks
     porespy.filters.trim_nonpercolating_paths
     porespy.filters.trim_saddle_points
-    porespy.filters.trim_small_cluster
+    porespy.filters.trim_small_clusters
 
 
 .. autofunction:: apply_chords

@@ -1253,8 +1253,10 @@ def trim_disconnected_blobs(im, inlets):
     im : ND-array
         The array to be trimmed
     inlets : ND-array or tuple of indices
-        The locations of the inlets.  Any voxels *not* connected directly to
-        the inlets will be trimmed
+        The locations of the inlets.  Can either be a boolean mask the same
+        shape as ``im``, or a tuple of indices such as that returned by the
+        ``where`` function.  Any voxels *not* connected directly to
+        the inlets will be trimmed.
 
     Returns
     -------
@@ -1262,13 +1264,22 @@ def trim_disconnected_blobs(im, inlets):
         An array of the same shape as ``im``, but with all foreground
         voxels not connected to the ``inlets`` removed.
     """
-    labels = spim.label(im)[0]
+    if type(inlets) == tuple:
+        temp = sp.copy(inlets)
+        inlets = sp.zeros_like(im, dtype=bool)
+        inlets[temp] = True
+    elif (inlets.shape == im.shape) and (inlets.max() == 1):
+        inlets = inlets.astype(bool)
+    else:
+        raise Exception('inlets not valid, refer to docstring for info')
+    labels = spim.label(inlets + (im > 0))[0]
     keep = sp.unique(labels[inlets])
     keep = keep[keep > 0]
     if len(keep) > 0:
         im2 = sp.reshape(sp.in1d(labels, keep), newshape=im.shape)
     else:
         im2 = sp.zeros_like(im)
+    im2 = im2*im
     return im2
 
 
