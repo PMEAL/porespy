@@ -299,6 +299,25 @@ class FilterTest():
         assert not sp.any(sp.isnan(snow.dt))
         assert not sp.any(sp.isnan(snow.im))
 
+    def test_chunked_func_2D(self):
+        from skimage.morphology import disk
+        im = disk(50)
+        f = ps.filters.fftmorphology
+        s = disk(1)
+        a = ps.filters.chunked_func(func=f, im=im, strel=s, mode='erosion')
+        b = ps.filters.fftmorphology(im, strel=s, mode='erosion')
+        assert sp.all(a == b)
+
+    def test_chunked_func_3D(self):
+        from skimage.morphology import ball
+        im = ball(50)
+        f = ps.filters.fftmorphology
+        s = ball(1)
+        a = ps.filters.chunked_func(func=f, im=im, strel=s, mode='erosion')
+        b = ps.filters.fftmorphology(im, strel=s, mode='erosion')
+        assert sp.all(a == b)
+
+
 if __name__ == '__main__':
     t = FilterTest()
     self = t
