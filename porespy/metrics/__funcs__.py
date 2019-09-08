@@ -75,7 +75,7 @@ def representative_elementary_volume(im, npoints=1000):
     return profile
 
 
-def porosity_profile(im, axis=0, pct=True):
+def porosity_profile(im, axis=0):
     r"""
     Returns a porosity profile along the specified axis
 
@@ -87,9 +87,6 @@ def porosity_profile(im, axis=0, pct=True):
         The axis (0, 1, or 2) along which to calculate the profile.  For
         instance, if `axis` is 0, then the porosity in each YZ plane is
         calculated and returned as 1D array with 1 value for each X position.
-    pct : boolean
-        If ``True`` (default), then the profile is returned as a percentage,
-        otherwise factional values are returned.
 
     Returns
     -------
@@ -102,8 +99,7 @@ def porosity_profile(im, axis=0, pct=True):
     a = set(range(im.ndim)).difference(set([axis]))
     a1, a2 = a
     prof = np.sum(np.sum(im, axis=a2), axis=a1)/(im.shape[a2]*im.shape[a1])
-    f = 100.0 if pct else 1.0
-    return prof*f
+    return prof
 
 
 def radial_density(im, bins=10, voxel_size=1):
