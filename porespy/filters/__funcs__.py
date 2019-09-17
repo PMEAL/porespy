@@ -1462,9 +1462,8 @@ def prune_branches(skel, branch_points=None, iterations=1):
     return im_result
 
 
-def chunked_func(func, divs=2, cores=None, im_arg=['input', 'image', 'im'],
-                 strel_arg=['structure', 'selem', 'strel', 'footprint',
-                            'size'], **kwargs):
+def chunked_func(func, overlap, im_arg=['input', 'image', 'im'],
+                 divs=2, cores=None, **kwargs):
     r"""
     Performs specfied operation "chunk-wise" to save memory, and can optionally
     spread the work across multiple cores.
@@ -1480,6 +1479,16 @@ def chunked_func(func, divs=2, cores=None, im_arg=['input', 'image', 'im'],
     func : function handle
         The function which should be applied to each chunk, such as
         ``spipy.ndimage.binary_dilation``.
+    overlap : scalar or list of scalars
+        The amount of overlap to include when dividing up the image.  This
+        value will almost always be the size (i.e. diameter) of the
+        structuring element.  The keyword for the structuring element depends
+        on which ``func`` is used, so PoreSpy cannot infer this value, hence
+        it must be given.
+    im_arg : string
+        The keyword used by ``func`` for the image to be operated on.  By
+        default this function will look for ``image``, ``input``, and ``im``
+        which are commonly used by *scipy.ndimage* and *skimage*.
     divs : scalar or list of scalars (default = [2, 2, 2])
         The number of chunks to divide the image into in each direction.  The
         default is 2 chunks in each direction, resulting in a quartering of
@@ -1487,41 +1496,13 @@ def chunked_func(func, divs=2, cores=None, im_arg=['input', 'image', 'im'],
         applying to all directions, while a list of scalars is interpreted
         as applying to each individual direction.
     cores : scalar
-        The number of cores which should be used.  By default, all available
-        cores are used.
-    im_arg : string (or list of strings)
-        The keyword argument used by ``func`` for the image.  This argument
-        gives the flexibility to accomodate the different argument naming
-        conventions used by different packages.  By default this will consider:
-
-        - 'input'
-        - 'image'
-        - 'im'
-
-        which covers the conventions used by **ndimage**, **skimage**, and
-        **porespy**.
-    strel_arg : string (or list of strings)
-        The keyword argument used by ``func`` for the structuring element.
-        This argument gives the flexibility to accomodate the different
-        argument naming conventions used by different packages.  By default
-        this will consider:
-
-        - 'structure'
-        - 'strel'
-        - 'footprint'
-        - 'selem'
-        - 'size'
-
-        which covers the conventions used by **ndimage**, **skimage**, and
-        **porespy**.  Note that 'size' is accepted instead of a structuring
-        element in some ``scipy.ndimage`` functions.
+        The number of cores which should be used.  By default, all cores will
+        be used, or as many are needed for the given number of chunks, which
+        even is smaller.
     kwargs : additional keyword arguments
         All other arguments are passed to ``func`` as keyword arguments. Note
-        that this must include the image and structuring element, for instance
-        ``input=im`` and ``structure=ball(3)``.  If ``func`` uses different
-        argument names, such as ``image=im`` and ``footprint=ball(3)`` then
-        you must specify these using the ``im_arg`` and ``strel_arg``
-        arguments (see above).
+        that you must specify the image argument using the convention of
+        ``func``, in addition to passing ``im``.
 
     Returns
     -------
@@ -1542,8 +1523,8 @@ def chunked_func(func, divs=2, cores=None, im_arg=['input', 'image', 'im'],
     >>> from skimage.morphology import ball
     >>> im = ps.generators.blobs(shape=[100, 100, 100])
     >>> f = spim.binary_dilation
-    >>> im2 = ps.filters.chunked_func(func=f, input=im,
-    ...                               structure=ball(3))
+    >>> im2 = ps.filters.chunked_func(func=f, overlap=7, input=im,
+    ...                               structure=ball(3), cores=1)
     Applying function to 8 subsections...
     >>> im3 = spim.binary_dilation(input=im, structure=ball(3))
     >>> sp.all(im2 == im3)
@@ -1554,7 +1535,9 @@ def chunked_func(func, divs=2, cores=None, im_arg=['input', 'image', 'im'],
     def apply_func(func, **kwargs):
         # Apply function on sub-slice of overall image
         return func(**kwargs)
-
+    # Import the array_split methods
+    from array_split import shape_split, ARRAY_BOUNDS
+    # Determine the value for im_arg
     if type(im_arg) == str:
         im_arg = [im_arg]
     for item in im_arg:
@@ -1562,32 +1545,28 @@ def chunked_func(func, divs=2, cores=None, im_arg=['input', 'image', 'im'],
             im = kwargs[item]
             im_arg = item
             break
-    if type(strel_arg) == str:
-        strel_arg = [strel_arg]
-    for item in strel_arg:
-        if item in kwargs.keys():
-            strel = kwargs[item]
-            strel_arg = item
-            break
-    from array_split import shape_split, ARRAY_BOUNDS
+    # Fetch image from the kwargs dict
+    im = kwargs[im_arg]
+    # Determine the number of divisions to create
     divs = sp.ones((im.ndim, ), dtype=int)*sp.array(divs)
     # This covers the possibility that strel was given as size, which is
     # possible in some ndimage functions
-    if sp.isscalar(strel):
-        halo = strel*(divs > 1)
+    if sp.isscalar(overlap):
+        halo = overlap*(divs > 1)
     else:
-        halo = sp.array(strel.shape) * (divs > 1)
+        halo = sp.array(overlap) * (divs > 1)
     slices = sp.ravel(shape_split(im.shape, axis=divs,
                                   halo=halo.tolist(),
                                   tile_bounds_policy=ARRAY_BOUNDS))
     # Apply func to each subsection of the image
     res = []
+    print('Image will be broken into the following chunks:')
     for s in slices:
         # Extract subsection from image and input into kwargs
         kwargs[im_arg] = im[tuple(s)]
+        print(kwargs[im_arg].shape)
         res.append(apply_func(func=func, **kwargs))
     # Now has dask actually compute the function on each subsection in parallel
-    print('Applying function to', str(len(slices)), 'subsections')
     with ProgressBar():
         ims = dask.compute(res, num_workers=cores)[0]
     # Finally, put the pieces back together into a single master image, im2
@@ -1612,6 +1591,7 @@ def chunked_func(func, divs=2, cores=None, im_arg=['input', 'image', 'im'],
         # Convert lists of slices to tuples
         a = tuple(a)
         b = tuple(b)
+        print(b)
         # Insert image chunk into main image
         im2[a] = ims[i][b]
     return im2
