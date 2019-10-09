@@ -1209,8 +1209,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
     if mode == 'mio':
         pw = int(sp.floor(dt.max()))
         impad = sp.pad(im, mode='symmetric', pad_width=pw)
-        inletspad = sp.pad(inlets, mode='symmetric', pad_width=pw)
-        inlets = sp.where(inletspad)
+        inlets = sp.pad(inlets, mode='symmetric', pad_width=pw)
 #        sizes = sp.unique(sp.around(sizes, decimals=0).astype(int))[-1::-1]
         imresults = sp.zeros(sp.shape(impad))
         for r in tqdm(sizes):
@@ -1222,7 +1221,6 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
                 imresults[(imresults == 0)*imtemp] = r
         imresults = extract_subsection(imresults, shape=im.shape)
     elif mode == 'dt':
-        inlets = sp.where(inlets)
         imresults = sp.zeros(sp.shape(im))
         for r in tqdm(sizes):
             imtemp = dt >= r
@@ -1232,7 +1230,6 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
                 imtemp = spim.distance_transform_edt(~imtemp) < r
                 imresults[(imresults == 0)*imtemp] = r
     elif mode == 'hybrid':
-        inlets = sp.where(inlets)
         imresults = sp.zeros(sp.shape(im))
         for r in tqdm(sizes):
             imtemp = dt >= r
@@ -1246,7 +1243,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
     return imresults
 
 
-def trim_disconnected_blobs(im, inlets):
+def trim_disconnected_blobs(im, inlets, strel=None):
     r"""
     Removes foreground voxels not connected to specified inlets
 
@@ -1259,6 +1256,8 @@ def trim_disconnected_blobs(im, inlets):
         shape as ``im``, or a tuple of indices such as that returned by the
         ``where`` function.  Any voxels *not* connected directly to
         the inlets will be trimmed.
+    strel : ND-array
+        The structuring element to use when
 
     Returns
     -------
@@ -1274,7 +1273,12 @@ def trim_disconnected_blobs(im, inlets):
         inlets = inlets.astype(bool)
     else:
         raise Exception('inlets not valid, refer to docstring for info')
-    labels = spim.label(inlets + (im > 0))[0]
+    from skimage.morphology import square
+    if im.ndim == 3:
+        square = cube
+    else:
+        square = square
+    labels = spim.label(inlets + (im > 0), structure=square(3))[0]
     keep = sp.unique(labels[inlets])
     keep = keep[keep > 0]
     if len(keep) > 0:
