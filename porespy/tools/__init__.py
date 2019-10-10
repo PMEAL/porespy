@@ -29,11 +29,12 @@ that do NOT return a modified version of the original image.
     porespy.tools.mesh_region
     porespy.tools.norm_to_uniform
     porespy.tools.overlay
-    porespy.tools.randomize_colors
-    porespy.tools.subdivide
     porespy.tools.ps_disk
     porespy.tools.ps_ball
     porespy.tools.pad_faces
+    porespy.tools.randomize_colors
+    porespy.tools.seq_to_satn
+    porespy.tools.subdivide
 
 .. autofunction:: align_image_with_openpnm
 .. autofunction:: bbox_to_slices
@@ -56,6 +57,7 @@ that do NOT return a modified version of the original image.
 .. autofunction:: ps_ball
 .. autofunction:: pad_faces
 .. autofunction:: randomize_colors
+.. autofunction:: seq_to_satn
 .. autofunction:: subdivide
 
 '''
@@ -83,3 +85,4 @@ from .__funcs__ import ps_disk
 from .__funcs__ import ps_ball
 from .__funcs__ import pad_faces
 from .__funcs__ import subdivide
+from .__funcs__ import seq_to_satn

@@ -1124,3 +1124,38 @@ def extract_regions(regions, labels: list, trim=True):
             bbox = bbox_to_slices([x_min, y_min, x_max, y_max])
         im_new = im_new[bbox]
     return im_new
+
+
+def seq_to_satn(seq, solid=0, uninvaded=-1):
+    r"""
+    Converts an image of invasion sequence values to saturation values.
+
+    Parameters
+    ----------
+    seq : ND-image
+        The image containing invasion sequence values in each voxel.
+        Note that the invasion steps must be positive integers, solid voxels
+        indicated by 0, and uninvaded voxels indicated by -1.
+
+    Returns
+    -------
+    satn : ND-image
+        An ND-iamge the same size as ``seq`` but with sequnece values replaced
+        by the fraction of pores invaded at or below the sequence number.
+        Solid voxels and uninvaded voxels are represented by 0 and -1
+        respectively.
+
+    """
+    seq = sp.copy(seq).astype(int)
+    solid = seq == 0
+    uninvaded = seq == -1
+    seq = sp.clip(seq, a_min=0, a_max=None)
+    seq = make_contiguous(seq)
+    b = sp.bincount(seq.flatten())
+    b[0] = 0
+    c = sp.cumsum(b)
+    satn = c[seq]/c.max()
+    satn *= 1 - solid.sum()/solid.size - uninvaded.sum()/solid.size
+    satn[solid] = 0.0
+    satn[uninvaded] = -1.0
+    return satn

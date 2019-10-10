@@ -28,7 +28,6 @@ altered values.
     porespy.filters.prune_branches
     porespy.filters.reduce_peaks
     porespy.filters.region_size
-    porespy.filters.seq_to_satn
     porespy.filters.snow_partitioning
     porespy.filters.snow_partitioning_n
     porespy.filters.trim_disconnected_blobs
@@ -57,7 +56,6 @@ altered values.
 .. autofunction:: prune_branches
 .. autofunction:: reduce_peaks
 .. autofunction:: region_size
-.. autofunction:: seq_to_satn
 .. autofunction:: snow_partitioning
 .. autofunction:: snow_partitioning_n
 .. autofunction:: trim_disconnected_blobs
@@ -87,7 +85,6 @@ from .__funcs__ import porosimetry
 from .__funcs__ import prune_branches
 from .__funcs__ import reduce_peaks
 from .__funcs__ import region_size
-from .__funcs__ import seq_to_satn
 from .__funcs__ import snow_partitioning
 from .__funcs__ import snow_partitioning_n
 from .__funcs__ import trim_disconnected_blobs
