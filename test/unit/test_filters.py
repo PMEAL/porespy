@@ -134,6 +134,20 @@ class FilterTest():
                                                  inlet_axis=2, outlet_axis=2)
         assert sp.sum(h) == 499611
 
+    def test_trim_nonpercolating_paths_masks(self):
+        im = ps.generators.blobs(shape=[200, 200])
+        im1 = ps.filters.trim_nonpercolating_paths(im,
+                                                   inlet_axis=0,
+                                                   outlet_axis=0)
+        inlets = sp.zeros_like(im)
+        inlets[0, :] = True
+        outlets = sp.zeros_like(im)
+        outlets[-1, :] = True
+        im2 = ps.filters.trim_nonpercolating_paths(im,
+                                                   inlets=inlets,
+                                                   outlets=outlets)
+        assert sp.all(im2 == im1)
+
     def test_fill_blind_pores(self):
         h = ps.filters.find_disconnected_voxels(self.im)
         b = ps.filters.fill_blind_pores(h)

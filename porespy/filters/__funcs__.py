@@ -689,7 +689,8 @@ def trim_floating_solid(im):
     return im
 
 
-def trim_nonpercolating_paths(im, inlet_axis=0, outlet_axis=0):
+def trim_nonpercolating_paths(im, inlet_axis=0, outlet_axis=0,
+                              inlets=None, outlets=None):
     r"""
     Removes all nonpercolating paths between specified edges
 
@@ -702,16 +703,20 @@ def trim_nonpercolating_paths(im, inlet_axis=0, outlet_axis=0):
     im : ND-array
         The image of the porous material with ```True`` values indicating the
         phase of interest
-
     inlet_axis : int
         Inlet axis of boundary condition. For three dimensional image the
         number ranges from 0 to 2. For two dimensional image the range is
-        between 0 to 1.
-
+        between 0 to 1. If ``inlets`` is given then this argument is ignored.
     outlet_axis : int
         Outlet axis of boundary condition. For three dimensional image the
         number ranges from 0 to 2. For two dimensional image the range is
-        between 0 to 1.
+        between 0 to 1. If ``outlets`` is given then this argument is ignored.
+    inlets : ND-image (optional)
+        A boolean mask indicating locations of inlets.  If this argument is
+        supplied then ``inlet_axis`` is ignored.
+    outlets : ND-image (optional)
+        A boolean mask indicating locations of outlets. If this argument is
+        supplied then ``outlet_axis`` is ignored.
 
     Returns
     -------
@@ -731,35 +736,36 @@ def trim_nonpercolating_paths(im, inlet_axis=0, outlet_axis=0):
                       ' unexpected behavior.')
     im = trim_floating_solid(~im)
     labels = spim.label(~im)[0]
-    inlet = sp.zeros_like(im, dtype=int)
-    outlet = sp.zeros_like(im, dtype=int)
-    if im.ndim == 3:
-        if inlet_axis == 0:
-            inlet[0, :, :] = 1
-        elif inlet_axis == 1:
-            inlet[:, 0, :] = 1
-        elif inlet_axis == 2:
-            inlet[:, :, 0] = 1
-
-        if outlet_axis == 0:
-            outlet[-1, :, :] = 1
-        elif outlet_axis == 1:
-            outlet[:, -1, :] = 1
-        elif outlet_axis == 2:
-            outlet[:, :, -1] = 1
-
-    if im.ndim == 2:
-        if inlet_axis == 0:
-            inlet[0, :] = 1
-        elif inlet_axis == 1:
-            inlet[:, 0] = 1
-
-        if outlet_axis == 0:
-            outlet[-1, :] = 1
-        elif outlet_axis == 1:
-            outlet[:, -1] = 1
-    IN = sp.unique(labels*inlet)
-    OUT = sp.unique(labels*outlet)
+    if inlets is None:
+        inlets = sp.zeros_like(im, dtype=bool)
+        if im.ndim == 3:
+            if inlet_axis == 0:
+                inlets[0, :, :] = True
+            elif inlet_axis == 1:
+                inlets[:, 0, :] = True
+            elif inlet_axis == 2:
+                inlets[:, :, 0] = True
+        if im.ndim == 2:
+            if inlet_axis == 0:
+                inlets[0, :] = True
+            elif inlet_axis == 1:
+                inlets[:, 0] = True
+    if outlets is None:
+        outlets = sp.zeros_like(im, dtype=bool)
+        if im.ndim == 3:
+            if outlet_axis == 0:
+                outlets[-1, :, :] = True
+            elif outlet_axis == 1:
+                outlets[:, -1, :] = True
+            elif outlet_axis == 2:
+                outlets[:, :, -1] = True
+        if im.ndim == 2:
+            if outlet_axis == 0:
+                outlets[-1, :] = True
+            elif outlet_axis == 1:
+                outlets[:, -1] = True
+    IN = sp.unique(labels*inlets)
+    OUT = sp.unique(labels*outlets)
     new_im = sp.isin(labels, list(set(IN) ^ set(OUT)), invert=True)
     im[new_im == 0] = True
     return ~im
