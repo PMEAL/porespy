@@ -604,7 +604,7 @@ def find_disconnected_voxels(im, conn=None):
     conn : int
         For 2D the options are 4 and 8 for square and diagonal neighbors, while
         for the 3D the options are 6 and 26, similarily for square and diagonal
-        neighbors.  The default is max
+        neighbors.  The default is the maximum option.
 
     Returns
     -------
@@ -629,11 +629,15 @@ def find_disconnected_voxels(im, conn=None):
             strel = disk(1)
         elif conn in [None, 8]:
             strel = square(3)
+        else:
+            raise Exception('Received conn is not valid')
     elif im.ndim == 3:
         if conn == 6:
             strel = ball(1)
         elif conn in [None, 26]:
             strel = cube(3)
+        else:
+            raise Exception('Received conn is not valid')
     labels, N = spim.label(input=im, structure=strel)
     holes = clear_border(labels=labels) > 0
     return holes
@@ -1246,7 +1250,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
     return imresults
 
 
-def trim_disconnected_blobs(im, inlets):
+def trim_disconnected_blobs(im, inlets, strel=None):
     r"""
     Removes foreground voxels not connected to specified inlets
 
@@ -1259,6 +1263,11 @@ def trim_disconnected_blobs(im, inlets):
         shape as ``im``, or a tuple of indices such as that returned by the
         ``where`` function.  Any voxels *not* connected directly to
         the inlets will be trimmed.
+    strel : ND-array
+        The neighborhood over which connectivity should be checked. It must
+        be symmetric and the same dimensionality as the image.  It is passed
+        directly to the ``scipy.ndimage.label`` function as the ``structure``
+        argument so refer to that docstring for additional info.
 
     Returns
     -------
@@ -1274,7 +1283,7 @@ def trim_disconnected_blobs(im, inlets):
         inlets = inlets.astype(bool)
     else:
         raise Exception('inlets not valid, refer to docstring for info')
-    labels = spim.label(inlets + (im > 0))[0]
+    labels = spim.label(inlets + (im > 0), strel=strel)[0]
     keep = sp.unique(labels[inlets])
     keep = keep[keep > 0]
     if len(keep) > 0:
