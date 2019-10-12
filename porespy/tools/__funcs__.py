@@ -1126,7 +1126,36 @@ def extract_regions(regions, labels: list, trim=True):
     return im_new
 
 
-def seq_to_satn(seq, solid=0, uninvaded=-1):
+def size_to_seq(size):
+    r"""
+    Converts an image of invasion size values into sequence values.
+
+    This is meant to accept the output of the ``porosimetry`` function.
+
+    Parameters
+    ----------
+    size : ND-image
+        The image containing invasion size values in each voxel.
+
+    Returns
+    -------
+    sequence : ND-image
+        An ND-image the same shape as ``size`` with invasion size values
+        replaced by the invasion sequence.  This assumes that the invasion
+        process occurs via increasing pressure steps, such as produced by
+        the ``porosimetry`` function.
+
+    """
+    solid = size == 0
+    vals = sp.digitize(size,
+                       bins=range(0, sp.ceil(size.max()).astype(int)),
+                       right=True)
+    vals = -(vals - vals.max() - 1)*~solid
+    vals = make_contiguous(vals)
+    return vals
+
+
+def seq_to_satn(seq):
     r"""
     Converts an image of invasion sequence values to saturation values.
 
