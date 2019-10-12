@@ -600,7 +600,6 @@ def find_disconnected_voxels(im, conn=None):
     im : ND-image
         A Boolean image, with True values indicating the phase for which
         disconnected voxels are sought.
-
     conn : int
         For 2D the options are 4 and 8 for square and diagonal neighbors, while
         for the 3D the options are 6 and 26, similarily for square and diagonal
@@ -643,7 +642,7 @@ def find_disconnected_voxels(im, conn=None):
     return holes
 
 
-def fill_blind_pores(im):
+def fill_blind_pores(im, conn=None):
     r"""
     Fills all pores that are not connected to the edges of the image.
 
@@ -656,6 +655,10 @@ def fill_blind_pores(im):
     -------
     image : ND-array
         A version of ``im`` but with all the disconnected pores removed.
+    conn : int
+        For 2D the options are 4 and 8 for square and diagonal neighbors, while
+        for the 3D the options are 6 and 26, similarily for square and diagonal
+        neighbors.  The default is the maximum option.
 
     See Also
     --------
@@ -663,12 +666,12 @@ def fill_blind_pores(im):
 
     """
     im = sp.copy(im)
-    holes = find_disconnected_voxels(im)
+    holes = find_disconnected_voxels(im, conn=conn)
     im[holes] = False
     return im
 
 
-def trim_floating_solid(im):
+def trim_floating_solid(im, conn=None):
     r"""
     Removes all solid that that is not attached to the edges of the image.
 
@@ -676,6 +679,10 @@ def trim_floating_solid(im):
     ----------
     im : ND-array
         The image of the porous material
+    conn : int
+        For 2D the options are 4 and 8 for square and diagonal neighbors, while
+        for the 3D the options are 6 and 26, similarily for square and diagonal
+        neighbors.  The default is the maximum option.
 
     Returns
     -------
@@ -688,7 +695,7 @@ def trim_floating_solid(im):
 
     """
     im = sp.copy(im)
-    holes = find_disconnected_voxels(~im)
+    holes = find_disconnected_voxels(~im, conn=conn)
     im[holes] = True
     return im
 
