@@ -600,11 +600,10 @@ def find_disconnected_voxels(im, conn=None):
     im : ND-image
         A Boolean image, with True values indicating the phase for which
         disconnected voxels are sought.
-
     conn : int
         For 2D the options are 4 and 8 for square and diagonal neighbors, while
         for the 3D the options are 6 and 26, similarily for square and diagonal
-        neighbors.  The default is max
+        neighbors.  The default is the maximum option.
 
     Returns
     -------
@@ -629,17 +628,21 @@ def find_disconnected_voxels(im, conn=None):
             strel = disk(1)
         elif conn in [None, 8]:
             strel = square(3)
+        else:
+            raise Exception('Received conn is not valid')
     elif im.ndim == 3:
         if conn == 6:
             strel = ball(1)
         elif conn in [None, 26]:
             strel = cube(3)
+        else:
+            raise Exception('Received conn is not valid')
     labels, N = spim.label(input=im, structure=strel)
     holes = clear_border(labels=labels) > 0
     return holes
 
 
-def fill_blind_pores(im):
+def fill_blind_pores(im, conn=None):
     r"""
     Fills all pores that are not connected to the edges of the image.
 
@@ -652,6 +655,10 @@ def fill_blind_pores(im):
     -------
     image : ND-array
         A version of ``im`` but with all the disconnected pores removed.
+    conn : int
+        For 2D the options are 4 and 8 for square and diagonal neighbors, while
+        for the 3D the options are 6 and 26, similarily for square and diagonal
+        neighbors.  The default is the maximum option.
 
     See Also
     --------
@@ -659,12 +666,12 @@ def fill_blind_pores(im):
 
     """
     im = sp.copy(im)
-    holes = find_disconnected_voxels(im)
+    holes = find_disconnected_voxels(im, conn=conn)
     im[holes] = False
     return im
 
 
-def trim_floating_solid(im):
+def trim_floating_solid(im, conn=None):
     r"""
     Removes all solid that that is not attached to the edges of the image.
 
@@ -672,6 +679,10 @@ def trim_floating_solid(im):
     ----------
     im : ND-array
         The image of the porous material
+    conn : int
+        For 2D the options are 4 and 8 for square and diagonal neighbors, while
+        for the 3D the options are 6 and 26, similarily for square and diagonal
+        neighbors.  The default is the maximum option.
 
     Returns
     -------
@@ -684,7 +695,7 @@ def trim_floating_solid(im):
 
     """
     im = sp.copy(im)
-    holes = find_disconnected_voxels(~im)
+    holes = find_disconnected_voxels(~im, conn=conn)
     im[holes] = True
     return im
 
@@ -1247,19 +1258,24 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
     return imresults
 
 
-def trim_disconnected_blobs(im, inlets):
+def trim_disconnected_blobs(im, inlets, strel=None):
     r"""
     Removes foreground voxels not connected to specified inlets
 
     Parameters
     ----------
     im : ND-array
-        The array to be trimmed
+        The image containing the blobs to be trimmed
     inlets : ND-array or tuple of indices
         The locations of the inlets.  Can either be a boolean mask the same
         shape as ``im``, or a tuple of indices such as that returned by the
         ``where`` function.  Any voxels *not* connected directly to
         the inlets will be trimmed.
+    strel : ND-array
+        The neighborhood over which connectivity should be checked. It must
+        be symmetric and the same dimensionality as the image.  It is passed
+        directly to the ``scipy.ndimage.label`` function as the ``structure``
+        argument so refer to that docstring for additional info.
 
     Returns
     -------
@@ -1275,7 +1291,7 @@ def trim_disconnected_blobs(im, inlets):
         inlets = inlets.astype(bool)
     else:
         raise Exception('inlets not valid, refer to docstring for info')
-    labels = spim.label(inlets + (im > 0))[0]
+    labels = spim.label(inlets + (im > 0), structure=strel)[0]
     keep = sp.unique(labels[inlets])
     keep = keep[keep > 0]
     if len(keep) > 0:
