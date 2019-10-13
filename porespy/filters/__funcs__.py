@@ -858,8 +858,9 @@ def flood(im, regions=None, mode='max'):
     mode = 'minimum' if mode == 'min' else mode
     if mode in ['mean', 'median', 'maximum', 'minimum', 'sum']:
         f = getattr(spim, mode)
-        vals = f(input=im, labels=regions, index=range(0, N))
-        im_flooded = vals[regions]
+        vals = f(input=im, labels=labels, index=range(0, N+1))
+        im_flooded = vals[labels]
+        im_flooded = im_flooded*mask
     else:
         raise Exception(mode + ' is not a recognized mode')
     return im_flooded
