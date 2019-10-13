@@ -854,6 +854,8 @@ def flood(im, regions=None, mode='max'):
         labels = sp.copy(regions)
         N = labels.max()
     mode = 'sum' if mode == 'size' else mode
+    mode = 'maximum' if mode == 'max' else mode
+    mode = 'minimum' if mode == 'min' else mode
     if mode in ['mean', 'median', 'maximum', 'minimum', 'sum']:
         f = getattr(spim, mode)
         vals = f(input=im, labels=regions, index=range(0, N))
