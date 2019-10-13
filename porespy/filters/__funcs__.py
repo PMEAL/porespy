@@ -1264,7 +1264,7 @@ def trim_disconnected_blobs(im, inlets, strel=None):
     Parameters
     ----------
     im : ND-array
-        The array to be trimmed
+        The image containing the blobs to be trimmed
     inlets : ND-array or tuple of indices
         The locations of the inlets.  Can either be a boolean mask the same
         shape as ``im``, or a tuple of indices such as that returned by the
@@ -1290,7 +1290,7 @@ def trim_disconnected_blobs(im, inlets, strel=None):
         inlets = inlets.astype(bool)
     else:
         raise Exception('inlets not valid, refer to docstring for info')
-    labels = spim.label(inlets + (im > 0), strel=strel)[0]
+    labels = spim.label(inlets + (im > 0), structure=strel)[0]
     keep = sp.unique(labels[inlets])
     keep = keep[keep > 0]
     if len(keep) > 0:
