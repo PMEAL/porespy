@@ -806,30 +806,33 @@ def trim_extrema(im, h, mode='maxima'):
     return result
 
 
-@jit(forceobj=True)
 def flood(im, regions=None, mode='max'):
     r"""
     Floods/fills each region in an image with a single value based on the
-    specific values in that region.  The ``mode`` argument is used to
-    determine how the value is calculated.
+    specific values in that region.
+
+    The ``mode`` argument is used to determine how the value is calculated.
 
     Parameters
     ----------
     im : array_like
-        An ND image with isolated regions containing 0's elsewhere.
-
+        An image with isolated regions with numerical values in each voxel,
+        and 0's elsewhere.
     regions : array_like
-        An array the same shape as ``im`` with each region labeled.  If None is
-        supplied (default) then ``scipy.ndimage.label`` is used with its
-        default arguments.
-
+        An array the same shape as ``im`` with each region labeled.  If
+        ``None`` is supplied (default) then ``scipy.ndimage.label`` is used
+        with its default arguments.
     mode : string
         Specifies how to determine which value should be used to flood each
         region.  Options are:
 
-        'max' - Floods each region with the local maximum in that region
+        'maximum' - Floods each region with the local maximum in that region
 
-        'min' - Floods each region the local minimum in that region
+        'minimum' - Floods each region the local minimum in that region
+
+        'median' - Floods each region the local median in that region
+
+        'mean' - Floods each region the local mean in that region
 
         'size' - Floods each region with the size of that region
 
@@ -850,24 +853,16 @@ def flood(im, regions=None, mode='max'):
     else:
         labels = sp.copy(regions)
         N = labels.max()
-    I = im.flatten()
-    L = labels.flatten()
-    if mode.startswith('max'):
-        V = sp.zeros(shape=N+1, dtype=float)
-        for i in range(len(L)):
-            if V[L[i]] < I[i]:
-                V[L[i]] = I[i]
-    elif mode.startswith('min'):
-        V = sp.ones(shape=N+1, dtype=float)*sp.inf
-        for i in range(len(L)):
-            if V[L[i]] > I[i]:
-                V[L[i]] = I[i]
-    elif mode.startswith('size'):
-        V = sp.zeros(shape=N+1, dtype=int)
-        for i in range(len(L)):
-            V[L[i]] += 1
-    im_flooded = sp.reshape(V[labels], newshape=im.shape)
-    im_flooded = im_flooded*mask
+    mode = 'sum' if mode == 'size' else mode
+    mode = 'maximum' if mode == 'max' else mode
+    mode = 'minimum' if mode == 'min' else mode
+    if mode in ['mean', 'median', 'maximum', 'minimum', 'sum']:
+        f = getattr(spim, mode)
+        vals = f(input=im, labels=labels, index=range(0, N+1))
+        im_flooded = vals[labels]
+        im_flooded = im_flooded*mask
+    else:
+        raise Exception(mode + ' is not a recognized mode')
     return im_flooded
 
 
