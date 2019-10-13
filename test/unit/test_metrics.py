@@ -81,8 +81,8 @@ class MetricsTest():
         im = ps.generators.lattice_spheres(shape=[999, 999],
                                            radius=15, offset=4)
         p = ps.metrics.porosity_profile(im, axis=0)
-        assert p.max() == 100
-        assert_allclose(p.min(), 24.524524524524523)
+        assert p.max() == 1.0
+        assert_allclose(p.min(), 0.24524524524524523)
 
     def test_porosity_profile_ndim_check(self):
         ps.metrics.porosity_profile(self.im2D, axis=0)

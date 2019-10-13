@@ -49,8 +49,14 @@ setup(
                       'pytrax',
                       'pyevtk',
                       'numba',
-                      'openpnm'],
+                      'openpnm',
+                      'dask'],
     author='Jeff Gostick',
     author_email='jgostick@gmail.com',
-    url='http://porespy.org'
+    url='http://porespy.org',
+    project_urls={
+        'Documentation': 'https://porespy.readthedocs.io/en/master/',
+        'Source': 'https://github.com/PMEAL/porespy/',
+        'Tracker': 'https://github.com/PMEAL/porespy/issues',
+    },
 )

@@ -5,6 +5,8 @@ import operator as op
 import scipy.ndimage as spim
 import scipy.spatial as sptl
 import warnings
+import dask
+from dask.diagnostics import ProgressBar
 from scipy.signal import fftconvolve
 from tqdm import tqdm
 from numba import jit
@@ -598,11 +600,10 @@ def find_disconnected_voxels(im, conn=None):
     im : ND-image
         A Boolean image, with True values indicating the phase for which
         disconnected voxels are sought.
-
     conn : int
         For 2D the options are 4 and 8 for square and diagonal neighbors, while
         for the 3D the options are 6 and 26, similarily for square and diagonal
-        neighbors.  The default is max
+        neighbors.  The default is the maximum option.
 
     Returns
     -------
@@ -627,17 +628,21 @@ def find_disconnected_voxels(im, conn=None):
             strel = disk(1)
         elif conn in [None, 8]:
             strel = square(3)
+        else:
+            raise Exception('Received conn is not valid')
     elif im.ndim == 3:
         if conn == 6:
             strel = ball(1)
         elif conn in [None, 26]:
             strel = cube(3)
+        else:
+            raise Exception('Received conn is not valid')
     labels, N = spim.label(input=im, structure=strel)
     holes = clear_border(labels=labels) > 0
     return holes
 
 
-def fill_blind_pores(im):
+def fill_blind_pores(im, conn=None):
     r"""
     Fills all pores that are not connected to the edges of the image.
 
@@ -650,6 +655,10 @@ def fill_blind_pores(im):
     -------
     image : ND-array
         A version of ``im`` but with all the disconnected pores removed.
+    conn : int
+        For 2D the options are 4 and 8 for square and diagonal neighbors, while
+        for the 3D the options are 6 and 26, similarily for square and diagonal
+        neighbors.  The default is the maximum option.
 
     See Also
     --------
@@ -657,12 +666,12 @@ def fill_blind_pores(im):
 
     """
     im = sp.copy(im)
-    holes = find_disconnected_voxels(im)
+    holes = find_disconnected_voxels(im, conn=conn)
     im[holes] = False
     return im
 
 
-def trim_floating_solid(im):
+def trim_floating_solid(im, conn=None):
     r"""
     Removes all solid that that is not attached to the edges of the image.
 
@@ -670,6 +679,10 @@ def trim_floating_solid(im):
     ----------
     im : ND-array
         The image of the porous material
+    conn : int
+        For 2D the options are 4 and 8 for square and diagonal neighbors, while
+        for the 3D the options are 6 and 26, similarily for square and diagonal
+        neighbors.  The default is the maximum option.
 
     Returns
     -------
@@ -682,12 +695,13 @@ def trim_floating_solid(im):
 
     """
     im = sp.copy(im)
-    holes = find_disconnected_voxels(~im)
+    holes = find_disconnected_voxels(~im, conn=conn)
     im[holes] = True
     return im
 
 
-def trim_nonpercolating_paths(im, inlet_axis=0, outlet_axis=0):
+def trim_nonpercolating_paths(im, inlet_axis=0, outlet_axis=0,
+                              inlets=None, outlets=None):
     r"""
     Removes all nonpercolating paths between specified edges
 
@@ -700,16 +714,20 @@ def trim_nonpercolating_paths(im, inlet_axis=0, outlet_axis=0):
     im : ND-array
         The image of the porous material with ```True`` values indicating the
         phase of interest
-
     inlet_axis : int
         Inlet axis of boundary condition. For three dimensional image the
         number ranges from 0 to 2. For two dimensional image the range is
-        between 0 to 1.
-
+        between 0 to 1. If ``inlets`` is given then this argument is ignored.
     outlet_axis : int
         Outlet axis of boundary condition. For three dimensional image the
         number ranges from 0 to 2. For two dimensional image the range is
-        between 0 to 1.
+        between 0 to 1. If ``outlets`` is given then this argument is ignored.
+    inlets : ND-image (optional)
+        A boolean mask indicating locations of inlets.  If this argument is
+        supplied then ``inlet_axis`` is ignored.
+    outlets : ND-image (optional)
+        A boolean mask indicating locations of outlets. If this argument is
+        supplied then ``outlet_axis`` is ignored.
 
     Returns
     -------
@@ -729,35 +747,36 @@ def trim_nonpercolating_paths(im, inlet_axis=0, outlet_axis=0):
                       ' unexpected behavior.')
     im = trim_floating_solid(~im)
     labels = spim.label(~im)[0]
-    inlet = sp.zeros_like(im, dtype=int)
-    outlet = sp.zeros_like(im, dtype=int)
-    if im.ndim == 3:
-        if inlet_axis == 0:
-            inlet[0, :, :] = 1
-        elif inlet_axis == 1:
-            inlet[:, 0, :] = 1
-        elif inlet_axis == 2:
-            inlet[:, :, 0] = 1
-
-        if outlet_axis == 0:
-            outlet[-1, :, :] = 1
-        elif outlet_axis == 1:
-            outlet[:, -1, :] = 1
-        elif outlet_axis == 2:
-            outlet[:, :, -1] = 1
-
-    if im.ndim == 2:
-        if inlet_axis == 0:
-            inlet[0, :] = 1
-        elif inlet_axis == 1:
-            inlet[:, 0] = 1
-
-        if outlet_axis == 0:
-            outlet[-1, :] = 1
-        elif outlet_axis == 1:
-            outlet[:, -1] = 1
-    IN = sp.unique(labels*inlet)
-    OUT = sp.unique(labels*outlet)
+    if inlets is None:
+        inlets = sp.zeros_like(im, dtype=bool)
+        if im.ndim == 3:
+            if inlet_axis == 0:
+                inlets[0, :, :] = True
+            elif inlet_axis == 1:
+                inlets[:, 0, :] = True
+            elif inlet_axis == 2:
+                inlets[:, :, 0] = True
+        if im.ndim == 2:
+            if inlet_axis == 0:
+                inlets[0, :] = True
+            elif inlet_axis == 1:
+                inlets[:, 0] = True
+    if outlets is None:
+        outlets = sp.zeros_like(im, dtype=bool)
+        if im.ndim == 3:
+            if outlet_axis == 0:
+                outlets[-1, :, :] = True
+            elif outlet_axis == 1:
+                outlets[:, -1, :] = True
+            elif outlet_axis == 2:
+                outlets[:, :, -1] = True
+        if im.ndim == 2:
+            if outlet_axis == 0:
+                outlets[-1, :] = True
+            elif outlet_axis == 1:
+                outlets[:, -1] = True
+    IN = sp.unique(labels*inlets)
+    OUT = sp.unique(labels*outlets)
     new_im = sp.isin(labels, list(set(IN) ^ set(OUT)), invert=True)
     im[new_im == 0] = True
     return ~im
@@ -798,30 +817,33 @@ def trim_extrema(im, h, mode='maxima'):
     return result
 
 
-@jit(forceobj=True)
 def flood(im, regions=None, mode='max'):
     r"""
     Floods/fills each region in an image with a single value based on the
-    specific values in that region.  The ``mode`` argument is used to
-    determine how the value is calculated.
+    specific values in that region.
+
+    The ``mode`` argument is used to determine how the value is calculated.
 
     Parameters
     ----------
     im : array_like
-        An ND image with isolated regions containing 0's elsewhere.
-
+        An image with isolated regions with numerical values in each voxel,
+        and 0's elsewhere.
     regions : array_like
-        An array the same shape as ``im`` with each region labeled.  If None is
-        supplied (default) then ``scipy.ndimage.label`` is used with its
-        default arguments.
-
+        An array the same shape as ``im`` with each region labeled.  If
+        ``None`` is supplied (default) then ``scipy.ndimage.label`` is used
+        with its default arguments.
     mode : string
         Specifies how to determine which value should be used to flood each
         region.  Options are:
 
-        'max' - Floods each region with the local maximum in that region
+        'maximum' - Floods each region with the local maximum in that region
 
-        'min' - Floods each region the local minimum in that region
+        'minimum' - Floods each region the local minimum in that region
+
+        'median' - Floods each region the local median in that region
+
+        'mean' - Floods each region the local mean in that region
 
         'size' - Floods each region with the size of that region
 
@@ -842,24 +864,16 @@ def flood(im, regions=None, mode='max'):
     else:
         labels = sp.copy(regions)
         N = labels.max()
-    I = im.flatten()
-    L = labels.flatten()
-    if mode.startswith('max'):
-        V = sp.zeros(shape=N+1, dtype=float)
-        for i in range(len(L)):
-            if V[L[i]] < I[i]:
-                V[L[i]] = I[i]
-    elif mode.startswith('min'):
-        V = sp.ones(shape=N+1, dtype=float)*sp.inf
-        for i in range(len(L)):
-            if V[L[i]] > I[i]:
-                V[L[i]] = I[i]
-    elif mode.startswith('size'):
-        V = sp.zeros(shape=N+1, dtype=int)
-        for i in range(len(L)):
-            V[L[i]] += 1
-    im_flooded = sp.reshape(V[labels], newshape=im.shape)
-    im_flooded = im_flooded*mask
+    mode = 'sum' if mode == 'size' else mode
+    mode = 'maximum' if mode == 'max' else mode
+    mode = 'minimum' if mode == 'min' else mode
+    if mode in ['mean', 'median', 'maximum', 'minimum', 'sum']:
+        f = getattr(spim, mode)
+        vals = f(input=im, labels=labels, index=range(0, N+1))
+        im_flooded = vals[labels]
+        im_flooded = im_flooded*mask
+    else:
+        raise Exception(mode + ' is not a recognized mode')
     return im_flooded
 
 
@@ -1244,19 +1258,24 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
     return imresults
 
 
-def trim_disconnected_blobs(im, inlets):
+def trim_disconnected_blobs(im, inlets, strel=None):
     r"""
     Removes foreground voxels not connected to specified inlets
 
     Parameters
     ----------
     im : ND-array
-        The array to be trimmed
+        The image containing the blobs to be trimmed
     inlets : ND-array or tuple of indices
         The locations of the inlets.  Can either be a boolean mask the same
         shape as ``im``, or a tuple of indices such as that returned by the
         ``where`` function.  Any voxels *not* connected directly to
         the inlets will be trimmed.
+    strel : ND-array
+        The neighborhood over which connectivity should be checked. It must
+        be symmetric and the same dimensionality as the image.  It is passed
+        directly to the ``scipy.ndimage.label`` function as the ``structure``
+        argument so refer to that docstring for additional info.
 
     Returns
     -------
@@ -1272,7 +1291,7 @@ def trim_disconnected_blobs(im, inlets):
         inlets = inlets.astype(bool)
     else:
         raise Exception('inlets not valid, refer to docstring for info')
-    labels = spim.label(inlets + (im > 0))[0]
+    labels = spim.label(inlets + (im > 0), structure=strel)[0]
     keep = sp.unique(labels[inlets])
     keep = keep[keep > 0]
     if len(keep) > 0:
@@ -1458,3 +1477,158 @@ def prune_branches(skel, branch_points=None, iterations=1):
         if sp.all(im_temp == im_result):
             iterations = 0
     return im_result
+
+
+def chunked_func(func, divs=2, cores=None, im_arg=['input', 'image', 'im'],
+                 strel_arg=['structure', 'selem', 'strel', 'footprint',
+                            'size'], **kwargs):
+    r"""
+    Performs specfied operation "chunk-wise" to save memory, and can optionally
+    spread the work across multiple cores.
+
+    This function can be used with any operation that requires a structuring
+    element of some sort, since these functions imply the operation is local
+    and can be chunked.  This function is particularly handy for very large
+    images (>500-cubed) which can easily fill the RAM on a normal PC and
+    take ages.
+
+    Parameters
+    ----------
+    func : function handle
+        The function which should be applied to each chunk, such as
+        ``spipy.ndimage.binary_dilation``.
+    divs : scalar or list of scalars (default = [2, 2, 2])
+        The number of chunks to divide the image into in each direction.  The
+        default is 2 chunks in each direction, resulting in a quartering of
+        the image and 8 total chunks (in 3D).  A scalar is interpreted as
+        applying to all directions, while a list of scalars is interpreted
+        as applying to each individual direction.
+    cores : scalar
+        The number of cores which should be used.  By default, all available
+        cores are used.
+    im_arg : string (or list of strings)
+        The keyword argument used by ``func`` for the image.  This argument
+        gives the flexibility to accomodate the different argument naming
+        conventions used by different packages.  By default this will consider:
+
+        - 'input'
+        - 'image'
+        - 'im'
+
+        which covers the conventions used by **ndimage**, **skimage**, and
+        **porespy**.
+    strel_arg : string (or list of strings)
+        The keyword argument used by ``func`` for the structuring element.
+        This argument gives the flexibility to accomodate the different
+        argument naming conventions used by different packages.  By default
+        this will consider:
+
+        - 'structure'
+        - 'strel'
+        - 'footprint'
+        - 'selem'
+        - 'size'
+
+        which covers the conventions used by **ndimage**, **skimage**, and
+        **porespy**.  Note that 'size' is accepted instead of a structuring
+        element in some ``scipy.ndimage`` functions.
+    kwargs : additional keyword arguments
+        All other arguments are passed to ``func`` as keyword arguments. Note
+        that this must include the image and structuring element, for instance
+        ``input=im`` and ``structure=ball(3)``.  If ``func`` uses different
+        argument names, such as ``image=im`` and ``footprint=ball(3)`` then
+        you must specify these using the ``im_arg`` and ``strel_arg``
+        arguments (see above).
+
+    Returns
+    -------
+    result : ND-image
+        An image the same size as the input image.
+
+    Notes
+    -----
+    This function divides the image into the specified number of chunks, but
+    also applies a padding to each chunk to create an overlap with neighboring
+    chunks.  This way the operation does not have any edge artifacts.  The
+    amount of padding is inferred from the size of the structuring element.
+
+    Examples
+    --------
+    >>> import scipy.ndimage as spim
+    >>> import porespy as ps
+    >>> from skimage.morphology import ball
+    >>> im = ps.generators.blobs(shape=[100, 100, 100])
+    >>> f = spim.binary_dilation
+    >>> im2 = ps.filters.chunked_func(func=f, input=im,
+    ...                               structure=ball(3))
+    Applying function to 8 subsections...
+    >>> im3 = spim.binary_dilation(input=im, structure=ball(3))
+    >>> sp.all(im2 == im3)
+    True
+
+    """
+    @dask.delayed
+    def apply_func(func, **kwargs):
+        # Apply function on sub-slice of overall image
+        return func(**kwargs)
+
+    if type(im_arg) == str:
+        im_arg = [im_arg]
+    for item in im_arg:
+        if item in kwargs.keys():
+            im = kwargs[item]
+            im_arg = item
+            break
+    if type(strel_arg) == str:
+        strel_arg = [strel_arg]
+    for item in strel_arg:
+        if item in kwargs.keys():
+            strel = kwargs[item]
+            strel_arg = item
+            break
+    from array_split import shape_split, ARRAY_BOUNDS
+    divs = sp.ones((im.ndim, ), dtype=int)*sp.array(divs)
+    # This covers the possibility that strel was given as size, which is
+    # possible in some ndimage functions
+    if sp.isscalar(strel):
+        halo = strel*(divs > 1)
+    else:
+        halo = sp.array(strel.shape) * (divs > 1)
+    slices = sp.ravel(shape_split(im.shape, axis=divs,
+                                  halo=halo.tolist(),
+                                  tile_bounds_policy=ARRAY_BOUNDS))
+    # Apply func to each subsection of the image
+    res = []
+    for s in slices:
+        # Extract subsection from image and input into kwargs
+        kwargs[im_arg] = im[tuple(s)]
+        res.append(apply_func(func=func, **kwargs))
+    # Now has dask actually compute the function on each subsection in parallel
+    print('Applying function to', str(len(slices)), 'subsections')
+    with ProgressBar():
+        ims = dask.compute(res, num_workers=cores)[0]
+    # Finally, put the pieces back together into a single master image, im2
+    im2 = sp.zeros_like(im, dtype=im.dtype)
+    for i, s in enumerate(slices):
+        # Prepare new slice objects into main and sub-sliced image
+        a = []  # Slices into main image
+        b = []  # Slices into chunked image
+        for dim in range(im.ndim):
+            if s[dim].start == 0:
+                ax = bx = 0
+            else:
+                ax = s[dim].start + halo[dim]
+                bx = halo[dim]
+            if s[dim].stop == im.shape[dim]:
+                ay = by = im.shape[dim]
+            else:
+                ay = s[dim].stop - halo[dim]
+                by = s[dim].stop - s[dim].start - halo[dim]
+            a.append(slice(ax, ay, None))
+            b.append(slice(bx, by, None))
+        # Convert lists of slices to tuples
+        a = tuple(a)
+        b = tuple(b)
+        # Insert image chunk into main image
+        im2[a] = ims[i][b]
+    return im2

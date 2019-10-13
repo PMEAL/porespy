@@ -35,7 +35,7 @@ class FilterTest():
         steps = sp.unique(mip)
         ans = sp.array([0.00000000, 1.00000000, 1.37871571, 1.61887041,
                         1.90085700, 2.23196205, 2.62074139, 3.07724114,
-                        3.61325732])
+                        3.61325732, 4.24264069])
         assert sp.allclose(steps, ans)
 
     def test_porosimetry_compare_modes_3D(self):
@@ -133,6 +133,20 @@ class FilterTest():
         h = ps.filters.trim_nonpercolating_paths(self.im,
                                                  inlet_axis=2, outlet_axis=2)
         assert sp.sum(h) == 499611
+
+    def test_trim_nonpercolating_paths_masks(self):
+        im = ps.generators.blobs(shape=[200, 200])
+        im1 = ps.filters.trim_nonpercolating_paths(im,
+                                                   inlet_axis=0,
+                                                   outlet_axis=0)
+        inlets = sp.zeros_like(im)
+        inlets[0, :] = True
+        outlets = sp.zeros_like(im)
+        outlets[-1, :] = True
+        im2 = ps.filters.trim_nonpercolating_paths(im,
+                                                   inlets=inlets,
+                                                   outlets=outlets)
+        assert sp.all(im2 == im1)
 
     def test_fill_blind_pores(self):
         h = ps.filters.find_disconnected_voxels(self.im)
@@ -298,6 +312,25 @@ class FilterTest():
         assert not sp.any(sp.isnan(snow.regions))
         assert not sp.any(sp.isnan(snow.dt))
         assert not sp.any(sp.isnan(snow.im))
+
+    def test_chunked_func_2D(self):
+        from skimage.morphology import disk
+        im = disk(50)
+        f = ps.filters.fftmorphology
+        s = disk(1)
+        a = ps.filters.chunked_func(func=f, im=im, strel=s, mode='erosion')
+        b = ps.filters.fftmorphology(im, strel=s, mode='erosion')
+        assert sp.all(a == b)
+
+    def test_chunked_func_3D(self):
+        from skimage.morphology import ball
+        im = ball(50)
+        f = ps.filters.fftmorphology
+        s = ball(1)
+        a = ps.filters.chunked_func(func=f, im=im, strel=s, mode='erosion')
+        b = ps.filters.fftmorphology(im, strel=s, mode='erosion')
+        assert sp.all(a == b)
+
 
 if __name__ == '__main__':
     t = FilterTest()
