@@ -4,6 +4,7 @@ import openpnm as op
 from porespy.tools import make_contiguous
 from skimage.segmentation import find_boundaries
 from skimage.morphology import ball, cube
+from porespy.tools import ps_ball
 from tqdm import tqdm
 from porespy.tools import _create_alias_map, overlay
 from porespy.tools import insert_sphere, insert_cylinder
@@ -210,7 +211,7 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200,
     pore_radi = np.rint(network["pore.diameter"] * 0.5 / res).astype(int)
     throat_radi = np.rint(network["throat.diameter"] * 0.5 / res).astype(int)
 
-    im_pores = np.zeros(shape, dtype=np.uint8)
+    im_pores = np.zeros(shape)
     im_throats = np.zeros_like(im_pores)
 
     if pore_shape == "cube":
@@ -218,7 +219,7 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200,
         rp = pore_radi * 2 + 1  # +1 since num_voxel must be odd
         rp_max = int(2 * round(delta / res)) + 1
     if pore_shape == "sphere":
-        pore_elem = ball
+        pore_elem = ps_ball
         rp = pore_radi
         rp_max = int(round(delta / res))
     if throat_shape == "cuboid":
@@ -227,14 +228,14 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200,
     # Generating voxels for pores
     for i, pore in enumerate(tqdm(network.pores(), disable=not verbose,
                                   desc="Generating pores  ")):
-        elem = pore_elem(rp[i])
+        elem = pore_elem(rp[i]) * (i+1)
         try:
             im_pores = overlay(im1=im_pores, im2=elem, c=xyz[i])
         except ValueError:
             elem = pore_elem(rp_max)
             im_pores = overlay(im1=im_pores, im2=elem, c=xyz[i])
     # Get rid of pore overlaps
-    im_pores[im_pores > 0] = 1
+    # im_pores[im_pores > 0] = 1
 
     # Generating voxels for throats
     for i, throat in enumerate(tqdm(network.throats(), disable=not verbose,
@@ -249,17 +250,18 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200,
                                          xyz1=xyz[cn[i, 1]])
     # Get rid of throat overlaps
     im_throats[im_throats > 0] = 1
-
     # Subtract pore-throat overlap from throats
-    im_throats = (im_throats.astype(bool) * ~im_pores.astype(bool)).astype(
-        sp.uint8)
-    im = im_pores * 1 + im_throats * 2
+    im_throats = (im_throats.astype(bool) & ~im_pores.astype(bool)).astype(int)
+    # Get solid phase
+    im_solid = ~(im_pores.astype(bool) + im_throats.astype(bool)) * (-1)
+    # Re-index pores so they match OpenPNM pore indexing
+    im_pores[im_pores!=0] -= 1
+    # Consolidate all phases into the final voxel image
+    im = im_solid + im_pores * 1 + im_throats * (-5)
 
     return im[extra_clearance:-extra_clearance,
               extra_clearance:-extra_clearance,
               extra_clearance:-extra_clearance]
-
-    return im
 
 
 def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
