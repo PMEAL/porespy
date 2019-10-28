@@ -34,6 +34,7 @@ Contains functions for analysing images as pore networks
 from .__funcs__ import add_boundary_regions
 from .__funcs__ import map_to_regions
 from .__funcs__ import generate_voxel_image
+from .__funcs__ import _generate_voxel_image
 from .__funcs__ import label_boundary_cells
 from .__funcs__ import add_phase_interconnections
 from .__getnet__ import regions_to_network

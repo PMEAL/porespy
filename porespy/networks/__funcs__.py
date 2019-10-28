@@ -2,6 +2,7 @@ import scipy as sp
 import numpy as np
 import openpnm as op
 from porespy.tools import make_contiguous
+import skimage as skim
 from skimage.segmentation import find_boundaries
 from skimage.morphology import ball, cube
 from porespy.tools import ps_ball
@@ -158,7 +159,7 @@ def add_boundary_regions(regions=None, faces=['front', 'back', 'left',
     return regions
 
 
-def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200,
+def _generate_voxel_image(network, pore_shape="cube", throat_shape="cylinder", max_dim=200,
                           verbose=1):
     r"""
     Generates a 3d numpy array from a network model.
@@ -243,25 +244,26 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200,
         try:
             im_throats = insert_cylinder(im_throats, r=throat_radi[i],
                                          xyz0=xyz[cn[i, 0]],
-                                         xyz1=xyz[cn[i, 1]])
+                                         xyz1=xyz[cn[i, 1]],
+                                         label=i+1)
         except ValueError:
             im_throats = insert_cylinder(im_throats, r=rp_max,
                                          xyz0=xyz[cn[i, 0]],
-                                         xyz1=xyz[cn[i, 1]])
-    # Get rid of throat overlaps
-    im_throats[im_throats > 0] = 1
-    # Subtract pore-throat overlap from throats
-    im_throats = (im_throats.astype(bool) & ~im_pores.astype(bool)).astype(int)
-    # Get solid phase
-    im_solid = ~(im_pores.astype(bool) + im_throats.astype(bool)) * (-1)
-    # Re-index pores so they match OpenPNM pore indexing
-    im_pores[im_pores!=0] -= 1
-    # Consolidate all phases into the final voxel image
-    im = im_solid + im_pores * 1 + im_throats * (-5)
+                                         xyz1=xyz[cn[i, 1]], 
+                                         label=i+1)
 
-    return im[extra_clearance:-extra_clearance,
-              extra_clearance:-extra_clearance,
-              extra_clearance:-extra_clearance]
+    im_throats[im_pores.astype(bool)] = 0
+    # Re-index pores' and throats' image so they match OpenPNM pore indexing
+    im_pores -= 1
+    im_throats -= 1
+    # Assigning -10 to solid phase so it's more distinct when using plt.imshow
+    im_pores[im_pores==-1] = -10
+    im_throats[im_throats==-1] = -10
+    # Removing the added padding
+    im_pores = skim.util.crop(im_pores, extra_clearance)
+    im_throats = skim.util.crop(im_throats, extra_clearance)
+
+    return im_pores, im_throats
 
 
 def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",

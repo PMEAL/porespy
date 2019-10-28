@@ -935,7 +935,7 @@ def insert_sphere(im, c, r):
     return im
 
 
-def insert_cylinder(im, xyz0, xyz1, r):
+def insert_cylinder(im, xyz0, xyz1, r, label=None):
     r"""
     Inserts a cylinder of given radius onto a given image
 
@@ -947,6 +947,9 @@ def insert_cylinder(im, xyz0, xyz1, r):
         Voxel coordinates of the two end points of the cylinder
     r : int
         Radius of the cylinder
+    label : int
+        Value with which cylinder voxels will be labelled. If not provided, a 
+        boolean image is returned (with cylinder voxels labelled as True)
 
     Returns
     -------
@@ -986,7 +989,7 @@ def insert_cylinder(im, xyz0, xyz1, r):
 
     im[xyz_min[0]:xyz_max[0]+1,
        xyz_min[1]:xyz_max[1]+1,
-       xyz_min[2]:xyz_max[2]+1] += template
+       xyz_min[2]:xyz_max[2]+1] = template * (True if label==None else label)
 
     return im
 
