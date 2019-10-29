@@ -142,14 +142,14 @@ bd = sp.zeros_like(im, dtype=bool)
 bd[:, :1] = 1
 bd *= im
 inv_seq_2 = invade_region(im=im, bd=bd, coarseness=3, thickness=3)
-inv_satn = ps.tools.seq_to_satn(seq=inv_seq_2)
+inv_satn = seq_to_satn(seq=inv_seq_2)
 
 
 # %%
 plt.subplot(1, 2, 1)
-plt.imshow(ps.tools.seq_to_satn(-(mio - mio.max()))/im, vmin=1e-3, vmax=1)
+plt.imshow(seq_to_satn(-(mio - mio.max()))/im, vmin=1e-3, vmax=1)
 plt.subplot(1, 2, 2)
-plt.imshow(ps.tools.seq_to_satn(inv_seq_2)/im, vmin=1e-3, vmax=1)
+plt.imshow(seq_to_satn(inv_seq_2)/im, vmin=1e-3, vmax=1)
 
 
 # %% Plot invasion curve
@@ -173,7 +173,7 @@ if 0:
 # %%  Turn saturation image into a movie
 cmap = plt.cm.viridis
 cmap.set_over(color='white')
-cmap.set_under(color='black')
+cmap.set_under(color='grey')
 if 1:
     steps = 100
     target = sp.around(inv_satn, decimals=2)
