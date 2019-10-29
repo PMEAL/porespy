@@ -11,6 +11,23 @@ plt.rcParams['figure.facecolor'] = "#002b36"
 plt.rcParams['figure.facecolor'] = "w"
 
 
+# %% Putting seq_to_satn function here until various branches are merged
+def seq_to_satn(seq):
+    seq = sp.copy(seq).astype(int)
+    solid = seq == 0
+    uninvaded = seq == -1
+    seq = sp.clip(seq, a_min=0, a_max=None)
+    seq = ps.tools.make_contiguous(seq)
+    b = sp.bincount(seq.flatten())
+    b[0] = 0
+    c = sp.cumsum(b)
+    satn = c[seq]/c.max()
+    satn *= 1 - solid.sum()/solid.size - uninvaded.sum()/solid.size
+    satn[solid] = 0.0
+    satn[uninvaded] = -1.0
+    return satn
+
+
 # %% Begin invasion of non-wetting fluid
 def invade_region(im, bd, dt=None, inv=None, thickness=3, coarseness=3):
     if inv is None:
