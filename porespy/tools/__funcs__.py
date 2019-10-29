@@ -968,7 +968,8 @@ def overlay(im1, im2, c):
     return im1
 
 
-def insert_sphere(im, c, r):
+
+def insert_sphere(im, c, r, v=True, overwrite=True):
     r"""
     Inserts a sphere of a specified radius into a given image
 
@@ -980,26 +981,48 @@ def insert_sphere(im, c, r):
         The [x, y, z] coordinate indicating the center of the sphere
     r : int
         The radius of sphere to insert
+    v : int
+        The value to put into the sphere voxels.  The default is ``True``
+        which corresponds to inserting spheres into a Boolean image.  If
+        a numerical value is given, ``im`` is converted to the same type as
+        ``v``.
+    overwrite : boolean
+        If ``True`` (default) then the sphere overwrites whatever values are
+        present in ``im``.  If ``False`` then the sphere values are only
+        inserted into locations that are 0 or ``False``.
 
     Returns
     -------
     image : ND-array
         The original image with a sphere inerted at the specified location
     """
+    # Convert image to same type os v for eventual insertion
+    if im.dtype != type(v):
+        im = im.astype(type(v))
+    # Parse the arugments
+    r = int(sp.around(r, decimals=0))
+    if r == 0:
+        return im
     c = sp.array(c, dtype=int)
     if c.size != im.ndim:
         raise Exception('Coordinates do not match dimensionality of image')
-
+    # Define a bounding box around inserted sphere, minding imaage boundaries
     bbox = []
     [bbox.append(sp.clip(c[i] - r, 0, im.shape[i])) for i in range(im.ndim)]
     [bbox.append(sp.clip(c[i] + r, 0, im.shape[i])) for i in range(im.ndim)]
     bbox = sp.ravel(bbox)
+    # Obtain slices into image
     s = bbox_to_slices(bbox)
-    temp = im[s]
-    blank = sp.ones_like(temp)
+    # Generate sphere template within image boundaries
+    blank = sp.ones_like(im[s], dtype=float)
     blank[tuple(c - bbox[0:im.ndim])] = 0
-    blank = spim.distance_transform_edt(blank) < r
-    im[s] = blank
+    sph = spim.distance_transform_edt(blank) < r
+    if overwrite:  # Clear voxles under sphere to be zero
+        temp = im[s]*sph > 0
+        im[s][temp] = 0
+    else:  # Clear portions of sphere to prevent overwriting
+        sph *= im[s] == 0
+    im[s] = im[s] + sph*v
     return im
 
 
