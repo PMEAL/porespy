@@ -3,15 +3,13 @@ import porespy as ps
 import scipy as sp
 import scipy.ndimage as spim
 from skimage.morphology import disk, ball, binary_dilation
-from skimage.segmentation import find_boundaries
 import matplotlib.pyplot as plt
 from matplotlib import animation
 from tqdm import tqdm
 plt.rcParams['figure.facecolor'] = "#002b36"
-plt.rcParams['figure.facecolor'] = "w"
 
 
-# %% Putting seq_to_satn function here until various branches are merged
+# %% Putting seq_to_satn and size_to_seq functions here until branches are merged
 def seq_to_satn(seq):
     seq = sp.copy(seq).astype(int)
     solid = seq == 0
@@ -28,8 +26,45 @@ def seq_to_satn(seq):
     return satn
 
 
+def size_to_seq(sizes):
+    r"""
+    Converts an image of invasion sizes to a sequence
+
+    Parameters
+    ----------
+    sizes : ND-array
+        An array with invasion size values in each voxel, such as the result
+        returned from the ``porosimetry`` function.
+
+    """
+    seq = (-(sizes - sizes.max())).astype(int) + 1
+    seq[seq > sizes.max()] = 0
+    return seq
+
+
 # %% Begin invasion of non-wetting fluid
 def invade_region(im, bd, dt=None, inv=None, thickness=3, coarseness=3):
+    r"""
+    Parameters
+    ----------
+    im : ND-array
+        Boolean array with ``True`` values indicating void voxels
+    bd : ND-array
+        Boolean array with ``True`` values indicating where the invading fluid
+        is injected from
+    dt : ND-array (optional)
+        The distance transform of ``im``.  If not provided it will be
+        calculated, so supplying it saves time
+    inv : ND-image (optional)
+        An image with previously invaded regions indicated.  Only voxels
+        labelled 0 will be invaded.
+    thickness : scalar
+        Indicates by how many voxels the boundary should be dilated on each
+        iteration when growing the invasion front.  The default is 3 which
+        balances accuracy and speed.  A value of 1 is the most accurate.
+    coarseness : scalar
+        Controls how coarsely the distance transform values are rounded.
+    """
     if inv is None:
         inv = -1*((~im).astype(int))
     else:
@@ -67,14 +102,16 @@ def invade_region(im, bd, dt=None, inv=None, thickness=3, coarseness=3):
                                              r=dt[c], v=_,
                                              overwrite=False)
         else:
-            blobs = ps.tools.fftmorphology(im=temp, strel=strel(r_max), mode='dilation')
+            blobs = ps.tools.fftmorphology(im=temp,
+                                           strel=strel(r_max),
+                                           mode='dilation')
             mask = inv == 0
             inv[mask] = blobs[mask]*step
         bd[pt] = True
         satn = (inv[im] > 0).sum()/im.sum()
         if satn > satn_step:
-                pbar.update()
-                satn_step = sp.around(satn, decimals=2) + 0.01
+            pbar.update()
+            satn_step = sp.around(satn, decimals=2) + 0.01
         if (inv == 0).sum() == 0:
             break
         if _ == (max_iter - 1):
@@ -82,26 +119,21 @@ def invade_region(im, bd, dt=None, inv=None, thickness=3, coarseness=3):
     return inv
 
 
-
-# %% Open or create image, and apply needed pre-processing
-#im = ps.generators.blobs(shape=[300, 300, 300], porosity=0.65, blobiness=1.2)
+# %%
 im = ps.generators.blobs(shape=[400, 400], porosity=0.65, blobiness=2)
-
-
-#%%
-#sp.save('nice_blobs', im)
-#im = sp.load('nice_blobs.npy')
+# sp.save('nice_blobs', im)
+# im = sp.load('nice_blobs.npy')
 dt = spim.distance_transform_edt(im)
 dt = sp.around(dt, decimals=0).astype(int)
-#dt = sp.digitize(dt, bins=sp.arange(0, dt.max(), 2))
 bd_init = sp.zeros_like(im, dtype=bool)
 bd_init[:, :1] = 1
 bd_init *= im
-mio = ps.filters.porosimetry(im=im, sizes=sp.arange(1, int(dt.max())), inlets=bd_init, mode='dt')
+mio = ps.filters.porosimetry(im=im, sizes=sp.arange(1, int(dt.max())),
+                             inlets=bd_init, mode='dt')
 psd = ps.metrics.pore_size_distribution(im=mio, bins=25, log=False)
 
 
-# %%
+# %% Apply IP on each region in the OP image
 if 0:
     satn = [(mio >= mio.max()).sum()/im.sum()]
     Rs = [int(mio.max())]
@@ -135,21 +167,20 @@ if 0:
     plt.imshow(mio/im)
 
 
-
-# %%
-#im = ps.generators.overlapping_spheres(shape=[200, 200], radius=7, porosity=0.5)
+# %% Apply IP on image in single pass
 bd = sp.zeros_like(im, dtype=bool)
 bd[:, :1] = 1
 bd *= im
-inv_seq_2 = invade_region(im=im, bd=bd, coarseness=3, thickness=3)
+inv_seq_2 = invade_region(im=im, bd=bd, coarseness=0, thickness=1)
 inv_satn = seq_to_satn(seq=inv_seq_2)
 
 
 # %%
-plt.subplot(1, 2, 1)
-plt.imshow(seq_to_satn(-(mio - mio.max()))/im, vmin=1e-3, vmax=1)
-plt.subplot(1, 2, 2)
-plt.imshow(seq_to_satn(inv_seq_2)/im, vmin=1e-3, vmax=1)
+if 1:
+    plt.subplot(1, 2, 1)
+    plt.imshow(seq_to_satn(size_to_seq(mio)), vmin=1e-5, vmax=1)
+    plt.subplot(1, 2, 2)
+    plt.imshow(seq_to_satn(inv_seq_2), vmin=1e-5, vmax=1)
 
 
 # %% Plot invasion curve
