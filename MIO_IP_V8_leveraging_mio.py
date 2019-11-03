@@ -27,16 +27,6 @@ def seq_to_satn(seq):
 
 
 def size_to_seq(sizes):
-    r"""
-    Converts an image of invasion sizes to a sequence
-
-    Parameters
-    ----------
-    sizes : ND-array
-        An array with invasion size values in each voxel, such as the result
-        returned from the ``porosimetry`` function.
-
-    """
     seq = (-(sizes - sizes.max())).astype(int) + 1
     seq[seq > sizes.max()] = 0
     return seq
@@ -57,7 +47,8 @@ def invade_region(im, bd, dt=None, inv=None, thickness=3, coarseness=3):
         calculated, so supplying it saves time
     inv : ND-image (optional)
         An image with previously invaded regions indicated.  Only voxels
-        labelled 0 will be invaded.
+        labelled 0 will be invaded.  Note that this requires the solid phase
+        to be labelled with -1.
     thickness : scalar
         Indicates by how many voxels the boundary should be dilated on each
         iteration when growing the invasion front.  The default is 3 which
@@ -120,7 +111,7 @@ def invade_region(im, bd, dt=None, inv=None, thickness=3, coarseness=3):
 
 
 # %%
-im = ps.generators.blobs(shape=[400, 400], porosity=0.65, blobiness=2)
+im = ps.generators.blobs(shape=[400, 400], porosity=0.75, blobiness=1)
 # sp.save('nice_blobs', im)
 # im = sp.load('nice_blobs.npy')
 dt = spim.distance_transform_edt(im)
@@ -176,7 +167,7 @@ inv_satn = seq_to_satn(seq=inv_seq_2)
 
 
 # %%
-if 1:
+if 0:
     plt.subplot(1, 2, 1)
     plt.imshow(seq_to_satn(size_to_seq(mio)), vmin=1e-5, vmax=1)
     plt.subplot(1, 2, 2)
@@ -208,15 +199,21 @@ cmap.set_under(color='grey')
 if 1:
     steps = 100
     target = sp.around(inv_satn, decimals=2)
+    partner = seq_to_satn(size_to_seq(mio))
     seq = sp.zeros_like(target)
+    seq2 = sp.zeros_like(target)
     movie = []
-    fig = plt.figure(figsize=[10, 10])
+    fig, ax = plt.subplots(1, 2)
     for v in sp.unique(target)[1:]:
         seq += v*(target == v)
         seq[~im] = target.max() + 10
-        frame = plt.imshow(seq, vmin=1e-3, vmax=target.max(),
-                           animated=True, cmap=cmap)
-        movie.append([frame])
+        frame1 = ax[0].imshow(seq, vmin=1e-3, vmax=target.max(),
+                              animated=True, cmap=cmap)
+        seq2 += v*(partner <= v)*(seq2 == 0)
+        seq2[~im] = target.max() + 10
+        frame2 = ax[1].imshow(seq2, vmin=1e-3, vmax=target.max(),
+                              animated=True, cmap=cmap)
+        movie.append([frame1, frame2])
     ani = animation.ArtistAnimation(fig, movie, interval=200,
                                     blit=True, repeat_delay=500)
 # ani.save('image_based_ip.gif', writer='imagemagick', fps=3)
