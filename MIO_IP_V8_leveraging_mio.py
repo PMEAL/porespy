@@ -1,4 +1,5 @@
 # %% Import necessary packages and functions
+import imageio
 import porespy as ps
 import scipy as sp
 import scipy.ndimage as spim
@@ -10,19 +11,19 @@ plt.rcParams['figure.facecolor'] = "#002b36"
 
 
 # %% Putting seq_to_satn and size_to_seq functions here until branches are merged
-def seq_to_satn(seq):
+def seq_to_satn(seq, solid=-1, uninvaded=0):
     seq = sp.copy(seq).astype(int)
-    solid = seq == 0
-    uninvaded = seq == -1
+    solid = seq == solid
+    uninvaded = seq == uninvaded
     seq = sp.clip(seq, a_min=0, a_max=None)
     seq = ps.tools.make_contiguous(seq)
     b = sp.bincount(seq.flatten())
     b[0] = 0
     c = sp.cumsum(b)
     satn = c[seq]/c.max()
-    satn *= 1 - solid.sum()/solid.size - uninvaded.sum()/solid.size
-    satn[solid] = 0.0
-    satn[uninvaded] = -1.0
+    satn *= 1 - uninvaded.sum()/solid.size
+    satn[solid] = -1.0
+    satn[uninvaded] = 0.0
     return satn
 
 
@@ -111,7 +112,7 @@ def invade_region(im, bd, dt=None, inv=None, thickness=3, coarseness=3):
 
 
 # %%
-im = ps.generators.blobs(shape=[400, 400], porosity=0.75, blobiness=1)
+im = ps.generators.blobs(shape=[400, 400], porosity=0.7, blobiness=2)
 # sp.save('nice_blobs', im)
 # im = sp.load('nice_blobs.npy')
 dt = spim.distance_transform_edt(im)
@@ -220,4 +221,7 @@ if 1:
 
 
 # %%
+inv_satn = sp.digitize(seq_to_satn(inv_seq_2),
+                       bins=sp.linspace(0, 1, 256)).astype(sp.uint8)
+imageio.imwrite('IP_2D_1.tif', inv_satn, format='tif')
 # imageio.volwrite('IP.tif', (inv_satn*100).astype(sp.uint8), format='tif')
