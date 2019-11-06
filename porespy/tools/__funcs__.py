@@ -1152,6 +1152,11 @@ def size_to_seq(size):
                        right=True)
     vals = -(vals - vals.max() - 1)*~solid
     vals = make_contiguous(vals)
+
+    # Possibly simpler way?
+    #    vals = (-(sizes - sizes.max())).astype(int) + 1
+    #    vals[vals > sizes.max()] = 0
+
     return vals
 
 
