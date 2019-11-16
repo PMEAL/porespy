@@ -1188,8 +1188,7 @@ def seq_to_satn(seq):
     b = sp.bincount(seq.flatten())
     b[0] = 0
     c = sp.cumsum(b)
-    satn = c[seq]/c.max()
-    satn *= 1 - solid.sum()/solid.size - uninvaded.sum()/solid.size
+    satn = c[seq]/((seq > 0).sum() + uninvaded.sum())
     satn[solid] = 0.0
     satn[uninvaded] = -1.0
     return satn
