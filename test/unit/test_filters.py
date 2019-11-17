@@ -35,7 +35,7 @@ class FilterTest():
         steps = sp.unique(mip)
         ans = sp.array([0.00000000, 1.00000000, 1.37871571, 1.61887041,
                         1.90085700, 2.23196205, 2.62074139, 3.07724114,
-                        3.61325732, 4.24264069])
+                        3.61325732])
         assert sp.allclose(steps, ans)
 
     def test_porosimetry_compare_modes_3D(self):
