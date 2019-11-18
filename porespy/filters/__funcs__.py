@@ -1530,7 +1530,7 @@ def chunked_func(func, overlap, im_arg=['input', 'image', 'im'],
     >>> f = spim.binary_dilation
     >>> im2 = ps.filters.chunked_func(func=f, overlap=7, im_arg='input',
     ...                               input=im, structure=ball(3), cores=1)
-    Applying function to 8 subsections...
+    [########################################] | 100% Completed...
     >>> im3 = spim.binary_dilation(input=im, structure=ball(3))
     >>> sp.all(im2 == im3)
     True
