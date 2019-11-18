@@ -1465,14 +1465,15 @@ def prune_branches(skel, branch_points=None, iterations=1):
 def chunked_func(func, overlap, im_arg=['input', 'image', 'im'],
                  divs=2, cores=None, **kwargs):
     r"""
-    Performs specfied operation "chunk-wise" to save memory, and can optionally
-    spread the work across multiple cores.
+    Performs specfied operation "chunk-wise"
 
-    This function can be used with any operation that requires a structuring
-    element of some sort, since these functions imply the operation is local
-    and can be chunked.  This function is particularly handy for very large
-    images (>500-cubed) which can easily fill the RAM on a normal PC and
-    take ages.
+    This can be used to save memory by doing one chunk at a time (``cores=1``)
+    or to increase computation speed by spreading the work across multiple
+    cores (e.g. ``core = 8``)
+
+    This function can be used with any operation that applies a structuring
+    element of some sort, since this implies that the operation is local
+    and can be chunked.
 
     Parameters
     ----------
@@ -1482,9 +1483,7 @@ def chunked_func(func, overlap, im_arg=['input', 'image', 'im'],
     overlap : scalar or list of scalars
         The amount of overlap to include when dividing up the image.  This
         value will almost always be the size (i.e. diameter) of the
-        structuring element.  The keyword for the structuring element depends
-        on which ``func`` is used, so PoreSpy cannot infer this value, hence
-        it must be given.
+        structuring element.
     im_arg : string
         The keyword used by ``func`` for the image to be operated on.  By
         default this function will look for ``image``, ``input``, and ``im``
@@ -1498,16 +1497,18 @@ def chunked_func(func, overlap, im_arg=['input', 'image', 'im'],
     cores : scalar
         The number of cores which should be used.  By default, all cores will
         be used, or as many are needed for the given number of chunks, which
-        even is smaller.
+        ever is smaller.
     kwargs : additional keyword arguments
         All other arguments are passed to ``func`` as keyword arguments. Note
-        that you must specify the image argument using the convention of
-        ``func``, in addition to passing ``im``.
+        that PoreSpy will fetch the image from this list of keywords using the
+        value provided to ``im_arg``.
 
     Returns
     -------
     result : ND-image
-        An image the same size as the input image.
+        An image the same size as the input image, with the specified filter
+        applied as though done on a single large image.  There should be *no*
+        difference.
 
     Notes
     -----
@@ -1516,6 +1517,10 @@ def chunked_func(func, overlap, im_arg=['input', 'image', 'im'],
     chunks.  This way the operation does not have any edge artifacts.  The
     amount of padding is inferred from the size of the structuring element.
 
+    See Also
+    --------
+    skikit-image.util.apply_parallel
+
     Examples
     --------
     >>> import scipy.ndimage as spim
@@ -1523,8 +1528,8 @@ def chunked_func(func, overlap, im_arg=['input', 'image', 'im'],
     >>> from skimage.morphology import ball
     >>> im = ps.generators.blobs(shape=[100, 100, 100])
     >>> f = spim.binary_dilation
-    >>> im2 = ps.filters.chunked_func(func=f, overlap=7, input=im,
-    ...                               structure=ball(3), cores=1)
+    >>> im2 = ps.filters.chunked_func(func=f, overlap=7, im_arg='input',
+    ...                               input=im, structure=ball(3), cores=1)
     Applying function to 8 subsections...
     >>> im3 = spim.binary_dilation(input=im, structure=ball(3))
     >>> sp.all(im2 == im3)
@@ -1560,17 +1565,17 @@ def chunked_func(func, overlap, im_arg=['input', 'image', 'im'],
                                   tile_bounds_policy=ARRAY_BOUNDS))
     # Apply func to each subsection of the image
     res = []
-    print('Image will be broken into the following chunks:')
+    # print('Image will be broken into the following chunks:')
     for s in slices:
         # Extract subsection from image and input into kwargs
         kwargs[im_arg] = im[tuple(s)]
-        print(kwargs[im_arg].shape)
+        # print(kwargs[im_arg].shape)
         res.append(apply_func(func=func, **kwargs))
-    # Now has dask actually compute the function on each subsection in parallel
+    # Have dask actually compute the function on each subsection in parallel
     with ProgressBar():
         ims = dask.compute(res, num_workers=cores)[0]
     # Finally, put the pieces back together into a single master image, im2
-    im2 = sp.zeros_like(im, dtype=im.dtype)
+    im2 = sp.zeros_like(im, dtype=ims[0].dtype)
     for i, s in enumerate(slices):
         # Prepare new slice objects into main and sub-sliced image
         a = []  # Slices into main image
@@ -1591,7 +1596,6 @@ def chunked_func(func, overlap, im_arg=['input', 'image', 'im'],
         # Convert lists of slices to tuples
         a = tuple(a)
         b = tuple(b)
-        print(b)
         # Insert image chunk into main image
         im2[a] = ims[i][b]
     return im2
