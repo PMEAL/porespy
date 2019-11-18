@@ -1530,7 +1530,6 @@ def chunked_func(func, overlap, im_arg=['input', 'image', 'im'],
     >>> f = spim.binary_dilation
     >>> im2 = ps.filters.chunked_func(func=f, overlap=7, im_arg='input',
     ...                               input=im, structure=ball(3), cores=1)
-    [########################################] | 100% Completed...
     >>> im3 = spim.binary_dilation(input=im, structure=ball(3))
     >>> sp.all(im2 == im3)
     True
@@ -1572,8 +1571,9 @@ def chunked_func(func, overlap, im_arg=['input', 'image', 'im'],
         # print(kwargs[im_arg].shape)
         res.append(apply_func(func=func, **kwargs))
     # Have dask actually compute the function on each subsection in parallel
-    with ProgressBar():
-        ims = dask.compute(res, num_workers=cores)[0]
+    # with ProgressBar():
+    #    ims = dask.compute(res, num_workers=cores)[0]
+    ims = dask.compute(res, num_workers=cores)[0]
     # Finally, put the pieces back together into a single master image, im2
     im2 = sp.zeros_like(im, dtype=ims[0].dtype)
     for i, s in enumerate(slices):
