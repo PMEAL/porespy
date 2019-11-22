@@ -34,4 +34,13 @@ jobs:
         pip install -e .
         
     - name: Running tests
-      run: pytest --pep8
+      run: pytest --pep8 --cov=./ --cov-report=xml
+    
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+        yml: ./codecov.yml     
