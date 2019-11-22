@@ -265,9 +265,9 @@ def two_point_correlation_bf(im, spacing=10):
     large 3D images and/or close spacing.
     """
     if im.ndim != im.squeeze().ndim:
-        warnings.warn('Input image conains a singleton axis:' + str(im.shape) +
-                      ' Reduce dimensionality with np.squeeze(im) to avoid' +
-                      ' unexpected behavior.')
+        warnings.warn('Input image conains a singleton axis:' + str(im.shape)
+                      + ' Reduce dimensionality with np.squeeze(im) to avoid'
+                      + ' unexpected behavior.')
     if im.ndim == 2:
         pts = sp.meshgrid(range(0, im.shape[0], spacing),
                           range(0, im.shape[1], spacing))
@@ -474,7 +474,7 @@ def chord_counts(im):
     length in a format suitable for ``plt.plot``.
     """
     labels, N = spim.label(im > 0)
-    props = regionprops(labels, coordinates='xy')
+    props = regionprops(labels)
     chord_lens = sp.array([i.filled_area for i in props])
     return chord_lens
 
@@ -653,15 +653,14 @@ def region_interface_areas(regions, areas, voxel_size=1, strel=None):
     """
     print('_'*60)
     print('Finding interfacial areas between each region')
-    from skimage.morphology import disk, square, ball, cube
+    from skimage.morphology import disk, ball
     im = regions.copy()
     if im.ndim != im.squeeze().ndim:
-        warnings.warn('Input image conains a singleton axis:' + str(im.shape) +
-                      ' Reduce dimensionality with np.squeeze(im) to avoid' +
-                      ' unexpected behavior.')
-    if im.ndim == 2:
-        cube = square
-        ball = disk
+        warnings.warn('Input image conains a singleton axis:' + str(im.shape)
+                      + ' Reduce dimensionality with np.squeeze(im) to avoid'
+                      + ' unexpected behavior.')
+    # cube_elem = square if im.ndim == 2 else cube
+    ball_elem = disk if im.ndim == 2 else ball
     # Get 'slices' into im for each region
     slices = spim.find_objects(im)
     # Initialize arrays
@@ -678,7 +677,7 @@ def region_interface_areas(regions, areas, voxel_size=1, strel=None):
             mask_im = sub_im == i
             sa[reg] = areas[reg]
             im_w_throats = spim.binary_dilation(input=mask_im,
-                                                structure=ball(1))
+                                                structure=ball_elem(1))
             im_w_throats = im_w_throats*sub_im
             Pn = sp.unique(im_w_throats)[1:] - 1
             for j in Pn:
@@ -692,8 +691,8 @@ def region_interface_areas(regions, areas, voxel_size=1, strel=None):
                                             slices[j][1].start)):
                                        max(slices[reg][1].stop,
                                            slices[j][1].stop)]
-                    merged_region = ((merged_region == reg + 1) +
-                                     (merged_region == j + 1))
+                    merged_region = ((merged_region == reg + 1)
+                                     + (merged_region == j + 1))
                     mesh = mesh_region(region=merged_region, strel=strel)
                     sa_combined.append(mesh_surface_area(mesh))
     # Interfacial area calculation
