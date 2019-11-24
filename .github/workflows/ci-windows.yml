@@ -31,7 +31,6 @@ jobs:
       run: |
         pip install -r requirements/pip_requirements.txt
         pip install -r requirements/test_requirements.txt
-        pip uninstall porespy --yes
         pip install -e .
         
     - name: Running tests

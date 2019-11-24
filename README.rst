@@ -1,5 +1,11 @@
 
-.. image:: https://github.com/PMEAL/porespy/workflows/CI/badge.svg
+.. image:: https://github.com/PMEAL/porespy/workflows/Ubuntu/badge.svg
+  :target: https://github.com/PMEAL/porespy/actions
+
+.. image:: https://github.com/PMEAL/porespy/workflows/macOS/badge.svg
+  :target: https://github.com/PMEAL/porespy/actions
+
+.. image:: https://github.com/PMEAL/porespy/workflows/Windows/badge.svg
   :target: https://github.com/PMEAL/porespy/actions
 
 .. image:: https://github.com/PMEAL/porespy/workflows/Examples/badge.svg
