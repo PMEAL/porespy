@@ -1,6 +1,6 @@
 
-.. image:: https://travis-ci.org/PMEAL/porespy.svg?branch=master
-   :target: https://travis-ci.org/PMEAL/porespy
+.. image:: https://github.com/PMEAL/porespy/workflows/CI/badge.svg
+  :target: https://github.com/PMEAL/porespy/actions
 
 .. image:: https://codecov.io/gh/PMEAL/PoreSpy/branch/master/graph/badge.svg
    :target: https://codecov.io/gh/PMEAL/PoreSpy
