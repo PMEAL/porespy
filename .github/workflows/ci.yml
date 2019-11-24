@@ -52,7 +52,7 @@ jobs:
         pip install -e .
         
     - name: Running tests
-      run: pytest --pep8 --cov=./ --cov-report=xml
+      run: pytest --pep8 --cov=./ --cov-report=xml --ignore=test/unit/test_examples.py
     
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
