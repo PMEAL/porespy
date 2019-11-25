@@ -145,8 +145,8 @@ class MetricsTest():
             ps.metrics.phase_fraction(sp.rand(10, 10, 10), normed=True)
         # The method must also work on boolean images
         counts = ps.metrics.phase_fraction(im.astype(bool))
-        assert counts[0] == (im==0).sum() / im.size
-        assert counts[1] == (im!=0).sum() / im.size
+        assert counts[0] == (im == 0).sum() / im.size
+        assert counts[1] == (im != 0).sum() / im.size
 
     def test_representative_elementary_volume(self):
         im = ps.generators.lattice_spheres(shape=[999, 999],
