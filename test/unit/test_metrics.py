@@ -40,6 +40,9 @@ class MetricsTest():
         assert sp.sqrt((sp.mean(tpcf_fft_1.probability[-5:]) - phi1)**2) < t
         phi2 = ps.metrics.porosity(im=self.im2D_big)
         assert sp.sqrt((sp.mean(tpcf_fft_2.probability[-5:]) - phi2)**2) < t
+        # Must raise error if 1D image is supplied
+        with pytest.raises(Exception):
+            _ = ps._metrics.two_point_correlation_fft(sp.random.rand(10))
 
     def test_tpcf_fft_3d(self):
         tpcf_fft = ps.metrics.two_point_correlation_fft(self.im3D)
@@ -58,6 +61,9 @@ class MetricsTest():
         t = 0.2
         phi1 = ps.metrics.porosity(im=self.im2D)
         assert sp.sqrt((sp.mean(tpcf_bf.probability[-5:]) - phi1)**2) < t
+        # Throw warning if image contains a singleton axis
+        with pytest.warns(UserWarning):
+            _ = ps.metrics.two_point_correlation_bf(sp.atleast_3d(self.im2D))
 
     def test_rev(self):
         rev = ps.metrics.representative_elementary_volume(self.blobs)
@@ -96,7 +102,13 @@ class MetricsTest():
 
     def test_chord_length_distribution_2D(self):
         chords = ps.filters.apply_chords(self.im2D)
-        ps.metrics.chord_length_distribution(chords, normalization='length')
+        cld = ps.metrics.chord_length_distribution(chords, normalization='length')
+        assert not hasattr(cld, "logL")
+        cld = ps.metrics.chord_length_distribution(chords, normalization='length', log=1)
+        assert hasattr(cld, "logL")
+        with pytest.raises(Exception):
+            cld = ps.metrics.chord_length_distribution(chords,
+                                                       normalization='unsupported_norm')
 
     def test_chord_length_distribution_3D(self):
         chords = ps.filters.apply_chords(self.im3D)
@@ -132,6 +144,9 @@ class MetricsTest():
         ia = ps.metrics.region_interface_areas(regions, areas)
         assert sp.all(ia.conns[0] == [2, 19])
         assert sp.around(ia.area[0], decimals=2) == 3.59
+        with pytest.warns(UserWarning):
+            im2D = (sp.random.rand(5, 5) * 10).astype(int)
+            _ = ps.metrics.region_interface_areas(sp.atleast_3d(im2D), areas)
 
     def test_phase_fraction(self):
         im = sp.reshape(sp.random.randint(0, 10, 1000), [10, 10, 10])
@@ -139,7 +154,7 @@ class MetricsTest():
         counts = ps.metrics.phase_fraction(im, normed=False)
         assert sp.all(labels == counts)
         fractions = ps.metrics.phase_fraction(im, normed=True)
-        assert fractions.sum() == 1
+        assert sp.isclose(fractions.sum(), 1)
         assert sp.allclose(fractions, counts/counts.sum())
         with pytest.raises(Exception):
             ps.metrics.phase_fraction(sp.rand(10, 10, 10), normed=True)
