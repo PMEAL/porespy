@@ -26,7 +26,8 @@ before_install:
 install:
   - conda install --yes python=$TRAVIS_PYTHON_VERSION --file requirements/conda_requirements.txt
   - pip install -r requirements/test_requirements.txt
-  - pip install Cython --install-option="--no-cython-compile"  
+  - pip install Cython --install-option="--no-cython-compile"
+  - pip install pkgconfig
   - pip uninstall porespy --yes
   - python setup.py install
 
