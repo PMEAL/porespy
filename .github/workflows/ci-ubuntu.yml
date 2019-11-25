@@ -38,6 +38,7 @@ jobs:
       run: pytest --pep8 --cov=./ --cov-report=xml --ignore=test/unit/test_examples.py
     
     - name: Upload coverage to Codecov
+      if: matrix.python-version == 3.7
       uses: codecov/codecov-action@v1
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
