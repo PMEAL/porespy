@@ -32,7 +32,7 @@ jobs:
         pip install -r requirements/pip_requirements.txt
         pip install -r requirements/test_requirements.txt
         pip uninstall porespy --yes
-        pip install -e .
+        python setup.py install
         
     - name: Running tests
       run: pytest test/unit/test_examples.py
