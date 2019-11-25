@@ -118,6 +118,8 @@ class MetricsTest():
         assert sp.around(a, decimals=2) == 258.3
         b = ps.metrics.mesh_surface_area(verts=mesh.verts, faces=mesh.faces)
         assert sp.around(b, decimals=2) == sp.around(a, decimals=2)
+        with pytest.raises(Exception):
+            mesh = ps.metrics.mesh_surface_area(mesh=None)
 
     def test_region_surface_areas(self):
         regions = self.regions
@@ -141,6 +143,10 @@ class MetricsTest():
         assert sp.allclose(fractions, counts/counts.sum())
         with pytest.raises(Exception):
             ps.metrics.phase_fraction(sp.rand(10, 10, 10), normed=True)
+        # The method must also work on boolean images
+        counts = ps.metrics.phase_fraction(im.astype(bool))
+        assert counts[0] == (im==0).sum() / im.size
+        assert counts[1] == (im!=0).sum() / im.size
 
     def test_representative_elementary_volume(self):
         im = ps.generators.lattice_spheres(shape=[999, 999],
