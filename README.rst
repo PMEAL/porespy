@@ -10,7 +10,7 @@
 
 .. image:: https://github.com/PMEAL/porespy/workflows/Examples/badge.svg
   :target: https://github.com/PMEAL/porespy/actions
-
+|
 .. image:: https://codecov.io/gh/PMEAL/PoreSpy/branch/master/graph/badge.svg
    :target: https://codecov.io/gh/PMEAL/PoreSpy
 
