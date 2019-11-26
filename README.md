@@ -111,8 +111,12 @@ import matplotlib.pyplot as plt
 im = ps.generators.blobs(shape=[200, 200], porosity=0.5, blobiness=2)
 plt.imshow(im)
 ```
-
+<!--
 ![image](https://github.com/PMEAL/porespy/raw/master/docs/_static/fig1.png)
+-->
+<p align="center">
+  <img src="https://github.com/PMEAL/porespy/raw/master/docs/_static/fig1.png" width="50%"></img>
+</p>
 
 ## Applying filters
 
@@ -125,8 +129,12 @@ distribution.
 lt = ps.filters.local_thickness(im)
 plt.imshow(lt)
 ```
-
+<!--
 ![image](https://github.com/PMEAL/porespy/raw/master/docs/_static/fig2.png)
+-->
+<p align="center">
+  <img src="https://github.com/PMEAL/porespy/raw/master/docs/_static/fig2.png" width="50%"></img>
+</p>
 
 A less common filter is the application of chords that span the pore
 space in a given direction. It is possible to gain information about
@@ -138,8 +146,12 @@ cr = ps.filters.apply_chords(im)
 cr = ps.filters.flood(cr, mode='size')
 plt.imshow(cr)
 ```
-
+<!--
 ![image](https://github.com/PMEAL/porespy/raw/master/docs/_static/fig3.png)
+-->
+<p align="center">
+  <img src="https://github.com/PMEAL/porespy/raw/master/docs/_static/fig3.png" width="50%"></img>
+</p>
 
 ## Calculating metrics
 
@@ -153,8 +165,12 @@ fig = plt.plot(*data, 'bo-')
 plt.ylabel('probability')
 plt.xlabel('correlation length [voxels]')
 ```
-
+<!--
 ![image](https://github.com/PMEAL/porespy/raw/master/docs/_static/fig4.png)
+-->
+<p align="center">
+  <img src="https://github.com/PMEAL/porespy/raw/master/docs/_static/fig4.png" width="50%"></img>
+</p>
 
 The metrics sub-module also contains a suite of functions that produce
 plots based on values in images that have passed through a filter, such
@@ -169,7 +185,11 @@ plt.plot(data.R, data.cdf, 'bo-')
 plt.xlabel('invasion size [voxels]')
 plt.ylabel('volume fraction invaded [voxels]')
 ```
-
+<!--
 ![image](https://github.com/PMEAL/porespy/raw/master/docs/_static/fig5.png)
-
 ![image](https://github.com/PMEAL/porespy/raw/master/docs/_static/fig6.png)
+-->
+<p align="center">
+  <img src="https://github.com/PMEAL/porespy/raw/master/docs/_static/fig5.png" width="50%"></img>
+  <img src="https://github.com/PMEAL/porespy/raw/master/docs/_static/fig6.png" width="50%"></img>
+</p>
