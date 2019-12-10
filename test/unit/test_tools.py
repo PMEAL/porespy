@@ -124,6 +124,29 @@ class ToolsTest():
         assert ims.shape == (2, 2)
         assert im[tuple(ims[0, 0])].sum() == sp.prod(im.shape)/4
 
+    def test_size_to_seq(self):
+        im = self.im2D
+        sz = ps.filters.porosimetry(im)
+        nsizes = sp.size(sp.unique(sp.around(sz, decimals=0)))
+        sq = ps.tools.size_to_seq(sz)
+        nsteps = sp.size(sp.unique(sq))
+        assert nsteps == nsizes
+
+    def test_seq_to_sat_fully_filled(self):
+        im = self.im2D
+        sz = ps.filters.porosimetry(im)
+        sq = ps.tools.size_to_seq(sz)
+        sat = ps.tools.seq_to_satn(sq)
+        assert sat.max() == 1
+
+    def test_seq_to_sat_partially_filled(self):
+        im = self.im2D
+        sz = ps.filters.porosimetry(im)
+        sq = ps.tools.size_to_seq(sz)
+        sq[sq == sq.max()] = -1
+        sat = ps.tools.seq_to_satn(sq)
+        assert sat.max() < 1
+
 
 if __name__ == '__main__':
     t = ToolsTest()

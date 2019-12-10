@@ -13,7 +13,7 @@ from numba import jit
 from skimage.segmentation import clear_border
 from skimage.morphology import ball, disk, square, cube, diamond, octahedron
 from skimage.morphology import reconstruction, watershed
-from porespy.tools import randomize_colors, fftmorphology
+from porespy.tools import randomize_colors, fftmorphology, make_contiguous
 from porespy.tools import get_border, extend_slice, extract_subsection
 from porespy.tools import ps_disk, ps_ball
 from porespy.tools import _create_alias_map
@@ -1221,8 +1221,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
     if mode == 'mio':
         pw = int(sp.floor(dt.max()))
         impad = sp.pad(im, mode='symmetric', pad_width=pw)
-        inletspad = sp.pad(inlets, mode='symmetric', pad_width=pw)
-        inlets = sp.where(inletspad)
+        inlets = sp.pad(inlets, mode='symmetric', pad_width=pw)
 #        sizes = sp.unique(sp.around(sizes, decimals=0).astype(int))[-1::-1]
         imresults = sp.zeros(sp.shape(impad))
         for r in tqdm(sizes):
@@ -1234,7 +1233,6 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
                 imresults[(imresults == 0)*imtemp] = r
         imresults = extract_subsection(imresults, shape=im.shape)
     elif mode == 'dt':
-        inlets = sp.where(inlets)
         imresults = sp.zeros(sp.shape(im))
         for r in tqdm(sizes):
             imtemp = dt >= r
@@ -1244,7 +1242,6 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
                 imtemp = spim.distance_transform_edt(~imtemp) < r
                 imresults[(imresults == 0)*imtemp] = r
     elif mode == 'hybrid':
-        inlets = sp.where(inlets)
         imresults = sp.zeros(sp.shape(im))
         for r in tqdm(sizes):
             imtemp = dt >= r
@@ -1291,7 +1288,12 @@ def trim_disconnected_blobs(im, inlets, strel=None):
         inlets = inlets.astype(bool)
     else:
         raise Exception('inlets not valid, refer to docstring for info')
-    labels = spim.label(inlets + (im > 0), structure=strel)[0]
+    from skimage.morphology import square
+    if im.ndim == 3:
+        square = cube
+    else:
+        square = square
+    labels = spim.label(inlets + (im > 0), structure=square(3))[0]
     keep = sp.unique(labels[inlets])
     keep = keep[keep > 0]
     if len(keep) > 0:
