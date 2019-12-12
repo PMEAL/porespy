@@ -1,8 +1,9 @@
-import porespy as ps
 import scipy as sp
 import scipy.spatial as sptl
 import scipy.ndimage as spim
-from porespy.tools import norm_to_uniform, ps_ball, ps_disk
+from numba import njit
+from porespy.tools import norm_to_uniform, ps_ball, ps_disk, get_border
+from porespy.tools import insert_sphere, fftmorphology
 from typing import List
 from numpy import array
 
@@ -87,7 +88,7 @@ def insert_shape(im, element, center=None, corner=None, value=1,
     return im
 
 
-def RSA(im: array, radius: int, volume_fraction: int = 1,
+def RSA(im: array, radius: int, volume_fraction: int = 1, n_max: int = None,
         mode: str = 'extended'):
     r"""
     Generates a sphere or disk packing using Random Sequential Addition
@@ -108,6 +109,11 @@ def RSA(im: array, radius: int, volume_fraction: int = 1,
         The fraction of the image that should be filled with spheres.  The
         spheres are addeds 1's, so each sphere addition increases the
         ``volume_fraction`` until the specified limit is reach.
+    n_max : scalar
+        The maximum number of spheres to add.  By default the addition will
+        go indefinately until ``volume_fraction`` is met, but specifying
+        a scalr for ``n_max`` will halt addition after the given number of
+        spheres are added.
     mode : string
         Controls how the edges of the image are handled.  Options are:
 
@@ -129,7 +135,7 @@ def RSA(im: array, radius: int, volume_fraction: int = 1,
     Each sphere is filled with 1's, but the center is marked with a 2.  This
     allows easy boolean masking to extract only the centers, which can be
     converted to coordinates using ``scipy.where`` and used for other purposes.
-    The obtain only the spheres, use``im = im == 1``.
+    To obtain only the spheres, use``im = im == 1``.
 
     This function adds spheres to the background of the received ``im``, which
     allows iteratively adding spheres of different radii to the unfilled space.
@@ -139,57 +145,58 @@ def RSA(im: array, radius: int, volume_fraction: int = 1,
     [1] Random Heterogeneous Materials, S. Torquato (2001)
 
     """
-    # Note: The 2D vs 3D splitting of this just me being lazy...I can't be
-    # bothered to figure it out programmatically right now
-    # TODO: Ideally the spheres should be added periodically
     print(78*'―')
     print('RSA: Adding spheres of size ' + str(radius))
-    d2 = len(im.shape) == 2
-    mrad = 2*radius
-    if d2:
+    im = sp.pad(im, pad_width=3*radius, mode='constant', constant_values=0)
+    if im.ndim == 2:
         im_strel = ps_disk(radius)
-        mask_strel = ps_disk(mrad)
+        template_sm = ps_disk(radius=radius)
+        template_lg = ps_disk(radius=2*radius)
     else:
         im_strel = ps_ball(radius)
-        mask_strel = ps_ball(mrad)
+        template_sm = ps_ball(radius=radius)
+        template_lg = ps_ball(radius=2*radius)
     if sp.any(im > 0):
         # Dilate existing objects by im_strel to remove pixels near them
         # from consideration for sphere placement
-        mask = ps.tools.fftmorphology(im > 0, im_strel > 0, mode='dilate')
+        mask = fftmorphology(im > 0, im_strel > 0, mode='dilate')
         mask = mask.astype(int)
     else:
-        mask = sp.zeros_like(im)
+        mask = sp.zeros_like(im, dtype=int)
     if mode == 'contained':
-        mask = _remove_edge(mask, radius)
+        temp = get_border(im.shape, thickness=3*radius, mode='faces')
+        mask = mask + temp
     elif mode == 'extended':
-        pass
+        temp = get_border(im.shape, thickness=2*radius, mode='faces')
+        mask = mask + temp
     elif mode == 'periodic':
-        raise Exception('Periodic edges are not implemented yet')
+        pass
     else:
-        raise Exception('Unrecognized mode: ' + mode)
+        pass
+    options_im = sp.reshape(sp.arange(im.size), newshape=im.shape)
+    options_im[mask > 0] = 0
     vf = im.sum()/im.size
-    free_spots = sp.argwhere(mask == 0)
     i = 0
-    while vf <= volume_fraction and len(free_spots) > 0:
-        choice = sp.random.randint(0, len(free_spots), size=1)
-        if d2:
-            [x, y] = free_spots[choice].flatten()
-            im = _fit_strel_to_im_2d(im, im_strel, radius, x, y)
-            mask = _fit_strel_to_im_2d(mask, mask_strel, mrad, x, y)
-            im[x, y] = 2
-        else:
-            [x, y, z] = free_spots[choice].flatten()
-            im = _fit_strel_to_im_3d(im, im_strel, radius, x, y, z)
-            mask = _fit_strel_to_im_3d(mask, mask_strel, mrad, x, y, z)
-            im[x, y, z] = 2
-        free_spots = sp.argwhere(mask == 0)
+    free_sites = options_im[options_im > 0]
+    while vf <= volume_fraction and len(free_sites) and (i < n_max):
+        print(i)
+        choice = sp.random.choice(free_sites)
+        c = sp.unravel_index(choice, options_im.shape)
+        s_sm = tuple([slice(ind - radius, ind + radius + 1, None) for ind in c])
+        im[s_sm] += template_sm
+        s_lg = tuple([slice(ind - 2*radius, ind + 2*radius + 1, None) for ind in c])
+        options_im[s_lg] *= ~template_lg
         vf = im.sum()/im.size
         i += 1
+        free_sites = options_im[options_im > 0]
     if vf > volume_fraction:
         print('Volume Fraction', volume_fraction, 'reached')
-    if len(free_spots) == 0:
-        print('No more free spots', 'Volume Fraction', vf)
-    return im
+    if len(free_sites) == 0:
+        print('No more free space available')
+    if i >= n_max:
+        print('Maximum number of spheres reached')
+    s = tuple([slice(radius*3, d-radius*3, None) for d in im.shape])
+    return im[s]
 
 
 def bundle_of_tubes(shape: List[int], spacing: int):
@@ -812,89 +819,3 @@ def line_segment(X0, X1):
         x = sp.rint(sp.linspace(X0[0], X1[0], L)).astype(int)
         y = sp.rint(sp.linspace(X0[1], X1[1], L)).astype(int)
         return [x, y]
-
-
-def _fit_strel_to_im_2d(im, strel, r, x, y):
-    r"""
-    Helper function to add a structuring element to a 2D image.
-    Used by RSA. Makes sure if center is less than r pixels from edge of image
-    that the strel is sliced to fit.
-    """
-    elem = strel.copy()
-    x_dim, y_dim = im.shape
-    x_min = x-r
-    x_max = x+r+1
-    y_min = y-r
-    y_max = y+r+1
-    if x_min < 0:
-        x_adj = -x_min
-        elem = elem[x_adj:, :]
-        x_min = 0
-    elif x_max > x_dim:
-        x_adj = x_max - x_dim
-        elem = elem[:-x_adj, :]
-    if y_min < 0:
-        y_adj = -y_min
-        elem = elem[:, y_adj:]
-        y_min = 0
-    elif y_max > y_dim:
-        y_adj = y_max - y_dim
-        elem = elem[:, :-y_adj]
-    ex, ey = elem.shape
-    im[x_min:x_min+ex, y_min:y_min+ey] += elem
-    return im
-
-
-def _fit_strel_to_im_3d(im, strel, r, x, y, z):
-    r"""
-    Helper function to add a structuring element to a 2D image.
-    Used by RSA. Makes sure if center is less than r pixels from edge of image
-    that the strel is sliced to fit.
-    """
-    elem = strel.copy()
-    x_dim, y_dim, z_dim = im.shape
-    x_min = x-r
-    x_max = x+r+1
-    y_min = y-r
-    y_max = y+r+1
-    z_min = z-r
-    z_max = z+r+1
-    if x_min < 0:
-        x_adj = -x_min
-        elem = elem[x_adj:, :, :]
-        x_min = 0
-    elif x_max > x_dim:
-        x_adj = x_max - x_dim
-        elem = elem[:-x_adj, :, :]
-    if y_min < 0:
-        y_adj = -y_min
-        elem = elem[:, y_adj:, :]
-        y_min = 0
-    elif y_max > y_dim:
-        y_adj = y_max - y_dim
-        elem = elem[:, :-y_adj, :]
-    if z_min < 0:
-        z_adj = -z_min
-        elem = elem[:, :, z_adj:]
-        z_min = 0
-    elif z_max > z_dim:
-        z_adj = z_max - z_dim
-        elem = elem[:, :, :-z_adj]
-    ex, ey, ez = elem.shape
-    im[x_min:x_min+ex, y_min:y_min+ey, z_min:z_min+ez] += elem
-    return im
-
-
-def _remove_edge(im, r):
-    r'''
-    Fill in the edges of the input image.
-    Used by RSA to ensure that no elements are placed too close to the edge.
-    '''
-    edge = sp.ones_like(im)
-    if len(im.shape) == 2:
-        sx, sy = im.shape
-        edge[r:sx-r, r:sy-r] = im[r:sx-r, r:sy-r]
-    else:
-        sx, sy, sz = im.shape
-        edge[r:sx-r, r:sy-r, r:sz-r] = im[r:sx-r, r:sy-r, r:sz-r]
-    return edge
