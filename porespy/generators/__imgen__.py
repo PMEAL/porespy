@@ -175,8 +175,11 @@ def RSA(im: array, radius: int, volume_fraction: int = 1, n_max: int = None,
         pass
     options_im = sp.reshape(sp.arange(im.size), newshape=im.shape)
     options_im[mask > 0] = 0
-    im = _begin_inserting(im, options_im, radius, template_sm, template_lg,
-                          n_max, volume_fraction)
+    # im = _begin_inserting(im, options_im, radius, template_sm, template_lg,
+    #                       n_max, volume_fraction)
+    im = _begin_inserting_nonumba(im, options_im, radius, template_sm,
+                                  template_lg, n_max, volume_fraction)
+
     s = tuple([slice(radius*3, d-radius*3, None) for d in im.shape])
     return im[s]
 
@@ -212,6 +215,34 @@ def _begin_inserting(im, options_im, radius, template_sm, template_lg, n_max,
     if i >= n_max:
         print('Maximum number of spheres reached')
     return im
+
+
+def _begin_inserting_nonumba(im, options_im, radius, template_sm, template_lg,
+                             n_max, volume_fraction):
+    if n_max is None:
+        n_max = sp.inf
+    vf = im.sum()/im.size
+    i = 0
+    free_sites = options_im[options_im > 0]
+    v = template_sm.sum()/im.size
+    while vf <= volume_fraction and len(free_sites) and (i < n_max):
+        choice = sp.random.choice(free_sites)
+        c = sp.unravel_index(choice, options_im.shape)
+        s_sm = tuple([slice(ind - radius, ind + radius + 1, None) for ind in c])
+        im[s_sm] += template_sm
+        s_lg = tuple([slice(ind - 2*radius, ind + 2*radius + 1, None) for ind in c])
+        options_im[s_lg] *= ~template_lg
+        vf += v
+        i += 1
+        free_sites = options_im[options_im > 0]
+    if vf > volume_fraction:
+        print('Volume Fraction', volume_fraction, 'reached')
+    if len(free_sites) == 0:
+        print('No more free space available')
+    if i >= n_max:
+        print('Maximum number of spheres reached')
+    s = tuple([slice(radius*3, d-radius*3, None) for d in im.shape])
+    return im[s]
 
 
 def bundle_of_tubes(shape: List[int], spacing: int):
