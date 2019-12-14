@@ -89,7 +89,7 @@ def insert_shape(im, element, center=None, corner=None, value=1,
 
 
 def RSA(im: array, radius: int, volume_fraction: int = 1, n_max: int = None,
-        mode: str = 'extended'):
+        mode: str = 'contained'):
     r"""
     Generates a sphere or disk packing using Random Sequential Addition
 
@@ -175,32 +175,42 @@ def RSA(im: array, radius: int, volume_fraction: int = 1, n_max: int = None,
         pass
     options_im = sp.reshape(sp.arange(im.size), newshape=im.shape)
     options_im[mask > 0] = 0
+    im = _begin_inserting(im, options_im, radius, template_sm, template_lg,
+                          n_max, volume_fraction)
+    s = tuple([slice(radius*3, d-radius*3, None) for d in im.shape])
+    return im[s]
 
-    def _begin_inserting(im, options_im, radius, template_sm, template_lg):
-        vf = im.sum()/im.size
-        i = 0
-        free_sites = options_im[options_im > 0]
-        v = template_sm.sum()/im.size
-        while vf <= volume_fraction and len(free_sites) and (i < n_max):
-            print(i)
-            choice = sp.random.choice(free_sites)
-            c = sp.unravel_index(choice, options_im.shape)
-            s_sm = tuple([slice(ind - radius, ind + radius + 1, None) for ind in c])
-            im[s_sm] += template_sm
-            s_lg = tuple([slice(ind - 2*radius, ind + 2*radius + 1, None) for ind in c])
-            options_im[s_lg] *= ~template_lg
-            vf += v
-            i += 1
-            free_sites = options_im[options_im > 0]
-        if vf > volume_fraction:
-            print('Volume Fraction', volume_fraction, 'reached')
-        if len(free_sites) == 0:
-            print('No more free space available')
-        if i >= n_max:
-            print('Maximum number of spheres reached')
-        s = tuple([slice(radius*3, d-radius*3, None) for d in im.shape])
-        return im[s]
-    im = _begin_inserting(im, options_im, radius, template_sm, template_lg)
+
+@njit
+def _begin_inserting(im, options_im, radius, template_sm, template_lg, n_max,
+                     volume_fraction):
+    if n_max is None:
+        n_max = sp.inf
+    r = radius
+    vf = im.sum()/im.size
+    i = 0
+    free_sites = sp.where(options_im > 0)
+    v = template_sm.sum()/im.size
+    c = [0]*im.ndim
+    while vf <= volume_fraction and len(free_sites[0]) and (i < n_max):
+        ind = sp.random.randint(0, free_sites[0].size)
+        for d in range(im.ndim):
+            c[d] = free_sites[d][ind]
+        for m1 in range(template_sm.shape[0]):
+            for n1 in range(template_sm.shape[1]):
+                im[m1 + c[0] - r, n1 + c[1] - r] += template_sm[m1, n1]
+        for m2 in range(template_lg.shape[0]):
+            for n2 in range(template_lg.shape[1]):
+                options_im[m2 + c[0] - 2*r, n2 + c[1] - 2*r] *= ~template_lg[m2, n2]
+        vf += v
+        i += 1
+        free_sites = sp.where(options_im > 0)
+    if vf > volume_fraction:
+        print('Volume Fraction', volume_fraction, 'reached')
+    if len(free_sites[0]) == 0:
+        print('No more free space available')
+    if i >= n_max:
+        print('Maximum number of spheres reached')
     return im
 
 
