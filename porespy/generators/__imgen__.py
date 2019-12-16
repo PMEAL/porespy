@@ -6,7 +6,7 @@ from porespy.tools import norm_to_uniform, ps_ball, ps_disk, get_border
 from porespy.tools import insert_sphere, fftmorphology
 from typing import List
 from numpy import array
-
+from skimage.morphology import ball, disk
 
 def insert_shape(im, element, center=None, corner=None, value=1,
                  mode='overwrite'):
@@ -150,12 +150,12 @@ def RSA(im: array, radius: int, volume_fraction: int = 1, n_max: int = None,
     im = sp.pad(im, pad_width=3*radius, mode='constant', constant_values=0)
     if im.ndim == 2:
         im_strel = ps_disk(radius)
-        template_sm = ps_disk(radius=radius)
-        template_lg = ps_disk(radius=2*radius)
+        template_lg = ps_disk(radius*2)
+        template_sm = ps_disk(radius)
     else:
         im_strel = ps_ball(radius)
-        template_sm = ps_ball(radius=radius)
-        template_lg = ps_ball(radius=2*radius)
+        template_lg = ps_ball(radius*2)
+        template_sm = ps_ball(radius)
     if sp.any(im > 0):
         # Dilate existing objects by im_strel to remove pixels near them
         # from consideration for sphere placement
@@ -174,19 +174,16 @@ def RSA(im: array, radius: int, volume_fraction: int = 1, n_max: int = None,
     else:
         pass
     options_im = sp.reshape(sp.arange(im.size), newshape=im.shape)
-    options_im[mask > 0] = 0
-    # im = _begin_inserting(im, options_im, radius, template_sm, template_lg,
-    #                       n_max, volume_fraction)
-    im = _begin_inserting_nonumba(im, options_im, radius, template_sm,
-                                  template_lg, n_max, volume_fraction)
-
+    options_im[mask > 0] = -1
+    im = _begin_inserting_nonumba(im, options_im, radius, n_max, volume_fraction,
+                                  template_lg, template_sm)
     s = tuple([slice(radius*3, d-radius*3, None) for d in im.shape])
     return im[s]
 
 
 @njit
-def _begin_inserting(im, options_im, radius, template_sm, template_lg, n_max,
-                     volume_fraction):
+def _begin_inserting(im, options_im, radius, n_max, volume_fraction,
+                     template_lg, template_sm):
     if n_max is None:
         n_max = sp.inf
     r = radius
@@ -199,12 +196,10 @@ def _begin_inserting(im, options_im, radius, template_sm, template_lg, n_max,
         ind = sp.random.randint(0, free_sites[0].size)
         for d in range(im.ndim):
             c[d] = free_sites[d][ind]
-        for m1 in range(template_sm.shape[0]):
-            for n1 in range(template_sm.shape[1]):
-                im[m1 + c[0] - r, n1 + c[1] - r] += template_sm[m1, n1]
-        for m2 in range(template_lg.shape[0]):
-            for n2 in range(template_lg.shape[1]):
-                options_im[m2 + c[0] - 2*r, n2 + c[1] - 2*r] *= ~template_lg[m2, n2]
+        for m in range(template_sm.shape[0]):
+            for n in range(template_sm.shape[1]):
+                im[m + c[0] - r, n + c[1] - r] += template_sm[m, n]
+                options_im[m + c[0] - 2*r, n + c[1] - 2*r] *= ~template_lg[m, n]
         vf += v
         i += 1
         free_sites = sp.where(options_im > 0)
@@ -217,32 +212,50 @@ def _begin_inserting(im, options_im, radius, template_sm, template_lg, n_max,
     return im
 
 
-def _begin_inserting_nonumba(im, options_im, radius, template_sm, template_lg,
-                             n_max, volume_fraction):
+def _begin_inserting_nonumba(im, options_im, radius, n_max, volume_fraction,
+                             template_lg, template_sm):
     if n_max is None:
         n_max = sp.inf
     vf = im.sum()/im.size
     i = 0
-    free_sites = options_im[options_im > 0]
     v = template_sm.sum()/im.size
-    while vf <= volume_fraction and len(free_sites) and (i < n_max):
-        choice = sp.random.choice(free_sites)
-        c = sp.unravel_index(choice, options_im.shape)
+    while (vf <= volume_fraction) and (i < n_max):
+        c, count = make_choice(options_im, offset=radius)
+        if options_im[tuple(c)] == -1:
+            print('No more free space available', count)
+            break
         s_sm = tuple([slice(ind - radius, ind + radius + 1, None) for ind in c])
-        im[s_sm] += template_sm
         s_lg = tuple([slice(ind - 2*radius, ind + 2*radius + 1, None) for ind in c])
-        options_im[s_lg] *= ~template_lg
+        im[s_sm] += template_sm  # Add ball to image
+        options_im[s_lg][template_lg] = -1  # Add -1 to extended region
         vf += v
         i += 1
-        free_sites = options_im[options_im > 0]
     if vf > volume_fraction:
-        print('Volume Fraction', volume_fraction, 'reached')
-    if len(free_sites) == 0:
-        print('No more free space available')
+        print('Volume fraction', volume_fraction, 'reached')
     if i >= n_max:
-        print('Maximum number of spheres reached')
+        print('Requested number of spheres reached')
     s = tuple([slice(radius*3, d-radius*3, None) for d in im.shape])
     return im[s]
+
+@njit
+def make_choice(options_im, offset=0, max_iters=None):
+    choice = -1
+    count = 0
+    if max_iters is None:
+        max_iters = int(float(options_im.size)/25.0)
+    if options_im.ndim == 2:
+        while (choice == -1) and (count < max_iters):
+            coords = [sp.random.randint(offset, options_im.shape[i]-offset)
+                      for i in range(options_im.ndim)]
+            choice = options_im[coords[0], coords[1]]
+            count += 1
+    elif options_im.ndim == 3:
+        while (choice == -1) and (count < max_iters):
+            coords = [sp.random.randint(offset, options_im.shape[i]-offset)
+                      for i in range(options_im.ndim)]
+            choice = options_im[coords[0], coords[1], coords[2]]
+            count += 1
+    return coords, count
 
 
 def bundle_of_tubes(shape: List[int], spacing: int):
