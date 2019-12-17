@@ -89,7 +89,7 @@ def insert_shape(im, element, center=None, corner=None, value=1,
 
 
 def RSA(im: array, radius: int, volume_fraction: int = 1, n_max: int = None,
-        mode: str = 'contained'):
+        max_iter: int = None, mode: str = 'contained'):
     r"""
     Generates a sphere or disk packing using Random Sequential Addition
 
@@ -102,18 +102,28 @@ def RSA(im: array, radius: int, volume_fraction: int = 1, n_max: int = None,
         The image into which the spheres should be inserted.  By accepting an
         image rather than a shape, it allows users to insert spheres into an
         already existing image.  To begin the process, start with an array of
-        zero such as ``im = np.zeros([200, 200], dtype=bool)``.
+        zeros such as ``im = np.zeros([200, 200, 200], dtype=bool)``.
     radius : int
         The radius of the disk or sphere to insert.
     volume_fraction : scalar
         The fraction of the image that should be filled with spheres.  The
-        spheres are addeds 1's, so each sphere addition increases the
-        ``volume_fraction`` until the specified limit is reach.
-    n_max : scalar
+        spheres are added as 1's, so each sphere addition increases the
+        ``volume_fraction`` until the specified limit is reach.  Note that if
+        ``n_max`` is reached first, then ``volume_fraction`` will not be
+        acheived.
+    n_max : int
         The maximum number of spheres to add.  By default the addition will
         go indefinately until ``volume_fraction`` is met, but specifying
         a scalr for ``n_max`` will halt addition after the given number of
-        spheres are added.
+        spheres are added.  Note that if ``volume_fraction`` is reached first
+        then ``n_max`` will not be achieved.
+    max_iter : int
+        The maximum number of attempts at inserting a sphere before concluding
+        that no more available free space is available.  The default is 1/4
+        of the image size, so in a 100^3 image (1,000,000 voxels) the
+        algorithm will stop if 250,000 attempts are made without a successful
+        sphere addition.  Reducing this number speeds up the process
+        substantially, but results in an underfilled image.
     mode : string
         Controls how the edges of the image are handled.  Options are:
 
@@ -127,8 +137,8 @@ def RSA(im: array, radius: int, volume_fraction: int = 1, n_max: int = None,
     Returns
     -------
     image : ND-array
-        A copy of ``im`` with spheres of specified radius *added* to the
-        background.
+        A handle the the input ``im`` with spheres of specified radius
+        *added* to the background.
 
     Notes
     -----
