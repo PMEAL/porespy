@@ -206,9 +206,15 @@ def _begin_inserting(im, options_im, radius, n_max, volume_fraction,
     free_sites = sp.flatnonzero(options_im >= 0)
     while (vf <= volume_fraction) and (i < n_max):
         c, count = _make_choice(options_im, free_sites=free_sites)
-        if options_im[tuple(c)] == -1:
-            print('No more free space found after trying', count, 'spots')
-            break
+        # The 100 below is arbitrary and may change performance
+        if (count > 100) or (options_im[tuple(c)] == -1):
+            free_sites = sp.flatnonzero(options_im >= 0)
+            if len(free_sites) > 0:
+                print('Rechecking with shorter list of options')
+                continue
+            if len(free_sites) == 0:
+                print('No more free space found')
+                break
         s_sm = tuple([slice(ind - radius, ind + radius + 1, None) for ind in c])
         s_lg = tuple([slice(ind - 2*radius, ind + 2*radius + 1, None) for ind in c])
         im[s_sm] += template_sm  # Add ball to image
@@ -224,15 +230,14 @@ def _begin_inserting(im, options_im, radius, n_max, volume_fraction,
 
 
 @njit
-def _make_choice(options_im, free_sites, max_iters=None):
+def _make_choice(options_im, free_sites):
     r"""
     This function is called by _begin_inserting to find valid insertion points
     """
     choice = -1
     count = 0
     upper_limit = len(free_sites)
-    if max_iters is None:
-        max_iters = int(float(upper_limit)/25)
+    max_iters = len(free_sites)*2
     if options_im.ndim == 2:
         coords = [0, 0]
         Nx = options_im.shape[0]
