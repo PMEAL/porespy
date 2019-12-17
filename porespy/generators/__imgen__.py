@@ -155,8 +155,8 @@ def RSA(im: array, radius: int, volume_fraction: int = 1, n_max: int = None,
     [1] Random Heterogeneous Materials, S. Torquato (2001)
 
     """
-    print(78*'―')
-    print('RSA: Adding spheres of size ' + str(radius))
+    # print(78*'―')
+    # print('RSA: Adding spheres of size ' + str(radius))
     if im.ndim == 2:
         im_strel = ps_disk(radius)
         template_lg = ps_disk(radius*2)
@@ -203,10 +203,11 @@ def _begin_inserting(im, options_im, radius, n_max, volume_fraction,
     vf = im.sum()/im.size
     i = 0
     v = template_sm.sum()/im.size
+    free_sites = sp.flatnonzero(options_im >= 0)
     while (vf <= volume_fraction) and (i < n_max):
-        c, count = _make_choice(options_im, offset=radius)
+        c, count = _make_choice(options_im, free_sites=free_sites)
         if options_im[tuple(c)] == -1:
-            print('No more free space available', count)
+            print('No more free space found after trying', count, 'spots')
             break
         s_sm = tuple([slice(ind - radius, ind + radius + 1, None) for ind in c])
         s_lg = tuple([slice(ind - 2*radius, ind + 2*radius + 1, None) for ind in c])
@@ -215,32 +216,49 @@ def _begin_inserting(im, options_im, radius, n_max, volume_fraction,
         vf += v
         i += 1
     if vf > volume_fraction:
-        print('Volume fraction', volume_fraction, 'reached')
+        print('Volume fraction', vf, 'reached')
     if i >= n_max:
-        print('Requested number of spheres reached')
+        print('Requested number of spheres added')
     s = tuple([slice(radius*3, d-radius*3, None) for d in im.shape])
     return im[s]
 
 
 @njit
-def _make_choice(options_im, offset=0, max_iters=None):
+def _make_choice(options_im, free_sites, max_iters=None):
     r"""
     This function is called by _begin_inserting to find valid insertion points
     """
     choice = -1
     count = 0
+    upper_limit = len(free_sites)
     if max_iters is None:
-        max_iters = int(float(options_im.size)/25.0)
+        max_iters = int(float(upper_limit)/25)
     if options_im.ndim == 2:
+        coords = [0, 0]
+        Nx = options_im.shape[0]
+        Ny = options_im.shape[1]
         while (choice == -1) and (count < max_iters):
-            coords = [sp.random.randint(offset, options_im.shape[i]-offset)
-                      for i in range(options_im.ndim)]
+            ind = sp.random.randint(0, upper_limit)
+            # This numpy function is not supported by numba yet
+            # c1, c2 = sp.unravel_index(free_sites[ind], options_im.shape)
+            # So using manual unraveling
+            coords[1] = free_sites[ind] % options_im.shape[0]
+            coords[0] = (free_sites[ind] // Nx) % Ny
             choice = options_im[coords[0], coords[1]]
             count += 1
-    elif options_im.ndim == 3:
+    if options_im.ndim == 3:
+        coords = [0, 0, 0]
+        Nx = options_im.shape[0]
+        Ny = options_im.shape[1]
+        Nz = options_im.shape[2]
         while (choice == -1) and (count < max_iters):
-            coords = [sp.random.randint(offset, options_im.shape[i]-offset)
-                      for i in range(options_im.ndim)]
+            ind = sp.random.randint(0, upper_limit)
+            # This numpy function is not supported by numba yet
+            # c1, c2, c3 = sp.unravel_index(free_sites[ind], options_im.shape)
+            # So using manual unraveling
+            coords[2] = free_sites[ind] % Nx
+            coords[1] = (free_sites[ind] // Nx) % Ny
+            coords[0] = (free_sites[ind] // (Nx * Ny)) % Ny
             choice = options_im[coords[0], coords[1], coords[2]]
             count += 1
     return coords, count
