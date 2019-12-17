@@ -147,7 +147,6 @@ def RSA(im: array, radius: int, volume_fraction: int = 1, n_max: int = None,
     """
     print(78*'―')
     print('RSA: Adding spheres of size ' + str(radius))
-    im = sp.pad(im, pad_width=3*radius, mode='constant', constant_values=0)
     if im.ndim == 2:
         im_strel = ps_disk(radius)
         template_lg = ps_disk(radius*2)
@@ -163,64 +162,39 @@ def RSA(im: array, radius: int, volume_fraction: int = 1, n_max: int = None,
         mask = mask.astype(int)
     else:
         mask = sp.zeros_like(im, dtype=int)
+    # Pad image by a factor of the radius to remove edges as insertion options
     if mode == 'contained':
-        temp = get_border(im.shape, thickness=3*radius, mode='faces')
-        mask = mask + temp
+        pad = 3*radius
     elif mode == 'extended':
-        temp = get_border(im.shape, thickness=2*radius, mode='faces')
-        mask = mask + temp
+        pad = 2*radius
     elif mode == 'periodic':
         pass
-    else:
-        pass
+    im = sp.pad(im, pad_width=pad, mode='constant', constant_values=0)
+    mask = sp.pad(mask, pad_width=pad, mode='constant', constant_values=0)
+    temp = get_border(im.shape, thickness=pad, mode='faces')
+    mask = mask + temp
+    # Set voxels near padded edge to -1 to prevent insertions there
     options_im = sp.reshape(sp.arange(im.size), newshape=im.shape)
     options_im[mask > 0] = -1
-    im = _begin_inserting_nonumba(im, options_im, radius, n_max, volume_fraction,
-                                  template_lg, template_sm)
-    s = tuple([slice(radius*3, d-radius*3, None) for d in im.shape])
+    im = _begin_inserting(im, options_im, radius, n_max, volume_fraction,
+                          template_lg, template_sm)
+    # Get slice into returned image to retain original size
+    s = tuple([slice(pad, d-pad, None) for d in im.shape])
     return im[s]
 
 
-@njit
 def _begin_inserting(im, options_im, radius, n_max, volume_fraction,
                      template_lg, template_sm):
-    if n_max is None:
-        n_max = sp.inf
-    r = radius
-    vf = im.sum()/im.size
-    i = 0
-    free_sites = sp.where(options_im > 0)
-    v = template_sm.sum()/im.size
-    c = [0]*im.ndim
-    while vf <= volume_fraction and len(free_sites[0]) and (i < n_max):
-        ind = sp.random.randint(0, free_sites[0].size)
-        for d in range(im.ndim):
-            c[d] = free_sites[d][ind]
-        for m in range(template_sm.shape[0]):
-            for n in range(template_sm.shape[1]):
-                im[m + c[0] - r, n + c[1] - r] += template_sm[m, n]
-                options_im[m + c[0] - 2*r, n + c[1] - 2*r] *= ~template_lg[m, n]
-        vf += v
-        i += 1
-        free_sites = sp.where(options_im > 0)
-    if vf > volume_fraction:
-        print('Volume Fraction', volume_fraction, 'reached')
-    if len(free_sites[0]) == 0:
-        print('No more free space available')
-    if i >= n_max:
-        print('Maximum number of spheres reached')
-    return im
-
-
-def _begin_inserting_nonumba(im, options_im, radius, n_max, volume_fraction,
-                             template_lg, template_sm):
+    r"""
+    This function is called by RSA and does the actual sphere insertion
+    """
     if n_max is None:
         n_max = sp.inf
     vf = im.sum()/im.size
     i = 0
     v = template_sm.sum()/im.size
     while (vf <= volume_fraction) and (i < n_max):
-        c, count = make_choice(options_im, offset=radius)
+        c, count = _make_choice(options_im, offset=radius)
         if options_im[tuple(c)] == -1:
             print('No more free space available', count)
             break
@@ -237,8 +211,12 @@ def _begin_inserting_nonumba(im, options_im, radius, n_max, volume_fraction,
     s = tuple([slice(radius*3, d-radius*3, None) for d in im.shape])
     return im[s]
 
+
 @njit
-def make_choice(options_im, offset=0, max_iters=None):
+def _make_choice(options_im, offset=0, max_iters=None):
+    r"""
+    This function is called by _begin_inserting to find valid insertion points
+    """
     choice = -1
     count = 0
     if max_iters is None:
