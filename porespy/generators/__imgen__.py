@@ -8,6 +8,7 @@ from typing import List
 from numpy import array
 from skimage.morphology import ball, disk
 
+
 def insert_shape(im, element, center=None, corner=None, value=1,
                  mode='overwrite'):
     r"""

@@ -900,7 +900,6 @@ def overlay(im1, im2, c):
     return im1
 
 
-
 def insert_sphere(im, c, r, v=True, overwrite=True):
     r"""
     Inserts a sphere of a specified radius into a given image
