@@ -93,8 +93,12 @@ def RSA(im: array, radius: int, volume_fraction: int = 1, n_max: int = None,
     r"""
     Generates a sphere or disk packing using Random Sequential Addition
 
-    This which ensures that spheres do not overlap but does not guarantee they
-    are tightly packed.
+    This algorithm ensures that spheres do not overlap but does not
+    guarantee they are tightly packed.
+
+    This function adds spheres to the background of the received ``im``, which
+    allows iteratively adding spheres of different radii to the unfilled space,
+    be repeatedly passing in the result of previous calls to RSA.
 
     Parameters
     ----------
@@ -117,22 +121,12 @@ def RSA(im: array, radius: int, volume_fraction: int = 1, n_max: int = None,
         a scalr for ``n_max`` will halt addition after the given number of
         spheres are added.  Note that if ``volume_fraction`` is reached first
         then ``n_max`` will not be achieved.
-    max_iter : int
-        The maximum number of attempts at inserting a sphere before concluding
-        that no more available free space is available.  The default is 1/4
-        of the image size, so in a 100^3 image (1,000,000 voxels) the
-        algorithm will stop if 250,000 attempts are made without a successful
-        sphere addition.  Reducing this number speeds up the process
-        substantially, but results in an underfilled image.
     mode : string
         Controls how the edges of the image are handled.  Options are:
 
         'extended' - Spheres are allowed to extend beyond the edge of the image
 
         'contained' - Spheres are all completely within the image
-
-        'periodic' - The portion of a sphere that extends beyond the image is
-        inserted into the opposite edge of the image (Not Implemented Yet!)
 
     Returns
     -------
@@ -142,13 +136,12 @@ def RSA(im: array, radius: int, volume_fraction: int = 1, n_max: int = None,
 
     Notes
     -----
-    Each sphere is filled with 1's, but the center is marked with a 2.  This
-    allows easy boolean masking to extract only the centers, which can be
-    converted to coordinates using ``scipy.where`` and used for other purposes.
-    To obtain only the spheres, use``im = im == 1``.
-
-    This function adds spheres to the background of the received ``im``, which
-    allows iteratively adding spheres of different radii to the unfilled space.
+    This function uses Numba to speed up the search for valid sphere insertion
+    points.  It seems that Numba does not look at the state of the scipy
+    random number generator, so setting the seed to a known value has no
+    effect on the output of this function. Each call to this function will
+    produce a unique value.  If you wish to use the same realization multiple
+    times you must save the array (e.g. ``numpy.save``).
 
     References
     ----------
@@ -181,8 +174,8 @@ def RSA(im: array, radius: int, volume_fraction: int = 1, n_max: int = None,
     elif mode == 'extended':
         temp = get_border(im.shape, thickness=2*radius, mode='faces')
         mask = mask + temp
-    elif mode == 'periodic':
-        raise Exception('periodic mode is not implemented yet')
+    else:
+        raise Exception('Unrecognized mode: ', mode)
     # Set voxels near padded edge to -1 to prevent insertions there
     options_im = sp.reshape(sp.arange(im.size), newshape=im.shape)
     options_im[mask > 0] = -1
