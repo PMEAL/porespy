@@ -203,43 +203,41 @@ class GeneratorTest():
         im = ps.generators.blobs(shape=[101])
         assert len(list(im.shape)) == 3
 
-    def test_RSA_2d_single(self):
-        sp.random.seed(0)
-        im = sp.zeros([100, 100], dtype=int)
-        im = ps.generators.RSA(im, radius=10, volume_fraction=0.5)
-        assert sp.sum(im > 0) == 5095
-        assert sp.sum(im > 1) == 20
-
-    def test_RSA_2d_multi(self):
-        sp.random.seed(0)
-        im = sp.zeros([100, 100], dtype=int)
-        im = ps.generators.RSA(im, radius=10, volume_fraction=0.5)
-        im = ps.generators.RSA(im, radius=5, volume_fraction=0.75)
-        assert sp.sum(im > 0) == 6520
-        assert sp.sum(im > 1) == 44
-
-    def test_RSA_3d_single(self):
-        sp.random.seed(0)
-        im = sp.zeros([50, 50, 50], dtype=int)
-        im = ps.generators.RSA(im, radius=5, volume_fraction=0.5)
-        assert sp.sum(im > 0) == 45602
-        assert sp.sum(im > 1) == 121
-
-    def test_RSA_mask_edge_2d(self):
+    def test_RSA_2d_contained(self):
         im = sp.zeros([100, 100], dtype=int)
         im = ps.generators.RSA(im, radius=10, volume_fraction=0.5,
                                mode='contained')
-        coords = sp.argwhere(im == 2)
-        assert ~sp.any(coords < 10)
-        assert ~sp.any(coords > 90)
+        border = ps.tools.get_border(shape=im.shape, mode='edges')
+        assert sp.sum(border*im) == 0
 
-    def test_RSA_mask_edge_3d(self):
-        im = sp.zeros([50, 50, 50], dtype=int)
-        im = ps.generators.RSA(im, radius=5, volume_fraction=0.5,
+    def test_RSA_2d_extended(self):
+        im = sp.zeros([100, 100], dtype=int)
+        im = ps.generators.RSA(im, radius=10, volume_fraction=0.5,
+                               mode='extended')
+        border = ps.tools.get_border(shape=im.shape, mode='edges')
+        assert sp.sum(border*im) > 0
+
+    def test_RSA_3d_contained(self):
+        im = sp.zeros([100, 100, 100], dtype=int)
+        im = ps.generators.RSA(im, radius=10, volume_fraction=0.5,
                                mode='contained')
-        coords = sp.argwhere(im == 2)
-        assert ~sp.any(coords < 5)
-        assert ~sp.any(coords > 45)
+        border = ps.tools.get_border(shape=im.shape, mode='faces')
+        assert sp.sum(border*im) == 0
+
+    def test_RSA_3d_extended(self):
+        im = sp.zeros([100, 100, 100], dtype=int)
+        im = ps.generators.RSA(im, radius=10, volume_fraction=0.5,
+                               mode='extended')
+        border = ps.tools.get_border(shape=im.shape, mode='faces')
+        assert sp.sum(border*im) > 0
+
+    def test_RSA_2d_seqential_additions(self):
+        im = sp.zeros([100, 100], dtype=int)
+        im = ps.generators.RSA(im, radius=10)
+        phi1 = ps.metrics.porosity(im)
+        im = ps.generators.RSA(im, radius=5)
+        phi2 = ps.metrics.porosity(im)
+        assert phi2 > phi1
 
     def test_line_segment(self):
         X0 = [3, 4]
