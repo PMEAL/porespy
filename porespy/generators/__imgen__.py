@@ -155,41 +155,41 @@ def RSA(im: array, radius: int, volume_fraction: int = 1, n_max: int = None,
     [1] Random Heterogeneous Materials, S. Torquato (2001)
 
     """
-    # print(78*'―')
-    # print('RSA: Adding spheres of size ' + str(radius))
+    print(78*'―')
+    print('RSA: Adding spheres of size ' + str(radius))
     if im.ndim == 2:
-        im_strel = ps_disk(radius)
+        strel = ps_disk(radius)
         template_lg = ps_disk(radius*2)
         template_sm = ps_disk(radius)
     else:
-        im_strel = ps_ball(radius)
+        strel = ps_ball(radius)
         template_lg = ps_ball(radius*2)
         template_sm = ps_ball(radius)
+    # Pad image by the radius faciliate insert near edges
+    im = sp.pad(im, pad_width=2*radius, mode='constant', constant_values=0)
     if sp.any(im > 0):
         # Dilate existing objects by im_strel to remove pixels near them
         # from consideration for sphere placement
-        mask = fftmorphology(im > 0, im_strel > 0, mode='dilate')
+        mask = fftmorphology(im > 0, strel, mode='dilate')
         mask = mask.astype(int)
     else:
         mask = sp.zeros_like(im, dtype=int)
-    # Pad image by a factor of the radius to remove edges as insertion options
+    # Depending on mode, adjust mask to remove options around edge
     if mode == 'contained':
-        pad = 3*radius
+        temp = get_border(im.shape, thickness=3*radius, mode='faces')
+        mask = mask + temp
     elif mode == 'extended':
-        pad = 2*radius
+        temp = get_border(im.shape, thickness=2*radius, mode='faces')
+        mask = mask + temp
     elif mode == 'periodic':
-        pass
-    im = sp.pad(im, pad_width=pad, mode='constant', constant_values=0)
-    mask = sp.pad(mask, pad_width=pad, mode='constant', constant_values=0)
-    temp = get_border(im.shape, thickness=pad, mode='faces')
-    mask = mask + temp
+        raise Exception('periodic mode is not implemented yet')
     # Set voxels near padded edge to -1 to prevent insertions there
     options_im = sp.reshape(sp.arange(im.size), newshape=im.shape)
     options_im[mask > 0] = -1
     im = _begin_inserting(im, options_im, radius, n_max, volume_fraction,
                           template_lg, template_sm)
     # Get slice into returned image to retain original size
-    s = tuple([slice(pad, d-pad, None) for d in im.shape])
+    s = tuple([slice(2*radius, d-2*radius, None) for d in im.shape])
     return im[s]
 
 
@@ -213,7 +213,7 @@ def _begin_inserting(im, options_im, radius, n_max, volume_fraction,
                 print('Rechecking with shorter list of options')
                 continue
             if len(free_sites) == 0:
-                print('No more free space found')
+                print('No more free space found, volume fraction is:', vf)
                 break
         s_sm = tuple([slice(ind - radius, ind + radius + 1, None) for ind in c])
         s_lg = tuple([slice(ind - 2*radius, ind + 2*radius + 1, None) for ind in c])
@@ -222,11 +222,10 @@ def _begin_inserting(im, options_im, radius, n_max, volume_fraction,
         vf += v
         i += 1
     if vf > volume_fraction:
-        print('Volume fraction', vf, 'reached')
+        print('Specified volume fraction reached')
     if i >= n_max:
         print('Requested number of spheres added')
-    s = tuple([slice(radius*3, d-radius*3, None) for d in im.shape])
-    return im[s]
+    return im
 
 
 @njit
