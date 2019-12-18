@@ -1,6 +1,5 @@
 import porespy as ps
 import pytest
-import scipy as sp
 import numpy as np
 import scipy.ndimage as spim
 from skimage.morphology import disk, ball
