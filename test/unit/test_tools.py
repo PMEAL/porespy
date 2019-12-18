@@ -1,5 +1,6 @@
 import porespy as ps
 import numpy as np
+import scipy as sp
 import scipy.ndimage as spim
 import matplotlib.pyplot as plt
 import pytest
@@ -89,11 +90,11 @@ class ToolsTest():
 
     def test_inhull(self):
         X = np.random.rand(25, 2)
-        hull = np.spatial.ConvexHull(X)
+        hull = sp.spatial.ConvexHull(X)
         assert not ps.tools.in_hull([[0, 0]], hull)
         assert ps.tools.in_hull([np.mean(X, axis=0)], hull)
         X = np.random.rand(25, 3)
-        hull = np.spatial.ConvexHull(X)
+        hull = sp.spatial.ConvexHull(X)
         assert not ps.tools.in_hull([[0, 0, 0]], hull)
         assert ps.tools.in_hull([np.mean(X, axis=0)], hull)
 
