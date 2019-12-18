@@ -328,7 +328,7 @@ def voronoi_edges(shape: List[int], radius: int, ncells: int,
     if np.size(shape) == 1:
         shape = np.full((3, ), int(shape))
     im = np.zeros(shape, dtype=bool)
-    base_pts = np.rand(ncells, 3)*shape
+    base_pts = np.random.rand(ncells, 3)*shape
     if flat_faces:
         # Reflect base points
         Nx, Ny, Nz = shape
@@ -761,10 +761,10 @@ def cylinders(shape: List[int], radius: int, ncylinders: int,
     n = 0
     while n < ncylinders:
         # Choose a random starting point in domain
-        x = np.rand(3)*shape
+        x = np.random.rand(3)*shape
         # Chose a random phi and theta within given ranges
-        phi = (np.pi/2 - np.pi*np.rand())*phi_max/90
-        theta = (np.pi/2 - np.pi*np.rand())*theta_max/90
+        phi = (np.pi/2 - np.pi*np.random.rand())*phi_max/90
+        theta = (np.pi/2 - np.pi*np.random.rand())*theta_max/90
         X0 = R*np.array([np.cos(phi)*np.cos(theta),
                          np.cos(phi)*np.sin(theta),
                          np.sin(phi)])

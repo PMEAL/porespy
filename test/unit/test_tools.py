@@ -88,11 +88,11 @@ class ToolsTest():
         assert im.shape == (60, 50, 40)
 
     def test_inhull(self):
-        X = np.rand(25, 2)
+        X = np.random.rand(25, 2)
         hull = np.spatial.ConvexHull(X)
         assert not ps.tools.in_hull([[0, 0]], hull)
         assert ps.tools.in_hull([np.mean(X, axis=0)], hull)
-        X = np.rand(25, 3)
+        X = np.random.rand(25, 3)
         hull = np.spatial.ConvexHull(X)
         assert not ps.tools.in_hull([[0, 0, 0]], hull)
         assert ps.tools.in_hull([np.mean(X, axis=0)], hull)

@@ -157,7 +157,7 @@ class MetricsTest():
         assert np.isclose(fractions.sum(), 1)
         assert np.allclose(fractions, counts/counts.sum())
         with pytest.raises(Exception):
-            ps.metrics.phase_fraction(np.rand(10, 10, 10), normed=True)
+            ps.metrics.phase_fraction(np.random.rand(10, 10, 10), normed=True)
         # The method must also work on boolean images
         counts = ps.metrics.phase_fraction(im.astype(bool))
         assert counts[0] == (im == 0).sum() / im.size
