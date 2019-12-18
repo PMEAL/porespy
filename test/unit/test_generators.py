@@ -1,5 +1,6 @@
 import porespy as ps
 import numpy as np
+import scipy as sp
 import pytest
 import scipy.ndimage as spim
 import matplotlib.pyplot as plt
@@ -143,7 +144,7 @@ class GeneratorTest():
 
     def test_polydisperse_spheres(self):
         phis = np.arange(0.1, 0.9, 0.2)
-        dist = np.stats.norm(loc=7, scale=2)
+        dist = sp.stats.norm(loc=7, scale=2)
         for phi in phis:
             im = ps.generators.polydisperse_spheres(shape=[100, 100, 50],
                                                     porosity=phi, dist=dist,
