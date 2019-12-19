@@ -52,9 +52,9 @@ Create a test image (or load one using ``skimage.io.imread``)
 .. code-block:: python
 
     >>> import porespy as ps
-    >>> import scipy as sp
+    >>> import numpy as np
     >>> import scipy.ndimage as spim
-    >>> sp.random.seed(0)  # Set number generator for same image each time
+    >>> np.random.seed(0)  # Set number generator for same image each time
     >>> im = ps.generators.blobs(shape=[250, 250])
 
 Apply a filter to the image using tools from ``scipy.ndimage``:
