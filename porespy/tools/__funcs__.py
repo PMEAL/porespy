@@ -1,3 +1,4 @@
+import numpy as np
 import scipy as sp
 import scipy.ndimage as spim
 import warnings
@@ -97,12 +98,12 @@ def align_image_with_openpnm(im):
         warnings.warn('Input image conains a singleton axis:' + str(im.shape) +
                       ' Reduce dimensionality with np.squeeze(im) to avoid' +
                       ' unexpected behavior.')
-    im = sp.copy(im)
+    im = np.copy(im)
     if im.ndim == 2:
-        im = (sp.swapaxes(im, 1, 0))
+        im = (np.swapaxes(im, 1, 0))
         im = im[-1::-1, :]
     elif im.ndim == 3:
-        im = (sp.swapaxes(im, 2, 0))
+        im = (np.swapaxes(im, 2, 0))
         im = im[:, -1::-1, :]
     return im
 
@@ -185,7 +186,7 @@ def fftmorphology(im, strel, mode='opening'):
 
     # Perform erosion and dilation
     # The array must be padded with 0's so it works correctly at edges
-    temp = sp.pad(array=im, pad_width=1, mode='constant', constant_values=0)
+    temp = np.pad(array=im, pad_width=1, mode='constant', constant_values=0)
     if mode.startswith('ero'):
         temp = erode(temp, strel)
     if mode.startswith('dila'):
@@ -333,8 +334,8 @@ def find_outer_region(im, r=0):
     """
     if r == 0:
         dt = spim.distance_transform_edt(input=im)
-        r = int(sp.amax(dt)) * 2
-    im_padded = sp.pad(array=im, pad_width=r, mode='constant',
+        r = int(np.amax(dt)) * 2
+    im_padded = np.pad(array=im, pad_width=r, mode='constant',
                        constant_values=True)
     dt = spim.distance_transform_edt(input=im_padded)
     seeds = (dt >= r) + get_border(shape=im_padded.shape)
@@ -377,11 +378,11 @@ def extract_cylinder(im, r=None, axis=0):
     if r is None:
         a = list(im.shape)
         a.pop(axis)
-        r = sp.floor(sp.amin(a) / 2)
+        r = np.floor(np.amin(a) / 2)
     dim = [range(int(-s / 2), int(s / 2) + s % 2) for s in im.shape]
-    inds = sp.meshgrid(*dim, indexing='ij')
+    inds = np.meshgrid(*dim, indexing='ij')
     inds[axis] = inds[axis] * 0
-    d = sp.sqrt(sp.sum(sp.square(inds), axis=0))
+    d = np.sqrt(np.sum(np.square(inds), axis=0))
     mask = d < r
     im_temp = im*mask
     return im_temp
@@ -408,9 +409,9 @@ def extract_subsection(im, shape):
 
     Examples
     --------
-    >>> import scipy as sp
+    >>> import numpy as np
     >>> from porespy.tools import extract_subsection
-    >>> im = sp.array([[1, 1, 1, 1], [1, 2, 2, 2], [1, 2, 3, 3], [1, 2, 3, 4]])
+    >>> im = np.array([[1, 1, 1, 1], [1, 2, 2, 2], [1, 2, 3, 3], [1, 2, 3, 4]])
     >>> print(im)
     [[1 1 1 1]
      [1 2 2 2]
@@ -423,15 +424,15 @@ def extract_subsection(im, shape):
 
     """
     # Check if shape was given as a fraction
-    shape = sp.array(shape)
+    shape = np.array(shape)
     if shape[0] < 1:
-        shape = sp.array(im.shape) * shape
-    center = sp.array(im.shape) / 2
+        shape = np.array(im.shape) * shape
+    center = np.array(im.shape) / 2
     s_im = []
     for dim in range(im.ndim):
         r = shape[dim] / 2
-        lower_im = sp.amax((center[dim] - r, 0))
-        upper_im = sp.amin((center[dim] + r, im.shape[dim]))
+        lower_im = np.amax((center[dim] - r, 0))
+        upper_im = np.amin((center[dim] + r, im.shape[dim]))
         s_im.append(slice(int(lower_im), int(upper_im)))
     return im[tuple(s_im)]
 
@@ -456,15 +457,15 @@ def get_planes(im, squeeze=True):
     planes : list
         A list of 2D-images
     """
-    x, y, z = (sp.array(im.shape) / 2).astype(int)
+    x, y, z = (np.array(im.shape) / 2).astype(int)
     planes = [im[x, :, :], im[:, y, :], im[:, :, z]]
     if not squeeze:
         imx = planes[0]
-        planes[0] = sp.reshape(imx, [1, imx.shape[0], imx.shape[1]])
+        planes[0] = np.reshape(imx, [1, imx.shape[0], imx.shape[1]])
         imy = planes[1]
-        planes[1] = sp.reshape(imy, [imy.shape[0], 1, imy.shape[1]])
+        planes[1] = np.reshape(imy, [imy.shape[0], 1, imy.shape[1]])
         imz = planes[2]
-        planes[2] = sp.reshape(imz, [imz.shape[0], imz.shape[1], 1])
+        planes[2] = np.reshape(imz, [imz.shape[0], imz.shape[1], 1])
     return planes
 
 
@@ -499,7 +500,7 @@ def extend_slice(s, shape, pad=1):
     --------
     >>> from scipy.ndimage import label, find_objects
     >>> from porespy.tools import extend_slice
-    >>> im = sp.array([[1, 0, 0], [1, 0, 0], [0, 0, 1]])
+    >>> im = np.array([[1, 0, 0], [1, 0, 0], [0, 0, 1]])
     >>> labels = label(im)[0]
     >>> s = find_objects(labels)
 
@@ -572,9 +573,9 @@ def randomize_colors(im, keep_vals=[0]):
     Examples
     --------
     >>> import porespy as ps
-    >>> import scipy as sp
-    >>> sp.random.seed(0)
-    >>> im = sp.random.randint(low=0, high=5, size=[4, 4])
+    >>> import numpy as np
+    >>> np.random.seed(0)
+    >>> im = np.random.randint(low=0, high=5, size=[4, 4])
     >>> print(im)
     [[4 0 3 3]
      [3 1 3 2]
@@ -593,14 +594,14 @@ def randomize_colors(im, keep_vals=[0]):
 
     '''
     im_flat = im.flatten()
-    keep_vals = sp.array(keep_vals)
-    swap_vals = ~sp.in1d(im_flat, keep_vals)
-    im_vals = sp.unique(im_flat[swap_vals])
-    new_vals = sp.random.permutation(im_vals)
-    im_map = sp.zeros(shape=[sp.amax(im_vals) + 1, ], dtype=int)
+    keep_vals = np.array(keep_vals)
+    swap_vals = ~np.in1d(im_flat, keep_vals)
+    im_vals = np.unique(im_flat[swap_vals])
+    new_vals = np.random.permutation(im_vals)
+    im_map = np.zeros(shape=[np.amax(im_vals) + 1, ], dtype=int)
     im_map[im_vals] = new_vals
     im_new = im_map[im_flat]
-    im_new = sp.reshape(im_new, newshape=sp.shape(im))
+    im_new = np.reshape(im_new, newshape=np.shape(im))
     return im_new
 
 
@@ -633,26 +634,26 @@ def make_contiguous(im, keep_zeros=True):
     Example
     -------
     >>> import porespy as ps
-    >>> import scipy as sp
-    >>> im = sp.array([[0, 2, 9], [6, 8, 3]])
+    >>> import numpy as np
+    >>> im = np.array([[0, 2, 9], [6, 8, 3]])
     >>> im = ps.tools.make_contiguous(im)
     >>> print(im)
     [[0 1 5]
      [3 4 2]]
 
     """
-    im = sp.copy(im)
+    im = np.copy(im)
     if keep_zeros:
         mask = (im == 0)
         im[mask] = im.min() - 1
     im = im - im.min()
     im_flat = im.flatten()
-    im_vals = sp.unique(im_flat)
-    im_map = sp.zeros(shape=sp.amax(im_flat) + 1)
-    im_map[im_vals] = sp.arange(0, sp.size(sp.unique(im_flat)))
+    im_vals = np.unique(im_flat)
+    im_map = np.zeros(shape=np.amax(im_flat) + 1)
+    im_map[im_vals] = np.arange(0, np.size(np.unique(im_flat)))
     im_new = im_map[im_flat]
-    im_new = sp.reshape(im_new, newshape=sp.shape(im))
-    im_new = sp.array(im_new, dtype=im_flat.dtype)
+    im_new = np.reshape(im_new, newshape=np.shape(im))
+    im_new = np.array(im_new, dtype=im_flat.dtype)
     return im_new
 
 
@@ -699,7 +700,6 @@ def get_border(shape, thickness=1, mode='edges', return_indices=False):
     Examples
     --------
     >>> import porespy as ps
-    >>> import scipy as sp
     >>> mask = ps.tools.get_border(shape=[3, 3], mode='corners')
     >>> print(mask)
     [[ True False  True]
@@ -714,7 +714,7 @@ def get_border(shape, thickness=1, mode='edges', return_indices=False):
     """
     ndims = len(shape)
     t = thickness
-    border = sp.ones(shape, dtype=bool)
+    border = np.ones(shape, dtype=bool)
     if mode == 'faces':
         if ndims == 2:
             border[t:-t, t:-t] = False
@@ -736,7 +736,7 @@ def get_border(shape, thickness=1, mode='edges', return_indices=False):
             border[0::, t:-t, 0::] = False
             border[0::, 0::, t:-t] = False
     if return_indices:
-        border = sp.where(border)
+        border = np.where(border)
     return border
 
 
@@ -792,8 +792,8 @@ def norm_to_uniform(im, scale=None):
     """
     if scale is None:
         scale = [im.min(), im.max()]
-    im = (im - sp.mean(im)) / sp.std(im)
-    im = 1 / 2 * sp.special.erfc(-im / sp.sqrt(2))
+    im = (im - np.mean(im)) / np.std(im)
+    im = 1 / 2 * sp.special.erfc(-im / np.sqrt(2))
     im = (im - im.min()) / (im.max() - im.min())
     im = im * (scale[1] - scale[0]) + scale[0]
     return im
@@ -875,14 +875,14 @@ def mesh_region(region: bool, strel=None):
             strel = ball(1)
         if region.ndim == 2:
             strel = disk(1)
-    pad_width = sp.amax(strel.shape)
+    pad_width = np.amax(strel.shape)
     if im.ndim == 3:
-        padded_mask = sp.pad(im, pad_width=pad_width, mode='constant')
+        padded_mask = np.pad(im, pad_width=pad_width, mode='constant')
         padded_mask = spim.convolve(padded_mask * 1.0,
-                                    weights=strel) / sp.sum(strel)
+                                    weights=strel) / np.sum(strel)
     else:
-        padded_mask = sp.reshape(im, (1,) + im.shape)
-        padded_mask = sp.pad(padded_mask, pad_width=pad_width, mode='constant')
+        padded_mask = np.reshape(im, (1,) + im.shape)
+        padded_mask = np.pad(padded_mask, pad_width=pad_width, mode='constant')
     verts, faces, norm, val = marching_cubes_lewiner(padded_mask)
     result = namedtuple('mesh', ('verts', 'faces', 'norm', 'val'))
     result.verts = verts - pad_width
@@ -906,8 +906,8 @@ def ps_disk(radius):
     strel : 2D-array
         A 2D numpy bool array of the structring element
     """
-    rad = int(sp.ceil(radius))
-    other = sp.ones((2 * rad + 1, 2 * rad + 1), dtype=bool)
+    rad = int(np.ceil(radius))
+    other = np.ones((2 * rad + 1, 2 * rad + 1), dtype=bool)
     other[rad, rad] = False
     disk = spim.distance_transform_edt(other) < radius
     return disk
@@ -927,8 +927,8 @@ def ps_ball(radius):
     strel : 3D-array
         A 3D numpy array of the structuring element
     """
-    rad = int(sp.ceil(radius))
-    other = sp.ones((2 * rad + 1, 2 * rad + 1, 2 * rad + 1), dtype=bool)
+    rad = int(np.ceil(radius))
+    other = np.ones((2 * rad + 1, 2 * rad + 1, 2 * rad + 1), dtype=bool)
     other[rad, rad, rad] = False
     ball = spim.distance_transform_edt(other) < radius
     return ball
@@ -1003,18 +1003,17 @@ def insert_sphere(im, c, r, v=True, overwrite=True):
     r = int(sp.around(r, decimals=0))
     if r == 0:
         return im
-    c = sp.array(c, dtype=int)
     if c.size != im.ndim:
         raise Exception('Coordinates do not match dimensionality of image')
     # Define a bounding box around inserted sphere, minding imaage boundaries
     bbox = []
-    [bbox.append(sp.clip(c[i] - r, 0, im.shape[i])) for i in range(im.ndim)]
-    [bbox.append(sp.clip(c[i] + r, 0, im.shape[i])) for i in range(im.ndim)]
-    bbox = sp.ravel(bbox)
+    [bbox.append(np.clip(c[i] - r, 0, im.shape[i])) for i in range(im.ndim)]
+    [bbox.append(np.clip(c[i] + r, 0, im.shape[i])) for i in range(im.ndim)]
+    bbox = np.ravel(bbox)
     # Obtain slices into image
     s = bbox_to_slices(bbox)
     # Generate sphere template within image boundaries
-    blank = sp.ones_like(im[s], dtype=float)
+    blank = np.ones_like(temp)
     blank[tuple(c - bbox[0:im.ndim])] = 0
     sph = spim.distance_transform_edt(blank) < r
     if overwrite:  # Clear voxles under sphere to be zero
@@ -1052,22 +1051,22 @@ def insert_cylinder(im, xyz0, xyz1, r):
     if im.ndim != 3:
         raise Exception('This function is only implemented for 3D images')
     # Converting coordinates to numpy array
-    xyz0, xyz1 = [sp.array(xyz).astype(int) for xyz in (xyz0, xyz1)]
+    xyz0, xyz1 = [np.array(xyz).astype(int) for xyz in (xyz0, xyz1)]
     r = int(r)
-    L = sp.absolute(xyz0 - xyz1).max() + 1
-    xyz_line = [sp.linspace(xyz0[i], xyz1[i], L).astype(int) for i in range(3)]
+    L = np.absolute(xyz0 - xyz1).max() + 1
+    xyz_line = [np.linspace(xyz0[i], xyz1[i], L).astype(int) for i in range(3)]
 
-    xyz_min = sp.amin(xyz_line, axis=1) - r
-    xyz_max = sp.amax(xyz_line, axis=1) + r
+    xyz_min = np.amin(xyz_line, axis=1) - r
+    xyz_max = np.amax(xyz_line, axis=1) + r
     shape_template = xyz_max - xyz_min + 1
-    template = sp.zeros(shape=shape_template)
+    template = np.zeros(shape=shape_template)
 
     # Shortcut for orthogonal cylinders
     if (xyz0 == xyz1).sum() == 2:
         unique_dim = [xyz0[i] != xyz1[i] for i in range(3)].index(True)
         shape_template[unique_dim] = 1
         template_2D = disk(radius=r).reshape(shape_template)
-        template = sp.repeat(template_2D, repeats=L, axis=unique_dim)
+        template = np.repeat(template_2D, repeats=L, axis=unique_dim)
         xyz_min[unique_dim] += r
         xyz_max[unique_dim] += -r
     else:
@@ -1127,7 +1126,7 @@ def pad_faces(im, faces):
             faces = [(int('left' in f) * 3, int('right' in f) * 3),
                      (int('front' in f) * 3, int('back' in f) * 3),
                      (int('top' in f) * 3, int('bottom' in f) * 3)]
-        im = sp.pad(im, pad_width=faces, mode='edge')
+        im = np.pad(im, pad_width=faces, mode='edge')
     else:
         im = im
     return im
@@ -1160,14 +1159,14 @@ def _create_alias_map(im, alias=None):
     """
     # -------------------------------------------------------------------------
     # Get alias if provided by user
-    phases_num = sp.unique(im * 1)
-    phases_num = sp.trim_zeros(phases_num)
+    phases_num = np.unique(im * 1)
+    phases_num = np.trim_zeros(phases_num)
     al = {}
     for values in phases_num:
         al[values] = 'phase{}'.format(values)
     if alias is not None:
         alias_sort = dict(sorted(alias.items()))
-        phase_labels = sp.array([*alias_sort])
+        phase_labels = np.array([*alias_sort])
         al = alias
         if set(phase_labels) != set(phases_num):
             raise Exception('Alias labels does not match with image labels '
@@ -1199,8 +1198,8 @@ def extract_regions(regions, labels: list, trim=True):
     if type(labels) is int:
         labels = [labels]
     s = spim.find_objects(regions)
-    im_new = sp.zeros_like(regions)
-    x_min, y_min, z_min = sp.inf, sp.inf, sp.inf
+    im_new = np.zeros_like(regions)
+    x_min, y_min, z_min = np.inf, np.inf, np.inf
     x_max, y_max, z_max = 0, 0, 0
     for i in labels:
         im_new[s[i-1]] = regions[s[i-1]] == i
@@ -1215,3 +1214,71 @@ def extract_regions(regions, labels: list, trim=True):
             bbox = bbox_to_slices([x_min, y_min, x_max, y_max])
         im_new = im_new[bbox]
     return im_new
+
+
+def size_to_seq(size):
+    r"""
+    Converts an image of invasion size values into sequence values.
+
+    This is meant to accept the output of the ``porosimetry`` function.
+
+    Parameters
+    ----------
+    size : ND-image
+        The image containing invasion size values in each voxel.
+
+    Returns
+    -------
+    sequence : ND-image
+        An ND-image the same shape as ``size`` with invasion size values
+        replaced by the invasion sequence.  This assumes that the invasion
+        process occurs via increasing pressure steps, such as produced by
+        the ``porosimetry`` function.
+
+    """
+    solid = size == 0
+    vals = np.digitize(size,
+                       bins=range(0, np.ceil(size.max()).astype(int)),
+                       right=True)
+    vals = -(vals - vals.max() - 1)*~solid
+    vals = make_contiguous(vals)
+
+    # Possibly simpler way?
+    #    vals = (-(sizes - sizes.max())).astype(int) + 1
+    #    vals[vals > sizes.max()] = 0
+
+    return vals
+
+
+def seq_to_satn(seq):
+    r"""
+    Converts an image of invasion sequence values to saturation values.
+
+    Parameters
+    ----------
+    seq : ND-image
+        The image containing invasion sequence values in each voxel.
+        Note that the invasion steps must be positive integers, solid voxels
+        indicated by 0, and uninvaded voxels indicated by -1.
+
+    Returns
+    -------
+    satn : ND-image
+        An ND-iamge the same size as ``seq`` but with sequnece values replaced
+        by the fraction of pores invaded at or below the sequence number.
+        Solid voxels and uninvaded voxels are represented by 0 and -1
+        respectively.
+
+    """
+    seq = np.copy(seq).astype(int)
+    solid = seq == 0
+    uninvaded = seq == -1
+    seq = np.clip(seq, a_min=0, a_max=None)
+    seq = make_contiguous(seq)
+    b = np.bincount(seq.flatten())
+    b[0] = 0
+    c = np.cumsum(b)
+    satn = c[seq]/((seq > 0).sum() + uninvaded.sum())
+    satn[solid] = 0.0
+    satn[uninvaded] = -1.0
+    return satn
