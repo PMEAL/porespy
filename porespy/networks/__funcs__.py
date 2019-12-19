@@ -1,4 +1,3 @@
-import scipy as sp
 import numpy as np
 import openpnm as op
 from porespy.tools import make_contiguous
@@ -35,10 +34,10 @@ def map_to_regions(regions, values):
     the region indexing starts at 1.  That is, region 1 corresponds to pore 0.
 
     """
-    values = sp.array(values).flatten()
-    if sp.size(values) != regions.max() + 1:
+    values = np.array(values).flatten()
+    if np.size(values) != regions.max() + 1:
         raise Exception('Number of values does not match number of regions')
-    im = sp.zeros_like(regions)
+    im = np.zeros_like(regions)
     im = values[regions]
     return im
 
@@ -81,7 +80,7 @@ def add_boundary_regions(regions=None, faces=['front', 'back', 'left',
     # -------------------------------------------------------------------------
     # Edge pad segmentation and distance transform
     if faces is not None:
-        regions = sp.pad(regions, 1, 'edge')
+        regions = np.pad(regions, 1, 'edge')
         # ---------------------------------------------------------------------
         if regions.ndim == 3:
             # Remove boundary nodes interconnection
@@ -104,7 +103,7 @@ def add_boundary_regions(regions=None, faces=['front', 'back', 'left',
             regions[:, -1, :] = (~find_boundaries(regions[:, -1, :],
                                                   mode='outer')) * regions[:, -1, :]
             # -----------------------------------------------------------------
-            regions = sp.pad(regions, 2, 'edge')
+            regions = np.pad(regions, 2, 'edge')
 
             # Remove unselected faces
             if 'front' not in faces:
@@ -135,7 +134,7 @@ def add_boundary_regions(regions=None, faces=['front', 'back', 'left',
             regions[:, -1] = (~find_boundaries(regions[:, -1],
                                                mode='outer')) * regions[:, -1]
             # -----------------------------------------------------------------
-            regions = sp.pad(regions, 2, 'edge')
+            regions = np.pad(regions, 2, 'edge')
 
             # Remove unselected faces
             if 'left' not in faces:
@@ -252,7 +251,7 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200,
 
     # Subtract pore-throat overlap from throats
     im_throats = (im_throats.astype(bool) * ~im_pores.astype(bool)).astype(
-        sp.uint8)
+        np.uint8)
     im = im_pores * 1 + im_throats * 2
 
     return im[extra_clearance:-extra_clearance,
@@ -318,7 +317,7 @@ def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
     while err > rtol:
         im = _generate_voxel_image(network, pore_shape, throat_shape,
                                    max_dim=max_dim, verbose=verbose)
-        eps = im.astype(bool).sum() / sp.prod(im.shape)
+        eps = im.astype(bool).sum() / np.prod(im.shape)
 
         err = abs(1 - eps / eps_old)
         eps_old = eps
@@ -390,23 +389,23 @@ def add_phase_interconnections(net, snow_partitioning_n, voxel_size=1,
 
     num = snow_partitioning_n.phase_max_label
     num = [0, *num]
-    phases_num = sp.unique(im * 1)
-    phases_num = sp.trim_zeros(phases_num)
+    phases_num = np.unique(im * 1)
+    phases_num = np.trim_zeros(phases_num)
     for i in phases_num:
-        loc1 = sp.logical_and(conns1 >= num[i - 1], conns1 < num[i])
-        loc2 = sp.logical_and(conns2 >= num[i - 1], conns2 < num[i])
-        loc3 = sp.logical_and(label >= num[i - 1], label < num[i])
+        loc1 = np.logical_and(conns1 >= num[i - 1], conns1 < num[i])
+        loc2 = np.logical_and(conns2 >= num[i - 1], conns2 < num[i])
+        loc3 = np.logical_and(label >= num[i - 1], label < num[i])
         net['throat.{}'.format(al[i])] = loc1 * loc2
         net['pore.{}'.format(al[i])] = loc3
         if i == phases_num[-1]:
-            loc4 = sp.logical_and(conns1 < num[-1], conns2 >= num[-1])
+            loc4 = np.logical_and(conns1 < num[-1], conns2 >= num[-1])
             loc5 = label >= num[-1]
             net['throat.boundary'] = loc4
             net['pore.boundary'] = loc5
         for j in phases_num:
             if j > i:
-                pi_pj_sa = sp.zeros_like(label)
-                loc6 = sp.logical_and(conns2 >= num[j - 1], conns2 < num[j])
+                pi_pj_sa = np.zeros_like(label)
+                loc6 = np.logical_and(conns2 >= num[j - 1], conns2 < num[j])
                 pi_pj_conns = loc1 * loc6
                 net['throat.{}_{}'.format(al[i], al[j])] = pi_pj_conns
                 if any(pi_pj_conns):
@@ -416,23 +415,23 @@ def add_phase_interconnections(net, snow_partitioning_n, voxel_size=1,
                     p_conns = net['throat.conns'][:, 0][pi_pj_conns]
                     s_conns = net['throat.conns'][:, 1][pi_pj_conns]
                     ps = net['throat.area'][pi_pj_conns]
-                    p_sa = sp.bincount(p_conns, ps)
+                    p_sa = np.bincount(p_conns, ps)
                     # trim zeros at head/tail position to avoid extra bins
-                    p_sa = sp.trim_zeros(p_sa)
-                    i_index = sp.arange(min(p_conns), max(p_conns) + 1)
-                    j_index = sp.arange(min(s_conns), max(s_conns) + 1)
-                    s_pa = sp.bincount(s_conns, ps)
-                    s_pa = sp.trim_zeros(s_pa)
+                    p_sa = np.trim_zeros(p_sa)
+                    i_index = np.arange(min(p_conns), max(p_conns) + 1)
+                    j_index = np.arange(min(s_conns), max(s_conns) + 1)
+                    s_pa = np.bincount(s_conns, ps)
+                    s_pa = np.trim_zeros(s_pa)
                     pi_pj_sa[i_index] = p_sa
                     pi_pj_sa[j_index] = s_pa
                     # ---------------------------------------------------------
                     # Calculates interfacial area using marching cube method
                     if marching_cubes_area:
                         ps_c = net['throat.area'][pi_pj_conns]
-                        p_sa_c = sp.bincount(p_conns, ps_c)
-                        p_sa_c = sp.trim_zeros(p_sa_c)
-                        s_pa_c = sp.bincount(s_conns, ps_c)
-                        s_pa_c = sp.trim_zeros(s_pa_c)
+                        p_sa_c = np.bincount(p_conns, ps_c)
+                        p_sa_c = np.trim_zeros(p_sa_c)
+                        s_pa_c = np.bincount(s_conns, ps_c)
+                        s_pa_c = np.trim_zeros(s_pa_c)
                         pi_pj_sa[i_index] = p_sa_c
                         pi_pj_sa[j_index] = s_pa_c
                     net['pore.{}_{}_area'.format(al[i],

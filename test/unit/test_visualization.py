@@ -1,5 +1,5 @@
 import porespy as ps
-import scipy as sp
+import numpy as np
 
 
 class VisualizationTest():
@@ -12,7 +12,7 @@ class VisualizationTest():
 
     def test_xray_x(self):
         xray = ps.visualization.xray(self.im)
-        assert sp.sum(xray) == sp.sum(~self.im)
+        assert np.sum(xray) == np.sum(~self.im)
 
     def test_sem_y(self):
         sem = ps.visualization.sem(self.im, direction='Y')
@@ -20,7 +20,7 @@ class VisualizationTest():
 
     def test_xray_y(self):
         xray = ps.visualization.xray(self.im, direction='Y')
-        assert sp.sum(xray) == sp.sum(~self.im)
+        assert np.sum(xray) == np.sum(~self.im)
 
     def test_sem_z(self):
         sem = ps.visualization.sem(self.im, direction='Z')
@@ -28,7 +28,7 @@ class VisualizationTest():
 
     def test_xray_z(self):
         xray = ps.visualization.xray(self.im, direction='Z')
-        assert sp.sum(xray) == sp.sum(~self.im)
+        assert np.sum(xray) == np.sum(~self.im)
 
 if __name__ == '__main__':
     t = VisualizationTest()

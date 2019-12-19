@@ -1,4 +1,4 @@
-import scipy as sp
+import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
@@ -18,8 +18,8 @@ def show_mesh(mesh):
     fig : Matplotlib figure
         A handle to a matplotlib 3D axis
     """
-    lim_max = sp.amax(mesh.verts, axis=0)
-    lim_min = sp.amin(mesh.verts, axis=0)
+    lim_max = np.amax(mesh.verts, axis=0)
+    lim_min = np.amin(mesh.verts, axis=0)
 
     # Display resulting triangular mesh using Matplotlib.
     fig = plt.figure()

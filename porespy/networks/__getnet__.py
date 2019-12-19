@@ -1,4 +1,4 @@
-import scipy as sp
+import numpy as np
 import openpnm as op
 from tqdm import tqdm
 import scipy.ndimage as spim
@@ -40,7 +40,7 @@ def regions_to_network(im, dt=None, voxel_size=1):
     from skimage.morphology import disk, ball
     struc_elem = disk if im.ndim == 2 else ball
 
-    # if ~sp.any(im == 0):
+    # if ~np.any(im == 0):
     #     raise Exception('The received image has no solid phase (0\'s)')
 
     if dt is None:
@@ -51,20 +51,20 @@ def regions_to_network(im, dt=None, voxel_size=1):
     slices = spim.find_objects(im)
 
     # Initialize arrays
-    Ps = sp.arange(1, sp.amax(im)+1)
-    Np = sp.size(Ps)
-    p_coords = sp.zeros((Np, im.ndim), dtype=float)
-    p_volume = sp.zeros((Np, ), dtype=float)
-    p_dia_local = sp.zeros((Np, ), dtype=float)
-    p_dia_global = sp.zeros((Np, ), dtype=float)
-    p_label = sp.zeros((Np, ), dtype=int)
-    p_area_surf = sp.zeros((Np, ), dtype=int)
+    Ps = np.arange(1, np.amax(im)+1)
+    Np = np.size(Ps)
+    p_coords = np.zeros((Np, im.ndim), dtype=float)
+    p_volume = np.zeros((Np, ), dtype=float)
+    p_dia_local = np.zeros((Np, ), dtype=float)
+    p_dia_global = np.zeros((Np, ), dtype=float)
+    p_label = np.zeros((Np, ), dtype=int)
+    p_area_surf = np.zeros((Np, ), dtype=int)
     t_conns = []
     t_dia_inscribed = []
     t_area = []
     t_perimeter = []
     t_coords = []
-    # dt_shape = sp.array(dt.shape)
+    # dt_shape = np.array(dt.shape)
 
     # Start extracting size information for pores and throats
     for i in tqdm(Ps):
@@ -75,27 +75,27 @@ def regions_to_network(im, dt=None, voxel_size=1):
         sub_im = im[s]
         sub_dt = dt[s]
         pore_im = sub_im == i
-        padded_mask = sp.pad(pore_im, pad_width=1, mode='constant')
+        padded_mask = np.pad(pore_im, pad_width=1, mode='constant')
         pore_dt = spim.distance_transform_edt(padded_mask)
-        s_offset = sp.array([i.start for i in s])
+        s_offset = np.array([i.start for i in s])
         p_label[pore] = i
         p_coords[pore, :] = spim.center_of_mass(pore_im) + s_offset
-        p_volume[pore] = sp.sum(pore_im)
-        p_dia_local[pore] = (2*sp.amax(pore_dt)) - sp.sqrt(3)
-        p_dia_global[pore] = 2*sp.amax(sub_dt)
-        p_area_surf[pore] = sp.sum(pore_dt == 1)
+        p_volume[pore] = np.sum(pore_im)
+        p_dia_local[pore] = (2*np.amax(pore_dt)) - np.sqrt(3)
+        p_dia_global[pore] = 2*np.amax(sub_dt)
+        p_area_surf[pore] = np.sum(pore_dt == 1)
         im_w_throats = spim.binary_dilation(input=pore_im, structure=struc_elem(1))
         im_w_throats = im_w_throats*sub_im
-        Pn = sp.unique(im_w_throats)[1:] - 1
+        Pn = np.unique(im_w_throats)[1:] - 1
         for j in Pn:
             if j > pore:
                 t_conns.append([pore, j])
-                vx = sp.where(im_w_throats == (j + 1))
-                t_dia_inscribed.append(2*sp.amax(sub_dt[vx]))
-                t_perimeter.append(sp.sum(sub_dt[vx] < 2))
-                t_area.append(sp.size(vx[0]))
+                vx = np.where(im_w_throats == (j + 1))
+                t_dia_inscribed.append(2*np.amax(sub_dt[vx]))
+                t_perimeter.append(np.sum(sub_dt[vx] < 2))
+                t_area.append(np.size(vx[0]))
                 t_inds = tuple([i+j for i, j in zip(vx, s_offset)])
-                temp = sp.where(dt[t_inds] == sp.amax(dt[t_inds]))[0][0]
+                temp = np.where(dt[t_inds] == np.amax(dt[t_inds]))[0][0]
                 if im.ndim == 2:
                     t_coords.append(tuple((t_inds[0][temp],
                                            t_inds[1][temp])))
@@ -106,38 +106,38 @@ def regions_to_network(im, dt=None, voxel_size=1):
     # Clean up values
     Nt = len(t_dia_inscribed)  # Get number of throats
     if im.ndim == 2:  # If 2D, add 0's in 3rd dimension
-        p_coords = sp.vstack((p_coords.T, sp.zeros((Np, )))).T
-        t_coords = sp.vstack((sp.array(t_coords).T, sp.zeros((Nt, )))).T
+        p_coords = np.vstack((p_coords.T, np.zeros((Np, )))).T
+        t_coords = np.vstack((np.array(t_coords).T, np.zeros((Nt, )))).T
 
     net = {}
-    net['pore.all'] = sp.ones((Np, ), dtype=bool)
-    net['throat.all'] = sp.ones((Nt, ), dtype=bool)
-    net['pore.coords'] = sp.copy(p_coords)*voxel_size
-    net['pore.centroid'] = sp.copy(p_coords)*voxel_size
-    net['throat.centroid'] = sp.array(t_coords)*voxel_size
-    net['throat.conns'] = sp.array(t_conns)
-    net['pore.label'] = sp.array(p_label)
-    net['pore.volume'] = sp.copy(p_volume)*(voxel_size**3)
-    net['throat.volume'] = sp.zeros((Nt, ), dtype=float)
-    net['pore.diameter'] = sp.copy(p_dia_local)*voxel_size
-    net['pore.inscribed_diameter'] = sp.copy(p_dia_local)*voxel_size
-    net['pore.equivalent_diameter'] = 2*((3/4*net['pore.volume']/sp.pi)**(1/3))
-    net['pore.extended_diameter'] = sp.copy(p_dia_global)*voxel_size
-    net['pore.surface_area'] = sp.copy(p_area_surf)*(voxel_size)**2
-    net['throat.diameter'] = sp.array(t_dia_inscribed)*voxel_size
-    net['throat.inscribed_diameter'] = sp.array(t_dia_inscribed)*voxel_size
-    net['throat.area'] = sp.array(t_area)*(voxel_size**2)
-    net['throat.perimeter'] = sp.array(t_perimeter)*voxel_size
-    net['throat.equivalent_diameter'] = (sp.array(t_area) * (voxel_size**2))**0.5
+    net['pore.all'] = np.ones((Np, ), dtype=bool)
+    net['throat.all'] = np.ones((Nt, ), dtype=bool)
+    net['pore.coords'] = np.copy(p_coords)*voxel_size
+    net['pore.centroid'] = np.copy(p_coords)*voxel_size
+    net['throat.centroid'] = np.array(t_coords)*voxel_size
+    net['throat.conns'] = np.array(t_conns)
+    net['pore.label'] = np.array(p_label)
+    net['pore.volume'] = np.copy(p_volume)*(voxel_size**3)
+    net['throat.volume'] = np.zeros((Nt, ), dtype=float)
+    net['pore.diameter'] = np.copy(p_dia_local)*voxel_size
+    net['pore.inscribed_diameter'] = np.copy(p_dia_local)*voxel_size
+    net['pore.equivalent_diameter'] = 2*((3/4*net['pore.volume']/np.pi)**(1/3))
+    net['pore.extended_diameter'] = np.copy(p_dia_global)*voxel_size
+    net['pore.surface_area'] = np.copy(p_area_surf)*(voxel_size)**2
+    net['throat.diameter'] = np.array(t_dia_inscribed)*voxel_size
+    net['throat.inscribed_diameter'] = np.array(t_dia_inscribed)*voxel_size
+    net['throat.area'] = np.array(t_area)*(voxel_size**2)
+    net['throat.perimeter'] = np.array(t_perimeter)*voxel_size
+    net['throat.equivalent_diameter'] = (np.array(t_area) * (voxel_size**2))**0.5
     P12 = net['throat.conns']
-    PT1 = sp.sqrt(sp.sum(((p_coords[P12[:, 0]]-t_coords) * voxel_size)**2, axis=1))
-    PT2 = sp.sqrt(sp.sum(((p_coords[P12[:, 1]]-t_coords) * voxel_size)**2, axis=1))
+    PT1 = np.sqrt(np.sum(((p_coords[P12[:, 0]]-t_coords) * voxel_size)**2, axis=1))
+    PT2 = np.sqrt(np.sum(((p_coords[P12[:, 1]]-t_coords) * voxel_size)**2, axis=1))
     net['throat.total_length'] = PT1 + PT2
     PT1 = PT1-p_dia_local[P12[:, 0]]/2*voxel_size
     PT2 = PT2-p_dia_local[P12[:, 1]]/2*voxel_size
     net['throat.length'] = PT1 + PT2
     dist = (p_coords[P12[:, 0]]-p_coords[P12[:, 1]])*voxel_size
-    net['throat.direct_length'] = sp.sqrt(sp.sum(dist**2, axis=1))
+    net['throat.direct_length'] = np.sqrt(np.sum(dist**2, axis=1))
     # Make a dummy openpnm network to get the conduit lengths
     pn = op.network.GenericNetwork()
     pn.update(net)
