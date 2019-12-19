@@ -25,6 +25,7 @@ altered values.
     porespy.filters.flood
     porespy.filters.flood_func
     porespy.filters.ICE_peaks
+    porespy.filters.invade_region
     porespy.filters.local_thickness
     porespy.filters.porosimetry
     porespy.filters.prune_branches
@@ -53,6 +54,7 @@ altered values.
 .. autofunction:: flood
 .. autofunction:: flood_func
 .. autofunction:: ICE_peaks
+.. autofunction:: invade_region
 .. autofunction:: hold_peaks
 .. autofunction:: local_thickness
 .. autofunction:: nphase_border
@@ -84,6 +86,7 @@ from .__funcs__ import find_peaks
 from .__funcs__ import flood
 from .__funcs__ import flood_func
 from .__funcs__ import ICE_peaks
+from .__funcs__ import invade_region
 from .__funcs__ import hold_peaks
 from .__funcs__ import local_thickness
 from .__funcs__ import nphase_border
