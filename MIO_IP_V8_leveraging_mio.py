@@ -11,9 +11,6 @@ from tqdm import tqdm
 plt.rcParams['figure.facecolor'] = "#002b36"
 
 
-# %% Begin invasion of non-wetting fluid
-
-
 
 # %%
 im = ps.generators.blobs(shape=[400, 400], porosity=0.7, blobiness=2)
