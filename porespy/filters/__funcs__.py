@@ -387,8 +387,8 @@ def ICE_peaks(dt):
     """
     if dt.ndim == 2:
         cube = square
-    labels_prev = sp.zeros_like(dt, dtype=int)
-    sizes = sp.unique(dt)[-1:0:-1]
+    labels_prev = np.zeros_like(dt, dtype=int)
+    sizes = np.unique(dt)[-1:0:-1]
     for r in tqdm(sizes):
         dt_thresh = dt >= r
         labels, N = spim.label(dt_thresh, structure=cube(3))
@@ -397,7 +397,7 @@ def ICE_peaks(dt):
         for i, s in enumerate(slices):
             if s:
                 im_temp = labels[s] == (i + 1)
-                if len(sp.unique(labels_prev[s] * im_temp)) > 2:
+                if len(np.unique(labels_prev[s] * im_temp)) > 2:
                     labels[s][im_temp] = 0
                 else:
                     labels_prev[s][im_temp] = i + 1
@@ -847,8 +847,8 @@ def trim_extrema(im, h, mode='maxima'):
     baseline values of the array are changed as well.
 
     """
-    mask = sp.copy(im)
-    im = sp.copy(im)
+    mask = np.copy(im)
+    im = np.copy(im)
     if mode == 'maxima':
         result = reconstruction(seed=im - h, mask=mask, method='dilation')
     elif mode == 'minima':
@@ -948,7 +948,7 @@ def flood_func(im, func, labels=None):
     if labels is None:
         labels, N = spim.label(im > 0)
     slices = spim.find_objects(labels)
-    new_im = sp.zeros_like(im, dtype=float)
+    new_im = np.zeros_like(im, dtype=float)
     for i, s in enumerate(slices):
         sub_im = labels[s] == (i + 1)
         val = func(im[s][sub_im])
