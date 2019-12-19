@@ -43,8 +43,8 @@ if 1:
         seq[~im] = target.max() + 10
         frame1 = ax.imshow(seq, vmin=1e-3, vmax=target.max(),
                            animated=True, cmap=cmap)
-        movie.append(frame1)
-    ani = animation.ArtistAnimation(fig, movie, interval=200,
+        movie.append([frame1])
+    ani = animation.ArtistAnimation(fig, movie, interval=400,
                                     blit=True, repeat_delay=500)
 # ani.save('image_based_ip.gif', writer='imagemagick', fps=3)
 
