@@ -160,13 +160,14 @@ def RSA(im: array, radius: int, volume_fraction: int = 1, n_max: int = None,
         template_lg = ps_ball(radius*2)
         template_sm = ps_ball(radius)
     # Pad image by the radius faciliate insert near edges
-    im = sp.pad(im, pad_width=2*radius, mode='constant', constant_values=0)
+    im = np.pad(im, pad_width=2*radius, mode='constant', constant_values=0)
+    if np.any(im > 0):
         # Dilate existing objects by im_strel to remove pixels near them
         # from consideration for sphere placement
         mask = fftmorphology(im > 0, strel, mode='dilate')
         mask = mask.astype(int)
     else:
-        mask = sp.zeros_like(im, dtype=int)
+        mask = np.zeros_like(im, dtype=int)
     # Depending on mode, adjust mask to remove options around edge
     if mode == 'contained':
         temp = get_border(im.shape, thickness=3*radius, mode='faces')
@@ -177,7 +178,7 @@ def RSA(im: array, radius: int, volume_fraction: int = 1, n_max: int = None,
     else:
         raise Exception('Unrecognized mode: ', mode)
     # Set voxels near padded edge to -1 to prevent insertions there
-    options_im = sp.reshape(sp.arange(im.size), newshape=im.shape)
+    options_im = np.reshape(np.arange(im.size), newshape=im.shape)
     options_im[mask > 0] = -1
     im = _begin_inserting(im, options_im, radius, n_max, volume_fraction,
                           template_lg, template_sm)
@@ -192,16 +193,16 @@ def _begin_inserting(im, options_im, radius, n_max, volume_fraction,
     This function is called by RSA and does the actual sphere insertion
     """
     if n_max is None:
-        n_max = sp.inf
+        n_max = np.inf
     vf = im.sum()/im.size
     i = 0
     v = template_sm.sum()/im.size
-    free_sites = sp.flatnonzero(options_im >= 0)
+    free_sites = np.flatnonzero(options_im >= 0)
     while (vf <= volume_fraction) and (i < n_max):
         c, count = _make_choice(options_im, free_sites=free_sites)
         # The 100 below is arbitrary and may change performance
         if (count > 100) or (options_im[tuple(c)] == -1):
-            free_sites = sp.flatnonzero(options_im >= 0)
+            free_sites = np.flatnonzero(options_im >= 0)
             if len(free_sites) > 0:
                 print('Rechecking with shorter list of options')
                 continue
@@ -235,9 +236,9 @@ def _make_choice(options_im, free_sites):
         Nx = options_im.shape[0]
         Ny = options_im.shape[1]
         while (choice == -1) and (count < max_iters):
-            ind = sp.random.randint(0, upper_limit)
+            ind = np.random.randint(0, upper_limit)
             # This numpy function is not supported by numba yet
-            # c1, c2 = sp.unravel_index(free_sites[ind], options_im.shape)
+            # c1, c2 = np.unravel_index(free_sites[ind], options_im.shape)
             # So using manual unraveling
             coords[1] = free_sites[ind] % options_im.shape[0]
             coords[0] = (free_sites[ind] // Nx) % Ny
@@ -249,9 +250,9 @@ def _make_choice(options_im, free_sites):
         Ny = options_im.shape[1]
         Nz = options_im.shape[2]
         while (choice == -1) and (count < max_iters):
-            ind = sp.random.randint(0, upper_limit)
+            ind = np.random.randint(0, upper_limit)
             # This numpy function is not supported by numba yet
-            # c1, c2, c3 = sp.unravel_index(free_sites[ind], options_im.shape)
+            # c1, c2, c3 = np.unravel_index(free_sites[ind], options_im.shape)
             # So using manual unraveling
             coords[2] = free_sites[ind] % Nx
             coords[1] = (free_sites[ind] // Nx) % Ny
