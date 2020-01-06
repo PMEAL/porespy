@@ -1715,7 +1715,8 @@ def chunked_func(func, divs=2, cores=None, im_arg=['input', 'image', 'im'],
     return im2
 
 
-def invade_region(im, bd, dt=None, inv=None, thickness=3, coarseness=3):
+def invade_region(im, bd, dt=None, inv=None, thickness=3, coarseness=3,
+                  max_iter=10000):
     r"""
     Performs invasion percolation on given image using iterative image dilation
 
@@ -1738,7 +1739,15 @@ def invade_region(im, bd, dt=None, inv=None, thickness=3, coarseness=3):
         iteration when growing the invasion front.  The default is 3 which
         balances accuracy and speed.  A value of 1 is the most accurate.
     coarseness : scalar
-        Controls how coarsely the distance transform values are rounded.
+        Controls how coarsely the distance transform values are represented. A
+        value of 1 means the distance values are only converted to integers,
+        while a value of 2 means values are separated by 2 (2, 4, 6, ...),
+        and so on.  A higher value means more spheres are inserted at each
+        step so speeds up the process at the cost of accuracy.
+    max_iter : scalar
+        The number of steps to apply before stopping.  The default is to run
+        for 10,000 steps which is almost certain to reach completion if the
+        image is smaller than about 250-cubed.
 
     Returns
     -------
@@ -1757,19 +1766,21 @@ def invade_region(im, bd, dt=None, inv=None, thickness=3, coarseness=3):
         inv = np.copy(inv)
     if dt is None:
         dt = spim.distance_transform_edt(im)
-    dt_coarse = np.digitize(dt, bins=np.arange(0, dt.max(), coarseness+1))
+    dt_coarse = np.digitize(dt, bins=np.arange(0, dt.max(), max(1, coarseness)))
     dt_coarse = dt_coarse/dt_coarse.max()*np.around(dt.max(), decimals=0)
     dt_coarse = dt_coarse.astype(int)
-    bd = np.copy(bd)
+    bd = np.copy(bd > 0)
     if im.ndim == 3:
         strel = ball
     else:
         strel = disk
-    max_iter = 5000
-    step = 0
+    if inv is not None:
+        step = np.max(inv)
+    else:
+        step = 0
     satn_step = 0.01
-    pbar = tqdm(total=100, unit='%_Saturation', disable=False)
-    for _ in range(1, max_iter):
+    # pbar = tqdm(total=100, unit='%_Saturation', disable=False)
+    for _ in tqdm(range(1, max_iter)):
         temp = spim.binary_dilation(input=bd,
                                     structure=strel(max(1, thickness)))
         edge = temp*(bd == 0)*im
@@ -1794,7 +1805,7 @@ def invade_region(im, bd, dt=None, inv=None, thickness=3, coarseness=3):
         bd[pt] = True
         satn = (inv[im] > 0).sum()/im.sum()
         if satn > satn_step:
-            pbar.update()
+            # pbar.update()
             satn_step = np.around(satn, decimals=2) + 0.01
         if (inv == 0).sum() == 0:
             break
