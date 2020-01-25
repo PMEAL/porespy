@@ -2,6 +2,7 @@ import porespy as ps
 import numpy as np
 import scipy.spatial as sptl
 import scipy.ndimage as spim
+from edt import edt
 from porespy.tools import norm_to_uniform, ps_ball, ps_disk
 from typing import List
 from numpy import array
@@ -351,7 +352,7 @@ def voronoi_edges(shape: List[int], radius: int, ncells: int,
         if np.all(pts >= 0) and np.all(pts < im.shape):
             line_pts = line_segment(pts[0], pts[1])
             im[tuple(line_pts)] = True
-    im = spim.distance_transform_edt(~im) > radius
+    im = edt(~im) > radius
     return im
 
 
@@ -492,7 +493,7 @@ def lattice_spheres(shape: List[int], radius: int, offset: int = 0,
                           s+r:im.shape[1]-r:2*s,
                           s:im.shape[2]-r:2*s]
         im[coords[0], coords[1], coords[2]] = 1
-    im = ~(spim.distance_transform_edt(~im) < r)
+    im = ~(edt(~im) < r)
     return im
 
 
@@ -543,7 +544,7 @@ def overlapping_spheres(shape: List[int], radius: int, porosity: float,
     im = np.random.random(size=shape)
 
     # Helper functions for calculating porosity: phi = g(f(N))
-    f = lambda N: spim.distance_transform_edt(im > N/bulk_vol) < radius
+    f = lambda N: edt(im > N/bulk_vol) < radius
     g = lambda im: 1 - im.sum() / np.prod(shape)
 
     # # Newton's method for getting image porosity match the given
@@ -777,7 +778,7 @@ def cylinders(shape: List[int], radius: int, ncylinders: int,
             im[crds[0][valid], crds[1][valid], crds[2][valid]] = 1
             n += 1
     im = np.array(im, dtype=bool)
-    dt = spim.distance_transform_edt(~im) < radius
+    dt = edt(~im) < radius
     return ~dt
 
 

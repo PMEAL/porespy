@@ -265,16 +265,16 @@ def find_outer_region(im, r=0):
 
     """
     if r == 0:
-        dt = spim.distance_transform_edt(input=im)
+        dt = edt(input=im)
         r = int(np.amax(dt)) * 2
     im_padded = np.pad(array=im, pad_width=r, mode='constant',
                        constant_values=True)
-    dt = spim.distance_transform_edt(input=im_padded)
+    dt = edt(input=im_padded)
     seeds = (dt >= r) + get_border(shape=im_padded.shape)
     # Remove seeds not connected to edges
     labels = spim.label(seeds)[0]
     mask = labels == 1  # Assume label of 1 on edges, assured by adding border
-    dt = spim.distance_transform_edt(~mask)
+    dt = edt(~mask)
     outer_region = dt < r
     outer_region = extract_subsection(im=outer_region, shape=im.shape)
     return outer_region
@@ -841,7 +841,7 @@ def ps_disk(radius):
     rad = int(np.ceil(radius))
     other = np.ones((2 * rad + 1, 2 * rad + 1), dtype=bool)
     other[rad, rad] = False
-    disk = spim.distance_transform_edt(other) < radius
+    disk = edt(other) < radius
     return disk
 
 
@@ -862,7 +862,7 @@ def ps_ball(radius):
     rad = int(np.ceil(radius))
     other = np.ones((2 * rad + 1, 2 * rad + 1, 2 * rad + 1), dtype=bool)
     other[rad, rad, rad] = False
-    ball = spim.distance_transform_edt(other) < radius
+    ball = edt(other) < radius
     return ball
 
 
@@ -930,7 +930,7 @@ def insert_sphere(im, c, r):
     temp = im[s]
     blank = np.ones_like(temp)
     blank[tuple(c - bbox[0:im.ndim])] = 0
-    blank = spim.distance_transform_edt(blank) < r
+    blank = edt(blank) < r
     im[s] = blank
     return im
 
@@ -982,7 +982,7 @@ def insert_cylinder(im, xyz0, xyz1, r):
     else:
         xyz_line_in_template_coords = [xyz_line[i] - xyz_min[i] for i in range(3)]
         template[tuple(xyz_line_in_template_coords)] = 1
-        template = spim.distance_transform_edt(template == 0) <= r
+        template = edt(template == 0) <= r
 
     im[xyz_min[0]:xyz_max[0]+1,
        xyz_min[1]:xyz_max[1]+1,
