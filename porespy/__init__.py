@@ -82,6 +82,7 @@ Use some filters from PoreSpy:
 __version__ = "1.2.0"
 
 from . import tools
+from . import dns
 from . import filters
 from . import metrics
 from . import networks
