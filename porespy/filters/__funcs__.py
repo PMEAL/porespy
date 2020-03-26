@@ -219,10 +219,10 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, return_all=False,
         print('Peforming Distance Transform')
         if np.any(im_shape == 1):
             ax = np.where(im_shape == 1)[0][0]
-            dt = edt(input=im.squeeze())
+            dt = edt(im.squeeze())
             dt = np.expand_dims(dt, ax)
         else:
-            dt = edt(input=im)
+            dt = edt(im)
 
     tup.im = im
     tup.dt = dt
