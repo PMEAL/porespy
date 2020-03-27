@@ -196,3 +196,22 @@ def openpnm_to_im(network, pore_shape="sphere", throat_shape="cylinder",
     return generate_voxel_image(network, pore_shape=pore_shape,
                                 throat_shape=throat_shape, max_dim=max_dim,
                                 verbose=verbose, rtol=rtol)
+
+
+def im_to_openfoam(im, scale=1, zoom_factor=1, label=True):
+    r"""
+    Save the image as an instruction file for OpenFoam to build an equivalent
+    hexahedral mesh with (optionally) defined boundaries.
+
+    Parameters
+    ----------
+    im : ND-array
+        The image of the porous material
+
+    filename : string or path object
+        The name and location to save the file, which will have `.net` file
+        extension.
+
+    """
+    from .OPENFOAM import OPENFOAM
+    OPENFOAM.save(im, scale, zoom_factor, label)
