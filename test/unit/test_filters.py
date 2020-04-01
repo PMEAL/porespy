@@ -174,11 +174,11 @@ class FilterTest():
 
     def test_local_thickness(self):
         lt = ps.filters.local_thickness(self.im, mode='dt')
-        np.testing.assert_almost_equal (lt.max(), self.im_dt.max(), decimal=6)
+        np.testing.assert_almost_equal(lt.max(), self.im_dt.max(), decimal=6)
         lt = ps.filters.local_thickness(self.im, mode='mio')
-        np.testing.assert_almost_equal (lt.max(), self.im_dt.max(), decimal=6)
+        np.testing.assert_almost_equal(lt.max(), self.im_dt.max(), decimal=6)
         lt = ps.filters.local_thickness(self.im, mode='hybrid')
-        np.testing.assert_almost_equal (lt.max(), self.im_dt.max(), decimal=6)
+        np.testing.assert_almost_equal(lt.max(), self.im_dt.max(), decimal=6)
 
     def test_local_thickness_known_sizes(self):
         im = np.zeros(shape=[300, 300])

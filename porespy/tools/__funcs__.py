@@ -1157,7 +1157,7 @@ def size_to_seq(size, bins=None):
     if bins is None:
         bins = np.unique(size)
     elif isinstance(bins, int):
-        bins = sp.linspace(0, size.max(), bins)
+        bins = np.linspace(0, size.max(), bins)
     vals = np.digitize(size, bins=bins, right=True)
     # Invert the vals so smallest size has largest sequence
     vals = -(vals - vals.max() - 1)*~solid
