@@ -1,6 +1,7 @@
 import scipy as sp
 import scipy.ndimage as spim
 import warnings
+from edt import edt
 from collections import namedtuple
 from skimage.morphology import ball, disk
 from skimage.measure import marching_cubes_lewiner
@@ -264,16 +265,16 @@ def find_outer_region(im, r=0):
 
     """
     if r == 0:
-        dt = spim.distance_transform_edt(input=im)
+        dt = edt(input=im)
         r = int(sp.amax(dt)) * 2
     im_padded = sp.pad(array=im, pad_width=r, mode='constant',
                        constant_values=True)
-    dt = spim.distance_transform_edt(input=im_padded)
+    dt = edt(input=im_padded)
     seeds = (dt >= r) + get_border(shape=im_padded.shape)
     # Remove seeds not connected to edges
     labels = spim.label(seeds)[0]
     mask = labels == 1  # Assume label of 1 on edges, assured by adding border
-    dt = spim.distance_transform_edt(~mask)
+    dt = edt(~mask)
     outer_region = dt < r
     outer_region = extract_subsection(im=outer_region, shape=im.shape)
     return outer_region
@@ -841,7 +842,7 @@ def ps_disk(radius):
     rad = int(sp.ceil(radius))
     other = sp.ones((2 * rad + 1, 2 * rad + 1), dtype=bool)
     other[rad, rad] = False
-    disk = spim.distance_transform_edt(other) < radius
+    disk = edt(other) < radius
     return disk
 
 
@@ -862,7 +863,7 @@ def ps_ball(radius):
     rad = int(sp.ceil(radius))
     other = sp.ones((2 * rad + 1, 2 * rad + 1, 2 * rad + 1), dtype=bool)
     other[rad, rad, rad] = False
-    ball = spim.distance_transform_edt(other) < radius
+    ball = edt(other) < radius
     return ball
 
 
@@ -947,7 +948,7 @@ def insert_sphere(im, c, r, v=True, overwrite=True):
     # Generate sphere template within image boundaries
     blank = sp.ones_like(im[s], dtype=float)
     blank[tuple(c - bbox[0:im.ndim])] = 0
-    sph = spim.distance_transform_edt(blank) < r
+    blank = edt(blank) < r
     if overwrite:  # Clear voxles under sphere to be zero
         temp = im[s]*sph > 0
         im[s][temp] = 0
@@ -983,28 +984,28 @@ def insert_cylinder(im, xyz0, xyz1, r):
     if im.ndim != 3:
         raise Exception('This function is only implemented for 3D images')
     # Converting coordinates to numpy array
-    xyz0, xyz1 = [sp.array(xyz).astype(int) for xyz in (xyz0, xyz1)]
+    xyz0, xyz1 = [np.array(xyz).astype(int) for xyz in (xyz0, xyz1)]
     r = int(r)
-    L = sp.absolute(xyz0 - xyz1).max() + 1
-    xyz_line = [sp.linspace(xyz0[i], xyz1[i], L).astype(int) for i in range(3)]
+    L = np.absolute(xyz0 - xyz1).max() + 1
+    xyz_line = [np.linspace(xyz0[i], xyz1[i], L).astype(int) for i in range(3)]
 
-    xyz_min = sp.amin(xyz_line, axis=1) - r
-    xyz_max = sp.amax(xyz_line, axis=1) + r
+    xyz_min = np.amin(xyz_line, axis=1) - r
+    xyz_max = np.amax(xyz_line, axis=1) + r
     shape_template = xyz_max - xyz_min + 1
-    template = sp.zeros(shape=shape_template)
+    template = np.zeros(shape=shape_template)
 
     # Shortcut for orthogonal cylinders
     if (xyz0 == xyz1).sum() == 2:
         unique_dim = [xyz0[i] != xyz1[i] for i in range(3)].index(True)
         shape_template[unique_dim] = 1
         template_2D = disk(radius=r).reshape(shape_template)
-        template = sp.repeat(template_2D, repeats=L, axis=unique_dim)
+        template = np.repeat(template_2D, repeats=L, axis=unique_dim)
         xyz_min[unique_dim] += r
         xyz_max[unique_dim] += -r
     else:
         xyz_line_in_template_coords = [xyz_line[i] - xyz_min[i] for i in range(3)]
         template[tuple(xyz_line_in_template_coords)] = 1
-        template = spim.distance_transform_edt(template == 0) <= r
+        template = edt(template == 0) <= r
 
     im[xyz_min[0]:xyz_max[0]+1,
        xyz_min[1]:xyz_max[1]+1,
@@ -1148,7 +1149,7 @@ def extract_regions(regions, labels: list, trim=True):
     return im_new
 
 
-def size_to_seq(size):
+def size_to_seq(size, bins=None):
     r"""
     Converts an image of invasion size values into sequence values.
 
@@ -1158,10 +1159,16 @@ def size_to_seq(size):
     ----------
     size : ND-image
         The image containing invasion size values in each voxel.
+    bins : array_like or int (optional)
+        The bins to use when converting sizes to sequence.  The default is
+        to create 1 bin for each unique value in ``size``.  If an **int**
+        is supplied it is interpreted as the number of bins between 0 and the
+        maximum value in ``size``.  If an array is supplied it is used as
+        the bins directly.
 
     Returns
     -------
-    sequence : ND-image
+    seq : ND-image
         An ND-image the same shape as ``size`` with invasion size values
         replaced by the invasion sequence.  This assumes that the invasion
         process occurs via increasing pressure steps, such as produced by
@@ -1169,15 +1176,19 @@ def size_to_seq(size):
 
     """
     solid = size == 0
-    vals = sp.digitize(size,
-                       bins=range(0, sp.ceil(size.max()).astype(int)),
-                       right=True)
+    if bins is None:
+        bins = np.unique(size)
+    elif isinstance(bins, int):
+        bins = np.linspace(0, size.max(), bins)
+    vals = np.digitize(size, bins=bins, right=True)
+    # Invert the vals so smallest size has largest sequence
     vals = -(vals - vals.max() - 1)*~solid
+    # In case too many bins are given, remove empty ones
     vals = make_contiguous(vals)
 
     # Possibly simpler way?
-    #    vals = (-(sizes - sizes.max())).astype(int) + 1
-    #    vals[vals > sizes.max()] = 0
+    #    vals = (-(size - size.max())).astype(int) + 1
+    #    vals[vals > size.max()] = 0
 
     return vals
 
