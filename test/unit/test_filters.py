@@ -2,6 +2,7 @@ import porespy as ps
 import pytest
 import numpy as np
 import scipy.ndimage as spim
+from edt import edt
 from skimage.morphology import disk, ball
 
 
@@ -11,7 +12,7 @@ class FilterTest():
         self.im = ps.generators.blobs(shape=[100, 100, 100], blobiness=2)
         # Ensure that im was generated as expeccted
         assert ps.metrics.porosity(self.im) == 0.499829
-        self.im_dt = spim.distance_transform_edt(self.im)
+        self.im_dt = edt(self.im)
 
     def test_im_in_not_im_out(self):
         im = self.im[:, :, 50]
@@ -173,11 +174,11 @@ class FilterTest():
 
     def test_local_thickness(self):
         lt = ps.filters.local_thickness(self.im, mode='dt')
-        assert lt.max() == self.im_dt.max()
+        np.testing.assert_almost_equal (lt.max(), self.im_dt.max(), decimal=6)
         lt = ps.filters.local_thickness(self.im, mode='mio')
-        assert lt.max() == self.im_dt.max()
+        np.testing.assert_almost_equal (lt.max(), self.im_dt.max(), decimal=6)
         lt = ps.filters.local_thickness(self.im, mode='hybrid')
-        assert lt.max() == self.im_dt.max()
+        np.testing.assert_almost_equal (lt.max(), self.im_dt.max(), decimal=6)
 
     def test_local_thickness_known_sizes(self):
         im = np.zeros(shape=[300, 300])

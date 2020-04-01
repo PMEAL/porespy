@@ -2,6 +2,7 @@ import numpy as np
 import scipy as sp
 import scipy.ndimage as spim
 import warnings
+from edt import edt
 from collections import namedtuple
 from skimage.morphology import ball, disk
 from skimage.measure import marching_cubes_lewiner
