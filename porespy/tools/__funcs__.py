@@ -1,4 +1,5 @@
 import scipy as sp
+import numpy as np
 import scipy.ndimage as spim
 import warnings
 from edt import edt
@@ -948,7 +949,7 @@ def insert_sphere(im, c, r, v=True, overwrite=True):
     # Generate sphere template within image boundaries
     blank = sp.ones_like(im[s], dtype=float)
     blank[tuple(c - bbox[0:im.ndim])] = 0
-    blank = edt(blank) < r
+    sph = edt(blank) < r
     if overwrite:  # Clear voxles under sphere to be zero
         temp = im[s]*sph > 0
         im[s][temp] = 0
