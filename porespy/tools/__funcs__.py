@@ -1127,7 +1127,7 @@ def extract_regions(regions, labels: list, trim=True):
     return im_new
 
 
-def size_to_seq(size):
+def size_to_seq(size, bins=None):
     r"""
     Converts an image of invasion size values into sequence values.
 
@@ -1137,10 +1137,16 @@ def size_to_seq(size):
     ----------
     size : ND-image
         The image containing invasion size values in each voxel.
+    bins : array_like or int (optional)
+        The bins to use when converting sizes to sequence.  The default is
+        to create 1 bin for each unique value in ``size``.  If an **int**
+        is supplied it is interpreted as the number of bins between 0 and the
+        maximum value in ``size``.  If an array is supplied it is used as
+        the bins directly.
 
     Returns
     -------
-    sequence : ND-image
+    seq : ND-image
         An ND-image the same shape as ``size`` with invasion size values
         replaced by the invasion sequence.  This assumes that the invasion
         process occurs via increasing pressure steps, such as produced by
@@ -1148,15 +1154,19 @@ def size_to_seq(size):
 
     """
     solid = size == 0
-    vals = np.digitize(size,
-                       bins=range(0, np.ceil(size.max()).astype(int)),
-                       right=True)
+    if bins is None:
+        bins = np.unique(size)
+    elif isinstance(bins, int):
+        bins = sp.linspace(0, size.max(), bins)
+    vals = np.digitize(size, bins=bins, right=True)
+    # Invert the vals so smallest size has largest sequence
     vals = -(vals - vals.max() - 1)*~solid
+    # In case too many bins are given, remove empty ones
     vals = make_contiguous(vals)
 
     # Possibly simpler way?
-    #    vals = (-(sizes - sizes.max())).astype(int) + 1
-    #    vals[vals > sizes.max()] = 0
+    #    vals = (-(size - size.max())).astype(int) + 1
+    #    vals[vals > size.max()] = 0
 
     return vals
 

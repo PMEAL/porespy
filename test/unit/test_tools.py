@@ -128,10 +128,24 @@ class ToolsTest():
     def test_size_to_seq(self):
         im = self.im2D
         sz = ps.filters.porosimetry(im)
-        nsizes = np.size(np.unique(np.around(sz, decimals=0)))
+        nsizes = np.size(np.unique(sz))
         sq = ps.tools.size_to_seq(sz)
         nsteps = np.size(np.unique(sq))
         assert nsteps == nsizes
+
+    def test_size_to_seq_int_bins(self):
+        im = self.im2D
+        sz = ps.filters.porosimetry(im)
+        sq = ps.tools.size_to_seq(sz, bins=5)
+        nsteps = np.size(np.unique(sq))
+        assert nsteps == 5
+
+    def test_size_to_seq_too_many_bins(self):
+        im = self.im2D
+        sz = ps.filters.porosimetry(im)
+        sq = ps.tools.size_to_seq(sz, bins=20)
+        nsteps = np.size(np.unique(sq))
+        assert nsteps == 5
 
     def test_seq_to_sat_fully_filled(self):
         im = self.im2D
