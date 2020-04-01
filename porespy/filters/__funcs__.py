@@ -5,6 +5,7 @@ import scipy.ndimage as spim
 import scipy.spatial as sptl
 import warnings
 import dask
+from edt import edt
 from dask.diagnostics import ProgressBar
 from scipy.signal import fftconvolve
 from tqdm import tqdm
@@ -218,10 +219,10 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, return_all=False,
         print('Peforming Distance Transform')
         if np.any(im_shape == 1):
             ax = np.where(im_shape == 1)[0][0]
-            dt = spim.distance_transform_edt(input=im.squeeze())
+            dt = edt(im.squeeze())
             dt = np.expand_dims(dt, ax)
         else:
-            dt = spim.distance_transform_edt(input=im)
+            dt = edt(im)
 
     tup.im = im
     tup.dt = dt
@@ -1202,7 +1203,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
                       ' Reduce dimensionality with np.squeeze(im) to avoid' +
                       ' unexpected behavior.')
 
-    dt = spim.distance_transform_edt(im > 0)
+    dt = edt(im > 0)
 
     if inlets is None:
         inlets = get_border(im.shape, mode='faces')
@@ -1238,7 +1239,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
             if access_limited:
                 imtemp = trim_disconnected_blobs(imtemp, inlets)
             if np.any(imtemp):
-                imtemp = spim.distance_transform_edt(~imtemp) < r
+                imtemp = edt(~imtemp) < r
                 imresults[(imresults == 0)*imtemp] = r
     elif mode == 'hybrid':
         imresults = np.zeros(np.shape(im))
