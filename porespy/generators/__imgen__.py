@@ -1,10 +1,12 @@
-import porespy as ps
 import numpy as np
 import scipy.spatial as sptl
 import scipy.ndimage as spim
-from porespy.tools import norm_to_uniform, ps_ball, ps_disk
+from numba import njit, jit
+from porespy.tools import norm_to_uniform, ps_ball, ps_disk, get_border
+from porespy.tools import insert_sphere, fftmorphology
 from typing import List
 from numpy import array
+from skimage.morphology import ball, disk
 
 
 def insert_shape(im, element, center=None, corner=None, value=1,
@@ -87,13 +89,17 @@ def insert_shape(im, element, center=None, corner=None, value=1,
     return im
 
 
-def RSA(im: array, radius: int, volume_fraction: int = 1,
-        mode: str = 'extended'):
+def RSA(im: array, radius: int, volume_fraction: int = 1, n_max: int = None,
+        max_iter: int = None, mode: str = 'contained'):
     r"""
     Generates a sphere or disk packing using Random Sequential Addition
 
-    This which ensures that spheres do not overlap but does not guarantee they
-    are tightly packed.
+    This algorithm ensures that spheres do not overlap but does not
+    guarantee they are tightly packed.
+
+    This function adds spheres to the background of the received ``im``, which
+    allows iteratively adding spheres of different radii to the unfilled space,
+    be repeatedly passing in the result of previous calls to RSA.
 
     Parameters
     ----------
@@ -101,13 +107,21 @@ def RSA(im: array, radius: int, volume_fraction: int = 1,
         The image into which the spheres should be inserted.  By accepting an
         image rather than a shape, it allows users to insert spheres into an
         already existing image.  To begin the process, start with an array of
-        zero such as ``im = np.zeros([200, 200], dtype=bool)``.
+        zeros such as ``im = np.zeros([200, 200, 200], dtype=bool)``.
     radius : int
         The radius of the disk or sphere to insert.
     volume_fraction : scalar
         The fraction of the image that should be filled with spheres.  The
-        spheres are addeds 1's, so each sphere addition increases the
-        ``volume_fraction`` until the specified limit is reach.
+        spheres are added as 1's, so each sphere addition increases the
+        ``volume_fraction`` until the specified limit is reach.  Note that if
+        ``n_max`` is reached first, then ``volume_fraction`` will not be
+        acheived.
+    n_max : int
+        The maximum number of spheres to add.  By default the addition will
+        go indefinately until ``volume_fraction`` is met, but specifying
+        a scalr for ``n_max`` will halt addition after the given number of
+        spheres are added.  Note that if ``volume_fraction`` is reached first
+        then ``n_max`` will not be achieved.
     mode : string
         Controls how the edges of the image are handled.  Options are:
 
@@ -115,81 +129,137 @@ def RSA(im: array, radius: int, volume_fraction: int = 1,
 
         'contained' - Spheres are all completely within the image
 
-        'periodic' - The portion of a sphere that extends beyond the image is
-        inserted into the opposite edge of the image (Not Implemented Yet!)
-
     Returns
     -------
     image : ND-array
-        A copy of ``im`` with spheres of specified radius *added* to the
-        background.
+        A handle the the input ``im`` with spheres of specified radius
+        *added* to the background.
 
     Notes
     -----
-    Each sphere is filled with 1's, but the center is marked with a 2.  This
-    allows easy boolean masking to extract only the centers, which can be
-    converted to coordinates using ``scipy.where`` and used for other purposes.
-    The obtain only the spheres, use``im = im == 1``.
-
-    This function adds spheres to the background of the received ``im``, which
-    allows iteratively adding spheres of different radii to the unfilled space.
+    This function uses Numba to speed up the search for valid sphere insertion
+    points.  It seems that Numba does not look at the state of the scipy
+    random number generator, so setting the seed to a known value has no
+    effect on the output of this function. Each call to this function will
+    produce a unique value.  If you wish to use the same realization multiple
+    times you must save the array (e.g. ``numpy.save``).
 
     References
     ----------
     [1] Random Heterogeneous Materials, S. Torquato (2001)
 
     """
-    # Note: The 2D vs 3D splitting of this just me being lazy...I can't be
-    # bothered to figure it out programmatically right now
-    # TODO: Ideally the spheres should be added periodically
     print(78*'―')
     print('RSA: Adding spheres of size ' + str(radius))
-    d2 = len(im.shape) == 2
-    mrad = 2*radius
-    if d2:
-        im_strel = ps_disk(radius)
-        mask_strel = ps_disk(mrad)
+    if im.ndim == 2:
+        strel = ps_disk(radius)
+        template_lg = ps_disk(radius*2)
+        template_sm = ps_disk(radius)
     else:
-        im_strel = ps_ball(radius)
-        mask_strel = ps_ball(mrad)
+        strel = ps_ball(radius)
+        template_lg = ps_ball(radius*2)
+        template_sm = ps_ball(radius)
+    # Pad image by the radius faciliate insert near edges
+    im = np.pad(im, pad_width=2*radius, mode='constant', constant_values=0)
     if np.any(im > 0):
         # Dilate existing objects by im_strel to remove pixels near them
         # from consideration for sphere placement
-        mask = ps.tools.fftmorphology(im > 0, im_strel > 0, mode='dilate')
+        mask = fftmorphology(im > 0, strel, mode='dilate')
         mask = mask.astype(int)
     else:
-        mask = np.zeros_like(im)
+        mask = np.zeros_like(im, dtype=int)
+    # Depending on mode, adjust mask to remove options around edge
     if mode == 'contained':
-        mask = _remove_edge(mask, radius)
+        temp = get_border(im.shape, thickness=3*radius, mode='faces')
+        mask = mask + temp
     elif mode == 'extended':
-        pass
-    elif mode == 'periodic':
-        raise Exception('Periodic edges are not implemented yet')
+        temp = get_border(im.shape, thickness=2*radius, mode='faces')
+        mask = mask + temp
     else:
-        raise Exception('Unrecognized mode: ' + mode)
+        raise Exception('Unrecognized mode: ', mode)
+    # Set voxels near padded edge to -1 to prevent insertions there
+    options_im = np.reshape(np.arange(im.size), newshape=im.shape)
+    options_im[mask > 0] = -1
+    im = _begin_inserting(im, options_im, radius, n_max, volume_fraction,
+                          template_lg, template_sm)
+    # Get slice into returned image to retain original size
+    s = tuple([slice(2*radius, d-2*radius, None) for d in im.shape])
+    return im[s]
+
+
+def _begin_inserting(im, options_im, radius, n_max, volume_fraction,
+                     template_lg, template_sm):
+    r"""
+    This function is called by RSA and does the actual sphere insertion
+    """
+    if n_max is None:
+        n_max = np.inf
     vf = im.sum()/im.size
-    free_spots = np.argwhere(mask == 0)
     i = 0
-    while vf <= volume_fraction and len(free_spots) > 0:
-        choice = np.random.randint(0, len(free_spots), size=1)
-        if d2:
-            [x, y] = free_spots[choice].flatten()
-            im = _fit_strel_to_im_2d(im, im_strel, radius, x, y)
-            mask = _fit_strel_to_im_2d(mask, mask_strel, mrad, x, y)
-            im[x, y] = 2
-        else:
-            [x, y, z] = free_spots[choice].flatten()
-            im = _fit_strel_to_im_3d(im, im_strel, radius, x, y, z)
-            mask = _fit_strel_to_im_3d(mask, mask_strel, mrad, x, y, z)
-            im[x, y, z] = 2
-        free_spots = np.argwhere(mask == 0)
-        vf = im.sum()/im.size
+    v = template_sm.sum()/im.size
+    free_sites = np.flatnonzero(options_im >= 0)
+    while (vf <= volume_fraction) and (i < n_max):
+        c, count = _make_choice(options_im, free_sites=free_sites)
+        # The 100 below is arbitrary and may change performance
+        if (count > 100) or (options_im[tuple(c)] == -1):
+            free_sites = np.flatnonzero(options_im >= 0)
+            if len(free_sites) > 0:
+                print('Rechecking with shorter list of options')
+                continue
+            if len(free_sites) == 0:
+                print('No more free space found, volume fraction is:', vf)
+                break
+        s_sm = tuple([slice(ind - radius, ind + radius + 1, None) for ind in c])
+        s_lg = tuple([slice(ind - 2*radius, ind + 2*radius + 1, None) for ind in c])
+        im[s_sm] += template_sm  # Add ball to image
+        options_im[s_lg][template_lg] = -1  # Add -1 to extended region
+        vf += v
         i += 1
     if vf > volume_fraction:
-        print('Volume Fraction', volume_fraction, 'reached')
-    if len(free_spots) == 0:
-        print('No more free spots', 'Volume Fraction', vf)
+        print('Specified volume fraction reached')
+    if i >= n_max:
+        print('Requested number of spheres added')
     return im
+
+
+@njit
+def _make_choice(options_im, free_sites):
+    r"""
+    This function is called by _begin_inserting to find valid insertion points
+    """
+    choice = -1
+    count = 0
+    upper_limit = len(free_sites)
+    max_iters = len(free_sites)*2
+    if options_im.ndim == 2:
+        coords = [0, 0]
+        Nx = options_im.shape[0]
+        Ny = options_im.shape[1]
+        while (choice == -1) and (count < max_iters):
+            ind = np.random.randint(0, upper_limit)
+            # This numpy function is not supported by numba yet
+            # c1, c2 = np.unravel_index(free_sites[ind], options_im.shape)
+            # So using manual unraveling
+            coords[1] = free_sites[ind] % options_im.shape[0]
+            coords[0] = (free_sites[ind] // Nx) % Ny
+            choice = options_im[coords[0], coords[1]]
+            count += 1
+    if options_im.ndim == 3:
+        coords = [0, 0, 0]
+        Nx = options_im.shape[0]
+        Ny = options_im.shape[1]
+        Nz = options_im.shape[2]
+        while (choice == -1) and (count < max_iters):
+            ind = np.random.randint(0, upper_limit)
+            # This numpy function is not supported by numba yet
+            # c1, c2, c3 = np.unravel_index(free_sites[ind], options_im.shape)
+            # So using manual unraveling
+            coords[2] = free_sites[ind] % Nx
+            coords[1] = (free_sites[ind] // Nx) % Ny
+            coords[0] = (free_sites[ind] // (Nx * Ny)) % Ny
+            choice = options_im[coords[0], coords[1], coords[2]]
+            count += 1
+    return coords, count
 
 
 def bundle_of_tubes(shape: List[int], spacing: int):
@@ -812,89 +882,3 @@ def line_segment(X0, X1):
         x = np.rint(np.linspace(X0[0], X1[0], L)).astype(int)
         y = np.rint(np.linspace(X0[1], X1[1], L)).astype(int)
         return [x, y]
-
-
-def _fit_strel_to_im_2d(im, strel, r, x, y):
-    r"""
-    Helper function to add a structuring element to a 2D image.
-    Used by RSA. Makes sure if center is less than r pixels from edge of image
-    that the strel is sliced to fit.
-    """
-    elem = strel.copy()
-    x_dim, y_dim = im.shape
-    x_min = x-r
-    x_max = x+r+1
-    y_min = y-r
-    y_max = y+r+1
-    if x_min < 0:
-        x_adj = -x_min
-        elem = elem[x_adj:, :]
-        x_min = 0
-    elif x_max > x_dim:
-        x_adj = x_max - x_dim
-        elem = elem[:-x_adj, :]
-    if y_min < 0:
-        y_adj = -y_min
-        elem = elem[:, y_adj:]
-        y_min = 0
-    elif y_max > y_dim:
-        y_adj = y_max - y_dim
-        elem = elem[:, :-y_adj]
-    ex, ey = elem.shape
-    im[x_min:x_min+ex, y_min:y_min+ey] += elem
-    return im
-
-
-def _fit_strel_to_im_3d(im, strel, r, x, y, z):
-    r"""
-    Helper function to add a structuring element to a 2D image.
-    Used by RSA. Makes sure if center is less than r pixels from edge of image
-    that the strel is sliced to fit.
-    """
-    elem = strel.copy()
-    x_dim, y_dim, z_dim = im.shape
-    x_min = x-r
-    x_max = x+r+1
-    y_min = y-r
-    y_max = y+r+1
-    z_min = z-r
-    z_max = z+r+1
-    if x_min < 0:
-        x_adj = -x_min
-        elem = elem[x_adj:, :, :]
-        x_min = 0
-    elif x_max > x_dim:
-        x_adj = x_max - x_dim
-        elem = elem[:-x_adj, :, :]
-    if y_min < 0:
-        y_adj = -y_min
-        elem = elem[:, y_adj:, :]
-        y_min = 0
-    elif y_max > y_dim:
-        y_adj = y_max - y_dim
-        elem = elem[:, :-y_adj, :]
-    if z_min < 0:
-        z_adj = -z_min
-        elem = elem[:, :, z_adj:]
-        z_min = 0
-    elif z_max > z_dim:
-        z_adj = z_max - z_dim
-        elem = elem[:, :, :-z_adj]
-    ex, ey, ez = elem.shape
-    im[x_min:x_min+ex, y_min:y_min+ey, z_min:z_min+ez] += elem
-    return im
-
-
-def _remove_edge(im, r):
-    r'''
-    Fill in the edges of the input image.
-    Used by RSA to ensure that no elements are placed too close to the edge.
-    '''
-    edge = np.ones_like(im)
-    if len(im.shape) == 2:
-        sx, sy = im.shape
-        edge[r:sx-r, r:sy-r] = im[r:sx-r, r:sy-r]
-    else:
-        sx, sy, sz = im.shape
-        edge[r:sx-r, r:sy-r, r:sz-r] = im[r:sx-r, r:sy-r, r:sz-r]
-    return edge
