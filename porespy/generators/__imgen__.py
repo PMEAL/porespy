@@ -467,19 +467,15 @@ def noise(shape, frequency, porosity=None, octaves=1, persistence=1):
     ----------
     shape : array_like
         The shape of the desired image
-
     frequncy : array_like
         Controls the frequency of the noise, with higher values leading to
         smaller features or more tightly spaced undulations in the brightness.
-
     porosity : float
         If specified, the returned image will be thresholded to the specified
         porosity.  If not provided, the greyscale noise is returned (default).
-
     octaves : int
         Controls the texture of the noise, with higher values giving more
         comlex features of larger length scales.
-
     persistence : int
         Controls how prominent each successive octave is
 
@@ -505,78 +501,75 @@ def noise(shape, frequency, porosity=None, octaves=1, persistence=1):
     `Github repo <https://github.com/pvigier/perlin-numpy>`_
 
     """
+    # Parse args
     shape = sp.array(shape)
     if shape.size == 1:  # Assume 3D
         shape = sp.ones(3, dtype=int)*shape
-    if shape.size == 2:
-        func = _perlin_noise_2D
-    if shape.size == 3:
-        func = _perlin_noise_3D
     res = sp.array(frequency)
     if res.size == 1:  # Assume shape as shape
         res = sp.ones(shape.size, dtype=int)*res
+
+    # Check inputs for various sins
     if res.size != shape.size:
         raise Exception('shape and res must have same dimensions')
     if sp.any(sp.mod(shape, res) > 0):
         raise Exception('res must be a multiple of shape along each axis')
     if sp.any(shape/res**octaves < 1):
         raise Exception('(res[i])**octaves must be <= shape[i]')
+    check = shape/(res**octaves)
+    if np.any(check % 1):
+        raise Exception("Image size must be factor of res**octaves")
+
+    # Generate noise
     noise = np.zeros(shape)
     frequency = 1
     amplitude = 1
-    for _ in tqdm(range(octaves), disable=(octaves == 1)):
-        noise += amplitude * func(shape, (frequency*res))
+    for _ in tqdm(range(octaves)):
+        if noise.ndim == 2:
+            noise += amplitude * _perlin_noise_2D(shape, frequency*res)
+        elif noise.ndim == 3:
+            noise += amplitude * _perlin_noise_3D(shape, frequency*res)
         frequency *= 2
         amplitude *= persistence
+
     if porosity is not None:
         noise = norm_to_uniform(noise, scale=[0, 1])
         noise = noise > porosity
+
     return noise
 
 
 def _perlin_noise_3D(shape, res):
-
     def f(t):
         return 6*t**5 - 15*t**4 + 10*t**3
 
-    delta = (res[0] / shape[0], res[1] / shape[1], res[2] / shape[2])
-    d = (shape[0] // res[0], shape[1] // res[1], shape[2] // res[2])
+    delta = res / shape
+    d = shape // res
     grid = np.mgrid[0:res[0]:delta[0], 0:res[1]:delta[1], 0:res[2]:delta[2]]
     grid = grid.transpose(1, 2, 3, 0) % 1
     # Gradients
-    theta = 2*np.pi*np.random.rand(res[0]+1, res[1]+1, res[2]+1)
-    phi = 2*np.pi*np.random.rand(res[0]+1, res[1]+1, res[2]+1)
+    theta = 2*np.pi*np.random.rand(*(res + 1))
+    phi = 2*np.pi*np.random.rand(*(res + 1))
     gradients = np.stack((np.sin(phi)*np.cos(theta),
                           np.sin(phi)*np.sin(theta),
                           np.cos(phi)), axis=3)
-    gradients[-1] = gradients[0]
     g000 = gradients[0:-1, 0:-1, 0:-1].repeat(d[0], 0).repeat(d[1], 1).repeat(d[2], 2)
-    g100 = gradients[1:, 0:-1, 0:-1].repeat(d[0], 0).repeat(d[1], 1).repeat(d[2], 2)
-    g010 = gradients[0:-1, 1:, 0:-1].repeat(d[0], 0).repeat(d[1], 1).repeat(d[2], 2)
-    g110 = gradients[1:, 1:, 0:-1].repeat(d[0], 0).repeat(d[1], 1).repeat(d[2], 2)
-    g001 = gradients[0:-1, 0:-1, 1:].repeat(d[0], 0).repeat(d[1], 1).repeat(d[2], 2)
-    g101 = gradients[1:, 0:-1, 1:].repeat(d[0], 0).repeat(d[1], 1).repeat(d[2], 2)
-    g011 = gradients[0:-1, 1:, 1:].repeat(d[0], 0).repeat(d[1], 1).repeat(d[2], 2)
-    g111 = gradients[1:, 1:, 1:].repeat(d[0], 0).repeat(d[1], 1).repeat(d[2], 2)
-
+    g100 = gradients[1:  , 0:-1, 0:-1].repeat(d[0], 0).repeat(d[1], 1).repeat(d[2], 2)
+    g010 = gradients[0:-1, 1:  , 0:-1].repeat(d[0], 0).repeat(d[1], 1).repeat(d[2], 2)
+    g110 = gradients[1:  , 1:  , 0:-1].repeat(d[0], 0).repeat(d[1], 1).repeat(d[2], 2)
+    g001 = gradients[0:-1, 0:-1, 1:  ].repeat(d[0], 0).repeat(d[1], 1).repeat(d[2], 2)
+    g101 = gradients[1:  , 0:-1, 1:  ].repeat(d[0], 0).repeat(d[1], 1).repeat(d[2], 2)
+    g011 = gradients[0:-1, 1:  , 1:  ].repeat(d[0], 0).repeat(d[1], 1).repeat(d[2], 2)
+    g111 = gradients[1:  , 1:  , 1:  ].repeat(d[0], 0).repeat(d[1], 1).repeat(d[2], 2)
     # Ramps
-    n000 = np.sum(np.stack((grid[:, :, :, 0], grid[:, :, :, 1],
-                            grid[:, :, :, 2]), axis=3)*g000, 3)
-    n100 = np.sum(np.stack((grid[:, :, :, 0]-1, grid[:, :, :, 1],
-                            grid[:, :, :, 2]), axis=3)*g100, 3)
-    n010 = np.sum(np.stack((grid[:, :, :, 0], grid[:, :, :, 1]-1,
-                            grid[:, :, :, 2]), axis=3)*g010, 3)
-    n110 = np.sum(np.stack((grid[:, :, :, 0]-1, grid[:, :, :, 1]-1,
-                            grid[:, :, :, 2]), axis=3)*g110, 3)
-    n001 = np.sum(np.stack((grid[:, :, :, 0], grid[:, :, :, 1],
-                            grid[:, :, :, 2]-1), axis=3)*g001, 3)
-    n101 = np.sum(np.stack((grid[:, :, :, 0]-1, grid[:, :, :, 1],
-                            grid[:, :, :, 2]-1), axis=3)*g101, 3)
-    n011 = np.sum(np.stack((grid[:, :, :, 0], grid[:, :, :, 1]-1,
-                            grid[:, :, :, 2]-1), axis=3)*g011, 3)
-    n111 = np.sum(np.stack((grid[:, :, :, 0]-1, grid[:, :, :, 1]-1,
-                            grid[:, :, :, 2]-1), axis=3)*g111, 3)
-
+    n000 = np.sum(np.stack((grid[:, :, :, 0]  , grid[:, :, :, 1]  , grid[:, :, :, 2]  ), axis=3)*g000, 3)
+    n100 = np.sum(np.stack((grid[:, :, :, 0]-1, grid[:, :, :, 1]  , grid[:, :, :, 2]  ), axis=3)*g100, 3)
+    n010 = np.sum(np.stack((grid[:, :, :, 0]  , grid[:, :, :, 1]-1, grid[:, :, :, 2]  ), axis=3)*g010, 3)
+    n110 = np.sum(np.stack((grid[:, :, :, 0]-1, grid[:, :, :, 1]-1, grid[:, :, :, 2]  ), axis=3)*g110, 3)
+    n001 = np.sum(np.stack((grid[:, :, :, 0]  , grid[:, :, :, 1]  , grid[:, :, :, 2]-1), axis=3)*g001, 3)
+    n101 = np.sum(np.stack((grid[:, :, :, 0]-1, grid[:, :, :, 1]  , grid[:, :, :, 2]-1), axis=3)*g101, 3)
+    n011 = np.sum(np.stack((grid[:, :, :, 0]  , grid[:, :, :, 1]-1, grid[:, :, :, 2]-1), axis=3)*g011, 3)
+    n111 = np.sum(np.stack((grid[:, :, :, 0]-1, grid[:, :, :, 1]-1, grid[:, :, :, 2]-1), axis=3)*g111, 3)
     # Interpolation
     t = f(grid)
     n00 = n000*(1-t[:, :, :, 0]) + t[:, :, :, 0]*n100
@@ -585,7 +578,6 @@ def _perlin_noise_3D(shape, res):
     n11 = n011*(1-t[:, :, :, 0]) + t[:, :, :, 0]*n111
     n0 = (1-t[:, :, :, 1])*n00 + t[:, :, :, 1]*n10
     n1 = (1-t[:, :, :, 1])*n01 + t[:, :, :, 1]*n11
-
     return ((1-t[:, :, :, 2])*n0 + t[:, :, :, 2]*n1)
 
 
@@ -593,8 +585,8 @@ def _perlin_noise_2D(shape, res):
     def f(t):
         return 6*t**5 - 15*t**4 + 10*t**3
 
-    delta = (res[0] / shape[0], res[1] / shape[1])
-    d = (shape[0] // res[0], shape[1] // res[1])
+    delta = res / shape
+    d = shape // res
     grid = np.mgrid[0:res[0]:delta[0],
                     0:res[1]:delta[1]].transpose(1, 2, 0) % 1
 
