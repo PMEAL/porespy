@@ -333,6 +333,16 @@ class FilterTest():
         b = ps.filters.fftmorphology(im, strel=s, mode='erosion')
         assert np.all(a == b)
 
+    def test_chunked_func_3D_w_strel(self):
+        from skimage.morphology import ball
+        im = ball(50)
+        f = ps.filters.fftmorphology
+        s = ball(1)
+        a = ps.filters.chunked_func(func=f, im=im, im_arg='im',
+                                    strel_arg='strel', strel=s, mode='erosion')
+        b = ps.filters.fftmorphology(im, strel=s, mode='erosion')
+        assert np.all(a == b)
+
 
 if __name__ == '__main__':
     t = FilterTest()

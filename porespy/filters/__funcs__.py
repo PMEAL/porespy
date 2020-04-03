@@ -1481,10 +1481,11 @@ def prune_branches(skel, branch_points=None, iterations=1):
     return im_result
 
 
-def chunked_func(func, overlap, im_arg=['input', 'image', 'im'],
-                 divs=2, cores=None, **kwargs):
+def chunked_func(func, overlap=None, divs=2, cores=None,
+                 im_arg=['input', 'image', 'im'],
+                 strel_arg=['strel', 'structure', 'footprint'], **kwargs):
     r"""
-    Performs specfied operation "chunk-wise"
+    Performs the specfied operation "chunk-wise" in parallel
 
     This can be used to save memory by doing one chunk at a time (``cores=1``)
     or to increase computation speed by spreading the work across multiple
@@ -1499,14 +1500,12 @@ def chunked_func(func, overlap, im_arg=['input', 'image', 'im'],
     func : function handle
         The function which should be applied to each chunk, such as
         ``spipy.ndimage.binary_dilation``.
-    overlap : scalar or list of scalars
+    overlap : scalar or list of scalars, optional
         The amount of overlap to include when dividing up the image.  This
         value will almost always be the size (i.e. diameter) of the
-        structuring element.
-    im_arg : string
-        The keyword used by ``func`` for the image to be operated on.  By
-        default this function will look for ``image``, ``input``, and ``im``
-        which are commonly used by *scipy.ndimage* and *skimage*.
+        structuring element. If not specified then the amount of overlap is
+        inferred from the size of the structuring element, in which case the
+        ``strel_arg`` must be specified.
     divs : scalar or list of scalars (default = [2, 2, 2])
         The number of chunks to divide the image into in each direction.  The
         default is 2 chunks in each direction, resulting in a quartering of
@@ -1517,6 +1516,15 @@ def chunked_func(func, overlap, im_arg=['input', 'image', 'im'],
         The number of cores which should be used.  By default, all cores will
         be used, or as many are needed for the given number of chunks, which
         ever is smaller.
+    im_arg : string
+        The keyword used by ``func`` for the image to be operated on.  By
+        default this function will look for ``image``, ``input``, and ``im``
+        which are commonly used by *scipy.ndimage* and *skimage*.
+    strel_arg : string
+        The keyword used by ``func`` for the structuring element to apply.
+        This is only needed if ``overlap`` is not specified. By default this
+        function will look for ``strel``, ``structure``, and ``footprint``
+        which are commonly used by *scipy.ndimage* and *skimage*.
     kwargs : additional keyword arguments
         All other arguments are passed to ``func`` as keyword arguments. Note
         that PoreSpy will fetch the image from this list of keywords using the
@@ -1533,8 +1541,10 @@ def chunked_func(func, overlap, im_arg=['input', 'image', 'im'],
     -----
     This function divides the image into the specified number of chunks, but
     also applies a padding to each chunk to create an overlap with neighboring
-    chunks.  This way the operation does not have any edge artifacts.  The
-    amount of padding is inferred from the size of the structuring element.
+    chunks.  This way the operation does not have any edge artifacts. The
+    amount of padding is usually equal to the radius of the structuring
+    element but some functions do not use one, such as the distance transform
+    and Gaussian blur.  In these cases the user can specify ``overlap``.
 
     See Also
     --------
@@ -1572,11 +1582,16 @@ def chunked_func(func, overlap, im_arg=['input', 'image', 'im'],
     im = kwargs[im_arg]
     # Determine the number of divisions to create
     divs = np.ones((im.ndim, ), dtype=int)*np.array(divs)
-    # This covers the possibility that strel was given as size, which is
-    # possible in some ndimage functions
-    if np.isscalar(strel):
+    # If overlap given then use it, otherwise search for strel in kwargs
+    if overlap is not None:
         halo = overlap*(divs > 1)
     else:
+        if type(strel_arg) == str:
+            strel_arg = [strel_arg]
+        for item in strel_arg:
+            if item in kwargs.keys():
+                strel = kwargs[item]
+                break
         halo = np.array(strel.shape) * (divs > 1)
     slices = np.ravel(shape_split(im.shape, axis=divs,
                                   halo=halo.tolist(),
