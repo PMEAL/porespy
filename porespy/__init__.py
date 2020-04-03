@@ -88,3 +88,4 @@ from . import networks
 from . import generators
 from . import visualization
 from . import io
+from .visualization import imshow
