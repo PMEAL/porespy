@@ -578,6 +578,7 @@ def overlapping_spheres(shape: List[int], radius: int, porosity: float,
 
 
 def generate_noise(shape: List[int], porosity=None, octaves: int = 3,
+                   frequency: List[int] = 2, persistence: int = 0.5):
     r"""
     Generate a Perlin noise field
 
@@ -622,17 +623,17 @@ def generate_noise(shape: List[int], porosity=None, octaves: int = 3,
     # Parse args
     shape = np.array(shape)
     if shape.size == 1:  # Assume 3D
-        shape = sp.ones(3, dtype=int)*shape
-    res = sp.array(frequency)
+        shape = np.ones(3, dtype=int)*shape
+    res = np.array(frequency)
     if res.size == 1:  # Assume shape as shape
-        res = sp.ones(shape.size, dtype=int)*res
+        res = np.ones(shape.size, dtype=int)*res
 
     # Check inputs for various sins
     if res.size != shape.size:
         raise Exception('shape and res must have same dimensions')
-    if sp.any(sp.mod(shape, res) > 0):
+    if np.any(np.mod(shape, res) > 0):
         raise Exception('res must be a multiple of shape along each axis')
-    if sp.any(shape/res**octaves < 1):
+    if np.any(shape/res**octaves < 1):
         raise Exception('(res[i])**octaves must be <= shape[i]')
     check = shape/(res**octaves)
     if np.any(check % 1):
