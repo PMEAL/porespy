@@ -1,4 +1,4 @@
-import scipy as sp
+import numpy as np
 from porespy.networks import regions_to_network
 from porespy.networks import label_boundary_cells
 from porespy.networks import add_boundary_regions
@@ -77,8 +77,8 @@ def snow_n(im,
     dt = pad_faces(im=snow.dt, faces=f)
     # -------------------------------------------------------------------------
     # For only one phase extraction with boundary regions
-    phases_num = sp.unique(im).astype(int)
-    phases_num = sp.trim_zeros(phases_num)
+    phases_num = np.unique(im).astype(int)
+    phases_num = np.trim_zeros(phases_num)
     if len(phases_num) == 1:
         if f is not None:
             snow.im = pad_faces(im=snow.im, faces=f)

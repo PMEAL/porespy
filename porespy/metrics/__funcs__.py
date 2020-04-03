@@ -1,9 +1,9 @@
-import scipy as sp
 import numpy as np
 import warnings
 from skimage.measure import regionprops
 import scipy.ndimage as spim
 import scipy.spatial as sptl
+from edt import edt
 from porespy.tools import extend_slice, mesh_region
 from porespy.filters import find_dt_artifacts
 from collections import namedtuple
@@ -52,21 +52,21 @@ def representative_elementary_volume(im, npoints=1000):
     (1987)
 
     """
-    im_temp = sp.zeros_like(im)
-    crds = sp.array(sp.rand(npoints, im.ndim)*im.shape, dtype=int)
-    pads = sp.array(sp.rand(npoints)*sp.amin(im.shape)/2+10, dtype=int)
+    im_temp = np.zeros_like(im)
+    crds = np.array(np.random.rand(npoints, im.ndim)*im.shape, dtype=int)
+    pads = np.array(np.random.rand(npoints)*np.amin(im.shape)/2+10, dtype=int)
     im_temp[tuple(crds.T)] = True
     labels, N = spim.label(input=im_temp)
     slices = spim.find_objects(input=labels)
-    porosity = sp.zeros(shape=(N,), dtype=float)
-    volume = sp.zeros(shape=(N,), dtype=int)
-    for i in tqdm(sp.arange(0, N)):
+    porosity = np.zeros(shape=(N,), dtype=float)
+    volume = np.zeros(shape=(N,), dtype=int)
+    for i in tqdm(np.arange(0, N)):
         s = slices[i]
         p = pads[i]
         new_s = extend_slice(s, shape=im.shape, pad=p)
         temp = im[new_s]
-        Vp = sp.sum(temp)
-        Vt = sp.size(temp)
+        Vp = np.sum(temp)
+        Vt = np.size(temp)
         porosity[i] = Vp/Vt
         volume[i] = Vt
     profile = namedtuple('profile', ('volume', 'porosity'))
@@ -178,11 +178,11 @@ def radial_density(im, bins=10, voxel_size=1):
     Macroscopic Properties. Springer, New York (2002) - See page 48 & 292
     """
     if im.dtype == bool:
-        im = spim.distance_transform_edt(im)
+        im = edt(im)
     mask = find_dt_artifacts(im) == 0
     im[mask] = 0
     x = im[im > 0].flatten()
-    h = sp.histogram(x, bins=bins, density=True)
+    h = np.histogram(x, bins=bins, density=True)
     h = _parse_histogram(h=h, voxel_size=voxel_size)
     rdf = namedtuple('radial_density_function',
                      ('R', 'pdf', 'cdf', 'bin_centers', 'bin_edges',
@@ -226,9 +226,9 @@ def porosity(im):
     calculation of accessible porosity, rather than overall porosity.
 
     """
-    im = sp.array(im, dtype=int)
-    Vp = sp.sum(im == 1)
-    Vs = sp.sum(im == 0)
+    im = np.array(im, dtype=int)
+    Vp = np.sum(im == 1)
+    Vs = np.sum(im == 0)
     e = Vp/(Vs + Vp)
     return e
 
@@ -253,7 +253,7 @@ def two_point_correlation_bf(im, spacing=10):
         function.  The x array is the distances between points and the y array
         is corresponding probabilities that points of a given distance both
         lie in the void space. The distance values are binned as follows:
-        ``bins = range(start=0, stop=sp.amin(im.shape)/2, stride=spacing)``
+        ``bins = range(start=0, stop=np.amin(im.shape)/2, stride=spacing)``
 
     Notes
     -----
@@ -265,27 +265,27 @@ def two_point_correlation_bf(im, spacing=10):
     large 3D images and/or close spacing.
     """
     if im.ndim != im.squeeze().ndim:
-        warnings.warn('Input image conains a singleton axis:' + str(im.shape) +
-                      ' Reduce dimensionality with np.squeeze(im) to avoid' +
-                      ' unexpected behavior.')
+        warnings.warn('Input image conains a singleton axis:' + str(im.shape)
+                      + ' Reduce dimensionality with np.squeeze(im) to avoid'
+                      + ' unexpected behavior.')
     if im.ndim == 2:
-        pts = sp.meshgrid(range(0, im.shape[0], spacing),
+        pts = np.meshgrid(range(0, im.shape[0], spacing),
                           range(0, im.shape[1], spacing))
-        crds = sp.vstack([pts[0].flatten(),
+        crds = np.vstack([pts[0].flatten(),
                           pts[1].flatten()]).T
     elif im.ndim == 3:
-        pts = sp.meshgrid(range(0, im.shape[0], spacing),
+        pts = np.meshgrid(range(0, im.shape[0], spacing),
                           range(0, im.shape[1], spacing),
                           range(0, im.shape[2], spacing))
-        crds = sp.vstack([pts[0].flatten(),
+        crds = np.vstack([pts[0].flatten(),
                           pts[1].flatten(),
                           pts[2].flatten()]).T
     dmat = sptl.distance.cdist(XA=crds, XB=crds)
     hits = im[tuple(pts)].flatten()
     dmat = dmat[hits, :]
-    h1 = sp.histogram(dmat, bins=range(0, int(sp.amin(im.shape)/2), spacing))
+    h1 = np.histogram(dmat, bins=range(0, int(np.amin(im.shape)/2), spacing))
     dmat = dmat[:, hits]
-    h2 = sp.histogram(dmat, bins=h1[1])
+    h2 = np.histogram(dmat, bins=h1[1])
     tpcf = namedtuple('two_point_correlation_function',
                       ('distance', 'probability'))
     return tpcf(h2[1][:-1], h2[0]/h1[0])
@@ -311,13 +311,13 @@ def _radial_profile(autocorr, r_max, nbins=100):
         and an array of ``counts`` in each bin.
     """
     if len(autocorr.shape) == 2:
-        adj = sp.reshape(autocorr.shape, [2, 1, 1])
-        inds = sp.indices(autocorr.shape) - adj/2
-        dt = sp.sqrt(inds[0]**2 + inds[1]**2)
+        adj = np.reshape(autocorr.shape, [2, 1, 1])
+        inds = np.indices(autocorr.shape) - adj/2
+        dt = np.sqrt(inds[0]**2 + inds[1]**2)
     elif len(autocorr.shape) == 3:
-        adj = sp.reshape(autocorr.shape, [3, 1, 1, 1])
-        inds = sp.indices(autocorr.shape) - adj/2
-        dt = sp.sqrt(inds[0]**2 + inds[1]**2 + inds[2]**2)
+        adj = np.reshape(autocorr.shape, [3, 1, 1, 1])
+        inds = np.indices(autocorr.shape) - adj/2
+        dt = np.sqrt(inds[0]**2 + inds[1]**2 + inds[2]**2)
     else:
         raise Exception('Image dimensions must be 2 or 3')
     bin_size = np.int(np.ceil(r_max/nbins))
@@ -364,9 +364,9 @@ def two_point_correlation_fft(im):
     # Fourier Transform and shift image
     F = sp_ft.ifftshift(sp_ft.fftn(sp_ft.fftshift(im)))
     # Compute Power Spectrum
-    P = sp.absolute(F**2)
+    P = np.absolute(F**2)
     # Auto-correlation is inverse of Power Spectrum
-    autoc = sp.absolute(sp_ft.ifftshift(sp_ft.ifftn(sp_ft.fftshift(P))))
+    autoc = np.absolute(sp_ft.ifftshift(sp_ft.ifftn(sp_ft.fftshift(P))))
     tpcf = _radial_profile(autoc, r_max=np.min(hls))
     return tpcf
 
@@ -428,8 +428,8 @@ def pore_size_distribution(im, bins=10, log=True, voxel_size=1):
     im = im.flatten()
     vals = im[im > 0]*voxel_size
     if log:
-        vals = sp.log10(vals)
-    h = _parse_histogram(sp.histogram(vals, bins=bins, density=True))
+        vals = np.log10(vals)
+    h = _parse_histogram(np.histogram(vals, bins=bins, density=True))
     psd = namedtuple('pore_size_distribution',
                      (log*'log' + 'R', 'pdf', 'cdf', 'satn',
                       'bin_centers', 'bin_edges', 'bin_widths'))
@@ -441,7 +441,7 @@ def _parse_histogram(h, voxel_size=1):
     delta_x = h[1]
     P = h[0]
     temp = P*(delta_x[1:] - delta_x[:-1])
-    C = sp.cumsum(temp[-1::-1])[-1::-1]
+    C = np.cumsum(temp[-1::-1])[-1::-1]
     S = P*(delta_x[1:] - delta_x[:-1])
     bin_edges = delta_x * voxel_size
     bin_widths = (delta_x[1:] - delta_x[:-1]) * voxel_size
@@ -469,13 +469,13 @@ def chord_counts(im):
     Notes
     ----
     The returned array can be passed to ``plt.hist`` to plot the histogram,
-    or to ``sp.histogram`` to get the histogram data directly. Another useful
-    function is ``sp.bincount`` which gives the number of chords of each
+    or to ``np.histogram`` to get the histogram data directly. Another useful
+    function is ``np.bincount`` which gives the number of chords of each
     length in a format suitable for ``plt.plot``.
     """
     labels, N = spim.label(im > 0)
-    props = regionprops(labels, coordinates='xy')
-    chord_lens = sp.array([i.filled_area for i in props])
+    props = regionprops(labels)
+    chord_lens = np.array([i.filled_area for i in props])
     return chord_lens
 
 
@@ -514,7 +514,7 @@ def linear_density(im, bins=25, voxel_size=1, log=False):
 
     """
     x = im[im > 0]
-    h = list(sp.histogram(x, bins=bins, density=True))
+    h = list(np.histogram(x, bins=bins, density=True))
     h = _parse_histogram(h=h, voxel_size=voxel_size)
     cld = namedtuple('linear_density_function',
                      ('L', 'pdf', 'cdf', 'relfreq',
@@ -595,16 +595,16 @@ def chord_length_distribution(im, bins=None, log=False, voxel_size=1,
     """
     x = chord_counts(im)
     if bins is None:
-        bins = sp.array(range(0, x.max()+2))*voxel_size
+        bins = np.array(range(0, x.max()+2))*voxel_size
     x = x*voxel_size
     if log:
-        x = sp.log10(x)
+        x = np.log10(x)
     if normalization == 'length':
-        h = list(sp.histogram(x, bins=bins, density=False))
+        h = list(np.histogram(x, bins=bins, density=False))
         h[0] = h[0]*(h[1][1:]+h[1][:-1])/2  # Scale bin heigths by length
         h[0] = h[0]/h[0].sum()/(h[1][1:]-h[1][:-1])  # Normalize h[0] manually
     elif normalization in ['number', 'count']:
-        h = sp.histogram(x, bins=bins, density=True)
+        h = np.histogram(x, bins=bins, density=True)
     else:
         raise Exception('Unsupported normalization:', normalization)
     h = _parse_histogram(h)
@@ -653,20 +653,19 @@ def region_interface_areas(regions, areas, voxel_size=1, strel=None):
     """
     print('_'*60)
     print('Finding interfacial areas between each region')
-    from skimage.morphology import disk, square, ball, cube
+    from skimage.morphology import disk, ball
     im = regions.copy()
     if im.ndim != im.squeeze().ndim:
-        warnings.warn('Input image conains a singleton axis:' + str(im.shape) +
-                      ' Reduce dimensionality with np.squeeze(im) to avoid' +
-                      ' unexpected behavior.')
-    if im.ndim == 2:
-        cube = square
-        ball = disk
+        warnings.warn('Input image conains a singleton axis:' + str(im.shape)
+                      + ' Reduce dimensionality with np.squeeze(im) to avoid'
+                      + ' unexpected behavior.')
+    # cube_elem = square if im.ndim == 2 else cube
+    ball_elem = disk if im.ndim == 2 else ball
     # Get 'slices' into im for each region
     slices = spim.find_objects(im)
     # Initialize arrays
-    Ps = sp.arange(1, sp.amax(im)+1)
-    sa = sp.zeros_like(Ps, dtype=float)
+    Ps = np.arange(1, np.amax(im)+1)
+    sa = np.zeros_like(Ps, dtype=float)
     sa_combined = []  # Difficult to preallocate since number of conns unknown
     cn = []
     # Start extracting area from im
@@ -678,9 +677,9 @@ def region_interface_areas(regions, areas, voxel_size=1, strel=None):
             mask_im = sub_im == i
             sa[reg] = areas[reg]
             im_w_throats = spim.binary_dilation(input=mask_im,
-                                                structure=ball(1))
+                                                structure=ball_elem(1))
             im_w_throats = im_w_throats*sub_im
-            Pn = sp.unique(im_w_throats)[1:] - 1
+            Pn = np.unique(im_w_throats)[1:] - 1
             for j in Pn:
                 if j > reg:
                     cn.append([reg, j])
@@ -692,12 +691,12 @@ def region_interface_areas(regions, areas, voxel_size=1, strel=None):
                                             slices[j][1].start)):
                                        max(slices[reg][1].stop,
                                            slices[j][1].stop)]
-                    merged_region = ((merged_region == reg + 1) +
-                                     (merged_region == j + 1))
+                    merged_region = ((merged_region == reg + 1)
+                                     + (merged_region == j + 1))
                     mesh = mesh_region(region=merged_region, strel=strel)
                     sa_combined.append(mesh_surface_area(mesh))
     # Interfacial area calculation
-    cn = sp.array(cn)
+    cn = np.array(cn)
     ia = 0.5 * (sa[cn[:, 0]] + sa[cn[:, 1]] - sa_combined)
     ia[ia <= 0] = 1
     result = namedtuple('interfacial_areas', ('conns', 'area'))
@@ -742,8 +741,8 @@ def region_surface_areas(regions, voxel_size=1, strel=None):
     # Get 'slices' into im for each pore region
     slices = spim.find_objects(im)
     # Initialize arrays
-    Ps = sp.arange(1, sp.amax(im)+1)
-    sa = sp.zeros_like(Ps, dtype=float)
+    Ps = np.arange(1, np.amax(im)+1)
+    sa = np.zeros_like(Ps, dtype=float)
     # Start extracting marching cube area from im
     for i in tqdm(Ps):
         reg = i - 1
@@ -821,10 +820,10 @@ def phase_fraction(im, normed=True):
         im = im.astype(int)
     elif im.dtype != int:
         raise Exception('Image must contain integer values for each phase')
-    labels = sp.arange(0, sp.amax(im)+1)
-    results = sp.zeros_like(labels)
+    labels = np.arange(0, np.amax(im)+1)
+    results = np.zeros_like(labels)
     for i in labels:
-        results[i] = sp.sum(im == i)
+        results[i] = np.sum(im == i)
     if normed:
         results = results/im.size
     return results

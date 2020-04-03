@@ -1,3 +1,4 @@
+import numpy as np
 from porespy.networks import regions_to_network, add_boundary_regions
 from porespy.networks import _net_dict
 from porespy.networks import label_boundary_cells
@@ -5,7 +6,6 @@ from porespy.tools import pad_faces
 from porespy.filters import snow_partitioning
 from porespy.tools import make_contiguous
 from porespy.metrics import region_surface_areas, region_interface_areas
-import scipy as sp
 
 
 def snow(im, voxel_size=1,
@@ -64,7 +64,7 @@ def snow(im, voxel_size=1,
     im = regions.im
     dt = regions.dt
     regions = regions.regions
-    b_num = sp.amax(regions)
+    b_num = np.amax(regions)
     # -------------------------------------------------------------------------
     # Boundary Conditions
     regions = add_boundary_regions(regions=regions, faces=boundary_faces)

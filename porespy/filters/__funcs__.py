@@ -1,11 +1,11 @@
 from collections import namedtuple
-import scipy as sp
 import numpy as np
 import operator as op
 import scipy.ndimage as spim
 import scipy.spatial as sptl
 import warnings
 import dask
+from edt import edt
 from dask.diagnostics import ProgressBar
 from scipy.signal import fftconvolve
 from tqdm import tqdm
@@ -13,7 +13,7 @@ from numba import jit
 from skimage.segmentation import clear_border
 from skimage.morphology import ball, disk, square, cube, diamond, octahedron
 from skimage.morphology import reconstruction, watershed
-from porespy.tools import randomize_colors, fftmorphology
+from porespy.tools import randomize_colors, fftmorphology, make_contiguous
 from porespy.tools import get_border, extend_slice, extract_subsection
 from porespy.tools import ps_disk, ps_ball
 from porespy.tools import _create_alias_map
@@ -45,9 +45,9 @@ def trim_small_clusters(im, size=1):
         strel = ball(1)
     else:
         raise Exception('Only 2D or 3D images are accepted')
-    filtered_array = sp.copy(im)
+    filtered_array = np.copy(im)
     labels, N = spim.label(filtered_array, structure=strel)
-    id_sizes = sp.array(spim.sum(im, labels, range(N + 1)))
+    id_sizes = np.array(spim.sum(im, labels, range(N + 1)))
     area_mask = (id_sizes <= size)
     filtered_array[area_mask[labels]] = 0
     return filtered_array
@@ -117,28 +117,28 @@ def distance_transform_lin(im, axis=0, mode='both'):
                       ' Reduce dimensionality with np.squeeze(im) to avoid' +
                       ' unexpected behavior.')
     if mode in ['backward', 'reverse']:
-        im = sp.flip(im, axis)
+        im = np.flip(im, axis)
         im = distance_transform_lin(im=im, axis=axis, mode='forward')
-        im = sp.flip(im, axis)
+        im = np.flip(im, axis)
         return im
     elif mode in ['both']:
         im_f = distance_transform_lin(im=im, axis=axis, mode='forward')
         im_b = distance_transform_lin(im=im, axis=axis, mode='backward')
-        return sp.minimum(im_f, im_b)
+        return np.minimum(im_f, im_b)
     else:
-        b = sp.cumsum(im > 0, axis=axis)
-        c = sp.diff(b*(im == 0), axis=axis)
-        d = sp.minimum.accumulate(c, axis=axis)
+        b = np.cumsum(im > 0, axis=axis)
+        c = np.diff(b*(im == 0), axis=axis)
+        d = np.minimum.accumulate(c, axis=axis)
         if im.ndim == 1:
-            e = sp.pad(d, pad_width=[1, 0], mode='constant', constant_values=0)
+            e = np.pad(d, pad_width=[1, 0], mode='constant', constant_values=0)
         elif im.ndim == 2:
             ax = [[[1, 0], [0, 0]], [[0, 0], [1, 0]]]
-            e = sp.pad(d, pad_width=ax[axis], mode='constant', constant_values=0)
+            e = np.pad(d, pad_width=ax[axis], mode='constant', constant_values=0)
         elif im.ndim == 3:
             ax = [[[1, 0], [0, 0], [0, 0]],
                   [[0, 0], [1, 0], [0, 0]],
                   [[0, 0], [0, 0], [1, 0]]]
-            e = sp.pad(d, pad_width=ax[axis], mode='constant', constant_values=0)
+            e = np.pad(d, pad_width=ax[axis], mode='constant', constant_values=0)
         f = im*(b + e)
         return f
 
@@ -211,18 +211,18 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, return_all=False,
     tup = namedtuple('results', field_names=['im', 'dt', 'peaks', 'regions'])
     print('_'*60)
     print("Beginning SNOW Algorithm")
-    im_shape = sp.array(im.shape)
+    im_shape = np.array(im.shape)
     if im.dtype is not bool:
         print('Converting supplied image (im) to boolean')
         im = im > 0
     if dt is None:
         print('Peforming Distance Transform')
-        if sp.any(im_shape == 1):
-            ax = sp.where(im_shape == 1)[0][0]
-            dt = spim.distance_transform_edt(input=im.squeeze())
-            dt = sp.expand_dims(dt, ax)
+        if np.any(im_shape == 1):
+            ax = np.where(im_shape == 1)[0][0]
+            dt = edt(im.squeeze())
+            dt = np.expand_dims(dt, ax)
         else:
-            dt = spim.distance_transform_edt(input=im)
+            dt = edt(im)
 
     tup.im = im
     tup.dt = dt
@@ -331,8 +331,8 @@ def snow_partitioning_n(im, r_max=4, sigma=0.4, return_all=True,
     # Get alias if provided by user
     al = _create_alias_map(im=im, alias=alias)
     # Perform snow on each phase and merge all segmentation and dt together
-    phases_num = sp.unique(im * 1)
-    phases_num = sp.trim_zeros(phases_num)
+    phases_num = np.unique(im * 1)
+    phases_num = np.trim_zeros(phases_num)
     combined_dt = 0
     combined_region = 0
     num = [0]
@@ -356,7 +356,7 @@ def snow_partitioning_n(im, r_max=4, sigma=0.4, return_all=True,
             phase_ws = phase_snow.regions * phase_snow.im
             phase_ws[phase_ws == num[i - 1]] = 0
             combined_region += phase_ws
-        num.append(sp.amax(combined_region))
+        num.append(np.amax(combined_region))
     if return_all:
         tup = namedtuple('results', field_names=['im', 'dt', 'phase_max_label',
                                                  'regions'])
@@ -452,10 +452,10 @@ def reduce_peaks(peaks):
     markers, N = spim.label(input=peaks, structure=strel(3))
     inds = spim.measurements.center_of_mass(input=peaks,
                                             labels=markers,
-                                            index=sp.arange(1, N+1))
-    inds = sp.floor(inds).astype(int)
+                                            index=np.arange(1, N+1))
+    inds = np.floor(inds).astype(int)
     # Centroid may not be on old pixel, so create a new peaks image
-    peaks_new = sp.zeros_like(peaks, dtype=bool)
+    peaks_new = np.zeros_like(peaks, dtype=bool)
     peaks_new[tuple(inds.T)] = True
     return peaks_new
 
@@ -493,7 +493,7 @@ def trim_saddle_points(peaks, dt, max_iters=10):
     using marker-based watershed segmenation".  Physical Review E. (2017)
 
     """
-    peaks = sp.copy(peaks)
+    peaks = np.copy(peaks)
     if dt.ndim == 2:
         from skimage.morphology import square as cube
     else:
@@ -506,16 +506,16 @@ def trim_saddle_points(peaks, dt, max_iters=10):
         dt_i = dt[s]
         im_i = dt_i > 0
         iters = 0
-        peaks_dil = sp.copy(peaks_i)
+        peaks_dil = np.copy(peaks_i)
         while iters < max_iters:
             iters += 1
             peaks_dil = spim.binary_dilation(input=peaks_dil,
                                              structure=cube(3))
-            peaks_max = peaks_dil*sp.amax(dt_i*peaks_dil)
+            peaks_max = peaks_dil*np.amax(dt_i*peaks_dil)
             peaks_extended = (peaks_max == dt_i)*im_i
-            if sp.all(peaks_extended == peaks_i):
+            if np.all(peaks_extended == peaks_i):
                 break  # Found a true peak
-            elif sp.sum(peaks_extended*peaks_i) == 0:
+            elif np.sum(peaks_extended*peaks_i) == 0:
                 peaks_i = False
                 break  # Found a saddle point
         peaks[s] = peaks_i
@@ -557,15 +557,15 @@ def trim_nearby_peaks(peaks, dt):
     [1] Gostick, J. "A versatile and efficient network extraction algorithm
     using marker-based watershed segmenation".  Physical Review E. (2017)
     """
-    peaks = sp.copy(peaks)
+    peaks = np.copy(peaks)
     if dt.ndim == 2:
         from skimage.morphology import square as cube
     else:
         from skimage.morphology import cube
     peaks, N = spim.label(peaks, structure=cube(3))
     crds = spim.measurements.center_of_mass(peaks, labels=peaks,
-                                            index=sp.arange(1, N+1))
-    crds = sp.vstack(crds).astype(int)  # Convert to numpy array of ints
+                                            index=np.arange(1, N+1))
+    crds = np.vstack(crds).astype(int)  # Convert to numpy array of ints
     # Get distance between each peak as a distance map
     tree = sptl.cKDTree(data=crds)
     temp = tree.query(x=crds, k=2)
@@ -573,7 +573,7 @@ def trim_nearby_peaks(peaks, dt):
     dist_to_neighbor = temp[0][:, 1]
     del temp, tree  # Free-up memory
     dist_to_solid = dt[tuple(crds.T)]  # Get distance to solid for each peak
-    hits = sp.where(dist_to_neighbor < dist_to_solid)[0]
+    hits = np.where(dist_to_neighbor < dist_to_solid)[0]
     # Drop peak that is closer to the solid than it's neighbor
     drop_peaks = []
     for peak in hits:
@@ -581,7 +581,7 @@ def trim_nearby_peaks(peaks, dt):
             drop_peaks.append(peak)
         else:
             drop_peaks.append(nearest_neighbor[peak])
-    drop_peaks = sp.unique(drop_peaks)
+    drop_peaks = np.unique(drop_peaks)
     # Remove peaks from image
     slices = spim.find_objects(input=peaks)
     for s in drop_peaks:
@@ -665,7 +665,7 @@ def fill_blind_pores(im, conn=None):
     find_disconnected_voxels
 
     """
-    im = sp.copy(im)
+    im = np.copy(im)
     holes = find_disconnected_voxels(im, conn=conn)
     im[holes] = False
     return im
@@ -694,7 +694,7 @@ def trim_floating_solid(im, conn=None):
     find_disconnected_voxels
 
     """
-    im = sp.copy(im)
+    im = np.copy(im)
     holes = find_disconnected_voxels(~im, conn=conn)
     im[holes] = True
     return im
@@ -748,7 +748,7 @@ def trim_nonpercolating_paths(im, inlet_axis=0, outlet_axis=0,
     im = trim_floating_solid(~im)
     labels = spim.label(~im)[0]
     if inlets is None:
-        inlets = sp.zeros_like(im, dtype=bool)
+        inlets = np.zeros_like(im, dtype=bool)
         if im.ndim == 3:
             if inlet_axis == 0:
                 inlets[0, :, :] = True
@@ -762,7 +762,7 @@ def trim_nonpercolating_paths(im, inlet_axis=0, outlet_axis=0,
             elif inlet_axis == 1:
                 inlets[:, 0] = True
     if outlets is None:
-        outlets = sp.zeros_like(im, dtype=bool)
+        outlets = np.zeros_like(im, dtype=bool)
         if im.ndim == 3:
             if outlet_axis == 0:
                 outlets[-1, :, :] = True
@@ -775,9 +775,9 @@ def trim_nonpercolating_paths(im, inlet_axis=0, outlet_axis=0,
                 outlets[-1, :] = True
             elif outlet_axis == 1:
                 outlets[:, -1] = True
-    IN = sp.unique(labels*inlets)
-    OUT = sp.unique(labels*outlets)
-    new_im = sp.isin(labels, list(set(IN) ^ set(OUT)), invert=True)
+    IN = np.unique(labels*inlets)
+    OUT = np.unique(labels*outlets)
+    new_im = np.isin(labels, list(set(IN) ^ set(OUT)), invert=True)
     im[new_im == 0] = True
     return ~im
 
@@ -862,7 +862,7 @@ def flood(im, regions=None, mode='max'):
     if regions is None:
         labels, N = spim.label(mask)
     else:
-        labels = sp.copy(regions)
+        labels = np.copy(regions)
         N = labels.max()
     mode = 'sum' if mode == 'size' else mode
     mode = 'maximum' if mode == 'max' else mode
@@ -901,12 +901,12 @@ def find_dt_artifacts(dt):
         the image.  Obviously, voxels with a value of zero have no error.
 
     """
-    temp = sp.ones(shape=dt.shape)*sp.inf
+    temp = np.ones(shape=dt.shape)*np.inf
     for ax in range(dt.ndim):
-        dt_lin = distance_transform_lin(sp.ones_like(temp, dtype=bool),
+        dt_lin = distance_transform_lin(np.ones_like(temp, dtype=bool),
                                         axis=ax, mode='both')
-        temp = sp.minimum(temp, dt_lin)
-    result = sp.clip(dt - temp, a_min=0, a_max=sp.inf)
+        temp = np.minimum(temp, dt_lin)
+    result = np.clip(dt - temp, a_min=0, a_max=np.inf)
     return result
 
 
@@ -931,7 +931,7 @@ def region_size(im):
     """
     if im.dtype == bool:
         im = spim.label(im)[0]
-    counts = sp.bincount(im.flatten())
+    counts = np.bincount(im.flatten())
     counts[0] = 0
     chords = counts[im]
     return chords
@@ -984,15 +984,15 @@ def apply_chords(im, spacing=1, axis=0, trim_edges=True, label=False):
         raise Exception('Spacing cannot be less than 0')
     if spacing == 0:
         label = True
-    result = sp.zeros(im.shape, dtype=int)  # Will receive chords at end
+    result = np.zeros(im.shape, dtype=int)  # Will receive chords at end
     slxyz = [slice(None, None, spacing*(axis != i) + 1) for i in [0, 1, 2]]
     slices = tuple(slxyz[:im.ndim])
     s = [[0, 1, 0], [0, 1, 0], [0, 1, 0]]  # Straight-line structuring element
     if im.ndim == 3:  # Make structuring element 3D if necessary
-        s = sp.pad(sp.atleast_3d(s), pad_width=((0, 0), (0, 0), (1, 1)),
+        s = np.pad(np.atleast_3d(s), pad_width=((0, 0), (0, 0), (1, 1)),
                    mode='constant', constant_values=0)
     im = im[slices]
-    s = sp.swapaxes(s, 0, axis)
+    s = np.swapaxes(s, 0, axis)
     chords = spim.label(im, structure=s)[0]
     if trim_edges:  # Label on border chords will be set to 0
         chords = clear_border(chords)
@@ -1047,7 +1047,7 @@ def apply_chords_3D(im, spacing=0, trim_edges=True):
         raise Exception('Must be a 3D image to use this function')
     if spacing < 0:
         raise Exception('Spacing cannot be less than 0')
-    ch = sp.zeros_like(im, dtype=int)
+    ch = np.zeros_like(im, dtype=int)
     ch[:, ::4+2*spacing, ::4+2*spacing] = 1  # X-direction
     ch[::4+2*spacing, :, 2::4+2*spacing] = 2  # Y-direction
     ch[2::4+2*spacing, 2::4+2*spacing, :] = 3  # Z-direction
@@ -1203,15 +1203,15 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
                       ' Reduce dimensionality with np.squeeze(im) to avoid' +
                       ' unexpected behavior.')
 
-    dt = spim.distance_transform_edt(im > 0)
+    dt = edt(im > 0)
 
     if inlets is None:
         inlets = get_border(im.shape, mode='faces')
 
     if isinstance(sizes, int):
-        sizes = sp.logspace(start=sp.log10(sp.amax(dt)), stop=0, num=sizes)
+        sizes = np.logspace(start=np.log10(np.amax(dt)), stop=0, num=sizes)
     else:
-        sizes = sp.unique(sizes)[-1::-1]
+        sizes = np.unique(sizes)[-1::-1]
 
     if im.ndim == 2:
         strel = ps_disk
@@ -1219,38 +1219,35 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
         strel = ps_ball
 
     if mode == 'mio':
-        pw = int(sp.floor(dt.max()))
-        impad = sp.pad(im, mode='symmetric', pad_width=pw)
-        inletspad = sp.pad(inlets, mode='symmetric', pad_width=pw)
-        inlets = sp.where(inletspad)
-#        sizes = sp.unique(sp.around(sizes, decimals=0).astype(int))[-1::-1]
-        imresults = sp.zeros(sp.shape(impad))
+        pw = int(np.floor(dt.max()))
+        impad = np.pad(im, mode='symmetric', pad_width=pw)
+        inlets = np.pad(inlets, mode='symmetric', pad_width=pw)
+#        sizes = np.unique(np.around(sizes, decimals=0).astype(int))[-1::-1]
+        imresults = np.zeros(np.shape(impad))
         for r in tqdm(sizes):
             imtemp = fftmorphology(impad, strel(r), mode='erosion')
             if access_limited:
                 imtemp = trim_disconnected_blobs(imtemp, inlets)
             imtemp = fftmorphology(imtemp, strel(r), mode='dilation')
-            if sp.any(imtemp):
+            if np.any(imtemp):
                 imresults[(imresults == 0)*imtemp] = r
         imresults = extract_subsection(imresults, shape=im.shape)
     elif mode == 'dt':
-        inlets = sp.where(inlets)
-        imresults = sp.zeros(sp.shape(im))
+        imresults = np.zeros(np.shape(im))
         for r in tqdm(sizes):
             imtemp = dt >= r
             if access_limited:
                 imtemp = trim_disconnected_blobs(imtemp, inlets)
-            if sp.any(imtemp):
-                imtemp = spim.distance_transform_edt(~imtemp) < r
+            if np.any(imtemp):
+                imtemp = edt(~imtemp) < r
                 imresults[(imresults == 0)*imtemp] = r
     elif mode == 'hybrid':
-        inlets = sp.where(inlets)
-        imresults = sp.zeros(sp.shape(im))
+        imresults = np.zeros(np.shape(im))
         for r in tqdm(sizes):
             imtemp = dt >= r
             if access_limited:
                 imtemp = trim_disconnected_blobs(imtemp, inlets)
-            if sp.any(imtemp):
+            if np.any(imtemp):
                 imtemp = fftconvolve(imtemp, strel(r), mode='same') > 0.0001
                 imresults[(imresults == 0)*imtemp] = r
     else:
@@ -1284,20 +1281,25 @@ def trim_disconnected_blobs(im, inlets, strel=None):
         voxels not connected to the ``inlets`` removed.
     """
     if type(inlets) == tuple:
-        temp = sp.copy(inlets)
-        inlets = sp.zeros_like(im, dtype=bool)
+        temp = np.copy(inlets)
+        inlets = np.zeros_like(im, dtype=bool)
         inlets[temp] = True
     elif (inlets.shape == im.shape) and (inlets.max() == 1):
         inlets = inlets.astype(bool)
     else:
         raise Exception('inlets not valid, refer to docstring for info')
-    labels = spim.label(inlets + (im > 0), structure=strel)[0]
-    keep = sp.unique(labels[inlets])
+    from skimage.morphology import square
+    if im.ndim == 3:
+        square = cube
+    else:
+        square = square
+    labels = spim.label(inlets + (im > 0), structure=square(3))[0]
+    keep = np.unique(labels[inlets])
     keep = keep[keep > 0]
     if len(keep) > 0:
-        im2 = sp.reshape(sp.in1d(labels, keep), newshape=im.shape)
+        im2 = np.reshape(np.in1d(labels, keep), newshape=im.shape)
     else:
-        im2 = sp.zeros_like(im)
+        im2 = np.zeros_like(im)
     im2 = im2*im
     return im2
 
@@ -1442,7 +1444,7 @@ def prune_branches(skel, branch_points=None, iterations=1):
     else:
         from skimage.morphology import cube
     # Create empty image to house results
-    im_result = sp.zeros_like(skel)
+    im_result = np.zeros_like(skel)
     # If branch points are not supplied, attempt to find them
     if branch_points is None:
         branch_points = spim.convolve(skel*1.0, weights=cube(3)) > 3
@@ -1464,39 +1466,46 @@ def prune_branches(skel, branch_points=None, iterations=1):
         # Find branch point labels the overlap current arc
         hits = pts_labels[s]*(arc_labels[s] == label_num)
         # If image contains 2 branch points, then it's not a tail.
-        if len(sp.unique(hits)) == 3:
+        if len(np.unique(hits)) == 3:
             im_result[s] += arc_labels[s] == label_num
     # Add missing branch points back to arc image to make complete skeleton
     im_result += skel*pts_orig
     if iterations > 1:
         iterations -= 1
-        im_temp = sp.copy(im_result)
+        im_temp = np.copy(im_result)
         im_result = prune_branches(skel=im_result,
                                    branch_points=None,
                                    iterations=iterations)
-        if sp.all(im_temp == im_result):
+        if np.all(im_temp == im_result):
             iterations = 0
     return im_result
 
 
-def chunked_func(func, divs=2, cores=None, im_arg=['input', 'image', 'im'],
-                 strel_arg=['structure', 'selem', 'strel', 'footprint',
-                            'size'], **kwargs):
+def chunked_func(func, overlap=None, divs=2, cores=None,
+                 im_arg=['input', 'image', 'im'],
+                 strel_arg=['strel', 'structure', 'footprint'], **kwargs):
     r"""
-    Performs specfied operation "chunk-wise" to save memory, and can optionally
-    spread the work across multiple cores.
+    Performs the specfied operation "chunk-wise" in parallel
 
-    This function can be used with any operation that requires a structuring
-    element of some sort, since these functions imply the operation is local
-    and can be chunked.  This function is particularly handy for very large
-    images (>500-cubed) which can easily fill the RAM on a normal PC and
-    take ages.
+    This can be used to save memory by doing one chunk at a time (``cores=1``)
+    or to increase computation speed by spreading the work across multiple
+    cores (e.g. ``core = 8``)
+
+    This function can be used with any operation that applies a structuring
+    element of some sort, since this implies that the operation is local
+    and can be chunked.
 
     Parameters
     ----------
     func : function handle
         The function which should be applied to each chunk, such as
         ``spipy.ndimage.binary_dilation``.
+    overlap : scalar or list of scalars, optional
+        The amount of overlap to include when dividing up the image.  This
+        value will almost always be the size (i.e. diameter) of the
+        structuring element. If not specified then the amount of overlap is
+        inferred from the size of the structuring element, in which case the
+        ``strel_arg`` must be specified.
     divs : scalar or list of scalars (default = [2, 2, 2])
         The number of chunks to divide the image into in each direction.  The
         default is 2 chunks in each direction, resulting in a quartering of
@@ -1504,53 +1513,42 @@ def chunked_func(func, divs=2, cores=None, im_arg=['input', 'image', 'im'],
         applying to all directions, while a list of scalars is interpreted
         as applying to each individual direction.
     cores : scalar
-        The number of cores which should be used.  By default, all available
-        cores are used.
-    im_arg : string (or list of strings)
-        The keyword argument used by ``func`` for the image.  This argument
-        gives the flexibility to accomodate the different argument naming
-        conventions used by different packages.  By default this will consider:
-
-        - 'input'
-        - 'image'
-        - 'im'
-
-        which covers the conventions used by **ndimage**, **skimage**, and
-        **porespy**.
-    strel_arg : string (or list of strings)
-        The keyword argument used by ``func`` for the structuring element.
-        This argument gives the flexibility to accomodate the different
-        argument naming conventions used by different packages.  By default
-        this will consider:
-
-        - 'structure'
-        - 'strel'
-        - 'footprint'
-        - 'selem'
-        - 'size'
-
-        which covers the conventions used by **ndimage**, **skimage**, and
-        **porespy**.  Note that 'size' is accepted instead of a structuring
-        element in some ``scipy.ndimage`` functions.
+        The number of cores which should be used.  By default, all cores will
+        be used, or as many are needed for the given number of chunks, which
+        ever is smaller.
+    im_arg : string
+        The keyword used by ``func`` for the image to be operated on.  By
+        default this function will look for ``image``, ``input``, and ``im``
+        which are commonly used by *scipy.ndimage* and *skimage*.
+    strel_arg : string
+        The keyword used by ``func`` for the structuring element to apply.
+        This is only needed if ``overlap`` is not specified. By default this
+        function will look for ``strel``, ``structure``, and ``footprint``
+        which are commonly used by *scipy.ndimage* and *skimage*.
     kwargs : additional keyword arguments
         All other arguments are passed to ``func`` as keyword arguments. Note
-        that this must include the image and structuring element, for instance
-        ``input=im`` and ``structure=ball(3)``.  If ``func`` uses different
-        argument names, such as ``image=im`` and ``footprint=ball(3)`` then
-        you must specify these using the ``im_arg`` and ``strel_arg``
-        arguments (see above).
+        that PoreSpy will fetch the image from this list of keywords using the
+        value provided to ``im_arg``.
 
     Returns
     -------
     result : ND-image
-        An image the same size as the input image.
+        An image the same size as the input image, with the specified filter
+        applied as though done on a single large image.  There should be *no*
+        difference.
 
     Notes
     -----
     This function divides the image into the specified number of chunks, but
     also applies a padding to each chunk to create an overlap with neighboring
-    chunks.  This way the operation does not have any edge artifacts.  The
-    amount of padding is inferred from the size of the structuring element.
+    chunks.  This way the operation does not have any edge artifacts. The
+    amount of padding is usually equal to the radius of the structuring
+    element but some functions do not use one, such as the distance transform
+    and Gaussian blur.  In these cases the user can specify ``overlap``.
+
+    See Also
+    --------
+    skikit-image.util.apply_parallel
 
     Examples
     --------
@@ -1559,11 +1557,10 @@ def chunked_func(func, divs=2, cores=None, im_arg=['input', 'image', 'im'],
     >>> from skimage.morphology import ball
     >>> im = ps.generators.blobs(shape=[100, 100, 100])
     >>> f = spim.binary_dilation
-    >>> im2 = ps.filters.chunked_func(func=f, input=im,
-    ...                               structure=ball(3))
-    Applying function to 8 subsections...
+    >>> im2 = ps.filters.chunked_func(func=f, overlap=7, im_arg='input',
+    ...                               input=im, structure=ball(3), cores=1)
     >>> im3 = spim.binary_dilation(input=im, structure=ball(3))
-    >>> sp.all(im2 == im3)
+    >>> np.all(im2 == im3)
     True
 
     """
@@ -1571,7 +1568,9 @@ def chunked_func(func, divs=2, cores=None, im_arg=['input', 'image', 'im'],
     def apply_func(func, **kwargs):
         # Apply function on sub-slice of overall image
         return func(**kwargs)
-
+    # Import the array_split methods
+    from array_split import shape_split, ARRAY_BOUNDS
+    # Determine the value for im_arg
     if type(im_arg) == str:
         im_arg = [im_arg]
     for item in im_arg:
@@ -1579,36 +1578,38 @@ def chunked_func(func, divs=2, cores=None, im_arg=['input', 'image', 'im'],
             im = kwargs[item]
             im_arg = item
             break
-    if type(strel_arg) == str:
-        strel_arg = [strel_arg]
-    for item in strel_arg:
-        if item in kwargs.keys():
-            strel = kwargs[item]
-            strel_arg = item
-            break
-    from array_split import shape_split, ARRAY_BOUNDS
-    divs = sp.ones((im.ndim, ), dtype=int)*sp.array(divs)
-    # This covers the possibility that strel was given as size, which is
-    # possible in some ndimage functions
-    if sp.isscalar(strel):
-        halo = strel*(divs > 1)
+    # Fetch image from the kwargs dict
+    im = kwargs[im_arg]
+    # Determine the number of divisions to create
+    divs = np.ones((im.ndim, ), dtype=int)*np.array(divs)
+    # If overlap given then use it, otherwise search for strel in kwargs
+    if overlap is not None:
+        halo = overlap*(divs > 1)
     else:
-        halo = sp.array(strel.shape) * (divs > 1)
-    slices = sp.ravel(shape_split(im.shape, axis=divs,
+        if type(strel_arg) == str:
+            strel_arg = [strel_arg]
+        for item in strel_arg:
+            if item in kwargs.keys():
+                strel = kwargs[item]
+                break
+        halo = np.array(strel.shape) * (divs > 1)
+    slices = np.ravel(shape_split(im.shape, axis=divs,
                                   halo=halo.tolist(),
                                   tile_bounds_policy=ARRAY_BOUNDS))
     # Apply func to each subsection of the image
     res = []
+    # print('Image will be broken into the following chunks:')
     for s in slices:
         # Extract subsection from image and input into kwargs
         kwargs[im_arg] = im[tuple(s)]
+        # print(kwargs[im_arg].shape)
         res.append(apply_func(func=func, **kwargs))
-    # Now has dask actually compute the function on each subsection in parallel
-    print('Applying function to', str(len(slices)), 'subsections')
-    with ProgressBar():
-        ims = dask.compute(res, num_workers=cores)[0]
+    # Have dask actually compute the function on each subsection in parallel
+    # with ProgressBar():
+    #    ims = dask.compute(res, num_workers=cores)[0]
+    ims = dask.compute(res, num_workers=cores)[0]
     # Finally, put the pieces back together into a single master image, im2
-    im2 = sp.zeros_like(im, dtype=im.dtype)
+    im2 = np.zeros_like(im, dtype=im.dtype)
     for i, s in enumerate(slices):
         # Prepare new slice objects into main and sub-sliced image
         a = []  # Slices into main image
