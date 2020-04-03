@@ -318,7 +318,8 @@ class FilterTest():
         im = disk(50)
         f = ps.filters.fftmorphology
         s = disk(1)
-        a = ps.filters.chunked_func(func=f, im=im, strel=s, mode='erosion')
+        a = ps.filters.chunked_func(func=f, im=im, overlap=3, im_arg='im',
+                                    strel=s, mode='erosion')
         b = ps.filters.fftmorphology(im, strel=s, mode='erosion')
         assert np.all(a == b)
 
@@ -327,7 +328,18 @@ class FilterTest():
         im = ball(50)
         f = ps.filters.fftmorphology
         s = ball(1)
-        a = ps.filters.chunked_func(func=f, im=im, strel=s, mode='erosion')
+        a = ps.filters.chunked_func(func=f, im=im, im_arg='im', overlap=3,
+                                    strel=s, mode='erosion')
+        b = ps.filters.fftmorphology(im, strel=s, mode='erosion')
+        assert np.all(a == b)
+
+    def test_chunked_func_3D_w_strel(self):
+        from skimage.morphology import ball
+        im = ball(50)
+        f = ps.filters.fftmorphology
+        s = ball(1)
+        a = ps.filters.chunked_func(func=f, im=im, im_arg='im',
+                                    strel_arg='strel', strel=s, mode='erosion')
         b = ps.filters.fftmorphology(im, strel=s, mode='erosion')
         assert np.all(a == b)
 
