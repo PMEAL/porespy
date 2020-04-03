@@ -1,4 +1,4 @@
-import scipy as sp
+import numpy as np
 import scipy.ndimage as spim
 from tqdm import tqdm
 from porespy.tools import extract_subsection, bbox_to_slices
@@ -18,14 +18,18 @@ def props_to_DataFrame(regionprops):
     ----------
     regionprops : list
         This is a list of properties for each region that is computed
-        by ``regionprops_3D``.
+        by ``regionprops_3D``.  Because ``regionprops_3D`` returns data in
+        the same ``list`` format as the ``regionprops`` function in **Skimage**
+        you can pass in either.
 
     Returns
     -------
-    A Pandas DataFrame with each region corresponding to a row and each column
-    corresponding to a key metric.  All the values for a given property (e.g.
-    'sphericity') can be obtained as ``val = df['sphericity']``.  Conversely,
-    all the key metrics for a given region can be found with ``df.iloc[1]``.
+    DataFrame : Pandas DataFrame
+        A Pandas DataFrame with each region corresponding to a row and each
+        column corresponding to a key metric.  All the values for a given
+        property (e.g. 'sphericity') can be obtained as
+        ``val = df['sphericity']``.  Conversely, all the key metrics for a
+        given region can be found with ``df.iloc[1]``.
 
     See Also
     --------
@@ -38,7 +42,7 @@ def props_to_DataFrame(regionprops):
     for item in reg.__dir__():
         if not item.startswith('_'):
             try:
-                if sp.shape(getattr(reg, item)) == ():
+                if np.shape(getattr(reg, item)) == ():
                     metrics.append(item)
             except (TypeError, NotImplementedError, AttributeError):
                 pass
@@ -46,7 +50,7 @@ def props_to_DataFrame(regionprops):
     d = {}
     for k in metrics:
         try:
-            d[k] = sp.array([r[k] for r in regionprops])
+            d[k] = np.array([r[k] for r in regionprops])
         except ValueError:
             print('Error encountered evaluating ' + k + ' so skipping it')
     # Create pandas data frame an return
@@ -76,8 +80,9 @@ def props_to_image(regionprops, shape, prop):
 
     Returns
     -------
-    An ND-image the same size as the original image, with each region
-    represented by the values specified in ``prop``.
+    image : ND-array
+        An ND-image the same size as the original image, with each region
+        represented by the values specified in ``prop``.
 
     See Also
     --------
@@ -85,7 +90,7 @@ def props_to_image(regionprops, shape, prop):
     regionprops_3d
 
     """
-    im = sp.zeros(shape=shape)
+    im = np.zeros(shape=shape)
     for r in regionprops:
         if prop == 'convex':
             mask = r.convex_image
@@ -114,15 +119,56 @@ def regionprops_3D(im):
 
     Returns
     -------
-    An augmented version of the list returned by skimage's ``regionprops``.
-    Information, such as ``volume``, can be found for region A using the
-    following syntax: ``result[A-1].volume``.
+    props : list
+        An augmented version of the list returned by skimage's ``regionprops``.
+        Information, such as ``volume``, can be found for region A using the
+        following syntax: ``result[A-1].volume``.
+
+        The returned list contains all the metrics normally returned by
+        **skimage.measure.regionprops** plus the following:
+
+        'slice': Slice indices into the image that can be used to extract the
+        region
+
+        'volume': Volume of the region in number of voxels.
+
+        'bbox_volume': Volume of the bounding box that contains the region.
+
+        'border': The edges of the region, found as the locations where
+        the distance transform is 1.
+
+        'inscribed_sphere': An image containing the largest sphere can can
+        fit entirely inside the region.
+
+        'surface_mesh_vertices': Obtained by applying the marching cubes
+        algorithm on the region, AFTER first blurring the voxel image.  This
+        allows marching cubes more freedom to fit the surface contours. See
+        also ``surface_mesh_simplices``
+
+        'surface_mesh_simplices': This accompanies ``surface_mesh_vertices``
+        and together they can be used to define the region as a mesh.
+
+        'surface_area': Calculated using the mesh obtained as described above,
+        using the ``porespy.metrics.mesh_surface_area`` method.
+
+        'sphericity': Defined as the ratio of the area of a sphere with the
+        same volume as the region to the actual surface area of the region.
+
+        'skeleton': The medial axis of the region obtained using the
+        ``skeletonize_3D`` method from **skimage**.
+
+        'convex_volume': Same as convex_area, but translated to a more
+        meaningful name.
+
+    See Also
+    --------
+    snow_partitioning
 
     Notes
     -----
     This function may seem slow compared to the skimage version, but that is
     because they defer calculation of certain properties until they are
-    accessed while this one evalulates everything (inlcuding the deferred
+    accessed, while this one evalulates everything (inlcuding the deferred
     properties from skimage's ``regionprops``)
 
     Regions can be identified using a watershed algorithm, which can be a bit
@@ -133,13 +179,12 @@ def regionprops_3D(im):
     print('_'*60)
     print('Calculating regionprops')
 
-    results = regionprops(im, coordinates='xy')
+    results = regionprops(im)
     for i in tqdm(range(len(results))):
         mask = results[i].image
-        mask_padded = sp.pad(mask, pad_width=1, mode='constant')
+        mask_padded = np.pad(mask, pad_width=1, mode='constant')
         temp = spim.distance_transform_edt(mask_padded)
         dt = extract_subsection(temp, shape=mask.shape)
-        # ---------------------------------------------------------------------
         # Slice indices
         results[i].slice = results[i]._slice
         # ---------------------------------------------------------------------
@@ -147,7 +192,7 @@ def regionprops_3D(im):
         results[i].volume = results[i].area
         # ---------------------------------------------------------------------
         # Volume of bounding box, in voxels
-        results[i].bbox_volume = sp.prod(mask.shape)
+        results[i].bbox_volume = np.prod(mask.shape)
         # ---------------------------------------------------------------------
         # Create an image of the border
         results[i].border = dt == 1
@@ -158,7 +203,7 @@ def regionprops_3D(im):
         results[i].inscribed_sphere = inv_dt < r
         # ---------------------------------------------------------------------
         # Find surface area using marching cubes and analyze the mesh
-        tmp = sp.pad(sp.atleast_3d(mask), pad_width=1, mode='constant')
+        tmp = np.pad(np.atleast_3d(mask), pad_width=1, mode='constant')
         tmp = spim.convolve(tmp, weights=ball(1))/5
         verts, faces, norms, vals = marching_cubes_lewiner(volume=tmp, level=0)
         results[i].surface_mesh_vertices = verts
@@ -168,8 +213,8 @@ def regionprops_3D(im):
         # ---------------------------------------------------------------------
         # Find sphericity
         vol = results[i].volume
-        r = (3/4/sp.pi*vol)**(1/3)
-        a_equiv = 4*sp.pi*(r)**2
+        r = (3/4/np.pi*vol)**(1/3)
+        a_equiv = 4*np.pi*(r)**2
         a_region = results[i].surface_area
         results[i].sphericity = a_equiv/a_region
         # ---------------------------------------------------------------------

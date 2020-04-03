@@ -7,7 +7,7 @@ rootdir = os.path.split(os.path.split(ps.__file__)[0])[0]
 examples_dir = os.path.join(rootdir, 'examples')
 filters_dir = os.path.join(examples_dir, 'filters')
 metrics_dir = os.path.join(examples_dir, 'metrics')
-netex_dir = os.path.join(examples_dir, 'network_extraction')
+netex_dir = os.path.join(examples_dir, 'networks')
 
 
 class ExamplesTest():
@@ -57,6 +57,11 @@ class ExamplesTest():
         rc = self._notebook_run(nbook)
         assert rc
 
+    def test_metrics_porosity_profiles(self):
+        nbook = os.path.join(metrics_dir, 'porosity_profiles.ipynb')
+        rc = self._notebook_run(nbook)
+        assert rc
+
     def test_metrics_regionprops_3d(self):
         nbook = os.path.join(metrics_dir, 'regionprops_3d.ipynb')
         rc = self._notebook_run(nbook)
@@ -73,7 +78,9 @@ class ExamplesTest():
         assert rc
 
     def test_network_extraction_snow_advanced(self):
-        pass
+        nbook = os.path.join(netex_dir, 'snow_advanced.ipynb')
+        rc = self._notebook_run(nbook)
+        assert rc
 
 
 if __name__ == '__main__':

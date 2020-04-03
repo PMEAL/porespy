@@ -16,9 +16,15 @@ with open(ver_path) as f:
         if line.startswith('__version__'):
             exec(line, main_)
 
+with open("README.rst", "r") as fh:
+    long_description = fh.read()
+
 setup(
     name='porespy',
     description='A set of tools for analyzing 3D images of porous materials',
+    long_description=long_description,
+    zip_safe=False,
+    # long_description_content_type="text/x-rst",
     version=main_['__version__'],
     classifiers=['Development Status :: 3 - Alpha',
                  'License :: OSI Approved :: MIT License',
@@ -30,9 +36,8 @@ setup(
               'porespy.generators',
               'porespy.metrics',
               'porespy.filters',
-              'porespy.network_extraction',
+              'porespy.networks',
               'porespy.visualization',
-              'porespy.simulations',
               'porespy.io'],
     install_requires=['numpy',
                       'scipy',
@@ -45,8 +50,15 @@ setup(
                       'pytrax',
                       'pyevtk',
                       'numba',
-                      'openpnm'],
+                      'openpnm',
+                      'dask',
+                      'edt'],
     author='Jeff Gostick',
     author_email='jgostick@gmail.com',
-    url='http://porespy.org'
+    url='http://porespy.org',
+    project_urls={
+        'Documentation': 'https://porespy.readthedocs.io/en/master/',
+        'Source': 'https://github.com/PMEAL/porespy/',
+        'Tracker': 'https://github.com/PMEAL/porespy/issues',
+    },
 )
