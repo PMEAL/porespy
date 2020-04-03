@@ -577,8 +577,8 @@ def overlapping_spheres(shape: List[int], radius: int, porosity: float,
     return ~f(N)
 
 
-def generate_noise(shape: List[int], porosity=None, octaves: int = 3,
-                   frequency: List[int] = 2, persistence: int = 0.5):
+def perlin_noise(shape: List[int], porosity=None, octaves: int = 3,
+                 frequency: List[int] = 2, persistence: float = 0.5):
     r"""
     Generate a Perlin noise field
 
@@ -595,8 +595,9 @@ def generate_noise(shape: List[int], porosity=None, octaves: int = 3,
     octaves : int
         Controls the texture of the noise, with higher values giving more
         comlex features of larger length scales.
-    persistence : int
-        Controls how prominent each successive octave is
+    persistence : float
+        Controls how prominent each successive octave is.  Shoul be a number
+        less than 1.
 
     Returns
     -------
@@ -672,32 +673,56 @@ def _perlin_noise_3D(shape, res):
     gradients = np.stack((np.sin(phi)*np.cos(theta),
                           np.sin(phi)*np.sin(theta),
                           np.cos(phi)), axis=3)
-    g000 = gradients[0:-1, 0:-1, 0:-1].repeat(d[0], 0).repeat(d[1], 1).repeat(d[2], 2)
-    g100 = gradients[1:  , 0:-1, 0:-1].repeat(d[0], 0).repeat(d[1], 1).repeat(d[2], 2)
-    g010 = gradients[0:-1, 1:  , 0:-1].repeat(d[0], 0).repeat(d[1], 1).repeat(d[2], 2)
-    g110 = gradients[1:  , 1:  , 0:-1].repeat(d[0], 0).repeat(d[1], 1).repeat(d[2], 2)
-    g001 = gradients[0:-1, 0:-1, 1:  ].repeat(d[0], 0).repeat(d[1], 1).repeat(d[2], 2)
-    g101 = gradients[1:  , 0:-1, 1:  ].repeat(d[0], 0).repeat(d[1], 1).repeat(d[2], 2)
-    g011 = gradients[0:-1, 1:  , 1:  ].repeat(d[0], 0).repeat(d[1], 1).repeat(d[2], 2)
-    g111 = gradients[1:  , 1:  , 1:  ].repeat(d[0], 0).repeat(d[1], 1).repeat(d[2], 2)
+    g000 = gradients[0:-1, 0:-1, 0:-1]
+    g000 = g000.repeat(d[0], 0).repeat(d[1], 1).repeat(d[2], 2)
+    g100 = gradients[1:, 0:-1, 0:-1]
+    g100 = g100.repeat(d[0], 0).repeat(d[1], 1).repeat(d[2], 2)
+    g010 = gradients[0:-1, 1:, 0:-1]
+    g010 = g010.repeat(d[0], 0).repeat(d[1], 1).repeat(d[2], 2)
+    g110 = gradients[1:, 1:, 0:-1]
+    g110 = g110.repeat(d[0], 0).repeat(d[1], 1).repeat(d[2], 2)
+    g001 = gradients[0:-1, 0:-1, 1:]
+    g001 = g001.repeat(d[0], 0).repeat(d[1], 1).repeat(d[2], 2)
+    g101 = gradients[1:, 0:-1, 1:]
+    g101 = g101.repeat(d[0], 0).repeat(d[1], 1).repeat(d[2], 2)
+    g011 = gradients[0:-1, 1:, 1:]
+    g011 = g011.repeat(d[0], 0).repeat(d[1], 1).repeat(d[2], 2)
+    g111 = gradients[1:, 1:, 1:]
+    g111 = g111.repeat(d[0], 0).repeat(d[1], 1).repeat(d[2], 2)
     # Ramps
-    n000 = np.sum(np.stack((grid[:, :, :, 0]  , grid[:, :, :, 1]  , grid[:, :, :, 2]  ), axis=3)*g000, 3)
-    n100 = np.sum(np.stack((grid[:, :, :, 0]-1, grid[:, :, :, 1]  , grid[:, :, :, 2]  ), axis=3)*g100, 3)
-    n010 = np.sum(np.stack((grid[:, :, :, 0]  , grid[:, :, :, 1]-1, grid[:, :, :, 2]  ), axis=3)*g010, 3)
-    n110 = np.sum(np.stack((grid[:, :, :, 0]-1, grid[:, :, :, 1]-1, grid[:, :, :, 2]  ), axis=3)*g110, 3)
-    n001 = np.sum(np.stack((grid[:, :, :, 0]  , grid[:, :, :, 1]  , grid[:, :, :, 2]-1), axis=3)*g001, 3)
-    n101 = np.sum(np.stack((grid[:, :, :, 0]-1, grid[:, :, :, 1]  , grid[:, :, :, 2]-1), axis=3)*g101, 3)
-    n011 = np.sum(np.stack((grid[:, :, :, 0]  , grid[:, :, :, 1]-1, grid[:, :, :, 2]-1), axis=3)*g011, 3)
-    n111 = np.sum(np.stack((grid[:, :, :, 0]-1, grid[:, :, :, 1]-1, grid[:, :, :, 2]-1), axis=3)*g111, 3)
+    n000 = np.sum(np.stack((grid[..., 0],
+                            grid[..., 1],
+                            grid[..., 2]), axis=3)*g000, 3)
+    n100 = np.sum(np.stack((grid[..., 0]-1,
+                            grid[..., 1],
+                            grid[..., 2]), axis=3)*g100, 3)
+    n010 = np.sum(np.stack((grid[..., 0],
+                            grid[..., 1]-1,
+                            grid[..., 2]), axis=3)*g010, 3)
+    n110 = np.sum(np.stack((grid[..., 0]-1,
+                            grid[..., 1]-1,
+                            grid[..., 2]), axis=3)*g110, 3)
+    n001 = np.sum(np.stack((grid[..., 0],
+                            grid[..., 1],
+                            grid[..., 2]-1), axis=3)*g001, 3)
+    n101 = np.sum(np.stack((grid[..., 0]-1,
+                            grid[..., 1],
+                            grid[..., 2]-1), axis=3)*g101, 3)
+    n011 = np.sum(np.stack((grid[..., 0],
+                            grid[..., 1]-1,
+                            grid[..., 2]-1), axis=3)*g011, 3)
+    n111 = np.sum(np.stack((grid[..., 0]-1,
+                            grid[..., 1]-1,
+                            grid[..., 2]-1), axis=3)*g111, 3)
     # Interpolation
     t = f(grid)
-    n00 = n000*(1-t[:, :, :, 0]) + t[:, :, :, 0]*n100
-    n10 = n010*(1-t[:, :, :, 0]) + t[:, :, :, 0]*n110
-    n01 = n001*(1-t[:, :, :, 0]) + t[:, :, :, 0]*n101
-    n11 = n011*(1-t[:, :, :, 0]) + t[:, :, :, 0]*n111
-    n0 = (1-t[:, :, :, 1])*n00 + t[:, :, :, 1]*n10
-    n1 = (1-t[:, :, :, 1])*n01 + t[:, :, :, 1]*n11
-    return ((1-t[:, :, :, 2])*n0 + t[:, :, :, 2]*n1)
+    n00 = n000*(1-t[..., 0]) + t[..., 0]*n100
+    n10 = n010*(1-t[..., 0]) + t[..., 0]*n110
+    n01 = n001*(1-t[..., 0]) + t[..., 0]*n101
+    n11 = n011*(1-t[..., 0]) + t[..., 0]*n111
+    n0 = (1-t[..., 1])*n00 + t[..., 1]*n10
+    n1 = (1-t[..., 1])*n01 + t[..., 1]*n11
+    return ((1-t[..., 2])*n0 + t[..., 2]*n1)
 
 
 def _perlin_noise_2D(shape, res):
@@ -718,10 +743,10 @@ def _perlin_noise_2D(shape, res):
     g11 = gradients[1:, 1:].repeat(d[0], 0).repeat(d[1], 1)
 
     # Ramps
-    n00 = np.sum(np.dstack((grid[:, :, 0], grid[:, :, 1])) * g00, 2)
-    n10 = np.sum(np.dstack((grid[:, :, 0]-1, grid[:, :, 1])) * g10, 2)
-    n01 = np.sum(np.dstack((grid[:, :, 0], grid[:, :, 1]-1)) * g01, 2)
-    n11 = np.sum(np.dstack((grid[:, :, 0]-1, grid[:, :, 1]-1)) * g11, 2)
+    n00 = np.sum(np.dstack((grid[..., 0], grid[..., 1])) * g00, 2)
+    n10 = np.sum(np.dstack((grid[..., 0]-1, grid[..., 1])) * g10, 2)
+    n01 = np.sum(np.dstack((grid[..., 0], grid[..., 1]-1)) * g01, 2)
+    n11 = np.sum(np.dstack((grid[..., 0]-1, grid[..., 1]-1)) * g11, 2)
 
     # Interpolation
     t = f(grid)
