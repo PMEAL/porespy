@@ -1,11 +1,13 @@
 import porespy as ps
 import numpy as np
+import numpy as np
 import scipy.spatial as sptl
 import scipy.ndimage as spim
 from edt import edt
 from porespy.tools import norm_to_uniform, ps_ball, ps_disk
 from typing import List
 from numpy import array
+from tqdm import tqdm
 
 
 def insert_shape(im, element, center=None, corner=None, value=1,
@@ -575,89 +577,183 @@ def overlapping_spheres(shape: List[int], radius: int, porosity: float,
     return ~f(N)
 
 
-def generate_noise(shape: List[int], porosity=None, octaves: int = 3,
-                   frequency: int = 32, mode: str = 'simplex'):
+def perlin_noise(shape: List[int], porosity=None, octaves: int = 3,
+                 frequency: List[int] = 2, persistence: float = 0.5):
     r"""
-    Generate a field of spatially correlated random noise using the Perlin
-    noise algorithm, or the updated Simplex noise algorithm.
+    Generate a Perlin noise field
 
     Parameters
     ----------
     shape : array_like
-        The size of the image to generate in [Nx, Ny, Nz] where N is the
-        number of voxels.
-
+        The shape of the desired image
+    frequncy : array_like
+        Controls the frequency of the noise, with higher values leading to
+        smaller features or more tightly spaced undulations in the brightness.
     porosity : float
-        If specified, this will threshold the image to the specified value
-        prior to returning.  If no value is given (the default), then the
-        scalar noise field is returned.
-
+        If specified, the returned image will be thresholded to the specified
+        porosity.  If not provided, the greyscale noise is returned (default).
     octaves : int
-        Controls the *texture* of the noise, with higher octaves giving more
-        complex features over larger length scales.
-
-    frequency : array_like
-        Controls the relative sizes of the features, with higher frequencies
-        giving larger features.  A scalar value will apply the same frequency
-        in all directions, given an isotropic field; a vector value will
-        apply the specified values along each axis to create anisotropy.
-
-    mode : string
-        Which noise algorithm to use, either ``'simplex'`` (default) or
-        ``'perlin'``.
+        Controls the texture of the noise, with higher values giving more
+        comlex features of larger length scales.
+    persistence : float
+        Controls how prominent each successive octave is.  Shoul be a number
+        less than 1.
 
     Returns
     -------
-    image : ND-array
-        If porosity is given, then a boolean array with ``True`` values
-        denoting the pore space is returned.  If not, then normally
-        distributed and spatially correlated randomly noise is returned.
+    An ND-array of the specified ``shape``.  If ``porosity`` is not given
+    then the array contains greyscale values distributed normally about 0.
+    Use ``porespy.tools.norm_to_uniform`` to create an well-scale image for
+    thresholding.  If ``porosity`` is given then these steps are done
+    internally and a boolean image is returned.
 
     Notes
     -----
-    This method depends the a package called 'noise' which must be
-    compiled. It is included in the Anaconda distribution, or a platform
-    specific binary can be downloaded.
+    The implementation used here is a bit fussy about the values of
+    ``frequency`` and ``octaves``.  (1) the image ``shape`` must an integer
+    multiple of ``frequency`` in each direction, and (2) ``frequency`` to the
+    power of ``octaves`` must be less than or equal the``shape`` in each
+    direction.  Exceptions are thrown if these conditions are not met.
 
-    See Also
-    --------
-    porespy.tools.norm_to_uniform
+    References
+    ----------
+    This implementation is taken from Pierre Vigier's
+    `Github repo <https://github.com/pvigier/perlin-numpy>`_
 
     """
-    try:
-        import noise
-    except ModuleNotFoundError:
-        raise Exception("The noise package must be installed")
+    # Parse args
     shape = np.array(shape)
-    if np.size(shape) == 1:
-        Lx, Ly, Lz = np.full((3, ), int(shape))
-    elif len(shape) == 2:
-        Lx, Ly = shape
-        Lz = 1
-    elif len(shape) == 3:
-        Lx, Ly, Lz = shape
-    if mode == 'simplex':
-        f = noise.snoise3
-    else:
-        f = noise.pnoise3
-    frequency = np.atleast_1d(frequency)
-    if frequency.size == 1:
-        freq = np.full(shape=[3, ], fill_value=frequency[0])
-    elif frequency.size == 2:
-        freq = np.concatenate((frequency, [1]))
-    else:
-        freq = np.array(frequency)
-    im = np.zeros(shape=[Lx, Ly, Lz], dtype=float)
-    for x in range(Lx):
-        for y in range(Ly):
-            for z in range(Lz):
-                im[x, y, z] = f(x=x/freq[0], y=y/freq[1], z=z/freq[2],
-                                octaves=octaves)
-    im = im.squeeze()
-    if porosity:
-        im = norm_to_uniform(im, scale=[0, 1])
-        im = im < porosity
-    return im
+    if shape.size == 1:  # Assume 3D
+        shape = np.ones(3, dtype=int)*shape
+    res = np.array(frequency)
+    if res.size == 1:  # Assume shape as shape
+        res = np.ones(shape.size, dtype=int)*res
+
+    # Check inputs for various sins
+    if res.size != shape.size:
+        raise Exception('shape and res must have same dimensions')
+    if np.any(np.mod(shape, res) > 0):
+        raise Exception('res must be a multiple of shape along each axis')
+    if np.any(shape/res**octaves < 1):
+        raise Exception('(res[i])**octaves must be <= shape[i]')
+    check = shape/(res**octaves)
+    if np.any(check % 1):
+        raise Exception("Image size must be factor of res**octaves")
+
+    # Generate noise
+    noise = np.zeros(shape)
+    frequency = 1
+    amplitude = 1
+    for _ in tqdm(range(octaves)):
+        if noise.ndim == 2:
+            noise += amplitude * _perlin_noise_2D(shape, frequency*res)
+        elif noise.ndim == 3:
+            noise += amplitude * _perlin_noise_3D(shape, frequency*res)
+        frequency *= 2
+        amplitude *= persistence
+
+    if porosity is not None:
+        noise = norm_to_uniform(noise, scale=[0, 1])
+        noise = noise > porosity
+
+    return noise
+
+
+def _perlin_noise_3D(shape, res):
+    def f(t):
+        return 6*t**5 - 15*t**4 + 10*t**3
+
+    delta = res / shape
+    d = shape // res
+    grid = np.mgrid[0:res[0]:delta[0], 0:res[1]:delta[1], 0:res[2]:delta[2]]
+    grid = grid.transpose(1, 2, 3, 0) % 1
+    # Gradients
+    theta = 2*np.pi*np.random.rand(*(res + 1))
+    phi = 2*np.pi*np.random.rand(*(res + 1))
+    gradients = np.stack((np.sin(phi)*np.cos(theta),
+                          np.sin(phi)*np.sin(theta),
+                          np.cos(phi)), axis=3)
+    g000 = gradients[0:-1, 0:-1, 0:-1]
+    g000 = g000.repeat(d[0], 0).repeat(d[1], 1).repeat(d[2], 2)
+    g100 = gradients[1:, 0:-1, 0:-1]
+    g100 = g100.repeat(d[0], 0).repeat(d[1], 1).repeat(d[2], 2)
+    g010 = gradients[0:-1, 1:, 0:-1]
+    g010 = g010.repeat(d[0], 0).repeat(d[1], 1).repeat(d[2], 2)
+    g110 = gradients[1:, 1:, 0:-1]
+    g110 = g110.repeat(d[0], 0).repeat(d[1], 1).repeat(d[2], 2)
+    g001 = gradients[0:-1, 0:-1, 1:]
+    g001 = g001.repeat(d[0], 0).repeat(d[1], 1).repeat(d[2], 2)
+    g101 = gradients[1:, 0:-1, 1:]
+    g101 = g101.repeat(d[0], 0).repeat(d[1], 1).repeat(d[2], 2)
+    g011 = gradients[0:-1, 1:, 1:]
+    g011 = g011.repeat(d[0], 0).repeat(d[1], 1).repeat(d[2], 2)
+    g111 = gradients[1:, 1:, 1:]
+    g111 = g111.repeat(d[0], 0).repeat(d[1], 1).repeat(d[2], 2)
+    # Ramps
+    n000 = np.sum(np.stack((grid[..., 0],
+                            grid[..., 1],
+                            grid[..., 2]), axis=3)*g000, 3)
+    n100 = np.sum(np.stack((grid[..., 0]-1,
+                            grid[..., 1],
+                            grid[..., 2]), axis=3)*g100, 3)
+    n010 = np.sum(np.stack((grid[..., 0],
+                            grid[..., 1]-1,
+                            grid[..., 2]), axis=3)*g010, 3)
+    n110 = np.sum(np.stack((grid[..., 0]-1,
+                            grid[..., 1]-1,
+                            grid[..., 2]), axis=3)*g110, 3)
+    n001 = np.sum(np.stack((grid[..., 0],
+                            grid[..., 1],
+                            grid[..., 2]-1), axis=3)*g001, 3)
+    n101 = np.sum(np.stack((grid[..., 0]-1,
+                            grid[..., 1],
+                            grid[..., 2]-1), axis=3)*g101, 3)
+    n011 = np.sum(np.stack((grid[..., 0],
+                            grid[..., 1]-1,
+                            grid[..., 2]-1), axis=3)*g011, 3)
+    n111 = np.sum(np.stack((grid[..., 0]-1,
+                            grid[..., 1]-1,
+                            grid[..., 2]-1), axis=3)*g111, 3)
+    # Interpolation
+    t = f(grid)
+    n00 = n000*(1-t[..., 0]) + t[..., 0]*n100
+    n10 = n010*(1-t[..., 0]) + t[..., 0]*n110
+    n01 = n001*(1-t[..., 0]) + t[..., 0]*n101
+    n11 = n011*(1-t[..., 0]) + t[..., 0]*n111
+    n0 = (1-t[..., 1])*n00 + t[..., 1]*n10
+    n1 = (1-t[..., 1])*n01 + t[..., 1]*n11
+    return ((1-t[..., 2])*n0 + t[..., 2]*n1)
+
+
+def _perlin_noise_2D(shape, res):
+    def f(t):
+        return 6*t**5 - 15*t**4 + 10*t**3
+
+    delta = res / shape
+    d = shape // res
+    grid = np.mgrid[0:res[0]:delta[0],
+                    0:res[1]:delta[1]].transpose(1, 2, 0) % 1
+
+    # Gradients
+    angles = 2*np.pi*np.random.rand(res[0]+1, res[1]+1)
+    gradients = np.dstack((np.cos(angles), np.sin(angles)))
+    g00 = gradients[0:-1, 0:-1].repeat(d[0], 0).repeat(d[1], 1)
+    g10 = gradients[1:, 0:-1].repeat(d[0], 0).repeat(d[1], 1)
+    g01 = gradients[0:-1, 1:].repeat(d[0], 0).repeat(d[1], 1)
+    g11 = gradients[1:, 1:].repeat(d[0], 0).repeat(d[1], 1)
+
+    # Ramps
+    n00 = np.sum(np.dstack((grid[..., 0], grid[..., 1])) * g00, 2)
+    n10 = np.sum(np.dstack((grid[..., 0]-1, grid[..., 1])) * g10, 2)
+    n01 = np.sum(np.dstack((grid[..., 0], grid[..., 1]-1)) * g01, 2)
+    n11 = np.sum(np.dstack((grid[..., 0]-1, grid[..., 1]-1)) * g11, 2)
+
+    # Interpolation
+    t = f(grid)
+    n0 = n00*(1-t[:, :, 0]) + t[:, :, 0]*n10
+    n1 = n01*(1-t[:, :, 0]) + t[:, :, 0]*n11
+
+    return np.sqrt(2)*((1-t[:, :, 1])*n0 + t[:, :, 1]*n1)
 
 
 def blobs(shape: List[int], porosity: float = 0.5, blobiness: int = 1):
