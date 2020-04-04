@@ -3,6 +3,38 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
 
+def imshow(im, ind=None, axis=None):
+    r"""
+    Convenient wrapper for matplotlib's ``imshow``.
+
+    This automatically:
+        * slices a 3D image in the middle of the last axis
+        * uses a masked array to make 0's white
+        * sets the origin to 'xy' so bottom-left corner is [0, 0]
+
+    Parameters
+    ----------
+    im : ND-array
+        The image to show.  Can be 2D or 3D.  If 2D then all other arguments
+        are ignored.
+    ind : int
+        The slice to show if ``im`` is 3D.  If not given then the middle of
+        the image is used.
+    axis : int
+        The axis to show if ``im`` is 3D.  If not given, then the last
+        axis of the image is used, so an 'xy' slice is shown.
+    """
+    if im.ndim == 3:
+        if axis is None:
+            axis = 2
+        if ind is None:
+            ind = int(im.shape[axis]/2)
+        im = im.take(indices=ind, axis=axis)
+    im = np.ma.array(im, mask=im == 0)
+    fig = plt.imshow(im, origin='xy')
+    return fig
+
+
 def show_mesh(mesh):
     r"""
     Visualizes the mesh of a region as obtained by ``get_mesh`` function in
