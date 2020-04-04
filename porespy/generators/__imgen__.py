@@ -1,9 +1,8 @@
+import numpy as np
+from edt import edt
 import porespy as ps
-import numpy as np
-import numpy as np
 import scipy.spatial as sptl
 import scipy.ndimage as spim
-from edt import edt
 from porespy.tools import norm_to_uniform, ps_ball, ps_disk
 from typing import List
 from numpy import array
@@ -59,8 +58,8 @@ def insert_shape(im, element, center=None, corner=None, value=1,
         for dim in range(im.ndim):
             r, d = np.divmod(element.shape[dim], 2)
             if d == 0:
-                raise Exception('Cannot specify center point when element ' +
-                                'has one or more even dimension')
+                raise Exception('Cannot specify center point when element '
+                                + 'has one or more even dimension')
             lower_im = np.amax((center[dim] - r, 0))
             upper_im = np.amin((center[dim] + r + 1, im.shape[dim]))
             s_im.append(slice(lower_im, upper_im))
@@ -145,8 +144,8 @@ def RSA(im: array, radius: int, volume_fraction: int = 1,
     # Note: The 2D vs 3D splitting of this just me being lazy...I can't be
     # bothered to figure it out programmatically right now
     # TODO: Ideally the spheres should be added periodically
-    print(78*'―')
-    print('RSA: Adding spheres of size ' + str(radius))
+    print(80*'-')
+    print(f'RSA: Adding spheres of size {radius}')
     d2 = len(im.shape) == 2
     mrad = 2*radius
     if d2:
@@ -191,7 +190,7 @@ def RSA(im: array, radius: int, volume_fraction: int = 1,
     if vf > volume_fraction:
         print('Volume Fraction', volume_fraction, 'reached')
     if len(free_spots) == 0:
-        print('No more free spots', 'Volume Fraction', vf)
+        print(f'No more free spots. Volume fraction: {vf:.3f}')
     return im
 
 

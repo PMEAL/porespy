@@ -3,9 +3,9 @@ import matplotlib.pyplot as plt
 
 def set_mpl_style():
 
-    sfont = 25
-    mfont = 35
-    lfont = 45
+    sfont = 15
+    mfont = 15
+    lfont = 15
 
     line_props = {'linewidth': 4,
                   'markersize': 10}

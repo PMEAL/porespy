@@ -1,22 +1,21 @@
-from collections import namedtuple
+import sys
+import dask
+import warnings
 import numpy as np
+from edt import edt
 import operator as op
+from tqdm import tqdm
 import scipy.ndimage as spim
 import scipy.spatial as sptl
-import warnings
-import dask
-from edt import edt
-from dask.diagnostics import ProgressBar
+from collections import namedtuple
 from scipy.signal import fftconvolve
-from tqdm import tqdm
-from numba import jit
 from skimage.segmentation import clear_border
 from skimage.morphology import ball, disk, square, cube, diamond, octahedron
 from skimage.morphology import reconstruction, watershed
-from porespy.tools import randomize_colors, fftmorphology, make_contiguous
+from porespy.tools import randomize_colors, fftmorphology
 from porespy.tools import get_border, extend_slice, extract_subsection
-from porespy.tools import ps_disk, ps_ball
 from porespy.tools import _create_alias_map
+from porespy.tools import ps_disk, ps_ball
 
 
 def trim_small_clusters(im, size=1):
@@ -44,11 +43,11 @@ def trim_small_clusters(im, size=1):
     elif im.ndims == 3:
         strel = ball(1)
     else:
-        raise Exception('Only 2D or 3D images are accepted')
+        raise Exception("Only 2D or 3D images are accepted")
     filtered_array = np.copy(im)
     labels, N = spim.label(filtered_array, structure=strel)
     id_sizes = np.array(spim.sum(im, labels, range(N + 1)))
-    area_mask = (id_sizes <= size)
+    area_mask = id_sizes <= size
     filtered_array[area_mask[labels]] = 0
     return filtered_array
 
@@ -64,12 +63,12 @@ def hold_peaks(im, axis=-1):
     """
     A = im
     B = np.swapaxes(A, axis, -1)
-    updown = np.empty((*B.shape[:-1], B.shape[-1]+1), B.dtype)
+    updown = np.empty((*B.shape[:-1], B.shape[-1] + 1), B.dtype)
     updown[..., 0], updown[..., -1] = -1, -1
     np.subtract(B[..., 1:], B[..., :-1], out=updown[..., 1:-1])
     chnidx = np.where(updown)
     chng = updown[chnidx]
-    pkidx, = np.where((chng[:-1] > 0) & (chng[1:] < 0) | (chnidx[-1][:-1] == 0))
+    (pkidx,) = np.where((chng[:-1] > 0) & (chng[1:] < 0) | (chnidx[-1][:-1] == 0))
     pkidx = (*map(op.itemgetter(pkidx), chnidx),)
     out = np.zeros_like(A)
     aux = out.swapaxes(axis, -1)
@@ -79,7 +78,7 @@ def hold_peaks(im, axis=-1):
     return result
 
 
-def distance_transform_lin(im, axis=0, mode='both'):
+def distance_transform_lin(im, axis=0, mode="both"):
     r"""
     Replaces each void voxel with the linear distance to the nearest solid
     voxel along the specified axis.
@@ -113,38 +112,44 @@ def distance_transform_lin(im, axis=0, mode='both'):
         the nearest background along the specified axis.
     """
     if im.ndim != im.squeeze().ndim:
-        warnings.warn('Input image conains a singleton axis:' + str(im.shape) +
-                      ' Reduce dimensionality with np.squeeze(im) to avoid' +
-                      ' unexpected behavior.')
-    if mode in ['backward', 'reverse']:
+        warnings.warn(
+            "Input image conains a singleton axis:"
+            + str(im.shape)
+            + " Reduce dimensionality with np.squeeze(im) to avoid"
+            + " unexpected behavior."
+        )
+    if mode in ["backward", "reverse"]:
         im = np.flip(im, axis)
-        im = distance_transform_lin(im=im, axis=axis, mode='forward')
+        im = distance_transform_lin(im=im, axis=axis, mode="forward")
         im = np.flip(im, axis)
         return im
-    elif mode in ['both']:
-        im_f = distance_transform_lin(im=im, axis=axis, mode='forward')
-        im_b = distance_transform_lin(im=im, axis=axis, mode='backward')
+    elif mode in ["both"]:
+        im_f = distance_transform_lin(im=im, axis=axis, mode="forward")
+        im_b = distance_transform_lin(im=im, axis=axis, mode="backward")
         return np.minimum(im_f, im_b)
     else:
         b = np.cumsum(im > 0, axis=axis)
-        c = np.diff(b*(im == 0), axis=axis)
+        c = np.diff(b * (im == 0), axis=axis)
         d = np.minimum.accumulate(c, axis=axis)
         if im.ndim == 1:
-            e = np.pad(d, pad_width=[1, 0], mode='constant', constant_values=0)
+            e = np.pad(d, pad_width=[1, 0], mode="constant", constant_values=0)
         elif im.ndim == 2:
             ax = [[[1, 0], [0, 0]], [[0, 0], [1, 0]]]
-            e = np.pad(d, pad_width=ax[axis], mode='constant', constant_values=0)
+            e = np.pad(d, pad_width=ax[axis], mode="constant", constant_values=0)
         elif im.ndim == 3:
-            ax = [[[1, 0], [0, 0], [0, 0]],
-                  [[0, 0], [1, 0], [0, 0]],
-                  [[0, 0], [0, 0], [1, 0]]]
-            e = np.pad(d, pad_width=ax[axis], mode='constant', constant_values=0)
-        f = im*(b + e)
+            ax = [
+                [[1, 0], [0, 0], [0, 0]],
+                [[0, 0], [1, 0], [0, 0]],
+                [[0, 0], [0, 0], [1, 0]],
+            ]
+            e = np.pad(d, pad_width=ax[axis], mode="constant", constant_values=0)
+        f = im * (b + e)
         return f
 
 
-def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, return_all=False,
-                      mask=True, randomize=True):
+def snow_partitioning(
+    im, dt=None, r_max=4, sigma=0.4, return_all=False, mask=True, randomize=True
+):
     r"""
     Partitions the void space into pore regions using a marker-based watershed
     algorithm, with specially filtered peaks as markers.
@@ -208,15 +213,15 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, return_all=False,
     using marker-based watershed segmenation".  Physical Review E. (2017)
 
     """
-    tup = namedtuple('results', field_names=['im', 'dt', 'peaks', 'regions'])
-    print('_'*60)
+    tup = namedtuple("results", field_names=["im", "dt", "peaks", "regions"])
+    print("-" * 60)
     print("Beginning SNOW Algorithm")
     im_shape = np.array(im.shape)
     if im.dtype is not bool:
-        print('Converting supplied image (im) to boolean')
+        print("Converting supplied image (im) to boolean")
         im = im > 0
     if dt is None:
-        print('Peforming Distance Transform')
+        print("Peforming Distance Transform")
         if np.any(im_shape == 1):
             ax = np.where(im_shape == 1)[0][0]
             dt = edt(im.squeeze())
@@ -228,16 +233,16 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, return_all=False,
     tup.dt = dt
 
     if sigma > 0:
-        print('Applying Gaussian blur with sigma =', str(sigma))
+        print("Applying Gaussian blur with sigma =", str(sigma))
         dt = spim.gaussian_filter(input=dt, sigma=sigma)
 
     peaks = find_peaks(dt=dt, r_max=r_max)
-    print('Initial number of peaks: ', spim.label(peaks)[1])
+    print("Initial number of peaks: ", spim.label(peaks)[1])
     peaks = trim_saddle_points(peaks=peaks, dt=dt, max_iters=500)
-    print('Peaks after trimming saddle points: ', spim.label(peaks)[1])
+    print("Peaks after trimming saddle points: ", spim.label(peaks)[1])
     peaks = trim_nearby_peaks(peaks=peaks, dt=dt)
     peaks, N = spim.label(peaks)
-    print('Peaks after trimming nearby peaks: ', N)
+    print("Peaks after trimming nearby peaks: ", N)
     tup.peaks = peaks
     if mask:
         mask_solid = im > 0
@@ -253,8 +258,9 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, return_all=False,
         return regions
 
 
-def snow_partitioning_n(im, r_max=4, sigma=0.4, return_all=True,
-                        mask=True, randomize=False, alias=None):
+def snow_partitioning_n(
+    im, r_max=4, sigma=0.4, return_all=True, mask=True, randomize=False, alias=None
+):
     r"""
     This function partitions an imaging oontain an arbitrary number of phases
     into regions using a marker-based watershed segmentation. Its an extension
@@ -337,15 +343,20 @@ def snow_partitioning_n(im, r_max=4, sigma=0.4, return_all=True,
     combined_region = 0
     num = [0]
     for i in phases_num:
-        print('_' * 60)
+        print("_" * 60)
         if alias is None:
-            print('Processing Phase {}'.format(i))
+            print("Processing Phase {}".format(i))
         else:
-            print('Processing Phase {}'.format(al[i]))
-        phase_snow = snow_partitioning(im == i,
-                                       dt=None, r_max=r_max, sigma=sigma,
-                                       return_all=return_all, mask=mask,
-                                       randomize=randomize)
+            print("Processing Phase {}".format(al[i]))
+        phase_snow = snow_partitioning(
+            im == i,
+            dt=None,
+            r_max=r_max,
+            sigma=sigma,
+            return_all=return_all,
+            mask=mask,
+            randomize=randomize,
+        )
         if len(phases_num) == 1 and phases_num == 1:
             combined_dt = phase_snow.dt
             combined_region = phase_snow.regions
@@ -358,8 +369,9 @@ def snow_partitioning_n(im, r_max=4, sigma=0.4, return_all=True,
             combined_region += phase_ws
         num.append(np.amax(combined_region))
     if return_all:
-        tup = namedtuple('results', field_names=['im', 'dt', 'phase_max_label',
-                                                 'regions'])
+        tup = namedtuple(
+            "results", field_names=["im", "dt", "phase_max_label", "regions"]
+        )
         tup.im = im
         tup.dt = combined_dt
         tup.phase_max_label = num[1:]
@@ -407,9 +419,12 @@ def find_peaks(dt, r_max=4, footprint=None):
     """
     im = dt > 0
     if im.ndim != im.squeeze().ndim:
-        warnings.warn('Input image conains a singleton axis:' + str(im.shape) +
-                      ' Reduce dimensionality with np.squeeze(im) to avoid' +
-                      ' unexpected behavior.')
+        warnings.warn(
+            "Input image conains a singleton axis:"
+            + str(im.shape)
+            + " Reduce dimensionality with np.squeeze(im) to avoid"
+            + " unexpected behavior."
+        )
     if footprint is None:
         if im.ndim == 2:
             footprint = disk
@@ -417,8 +432,8 @@ def find_peaks(dt, r_max=4, footprint=None):
             footprint = ball
         else:
             raise Exception("only 2-d and 3-d images are supported")
-    mx = spim.maximum_filter(dt + 2*(~im), footprint=footprint(r_max))
-    peaks = (dt == mx)*im
+    mx = spim.maximum_filter(dt + 2 * (~im), footprint=footprint(r_max))
+    peaks = (dt == mx) * im
     return peaks
 
 
@@ -450,9 +465,9 @@ def reduce_peaks(peaks):
     else:
         strel = cube
     markers, N = spim.label(input=peaks, structure=strel(3))
-    inds = spim.measurements.center_of_mass(input=peaks,
-                                            labels=markers,
-                                            index=np.arange(1, N+1))
+    inds = spim.measurements.center_of_mass(
+        input=peaks, labels=markers, index=np.arange(1, N + 1)
+    )
     inds = np.floor(inds).astype(int)
     # Centroid may not be on old pixel, so create a new peaks image
     peaks_new = np.zeros_like(peaks, dtype=bool)
@@ -502,26 +517,27 @@ def trim_saddle_points(peaks, dt, max_iters=10):
     slices = spim.find_objects(labels)
     for i in range(N):
         s = extend_slice(s=slices[i], shape=peaks.shape, pad=10)
-        peaks_i = labels[s] == i+1
+        peaks_i = labels[s] == i + 1
         dt_i = dt[s]
         im_i = dt_i > 0
         iters = 0
         peaks_dil = np.copy(peaks_i)
         while iters < max_iters:
             iters += 1
-            peaks_dil = spim.binary_dilation(input=peaks_dil,
-                                             structure=cube(3))
-            peaks_max = peaks_dil*np.amax(dt_i*peaks_dil)
-            peaks_extended = (peaks_max == dt_i)*im_i
+            peaks_dil = spim.binary_dilation(input=peaks_dil, structure=cube(3))
+            peaks_max = peaks_dil * np.amax(dt_i * peaks_dil)
+            peaks_extended = (peaks_max == dt_i) * im_i
             if np.all(peaks_extended == peaks_i):
                 break  # Found a true peak
-            elif np.sum(peaks_extended*peaks_i) == 0:
+            elif np.sum(peaks_extended * peaks_i) == 0:
                 peaks_i = False
                 break  # Found a saddle point
         peaks[s] = peaks_i
         if iters >= max_iters:
-            print('Maximum number of iterations reached, consider'
-                  + 'running again with a larger value of max_iters')
+            print(
+                "Maximum number of iterations reached, consider "
+                + "running again with a larger value of max_iters"
+            )
     return peaks
 
 
@@ -563,8 +579,9 @@ def trim_nearby_peaks(peaks, dt):
     else:
         from skimage.morphology import cube
     peaks, N = spim.label(peaks, structure=cube(3))
-    crds = spim.measurements.center_of_mass(peaks, labels=peaks,
-                                            index=np.arange(1, N+1))
+    crds = spim.measurements.center_of_mass(
+        peaks, labels=peaks, index=np.arange(1, N + 1)
+    )
     crds = np.vstack(crds).astype(int)  # Convert to numpy array of ints
     # Get distance between each peak as a distance map
     tree = sptl.cKDTree(data=crds)
@@ -586,7 +603,7 @@ def trim_nearby_peaks(peaks, dt):
     slices = spim.find_objects(input=peaks)
     for s in drop_peaks:
         peaks[slices[s]] = 0
-    return (peaks > 0)
+    return peaks > 0
 
 
 def find_disconnected_voxels(im, conn=None):
@@ -620,23 +637,26 @@ def find_disconnected_voxels(im, conn=None):
 
     """
     if im.ndim != im.squeeze().ndim:
-        warnings.warn('Input image conains a singleton axis:' + str(im.shape) +
-                      ' Reduce dimensionality with np.squeeze(im) to avoid' +
-                      ' unexpected behavior.')
+        warnings.warn(
+            "Input image conains a singleton axis:"
+            + str(im.shape)
+            + " Reduce dimensionality with np.squeeze(im) to avoid"
+            + " unexpected behavior."
+        )
     if im.ndim == 2:
         if conn == 4:
             strel = disk(1)
         elif conn in [None, 8]:
             strel = square(3)
         else:
-            raise Exception('Received conn is not valid')
+            raise Exception("Received conn is not valid")
     elif im.ndim == 3:
         if conn == 6:
             strel = ball(1)
         elif conn in [None, 26]:
             strel = cube(3)
         else:
-            raise Exception('Received conn is not valid')
+            raise Exception("Received conn is not valid")
     labels, N = spim.label(input=im, structure=strel)
     holes = clear_border(labels=labels) > 0
     return holes
@@ -700,8 +720,9 @@ def trim_floating_solid(im, conn=None):
     return im
 
 
-def trim_nonpercolating_paths(im, inlet_axis=0, outlet_axis=0,
-                              inlets=None, outlets=None):
+def trim_nonpercolating_paths(
+    im, inlet_axis=0, outlet_axis=0, inlets=None, outlets=None
+):
     r"""
     Removes all nonpercolating paths between specified edges
 
@@ -742,9 +763,12 @@ def trim_nonpercolating_paths(im, inlet_axis=0, outlet_axis=0,
 
     """
     if im.ndim != im.squeeze().ndim:
-        warnings.warn('Input image conains a singleton axis:' + str(im.shape) +
-                      ' Reduce dimensionality with np.squeeze(im) to avoid' +
-                      ' unexpected behavior.')
+        warnings.warn(
+            "Input image conains a singleton axis:"
+            + str(im.shape)
+            + " Reduce dimensionality with np.squeeze(im) to avoid"
+            + " unexpected behavior."
+        )
     im = trim_floating_solid(~im)
     labels = spim.label(~im)[0]
     if inlets is None:
@@ -775,14 +799,14 @@ def trim_nonpercolating_paths(im, inlet_axis=0, outlet_axis=0,
                 outlets[-1, :] = True
             elif outlet_axis == 1:
                 outlets[:, -1] = True
-    IN = np.unique(labels*inlets)
-    OUT = np.unique(labels*outlets)
+    IN = np.unique(labels * inlets)
+    OUT = np.unique(labels * outlets)
     new_im = np.isin(labels, list(set(IN) ^ set(OUT)), invert=True)
     im[new_im == 0] = True
     return ~im
 
 
-def trim_extrema(im, h, mode='maxima'):
+def trim_extrema(im, h, mode="maxima"):
     r"""
     Trims local extrema in greyscale values by a specified amount.
 
@@ -810,14 +834,14 @@ def trim_extrema(im, h, mode='maxima'):
 
     """
     result = im
-    if mode in ['maxima', 'extrema']:
-        result = reconstruction(seed=im - h, mask=im, method='dilation')
-    elif mode in ['minima', 'extrema']:
-        result = reconstruction(seed=im + h, mask=im, method='erosion')
+    if mode in ["maxima", "extrema"]:
+        result = reconstruction(seed=im - h, mask=im, method="dilation")
+    elif mode in ["minima", "extrema"]:
+        result = reconstruction(seed=im + h, mask=im, method="erosion")
     return result
 
 
-def flood(im, regions=None, mode='max'):
+def flood(im, regions=None, mode="max"):
     r"""
     Floods/fills each region in an image with a single value based on the
     specific values in that region.
@@ -864,16 +888,16 @@ def flood(im, regions=None, mode='max'):
     else:
         labels = np.copy(regions)
         N = labels.max()
-    mode = 'sum' if mode == 'size' else mode
-    mode = 'maximum' if mode == 'max' else mode
-    mode = 'minimum' if mode == 'min' else mode
-    if mode in ['mean', 'median', 'maximum', 'minimum', 'sum']:
+    mode = "sum" if mode == "size" else mode
+    mode = "maximum" if mode == "max" else mode
+    mode = "minimum" if mode == "min" else mode
+    if mode in ["mean", "median", "maximum", "minimum", "sum"]:
         f = getattr(spim, mode)
-        vals = f(input=im, labels=labels, index=range(0, N+1))
+        vals = f(input=im, labels=labels, index=range(0, N + 1))
         im_flooded = vals[labels]
-        im_flooded = im_flooded*mask
+        im_flooded = im_flooded * mask
     else:
-        raise Exception(mode + ' is not a recognized mode')
+        raise Exception(mode + " is not a recognized mode")
     return im_flooded
 
 
@@ -901,10 +925,11 @@ def find_dt_artifacts(dt):
         the image.  Obviously, voxels with a value of zero have no error.
 
     """
-    temp = np.ones(shape=dt.shape)*np.inf
+    temp = np.ones(shape=dt.shape) * np.inf
     for ax in range(dt.ndim):
-        dt_lin = distance_transform_lin(np.ones_like(temp, dtype=bool),
-                                        axis=ax, mode='both')
+        dt_lin = distance_transform_lin(
+            np.ones_like(temp, dtype=bool), axis=ax, mode="both"
+        )
         temp = np.minimum(temp, dt_lin)
     result = np.clip(dt - temp, a_min=0, a_max=np.inf)
     return result
@@ -977,20 +1002,27 @@ def apply_chords(im, spacing=1, axis=0, trim_edges=True, label=False):
 
     """
     if im.ndim != im.squeeze().ndim:
-        warnings.warn('Input image conains a singleton axis:' + str(im.shape) +
-                      ' Reduce dimensionality with np.squeeze(im) to avoid' +
-                      ' unexpected behavior.')
+        warnings.warn(
+            "Input image conains a singleton axis:"
+            + str(im.shape)
+            + " Reduce dimensionality with np.squeeze(im) to avoid"
+            + " unexpected behavior."
+        )
     if spacing < 0:
-        raise Exception('Spacing cannot be less than 0')
+        raise Exception("Spacing cannot be less than 0")
     if spacing == 0:
         label = True
     result = np.zeros(im.shape, dtype=int)  # Will receive chords at end
-    slxyz = [slice(None, None, spacing*(axis != i) + 1) for i in [0, 1, 2]]
-    slices = tuple(slxyz[:im.ndim])
+    slxyz = [slice(None, None, spacing * (axis != i) + 1) for i in [0, 1, 2]]
+    slices = tuple(slxyz[: im.ndim])
     s = [[0, 1, 0], [0, 1, 0], [0, 1, 0]]  # Straight-line structuring element
     if im.ndim == 3:  # Make structuring element 3D if necessary
-        s = np.pad(np.atleast_3d(s), pad_width=((0, 0), (0, 0), (1, 1)),
-                   mode='constant', constant_values=0)
+        s = np.pad(
+            np.atleast_3d(s),
+            pad_width=((0, 0), (0, 0), (1, 1)),
+            mode="constant",
+            constant_values=0,
+        )
     im = im[slices]
     s = np.swapaxes(s, 0, axis)
     chords = spim.label(im, structure=s)[0]
@@ -1040,25 +1072,28 @@ def apply_chords_3D(im, spacing=0, trim_edges=True):
 
     """
     if im.ndim != im.squeeze().ndim:
-        warnings.warn('Input image conains a singleton axis:' + str(im.shape) +
-                      ' Reduce dimensionality with np.squeeze(im) to avoid' +
-                      ' unexpected behavior.')
+        warnings.warn(
+            "Input image conains a singleton axis:"
+            + str(im.shape)
+            + " Reduce dimensionality with np.squeeze(im) to avoid"
+            + " unexpected behavior."
+        )
     if im.ndim < 3:
-        raise Exception('Must be a 3D image to use this function')
+        raise Exception("Must be a 3D image to use this function")
     if spacing < 0:
-        raise Exception('Spacing cannot be less than 0')
+        raise Exception("Spacing cannot be less than 0")
     ch = np.zeros_like(im, dtype=int)
-    ch[:, ::4+2*spacing, ::4+2*spacing] = 1  # X-direction
-    ch[::4+2*spacing, :, 2::4+2*spacing] = 2  # Y-direction
-    ch[2::4+2*spacing, 2::4+2*spacing, :] = 3  # Z-direction
-    chords = ch*im
+    ch[:, :: 4 + 2 * spacing, :: 4 + 2 * spacing] = 1       # X-direction
+    ch[:: 4 + 2 * spacing, :, 2::4 + 2 * spacing] = 2     # Y-direction
+    ch[2::4 + 2 * spacing, 2::4 + 2 * spacing, :] = 3   # Z-direction
+    chords = ch * im
     if trim_edges:
         temp = clear_border(spim.label(chords > 0)[0]) > 0
-        chords = temp*chords
+        chords = temp * chords
     return chords
 
 
-def local_thickness(im, sizes=25, mode='hybrid'):
+def local_thickness(im, sizes=25, mode="hybrid"):
     r"""
     For each voxel, this function calculates the radius of the largest sphere
     that both engulfs the voxel and fits entirely within the foreground.
@@ -1123,8 +1158,7 @@ def local_thickness(im, sizes=25, mode='hybrid'):
     return im_new
 
 
-def porosimetry(im, sizes=25, inlets=None, access_limited=True,
-                mode='hybrid'):
+def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode="hybrid"):
     r"""
     Performs a porosimetry simulution on the image
 
@@ -1199,14 +1233,17 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
 
     """
     if im.ndim != im.squeeze().ndim:
-        warnings.warn('Input image conains a singleton axis:' + str(im.shape) +
-                      ' Reduce dimensionality with np.squeeze(im) to avoid' +
-                      ' unexpected behavior.')
+        warnings.warn(
+            "Input image conains a singleton axis:"
+            + str(im.shape)
+            + " Reduce dimensionality with np.squeeze(im) to avoid"
+            + " unexpected behavior."
+        )
 
     dt = edt(im > 0)
 
     if inlets is None:
-        inlets = get_border(im.shape, mode='faces')
+        inlets = get_border(im.shape, mode="faces")
 
     if isinstance(sizes, int):
         sizes = np.logspace(start=np.log10(np.amax(dt)), stop=0, num=sizes)
@@ -1218,40 +1255,40 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
     else:
         strel = ps_ball
 
-    if mode == 'mio':
+    if mode == "mio":
         pw = int(np.floor(dt.max()))
-        impad = np.pad(im, mode='symmetric', pad_width=pw)
-        inlets = np.pad(inlets, mode='symmetric', pad_width=pw)
-#        sizes = np.unique(np.around(sizes, decimals=0).astype(int))[-1::-1]
+        impad = np.pad(im, mode="symmetric", pad_width=pw)
+        inlets = np.pad(inlets, mode="symmetric", pad_width=pw)
+        # sizes = np.unique(np.around(sizes, decimals=0).astype(int))[-1::-1]
         imresults = np.zeros(np.shape(impad))
-        for r in tqdm(sizes):
-            imtemp = fftmorphology(impad, strel(r), mode='erosion')
+        for r in tqdm(sizes, file=sys.stdout):
+            imtemp = fftmorphology(impad, strel(r), mode="erosion")
             if access_limited:
                 imtemp = trim_disconnected_blobs(imtemp, inlets)
-            imtemp = fftmorphology(imtemp, strel(r), mode='dilation')
+            imtemp = fftmorphology(imtemp, strel(r), mode="dilation")
             if np.any(imtemp):
-                imresults[(imresults == 0)*imtemp] = r
+                imresults[(imresults == 0) * imtemp] = r
         imresults = extract_subsection(imresults, shape=im.shape)
-    elif mode == 'dt':
+    elif mode == "dt":
         imresults = np.zeros(np.shape(im))
-        for r in tqdm(sizes):
+        for r in tqdm(sizes, file=sys.stdout):
             imtemp = dt >= r
             if access_limited:
                 imtemp = trim_disconnected_blobs(imtemp, inlets)
             if np.any(imtemp):
                 imtemp = edt(~imtemp) < r
-                imresults[(imresults == 0)*imtemp] = r
-    elif mode == 'hybrid':
+                imresults[(imresults == 0) * imtemp] = r
+    elif mode == "hybrid":
         imresults = np.zeros(np.shape(im))
-        for r in tqdm(sizes):
+        for r in tqdm(sizes, file=sys.stdout):
             imtemp = dt >= r
             if access_limited:
                 imtemp = trim_disconnected_blobs(imtemp, inlets)
             if np.any(imtemp):
-                imtemp = fftconvolve(imtemp, strel(r), mode='same') > 0.0001
-                imresults[(imresults == 0)*imtemp] = r
+                imtemp = fftconvolve(imtemp, strel(r), mode="same") > 0.0001
+                imresults[(imresults == 0) * imtemp] = r
     else:
-        raise Exception('Unreckognized mode ' + mode)
+        raise Exception("Unreckognized mode " + mode)
     return imresults
 
 
@@ -1287,8 +1324,9 @@ def trim_disconnected_blobs(im, inlets, strel=None):
     elif (inlets.shape == im.shape) and (inlets.max() == 1):
         inlets = inlets.astype(bool)
     else:
-        raise Exception('inlets not valid, refer to docstring for info')
+        raise Exception("inlets not valid, refer to docstring for info")
     from skimage.morphology import square
+
     if im.ndim == 3:
         square = cube
     else:
@@ -1300,15 +1338,15 @@ def trim_disconnected_blobs(im, inlets, strel=None):
         im2 = np.reshape(np.in1d(labels, keep), newshape=im.shape)
     else:
         im2 = np.zeros_like(im)
-    im2 = im2*im
+    im2 = im2 * im
     return im2
 
 
 def _get_axial_shifts(ndim=2, include_diagonals=False):
-    r'''
+    r"""
     Helper function to generate the axial shifts that will be performed on
     the image to identify bordering pixels/voxels
-    '''
+    """
     if ndim == 2:
         if include_diagonals:
             neighbors = square(3)
@@ -1333,40 +1371,37 @@ def _get_axial_shifts(ndim=2, include_diagonals=False):
 
 
 def _make_stack(im, include_diagonals=False):
-    r'''
+    r"""
     Creates a stack of images with one extra dimension to the input image
     with length equal to the number of borders to search + 1.
     Image is rolled along the axial shifts so that the border pixel is
     overlapping the original pixel. First image in stack is the original.
     Stacking makes direct vectorized array comparisons possible.
-    '''
+    """
     ndim = len(np.shape(im))
     axial_shift = _get_axial_shifts(ndim, include_diagonals)
     if ndim == 2:
-        stack = np.zeros([np.shape(im)[0],
-                          np.shape(im)[1],
-                          len(axial_shift)+1])
+        stack = np.zeros([np.shape(im)[0], np.shape(im)[1], len(axial_shift) + 1])
         stack[:, :, 0] = im
         for i in range(len(axial_shift)):
             ax0, ax1 = axial_shift[i]
             temp = np.roll(np.roll(im, ax0, 0), ax1, 1)
-            stack[:, :, i+1] = temp
+            stack[:, :, i + 1] = temp
         return stack
     elif ndim == 3:
-        stack = np.zeros([np.shape(im)[0],
-                          np.shape(im)[1],
-                          np.shape(im)[2],
-                          len(axial_shift)+1])
+        stack = np.zeros(
+            [np.shape(im)[0], np.shape(im)[1], np.shape(im)[2], len(axial_shift) + 1]
+        )
         stack[:, :, :, 0] = im
         for i in range(len(axial_shift)):
             ax0, ax1, ax2 = axial_shift[i]
             temp = np.roll(np.roll(np.roll(im, ax0, 0), ax1, 1), ax2, 2)
-            stack[:, :, :, i+1] = temp
+            stack[:, :, :, i + 1] = temp
         return stack
 
 
 def nphase_border(im, include_diagonals=False):
-    r'''
+    r"""
     Identifies the voxels in regions that border *N* other regions.
 
     Useful for finding triple-phase boundaries.
@@ -1387,17 +1422,20 @@ def nphase_border(im, include_diagonals=False):
     image : ND-array
         A copy of ``im`` with voxel values equal to the number of uniquely
         different bordering values
-    '''
+    """
     if im.ndim != im.squeeze().ndim:
-        warnings.warn('Input image conains a singleton axis:' + str(im.shape) +
-                      ' Reduce dimensionality with np.squeeze(im) to avoid' +
-                      ' unexpected behavior.')
+        warnings.warn(
+            "Input image conains a singleton axis:"
+            + str(im.shape)
+            + " Reduce dimensionality with np.squeeze(im) to avoid"
+            + " unexpected behavior."
+        )
     # Get dimension of image
     ndim = len(np.shape(im))
     if ndim not in [2, 3]:
         raise NotImplementedError("Function only works for 2d and 3d images")
     # Pad image to handle edges
-    im = np.pad(im, pad_width=1, mode='edge')
+    im = np.pad(im, pad_width=1, mode="edge")
     # Stack rolled images for each neighbor to be inspected
     stack = _make_stack(im, include_diagonals)
     # Sort the stack along the last axis
@@ -1407,9 +1445,9 @@ def nphase_border(im, include_diagonals=False):
     # Number of changes is number of unique bordering regions
     for k in range(np.shape(stack)[ndim])[1:]:
         if ndim == 2:
-            mask = stack[:, :, k] != stack[:, :, k-1]
+            mask = stack[:, :, k] != stack[:, :, k - 1]
         elif ndim == 3:
-            mask = stack[:, :, :, k] != stack[:, :, :, k-1]
+            mask = stack[:, :, :, k] != stack[:, :, :, k - 1]
         out += mask
     # Un-pad
     if ndim == 2:
@@ -1447,12 +1485,12 @@ def prune_branches(skel, branch_points=None, iterations=1):
     im_result = np.zeros_like(skel)
     # If branch points are not supplied, attempt to find them
     if branch_points is None:
-        branch_points = spim.convolve(skel*1.0, weights=cube(3)) > 3
-        branch_points = branch_points*skel
+        branch_points = spim.convolve(skel * 1.0, weights=cube(3)) > 3
+        branch_points = branch_points * skel
     # Store original branch points before dilating
     pts_orig = branch_points
     # Find arcs of skeleton by deleting branch points
-    arcs = skel*(~branch_points)
+    arcs = skel * (~branch_points)
     # Label arcs
     arc_labels = spim.label(arcs, structure=cube(3))[0]
     # Dilate branch points so they overlap with the arcs
@@ -1464,26 +1502,32 @@ def prune_branches(skel, branch_points=None, iterations=1):
     for s in slices:
         label_num += 1
         # Find branch point labels the overlap current arc
-        hits = pts_labels[s]*(arc_labels[s] == label_num)
+        hits = pts_labels[s] * (arc_labels[s] == label_num)
         # If image contains 2 branch points, then it's not a tail.
         if len(np.unique(hits)) == 3:
             im_result[s] += arc_labels[s] == label_num
     # Add missing branch points back to arc image to make complete skeleton
-    im_result += skel*pts_orig
+    im_result += skel * pts_orig
     if iterations > 1:
         iterations -= 1
         im_temp = np.copy(im_result)
-        im_result = prune_branches(skel=im_result,
-                                   branch_points=None,
-                                   iterations=iterations)
+        im_result = prune_branches(
+            skel=im_result, branch_points=None, iterations=iterations
+        )
         if np.all(im_temp == im_result):
             iterations = 0
     return im_result
 
 
-def chunked_func(func, overlap=None, divs=2, cores=None,
-                 im_arg=['input', 'image', 'im'],
-                 strel_arg=['strel', 'structure', 'footprint'], **kwargs):
+def chunked_func(
+    func,
+    overlap=None,
+    divs=2,
+    cores=None,
+    im_arg=["input", "image", "im"],
+    strel_arg=["strel", "structure", "footprint"],
+    **kwargs
+):
     r"""
     Performs the specfied operation "chunk-wise" in parallel
 
@@ -1564,12 +1608,15 @@ def chunked_func(func, overlap=None, divs=2, cores=None,
     True
 
     """
+
     @dask.delayed
     def apply_func(func, **kwargs):
         # Apply function on sub-slice of overall image
         return func(**kwargs)
+
     # Import the array_split methods
     from array_split import shape_split, ARRAY_BOUNDS
+
     # Determine the value for im_arg
     if type(im_arg) == str:
         im_arg = [im_arg]
@@ -1581,10 +1628,10 @@ def chunked_func(func, overlap=None, divs=2, cores=None,
     # Fetch image from the kwargs dict
     im = kwargs[im_arg]
     # Determine the number of divisions to create
-    divs = np.ones((im.ndim, ), dtype=int)*np.array(divs)
+    divs = np.ones((im.ndim,), dtype=int) * np.array(divs)
     # If overlap given then use it, otherwise search for strel in kwargs
     if overlap is not None:
-        halo = overlap*(divs > 1)
+        halo = overlap * (divs > 1)
     else:
         if type(strel_arg) == str:
             strel_arg = [strel_arg]
@@ -1593,9 +1640,11 @@ def chunked_func(func, overlap=None, divs=2, cores=None,
                 strel = kwargs[item]
                 break
         halo = np.array(strel.shape) * (divs > 1)
-    slices = np.ravel(shape_split(im.shape, axis=divs,
-                                  halo=halo.tolist(),
-                                  tile_bounds_policy=ARRAY_BOUNDS))
+    slices = np.ravel(
+        shape_split(
+            im.shape, axis=divs, halo=halo.tolist(), tile_bounds_policy=ARRAY_BOUNDS
+        )
+    )
     # Apply func to each subsection of the image
     res = []
     # print('Image will be broken into the following chunks:')
