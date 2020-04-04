@@ -1,5 +1,6 @@
 import porespy as ps
 import matplotlib.pyplot as plt
+import scipy as sp
 import scipy.ndimage as spim
 
 # Generate an image of spheres using the imgen class

@@ -32,5 +32,6 @@ from .__views__ import show_planes
 from .__views__ import xray
 from .__views__ import view_3D
 from .__plots__ import show_mesh
+from .__plots__ import imshow
 from .__funcs__ import set_mpl_style
 from .__funcs__ import imshow

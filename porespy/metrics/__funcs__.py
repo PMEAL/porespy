@@ -3,6 +3,7 @@ import warnings
 from skimage.measure import regionprops
 import scipy.ndimage as spim
 import scipy.spatial as sptl
+from edt import edt
 from porespy.tools import extend_slice, mesh_region
 from porespy.filters import find_dt_artifacts
 from collections import namedtuple
@@ -177,7 +178,7 @@ def radial_density(im, bins=10, voxel_size=1):
     Macroscopic Properties. Springer, New York (2002) - See page 48 & 292
     """
     if im.dtype == bool:
-        im = spim.distance_transform_edt(im)
+        im = edt(im)
     mask = find_dt_artifacts(im) == 0
     im[mask] = 0
     x = im[im > 0].flatten()
