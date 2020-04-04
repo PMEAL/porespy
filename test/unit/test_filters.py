@@ -1,8 +1,8 @@
-import porespy as ps
 import pytest
 import numpy as np
-import scipy.ndimage as spim
 from edt import edt
+import porespy as ps
+import scipy.ndimage as spim
 from skimage.morphology import disk, ball
 
 
@@ -342,6 +342,11 @@ class FilterTest():
                                     strel_arg='strel', strel=s, mode='erosion')
         b = ps.filters.fftmorphology(im, strel=s, mode='erosion')
         assert np.all(a == b)
+
+    def test_prune_branches(self):
+        im = ps.generators.blobs(shape=[50, 50, 50], porosity=0.5, blobiness=1)
+        im_pruned = ps.filters.prune_branches(im)
+        assert im_pruned.sum() == 62583
 
 
 if __name__ == '__main__':
