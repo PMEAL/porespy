@@ -22,7 +22,7 @@ jobs:
     - uses: actions/cache@v1
       with:
         path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/pip_requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
 
@@ -33,6 +33,8 @@ jobs:
         pip install -r requirements/test_requirements.txt
         pip uninstall porespy --yes
         pip install -e .
-        
+
     - name: Running tests
-      run: pytest test/unit/test_examples.py
+      run:
+        pytest --nbval -p no:python
+        --ignore=test/
