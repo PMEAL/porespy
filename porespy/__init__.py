@@ -79,7 +79,7 @@ Use some filters from PoreSpy:
 
 '''
 
-__version__ = "1.3.0-dev"
+__version__ = "1.3.0-dev001"
 
 from . import tools
 from . import filters
