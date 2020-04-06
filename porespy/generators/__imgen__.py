@@ -112,29 +112,31 @@ def RSA(im: array, radius: int, volume_fraction: int = 1, n_max: int = None,
         zeros such as ``im = np.zeros([200, 200, 200], dtype=bool)``.
     radius : int
         The radius of the disk or sphere to insert.
-    volume_fraction : scalar
+    volume_fraction : scalar (default is 1.0)
         The fraction of the image that should be filled with spheres.  The
         spheres are added as 1's, so each sphere addition increases the
         ``volume_fraction`` until the specified limit is reach.  Note that if
         ``n_max`` is reached first, then ``volume_fraction`` will not be
         acheived.
-    n_max : int
-        The maximum number of spheres to add.  By default the addition will
-        go indefinately until ``volume_fraction`` is met, but specifying
-        a scalr for ``n_max`` will halt addition after the given number of
-        spheres are added.  Note that if ``volume_fraction`` is reached first
-        then ``n_max`` will not be achieved.
-    mode : string
+    n_max : int (default is 10,000)
+        The maximum number of spheres to add.  By default the value of
+        ``n_max`` is high so that the addition of spheres will go indefinately
+        until ``volume_fraction`` is met, but specifying a smaller value
+        will halt addition after the given number of spheres are added.
+    mode : string (default is 'contained')
         Controls how the edges of the image are handled.  Options are:
 
-        'extended' - Spheres are allowed to extend beyond the edge of the image
-
         'contained' - Spheres are all completely within the image
+
+        'extended' - Spheres are allowed to extend beyond the edge of the
+        image.  In this mode the volume fraction will be less that requested
+        since some spheres extend beyond the image, but their entire volume
+        is counted as added for computational efficiency.
 
     Returns
     -------
     image : ND-array
-        A handle the the input ``im`` with spheres of specified radius
+        A handle to the input ``im`` with spheres of specified radius
         *added* to the background.
 
     Notes
@@ -143,7 +145,7 @@ def RSA(im: array, radius: int, volume_fraction: int = 1, n_max: int = None,
     points.  It seems that Numba does not look at the state of the scipy
     random number generator, so setting the seed to a known value has no
     effect on the output of this function. Each call to this function will
-    produce a unique value.  If you wish to use the same realization multiple
+    produce a unique image.  If you wish to use the same realization multiple
     times you must save the array (e.g. ``numpy.save``).
 
     References
@@ -151,8 +153,37 @@ def RSA(im: array, radius: int, volume_fraction: int = 1, n_max: int = None,
     [1] Random Heterogeneous Materials, S. Torquato (2001)
 
     """
+    def _begin_inserting():
+        # Get current volume fraction of im
+        vf = vf_start
+        free_sites = np.flatnonzero(options_im)
+        i = 0
+        while (vf <= vf_final) and (i < n_max):
+            c, count = _make_choice(options_im, free_sites=free_sites)
+            # The 100 below is arbitrary and may change performance
+            if (count > 100) or (options_im[tuple(c)] is False):
+                # Regenerate list of free_sites
+                free_sites = np.flatnonzero(options_im)
+                if len(free_sites) > 0:
+                    print('Rechecking with shorter list of options after '
+                          + str(i) + ' iterations')
+                    continue
+                elif len(free_sites) == 0:
+                    print('No more free space found')
+                    break
+            s_sm = tuple([slice(i - radius, i + radius + 1, None) for i in c])
+            s_lg = tuple([slice(i - 2*radius, i + 2*radius + 1, None) for i in c])
+            im[s_sm] += template_sm  # Add ball to image
+            options_im[s_lg][template_lg] = False  # Add -1 to extended region
+            vf += vf_template
+            i += 1
+        print('Number of spheres inserted is:', i)
+        return im
+
     print(78*'―')
     print('RSA: Adding spheres of size ' + str(radius))
+    if n_max is None:
+        n_max = 10000
     vf_start = im.sum()/im.size
     vf_final = volume_fraction
     if im.ndim == 2:
@@ -185,45 +216,12 @@ def RSA(im: array, radius: int, volume_fraction: int = 1, n_max: int = None,
     # Set voxels near padded edge to -1 to prevent insertions there
     options_im = np.ones(shape=im.shape, dtype=bool)*(~im)
     options_im[mask > 0] = False
-    im = _begin_inserting(im, options_im, radius, n_max, vf_start, vf_final,
-                          template_lg, template_sm, vf_template)
+    im = _begin_inserting()
     # Get slice into returned image to retain original size
     s = tuple([slice(2*radius, d-2*radius, None) for d in im.shape])
-    return im[s]
-
-
-def _begin_inserting(im, options_im, radius, n_max, vf_start, vf_final,
-                     template_lg, template_sm, vf_template):
-    r"""
-    This function is called by RSA and does the actual sphere insertion
-    """
-    if n_max is None:
-        n_max = 10000
-    # Get current volume fraction of im
-    vf = vf_start
-    free_sites = np.flatnonzero(options_im)
-    i = 0
-    while (vf <= vf_final) and (i < n_max):
-        c, count = _make_choice(options_im, free_sites=free_sites)
-        # The 100 below is arbitrary and may change performance
-        if (count > 100) or (options_im[tuple(c)] == False):
-            # Regenerate list of free_sites
-            free_sites = np.flatnonzero(options_im)
-            if len(free_sites) > 0:
-                print('Rechecking with shorter list of options after '
-                      + str(i) + ' iterations')
-                continue
-            elif len(free_sites) == 0:
-                print('No more free space found')
-                break
-        s_sm = tuple([slice(ind - radius, ind + radius + 1, None) for ind in c])
-        s_lg = tuple([slice(ind - 2*radius, ind + 2*radius + 1, None) for ind in c])
-        im[s_sm] += template_sm  # Add ball to image
-        options_im[s_lg][template_lg] = False  # Add -1 to extended region
-        vf += vf_template
-        i += 1
+    im = im[s]
+    vf = im.sum()/im.size
     print('Final volume fraction is:', vf)
-    print('Number of spheres inserted is:', i)
     return im
 
 
