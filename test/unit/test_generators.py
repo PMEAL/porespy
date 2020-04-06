@@ -242,6 +242,20 @@ class GeneratorTest():
         phi2 = ps.metrics.porosity(im)
         assert phi2 > phi1
 
+    def test_RSA_preexisting_structure(self):
+        im = ps.generators.blobs(shape=[200, 200, 200])
+        phi1 = im.sum()/im.size
+        im = ps.generators.RSA(im, radius=8, n_max=200, mode='contained')
+        phi2 = im.sum()/im.size
+        assert phi2 > phi1
+        im = ps.generators.RSA(im, radius=8, n_max=200, mode='contained')
+        im = ps.generators.RSA(im, radius=8, n_max=200, mode='contained')
+        im = ps.generators.RSA(im, radius=8, n_max=200, mode='contained')
+        phi1 = im.sum()/im.size
+        im = ps.generators.RSA(im, radius=8, n_max=200, mode='contained')
+        phi2 = im.sum()/im.size
+        assert phi2 == phi1
+
     def test_line_segment(self):
         X0 = [3, 4]
         X1 = [5, 9]

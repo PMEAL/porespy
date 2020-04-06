@@ -158,23 +158,17 @@ def RSA(im: array, radius: int, volume_fraction: int = 1, n_max: int = None,
         vf = vf_start
         free_sites = np.flatnonzero(options_im)
         i = 0
-        while (vf <= vf_final) and (i < n_max):
+        while (vf <= vf_final) and (i < n_max) and (len(free_sites) > 0):
             c, count = _make_choice(options_im, free_sites=free_sites)
             # The 100 below is arbitrary and may change performance
-            if (count > 100) or (options_im[tuple(c)] is False):
+            if (count > 100) and (len(free_sites) > 0):
                 # Regenerate list of free_sites
                 free_sites = np.flatnonzero(options_im)
-                if len(free_sites) > 0:
-                    print('Rechecking with shorter list of options after '
-                          + str(i) + ' iterations')
-                    continue
-                elif len(free_sites) == 0:
-                    print('No more free space found')
-                    break
-            s_sm = tuple([slice(i - radius, i + radius + 1, None) for i in c])
-            s_lg = tuple([slice(i - 2*radius, i + 2*radius + 1, None) for i in c])
+                continue
+            s_sm = tuple([slice(x - radius, x + radius + 1, None) for x in c])
+            s_lg = tuple([slice(x - 2*radius, x + 2*radius + 1, None) for x in c])
             im[s_sm] += template_sm  # Add ball to image
-            options_im[s_lg][template_lg] = False  # Add -1 to extended region
+            options_im[s_lg][template_lg] = False  # Update extended region
             vf += vf_template
             i += 1
         print('Number of spheres inserted is:', i)
@@ -185,8 +179,9 @@ def RSA(im: array, radius: int, volume_fraction: int = 1, n_max: int = None,
     im = im.astype(bool)
     if n_max is None:
         n_max = 10000
-    vf_start = im.sum()/im.size
     vf_final = volume_fraction
+    vf_start = im.sum()/im.size
+    print('Initial volume fraction of im is:', vf_start)
     if im.ndim == 2:
         strel = ps_disk(radius)
         template_lg = ps_disk(radius*2)
@@ -256,12 +251,14 @@ def _make_choice(options_im, free_sites):
     choice = False
     count = 0
     upper_limit = len(free_sites)
-    max_iters = len(free_sites)*2
+    max_iters = len(free_sites)*20
     if options_im.ndim == 2:
-        coords = [0, 0]
+        coords = [-1, -1]
         Nx = options_im.shape[0]
         Ny = options_im.shape[1]
-        while ~choice and (count < max_iters):
+        while ~choice:
+            if count >= max_iters:
+                break
             ind = np.random.randint(0, upper_limit)
             # This numpy function is not supported by numba yet
             # c1, c2 = np.unravel_index(free_sites[ind], options_im.shape)
@@ -271,11 +268,13 @@ def _make_choice(options_im, free_sites):
             choice = options_im[coords[0], coords[1]]
             count += 1
     if options_im.ndim == 3:
-        coords = [0, 0, 0]
+        coords = [-1, -1, -1]
         Nx = options_im.shape[0]
         Ny = options_im.shape[1]
         # Nz = options_im.shape[2]
-        while ~choice and (count < max_iters):
+        while ~choice:
+            if count >= max_iters:
+                break
             ind = np.random.randint(0, upper_limit)
             # This numpy function is not supported by numba yet
             # c1, c2, c3 = np.unravel_index(free_sites[ind], options_im.shape)
