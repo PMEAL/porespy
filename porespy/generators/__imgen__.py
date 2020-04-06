@@ -191,15 +191,14 @@ def RSA(im: array, radius: int, volume_fraction: int = 1, n_max: int = None,
         template_lg = ps_ball(radius*2)
         template_sm = ps_ball(radius)
     vf_template = template_sm.sum()/im.size
-    # Pad image by the radius to facilitate insertion near edges
-    im = np.pad(im, pad_width=2*radius, mode='constant', constant_values=0)
+    # Pad image by the radius of large template to enable insertion near edges
+    im = np.pad(im, pad_width=2*radius, mode='constant', constant_values=False)
     if np.any(im > 0):
-        # Dilate existing objects by im_strel to remove pixels near them
+        # Dilate existing objects by strel to remove pixels near them
         # from consideration for sphere placement
         mask = fftmorphology(im > 0, strel, mode='dilate')
-        mask = mask.astype(int)
     else:
-        mask = np.zeros_like(im, dtype=int)
+        mask = np.zeros_like(im, dtype=bool)
     # Depending on mode, adjust mask to remove options around edge
     if mode == 'contained':
         temp = get_border(im.shape, thickness=3*radius, mode='faces')
@@ -210,8 +209,8 @@ def RSA(im: array, radius: int, volume_fraction: int = 1, n_max: int = None,
     else:
         raise Exception('Unrecognized mode: ', mode)
     # Set voxels near padded edge to -1 to prevent insertions there
-    options_im = np.ones(shape=im.shape, dtype=bool)*(im == 0)
-    options_im[mask > 0] = False
+    options_im = np.ones(shape=im.shape, dtype=bool)
+    options_im[mask] = False
     im = _begin_inserting()
     # Get slice into returned image to retain original size
     s = tuple([slice(2*radius, d-2*radius, None) for d in im.shape])

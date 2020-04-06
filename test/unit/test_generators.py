@@ -248,6 +248,7 @@ class GeneratorTest():
         im = ps.generators.RSA(im, radius=8, n_max=200, mode='contained')
         phi2 = im.sum()/im.size
         assert phi2 > phi1
+        # Ensure that 3 passes through RSA fills up image
         im = ps.generators.RSA(im, radius=8, n_max=200, mode='contained')
         im = ps.generators.RSA(im, radius=8, n_max=200, mode='contained')
         im = ps.generators.RSA(im, radius=8, n_max=200, mode='contained')
