@@ -98,17 +98,47 @@ class ToolsTest():
         assert not ps.tools.in_hull([[0, 0, 0]], hull)
         assert ps.tools.in_hull([np.mean(X, axis=0)], hull)
 
-    def test_insert_sphere_2D(self):
+    def test_insert_sphere_2D_no_overwrite(self):
         im = np.zeros(shape=[200, 200], dtype=bool)
-        im = ps.tools.insert_sphere(im, [100, 100], 50)
-        im = ps.tools.insert_sphere(im, [10, 100], 50)
-        im = ps.tools.insert_sphere(im, [180, 100], 50)
+        im = ps.tools.insert_sphere(im, c=[100, 100], r=50, v=1, overwrite=False)
+        im = ps.tools.insert_sphere(im, c=[110, 100], r=50, v=2, overwrite=False)
+        im = ps.tools.insert_sphere(im, c=[90, 100], r=50, v=3, overwrite=False)
+        vals, counts = np.unique(im, return_counts=True)
+        assert sp.all(np.unique(im) == vals)
+        assert counts[1] > counts[2]
 
-    def test_insert_sphere_3D(self):
+    def test_insert_sphere_2D_w_overwrite(self):
+        im = np.zeros(shape=[200, 200], dtype=bool)
+        im = ps.tools.insert_sphere(im, c=[100, 100], r=50, v=1, overwrite=True)
+        im = ps.tools.insert_sphere(im, c=[110, 100], r=50, v=2, overwrite=True)
+        im = ps.tools.insert_sphere(im, c=[90, 100], r=50, v=3, overwrite=True)
+        vals, counts = np.unique(im, return_counts=True)
+        assert sp.all(np.unique(im) == vals)
+        assert counts[1] < counts[2]
+
+    def test_insert_sphere_3D_no_overwrite(self):
         im = np.zeros(shape=[200, 200, 200], dtype=bool)
-        im = ps.tools.insert_sphere(im, [100, 100, 100], 50)
-        im = ps.tools.insert_sphere(im, [10, 100, 100], 50)
-        im = ps.tools.insert_sphere(im, [180, 100, 100], 50)
+        im = ps.tools.insert_sphere(im, c=[100, 100, 100], r=50, v=1,
+                                    overwrite=False)
+        im = ps.tools.insert_sphere(im, c=[110, 100, 100], r=50, v=2,
+                                    overwrite=False)
+        im = ps.tools.insert_sphere(im, c=[90, 100, 100], r=50, v=3,
+                                    overwrite=False)
+        vals, counts = np.unique(im, return_counts=True)
+        assert sp.all(np.unique(im) == vals)
+        assert counts[1] > counts[2]
+
+    def test_insert_sphere_3D_w_overwrite(self):
+        im = np.zeros(shape=[200, 200, 200], dtype=bool)
+        im = ps.tools.insert_sphere(im, c=[100, 100, 100], r=50, v=1,
+                                    overwrite=True)
+        im = ps.tools.insert_sphere(im, c=[110, 100, 100], r=50, v=2,
+                                    overwrite=True)
+        im = ps.tools.insert_sphere(im, c=[90, 100, 100], r=50, v=3,
+                                    overwrite=True)
+        vals, counts = np.unique(im, return_counts=True)
+        assert sp.all(np.unique(im) == vals)
+        assert counts[1] < counts[2]
 
     def test_subdivide_3D(self):
         im = np.ones([50, 100, 150])

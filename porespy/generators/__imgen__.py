@@ -182,6 +182,7 @@ def RSA(im: array, radius: int, volume_fraction: int = 1, n_max: int = None,
 
     print(78*'―')
     print('RSA: Adding spheres of size ' + str(radius))
+    im = im.astype(bool)
     if n_max is None:
         n_max = 10000
     vf_start = im.sum()/im.size
@@ -214,7 +215,7 @@ def RSA(im: array, radius: int, volume_fraction: int = 1, n_max: int = None,
     else:
         raise Exception('Unrecognized mode: ', mode)
     # Set voxels near padded edge to -1 to prevent insertions there
-    options_im = np.ones(shape=im.shape, dtype=bool)*(~im)
+    options_im = np.ones(shape=im.shape, dtype=bool)*(im == 0)
     options_im[mask > 0] = False
     im = _begin_inserting()
     # Get slice into returned image to retain original size
