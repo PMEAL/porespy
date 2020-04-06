@@ -161,7 +161,7 @@ def RSA(im: array, radius: int, volume_fraction: int = 1, n_max: int = None,
         while (vf <= vf_final) and (i < n_max) and (len(free_sites) > 0):
             c, count = _make_choice(options_im, free_sites=free_sites)
             # The 100 below is arbitrary and may change performance
-            if (count > 100) and (len(free_sites) > 0):
+            if count > 100 or all(np.array(c) == -1):
                 # Regenerate list of free_sites
                 free_sites = np.flatnonzero(options_im)
                 continue
@@ -183,11 +183,9 @@ def RSA(im: array, radius: int, volume_fraction: int = 1, n_max: int = None,
     vf_start = im.sum()/im.size
     print('Initial volume fraction of im is:', vf_start)
     if im.ndim == 2:
-        strel = ps_disk(radius)
         template_lg = ps_disk(radius*2)
         template_sm = ps_disk(radius)
     else:
-        strel = ps_ball(radius)
         template_lg = ps_ball(radius*2)
         template_sm = ps_ball(radius)
     vf_template = template_sm.sum()/im.size
@@ -196,7 +194,7 @@ def RSA(im: array, radius: int, volume_fraction: int = 1, n_max: int = None,
     if np.any(im > 0):
         # Dilate existing objects by strel to remove pixels near them
         # from consideration for sphere placement
-        mask = fftmorphology(im > 0, strel, mode='dilate')
+        mask = fftmorphology(im > 0, template_sm, mode='dilate')
     else:
         mask = np.zeros_like(im, dtype=bool)
     # Depending on mode, adjust mask to remove options around edge
@@ -266,6 +264,8 @@ def _make_choice(options_im, free_sites):
             coords[0] = (free_sites[ind] // Nx) % Ny
             choice = options_im[coords[0], coords[1]]
             count += 1
+        if ~choice:
+            coords = [-1, -1]
     if options_im.ndim == 3:
         coords = [-1, -1, -1]
         Nx = options_im.shape[0]
@@ -283,6 +283,8 @@ def _make_choice(options_im, free_sites):
             coords[0] = (free_sites[ind] // (Nx * Ny)) % Ny
             choice = options_im[coords[0], coords[1], coords[2]]
             count += 1
+        if ~choice:
+            coords = [-1, -1, -1]
     return coords, count
 
 
