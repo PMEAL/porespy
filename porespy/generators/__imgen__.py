@@ -194,7 +194,8 @@ def RSA(im: array, radius: int, volume_fraction: int = 1, n_max: int = None,
     if np.any(im > 0):
         # Dilate existing objects by strel to remove pixels near them
         # from consideration for sphere placement
-        mask = fftmorphology(im > 0, template_sm, mode='dilate')
+        dt = edt(im == 0) <= radius
+        mask = (im > 0) + dt
     else:
         mask = np.zeros_like(im, dtype=bool)
     # Depending on mode, adjust mask to remove options around edge
