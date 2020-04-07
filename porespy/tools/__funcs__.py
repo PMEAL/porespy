@@ -947,7 +947,7 @@ def insert_sphere(im, c, r, v=True, overwrite=True):
     # Obtain slices into image
     s = bbox_to_slices(bbox)
     # Generate sphere template within image boundaries
-    blank = sp.ones_like(im[s], dtype=float)
+    blank = sp.ones_like(im[s], dtype=int)
     blank[tuple(c - bbox[0:im.ndim])] = 0
     sph = edt(blank) < r
     if overwrite:  # Clear voxles under sphere to be zero
