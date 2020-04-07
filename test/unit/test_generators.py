@@ -206,43 +206,59 @@ class GeneratorTest():
         im = ps.generators.blobs(shape=[101])
         assert len(list(im.shape)) == 3
 
-    def test_RSA_2d_single(self):
-        np.random.seed(0)
-        im = np.zeros([100, 100], dtype=int)
-        im = ps.generators.RSA(im, radius=10, volume_fraction=0.5)
-        assert np.sum(im > 0) == 5095
-        assert np.sum(im > 1) == 20
-
-    def test_RSA_2d_multi(self):
-        np.random.seed(0)
-        im = np.zeros([100, 100], dtype=int)
-        im = ps.generators.RSA(im, radius=10, volume_fraction=0.5)
-        im = ps.generators.RSA(im, radius=5, volume_fraction=0.75)
-        assert np.sum(im > 0) == 6520
-        assert np.sum(im > 1) == 44
-
-    def test_RSA_3d_single(self):
-        np.random.seed(0)
-        im = np.zeros([50, 50, 50], dtype=int)
-        im = ps.generators.RSA(im, radius=5, volume_fraction=0.5)
-        assert np.sum(im > 0) == 45602
-        assert np.sum(im > 1) == 121
-
-    def test_RSA_mask_edge_2d(self):
+    def test_RSA_2d_contained(self):
         im = np.zeros([100, 100], dtype=int)
         im = ps.generators.RSA(im, radius=10, volume_fraction=0.5,
                                mode='contained')
-        coords = np.argwhere(im == 2)
-        assert ~np.any(coords < 10)
-        assert ~np.any(coords > 90)
+        im = np.pad(im, pad_width=1, mode='constant', constant_values=False)
+        lt = ps.filters.local_thickness(im)
+        assert len(np.unique(lt)) == 2
 
-    def test_RSA_mask_edge_3d(self):
-        im = np.zeros([50, 50, 50], dtype=int)
-        im = ps.generators.RSA(im, radius=5, volume_fraction=0.5,
+    def test_RSA_2d_extended(self):
+        im = np.zeros([100, 100], dtype=int)
+        im = ps.generators.RSA(im, radius=10, volume_fraction=0.5,
+                               mode='extended')
+        im = np.pad(im, pad_width=1, mode='constant', constant_values=False)
+        lt = ps.filters.local_thickness(im)
+        assert len(np.unique(lt)) > 2
+
+    def test_RSA_3d_contained(self):
+        im = sp.zeros([100, 100, 100], dtype=int)
+        im = ps.generators.RSA(im, radius=10, volume_fraction=0.5,
                                mode='contained')
-        coords = np.argwhere(im == 2)
-        assert ~np.any(coords < 5)
-        assert ~np.any(coords > 45)
+        lt = ps.filters.local_thickness(im, sizes=[10, 9, 8, 7, 6, 5])
+        assert len(np.unique(lt)) == 2
+
+    def test_RSA_3d_extended(self):
+        im = sp.zeros([100, 100, 100], dtype=int)
+        im = ps.generators.RSA(im, radius=10, volume_fraction=0.5,
+                               mode='extended')
+        im = np.pad(im, pad_width=1, mode='constant', constant_values=False)
+        lt = ps.filters.local_thickness(im, sizes=[10, 9, 8, 7, 6, 5])
+        assert len(np.unique(lt)) > 2
+
+    def test_RSA_2d_seqential_additions(self):
+        im = sp.zeros([100, 100], dtype=int)
+        im = ps.generators.RSA(im, radius=10)
+        phi1 = ps.metrics.porosity(im)
+        im = ps.generators.RSA(im, radius=5)
+        phi2 = ps.metrics.porosity(im)
+        assert phi2 > phi1
+
+    def test_RSA_preexisting_structure(self):
+        im = ps.generators.blobs(shape=[200, 200, 200])
+        phi1 = im.sum()/im.size
+        im = ps.generators.RSA(im, radius=8, n_max=200, mode='contained')
+        phi2 = im.sum()/im.size
+        assert phi2 > phi1
+        # Ensure that 3 passes through RSA fills up image
+        im = ps.generators.RSA(im, radius=8, n_max=200, mode='contained')
+        im = ps.generators.RSA(im, radius=8, n_max=200, mode='contained')
+        im = ps.generators.RSA(im, radius=8, n_max=200, mode='contained')
+        phi1 = im.sum()/im.size
+        im = ps.generators.RSA(im, radius=8, n_max=200, mode='contained')
+        phi2 = im.sum()/im.size
+        assert phi2 == phi1
 
     def test_line_segment(self):
         X0 = [3, 4]
