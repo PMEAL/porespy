@@ -3,7 +3,7 @@ import numpy as np
 from edt import edt
 import porespy as ps
 import scipy.ndimage as spim
-from skimage.morphology import disk, ball
+from skimage.morphology import disk, ball, skeletonize_3d
 
 
 class FilterTest():
@@ -344,9 +344,10 @@ class FilterTest():
         assert np.all(a == b)
 
     def test_prune_branches(self):
-        im = ps.generators.blobs(shape=[50, 50, 50], porosity=0.5, blobiness=1)
-        im_pruned = ps.filters.prune_branches(im)
-        assert im_pruned.sum() == 62583
+        im = ps.generators.lattice_spheres(shape=[100, 100, 100], radius=4)
+        skel1 = skeletonize_3d(im)
+        skel2 = ps.filters.prune_branches(skel1)
+        assert skel1.sum() > skel2.sum()
 
 
 if __name__ == '__main__':
