@@ -153,28 +153,6 @@ def RSA(im: array, radius: int, volume_fraction: int = 1, n_max: int = None,
     [1] Random Heterogeneous Materials, S. Torquato (2001)
 
     """
-    def _begin_inserting():
-        # Get current volume fraction of im
-        vf = vf_start
-        free_sites = np.flatnonzero(options_im)
-        i = 0
-        while (vf <= vf_final) and (i < n_max) and (len(free_sites) > 0):
-            c, count = _make_choice(options_im, free_sites=free_sites)
-            # The 100 below is arbitrary and may change performance
-            if count > 100 or all(np.array(c) == -1):
-                # Regenerate list of free_sites
-                print('Regenerating free_sites after', i, 'iterations')
-                free_sites = np.flatnonzero(options_im)
-                continue
-            s_sm = tuple([slice(x - radius, x + radius + 1, None) for x in c])
-            s_lg = tuple([slice(x - 2*radius, x + 2*radius + 1, None) for x in c])
-            im[s_sm] += template_sm  # Add ball to image
-            options_im[s_lg][template_lg] = False  # Update extended region
-            vf += vf_template
-            i += 1
-        print('Number of spheres inserted:', i)
-        return im
-
     print(78*'―')
     print('RSA: Adding spheres of size ' + str(radius))
     im = im.astype(bool)
@@ -191,28 +169,43 @@ def RSA(im: array, radius: int, volume_fraction: int = 1, n_max: int = None,
         template_sm = ps_ball(radius)
     vf_template = template_sm.sum()/im.size
     # Pad image by the radius of large template to enable insertion near edges
-    im = np.pad(im, pad_width=2*radius, mode='constant', constant_values=False)
-    if np.any(im > 0):
-        # Dilate existing objects by strel to remove pixels near them
-        # from consideration for sphere placement
-        print('Dilating existing features')
-        dt = edt(im == 0) <= radius
-        mask = (im > 0) + dt
-    else:
-        mask = np.zeros_like(im, dtype=bool)
+    im = np.pad(im, pad_width=2*radius, mode='edge')
     # Depending on mode, adjust mask to remove options around edge
     if mode == 'contained':
-        temp = get_border(im.shape, thickness=3*radius, mode='faces')
-        mask = mask + temp
+        border = get_border(im.shape, thickness=2*radius, mode='faces')
     elif mode == 'extended':
-        temp = get_border(im.shape, thickness=2*radius, mode='faces')
-        mask = mask + temp
+        border = get_border(im.shape, thickness=radius, mode='faces')
     else:
         raise Exception('Unrecognized mode: ', mode)
-    # Set voxels near padded edge to -1 to prevent insertions there
-    options_im = np.ones(shape=im.shape, dtype=bool)
-    options_im[mask] = False
-    im = _begin_inserting()
+    # Remove border pixels
+    im[border] = True
+    # Dilate existing objects by strel to remove pixels near them
+    # from consideration for sphere placement
+    print('Dilating foreground features by sphere radius')
+    dt = edt(im == 0)
+    options_im = (dt >= radius)
+    # ------------------------------------------------------------------------
+    # Begin inserting the spheres
+    vf = vf_start
+    free_sites = np.flatnonzero(options_im)
+    i = 0
+    while (vf <= vf_final) and (i < n_max) and (len(free_sites) > 0):
+        c, count = _make_choice(options_im, free_sites=free_sites)
+        # The 100 below is arbitrary and may change performance
+        if count > 100:
+            # Regenerate list of free_sites
+            print('Regenerating free_sites after', i, 'iterations')
+            free_sites = np.flatnonzero(options_im)
+        if all(np.array(c) == -1):
+            break
+        s_sm = tuple([slice(x - radius, x + radius + 1, None) for x in c])
+        s_lg = tuple([slice(x - 2*radius, x + 2*radius + 1, None) for x in c])
+        im[s_sm] += template_sm  # Add ball to image
+        options_im[s_lg][template_lg] = False  # Update extended region
+        vf += vf_template
+        i += 1
+    print('Number of spheres inserted:', i)
+    # ------------------------------------------------------------------------
     # Get slice into returned image to retain original size
     s = tuple([slice(2*radius, d-2*radius, None) for d in im.shape])
     im = im[s]
@@ -251,12 +244,11 @@ def _make_choice(options_im, free_sites):
     choice = False
     count = 0
     upper_limit = len(free_sites)
-    max_iters = upper_limit*2
+    max_iters = upper_limit*20
     if options_im.ndim == 2:
         coords = [-1, -1]
-        Nx = options_im.shape[0]
-        Ny = options_im.shape[1]
-        while ~choice:
+        Nx, Ny = options_im.shape
+        while not choice:
             if count >= max_iters:
                 coords = [-1, -1]
                 break
@@ -264,16 +256,14 @@ def _make_choice(options_im, free_sites):
             # This numpy function is not supported by numba yet
             # c1, c2 = np.unravel_index(free_sites[ind], options_im.shape)
             # So using manual unraveling
-            coords[1] = free_sites[ind] % Nx
-            coords[0] = (free_sites[ind] // Nx) % Ny
+            coords[1] = free_sites[ind] % Ny
+            coords[0] = (free_sites[ind] // Ny) % Nx
             choice = options_im[coords[0], coords[1]]
             count += 1
     if options_im.ndim == 3:
         coords = [-1, -1, -1]
-        Nx = options_im.shape[0]
-        Ny = options_im.shape[1]
-        # Nz = options_im.shape[2]
-        while ~choice:
+        Nx, Ny, Nz = options_im.shape
+        while not choice:
             if count >= max_iters:
                 coords = [-1, -1, -1]
                 break
@@ -281,9 +271,9 @@ def _make_choice(options_im, free_sites):
             # This numpy function is not supported by numba yet
             # c1, c2, c3 = np.unravel_index(free_sites[ind], options_im.shape)
             # So using manual unraveling
-            coords[2] = free_sites[ind] % Nx
-            coords[1] = (free_sites[ind] // Nx) % Ny
-            coords[0] = (free_sites[ind] // (Nx * Ny)) % Ny
+            coords[2] = free_sites[ind] % Nz
+            coords[1] = (free_sites[ind] // Nz) % Ny
+            coords[0] = (free_sites[ind] // (Nz * Ny)) % Nx
             choice = options_im[coords[0], coords[1], coords[2]]
             count += 1
     return coords, count
