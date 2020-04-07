@@ -163,6 +163,7 @@ def RSA(im: array, radius: int, volume_fraction: int = 1, n_max: int = None,
             # The 100 below is arbitrary and may change performance
             if count > 100 or all(np.array(c) == -1):
                 # Regenerate list of free_sites
+                print('Regenerating free_sites after', i, 'iterations')
                 free_sites = np.flatnonzero(options_im)
                 continue
             s_sm = tuple([slice(x - radius, x + radius + 1, None) for x in c])
@@ -171,7 +172,7 @@ def RSA(im: array, radius: int, volume_fraction: int = 1, n_max: int = None,
             options_im[s_lg][template_lg] = False  # Update extended region
             vf += vf_template
             i += 1
-        print('Number of spheres inserted is:', i)
+        print('Number of spheres inserted:', i)
         return im
 
     print(78*'―')
@@ -181,7 +182,7 @@ def RSA(im: array, radius: int, volume_fraction: int = 1, n_max: int = None,
         n_max = 10000
     vf_final = volume_fraction
     vf_start = im.sum()/im.size
-    print('Initial volume fraction of im is:', vf_start)
+    print('Initial volume fraction:', vf_start)
     if im.ndim == 2:
         template_lg = ps_disk(radius*2)
         template_sm = ps_disk(radius)
@@ -194,6 +195,7 @@ def RSA(im: array, radius: int, volume_fraction: int = 1, n_max: int = None,
     if np.any(im > 0):
         # Dilate existing objects by strel to remove pixels near them
         # from consideration for sphere placement
+        print('Dilating existing features')
         dt = edt(im == 0) <= radius
         mask = (im > 0) + dt
     else:
@@ -215,7 +217,7 @@ def RSA(im: array, radius: int, volume_fraction: int = 1, n_max: int = None,
     s = tuple([slice(2*radius, d-2*radius, None) for d in im.shape])
     im = im[s]
     vf = im.sum()/im.size
-    print('Final volume fraction is:', vf)
+    print('Final volume fraction:', vf)
     return im
 
 
@@ -249,13 +251,14 @@ def _make_choice(options_im, free_sites):
     choice = False
     count = 0
     upper_limit = len(free_sites)
-    max_iters = len(free_sites)*20
+    max_iters = upper_limit*2
     if options_im.ndim == 2:
         coords = [-1, -1]
         Nx = options_im.shape[0]
         Ny = options_im.shape[1]
         while ~choice:
             if count >= max_iters:
+                coords = [-1, -1]
                 break
             ind = np.random.randint(0, upper_limit)
             # This numpy function is not supported by numba yet
@@ -265,8 +268,6 @@ def _make_choice(options_im, free_sites):
             coords[0] = (free_sites[ind] // Nx) % Ny
             choice = options_im[coords[0], coords[1]]
             count += 1
-        if ~choice:
-            coords = [-1, -1]
     if options_im.ndim == 3:
         coords = [-1, -1, -1]
         Nx = options_im.shape[0]
@@ -274,6 +275,7 @@ def _make_choice(options_im, free_sites):
         # Nz = options_im.shape[2]
         while ~choice:
             if count >= max_iters:
+                coords = [-1, -1, -1]
                 break
             ind = np.random.randint(0, upper_limit)
             # This numpy function is not supported by numba yet
@@ -284,8 +286,6 @@ def _make_choice(options_im, free_sites):
             coords[0] = (free_sites[ind] // (Nx * Ny)) % Ny
             choice = options_im[coords[0], coords[1], coords[2]]
             count += 1
-        if ~choice:
-            coords = [-1, -1, -1]
     return coords, count
 
 
