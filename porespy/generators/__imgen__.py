@@ -174,7 +174,7 @@ def RSA(im: array, radius: int, volume_fraction: int = 1, n_max: int = None,
     if mode == 'contained':
         border = get_border(im.shape, thickness=2*radius, mode='faces')
     elif mode == 'extended':
-        border = get_border(im.shape, thickness=radius, mode='faces')
+        border = get_border(im.shape, thickness=radius+1, mode='faces')
     else:
         raise Exception('Unrecognized mode: ', mode)
     # Remove border pixels

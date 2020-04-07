@@ -210,29 +210,32 @@ class GeneratorTest():
         im = np.zeros([100, 100], dtype=int)
         im = ps.generators.RSA(im, radius=10, volume_fraction=0.5,
                                mode='contained')
-        border = ps.tools.get_border(shape=im.shape, mode='edges')
-        assert sp.sum(border*im) == 0
+        im = np.pad(im, pad_width=1, mode='constant', constant_values=False)
+        lt = ps.filters.local_thickness(im)
+        assert len(np.unique(lt)) == 2
 
     def test_RSA_2d_extended(self):
         im = np.zeros([100, 100], dtype=int)
         im = ps.generators.RSA(im, radius=10, volume_fraction=0.5,
                                mode='extended')
-        border = ps.tools.get_border(shape=im.shape, mode='edges')
-        assert sp.sum(border*im) > 0
+        im = np.pad(im, pad_width=1, mode='constant', constant_values=False)
+        lt = ps.filters.local_thickness(im)
+        assert len(np.unique(lt)) > 2
 
     def test_RSA_3d_contained(self):
         im = sp.zeros([100, 100, 100], dtype=int)
         im = ps.generators.RSA(im, radius=10, volume_fraction=0.5,
                                mode='contained')
-        border = ps.tools.get_border(shape=im.shape, mode='faces')
-        assert sp.sum(border*im) == 0
+        lt = ps.filters.local_thickness(im, sizes=[10, 9, 8, 7, 6, 5])
+        assert len(np.unique(lt)) == 2
 
     def test_RSA_3d_extended(self):
         im = sp.zeros([100, 100, 100], dtype=int)
         im = ps.generators.RSA(im, radius=10, volume_fraction=0.5,
                                mode='extended')
-        border = ps.tools.get_border(shape=im.shape, mode='faces')
-        assert sp.sum(border*im) > 0
+        im = np.pad(im, pad_width=1, mode='constant', constant_values=False)
+        lt = ps.filters.local_thickness(im, sizes=[10, 9, 8, 7, 6, 5])
+        assert len(np.unique(lt)) > 2
 
     def test_RSA_2d_seqential_additions(self):
         im = sp.zeros([100, 100], dtype=int)
