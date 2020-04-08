@@ -1,9 +1,9 @@
 import numpy as np
-import numpy as np
+from edt import edt
+import porespy as ps
 import scipy.spatial as sptl
 import scipy.ndimage as spim
 from numba import njit, jit
-from edt import edt
 from porespy.tools import norm_to_uniform, ps_ball, ps_disk, get_border
 from porespy.tools import insert_sphere, fftmorphology
 from typing import List
@@ -61,8 +61,8 @@ def insert_shape(im, element, center=None, corner=None, value=1,
         for dim in range(im.ndim):
             r, d = np.divmod(element.shape[dim], 2)
             if d == 0:
-                raise Exception('Cannot specify center point when element ' +
-                                'has one or more even dimension')
+                raise Exception('Cannot specify center point when element '
+                                + 'has one or more even dimension')
             lower_im = np.amax((center[dim] - r, 0))
             upper_im = np.amin((center[dim] + r + 1, im.shape[dim]))
             s_im.append(slice(lower_im, upper_im))
@@ -93,7 +93,7 @@ def insert_shape(im, element, center=None, corner=None, value=1,
 
 
 def RSA(im: array, radius: int, volume_fraction: int = 1, n_max: int = None,
-        max_iter: int = None, mode: str = 'contained'):
+        mode: str = 'contained'):
     r"""
     Generates a sphere or disk packing using Random Sequential Addition
 
@@ -113,29 +113,31 @@ def RSA(im: array, radius: int, volume_fraction: int = 1, n_max: int = None,
         zeros such as ``im = np.zeros([200, 200, 200], dtype=bool)``.
     radius : int
         The radius of the disk or sphere to insert.
-    volume_fraction : scalar
+    volume_fraction : scalar (default is 1.0)
         The fraction of the image that should be filled with spheres.  The
         spheres are added as 1's, so each sphere addition increases the
         ``volume_fraction`` until the specified limit is reach.  Note that if
         ``n_max`` is reached first, then ``volume_fraction`` will not be
         acheived.
-    n_max : int
-        The maximum number of spheres to add.  By default the addition will
-        go indefinately until ``volume_fraction`` is met, but specifying
-        a scalr for ``n_max`` will halt addition after the given number of
-        spheres are added.  Note that if ``volume_fraction`` is reached first
-        then ``n_max`` will not be achieved.
-    mode : string
+    n_max : int (default is 10,000)
+        The maximum number of spheres to add.  By default the value of
+        ``n_max`` is high so that the addition of spheres will go indefinately
+        until ``volume_fraction`` is met, but specifying a smaller value
+        will halt addition after the given number of spheres are added.
+    mode : string (default is 'contained')
         Controls how the edges of the image are handled.  Options are:
 
-        'extended' - Spheres are allowed to extend beyond the edge of the image
-
         'contained' - Spheres are all completely within the image
+
+        'extended' - Spheres are allowed to extend beyond the edge of the
+        image.  In this mode the volume fraction will be less that requested
+        since some spheres extend beyond the image, but their entire volume
+        is counted as added for computational efficiency.
 
     Returns
     -------
     image : ND-array
-        A handle the the input ``im`` with spheres of specified radius
+        A handle to the input ``im`` with spheres of specified radius
         *added* to the background.
 
     Notes
@@ -144,7 +146,7 @@ def RSA(im: array, radius: int, volume_fraction: int = 1, n_max: int = None,
     points.  It seems that Numba does not look at the state of the scipy
     random number generator, so setting the seed to a known value has no
     effect on the output of this function. Each call to this function will
-    produce a unique value.  If you wish to use the same realization multiple
+    produce a unique image.  If you wish to use the same realization multiple
     times you must save the array (e.g. ``numpy.save``).
 
     References
@@ -152,76 +154,64 @@ def RSA(im: array, radius: int, volume_fraction: int = 1, n_max: int = None,
     [1] Random Heterogeneous Materials, S. Torquato (2001)
 
     """
-    print(78*'―')
-    print('RSA: Adding spheres of size ' + str(radius))
+    print(80*'-')
+    print(f'RSA: Adding spheres of size {radius}')
+    im = im.astype(bool)
+    if n_max is None:
+        n_max = 10000
+    vf_final = volume_fraction
+    vf_start = im.sum()/im.size
+    print('Initial volume fraction:', vf_start)
     if im.ndim == 2:
-        strel = ps_disk(radius)
         template_lg = ps_disk(radius*2)
         template_sm = ps_disk(radius)
     else:
-        strel = ps_ball(radius)
         template_lg = ps_ball(radius*2)
         template_sm = ps_ball(radius)
-    # Pad image by the radius faciliate insert near edges
-    im = np.pad(im, pad_width=2*radius, mode='constant', constant_values=0)
-    if np.any(im > 0):
-        # Dilate existing objects by im_strel to remove pixels near them
-        # from consideration for sphere placement
-        mask = fftmorphology(im > 0, strel, mode='dilate')
-        mask = mask.astype(int)
-    else:
-        mask = np.zeros_like(im, dtype=int)
+    vf_template = template_sm.sum()/im.size
+    # Pad image by the radius of large template to enable insertion near edges
+    im = np.pad(im, pad_width=2*radius, mode='edge')
     # Depending on mode, adjust mask to remove options around edge
     if mode == 'contained':
-        temp = get_border(im.shape, thickness=3*radius, mode='faces')
-        mask = mask + temp
+        border = get_border(im.shape, thickness=2*radius, mode='faces')
     elif mode == 'extended':
-        temp = get_border(im.shape, thickness=2*radius, mode='faces')
-        mask = mask + temp
+        border = get_border(im.shape, thickness=radius+1, mode='faces')
     else:
         raise Exception('Unrecognized mode: ', mode)
-    # Set voxels near padded edge to -1 to prevent insertions there
-    options_im = np.reshape(np.arange(im.size), newshape=im.shape)
-    options_im[mask > 0] = -1
-    im = _begin_inserting(im, options_im, radius, n_max, volume_fraction,
-                          template_lg, template_sm)
-    # Get slice into returned image to retain original size
-    s = tuple([slice(2*radius, d-2*radius, None) for d in im.shape])
-    return im[s]
-
-
-def _begin_inserting(im, options_im, radius, n_max, volume_fraction,
-                     template_lg, template_sm):
-    r"""
-    This function is called by RSA and does the actual sphere insertion
-    """
-    if n_max is None:
-        n_max = np.inf
-    vf = im.sum()/im.size
+    # Remove border pixels
+    im[border] = True
+    # Dilate existing objects by strel to remove pixels near them
+    # from consideration for sphere placement
+    print('Dilating foreground features by sphere radius')
+    dt = edt(im == 0)
+    options_im = (dt >= radius)
+    # ------------------------------------------------------------------------
+    # Begin inserting the spheres
+    vf = vf_start
+    free_sites = np.flatnonzero(options_im)
     i = 0
-    v = template_sm.sum()/im.size
-    free_sites = np.flatnonzero(options_im >= 0)
-    while (vf <= volume_fraction) and (i < n_max):
+    while (vf <= vf_final) and (i < n_max) and (len(free_sites) > 0):
         c, count = _make_choice(options_im, free_sites=free_sites)
         # The 100 below is arbitrary and may change performance
-        if (count > 100) or (options_im[tuple(c)] == -1):
-            free_sites = np.flatnonzero(options_im >= 0)
-            if len(free_sites) > 0:
-                print('Rechecking with shorter list of options')
-                continue
-            if len(free_sites) == 0:
-                print('No more free space found, volume fraction is:', vf)
-                break
-        s_sm = tuple([slice(ind - radius, ind + radius + 1, None) for ind in c])
-        s_lg = tuple([slice(ind - 2*radius, ind + 2*radius + 1, None) for ind in c])
+        if count > 100:
+            # Regenerate list of free_sites
+            print('Regenerating free_sites after', i, 'iterations')
+            free_sites = np.flatnonzero(options_im)
+        if all(np.array(c) == -1):
+            break
+        s_sm = tuple([slice(x - radius, x + radius + 1, None) for x in c])
+        s_lg = tuple([slice(x - 2*radius, x + 2*radius + 1, None) for x in c])
         im[s_sm] += template_sm  # Add ball to image
-        options_im[s_lg][template_lg] = -1  # Add -1 to extended region
-        vf += v
+        options_im[s_lg][template_lg] = False  # Update extended region
+        vf += vf_template
         i += 1
-    if vf > volume_fraction:
-        print('Specified volume fraction reached')
-    if i >= n_max:
-        print('Requested number of spheres added')
+    print('Number of spheres inserted:', i)
+    # ------------------------------------------------------------------------
+    # Get slice into returned image to retain original size
+    s = tuple([slice(2*radius, d-2*radius, None) for d in im.shape])
+    im = im[s]
+    vf = im.sum()/im.size
+    print('Final volume fraction:', vf)
     return im
 
 
@@ -229,37 +219,62 @@ def _begin_inserting(im, options_im, radius, n_max, volume_fraction,
 def _make_choice(options_im, free_sites):
     r"""
     This function is called by _begin_inserting to find valid insertion points
+
+    Parameters
+    ----------
+    options_im : ND-array
+        An array with ``True`` at all valid locations and ``False`` at all
+        locations where a sphere already exists PLUS a region of radius R
+        around each sphere since these points are also invalid insertion
+        points.
+    free_sites : array_like
+        A 1D array containing valid insertion indices.  This list is used to
+        select insertion points from a limited which occasionally gets
+        smaller.
+
+    Returns
+    -------
+    coords : list
+        The XY or XYZ coordinates of the next insertion point
+    count : int
+        The number of attempts that were needed to find valid point.  If
+        this value gets too high, a short list of ``free_sites`` should be
+        generated in the calling function.
+
     """
-    choice = -1
+    choice = False
     count = 0
     upper_limit = len(free_sites)
-    max_iters = len(free_sites)*2
+    max_iters = upper_limit*20
     if options_im.ndim == 2:
-        coords = [0, 0]
-        Nx = options_im.shape[0]
-        Ny = options_im.shape[1]
-        while (choice == -1) and (count < max_iters):
+        coords = [-1, -1]
+        Nx, Ny = options_im.shape
+        while not choice:
+            if count >= max_iters:
+                coords = [-1, -1]
+                break
             ind = np.random.randint(0, upper_limit)
             # This numpy function is not supported by numba yet
             # c1, c2 = np.unravel_index(free_sites[ind], options_im.shape)
             # So using manual unraveling
-            coords[1] = free_sites[ind] % options_im.shape[0]
-            coords[0] = (free_sites[ind] // Nx) % Ny
+            coords[1] = free_sites[ind] % Ny
+            coords[0] = (free_sites[ind] // Ny) % Nx
             choice = options_im[coords[0], coords[1]]
             count += 1
     if options_im.ndim == 3:
-        coords = [0, 0, 0]
-        Nx = options_im.shape[0]
-        Ny = options_im.shape[1]
-        Nz = options_im.shape[2]
-        while (choice == -1) and (count < max_iters):
+        coords = [-1, -1, -1]
+        Nx, Ny, Nz = options_im.shape
+        while not choice:
+            if count >= max_iters:
+                coords = [-1, -1, -1]
+                break
             ind = np.random.randint(0, upper_limit)
             # This numpy function is not supported by numba yet
             # c1, c2, c3 = np.unravel_index(free_sites[ind], options_im.shape)
             # So using manual unraveling
-            coords[2] = free_sites[ind] % Nx
-            coords[1] = (free_sites[ind] // Nx) % Ny
-            coords[0] = (free_sites[ind] // (Nx * Ny)) % Ny
+            coords[2] = free_sites[ind] % Nz
+            coords[1] = (free_sites[ind] // Nz) % Ny
+            coords[0] = (free_sites[ind] // (Nz * Ny)) % Nx
             choice = options_im[coords[0], coords[1], coords[2]]
             count += 1
     return coords, count
