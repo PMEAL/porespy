@@ -9,7 +9,7 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        python-version: [3.6, 3.7]
+        python-version: [3.6, 3.7, 3.8]
         operating-system: [ubuntu-latest]
 
     steps:
@@ -22,21 +22,20 @@ jobs:
     - uses: actions/cache@v1
       with:
         path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/pip_requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
 
     - name: Install Dependencies
-      # if: steps.cache.outputs.cache-hit != 'true'
       run: |
         pip install -r requirements/pip_requirements.txt
         pip install -r requirements/test_requirements.txt
         pip uninstall porespy --yes
         python setup.py install
-        
+
     - name: Running tests
-      run: pytest --pep8 --cov=./ --cov-report=xml --ignore=test/unit/test_examples.py
-    
+      run: pytest --pep8 --cov=./ --cov-report=xml
+
     - name: Upload coverage to Codecov
       if: matrix.python-version == 3.7
       uses: codecov/codecov-action@v1
@@ -45,4 +44,4 @@ jobs:
         file: ./coverage.xml
         flags: unittests
         name: codecov-umbrella
-        yml: ./codecov.yml     
+        yml: ./codecov.yml

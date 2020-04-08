@@ -1,3 +1,4 @@
+import sys
 import numpy as np
 import openpnm as op
 from tqdm import tqdm
@@ -35,7 +36,7 @@ def regions_to_network(im, dt=None, voxel_size=1):
     directly to an OpenPNM network object using the ``update`` command.
 
     """
-    print('_'*60)
+    print('-'*60)
     print('Extracting pore and throat information from image')
     from skimage.morphology import disk, ball
     struc_elem = disk if im.ndim == 2 else ball
@@ -67,7 +68,7 @@ def regions_to_network(im, dt=None, voxel_size=1):
     # dt_shape = np.array(dt.shape)
 
     # Start extracting size information for pores and throats
-    for i in tqdm(Ps):
+    for i in tqdm(Ps, file=sys.stdout):
         pore = i - 1
         if slices[pore] is None:
             continue

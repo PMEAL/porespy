@@ -68,7 +68,7 @@ Use some filters from PoreSpy:
 .. code-block:: python
 
     >>> peaks = ps.filters.snow_partitioning(im=im, dt=dt)
-    ____________________________________________________________
+    ------------------------------------------------------------
     Beginning SNOW Algorithm
     Converting supplied image (im) to boolean
     Applying Gaussian blur with sigma = 0.4
@@ -79,7 +79,7 @@ Use some filters from PoreSpy:
 
 '''
 
-__version__ = "1.2.0"
+__version__ = "1.3.0-dev002"
 
 from . import tools
 from . import filters
@@ -88,3 +88,4 @@ from . import networks
 from . import generators
 from . import visualization
 from . import io
+from .visualization import imshow
