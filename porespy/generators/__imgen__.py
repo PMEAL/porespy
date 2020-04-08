@@ -1,8 +1,9 @@
 import numpy as np
+from edt import edt
+import porespy as ps
 import scipy.spatial as sptl
 import scipy.ndimage as spim
 from numba import njit, jit
-from edt import edt
 from porespy.tools import norm_to_uniform, ps_ball, ps_disk, get_border
 from porespy.tools import insert_sphere, fftmorphology
 from typing import List
@@ -60,8 +61,8 @@ def insert_shape(im, element, center=None, corner=None, value=1,
         for dim in range(im.ndim):
             r, d = np.divmod(element.shape[dim], 2)
             if d == 0:
-                raise Exception('Cannot specify center point when element ' +
-                                'has one or more even dimension')
+                raise Exception('Cannot specify center point when element '
+                                + 'has one or more even dimension')
             lower_im = np.amax((center[dim] - r, 0))
             upper_im = np.amin((center[dim] + r + 1, im.shape[dim]))
             s_im.append(slice(lower_im, upper_im))
@@ -153,8 +154,8 @@ def RSA(im: array, radius: int, volume_fraction: int = 1, n_max: int = None,
     [1] Random Heterogeneous Materials, S. Torquato (2001)
 
     """
-    print(78*'―')
-    print('RSA: Adding spheres of size ' + str(radius))
+    print(80*'-')
+    print(f'RSA: Adding spheres of size {radius}')
     im = im.astype(bool)
     if n_max is None:
         n_max = 10000
