@@ -349,6 +349,13 @@ class FilterTest():
         skel2 = ps.filters.prune_branches(skel1)
         assert skel1.sum() > skel2.sum()
 
+    def test_apply_padded(self):
+        im = ps.generators.blobs(shape=[100, 100])
+        skel1 = skeletonize_3d(im)
+        skel2 = ps.filters.apply_padded(im=im, pad_width=20, pad_val=1,
+                                        func=skeletonize_3d)
+        assert (skel1.astype(bool)).sum() != (skel2.astype(bool)).sum()
+
 
 if __name__ == '__main__':
     t = FilterTest()
