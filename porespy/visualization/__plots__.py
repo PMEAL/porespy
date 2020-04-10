@@ -3,9 +3,40 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
 
-def imshow(im, ind=None, axis=None):
+def bar(tup, h='pdf', **kwargs):
     r"""
-    Convenient wrapper for matplotlib's ``imshow``.
+    Convenience wrapper for matplotlib's ``bar``.
+
+    This automatically:
+        * fetches the ``bin_centers``
+        * fetches the bin heights from the specified ``h``
+        * sets the bin widths
+        * sets the edges to black
+
+    Parameters
+    ----------
+    tup : named-tuple
+        The named tuple returned by various functions in the
+        ``porespy.metrics`` submodule, such as ``chord_length_distribution``.
+    h : str
+        The value to use for bin heights.  The default is ``pdf``, but
+        ``cdf`` is another option. Depending on the function the named-tuple
+        may have different options.
+    kwargs : keyword arguments
+        All other keyword arguments are passed to ``bar``, including
+        ``edgecolor`` if you wish to overwrite the default black.
+
+    Returns
+    -------
+    fig: Matplotlib figure handle
+    """
+    if 'edgecolor' not in kwargs:
+        kwargs['edgecolor'] = 'k'
+    fig = plt.bar(x=tup.bin_centers, height=getattr(tup, h),
+                  width=tup.bin_widths, **kwargs)
+    return fig
+
+
 def imshow(*im, ind=None, axis=None):
     r"""
     Convenience wrapper for matplotlib's ``imshow``.
