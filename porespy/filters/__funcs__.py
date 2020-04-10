@@ -18,9 +18,41 @@ from porespy.tools import _create_alias_map
 from porespy.tools import ps_disk, ps_ball
 
 
+def apply_padded(im, pad_width, func, pad_val=1, **kwargs):
+    r"""
+    Applies padding to an image before sending to ``func``, then extracts the
+    result corresponding to the original image shape.
+
+    Parameters
+    ----------
+    im : ND-image
+        The image to which ``func`` should be applied
+    pad_width : int or list of ints
+        The amount of padding to apply to each axis.  Refer to ``numpy.pad``
+        documentation for more details.
+    pad_val : scalar
+        The value to place into the padded voxels.  The default is 1 (or
+        ``True``) which extends the pore space.
+    func : function handle
+        The function to apply to the padded image
+    kwargs : additional keyword arguments
+        All additional keyword arguments are collected and passed to ``func``.
+
+    Notes
+    -----
+    A use case for this is when using ``skimage.morphology.skeletonize_3d``
+    to ensure that the skeleton extends beyond the edges of the image.
+    """
+    padded = np.pad(im, pad_width=pad_width,
+                    mode='constant', constant_values=pad_val)
+    temp = func(padded, **kwargs)
+    result = extract_subsection(im=temp, shape=im.shape)
+    return result
+
+
 def trim_small_clusters(im, size=1):
     r"""
-    Remove isolated voxels or clusters smaller than a given size
+    Remove isolated voxels or clusters of a given size or smaller
 
     Parameters
     ----------
