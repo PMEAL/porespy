@@ -30,12 +30,24 @@ class VisualizationTest():
         xray = ps.visualization.xray(self.im, direction='Z')
         assert np.sum(xray) == np.sum(~self.im)
 
-    def test_imshow(self):
+    def test_imshow_single(self):
         im = ps.generators.blobs(shape=[10, 20, 30])
         fig = ps.visualization.imshow(im)
-        assert fig.get_extent() == (-0.5, 19.5, -0.5, 9.5)
-        fig = ps.visualization.imshow(im, axis=0, ind=5)
-        assert fig.get_extent() == (-0.5, 29.5, -0.5, 19.5)
+        assert fig.numCols == 1
+        assert fig.numRows == 1
+
+    def test_imshow_multi(self):
+        im = ps.generators.blobs(shape=[10, 20, 30])
+        fig = ps.visualization.imshow(im, im)
+        assert fig.numCols == 2
+        assert fig.numRows == 1
+
+    def test_bar(self):
+        im = ps.generators.blobs(shape=[101, 200])
+        chords = ps.filters.apply_chords(im)
+        h = ps.metrics.chord_length_distribution(chords)
+        fig = ps.visualization.bar(h)
+        assert len(h.pdf) == len(fig.patches)
 
 
 if __name__ == '__main__':
