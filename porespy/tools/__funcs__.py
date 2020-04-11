@@ -112,10 +112,14 @@ def fftmorphology(im, strel, mode='opening'):
         t = fftconvolve(im, strel, mode='same') > 0.1
         return t
 
+    def convolve(im, strel):
+        t = fftconvolve(im, strel, mode='same')
+        return t
+
     if im.ndim != im.squeeze().ndim:
-        warnings.warn('Input image conains a singleton axis:' + str(im.shape) +
-                      ' Reduce dimensionality with np.squeeze(im) to avoid' +
-                      ' unexpected behavior.')
+        warnings.warn('Input image conains a singleton axis:' + str(im.shape)
+                      + ' Reduce dimensionality with np.squeeze(im) to avoid'
+                      + ' unexpected behavior.')
 
     # Perform erosion and dilation
     # The array must be padded with 0's so it works correctly at edges
@@ -124,6 +128,8 @@ def fftmorphology(im, strel, mode='opening'):
         temp = erode(temp, strel)
     if mode.startswith('dila'):
         temp = dilate(temp, strel)
+    if mode.startswith('conv'):
+        temp = convolve(temp, strel)
 
     # Remove padding from resulting image
     if im.ndim == 2:
