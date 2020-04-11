@@ -16,8 +16,10 @@ with open(ver_path) as f:
         if line.startswith('__version__'):
             exec(line, main_)
 
-with open("README.rst", "r") as fh:
-    long_description = fh.read()
+# Read the contents of README file
+this_directory = os.path.abspath(os.path.dirname(__file__))
+with open(os.path.join(this_directory, 'README.md'), encoding='utf-8') as f:
+    long_description = f.read()
 
 setup(
     name='porespy',
