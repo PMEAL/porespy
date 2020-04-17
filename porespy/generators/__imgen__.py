@@ -994,3 +994,38 @@ def line_segment(X0, X1):
         x = np.rint(np.linspace(X0[0], X1[0], L)).astype(int)
         y = np.rint(np.linspace(X0[1], X1[1], L)).astype(int)
         return [x, y]
+
+
+def random_cantor_dust(shape, n, p=2, f=0.8, ndims=3):
+    r"""
+    Generates a random cantor dust
+
+    Parameters
+    ----------
+    shape : array_like
+        The shape of the final image.  Must be evenly divisible by ``p**n``.
+    n : int
+        The number of times to iteratively divide the image.
+    p : int (default = 2)
+        The number of divisions to make on each iteration.
+    f : float (default = 0.8)
+        The fraction of the set to keep on each iteration.
+    ndims : int (default = 3)
+        The number of dimensions of the desired image
+
+    """
+    im = np.ones(shape, dtype=bool)
+    from tqdm import tqdm
+    divs = []
+    if isinstance(n, int):
+        for i in range(1, n):
+            divs.append(p**i)
+    else:
+        for i in n:
+            divs.append(p**i)
+    for i in tqdm(divs):
+        sh = (np.array(im.shape)/i).astype(int)
+        mask = np.random.rand(*sh) < f
+        mask = spim.zoom(mask, zoom=i, order=0)
+        im = im*mask
+    return im
