@@ -998,7 +998,7 @@ def line_segment(X0, X1):
 
 def random_cantor_dust(shape, n, p=2, f=0.8, ndims=3):
     r"""
-    Generates a random cantor dust
+    Generates an image of random cantor dust in 2 or 3 dimensions
 
     Parameters
     ----------
@@ -1028,4 +1028,47 @@ def random_cantor_dust(shape, n, p=2, f=0.8, ndims=3):
         mask = np.random.rand(*sh) < f
         mask = spim.zoom(mask, zoom=i, order=0)
         im = im*mask
+    return im
+
+
+def sierpinski_foam(dmin, n, ndims=2):
+    r"""
+    Generates an image of a Sierpinski carpet or foram in 2 or 3 dimensions
+
+    Parameters
+    ----------
+    dmin : int
+        The size of the smallest square in the final image
+    n : int
+        The number of times to iteratively tile the image
+    ndims : int (default = 2)
+        The number of dimensions of the desired image
+
+    Notes
+    -----
+    If ``dmin`` is even, the final image size will be :math:`2 \cdot (dmin + 1)^{n}`.
+    If ``dmin`` is odd, it will be :math:`(dmin)^{(n+1})`.
+    """
+    def _insert_cubes(im, n):
+        if n > 0:
+            n -= 1
+            shape = np.asarray(np.shape(im))
+            im = np.tile(im, (3, 3, 3))
+            im[shape[0]:2*shape[0], shape[1]:2*shape[1], shape[2]:2*shape[2]] = 0
+            im = _insert_cubes(im, n)
+        return im
+
+    def _insert_squares(im, n):
+        if n > 0:
+            n -= 1
+            shape = np.asarray(np.shape(im))
+            im = np.tile(im, (3, 3))
+            im[shape[0]:2*shape[0], shape[1]:2*shape[1]] = 0
+            im = _insert_squares(im, n)
+        return im
+    im = np.ones([dmin]*ndims, dtype=int)
+    if ndims == 2:
+        im = _insert_squares(im, n)
+    elif ndims == 3:
+        im = _insert_cubes(im, n)
     return im

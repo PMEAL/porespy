@@ -23,6 +23,7 @@ illustration purposes.
     porespy.generators.polydisperse_spheres
     porespy.generators.random_cantor_dust
     porespy.generators.RSA
+    porespy.generators.sierpinski_foam
     porespy.generators.voronoi_edges
 
 .. autofunction:: blobs
@@ -36,6 +37,7 @@ illustration purposes.
 .. autofunction:: polydisperse_spheres
 .. autofunction:: random_cantor_dust
 .. autofunction:: RSA
+.. autofunction:: sierpinski_foam
 .. autofunction:: voronoi_edges
 
 """
@@ -51,4 +53,5 @@ from .__imgen__ import perlin_noise
 from .__imgen__ import polydisperse_spheres
 from .__imgen__ import random_cantor_dust
 from .__imgen__ import RSA
+from .__imgen__ import sierpinski_foam
 from .__imgen__ import voronoi_edges
