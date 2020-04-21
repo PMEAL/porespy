@@ -1283,8 +1283,8 @@ def seq_to_satn(seq, solid=0, uninvaded=-1):
     satn : ND-image
         An ND-iamge the same size as ``seq`` but with sequnece values replaced
         by the fraction of pores invaded at or below the sequence number.
-        Solid voxels and uninvaded voxels are represented by 0 and -1
-        respectively.
+        Solid voxels and uninvaded voxels are represented by the values given
+        in ``solid`` and ``uninvaded``.
 
     """
     seq = sp.copy(seq).astype(int)

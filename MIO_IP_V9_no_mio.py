@@ -52,26 +52,5 @@ if 1:
 # %%
 satn = np.digitize(ps.tools.seq_to_satn(inv_seq_2),
                    bins=np.linspace(0, 1, 256)).astype(np.uint8)
-imageio.imwrite('IP_2D_1.tif', satn, format='tif')
+# imageio.imwrite('IP_2D_1.tif', satn, format='tif')
 # imageio.volwrite('IP.tif', (inv_satn*100).astype(sp.uint8), format='tif')
-
-# %%
-inv_satn = ps.tools.seq_to_satn(seq=inv_seq_2, solid=-1, uninvaded=0)
-mk = np.zeros_like(inv_satn, dtype=bool)
-mk[:, -1] = True
-
-trapped = np.zeros_like(mk)
-for t in np.arange(0.7, 0.0, -0.05):
-    temp = inv_satn > t
-    labels = spim.label(temp)[0]
-    keep = np.unique(labels[mk])[1:]
-    trapped += temp*np.isin(labels, keep, invert=True)
-
-inv_satn[trapped] = -1
-inv_satn = ps.tools.make_contiguous
-
-
-
-
-
-

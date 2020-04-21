@@ -1889,3 +1889,50 @@ def invade_region(im, bd, dt=None, inv=None, thickness=3, coarseness=3,
         if _ == (max_iter - 1):
             print('Maximum number of iterations reached')
     return inv
+
+
+def find_trapped_regions(seq, outlets=None, bins=25):
+    r"""
+    Find the trapped regions given an invasion sequence image
+
+    Parameters
+    ----------
+    seq : ND-array
+        An image with invasion sequence values in each voxel.  Regions
+        labelled -1 are considered uninvaded, and regions labelled 0 are
+        considered solid. Such an image is returned from the
+        ``invaded_region`` function.
+    outlets : ND-array
+        An image the same size as ``seq`` with ``True`` indicating outlets
+        and ``False`` elsewhere.  If not given then all image boundaries
+        are considered outlets.
+    bins : int
+        The resolution to use when thresholding the ``seq`` image.  By default
+        the invasion sequence will be broken into 25 discrete steps and
+        trapping will be identified at each step. A higher value of ``bins``
+        will provide a more accurate trapping analysis, but is more time
+        consuming. If ``None`` is specified, then *all* the steps will
+        analyzed, providing the highest accuracy.
+
+    Returns
+    -------
+    trapped : ND-image
+        An image, the same size as ``seq`` with ``True`` values indicating
+        the trapped voxels.
+
+    """
+    seq = np.copy(seq)
+    if outlets is None:
+        outlets = get_border(seq.shape, mode='faces')
+    trapped = np.zeros_like(outlets)
+    if bins is None:
+        bins = np.unique(seq)
+        bins = bins[bins > 0]
+    else:
+        bins = np.linspace(seq.max(), 1, bins)
+    for i in tqdm(bins):
+        temp = seq > i
+        labels = spim.label(temp)[0]
+        keep = np.unique(labels[outlets])[1:]
+        trapped += temp*np.isin(labels, keep, invert=True)
+    return trapped

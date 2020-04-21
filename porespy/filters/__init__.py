@@ -23,6 +23,7 @@ altered values.
     porespy.filters.find_disconnected_voxels
     porespy.filters.find_dt_artifacts
     porespy.filters.find_peaks
+    porespy.filters.find_trapped_regions
     porespy.filters.flood
     porespy.filters.hold_peaks
     porespy.filters.flood_func
@@ -55,6 +56,7 @@ altered values.
 .. autofunction:: find_disconnected_voxels
 .. autofunction:: find_dt_artifacts
 .. autofunction:: find_peaks
+.. autofunction:: find_trapped_regions
 .. autofunction:: flood
 .. autofunction:: flood_func
 .. autofunction:: ICE_peaks
@@ -88,6 +90,7 @@ from .__funcs__ import fill_blind_pores
 from .__funcs__ import find_disconnected_voxels
 from .__funcs__ import find_dt_artifacts
 from .__funcs__ import find_peaks
+from .__funcs__ import find_trapped_regions
 from .__funcs__ import flood
 from .__funcs__ import flood_func
 from .__funcs__ import ICE_peaks
