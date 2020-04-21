@@ -56,16 +56,22 @@ imageio.imwrite('IP_2D_1.tif', satn, format='tif')
 # imageio.volwrite('IP.tif', (inv_satn*100).astype(sp.uint8), format='tif')
 
 # %%
-mk = np.zeros_like(inv_satn)
-mk[:, -2] = True
-mk = mk*(inv_satn > -1)
-mk = np.pad(mk, 1, constant_values=0)
-mk = spim.label(mk)[0]
-temp = np.copy(inv_satn)
-temp[temp == -1] = 2
-temp = np.pad(temp, 1, constant_values=2)
-mk *= 0
-mk[-3, -3] = 1
-ws = watershed(temp, mk)
-plt.imshow(ws[1:-1, 1:-1]/im)
+inv_satn = ps.tools.seq_to_satn(seq=inv_seq_2, solid=-1, uninvaded=0)
+mk = np.zeros_like(inv_satn, dtype=bool)
+mk[:, -1] = True
+
+trapped = np.zeros_like(mk)
+for t in np.arange(0.7, 0.0, -0.05):
+    temp = inv_satn > t
+    labels = spim.label(temp)[0]
+    keep = np.unique(labels[mk])[1:]
+    trapped += temp*np.isin(labels, keep, invert=True)
+
+inv_satn[trapped] = -1
+inv_satn = ps.tools.make_contiguous
+
+
+
+
+
 
