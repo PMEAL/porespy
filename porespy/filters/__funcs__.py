@@ -19,9 +19,41 @@ from porespy.tools import _create_alias_map
 from porespy.tools import ps_disk, ps_ball
 
 
+def apply_padded(im, pad_width, func, pad_val=1, **kwargs):
+    r"""
+    Applies padding to an image before sending to ``func``, then extracts the
+    result corresponding to the original image shape.
+
+    Parameters
+    ----------
+    im : ND-image
+        The image to which ``func`` should be applied
+    pad_width : int or list of ints
+        The amount of padding to apply to each axis.  Refer to ``numpy.pad``
+        documentation for more details.
+    pad_val : scalar
+        The value to place into the padded voxels.  The default is 1 (or
+        ``True``) which extends the pore space.
+    func : function handle
+        The function to apply to the padded image
+    kwargs : additional keyword arguments
+        All additional keyword arguments are collected and passed to ``func``.
+
+    Notes
+    -----
+    A use case for this is when using ``skimage.morphology.skeletonize_3d``
+    to ensure that the skeleton extends beyond the edges of the image.
+    """
+    padded = np.pad(im, pad_width=pad_width,
+                    mode='constant', constant_values=pad_val)
+    temp = func(padded, **kwargs)
+    result = extract_subsection(im=temp, shape=im.shape)
+    return result
+
+
 def trim_small_clusters(im, size=1):
     r"""
-    Remove isolated voxels or clusters smaller than a given size
+    Remove isolated voxels or clusters of a given size or smaller
 
     Parameters
     ----------
@@ -1241,12 +1273,12 @@ def local_thickness(im, sizes=25, mode="hybrid"):
 
 def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode="hybrid"):
     r"""
-    Performs a porosimetry simulution on the image
+    Performs a porosimetry simulution on an image
 
     Parameters
     ----------
     im : ND-array
-        An ND image of the porous material containing True values in the
+        An ND image of the porous material containing ``True`` values in the
         pore space.
 
     sizes : array_like or scalar
@@ -1255,7 +1287,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode="hybrid"):
         the min and max of the distance transform are used.
 
     inlets : ND-array, boolean
-        A boolean mask with True values indicating where the invasion
+        A boolean mask with ``True`` values indicating where the invasion
         enters the image.  By default all faces are considered inlets,
         akin to a mercury porosimetry experiment.  Users can also apply
         solid boundaries to their image externally before passing it in,
@@ -1264,7 +1296,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode="hybrid"):
 
     access_limited : Boolean
         This flag indicates if the intrusion should only occur from the
-        surfaces (``access_limited`` is True, which is the default), or
+        surfaces (``access_limited`` is ``True``, which is the default), or
         if the invading phase should be allowed to appear in the core of
         the image.  The former simulates experimental tools like mercury
         intrusion porosimetry, while the latter is useful for comparison
@@ -1298,7 +1330,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode="hybrid"):
         capillary pressure by applying a boolean comparison:
         ``inv_phase = im > r`` where ``r`` is the radius (in voxels) of the
         invading sphere.  Of course, ``r`` can be converted to capillary
-        pressure using your favorite model.
+        pressure using a preferred model.
 
     Notes
     -----
@@ -1309,13 +1341,12 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode="hybrid"):
 
     See Also
     --------
-    fftmorphology
     local_thickness
 
     """
     if im.ndim != im.squeeze().ndim:
         warnings.warn(
-            "Input image conains a singleton axis:"
+            "Input image contains a singleton axis:"
             + str(im.shape)
             + " Reduce dimensionality with np.squeeze(im) to avoid"
             + " unexpected behavior."
@@ -1369,7 +1400,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode="hybrid"):
                 imtemp = fftconvolve(imtemp, strel(r), mode="same") > 0.0001
                 imresults[(imresults == 0) * imtemp] = r
     else:
-        raise Exception("Unreckognized mode " + mode)
+        raise Exception("Unrecognized mode " + mode)
     return imresults
 
 
@@ -1406,13 +1437,11 @@ def trim_disconnected_blobs(im, inlets, strel=None):
         inlets = inlets.astype(bool)
     else:
         raise Exception("inlets not valid, refer to docstring for info")
-    from skimage.morphology import square
-
     if im.ndim == 3:
-        square = cube
+        strel = cube
     else:
-        square = square
-    labels = spim.label(inlets + (im > 0), structure=square(3))[0]
+        strel = square
+    labels = spim.label(inlets + (im > 0), structure=strel(3))[0]
     keep = np.unique(labels[inlets])
     keep = keep[keep > 0]
     if len(keep) > 0:
@@ -1600,15 +1629,13 @@ def prune_branches(skel, branch_points=None, iterations=1):
     return im_result
 
 
-def chunked_func(
-    func,
-    overlap=None,
-    divs=2,
-    cores=None,
-    im_arg=["input", "image", "im"],
-    strel_arg=["strel", "structure", "footprint"],
-    **kwargs
-):
+def chunked_func(func,
+                 overlap=None,
+                 divs=2,
+                 cores=None,
+                 im_arg=["input", "image", "im"],
+                 strel_arg=["strel", "structure", "footprint"],
+                 **kwargs):
     r"""
     Performs the specfied operation "chunk-wise" in parallel
 
