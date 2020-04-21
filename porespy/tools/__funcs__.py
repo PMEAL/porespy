@@ -1263,7 +1263,7 @@ def size_to_seq(size, bins=None):
     return vals
 
 
-def seq_to_satn(seq):
+def seq_to_satn(seq, solid=0, uninvaded=-1):
     r"""
     Converts an image of invasion sequence values to saturation values.
 
@@ -1271,8 +1271,12 @@ def seq_to_satn(seq):
     ----------
     seq : ND-image
         The image containing invasion sequence values in each voxel.
-        Note that the invasion steps must be positive integers, solid voxels
-        indicated by 0, and uninvaded voxels indicated by -1.
+    solid : int
+        The integer value in ``seq`` corresponding to solid voxels.  The
+        default is 0.
+    uninvaded : int
+        The integer value in ``seq`` corresponding to uninvaded voxels.  The
+        default is -1.
 
     Returns
     -------
@@ -1284,14 +1288,14 @@ def seq_to_satn(seq):
 
     """
     seq = sp.copy(seq).astype(int)
-    solid = seq == 0
-    uninvaded = seq == -1
+    solid_arr = seq == 0
+    uninvaded_arr = seq == -1
     seq = sp.clip(seq, a_min=0, a_max=None)
     seq = make_contiguous(seq)
     b = sp.bincount(seq.flatten())
     b[0] = 0
     c = sp.cumsum(b)
-    satn = c[seq]/((seq > 0).sum() + uninvaded.sum())
-    satn[solid] = 0.0
-    satn[uninvaded] = -1.0
+    satn = c[seq]/((seq > 0).sum() + uninvaded_arr.sum())
+    satn[solid_arr] = solid
+    satn[uninvaded_arr] = uninvaded
     return satn
