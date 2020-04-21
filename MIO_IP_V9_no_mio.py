@@ -34,7 +34,7 @@ cmap.set_over(color='white')
 cmap.set_under(color='grey')
 if 1:
     steps = 100
-    target = np.around(inv_satn, decimals=2)
+    target = np.around(inv_satn, decimals=3)
     seq = np.zeros_like(target)
     movie = []
     fig, ax = plt.subplots(1, 1)
@@ -50,7 +50,22 @@ if 1:
 
 
 # %%
-inv_satn = np.digitize(ps.tools.seq_to_satn(inv_seq_2),
-                       bins=np.linspace(0, 1, 256)).astype(np.uint8)
-imageio.imwrite('IP_2D_1.tif', inv_satn, format='tif')
+satn = np.digitize(ps.tools.seq_to_satn(inv_seq_2),
+                   bins=np.linspace(0, 1, 256)).astype(np.uint8)
+imageio.imwrite('IP_2D_1.tif', satn, format='tif')
 # imageio.volwrite('IP.tif', (inv_satn*100).astype(sp.uint8), format='tif')
+
+# %%
+mk = np.zeros_like(inv_satn)
+mk[:, -2] = True
+mk = mk*(inv_satn > -1)
+mk = np.pad(mk, 1, constant_values=0)
+mk = spim.label(mk)[0]
+temp = np.copy(inv_satn)
+temp[temp == -1] = 2
+temp = np.pad(temp, 1, constant_values=2)
+mk *= 0
+mk[-3, -3] = 1
+ws = watershed(temp, mk)
+plt.imshow(ws[1:-1, 1:-1]/im)
+
