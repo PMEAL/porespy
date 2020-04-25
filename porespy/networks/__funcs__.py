@@ -149,7 +149,7 @@ def add_boundary_regions(regions=None, faces=['front', 'back', 'left',
             print('add_boundary_regions works only on 2D and 3D images')
         # ---------------------------------------------------------------------
         # Make labels contiguous
-        regions = make_contiguous(regions)
+        regions = make_contiguous(regions, mode='keep_zeros')
     else:
         regions = regions
 

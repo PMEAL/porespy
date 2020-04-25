@@ -83,7 +83,7 @@ def snow_n(im,
         if f is not None:
             snow.im = pad_faces(im=snow.im, faces=f)
         regions = regions * (snow.im.astype(bool))
-        regions = make_contiguous(regions)
+        regions = make_contiguous(regions, mode='keep_zeros')
     # -------------------------------------------------------------------------
     # Extract N phases sites and bond information from image
     net = regions_to_network(im=regions, dt=dt, voxel_size=voxel_size)

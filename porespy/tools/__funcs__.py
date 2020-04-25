@@ -1288,7 +1288,7 @@ def size_to_seq(size, bins=None):
     # Invert the vals so smallest size has largest sequence
     vals = -(vals - vals.max() - 1)*~solid
     # In case too many bins are given, remove empty ones
-    vals = make_contiguous(vals)
+    vals = make_contiguous(vals, mode='keep_zeros')
 
     # Possibly simpler way?
     #    vals = (-(size - size.max())).astype(int) + 1
