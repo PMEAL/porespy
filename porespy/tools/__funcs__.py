@@ -1297,39 +1297,36 @@ def size_to_seq(size, bins=None):
     return vals
 
 
-def seq_to_satn(seq, solid=0, uninvaded=-1):
+def seq_to_satn(seq):
     r"""
     Converts an image of invasion sequence values to saturation values.
 
     Parameters
     ----------
     seq : ND-image
-        The image containing invasion sequence values in each voxel.
-    solid : int
-        The integer value in ``seq`` corresponding to solid voxels.  The
-        default is 0.
-    uninvaded : int
-        The integer value in ``seq`` corresponding to uninvaded voxels.  The
-        default is -1.
+        The image containing invasion sequence values in each voxel.  Solid
+        should be indicated as 0's and uninvaded voxels as -1.
 
     Returns
     -------
     satn : ND-image
-        An ND-iamge the same size as ``seq`` but with sequnece values replaced
-        by the fraction of pores invaded at or below the sequence number.
-        Solid voxels and uninvaded voxels are represented by the values given
-        in ``solid`` and ``uninvaded``.
+        An ND-image the same size as ``seq`` but with sequence values replaced
+        by the fraction of void space invaded at or below the sequence number.
+        Solid voxels and uninvaded voxels are represented by 0 and -1,
+        respectively.
 
     """
     seq = sp.copy(seq).astype(int)
-    solid_arr = seq == 0
-    uninvaded_arr = seq == -1
-    seq = sp.clip(seq, a_min=0, a_max=None)
-    seq = make_contiguous(seq)
-    b = sp.bincount(seq.flatten())
-    b[0] = 0
+    solid_mask = seq == 0
+    uninvaded_mask = seq == -1
+    seq[seq <= 0] = 0
+    seq = rankdata(seq, method='dense') - 1
+    b = sp.bincount(seq)
+    if (solid_mask.sum() > 0) or (uninvaded_mask.sum() > 0):
+        b[0] = 0
     c = sp.cumsum(b)
-    satn = c[seq]/((seq > 0).sum() + uninvaded_arr.sum())
-    satn[solid_arr] = solid
-    satn[uninvaded_arr] = uninvaded
+    seq = np.reshape(seq, solid_mask.shape)
+    satn = c[seq]/(seq.size - solid_mask.sum())
+    satn[solid_mask] = 0
+    satn[uninvaded_mask] = -1
     return satn
