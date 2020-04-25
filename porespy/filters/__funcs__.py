@@ -1940,6 +1940,8 @@ def find_trapped_regions(seq, outlets=None, bins=25, return_mask=True):
         trapped voxels set to 0.
 
     """
+    if seq.max <= 1.0:
+        raise Exception('seq appears to be saturations, not invasion steps')
     seq = np.copy(seq)
     if outlets is None:
         outlets = get_border(seq.shape, mode='faces')
