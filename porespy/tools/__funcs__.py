@@ -1004,7 +1004,6 @@ def overlay(im1, im2, c):
     return im1
 
 
-
 def insert_sphere(im, c, r, v=True, overwrite=True):
     r"""
     Inserts a sphere of a specified radius into a given image
@@ -1051,8 +1050,8 @@ def insert_sphere(im, c, r, v=True, overwrite=True):
     s = bbox_to_slices(bbox)
     # Generate sphere template within image boundaries
     blank = np.ones_like(im[s], dtype=float)
-    blank[tuple(c - bbox[0:im.ndim])] = 0
-    sph = edt(blank) < r
+    blank[tuple(c - bbox[0:im.ndim])] = 0.0
+    sph = spim.distance_transform_edt(blank) < r
     if overwrite:  # Clear voxles under sphere to be zero
         temp = im[s]*sph > 0
         im[s][temp] = 0
