@@ -1,6 +1,7 @@
 import scipy as sp
 import numpy as np
 import scipy.ndimage as spim
+from scipy.stats import rankdata
 import warnings
 from edt import edt
 from collections import namedtuple
@@ -606,31 +607,41 @@ def randomize_colors(im, keep_vals=[0]):
     return im_new
 
 
-def make_contiguous(im, keep_zeros=True):
+def make_contiguous(im, mode='keep_zeros'):
     r"""
     Take an image with arbitrary greyscale values and adjust them to ensure
     all values fall in a contiguous range starting at 0.
-
-    This function will handle negative numbers such that most negative number
-    will become 0, *unless* ``keep_zeros`` is ``True`` in which case it will
-    become 1, and all 0's in the original image remain 0.
 
     Parameters
     ----------
     im : array_like
         An ND array containing greyscale values
 
-    keep_zeros : Boolean
-        If ``True`` (default) then 0 values remain 0, regardless of how the
-        other numbers are adjusted.  This is mostly relevant when the array
-        contains negative numbers, and means that -1 will become +1, while
-        0 values remain 0.
+    mode : string
+        Controls how the ranking is applied in the presence of numbers less
+        than or equal to 0.
+
+        'keep_zeros' : (default) Voxels equal to 0 remain 0, and all other
+        numbers are ranked starting at 1, include negative numbers,
+        so [-1, 0, 4] becomes [1, 0, 2]
+
+        'symmetric' : Negative and positive voxels are ranks based on their
+        respective distances to 0, so [-4, -1, 0, 5] becomes [-2, -1, 0, 1]
+
+        'clipped' : Voxels less than or equal to 0 are set to 0, while
+        all other numbers are ranked starting at 1, so [-3, 0, 2] becomes
+        [0, 0, 1].
+
+        'none' : Voxels are ranked such that the smallest or most
+        negative number becomes 1, so [-4, 2, 0] becomes [1, 3, 2].
+        This is equivalent to calling ``scipy.stats.randdata`` directly,
+        and reshaping the result to match ``im``.
 
     Returns
     -------
     image : ND-array
         An ND-array the same size as ``im`` but with all values in contiguous
-        orders.
+        order.
 
     Example
     -------
@@ -643,19 +654,42 @@ def make_contiguous(im, keep_zeros=True):
      [3 4 2]]
 
     """
-    im = sp.copy(im)
-    if keep_zeros:
-        mask = (im == 0)
-        im[mask] = im.min() - 1
-    im = im - im.min()
+    im = np.copy(im)
     im_flat = im.flatten()
-    im_vals = sp.unique(im_flat)
-    im_map = sp.zeros(shape=sp.amax(im_flat) + 1)
-    im_map[im_vals] = sp.arange(0, sp.size(sp.unique(im_flat)))
-    im_new = im_map[im_flat]
-    im_new = sp.reshape(im_new, newshape=sp.shape(im))
-    im_new = sp.array(im_new, dtype=im_flat.dtype)
-    return im_new
+
+    if mode == 'none':
+        im_new = rankdata(im_flat, method='dense')
+        im_new = np.reshape(im_new, im.shape)
+        return im_new
+
+    elif mode.startswith('clip'):
+        mask = im_flat <= 0
+        im_flat[mask] = 0
+        im_new = rankdata(im_flat, method='dense') - 1
+        im_new[mask] = 0
+        im_new = np.reshape(im_new, im.shape)
+        return im_new
+
+    elif mode.startswith('keep_zero'):
+        mask = im_flat == 0
+        im_flat[mask] = im.min() - 1
+        im_new = rankdata(im_flat, method='dense') - 1
+        im_new[mask] = 0
+        im_new = np.reshape(im_new, im.shape)
+        return im_new
+
+    elif mode.startswith('sym'):
+        mask_neg = im_flat < 0
+        im_neg = -rankdata(-im_flat[mask_neg], method='dense')
+        mask_pos = im_flat > 0
+        im_pos = rankdata(im_flat[mask_pos], method='dense')
+        im_flat[mask_pos] = im_pos
+        im_flat[mask_neg] = im_neg
+        im_new = np.reshape(im_flat, im.shape)
+        return im_new
+
+    else:
+        raise Exception("Unrecognized mode:" + mode)
 
 
 def get_border(shape, thickness=1, mode='edges', return_indices=False):

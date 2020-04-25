@@ -29,11 +29,16 @@ class ToolsTest():
         cont_im = ps.tools.make_contiguous(self.im)
         assert np.all(np.arange(np.unique(self.im).size) == np.unique(cont_im))
 
-    def test_make_contiguous_negs(self):
+    def test_make_contiguous_w_negs_and_modes(self):
         im = np.array([[0, 0, 1, 3], [-2, -4, 1, 3], [-4, 3, 5, 0]])
-        a = ps.tools.make_contiguous(im, keep_zeros=True).max()
-        b = ps.tools.make_contiguous(im, keep_zeros=False).max()
-        assert a == b
+        a = ps.tools.make_contiguous(im, mode='keep_zeros').flatten()
+        assert np.all(a == [0, 0, 3, 4, 2, 1, 3, 4, 1, 4, 5, 0])
+        b = ps.tools.make_contiguous(im, mode='clipped').flatten()
+        assert np.all(b == [0, 0, 1, 2, 0, 0, 1, 2, 0, 2, 3, 0])
+        c = ps.tools.make_contiguous(im, mode='symmetric').flatten()
+        assert np.all(c == [0, 0, 1, 2, -1, -2, 1, 2, -2, 2, 3, 0])
+        d = ps.tools.make_contiguous(im, mode='none').flatten()
+        assert np.all(d == [3, 3, 4, 5, 2, 1, 4, 5, 1, 5, 6, 3])
 
     def test_extract_subsection(self):
         sec = ps.tools.extract_subsection(self.blobs, [0.5])
