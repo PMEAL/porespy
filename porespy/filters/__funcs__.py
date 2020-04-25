@@ -1903,7 +1903,7 @@ def invade_region(im, bd, dt=None, inv=None, thickness=3, coarseness=3,
     return inv
 
 
-def find_trapped_regions(seq, outlets=None, bins=25):
+def find_trapped_regions(seq, outlets=None, bins=25, return_mask=True):
     r"""
     Find the trapped regions given an invasion sequence image
 
@@ -1925,12 +1925,19 @@ def find_trapped_regions(seq, outlets=None, bins=25):
         will provide a more accurate trapping analysis, but is more time
         consuming. If ``None`` is specified, then *all* the steps will
         analyzed, providing the highest accuracy.
+    return_mask : bool
+        If ``True`` (default) then the return image is a boolean mask
+        indicating which voxels are trapped.  If ``False``, then a copy of
+        ``seq`` is returned with the trapped voxels set to uninvaded and
+        the invasion sequence values adjusted accordingly.
 
     Returns
     -------
     trapped : ND-image
-        An image, the same size as ``seq`` with ``True`` values indicating
-        the trapped voxels.
+        An image, the same size as ``seq``.  If ``return_mask`` is ``True``,
+        then the image has ``True`` values indicating the trapped voxels.  If
+        ``return_mask`` is ``False``, then a copy of ``seq`` is returned with
+        trapped voxels set to 0.
 
     """
     seq = np.copy(seq)
@@ -1947,4 +1954,9 @@ def find_trapped_regions(seq, outlets=None, bins=25):
         labels = spim.label(temp)[0]
         keep = np.unique(labels[outlets])[1:]
         trapped += temp*np.isin(labels, keep, invert=True)
-    return trapped
+    if return_mask:
+        return trapped
+    else:
+        seq[trapped] = -1
+        seq = make_contiguous(seq, mode='symmetric')
+        return seq
