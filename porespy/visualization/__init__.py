@@ -30,4 +30,3 @@ This module contains functions for quickly visualizing 3D images in 2D views.
 from .__views__ import sem, show_planes, xray, view_3D
 from .__plots__ import imshow, bar, show_mesh
 from .__funcs__ import set_mpl_style
-from .__funcs__ import imshow
