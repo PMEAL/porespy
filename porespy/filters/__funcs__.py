@@ -70,9 +70,9 @@ def trim_small_clusters(im, size=1):
         ``size`` removed.
 
     """
-    if im.dims == 2:
+    if im.ndim == 2:
         strel = disk(1)
-    elif im.ndims == 3:
+    elif im.ndim == 3:
         strel = ball(1)
     else:
         raise Exception("Only 2D or 3D images are accepted")
