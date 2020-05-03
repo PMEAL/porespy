@@ -1254,7 +1254,7 @@ def extract_regions(regions, labels: list, trim=True):
 
 def size_to_seq(size, im=None, bins=None):
     r"""
-    Converts an image of invasion size values into sequence values.
+    Converts an image of invasion size values into sequence values
 
     This is meant to accept the output of the ``porosimetry`` function.
 
@@ -1297,6 +1297,30 @@ def size_to_seq(size, im=None, bins=None):
 
 def size_to_satn(size, im=None, bins=None):
     r"""
+    Converts an image of invasion size values into saturations
+
+    Parameters
+    ----------
+    size : ND-image
+        The image containing invasion size values in each voxel.
+    im : ND-image, optional
+        A binary image of the porous media, with ``True`` indicating the
+        void space and ``False`` indicating the solid phase. If not given
+        then it is assumed that the solid is identified as ``size == 0``.
+    bins : array_like or int (optional)
+        The bins to use when converting sizes to saturation.  The default is
+        to create 1 bin for each unique value in ``size``.  If an **int**
+        is supplied it is interpreted as the number of bins between 0 and the
+        maximum value in ``size``.  If an array is supplied it is used as
+        the bins directly.
+
+    Returns
+    -------
+    satn : ND-image
+        An ND-image the same size as ``seq`` but with sequence values replaced
+        by the fraction of void space invaded at or below the sequence number.
+        Solid voxels and uninvaded voxels are represented by 0 and -1,
+        respectively.
     """
     if bins is None:
         bins = np.unique(size)
