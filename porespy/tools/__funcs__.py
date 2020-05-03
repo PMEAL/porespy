@@ -62,7 +62,7 @@ def marching_map(path, start):
 
     Notes
     -----
-    This function requires scikit-fmm is installed on your machine. This
+    This function assumes scikit-fmm is installed on your machine. This
     package requires downloading and installing the binaries specific for your
     platform.  Mac and Linux builds are available fron conda, while windows
     builds can be downloaded from Christoph Gohlke website.
@@ -81,15 +81,16 @@ def marching_map(path, start):
 
 def align_image_with_openpnm(im):
     r"""
-    Rotates an image to agree with the coordinates used in OpenPNM.  It is
-    unclear why they are not in agreement to start with.  This is necessary
-    for overlaying the image and the network in Paraview.
+    Rotates an image to agree with the coordinates used in OpenPNM.
+
+    It is unclear why they are not in agreement to start with.  This is
+    necessary for overlaying the image and the network in Paraview.
 
     Parameters
     ----------
     im : ND-array
-        The image to be rotated.  Can be the Boolean image of the pore space or
-        any other image of interest.
+        The image to be rotated.  Can be the Boolean image of the pore space
+        or any other image of interest.
 
     Returns
     -------
@@ -97,7 +98,7 @@ def align_image_with_openpnm(im):
         Returns a copy of ``im`` rotated accordingly.
     """
     if im.ndim != im.squeeze().ndim:
-        warnings.warn('Input image conains a singleton axis:' + str(im.shape) +
+        warnings.warn('Input image contains a singleton axis:' + str(im.shape) +
                       ' Reduce dimensionality with np.squeeze(im) to avoid' +
                       ' unexpected behavior.')
     im = sp.copy(im)
@@ -305,7 +306,7 @@ def bbox_to_slices(bbox):
     return ret
 
 
-def find_outer_region(im, r=0):
+def find_outer_region(im, r=None):
     r"""
     Finds regions of the image that are outside of the solid matrix.
 
@@ -334,12 +335,11 @@ def find_outer_region(im, r=0):
         identified as *outside* the sample.
 
     """
-    if r == 0:
-        dt = edt(input=im)
+    dt = edt(im)
+    if r is None:
         r = int(sp.amax(dt)) * 2
     im_padded = sp.pad(array=im, pad_width=r, mode='constant',
                        constant_values=True)
-    dt = edt(input=im_padded)
     seeds = (dt >= r) + get_border(shape=im_padded.shape)
     # Remove seeds not connected to edges
     labels = spim.label(seeds)[0]
@@ -1252,7 +1252,7 @@ def extract_regions(regions, labels: list, trim=True):
     return im_new
 
 
-def size_to_seq(size, bins=None):
+def size_to_seq(size, im=None, bins=None):
     r"""
     Converts an image of invasion size values into sequence values.
 
@@ -1262,6 +1262,10 @@ def size_to_seq(size, bins=None):
     ----------
     size : ND-image
         The image containing invasion size values in each voxel.
+    im : ND-image, optional
+        A binary image of the porous media, with ``True`` indicating the
+        void space and ``False`` indicating the solid phase. If not given
+        then it is assumed that the solid is identified as ``size == 0``.
     bins : array_like or int (optional)
         The bins to use when converting sizes to sequence.  The default is
         to create 1 bin for each unique value in ``size``.  If an **int**
@@ -1288,15 +1292,29 @@ def size_to_seq(size, bins=None):
     vals = -(vals - vals.max() - 1)*~solid
     # In case too many bins are given, remove empty ones
     vals = make_contiguous(vals, mode='keep_zeros')
-
-    # Possibly simpler way?
-    #    vals = (-(size - size.max())).astype(int) + 1
-    #    vals[vals > size.max()] = 0
-
     return vals
 
 
-def seq_to_satn(seq):
+def size_to_satn(size, im=None, bins=None):
+    r"""
+    """
+    if bins is None:
+        bins = np.unique(size)
+    elif isinstance(bins, int):
+        bins = np.linspace(0, size.max(), bins)
+    if im is None:
+        im = (size != 0)
+    void_vol = im.sum()
+    satn = -np.ones_like(size, dtype=float)
+    for r in bins[-1:0:-1]:
+        hits = (size >= r) * (size > 0)
+        temp = hits.sum()/void_vol
+        satn[hits * (satn == -1)] = temp
+    satn *= (im > 0)
+    return satn
+
+
+def seq_to_satn(seq, im=None):
     r"""
     Converts an image of invasion sequence values to saturation values.
 
@@ -1305,6 +1323,10 @@ def seq_to_satn(seq):
     seq : ND-image
         The image containing invasion sequence values in each voxel.  Solid
         should be indicated as 0's and uninvaded voxels as -1.
+    im : ND-image, optional
+        A binary image of the porous media, with ``True`` indicating the
+        void space and ``False`` indicating the solid phase. If not given
+        then it is assumed that the solid is identified as ``seq == 0``.
 
     Returns
     -------
@@ -1316,7 +1338,10 @@ def seq_to_satn(seq):
 
     """
     seq = sp.copy(seq).astype(int)
-    solid_mask = seq == 0
+    if im is None:
+        solid_mask = seq == 0
+    else:
+        solid_mask = im == 0
     uninvaded_mask = seq == -1
     seq[seq <= 0] = 0
     seq = rankdata(seq, method='dense') - 1
