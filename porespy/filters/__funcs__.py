@@ -1364,9 +1364,10 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode="hybrid"):
 
     if im.ndim == 2:
         strel = ps_disk
+        strel_2 = disk
     else:
         strel = ps_ball
-
+        strel_2 = ball
     if mode == "mio":
         pw = int(np.floor(dt.max()))
         impad = np.pad(im, mode="symmetric", pad_width=pw)
@@ -1376,7 +1377,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode="hybrid"):
         for r in tqdm(sizes, file=sys.stdout):
             imtemp = fftmorphology(impad, strel(r), mode="erosion")
             if access_limited:
-                imtemp = trim_disconnected_blobs(imtemp, inlets)
+                imtemp = trim_disconnected_blobs(imtemp, inlets, strel=strel_2(1))
             imtemp = fftmorphology(imtemp, strel(r), mode="dilation")
             if np.any(imtemp):
                 imresults[(imresults == 0) * imtemp] = r
@@ -1386,7 +1387,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode="hybrid"):
         for r in tqdm(sizes, file=sys.stdout):
             imtemp = dt >= r
             if access_limited:
-                imtemp = trim_disconnected_blobs(imtemp, inlets)
+                imtemp = trim_disconnected_blobs(imtemp, inlets, strel=strel_2(1))
             if np.any(imtemp):
                 imtemp = edt(~imtemp) < r
                 imresults[(imresults == 0) * imtemp] = r
@@ -1395,7 +1396,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode="hybrid"):
         for r in tqdm(sizes, file=sys.stdout):
             imtemp = dt >= r
             if access_limited:
-                imtemp = trim_disconnected_blobs(imtemp, inlets)
+                imtemp = trim_disconnected_blobs(imtemp, inlets, strel=strel_2(1))
             if np.any(imtemp):
                 imtemp = fftconvolve(imtemp, strel(r), mode="same") > 0.0001
                 imresults[(imresults == 0) * imtemp] = r
@@ -1437,17 +1438,15 @@ def trim_disconnected_blobs(im, inlets, strel=None):
         inlets = inlets.astype(bool)
     else:
         raise Exception("inlets not valid, refer to docstring for info")
-    if im.ndim == 3:
-        strel = cube
-    else:
-        strel = square
-    labels = spim.label(inlets + (im > 0), structure=strel(3))[0]
+    if strel is None:
+        if im.ndim == 3:
+            strel = cube(3)
+        else:
+            strel = square(3)
+    labels = spim.label(inlets + (im > 0), structure=strel)[0]
     keep = np.unique(labels[inlets])
     keep = keep[keep > 0]
-    if len(keep) > 0:
-        im2 = np.reshape(np.in1d(labels, keep), newshape=im.shape)
-    else:
-        im2 = np.zeros_like(im)
+    im2 = np.isin(labels, keep)
     im2 = im2 * im
     return im2
 
@@ -1748,11 +1747,8 @@ def chunked_func(func,
                 strel = kwargs[item]
                 break
         halo = np.array(strel.shape) * (divs > 1)
-    slices = np.ravel(
-        shape_split(
-            im.shape, axis=divs, halo=halo.tolist(), tile_bounds_policy=ARRAY_BOUNDS
-        )
-    )
+    slices = np.ravel(shape_split(im.shape, axis=divs, halo=halo.tolist(),
+                                  tile_bounds_policy=ARRAY_BOUNDS))
     # Apply func to each subsection of the image
     res = []
     # print('Image will be broken into the following chunks:')
