@@ -1848,10 +1848,11 @@ def invade_region(im, bd, dt=None, inv=None, thickness=3, coarseness=3,
     step = 0
     # satn_step = 0.01
     # pbar = tqdm(total=100, unit='%_Saturation', disable=False)
+    edge = np.copy(bd)
     for _ in tqdm(range(1, max_iter)):
         # Dilate the boundary by 'thickness'
-        temp = spim.binary_dilation(input=bd,
-                                    structure=strel(max(1, thickness)))
+        temp = spim.binary_dilation(input=bd, structure=strel(max(1, thickness)))
+        # temp = edt(~bd, parallel=8) <= thickness
         # Reduce to only the 'new' boundary
         edge = temp*(bd == 0)*im
         if ~np.any(edge):
@@ -1872,12 +1873,14 @@ def invade_region(im, bd, dt=None, inv=None, thickness=3, coarseness=3,
         if npts < 100*(1 + 20*(im.ndim == 3)):
             for i in range(len(pt[0])):
                 c = tuple([pt[j][i] for j in range(len(pt))])
-                inv = insert_sphere(im=inv, c=np.array(c), r=dt[c], v=_,
+                inv = insert_sphere(im=inv, c=np.array(c), r=dt[c], v=step,
                                     overwrite=False)
         else:  # If many points, just use a dilation on whole image
-            blobs = fftmorphology(im=temp, strel=strel(r_max), mode='dilation')
+            # blobs = fftmorphology(im=temp, strel=strel(r_max), mode='dilation')
+            blobs = edt(~temp, parallel=8) <= r_max
             mask = inv == 0
             inv[mask] = blobs[mask]*step
+
         # Update the boundary image with the newly invaded points
         bd[pt] = True
         # Calculate the image saturation
