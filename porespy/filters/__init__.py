@@ -71,7 +71,8 @@ altered values.
 .. autofunction:: trim_small_clusters
 
 """
-
+from .__mio_with_gravity__ import dilate_im_gravity, Connectivity_Check
+from .__mio_with_gravity__ import eliminate_overlapping, _erode_im, _dilate_im
 from .__funcs__ import apply_chords
 from .__funcs__ import apply_chords_3D
 from .__funcs__ import apply_padded
