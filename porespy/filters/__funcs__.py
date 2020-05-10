@@ -1835,9 +1835,8 @@ def invade_region(im, bd, dt=None, inv=None, thickness=3, coarseness=3,
         dt = edt(im)
     # Coarsen the dt to nearest integer or more
     coarseness = max(1, coarseness)
-    dt_coarse = np.digitize(dt, bins=np.arange(0, dt.max(), coarseness))
-    dt_coarse = dt_coarse/dt_coarse.max()*np.around(dt.max(), decimals=0)
-    dt_coarse = dt_coarse.astype(int)
+    dt_coarse = np.digitize(dt, bins=np.arange(1, dt.max(), coarseness))
+    dt_coarse = (dt_coarse/dt_coarse.max()*dt.max()).astype(int)
     # Process the boundary image
     bd = np.copy(bd > 0)
     if im.ndim == 3:
@@ -1849,51 +1848,54 @@ def invade_region(im, bd, dt=None, inv=None, thickness=3, coarseness=3,
     # satn_step = 0.01
     # pbar = tqdm(total=100, unit='%_Saturation', disable=False)
     edge = np.copy(bd)
-    for _ in tqdm(range(1, max_iter)):
-        # Dilate the boundary by 'thickness'
-        temp = spim.binary_dilation(input=bd, structure=strel(max(1, thickness)))
-        # temp = edt(~bd, parallel=8) <= thickness
-        # Reduce to only the 'new' boundary
-        edge = temp*(bd == 0)*im
-        if ~np.any(edge):
-            print('\nNo more accessible invasion sites found...exiting')
-            break
-        # Find the maximum value of the dt underlaying the new edge
-        r_max = dt_coarse[edge].max()
-        # Find all values of the dt with that size
-        dt_thresh = dt_coarse >= r_max
-        temp = edge*dt_thresh
-        # Convert found voxels to a list of points
-        pt = np.where(temp)
-        npts = len(pt[0])
-        # Increment to step count
-        if npts > 0:
-            step += 1
-        # If the number of points is smallish, add spheres individually
-        if npts < 100*(1 + 20*(im.ndim == 3)):
-            for i in range(len(pt[0])):
-                c = tuple([pt[j][i] for j in range(len(pt))])
-                inv = insert_sphere(im=inv, c=np.array(c), r=dt[c], v=step,
-                                    overwrite=False)
-        else:  # If many points, just use a dilation on whole image
-            # blobs = fftmorphology(im=temp, strel=strel(r_max), mode='dilation')
-            blobs = edt(~temp, parallel=8) <= r_max
-            mask = inv == 0
-            inv[mask] = blobs[mask]*step
+    with tqdm(range(1, max_iter)) as pbar:
+        for _ in range(1, max_iter):
+            pbar.update()
+            # Dilate the boundary by 'thickness'
+            temp = spim.binary_dilation(input=bd, structure=strel(max(1, thickness)))
+            # temp = edt(~bd, parallel=8) <= thickness
+            # Reduce to only the 'new' boundary
+            edge = temp*(bd == 0)*im
+            if ~np.any(edge):
+                print('\nNo more accessible invasion sites found...exiting')
+                break
+            # Find the maximum value of the dt underlaying the new edge
+            r_max = dt_coarse[edge].max()
+            # Find all values of the dt with that size
+            dt_thresh = dt_coarse >= r_max
+            temp = edge*dt_thresh
+            # Convert found voxels to a list of points
+            pt = np.where(temp)
+            npts = len(pt[0])
+            # Increment to step count
+            if npts > 0:
+                step += 1
+            # If the number of points is smallish, add spheres individually
+            if npts < 100*(1 + 20*(im.ndim == 3)):
+                for i in range(len(pt[0])):
+                    c = tuple([pt[j][i] for j in range(len(pt))])
+                    inv = insert_sphere(im=inv, c=np.array(c), r=int(dt[c]),
+                                        v=step, overwrite=False)
+            else:  # If many points, just use a dilation on whole image
+                # blobs = fftmorphology(im=temp, strel=strel(r_max), mode='dilation')
+                blobs = edt(~temp, parallel=8) <= r_max
+                mask = inv == 0
+                inv[mask] = blobs[mask]*step
 
-        # Update the boundary image with the newly invaded points
-        bd[pt] = True
-        # Calculate the image saturation
-        # satn = (inv[im] > 0).sum()/im.sum()
-        # if satn > satn_step:
-        #     # pbar.update()
-        #     satn_step = np.around(satn, decimals=2) + 0.01
-        # If no more uninvaded voxels, end loop
-        if (inv == 0).sum() == 0:
-            print('\nAll available void space is filled...exiting')
-            break
-        if _ == (max_iter - 1):
-            print('\nMaximum number of iterations reached...exiting')
+            # Update the boundary image with the newly invaded points
+            bd[pt] = True
+            # Calculate the image saturation
+            # satn = (inv[im] > 0).sum()/im.sum()
+            # if satn > satn_step:
+            #     # pbar.update()
+            #     satn_step = np.around(satn, decimals=2) + 0.01
+            # If no more uninvaded voxels, end loop
+            if (inv == 0).sum() == 0:
+                print('\nAll available void space is filled...exiting')
+                break
+            if _ == (max_iter - 1):
+                print('\nMaximum number of iterations reached...exiting')
+                break
     # Convert inv image such that uninvaded voxels are set to -1 and solid to 0
     temp = inv == 0
     inv[~im] = 0
