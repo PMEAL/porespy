@@ -1829,7 +1829,7 @@ def invade_region(im, bd, dt=None, inv=None, thickness=3, coarseness=3,
     porosimetry
 
     """
-    # Initialize image with -1 in the solid, and 0's in the void
+    # Initialize inv image with -1 in the solid, and 0's in the void
     inv = -1*((~im).astype(int))
     if dt is None:  # Find dt if not given
         dt = edt(im)
@@ -1839,18 +1839,19 @@ def invade_region(im, bd, dt=None, inv=None, thickness=3, coarseness=3,
     dt_coarse = (dt_coarse/dt_coarse.max()*dt.max()).astype(int)
     # Process the boundary image
     bd = np.copy(bd > 0)
+    edge = np.copy(bd)
+    # Fetch the correct strel for dilation
     if im.ndim == 3:
         strel = ball
     else:
         strel = disk
-    # Intialize loop variables
-    edge = np.copy(bd)
     with tqdm(range(1, max_iter)) as pbar:
         for step in range(1, max_iter):
             pbar.update()
-            # Dilate the boundary by 'thickness'
+            # Dilate the boundary by given 'thickness'
             temp = spim.binary_dilation(input=bd,
                                         structure=strel(max(1, thickness)))
+            # The following may be useful on large 3D images...explore later
             # temp = edt(~bd, parallel=8) <= thickness
             # Reduce to only the 'new' boundary
             edge = temp*(bd == 0)*im
@@ -1864,22 +1865,19 @@ def invade_region(im, bd, dt=None, inv=None, thickness=3, coarseness=3,
             temp = edge*dt_thresh
             # Convert found voxels to a list of points
             pt = np.where(temp)
-            npts = len(pt[0])
-            # If the number of points is smallish, add spheres individually
+            # The following for-loop could be implemented with Numba
             for i in range(len(pt[0])):
                 c = tuple([pt[j][i] for j in range(len(pt))])
                 inv = insert_sphere(im=inv, c=np.array(c), r=int(dt[c]),
                                     v=step, overwrite=False)
-            # Update the boundary image with the newly invaded points
-            bd[pt] = True
-            # If no more uninvaded voxels, end loop
-            if (inv == 0).sum() == 0:
+            bd[pt] = True  # Update boundary image with newly invaded points
+            if (inv == 0).sum() == 0:  # If no more uninvaded voxels, end loop
                 print('\nAll available void space is filled...exiting')
                 break
-            if step == (max_iter - 1):
+            if step == (max_iter - 1):  # If max_iters reached, end loop
                 print('\nMaximum number of iterations reached...exiting')
                 break
-    # Convert inv image such that uninvaded voxels are set to -1 and solid to 0
+    # Convert inv image so that uninvaded voxels are set to -1 and solid to 0
     temp = inv == 0
     inv[~im] = 0
     inv[temp] = -1
