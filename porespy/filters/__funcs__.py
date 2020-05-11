@@ -1824,7 +1824,7 @@ def invade_region(im, bd, dt=None, inv=None, max_iter=10000):
     if dt is None:  # Find dt if not given
         dt = edt(im)
     # Conert the dt to nearest integer or more
-    dt_coarse = dt.astype(int)
+    dt = dt.astype(int)
     # Process the boundary image
     bd = np.copy(bd > 0)
     edge = np.copy(bd)
@@ -1842,11 +1842,9 @@ def invade_region(im, bd, dt=None, inv=None, max_iter=10000):
                 temp = spim.binary_dilation(input=bd, structure=strel(1))
             elif mode == 'insert':
                 pt = np.where(bd)
-                r = np.ones_like(pt[0], dtype=int)
-                v = np.ones_like(r)
                 temp = _insert_disks_at_points_numba(im=np.copy(bd),
                                                      coords=pt,
-                                                     radii=r, vals=v,
+                                                     r=1, vals=1,
                                                      smooth=False)
             elif mode == 'edt':
                 temp = edt(~bd, parallel=8) <= 1
@@ -1856,17 +1854,13 @@ def invade_region(im, bd, dt=None, inv=None, max_iter=10000):
                 print('\nNo more accessible invasion sites found...exiting')
                 break
             # Find the maximum value of the dt underlaying the new edge
-            r_max = dt_coarse[edge].max()
+            r_max = dt[edge].max()
             # Find all values of the dt with that size
-            dt_thresh = dt_coarse >= r_max
-            temp = edge*dt_thresh
-            # Convert found voxels to a list of points
-            pt = np.where(temp)
-            # The following for-loop could be implemented with Numba
-            radii = dt[pt].astype(int)
-            vals = np.ones_like(radii)*step
+            dt_thresh = dt >= r_max
+            pt = np.where(edge*dt_thresh)
             inv = _insert_disks_at_points_numba(im=inv, coords=pt,
-                                                radii=radii, vals=vals)
+                                                r=r_max, v=step,
+                                                smooth=True)
             bd[pt] = True  # Update boundary image with newly invaded points
             if (inv == 0).sum() == 0:  # If no more uninvaded voxels, end loop
                 print('\nAll available void space is filled...exiting')
@@ -1883,14 +1877,58 @@ def invade_region(im, bd, dt=None, inv=None, max_iter=10000):
 
 
 @numba.jit(nopython=True, parallel=False)
-def _insert_disks_at_points_numba(im, coords, radii, vals, smooth=True):
+def _make_disks(r, smooth=True):
+    disks = [np.atleast_2d(np.array([]))]
+    for val in range(1, r):
+        disk = _make_disk(val, smooth)
+        disks.append(disk)
+    return disks
+
+
+@numba.jit(nopython=True, parallel=False)
+def _make_balls(r, smooth=True):
+    balls = [np.atleast_3d(np.array([]))]
+    for val in range(1, r):
+        ball = _make_balls(val, smooth)
+        balls.append(ball)
+    return balls
+
+
+@numba.jit(nopython=True, parallel=False)
+def _insert_disks_at_points_numba(im, coords, r, v, smooth=True):
+    r"""
+    Insert disks into the given 2D image at given locations
+
+    This function uses numba to accelerate the process, and does not
+    overwrite any existing values (i.e. only writes to locations containing
+    zeros).
+
+    Parameters
+    ----------
+    im : 2D-array
+        The image into which the disks should be inserted. This is an
+        'in-place' operation.
+    coords : tuple of 1D-arrays
+        The center point of each disk. The expected format is the same
+        as that returned by ``numpy.where``.
+    r : int
+        The radius of all the disks to add. It is assumed that all disks
+        are the same radius.
+    v : scalar
+        The value to insert for each sphere.
+    smooth : boolean
+        If ``True`` (default) then the disks will not have the litte nibs
+        on the surfaces.
+
+    See Also
+    --------
+    _insert_spheres_at_points_numba
+    """
     npts = coords[0].size
     xlim, ylim = im.shape
+    s = _make_disk(r, smooth)
     for i in range(npts):
-        r = radii[i]
-        v = vals[i]
         c = np.array([coords[j][i] for j in range(len(coords))])
-        s = _make_disk(r, smooth)
         for a, x in enumerate(range(c[0] - r, c[0] + r + 1)):
             if (x >= 0) and (x < xlim):
                 for b, y in enumerate(range(c[1] - r, c[1] + r + 1)):
@@ -1901,14 +1939,12 @@ def _insert_disks_at_points_numba(im, coords, radii, vals, smooth=True):
 
 
 @numba.jit(nopython=True, parallel=False)
-def _insert_spheres_at_points_numba(im, coords, radii, vals, smooth=True):
+def _insert_spheres_at_points_numba(im, coords, r, v, smooth=True):
     npts = coords[0].size
     xlim, ylim, zlim = im.shape
+    s = _make_ball(r, smooth)
     for i in range(npts):
-        r = radii[i]
-        v = vals[i]
         c = np.array([coords[j][i] for j in range(len(coords))])
-        s = _make_disk(r, smooth)
         for a, x in enumerate(range(c[0] - r, c[0] + r + 1)):
             if (x >= 0) and (x < xlim):
                 for b, y in enumerate(range(c[1] - r, c[1] + r + 1)):
