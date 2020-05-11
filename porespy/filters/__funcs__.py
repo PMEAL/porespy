@@ -1789,7 +1789,7 @@ def chunked_func(func,
     return im2
 
 
-def invade_region(im, bd, dt=None, inv=None, max_iter=10000):
+def invade_region(im, bd, dt=None, inv=None, mode='morph', max_iter=10000):
     r"""
     Performs invasion percolation on given image using iterative image dilation
 
@@ -1807,6 +1807,18 @@ def invade_region(im, bd, dt=None, inv=None, max_iter=10000):
         The number of steps to apply before stopping.  The default is to run
         for 10,000 steps which is almost certain to reach completion if the
         image is smaller than about 250-cubed.
+    mode : str
+        The method used to dilate the border on each iteration.  They all
+        give identical results, but may some may have better performance than
+        other depending on image size and dimensions.  Options are:
+
+            'morph' - Uses ``scipy.ndimage.binary_dilation`` with a spherical
+            or cirular structuring element of radius 1.  This is the default.
+
+            'insert' - Using a ``numba`` jit for-loop to insert spheres or
+            disks of radius 1 at all border locations.
+
+            'edt' - Using the ``edt`` package to compute a dilation.
 
     Returns
     -------
@@ -1833,7 +1845,6 @@ def invade_region(im, bd, dt=None, inv=None, max_iter=10000):
         strel = ball
     else:
         strel = disk
-    mode = 'morph'
     with tqdm(range(1, max_iter)) as pbar:
         for step in range(1, max_iter):
             pbar.update()
@@ -1844,7 +1855,7 @@ def invade_region(im, bd, dt=None, inv=None, max_iter=10000):
                 pt = np.where(bd)
                 temp = _insert_disks_at_points_numba(im=np.copy(bd),
                                                      coords=pt,
-                                                     r=1, vals=1,
+                                                     r=1, v=1,
                                                      smooth=False)
             elif mode == 'edt':
                 temp = edt(~bd, parallel=8) <= 1
@@ -1857,14 +1868,12 @@ def invade_region(im, bd, dt=None, inv=None, max_iter=10000):
             r_max = dt[edge].max()
             # Find all values of the dt with that size
             dt_thresh = dt >= r_max
+            # Extract the actual coordinates of the insertion sites
             pt = np.where(edge*dt_thresh)
             inv = _insert_disks_at_points_numba(im=inv, coords=pt,
                                                 r=r_max, v=step,
                                                 smooth=True)
             bd[pt] = True  # Update boundary image with newly invaded points
-            if (inv == 0).sum() == 0:  # If no more uninvaded voxels, end loop
-                print('\nAll available void space is filled...exiting')
-                break
             if step == (max_iter - 1):  # If max_iters reached, end loop
                 print('\nMaximum number of iterations reached...exiting')
                 break
