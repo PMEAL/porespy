@@ -1852,11 +1852,9 @@ def invade_region(im, bd, dt=None, inv=None, mode='morph', max_iter=10000):
             if mode == 'morph':
                 temp = spim.binary_dilation(input=bd, structure=strel(1))
             elif mode == 'insert':
-                pt = np.where(bd)
-                temp = _insert_disks_at_points_numba(im=np.copy(bd),
-                                                     coords=pt,
-                                                     r=1, v=1,
-                                                     smooth=False)
+                pt = np.vstack(np.where(bd))
+                temp = _insert_disks_at_points(im=np.copy(bd), coords=pt,
+                                               r=1, v=1, smooth=False)
             elif mode == 'edt':
                 temp = edt(~bd, parallel=8) <= 1
             # Reduce to only the 'new' boundary
@@ -1869,10 +1867,9 @@ def invade_region(im, bd, dt=None, inv=None, mode='morph', max_iter=10000):
             # Find all values of the dt with that size
             dt_thresh = dt >= r_max
             # Extract the actual coordinates of the insertion sites
-            pt = np.where(edge*dt_thresh)
-            inv = _insert_disks_at_points_numba(im=inv, coords=pt,
-                                                r=r_max, v=step,
-                                                smooth=True)
+            pt = np.where(edge*dt_thresh)  # Keep as tuple for later use
+            inv = _insert_disks_at_points(im=inv, coords=np.vstack(pt),
+                                          r=r_max, v=step, smooth=True)
             bd[pt] = True  # Update boundary image with newly invaded points
             if step == (max_iter - 1):  # If max_iters reached, end loop
                 print('\nMaximum number of iterations reached...exiting')
@@ -1887,6 +1884,24 @@ def invade_region(im, bd, dt=None, inv=None, mode='morph', max_iter=10000):
 
 @numba.jit(nopython=True, parallel=False)
 def _make_disks(r, smooth=True):
+    r"""
+    Returns a list of disks from size 0 to ``r``
+
+    Parameters
+    ----------
+    r : int
+        The size of the largest disk to generate
+    smooth : bool
+        Indicates whether the disks should include the nibs (``False``) on
+        the surface or not (``True``).  The default is ``True``.
+
+    Returns
+    -------
+    disks : list of ND-arrays
+        A list containing the disk images, with the disk of radius R at index
+        R of the list, meaning it can be accessed as ``disks[R]``.
+
+    """
     disks = [np.atleast_2d(np.array([]))]
     for val in range(1, r):
         disk = _make_disk(val, smooth)
@@ -1896,17 +1911,35 @@ def _make_disks(r, smooth=True):
 
 @numba.jit(nopython=True, parallel=False)
 def _make_balls(r, smooth=True):
+    r"""
+    Returns a list of balls from size 0 to ``r``
+
+    Parameters
+    ----------
+    r : int
+        The size of the largest ball to generate
+    smooth : bool
+        Indicates whether the balls should include the nibs (``False``) on
+        the surface or not (``True``).  The default is ``True``.
+
+    Returns
+    -------
+    balls : list of ND-arrays
+        A list containing the ball images, with the ball of radius R at index
+        R of the list, meaning it can be accessed as ``balls[R]``.
+
+    """
     balls = [np.atleast_3d(np.array([]))]
     for val in range(1, r):
-        ball = _make_balls(val, smooth)
+        ball = _make_ball(val, smooth)
         balls.append(ball)
     return balls
 
 
 @numba.jit(nopython=True, parallel=False)
-def _insert_disks_at_points_numba(im, coords, r, v, smooth=True):
+def _insert_disks_at_points(im, coords, r, v, smooth=True):
     r"""
-    Insert disks into the given 2D image at given locations
+    Insert spheres (or disks) into the given ND image at given locations
 
     This function uses numba to accelerate the process, and does not
     overwrite any existing values (i.e. only writes to locations containing
@@ -1914,53 +1947,47 @@ def _insert_disks_at_points_numba(im, coords, r, v, smooth=True):
 
     Parameters
     ----------
-    im : 2D-array
-        The image into which the disks should be inserted. This is an
+    im : ND-array
+        The image into which the spheres/disks should be inserted. This is an
         'in-place' operation.
-    coords : tuple of 1D-arrays
-        The center point of each disk. The expected format is the same
-        as that returned by ``numpy.where``.
+    coords : ND-array
+        The center point of each sphere/disk in an array of shape
+        ``ndim by npts``
     r : int
-        The radius of all the disks to add. It is assumed that all disks
-        are the same radius.
+        The radius of all the spheres/disks to add. It is assumed that they
+        are all the same radius.
     v : scalar
-        The value to insert for each sphere.
+        The value to insert
     smooth : boolean
-        If ``True`` (default) then the disks will not have the litte nibs
-        on the surfaces.
+        If ``True`` (default) then the spheres/disks will not have the litte
+        nibs on the surfaces.
 
-    See Also
-    --------
-    _insert_spheres_at_points_numba
     """
-    npts = coords[0].size
-    xlim, ylim = im.shape
-    s = _make_disk(r, smooth)
-    for i in range(npts):
-        c = np.array([coords[j][i] for j in range(len(coords))])
-        for a, x in enumerate(range(c[0] - r, c[0] + r + 1)):
-            if (x >= 0) and (x < xlim):
-                for b, y in enumerate(range(c[1] - r, c[1] + r + 1)):
-                    if (y >= 0) and (y < ylim):
-                        if (s[a, b] == 1) and (im[x, y] == 0):
-                            im[x, y] = v
-    return im
-
-
-@numba.jit(nopython=True, parallel=False)
-def _insert_spheres_at_points_numba(im, coords, r, v, smooth=True):
-    npts = coords[0].size
-    xlim, ylim, zlim = im.shape
-    s = _make_ball(r, smooth)
-    for i in range(npts):
-        c = np.array([coords[j][i] for j in range(len(coords))])
-        for a, x in enumerate(range(c[0] - r, c[0] + r + 1)):
-            if (x >= 0) and (x < xlim):
-                for b, y in enumerate(range(c[1] - r, c[1] + r + 1)):
-                    if (y >= 0) and (y < ylim):
-                        for c, z in enumerate(range(c[2] - r, c[2] + r + 1)):
-                            if (s[a, b, c] == 1) and (im[x, y, z] == 0):
-                                im[x, y, z] = v
+    npts = len(coords[0])
+    if im.ndim == 2:
+        xlim, ylim = im.shape
+        s = _make_disk(r, smooth)
+        for i in range(npts):
+            pt = coords[:, i]
+            for a, x in enumerate(range(pt[0]-r, pt[0]+r+1)):
+                if (x >= 0) and (x < xlim):
+                    for b, y in enumerate(range(pt[1]-r, pt[1]+r+1)):
+                        if (y >= 0) and (y < ylim):
+                            if (s[a, b] == 1) and (im[x, y] == 0):
+                                im[x, y] = v
+    elif im.ndim == 3:
+        xlim, ylim, zlim = im.shape
+        s = _make_ball(r, smooth)
+        for i in range(npts):
+            pt = coords[:, i]
+            for a, x in enumerate(range(pt[0]-r, pt[0]+r+1)):
+                if (x >= 0) and (x < xlim):
+                    for b, y in enumerate(range(pt[1]-r, pt[1]+r+1)):
+                        if (y >= 0) and (y < ylim):
+                            for c, z in enumerate(range(pt[2]-r, pt[2]+r+1)):
+                                if (z >= 0) and (z < zlim):
+                                    if (s[a, b, c] == 1) and (im[x, y, z] == 0):
+                                        im[x, y, z] = v
     return im
 
 
