@@ -1835,8 +1835,11 @@ def invade_region(im, bd, dt=None, inv=None, thickness=3, coarseness=3,
         dt = edt(im)
     # Coarsen the dt to nearest integer or more
     coarseness = max(1, coarseness)
-    dt_coarse = np.digitize(dt, bins=np.arange(1, dt.max(), coarseness))
-    dt_coarse = (dt_coarse/dt_coarse.max()*dt.max()).astype(int)
+    bins = np.linspace(1, np.ceil(dt.max()), int(dt.max()/coarseness))
+    bins = np.hstack(([0], bins))
+    temp = np.digitize(dt, bins=bins, right=True)
+    dt_coarse = bins[temp]
+    dt_coarse = dt.astype(int)
     # Process the boundary image
     bd = np.copy(bd > 0)
     edge = np.copy(bd)
@@ -1866,10 +1869,10 @@ def invade_region(im, bd, dt=None, inv=None, thickness=3, coarseness=3,
             # Convert found voxels to a list of points
             pt = np.where(temp)
             # The following for-loop could be implemented with Numba
-            for i in range(len(pt[0])):
-                c = tuple([pt[j][i] for j in range(len(pt))])
-                inv = insert_sphere(im=inv, c=np.array(c), r=int(dt[c]),
-                                    v=step, overwrite=False)
+            radii = dt[pt]
+            vals = np.ones_like(radii)*step
+            inv = _insert_spheres_at_points(im=inv, coords=pt,
+                                            radii=radii, vals=vals)
             bd[pt] = True  # Update boundary image with newly invaded points
             if (inv == 0).sum() == 0:  # If no more uninvaded voxels, end loop
                 print('\nAll available void space is filled...exiting')
@@ -1882,6 +1885,14 @@ def invade_region(im, bd, dt=None, inv=None, thickness=3, coarseness=3,
     inv[~im] = 0
     inv[temp] = -1
     inv = make_contiguous(im=inv, mode='symmetric')
+    return inv
+
+
+def _insert_spheres_at_points(im, coords, radii, vals):
+    for i in range(len(coords[0])):
+        c = tuple([coords[j][i] for j in range(len(coords))])
+        inv = insert_sphere(im=im, c=np.array(c), r=int(radii[i]), v=vals[i],
+                            overwrite=False)
     return inv
 
 
