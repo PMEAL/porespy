@@ -14,10 +14,10 @@ from skimage.morphology import ball, disk, square, cube, diamond, octahedron
 from skimage.morphology import reconstruction, watershed
 from porespy.tools import randomize_colors, fftmorphology
 from porespy.tools import get_border, extend_slice, extract_subsection
-from porespy.tools import ps_disk, ps_ball, insert_sphere, make_contiguous
+from porespy.tools import make_contiguous
 from porespy.tools import _create_alias_map
 from porespy.tools import ps_disk, ps_ball
-from numba import njit
+import numba
 
 
 def apply_padded(im, pad_width, func, pad_val=1, **kwargs):
@@ -1789,8 +1789,7 @@ def chunked_func(func,
     return im2
 
 
-def invade_region(im, bd, dt=None, inv=None, thickness=3, coarseness=3,
-                  max_iter=10000):
+def invade_region(im, bd, dt=None, inv=None, max_iter=10000):
     r"""
     Performs invasion percolation on given image using iterative image dilation
 
@@ -1804,16 +1803,6 @@ def invade_region(im, bd, dt=None, inv=None, thickness=3, coarseness=3,
     dt : ND-array (optional)
         The distance transform of ``im``.  If not provided it will be
         calculated, so supplying it saves time.
-    thickness : scalar
-        Indicates by how many voxels the boundary should be dilated on each
-        iteration when growing the invasion front.  The default is 3 which
-        balances accuracy and speed.  A value of 1 is the most accurate.
-    coarseness : scalar
-        Controls how coarsely the distance transform values are represented. A
-        value of 1 means the distance values are only converted to integers,
-        while a value of 2 means values are separated by 2 (2, 4, 6, ...),
-        and so on.  A higher value means more spheres are inserted at each
-        step so speeds up the process at the cost of accuracy.
     max_iter : scalar
         The number of steps to apply before stopping.  The default is to run
         for 10,000 steps which is almost certain to reach completion if the
@@ -1834,12 +1823,7 @@ def invade_region(im, bd, dt=None, inv=None, thickness=3, coarseness=3,
     inv = -1*((~im).astype(int))
     if dt is None:  # Find dt if not given
         dt = edt(im)
-    # Coarsen the dt to nearest integer or more
-    coarseness = max(1, coarseness)
-    bins = np.linspace(1, np.ceil(dt.max()), int(dt.max()/coarseness))
-    bins = np.hstack(([0], bins))
-    temp = np.digitize(dt, bins=bins, right=True)
-    dt_coarse = bins[temp]
+    # Conert the dt to nearest integer or more
     dt_coarse = dt.astype(int)
     # Process the boundary image
     bd = np.copy(bd > 0)
@@ -1849,14 +1833,23 @@ def invade_region(im, bd, dt=None, inv=None, thickness=3, coarseness=3,
         strel = ball
     else:
         strel = disk
+    mode = 'morph'
     with tqdm(range(1, max_iter)) as pbar:
         for step in range(1, max_iter):
             pbar.update()
             # Dilate the boundary by given 'thickness'
-            temp = spim.binary_dilation(input=bd,
-                                        structure=strel(max(1, thickness)))
-            # The following may be useful on large 3D images...explore later
-            # temp = edt(~bd, parallel=8) <= thickness
+            if mode == 'morph':
+                temp = spim.binary_dilation(input=bd, structure=strel(1))
+            elif mode == 'insert':
+                pt = np.where(bd)
+                r = np.ones_like(pt[0], dtype=int)
+                v = np.ones_like(r)
+                temp = _insert_disks_at_points_numba(im=np.copy(bd),
+                                                     coords=pt,
+                                                     radii=r, vals=v,
+                                                     smooth=False)
+            elif mode == 'edt':
+                temp = edt(~bd, parallel=8) <= 1
             # Reduce to only the 'new' boundary
             edge = temp*(bd == 0)*im
             if ~np.any(edge):
@@ -1889,23 +1882,15 @@ def invade_region(im, bd, dt=None, inv=None, thickness=3, coarseness=3,
     return inv
 
 
-def _insert_spheres_at_points(im, coords, radii, vals):
-    for i in range(len(coords[0])):
-        c = tuple([coords[j][i] for j in range(len(coords))])
-        inv = insert_sphere(im=im, c=np.array(c), r=int(radii[i]), v=vals[i],
-                            overwrite=False)
-    return inv
-
-
-@njit
-def _insert_disks_at_points_numba(im, coords, radii, vals):
+@numba.jit(nopython=True, parallel=False)
+def _insert_disks_at_points_numba(im, coords, radii, vals, smooth=True):
     npts = coords[0].size
     xlim, ylim = im.shape
     for i in range(npts):
         r = radii[i]
         v = vals[i]
         c = np.array([coords[j][i] for j in range(len(coords))])
-        s = _make_disk(r)
+        s = _make_disk(r, smooth)
         for a, x in enumerate(range(c[0] - r, c[0] + r + 1)):
             if (x >= 0) and (x < xlim):
                 for b, y in enumerate(range(c[1] - r, c[1] + r + 1)):
@@ -1915,15 +1900,15 @@ def _insert_disks_at_points_numba(im, coords, radii, vals):
     return im
 
 
-@njit
-def _insert_spheres_at_points_numba(im, coords, radii, vals):
+@numba.jit(nopython=True, parallel=False)
+def _insert_spheres_at_points_numba(im, coords, radii, vals, smooth=True):
     npts = coords[0].size
     xlim, ylim, zlim = im.shape
     for i in range(npts):
         r = radii[i]
         v = vals[i]
         c = np.array([coords[j][i] for j in range(len(coords))])
-        s = _make_disk(r)
+        s = _make_disk(r, smooth)
         for a, x in enumerate(range(c[0] - r, c[0] + r + 1)):
             if (x >= 0) and (x < xlim):
                 for b, y in enumerate(range(c[1] - r, c[1] + r + 1)):
@@ -1934,7 +1919,7 @@ def _insert_spheres_at_points_numba(im, coords, radii, vals):
     return im
 
 
-@njit
+@numba.jit(nopython=True, parallel=False)
 def _make_disk(r, smooth=True):
     s = np.zeros((2*r+1, 2*r+1), dtype=type(r))
     if smooth:
@@ -1948,7 +1933,7 @@ def _make_disk(r, smooth=True):
     return s
 
 
-@njit
+@numba.jit(nopython=True, parallel=False)
 def _make_ball(r, smooth=True):
     s = np.zeros((2*r+1, 2*r+1, 2*r+1), dtype=type(r))
     if smooth:

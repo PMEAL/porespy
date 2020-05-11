@@ -9,7 +9,7 @@ plt.rcParams['figure.facecolor'] = "#FFFFFF"
 
 # %%  Generate or load a test image
 np.random.seed(0)
-im = ps.generators.blobs(shape=[250, 500], porosity=0.6, blobiness=2)
+im = ps.generators.blobs(shape=[400, 400], porosity=0.6, blobiness=2)
 # np.save('nice_blobs', im)
 # im = np.load('nice_blobs.npy')
 pad = 50
@@ -22,11 +22,11 @@ bd = np.zeros_like(im, dtype=bool)
 bd[:, :2] = 1
 bd *= im
 # Run invasion algorithm
-inv_seq = ps.filters.invade_region(im=im, bd=bd, coarseness=1, thickness=1)
+inv_seq = ps.filters.invade_region(im=im, bd=bd)
+inv_seq = inv_seq[:, pad:]
 # Do some post-processing
 inv_seq_trapping = ps.filters.find_trapped_regions(seq=inv_seq, return_mask=False)
 inv_satn = ps.tools.seq_to_satn(seq=inv_seq)
-inv_satn_trapping = ps.tools.seq_to_satn(seq=inv_seq_trapping)
 
 
 # %%  Turn saturation image into a movie
@@ -38,6 +38,7 @@ if 0:
     cmap.set_under(color='grey')
 
     # Reduce inv_satn image to limited number of values to speed-up movie
+    inv_satn_trapping = ps.tools.seq_to_satn(seq=inv_seq_trapping)
     target = np.around(inv_satn_trapping, decimals=3)
     seq = np.zeros_like(target)  # Empty image to place frame
     movie = []  # List to append each frame
@@ -59,14 +60,14 @@ dt = edt(im)
 # sizes = np.unique(np.round(dt, decimals=0))[1:]
 # sizes = np.unique(np.floor(dt))[1:]
 # sizes = 50
-sizes = np.arange(int(dt.max())+1, 1, -1)
-mio = ps.filters.porosimetry(im=im, inlets=bd, sizes=sizes, mode='dt')
+sizes = np.arange(int(dt.max())+1, 0, -1)
+mio = ps.filters.porosimetry(im=im, inlets=bd, sizes=sizes, mode='dt')[:, pad:]
 # ps.imshow(mio)
+im = im[:, pad:]
 inv_seq_2 = ps.tools.size_to_seq(mio)
 inv_seq_2[im*(inv_seq_2 == 0)] = -1  # Adjust to set uninvaded to -1
 inv_satn_2 = ps.tools.seq_to_satn(inv_seq_2)
 inv_satn_2 = ps.tools.size_to_satn(size=mio, im=im)
-
 
 # %%
 satns = np.unique(inv_satn_2)[2::1]
@@ -85,13 +86,22 @@ for i, s in enumerate(satns):
     diff_mask[(mio_mask == 1)*(ip_mask == 0)] = 1
     diff_mask[(mio_mask == 0)*(ip_mask == 1)] = -1
 
+# %%
 plt.figure()
 plt.plot(satns, err1, 'bo')
 plt.plot(satns, err2, 'ro')
 plt.ylim([0, 0.01])
 plt.figure()
-pad = 0
-plt.imshow(diff_mask[:, pad:]/im[:, pad:], origin='xy', cmap=plt.cm.viridis)
+plt.imshow(diff_mask/im, origin='xy', cmap=plt.cm.viridis)
+
+# %%
+fig, ax = plt.subplots(2, 1)
+s = np.unique(inv_satn_2)[2]
+# s = np.unique(inv_satn)[3]
+# s = 0.009942
+ax[0].imshow(((inv_satn <= s) * (inv_satn > 0))/im)
+ax[1].imshow(((inv_satn_2 <= s) * (inv_satn_2 > 0))/im)
+
 
 # %%
 # import imageio
