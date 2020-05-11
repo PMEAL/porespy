@@ -17,6 +17,7 @@ from porespy.tools import get_border, extend_slice, extract_subsection
 from porespy.tools import ps_disk, ps_ball, insert_sphere, make_contiguous
 from porespy.tools import _create_alias_map
 from porespy.tools import ps_disk, ps_ball
+from numba import njit
 
 
 def apply_padded(im, pad_width, func, pad_val=1, **kwargs):
@@ -1869,10 +1870,10 @@ def invade_region(im, bd, dt=None, inv=None, thickness=3, coarseness=3,
             # Convert found voxels to a list of points
             pt = np.where(temp)
             # The following for-loop could be implemented with Numba
-            radii = dt[pt]
+            radii = dt[pt].astype(int)
             vals = np.ones_like(radii)*step
-            inv = _insert_spheres_at_points(im=inv, coords=pt,
-                                            radii=radii, vals=vals)
+            inv = _insert_disks_at_points_numba(im=inv, coords=pt,
+                                                radii=radii, vals=vals)
             bd[pt] = True  # Update boundary image with newly invaded points
             if (inv == 0).sum() == 0:  # If no more uninvaded voxels, end loop
                 print('\nAll available void space is filled...exiting')
@@ -1894,6 +1895,72 @@ def _insert_spheres_at_points(im, coords, radii, vals):
         inv = insert_sphere(im=im, c=np.array(c), r=int(radii[i]), v=vals[i],
                             overwrite=False)
     return inv
+
+
+@njit
+def _insert_disks_at_points_numba(im, coords, radii, vals):
+    npts = coords[0].size
+    xlim, ylim = im.shape
+    for i in range(npts):
+        r = radii[i]
+        v = vals[i]
+        c = np.array([coords[j][i] for j in range(len(coords))])
+        s = _make_disk(r)
+        for a, x in enumerate(range(c[0] - r, c[0] + r + 1)):
+            if (x >= 0) and (x < xlim):
+                for b, y in enumerate(range(c[1] - r, c[1] + r + 1)):
+                    if (y >= 0) and (y < ylim):
+                        if (s[a, b] == 1) and (im[x, y] == 0):
+                            im[x, y] = v
+    return im
+
+
+@njit
+def _insert_spheres_at_points_numba(im, coords, radii, vals):
+    npts = coords[0].size
+    xlim, ylim, zlim = im.shape
+    for i in range(npts):
+        r = radii[i]
+        v = vals[i]
+        c = np.array([coords[j][i] for j in range(len(coords))])
+        s = _make_disk(r)
+        for a, x in enumerate(range(c[0] - r, c[0] + r + 1)):
+            if (x >= 0) and (x < xlim):
+                for b, y in enumerate(range(c[1] - r, c[1] + r + 1)):
+                    if (y >= 0) and (y < ylim):
+                        for c, z in enumerate(range(c[2] - r, c[2] + r + 1)):
+                            if (s[a, b, c] == 1) and (im[x, y, z] == 0):
+                                im[x, y, z] = v
+    return im
+
+
+@njit
+def _make_disk(r, smooth=True):
+    s = np.zeros((2*r+1, 2*r+1), dtype=type(r))
+    if smooth:
+        thresh = r - 0.001
+    else:
+        thresh = r
+    for i in range(2*r+1):
+        for j in range(2*r+1):
+            if ((i - r)**2 + (j - r)**2)**0.5 <= thresh:
+                s[i, j] = 1
+    return s
+
+
+@njit
+def _make_ball(r, smooth=True):
+    s = np.zeros((2*r+1, 2*r+1, 2*r+1), dtype=type(r))
+    if smooth:
+        thresh = r - 0.001
+    else:
+        thresh = r
+    for i in range(2*r+1):
+        for j in range(2*r+1):
+            for k in range(2*r+1):
+                if ((i - r)**2 + (j - r)**2 + (k - r)**2)**0.5 <= thresh:
+                    s[i, j, k] = 1
+    return s
 
 
 def find_trapped_regions(seq, outlets=None, bins=25, return_mask=True):
