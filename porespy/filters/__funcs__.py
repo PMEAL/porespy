@@ -1789,7 +1789,8 @@ def chunked_func(func,
     return im2
 
 
-def invade_region(im, bd, dt=None, inv=None, mode='morph', max_iter=10000):
+def invade_region(im, bd, dt=None, inv=None, mode='morph', return_sizes=False,
+                  max_iter=10000):
     r"""
     Performs invasion percolation on given image using iterative image dilation
 
@@ -1807,6 +1808,10 @@ def invade_region(im, bd, dt=None, inv=None, mode='morph', max_iter=10000):
         The number of steps to apply before stopping.  The default is to run
         for 10,000 steps which is almost certain to reach completion if the
         image is smaller than about 250-cubed.
+    return_sizes : boolean
+        If ``True`` a second image is returned containing the size of the
+        sphere inserted at each step, in addition to the image containing
+        the invasion sequence
     mode : str
         The method used to dilate the border on each iteration.  They all
         give identical results, but may some may have better performance than
@@ -1818,13 +1823,14 @@ def invade_region(im, bd, dt=None, inv=None, mode='morph', max_iter=10000):
             'insert' - Using a ``numba`` jit for-loop to insert spheres or
             disks of radius 1 at all border locations.
 
-            'edt' - Using the ``edt`` package to compute a dilation.
-
     Returns
     -------
     inv_sequence : ND-array
         An array the same shape as ``im`` with each voxel labelled by the
         sequence at which it was invaded.
+    inv_size : ND-array
+        If ``return_sizes`` is ``True``, then a tuple containing
+        ``inv_sequence`` and ``inv_size`` is returned
 
     See Also
     --------
@@ -1833,6 +1839,7 @@ def invade_region(im, bd, dt=None, inv=None, mode='morph', max_iter=10000):
     """
     # Initialize inv image with -1 in the solid, and 0's in the void
     inv = -1*((~im).astype(int))
+    sizes = -1*((~im).astype(int))
     if dt is None:  # Find dt if not given
         dt = edt(im)
     # Conert the dt to nearest integer or more
@@ -1845,6 +1852,8 @@ def invade_region(im, bd, dt=None, inv=None, mode='morph', max_iter=10000):
         strel = ball
     else:
         strel = disk
+    # Intialize scratch array so it can be cleared and refilled inside loop
+    scratch = np.zeros_like(bd)
     with tqdm(range(1, max_iter)) as pbar:
         for step in range(1, max_iter):
             pbar.update()
@@ -1853,10 +1862,11 @@ def invade_region(im, bd, dt=None, inv=None, mode='morph', max_iter=10000):
                 temp = spim.binary_dilation(input=bd, structure=strel(1))
             elif mode == 'insert':
                 pt = np.vstack(np.where(bd))
-                temp = _insert_disks_at_points(im=np.copy(bd), coords=pt,
+                # scratch.fill(True)
+                # scratch *= bd
+                scratch = np.copy(bd)
+                temp = _insert_disks_at_points(im=scratch, coords=pt,
                                                r=1, v=1, smooth=False)
-            elif mode == 'edt':
-                temp = edt(~bd, parallel=8) <= 1
             # Reduce to only the 'new' boundary
             edge = temp*(bd == 0)*im
             if ~np.any(edge):
@@ -1870,6 +1880,9 @@ def invade_region(im, bd, dt=None, inv=None, mode='morph', max_iter=10000):
             pt = np.where(edge*dt_thresh)  # Keep as tuple for later use
             inv = _insert_disks_at_points(im=inv, coords=np.vstack(pt),
                                           r=r_max, v=step, smooth=True)
+            if return_sizes:
+                sizes = _insert_disks_at_points(im=sizes, coords=np.vstack(pt),
+                                                r=r_max, v=r_max, smooth=True)
             bd[pt] = True  # Update boundary image with newly invaded points
             if step == (max_iter - 1):  # If max_iters reached, end loop
                 print('\nMaximum number of iterations reached...exiting')
@@ -1879,6 +1892,11 @@ def invade_region(im, bd, dt=None, inv=None, mode='morph', max_iter=10000):
     inv[~im] = 0
     inv[temp] = -1
     inv = make_contiguous(im=inv, mode='symmetric')
+    if return_sizes:
+        temp = sizes == 0
+        sizes[~im] = 0
+        sizes[temp] = -1
+        inv = (inv, sizes)
     return inv
 
 
@@ -1939,7 +1957,7 @@ def _make_balls(r, smooth=True):
 @numba.jit(nopython=True, parallel=False)
 def _insert_disks_at_points(im, coords, r, v, smooth=True):
     r"""
-    Insert spheres (or disks) into the given ND image at given locations
+    Insert spheres (or disks) into the given ND-image at given locations
 
     This function uses numba to accelerate the process, and does not
     overwrite any existing values (i.e. only writes to locations containing
