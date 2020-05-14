@@ -1900,6 +1900,50 @@ def invade_region(im, bd, dt=None, inv=None, mode='morph', return_sizes=False,
     return inv
 
 
+def pc_curve_from_sizes(im, sizes, seq, sigma=0.072, theta=0, voxel_size=1):
+    r"""
+    Produces a Pc-Snwp curve from the output of ``invade_regions``
+
+    Parameters
+    ----------
+    im : ND-array
+        The voxel image of the porous media
+    sizes : ND-array
+        This image is returned from ``invade_regions`` when ``return_sizes``
+        is set to ``True``.
+    seq : ND-array
+        The image containing the invasion sequence values returned from
+        ``invaded_regions``.
+    sigma : float
+        The surface tension of the fluid-fluid system of interest
+    theta : float
+        The contact angle through defending phase in degrees
+    voxel_size : float
+        The voxel resolution of the image
+
+    Returns
+    -------
+    pc_curve : namedtuple
+        A namedtuple containing the capillary pressure (``Pc``) and
+        non-wetting phase saturation (``snwp``).
+
+    """
+    seqs = np.unique(seq)[1:]
+    x = []
+    y = []
+    for n in tqdm(seqs):
+        mask = seq == n
+        r = sizes[mask][0]*voxel_size
+        pc = -2*sigma*np.cos(np.deg2rad(theta))/r
+        x.append(pc)
+        snwp = ((seq <= n)*(im == 1)).sum()/im.size
+        y.append(snwp)
+    pc_curve = namedtuple('data', field_names=['Pc', 'snwp'])
+    pc_curve.Pc = x
+    pc_curve.snwp = y
+    return pc_curve
+
+
 @numba.jit(nopython=True, parallel=False)
 def _make_disks(r, smooth=True):
     r"""
