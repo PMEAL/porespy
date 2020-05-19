@@ -1762,6 +1762,10 @@ def snow_partitioning_parallel(im,
     crop: bool
         If True the image shape is cropped to fit specified division.
 
+    zoom_factor: float or int
+        The amount of zoom appiled to image to find overlap thickness using "ws"
+        overlap mode.
+
     Returns
     ----------
     regions: ND_array
