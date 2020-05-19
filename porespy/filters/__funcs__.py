@@ -1850,7 +1850,6 @@ def snow_partitioning_parallel(im,
 
 def chunked_snow(im, r_max=5, sigma=0.4):
     r"""
-
     Partitions the void space into pore regions using a marker-based watershed
     algorithm, with specially filtered peaks as markers.
 
@@ -1896,7 +1895,6 @@ def chunked_snow(im, r_max=5, sigma=0.4):
 
 def pad(im, pad_width=1, constant_value=0):
     r"""
-
     Pad the image with a constant values and width.
 
     Parameters:
@@ -1913,7 +1911,6 @@ def pad(im, pad_width=1, constant_value=0):
     -------
     output: ND-array
         Padded image with same dimnesions as provided image
-
     """
     shape = np.array(im.shape)
     pad_shape = shape + (2 * pad_width)
@@ -1935,7 +1932,6 @@ def pad(im, pad_width=1, constant_value=0):
 
 def relabel_chunks(im, chunk_shape):
     r"""
-
     Assign new labels to each chunk or sub-domain of actual image. This
     prevents from two or more regions to have same label.
 
@@ -1954,7 +1950,6 @@ def relabel_chunks(im, chunk_shape):
     -------
     output : ND-array
         Relabeled image with unique label assigned to each region.
-
     """
     im = pad(im, pad_width=1)
     im_shape = np.array(im.shape, dtype=np.uint32)
@@ -1991,7 +1986,6 @@ def relabel_chunks(im, chunk_shape):
 
 def trim_internal_slice(im, chunk_shape):
     r"""
-
     Delete extra slices from image that were used to stitch two or more chunks
     together.
 
@@ -2009,7 +2003,6 @@ def trim_internal_slice(im, chunk_shape):
     output :  ND-array
         Image without extra internal slices. The shape of the image will be
         same as input image provided for  waterhsed segmentation.
-
     """
     im_shape = np.array(im.shape, dtype=np.uint32)
     c1 = np.array(chunk_shape, dtype=np.uint32) + 2
@@ -2043,7 +2036,6 @@ def trim_internal_slice(im, chunk_shape):
 
 def watershed_stitching(im, chunk_shape):
     r"""
-
     Stitch individual sub-domains of watershed segmentation into one big
     segmentation with all boundary labels of each sub-domain relabeled to merge
     boundary regions.
@@ -2096,6 +2088,22 @@ def watershed_stitching(im, chunk_shape):
 
 @njit(parallel=True)
 def copy(im, output):
+    r"""
+    The function copy the input array and make output array that is allocated
+    in different memory space. This a numba version of copy function of numpy.
+    Because each element is copied using parallel approach this implementation
+    is facter than numpy version of copy.
+
+    parameter:
+    ----------
+    array: ND-array
+        Array that needs to be copied
+
+    Return:
+    -------
+    output: ND-array
+        Copied array
+    """
 
     if im.ndim == 3:
         for i in prange(im.shape[0]):
@@ -2115,7 +2123,24 @@ def copy(im, output):
 
 @njit(parallel=True)
 def _replace(array, keys, values):
+    r"""
+    This function replace keys elements in input array with new value elements.
+    This function is used as internal function of replace_relabels.
 
+    Parameter:
+    ----------
+    array : ND-array
+        Array which requires replacing labels
+    keys :  1D-array
+        The unique labels that need to be replaced
+    values : 1D-array
+        The unique values that will be assigned to labels
+
+    return:
+    -------
+    array : ND-array
+        Array with replaced labels.
+    """
     ind_sort = np.argsort(keys)
     keys_sorted = keys[ind_sort]
     values_sorted = values[ind_sort]
@@ -2129,7 +2154,6 @@ def _replace(array, keys, values):
 
 def replace_labels(array, keys, values):
     r"""
-
     Replace labels in array provided as keys to values.
 
     Parameter:
@@ -2157,6 +2181,27 @@ def replace_labels(array, keys, values):
 
 @njit()
 def _sequence(array, count):
+    r"""
+    Internal function of resequnce_labels method. This function resquence array
+    elements in an ascending order using numba technique which is many folds
+    faster than make contigious funcition.
+
+    parameter:
+    ----------
+    array: 1d-array
+        1d-array that needs resquencing
+    count: 1d-array
+        1d-array of zeros having same size as array
+
+    return:
+    -------
+    array: 1d-array
+        The input array with elements resequenced in ascending order
+    Note: The output of this function is not same as make_contigous or
+    relabel_sequential function of scikit-image. This function resequence and
+    randomize the regions while other methods only do resequencing and output
+    sorted array.
+    """
     a = 1
     i = 0
     while i < (len(array)):
@@ -2171,6 +2216,19 @@ def _sequence(array, count):
 
 @njit(parallel=True)
 def amax(array):
+    r"""
+    Find largest element in an array using fast parallel numba technique
+
+    Parameter:
+    ----------
+    array: ND-array
+        array in which largest elements needs to be calcuted
+
+    return:
+    scalar: float or int
+        The largest element value in the input array
+    """
+
     return np.max(array)
 
 
