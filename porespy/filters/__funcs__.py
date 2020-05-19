@@ -2,6 +2,7 @@ import sys
 import dask
 import warnings
 import numpy as np
+from numba import njit,  prange
 from edt import edt
 import operator as op
 from tqdm import tqdm
@@ -1709,3 +1710,467 @@ def chunked_func(func,
         # Insert image chunk into main image
         im2[a] = ims[i][b]
     return im2
+
+
+def snow_partitioning_parallel(im,
+                               overlap='dt',
+                               divs=2,
+                               mode = 'parallel',
+                               num_workers=None,
+                               crop=True,
+                               zoom_factor=0.5):
+    r"""
+    Perform SNOW algorithm in parallel and serial mode to reduce time and
+    memory usage repectively.
+
+    Parameters
+    ----------
+    im: ND_array
+        A binary image of porous media with 'True' values indicating phase of
+        interest
+
+    overlap: float or int
+        Overlapping thickness between two chunks to merge watershed
+        segmentation of all domains. If 'auto' the overlap will be calculated
+        based on maximum distance transform in the whole image.
+
+    divs: list or int
+        Number of domains each axis will be divided. If a scalar is provided
+        then it will be assigned to all axis.
+
+    num_workers: int
+        Number of cores that will be used to parallel process all domains. By
+        defualt all cores will be used but user can specify any integer values
+        to control the memory usage.
+
+    crop: bool
+        If True the image shape is cropped to fit specified division.
+
+    Returns
+    ----------
+    regions: ND_array
+        Partitioned image of segmentated regions with unique labels. Each
+        region correspond to pore body while intersection with other region
+        correspond throat area.
+    """
+    # -------------------------------------------------------------------------
+    # Adjust image shape according to specified dimension
+    if isinstance(divs, int):
+        divs = [divs for i in range(im.ndim)]
+    shape = []
+    for i in range(im.ndim):
+        shape.append(divs[i] * (im.shape[i] // divs[i]))
+
+    if shape != list(im.shape):
+        if crop:
+            for i in range(im.ndim):
+                im = im.swapaxes(0, i)
+                im = im[:shape[i], ...]
+                im = im.swapaxes(i, 0)
+            print('Image is cropped to shape {}.'.format(shape))
+        else:
+            print('_' * 80)
+            print("Possible image shape for "
+                  "specified divisions is {}. ".format(shape))
+            print("To crop the image please set crop argument to 'True'.")
+            return
+    # -------------------------------------------------------------------------
+    # Get overlap thickness from distance transform
+    chunk_shape = (np.array(shape) / np.array(divs)).astype(int)
+    print('_' * 80)
+    print('Calculating overlap thickness')
+    if overlap == 'dt':
+        dt = edt((im > 0), parallel=0)
+        overlap = dt.max()
+    elif overlap == 'ws':
+        rev = spim.interpolation.zoom(im, zoom=zoom_factor, order=0)
+        rev = rev > 0
+        dt = edt(rev, parallel=0)
+        rev_snow = snow_partitioning(rev, dt=dt, r_max=5)
+        labels, counts = np.unique(rev_snow, return_counts=True)
+        node = np.where(counts == counts[1:].max())[0][0]
+        slices = spim.find_objects(rev_snow)
+        overlap = max(rev_snow[slices[node - 1]].shape) / zoom_factor
+    else:
+        overlap = overlap
+        dt = edt((im > 0), parallel=0)
+    print('Overlap Thickness: ' + str(int(2.0 * overlap)) + ' voxels')
+    # -------------------------------------------------------------------------
+    # Get overlap and trim depth of all image dimension
+    depth = {}
+    trim_depth = {}
+    for i in range(im.ndim):
+        depth[i] = int(2.0 * overlap)
+        trim_depth[i] = int(2.0 * overlap) - 1
+    # -------------------------------------------------------------------------
+    # Applying snow to image chunks
+    im = da.from_array(dt, chunks=chunk_shape)
+    im = da.overlap.overlap(im, depth=depth, boundary='none')
+    im = im.map_blocks(chunked_snow)
+    im = da.overlap.trim_internal(im, trim_depth, boundary='none')
+    if mode == 'serial':
+        num_workers = 1
+    with ProgressBar():
+        print('_' * 80)
+        print('Applying snow to image chunks')
+        regions = im.compute(num_workers=num_workers)
+    # -------------------------------------------------------------------------
+    # Relabelling watershed chunks
+    print('_' * 80)
+    print('Relabelling watershed chunks')
+    regions = relabel_chunks(im=regions, chunk_shape=chunk_shape)
+    # -------------------------------------------------------------------------
+    # Stitching watershed chunks
+    print('_' * 80)
+    print('Stitching watershed chunks')
+    regions = watershed_stitching(im=regions, chunk_shape=chunk_shape)
+
+    return regions
+
+
+def chunked_snow(im, r_max=5, sigma=0.4):
+    r"""
+
+    Partitions the void space into pore regions using a marker-based watershed
+    algorithm, with specially filtered peaks as markers.
+
+    The SNOW network extraction algorithm (Sub-Network of an Over-segmented
+    Watershed) was designed to handle to perculiarities of high porosity
+    materials, but it applies well to other materials as well.
+
+    Parameters
+    ----------
+    im : array_like
+        A boolean image of the domain, with ``True`` indicating the pore space
+        and ``False`` elsewhere.
+    r_max : int
+        The radius of the spherical structuring element to use in the Maximum
+        filter stage that is used to find peaks.  The default is 5
+    sigma : float
+        The standard deviation of the Gaussian filter used in step 1.  The
+        default is 0.4.  If 0 is given then the filter is not applied, which is
+        useful if a distance transform is supplied as the ``im`` argument that
+        has already been processed.
+
+    Returns
+    -------
+    image : ND-array
+        An image the same shape as ``im`` with the void space partitioned into
+        pores using a marker based watershed with the peaks found by the
+        SNOW algorithm [1].
+
+    References
+    ----------
+    [1] Gostick, J. "A versatile and efficient network extraction algorithm
+    using marker-based watershed segmenation".  Physical Review E. (2017)
+    """
+
+    dt = spim.gaussian_filter(input=im, sigma=sigma)
+    peaks = find_peaks(dt=dt, r_max=r_max)
+    peaks = trim_saddle_points(peaks=peaks, dt=dt, max_iters=99)
+    peaks = trim_nearby_peaks(peaks=peaks, dt=dt)
+    peaks, N = spim.label(peaks)
+    regions = watershed(image=-dt, markers=peaks, mask=im>0)
+
+    return regions * (im > 0)
+
+
+def pad(im, pad_width=1, constant_value=0):
+    r"""
+
+    Pad the image with a constant values and width.
+
+    Parameters:
+    ----------
+    im : ND-array
+        The image that requires padding
+    pad_width : int
+        The number of values that will be padded from the edges. Default values
+        is 1.
+    contant_value : int
+        Pads with the specified constant value
+
+    return:
+    -------
+    output: ND-array
+        Padded image with same dimnesions as provided image
+
+    """
+    shape = np.array(im.shape)
+    pad_shape = shape + (2 * pad_width)
+    temp = np.zeros(pad_shape, dtype=np.uint32)
+    if constant_value != 0:
+        temp = temp + constant_value
+    if im.ndim == 3:
+        temp[pad_width: -pad_width,
+        pad_width: -pad_width,
+        pad_width: -pad_width] = im
+    elif im.ndim == 2:
+        temp[pad_width: -pad_width,
+        pad_width: -pad_width] = im
+    else:
+        temp[pad_width: -pad_width] = im
+
+    return temp
+
+
+def relabel_chunks(im, chunk_shape):
+    r"""
+
+    Assign new labels to each chunk or sub-domain of actual image. This
+    prevents from two or more regions to have same label.
+
+    Parameters:
+    -----------
+
+    im: ND-array
+        Actual image that contains repeating labels in chunks or sub-domains
+    chunk_shape: tuple
+        The shape of chunk that will be relabeled in actual image. Note the
+        chunk shape should be a multiple of actual image shape otherwise some
+        labels will not be relabeled.
+
+    return:
+    -------
+    output : ND-array
+        Relabeled image with unique label assigned to each region.
+
+    """
+    im = pad(im, pad_width=1)
+    im_shape = np.array(im.shape, dtype=np.uint32)
+    max_num = 0
+    c = np.array(chunk_shape, dtype=np.uint32) + 2
+    num = (im_shape / c).astype(int)
+
+    if im.ndim == 3:
+        for z in range(num[0]):
+            for y in range(num[1]):
+                for x in range(num[2]):
+                    chunk = im[z * c[0]: (z + 1) * c[0],
+                            y * c[1]: (y + 1) * c[1],
+                            x * c[2]: (x + 1) * c[2]]
+                    chunk += max_num
+                    chunk[chunk == max_num] = 0
+                    max_num = chunk.max()
+                    im[z * c[0]: (z + 1) * c[0],
+                    y * c[1]: (y + 1) * c[1],
+                    x * c[2]: (x + 1) * c[2]] = chunk
+    else:
+        for y in range(num[0]):
+            for x in range(num[1]):
+                chunk = im[y * c[0]: (y + 1) * c[0],
+                        x * c[1]: (x + 1) * c[1]]
+                chunk += max_num
+                chunk[chunk == max_num] = 0
+                max_num = chunk.max()
+                im[y * c[0]: (y + 1) * c[0],
+                x * c[1]: (x + 1) * c[1]] = chunk
+
+    return im
+
+
+def trim_internal_slice(im, chunk_shape):
+    r"""
+
+    Delete extra slices from image that were used to stitch two or more chunks
+    together.
+
+    Parameters:
+    -----------
+
+    im :  ND-array
+        image that contains extra slices in x, y, z direction.
+
+    chunk_shape : tuple
+        The shape of the chunk from which image is subdivided.
+
+    Return:
+    -------
+    output :  ND-array
+        Image without extra internal slices. The shape of the image will be
+        same as input image provided for  waterhsed segmentation.
+
+    """
+    im_shape = np.array(im.shape, dtype=np.uint32)
+    c1 = np.array(chunk_shape, dtype=np.uint32) + 2
+    c2 = np.array(chunk_shape, dtype=np.uint32)
+    num = (im_shape / c1).astype(int)
+    out_shape = num * c2
+    out = np.empty((out_shape), dtype=np.uint32)
+
+    if im.ndim == 3:
+        for z in range(num[0]):
+            for y in range(num[1]):
+                for x in range(num[2]):
+                    chunk = im[z * c1[0]: (z + 1) * c1[0],
+                            y * c1[1]: (y + 1) * c1[1],
+                            x * c1[2]: (x + 1) * c1[2]]
+
+                    out[z * c2[0]: (z + 1) * c2[0],
+                    y * c2[1]: (y + 1) * c2[1],
+                    x * c2[2]: (x + 1) * c2[2]] = chunk[1:-1, 1:-1, 1:-1]
+    else:
+        for y in range(num[0]):
+            for x in range(num[1]):
+                chunk = im[y * c1[0]: (y + 1) * c1[0],
+                        x * c1[1]: (x + 1) * c1[1]]
+
+                out[y * c2[0]: (y + 1) * c2[0],
+                x * c2[1]: (x + 1) * c2[1]] = chunk[1:-1, 1:-1]
+
+    return out
+
+
+def watershed_stitching(im, chunk_shape):
+    r"""
+
+    Stitch individual sub-domains of watershed segmentation into one big
+    segmentation with all boundary labels of each sub-domain relabeled to merge
+    boundary regions.
+
+    Parameters:
+    -----------
+    im : ND-array
+        Image with watershed segmentation perfromed on sub-domains individually.
+
+    chunk_shape: tuple
+        The shape of the sub-domain in which image segmentation is performered.
+
+    return:
+    -------
+    output : ND-array
+        Stitched watershed segmentation with all sub-domains merged to form a
+        single watershed segmentation.
+    """
+
+    c_shape = np.array(chunk_shape)
+    cuts_num = (np.array(im.shape) / c_shape).astype(np.uint32)
+
+    for axis, num in enumerate(cuts_num):
+        keys = []
+        values = []
+        if num > 1:
+            im = im.swapaxes(0, axis)
+            for i in range(1, num):
+                sl = i * (chunk_shape[axis] + 3) - (i - 1)
+                sl1 = im[sl - 3, ...]
+                sl1_mask = sl1 > 0
+                sl2 = im[sl - 1, ...] * sl1_mask
+                sl1_labels = sl1.flatten()[sl1.flatten() > 0]
+                sl2_labels = sl2.flatten()[sl2.flatten() > 0]
+                if sl1_labels.size != sl2_labels.size:
+                    raise Exception('The selected overlapping thickness is not '
+                                    'suitable for input image. Change '
+                                    'overlapping criteria '
+                                    'or manually input value.')
+                keys.append(sl1_labels)
+                values.append(sl2_labels)
+            im = replace_labels(array=im, keys=keys, values=values)
+            im = im.swapaxes(axis, 0)
+    im = trim_internal_slice(im=im, chunk_shape=chunk_shape)
+    im = resequence_labels(array=im)
+
+    return im
+
+
+@njit(parallel=True)
+def copy(im, output):
+
+    if im.ndim == 3:
+        for i in prange(im.shape[0]):
+            for j in prange(im.shape[1]):
+                for k in prange(im.shape[2]):
+                        output[i, j, k] = im[i, j, k]
+    elif im.ndim == 2:
+        for i in prange(im.shape[0]):
+            for j in prange(im.shape[1]):
+                output[i, j] = im[i, j]
+    else:
+        for i in prange(im.shape[0]):
+            output[i] = im[i]
+
+    return output
+
+
+@njit(parallel=True)
+def _replace(array, keys, values):
+
+    ind_sort = np.argsort(keys)
+    keys_sorted = keys[ind_sort]
+    values_sorted = values[ind_sort]
+    s_keys = set(keys)
+
+    for i in prange(array.shape[0]):
+        if array[i] in s_keys:
+            ind = np.searchsorted(keys_sorted, array[i])
+            array[i] = values_sorted[ind]
+
+
+def replace_labels(array, keys, values):
+    r"""
+
+    Replace labels in array provided as keys to values.
+
+    Parameter:
+    ----------
+    array : ND-array
+        Array which requires replacing labels
+    keys :  1D-array
+        The unique labels that need to be replaced
+    values : 1D-array
+        The unique values that will be assigned to labels
+
+    return:
+    -------
+    array : ND-array
+        Array with replaced labels.
+    """
+    a_shape = array.shape
+    array = array.flatten()
+    keys = np.concatenate(keys, axis=0)
+    values = np.concatenate(values, axis=0)
+    _replace(array, keys, values)
+
+    return array.reshape(a_shape)
+
+
+@njit()
+def _sequence(array, count):
+    a = 1
+    i = 0
+    while i < (len(array)):
+        data = array[i]
+        if data != 0:
+            if count[data] == 0:
+                count[data] = a
+                a += 1
+        array[i] = count[data]
+        i += 1
+
+
+@njit(parallel=True)
+def amax(array):
+    return np.max(array)
+
+
+def resequence_labels(array):
+    r"""
+    Resequence the lablels to make them contigious.
+
+    Parameter:
+    ----------
+    array: ND-array
+        Array that requires resequencing
+
+    return:
+    -------
+    array : ND-array
+        Resequenced array with same shape as input array
+    """
+    a_shape = array.shape
+    array = array.ravel()
+    max_num = amax(array) + 1
+    count = np.zeros(max_num, dtype=np.uint32)
+    _sequence(array, count)
+
+    return array.reshape(a_shape)
