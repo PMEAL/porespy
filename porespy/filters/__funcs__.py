@@ -1721,7 +1721,8 @@ def snow_partitioning_parallel(im,
                                zoom_factor=0.5):
     r"""
     Perform SNOW algorithm in parallel and serial mode to reduce time and
-    memory usage repectively.
+    memory usage repectively by geomertirc domain decomposition of large size
+    image.
 
     Parameters
     ----------
@@ -1730,18 +1731,33 @@ def snow_partitioning_parallel(im,
         interest
 
     overlap: float or int
-        Overlapping thickness between two chunks to merge watershed
-        segmentation of all domains. If 'auto' the overlap will be calculated
-        based on maximum distance transform in the whole image.
+        Overlapping thickness between two subdomains that is used to merge
+        watershed segmented regions at intersection of two or more subdomains.
+        If 'dt' the overlap will be calculated based on maximum
+        distance transform in the whole image.
+        If 'ws' the overlap will be calculated by finding the maximum dimension
+        of the bounding box of largest segmented region. The image is scale down
+        by 'zoom_factor' provided by user.
+        If any real number of overlap is provided then this value will be
+        considered as overlapping thickness.
 
     divs: list or int
-        Number of domains each axis will be divided. If a scalar is provided
-        then it will be assigned to all axis.
+        Number of domains each axis will be divided.
+        If a scalar is provided then it will be assigned to all axis.
+        If list is provided then each respective axis will be divided by its
+        corresponding number in the list. For example [2, 3, 4] will divide
+        z, y and x axis to 2, 3, and 4 respectively.
+
+    mode: str
+        if 'parallel' then all subdomains will be processed in number of cores
+        provided as num_workers
+        if 'serial' then all subdomains will be processed one by one in one core
+        of CPU.
 
     num_workers: int
-        Number of cores that will be used to parallel process all domains. By
-        defualt all cores will be used but user can specify any integer values
-        to control the memory usage.
+        Number of cores that will be used to parallel process all domains.
+        If None then all cores will be used but user can specify any integer
+        values to control the memory usage.
 
     crop: bool
         If True the image shape is cropped to fit specified division.
@@ -1753,7 +1769,7 @@ def snow_partitioning_parallel(im,
         region correspond to pore body while intersection with other region
         correspond throat area.
     """
-    # -------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
     # Adjust image shape according to specified dimension
     if isinstance(divs, int):
         divs = [divs for i in range(im.ndim)]
@@ -1774,7 +1790,7 @@ def snow_partitioning_parallel(im,
                   "specified divisions is {}. ".format(shape))
             print("To crop the image please set crop argument to 'True'.")
             return
-    # -------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
     # Get overlap thickness from distance transform
     chunk_shape = (np.array(shape) / np.array(divs)).astype(int)
     print('_' * 80)
@@ -1792,17 +1808,17 @@ def snow_partitioning_parallel(im,
         slices = spim.find_objects(rev_snow)
         overlap = max(rev_snow[slices[node - 1]].shape) / zoom_factor
     else:
-        overlap = overlap
+        overlap = overlap / 2.0
         dt = edt((im > 0), parallel=0)
     print('Overlap Thickness: ' + str(int(2.0 * overlap)) + ' voxels')
-    # -------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
     # Get overlap and trim depth of all image dimension
     depth = {}
     trim_depth = {}
     for i in range(im.ndim):
         depth[i] = int(2.0 * overlap)
         trim_depth[i] = int(2.0 * overlap) - 1
-    # -------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
     # Applying snow to image chunks
     im = da.from_array(dt, chunks=chunk_shape)
     im = da.overlap.overlap(im, depth=depth, boundary='none')
@@ -1810,16 +1826,20 @@ def snow_partitioning_parallel(im,
     im = da.overlap.trim_internal(im, trim_depth, boundary='none')
     if mode == 'serial':
         num_workers = 1
+    elif mode == 'parallel':
+        num_workers = num_workers
+    else:
+        raise Exception('Mode of operation can either be parallel or serial')
     with ProgressBar():
         print('_' * 80)
         print('Applying snow to image chunks')
         regions = im.compute(num_workers=num_workers)
-    # -------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
     # Relabelling watershed chunks
     print('_' * 80)
     print('Relabelling watershed chunks')
     regions = relabel_chunks(im=regions, chunk_shape=chunk_shape)
-    # -------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
     # Stitching watershed chunks
     print('_' * 80)
     print('Stitching watershed chunks')
@@ -1841,8 +1861,7 @@ def chunked_snow(im, r_max=5, sigma=0.4):
     Parameters
     ----------
     im : array_like
-        A boolean image of the domain, with ``True`` indicating the pore space
-        and ``False`` elsewhere.
+        Distance transform of phase of interest in a binary image
     r_max : int
         The radius of the spherical structuring element to use in the Maximum
         filter stage that is used to find peaks.  The default is 5
@@ -1925,6 +1944,7 @@ def relabel_chunks(im, chunk_shape):
 
     im: ND-array
         Actual image that contains repeating labels in chunks or sub-domains
+
     chunk_shape: tuple
         The shape of chunk that will be relabeled in actual image. Note the
         chunk shape should be a multiple of actual image shape otherwise some
@@ -2031,10 +2051,11 @@ def watershed_stitching(im, chunk_shape):
     Parameters:
     -----------
     im : ND-array
-        Image with watershed segmentation perfromed on sub-domains individually.
+        A worked image with watershed segmentation performed on all sub-domains
+        individually.
 
     chunk_shape: tuple
-        The shape of the sub-domain in which image segmentation is performered.
+        The shape of the sub-domain in which image segmentation is performed.
 
     return:
     -------
