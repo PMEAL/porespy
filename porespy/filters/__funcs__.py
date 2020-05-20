@@ -1,5 +1,6 @@
 import sys
 import dask
+from dask.diagnostics import ProgressBar
 import warnings
 import numpy as np
 from numba import njit,  prange
@@ -1718,7 +1719,10 @@ def snow_partitioning_parallel(im,
                                mode = 'parallel',
                                num_workers=None,
                                crop=True,
-                               zoom_factor=0.5):
+                               zoom_factor=0.5,
+                               r_max=5,
+                               sigma=0.4,
+                               return_all=False):
     r"""
     Perform SNOW algorithm in parallel and serial mode to reduce time and
     memory usage repectively by geomertirc domain decomposition of large size
@@ -1765,6 +1769,11 @@ def snow_partitioning_parallel(im,
     zoom_factor: float or int
         The amount of zoom appiled to image to find overlap thickness using "ws"
         overlap mode.
+    
+    return_all : boolean
+        If set to ``True`` a named tuple is returned containing the original
+        image, the distance transform, and the final
+        pore regions.  The default is ``False``
 
     Returns
     ----------
@@ -1775,6 +1784,7 @@ def snow_partitioning_parallel(im,
     """
     # --------------------------------------------------------------------------
     # Adjust image shape according to specified dimension
+    tup = namedtuple("results", field_names=["im", "dt", "regions"])
     if isinstance(divs, int):
         divs = [divs for i in range(im.ndim)]
     shape = []
@@ -1789,7 +1799,7 @@ def snow_partitioning_parallel(im,
                 im = im.swapaxes(i, 0)
             print('Image is cropped to shape {}.'.format(shape))
         else:
-            print('_' * 80)
+            print('_' * 60)
             print("Possible image shape for "
                   "specified divisions is {}. ".format(shape))
             print("To crop the image please set crop argument to 'True'.")
@@ -1797,7 +1807,7 @@ def snow_partitioning_parallel(im,
     # --------------------------------------------------------------------------
     # Get overlap thickness from distance transform
     chunk_shape = (np.array(shape) / np.array(divs)).astype(int)
-    print('_' * 80)
+    print('_' * 60)
     print('Calculating overlap thickness')
     if overlap == 'dt':
         dt = edt((im > 0), parallel=0)
@@ -1806,7 +1816,7 @@ def snow_partitioning_parallel(im,
         rev = spim.interpolation.zoom(im, zoom=zoom_factor, order=0)
         rev = rev > 0
         dt = edt(rev, parallel=0)
-        rev_snow = snow_partitioning(rev, dt=dt, r_max=5)
+        rev_snow = snow_partitioning(rev, dt=dt, r_max=r_max, sigma=sigma)
         labels, counts = np.unique(rev_snow, return_counts=True)
         node = np.where(counts == counts[1:].max())[0][0]
         slices = spim.find_objects(rev_snow)
@@ -1822,12 +1832,15 @@ def snow_partitioning_parallel(im,
     for i in range(im.ndim):
         depth[i] = int(2.0 * overlap)
         trim_depth[i] = int(2.0 * overlap) - 1
+
+    tup.im = im
+    tup.dt = dt
     # --------------------------------------------------------------------------
     # Applying snow to image chunks
-    im = da.from_array(dt, chunks=chunk_shape)
-    im = da.overlap.overlap(im, depth=depth, boundary='none')
-    im = im.map_blocks(chunked_snow)
-    im = da.overlap.trim_internal(im, trim_depth, boundary='none')
+    im = dask.array.from_array(dt, chunks=chunk_shape)
+    im = dask.array.overlap.overlap(im, depth=depth, boundary='none')
+    im = im.map_blocks(chunked_snow, r_max=r_max, sigma=sigma)
+    im = dask.array.overlap.trim_internal(im, trim_depth, boundary='none')
     if mode == 'serial':
         num_workers = 1
     elif mode == 'parallel':
@@ -1835,20 +1848,25 @@ def snow_partitioning_parallel(im,
     else:
         raise Exception('Mode of operation can either be parallel or serial')
     with ProgressBar():
-        print('_' * 80)
+        print('_' * 60)
         print('Applying snow to image chunks')
         regions = im.compute(num_workers=num_workers)
     # --------------------------------------------------------------------------
     # Relabelling watershed chunks
-    print('_' * 80)
+    print('_' * 60)
     print('Relabelling watershed chunks')
     regions = relabel_chunks(im=regions, chunk_shape=chunk_shape)
     # --------------------------------------------------------------------------
     # Stitching watershed chunks
-    print('_' * 80)
+    print('_' * 60)
     print('Stitching watershed chunks')
     regions = watershed_stitching(im=regions, chunk_shape=chunk_shape)
-
+    if return_all:
+        tup.regions = regions
+        return tup
+    else:
+        return regions
+    
     return regions
 
 
