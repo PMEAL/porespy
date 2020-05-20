@@ -1,9 +1,10 @@
 import sys
 import dask
+import dask.array as da
 from dask.diagnostics import ProgressBar
 import warnings
 import numpy as np
-from numba import njit,  prange
+from numba import njit, prange
 from edt import edt
 import operator as op
 from tqdm import tqdm
@@ -1716,7 +1717,7 @@ def chunked_func(func,
 def snow_partitioning_parallel(im,
                                overlap='dt',
                                divs=2,
-                               mode = 'parallel',
+                               mode='parallel',
                                num_workers=None,
                                crop=True,
                                zoom_factor=0.5,
@@ -1769,7 +1770,7 @@ def snow_partitioning_parallel(im,
     zoom_factor: float or int
         The amount of zoom appiled to image to find overlap thickness using "ws"
         overlap mode.
-    
+
     return_all : boolean
         If set to ``True`` a named tuple is returned containing the original
         image, the distance transform, and the final
@@ -1838,10 +1839,10 @@ def snow_partitioning_parallel(im,
     tup.dt = dt
     # --------------------------------------------------------------------------
     # Applying snow to image chunks
-    im = dask.array.from_array(dt, chunks=chunk_shape)
-    im = dask.array.overlap.overlap(im, depth=depth, boundary='none')
+    im = da.from_array(dt, chunks=chunk_shape)
+    im = da.overlap.overlap(im, depth=depth, boundary='none')
     im = im.map_blocks(chunked_snow, r_max=r_max, sigma=sigma)
-    im = dask.array.overlap.trim_internal(im, trim_depth, boundary='none')
+    im = da.overlap.trim_internal(im, trim_depth, boundary='none')
     if mode == 'serial':
         num_workers = 1
     elif mode == 'parallel':
@@ -1867,7 +1868,7 @@ def snow_partitioning_parallel(im,
         return tup
     else:
         return regions
-    
+
     return regions
 
 
@@ -1911,7 +1912,7 @@ def chunked_snow(im, r_max=5, sigma=0.4):
     peaks = trim_saddle_points(peaks=peaks, dt=dt, max_iters=99)
     peaks = trim_nearby_peaks(peaks=peaks, dt=dt)
     peaks, N = spim.label(peaks)
-    regions = watershed(image=-dt, markers=peaks, mask=im>0)
+    regions = watershed(image=-dt, markers=peaks, mask=im > 0)
 
     return regions * (im > 0)
 
@@ -1942,11 +1943,11 @@ def pad(im, pad_width=1, constant_value=0):
         temp = temp + constant_value
     if im.ndim == 3:
         temp[pad_width: -pad_width,
-        pad_width: -pad_width,
-        pad_width: -pad_width] = im
+            pad_width: -pad_width,
+            pad_width: -pad_width] = im
     elif im.ndim == 2:
         temp[pad_width: -pad_width,
-        pad_width: -pad_width] = im
+            pad_width: -pad_width] = im
     else:
         temp[pad_width: -pad_width] = im
 
@@ -1985,8 +1986,8 @@ def relabel_chunks(im, chunk_shape):
             for y in range(num[1]):
                 for x in range(num[2]):
                     chunk = im[z * c[0]: (z + 1) * c[0],
-                            y * c[1]: (y + 1) * c[1],
-                            x * c[2]: (x + 1) * c[2]]
+                                y * c[1]: (y + 1) * c[1],
+                                x * c[2]: (x + 1) * c[2]]
                     chunk += max_num
                     chunk[chunk == max_num] = 0
                     max_num = chunk.max()
@@ -1997,12 +1998,12 @@ def relabel_chunks(im, chunk_shape):
         for y in range(num[0]):
             for x in range(num[1]):
                 chunk = im[y * c[0]: (y + 1) * c[0],
-                        x * c[1]: (x + 1) * c[1]]
+                            x * c[1]: (x + 1) * c[1]]
                 chunk += max_num
                 chunk[chunk == max_num] = 0
                 max_num = chunk.max()
                 im[y * c[0]: (y + 1) * c[0],
-                x * c[1]: (x + 1) * c[1]] = chunk
+                    x * c[1]: (x + 1) * c[1]] = chunk
 
     return im
 
@@ -2039,20 +2040,20 @@ def trim_internal_slice(im, chunk_shape):
             for y in range(num[1]):
                 for x in range(num[2]):
                     chunk = im[z * c1[0]: (z + 1) * c1[0],
-                            y * c1[1]: (y + 1) * c1[1],
-                            x * c1[2]: (x + 1) * c1[2]]
+                                y * c1[1]: (y + 1) * c1[1],
+                                x * c1[2]: (x + 1) * c1[2]]
 
                     out[z * c2[0]: (z + 1) * c2[0],
-                    y * c2[1]: (y + 1) * c2[1],
-                    x * c2[2]: (x + 1) * c2[2]] = chunk[1:-1, 1:-1, 1:-1]
+                        y * c2[1]: (y + 1) * c2[1],
+                        x * c2[2]: (x + 1) * c2[2]] = chunk[1:-1, 1:-1, 1:-1]
     else:
         for y in range(num[0]):
             for x in range(num[1]):
                 chunk = im[y * c1[0]: (y + 1) * c1[0],
-                        x * c1[1]: (x + 1) * c1[1]]
+                            x * c1[1]: (x + 1) * c1[1]]
 
                 out[y * c2[0]: (y + 1) * c2[0],
-                x * c2[1]: (x + 1) * c2[1]] = chunk[1:-1, 1:-1]
+                    x * c2[1]: (x + 1) * c2[1]] = chunk[1:-1, 1:-1]
 
     return out
 
