@@ -1820,7 +1820,8 @@ def snow_partitioning_parallel(im,
         labels, counts = np.unique(rev_snow, return_counts=True)
         node = np.where(counts == counts[1:].max())[0][0]
         slices = spim.find_objects(rev_snow)
-        overlap = max(rev_snow[slices[node - 1]].shape) / zoom_factor
+        overlap = max(rev_snow[slices[node - 1]].shape) / (zoom_factor * 2.0)
+        dt = edt((im > 0), parallel=0)
     else:
         overlap = overlap / 2.0
         dt = edt((im > 0), parallel=0)
