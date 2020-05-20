@@ -1,30 +1,37 @@
-import collections
 import openpnm as op
 import porespy as ps
+import matplotlib.pyplot as plt
+import collections
+import sys
+# Generating an image of size n x n and porosity p
+p = 0.75
+n = 300
+im = ps.generators.blobs(shape=[n, n], porosity=p)
+plt.imshow(im)
 
 
-def tortuosity():
+def tortuosity(im, axis):
     r"""
     Calculates tortuosity of given image in specified direction
-    
+
     Parameters
     ----------
     im : ND-image
         The binary image to analyze with ``True`` indicating phase of interest
     axis : int
         The axis along which to apply boundary conditions
-        
+
     Returns
     -------
     results : tuple
-        A named-tuple containing the ``tortuosity``, ``conc_field``, percolating_porosity, 
-        
+        A named-tuple containing the ``tortuosity``, ``conc_field``,
+        ``percolating_porosity``
+
     """
-    if axis > (im.ndim -1):
+    if axis > (im.ndim - 1):
         raise Exception("Axis argument is too high")
     # removing floating pores
-    im = ps.filters.trim_nonpercolating_paths(im, 
-                                              inlet_axis=axis, 
+    im = ps.filters.trim_nonpercolating_paths(im, inlet_axis=axis,
                                               outlet_axis=axis)
     # porosity is changed because of trimmimg floating pores
     porosity_true = im.sum()/im.size
@@ -48,6 +55,6 @@ def tortuosity():
     # calculating molar flow rate, effective diffusivity and tortuosity
     rate_outlet = fd.rate(pores=outlet)[0]
     Tau = porosity_true*(1/abs(rate_outlet))
-    image = collections.namedtuple('image', ['flow_rate', 'eff_D', 'Tortuosity'])
-    im_1 = image(rate_outlet, D_eff, Tau)
-    return im_1[2]
+    image = collections.namedtuple('image', ['flow_rate', 'Tortuosity'])
+    im_1 = image(rate_outlet, Tau)
+    return im_1[1]
