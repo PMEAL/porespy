@@ -1943,11 +1943,11 @@ def pad(im, pad_width=1, constant_value=0):
         temp = temp + constant_value
     if im.ndim == 3:
         temp[pad_width: -pad_width,
-            pad_width: -pad_width,
-            pad_width: -pad_width] = im
+             pad_width: -pad_width,
+             pad_width: -pad_width] = im
     elif im.ndim == 2:
         temp[pad_width: -pad_width,
-            pad_width: -pad_width] = im
+             pad_width: -pad_width] = im
     else:
         temp[pad_width: -pad_width] = im
 
@@ -1986,24 +1986,24 @@ def relabel_chunks(im, chunk_shape):
             for y in range(num[1]):
                 for x in range(num[2]):
                     chunk = im[z * c[0]: (z + 1) * c[0],
-                                y * c[1]: (y + 1) * c[1],
-                                x * c[2]: (x + 1) * c[2]]
+                               y * c[1]: (y + 1) * c[1],
+                               x * c[2]: (x + 1) * c[2]]
                     chunk += max_num
                     chunk[chunk == max_num] = 0
                     max_num = chunk.max()
                     im[z * c[0]: (z + 1) * c[0],
-                    y * c[1]: (y + 1) * c[1],
-                    x * c[2]: (x + 1) * c[2]] = chunk
+                       y * c[1]: (y + 1) * c[1],
+                       x * c[2]: (x + 1) * c[2]] = chunk
     else:
         for y in range(num[0]):
             for x in range(num[1]):
                 chunk = im[y * c[0]: (y + 1) * c[0],
-                            x * c[1]: (x + 1) * c[1]]
+                           x * c[1]: (x + 1) * c[1]]
                 chunk += max_num
                 chunk[chunk == max_num] = 0
                 max_num = chunk.max()
                 im[y * c[0]: (y + 1) * c[0],
-                    x * c[1]: (x + 1) * c[1]] = chunk
+                   x * c[1]: (x + 1) * c[1]] = chunk
 
     return im
 
@@ -2040,8 +2040,8 @@ def trim_internal_slice(im, chunk_shape):
             for y in range(num[1]):
                 for x in range(num[2]):
                     chunk = im[z * c1[0]: (z + 1) * c1[0],
-                                y * c1[1]: (y + 1) * c1[1],
-                                x * c1[2]: (x + 1) * c1[2]]
+                               y * c1[1]: (y + 1) * c1[1],
+                               x * c1[2]: (x + 1) * c1[2]]
 
                     out[z * c2[0]: (z + 1) * c2[0],
                         y * c2[1]: (y + 1) * c2[1],
@@ -2050,7 +2050,7 @@ def trim_internal_slice(im, chunk_shape):
         for y in range(num[0]):
             for x in range(num[1]):
                 chunk = im[y * c1[0]: (y + 1) * c1[0],
-                            x * c1[1]: (x + 1) * c1[1]]
+                           x * c1[1]: (x + 1) * c1[1]]
 
                 out[y * c2[0]: (y + 1) * c2[0],
                     x * c2[1]: (x + 1) * c2[1]] = chunk[1:-1, 1:-1]
