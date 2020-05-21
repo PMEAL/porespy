@@ -12,9 +12,9 @@ import scipy.ndimage as spim
 import scipy.spatial as sptl
 from collections import namedtuple
 from scipy.signal import fftconvolve
-from skimage.segmentation import clear_border
+from skimage.segmentation import clear_border, watershed
 from skimage.morphology import ball, disk, square, cube, diamond, octahedron
-from skimage.morphology import reconstruction, watershed
+from skimage.morphology import reconstruction
 from porespy.tools import randomize_colors, fftmorphology
 from porespy.tools import get_border, extend_slice, extract_subsection
 from porespy.tools import _create_alias_map
