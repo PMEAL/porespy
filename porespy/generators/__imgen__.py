@@ -930,20 +930,20 @@ def cylinders(shape: List[int], radius: int, ncylinders: int,
         shape = np.full((3, ), int(shape))
     elif np.size(shape) == 2:
         raise Exception("2D cylinders don't make sense")
-    if length is None:
-        R = np.sqrt(np.sum(np.square(shape))).astype(int)
-    else:
-        R = length/2
-    im = np.zeros(shape)
+    R = np.sqrt(np.sum(np.square(shape))).astype(int)
+    if length is not None:
+        R = min(int(length/2), R)
     # Adjust max angles to be between 0 and 90
     if (phi_max > 90) or (phi_max < 0):
         raise Exception('phi_max must be betwen 0 and 90')
     if (theta_max > 90) or (theta_max < 0):
         raise Exception('theta_max must be betwen 0 and 90')
+    # Create empty image for inserting
+    im = np.zeros(shape, dtype=bool)
     n = 0
     while n < ncylinders:
         # Choose a random starting point in domain
-        x = np.random.rand(3)*shape
+        x = np.random.rand(3)*(shape + 2*R)
         # Chose a random phi and theta within given ranges
         phi = (np.pi/2 - np.pi*np.random.rand())*phi_max/90
         theta = (np.pi/2 - np.pi*np.random.rand())*theta_max/90
@@ -952,11 +952,11 @@ def cylinders(shape: List[int], radius: int, ncylinders: int,
                          np.sin(phi)])
         [X0, X1] = [x + X0, x - X0]
         crds = line_segment(X0, X1)
-        lower = ~np.any(np.vstack(crds).T < [0, 0, 0], axis=1)
-        upper = ~np.any(np.vstack(crds).T >= shape, axis=1)
+        lower = ~np.any(np.vstack(crds).T < [R, R, R], axis=1)
+        upper = ~np.any(np.vstack(crds).T >= shape + R, axis=1)
         valid = upper*lower
         if np.any(valid):
-            im[crds[0][valid], crds[1][valid], crds[2][valid]] = 1
+            im[crds[0][valid] - R, crds[1][valid] - R, crds[2][valid] - R] = 1
             n += 1
     im = np.array(im, dtype=bool)
     dt = edt(~im) < radius
