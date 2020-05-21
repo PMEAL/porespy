@@ -931,11 +931,11 @@ def cylinders(shape: List[int], radius: int, ncylinders: int,
         shape = np.full((3, ), int(shape))
     elif np.size(shape) == 2:
         raise Exception("2D cylinders don't make sense")
-    # Find max length as 2x diagonal across domain from [0,0,0] to [Nx,Ny,Nz]
-    Rmax = 2*np.sqrt(np.sum(np.square(shape))).astype(int)
+    # Find hypotenuse of domain from [0,0,0] to [Nx,Ny,Nz]
+    H = np.sqrt(np.sum(np.square(shape))).astype(int)
     if length is None:  # Assume cylinders span domain if length not given
-        R = Rmax
-    R = min(int(length/2), Rmax)  # Trim given length to Rmax if too long
+        R = 2*H
+    R = min(int(length/2), 2*H)  # Trim given length to Rmax if too long
     # Adjust max angles to be between 0 and 90
     if (phi_max > 90) or (phi_max < 0):
         raise Exception('phi_max must be betwen 0 and 90')
@@ -944,23 +944,26 @@ def cylinders(shape: List[int], radius: int, ncylinders: int,
     # Create empty image for inserting into
     im = np.zeros(shape, dtype=bool)
     n = 0
-    while n < ncylinders:
-        # Choose a random starting point in domain
-        x = np.random.rand(3)*(shape + 2*R)
-        # Chose a random phi and theta within given ranges
-        phi = (np.pi/2 - np.pi*np.random.rand())*phi_max/90
-        theta = (np.pi/2 - np.pi*np.random.rand())*theta_max/90
-        X0 = R*np.array([np.cos(phi)*np.cos(theta),
-                         np.cos(phi)*np.sin(theta),
-                         np.sin(phi)])
-        [X0, X1] = [x + X0, x - X0]
-        crds = line_segment(X0, X1)
-        lower = ~np.any(np.vstack(crds).T < [R, R, R], axis=1)
-        upper = ~np.any(np.vstack(crds).T >= shape + R, axis=1)
-        valid = upper*lower
-        if np.any(valid):
-            im[crds[0][valid] - R, crds[1][valid] - R, crds[2][valid] - R] = 1
-            n += 1
+    L = min(H, R)
+    with tqdm(range(1, ncylinders)) as pbar:
+        while n < ncylinders:
+            # Choose a random starting point in domain
+            x = np.random.rand(3)*(shape + 2*L)
+            # Chose a random phi and theta within given ranges
+            phi = (np.pi/2 - np.pi*np.random.rand())*phi_max/90
+            theta = (np.pi/2 - np.pi*np.random.rand())*theta_max/90
+            X0 = R*np.array([np.cos(phi)*np.cos(theta),
+                             np.cos(phi)*np.sin(theta),
+                             np.sin(phi)])
+            [X0, X1] = [x + X0, x - X0]
+            crds = line_segment(X0, X1)
+            lower = ~np.any(np.vstack(crds).T < [L, L, L], axis=1)
+            upper = ~np.any(np.vstack(crds).T >= shape + L, axis=1)
+            valid = upper*lower
+            if np.any(valid):
+                im[crds[0][valid] - L, crds[1][valid] - L, crds[2][valid] - L] = 1
+                n += 1
+                pbar.update()
     im = np.array(im, dtype=bool)
     dt = edt(~im) < radius
     return ~dt
