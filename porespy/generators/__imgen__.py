@@ -931,15 +931,17 @@ def cylinders(shape: List[int], radius: int, ncylinders: int,
         shape = np.full((3, ), int(shape))
     elif np.size(shape) == 2:
         raise Exception("2D cylinders don't make sense")
-    R = np.sqrt(np.sum(np.square(shape))).astype(int)
-    if length is not None:
-        R = min(int(length/2), R)
+    # Find max length as 2x diagonal across domain from [0,0,0] to [Nx,Ny,Nz]
+    Rmax = 2*np.sqrt(np.sum(np.square(shape))).astype(int)
+    if length is None:  # Assume cylinders span domain if length not given
+        R = Rmax
+    R = min(int(length/2), Rmax)  # Trim given length to Rmax if too long
     # Adjust max angles to be between 0 and 90
     if (phi_max > 90) or (phi_max < 0):
         raise Exception('phi_max must be betwen 0 and 90')
     if (theta_max > 90) or (theta_max < 0):
         raise Exception('theta_max must be betwen 0 and 90')
-    # Create empty image for inserting
+    # Create empty image for inserting into
     im = np.zeros(shape, dtype=bool)
     n = 0
     while n < ncylinders:
