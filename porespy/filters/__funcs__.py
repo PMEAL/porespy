@@ -2146,25 +2146,8 @@ def copy(im, output):
 
 
 @njit(parallel=True)
-def replace(array, keys, values):
-    r"""
-    This function replace keys elements in input array with new value elements.
-    This function is used as internal function of replace_relabels.
+def _replace(array, keys, values):
 
-    Parameter:
-    ----------
-    array : ND-array
-        Array which requires replacing labels
-    keys :  1D-array
-        The unique labels that need to be replaced
-    values : 1D-array
-        The unique values that will be assigned to labels
-
-    return:
-    -------
-    array : ND-array
-        Array with replaced labels.
-    """
     ind_sort = np.argsort(keys)
     keys_sorted = keys[ind_sort]
     values_sorted = values[ind_sort]
@@ -2198,7 +2181,7 @@ def replace_labels(array, keys, values):
     array = array.flatten()
     keys = np.concatenate(keys, axis=0)
     values = np.concatenate(values, axis=0)
-    replace(array, keys, values)
+    _replace(array, keys, values)
 
     return array.reshape(a_shape)
 
