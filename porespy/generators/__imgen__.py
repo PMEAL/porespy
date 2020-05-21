@@ -934,8 +934,8 @@ def cylinders(shape: List[int], radius: int, ncylinders: int,
     # Find hypotenuse of domain from [0,0,0] to [Nx,Ny,Nz]
     H = np.sqrt(np.sum(np.square(shape))).astype(int)
     if length is None:  # Assume cylinders span domain if length not given
-        R = 2*H
-    R = min(int(length/2), 2*H)  # Trim given length to Rmax if too long
+        length = 2*H
+    R = min(int(length/2), 2*H)  # Trim given length to 2H if too long
     # Adjust max angles to be between 0 and 90
     if (phi_max > 90) or (phi_max < 0):
         raise Exception('phi_max must be betwen 0 and 90')
