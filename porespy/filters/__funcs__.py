@@ -2146,7 +2146,7 @@ def copy(im, output):
 
 
 @njit(parallel=True)
-def _replace(array, keys, values):
+def replace(array, keys, values):
     r"""
     This function replace keys elements in input array with new value elements.
     This function is used as internal function of replace_relabels.
@@ -2198,7 +2198,7 @@ def replace_labels(array, keys, values):
     array = array.flatten()
     keys = np.concatenate(keys, axis=0)
     values = np.concatenate(values, axis=0)
-    _replace(array, keys, values)
+    replace(array, keys, values)
 
     return array.reshape(a_shape)
 
