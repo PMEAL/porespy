@@ -118,7 +118,7 @@ def fftmorphology(im, strel, mode='opening'):
 
     # Perform erosion and dilation
     # The array must be padded with 0's so it works correctly at edges
-    temp = sp.pad(array=im, pad_width=1, mode='constant', constant_values=0)
+    temp = np.pad(array=im, pad_width=1, mode='constant', constant_values=0)
     if mode.startswith('ero'):
         temp = erode(temp, strel)
     if mode.startswith('dila'):
@@ -267,7 +267,7 @@ def find_outer_region(im, r=0):
     if r == 0:
         dt = spim.distance_transform_edt(input=im)
         r = int(np.amax(dt)) * 2
-    im_padded = sp.pad(array=im, pad_width=r, mode='constant',
+    im_padded = np.pad(array=im, pad_width=r, mode='constant',
                        constant_values=True)
     dt = spim.distance_transform_edt(input=im_padded)
     seeds = (dt >= r) + get_border(shape=im_padded.shape)
@@ -533,7 +533,7 @@ def randomize_colors(im, keep_vals=[0]):
     im_map = np.zeros(shape=[np.amax(im_vals) + 1, ], dtype=int)
     im_map[im_vals] = new_vals
     im_new = im_map[im_flat]
-    im_new = sp.reshape(im_new, newshape=sp.shape(im))
+    im_new = sp.reshape(im_new, newshape=np.shape(im))
     return im_new
 
 
@@ -584,7 +584,7 @@ def make_contiguous(im, keep_zeros=True):
     im_map = np.zeros(shape=np.amax(im_flat) + 1)
     im_map[im_vals] = np.arange(0, sp.size(sp.unique(im_flat)))
     im_new = im_map[im_flat]
-    im_new = sp.reshape(im_new, newshape=sp.shape(im))
+    im_new = sp.reshape(im_new, newshape=np.shape(im))
     im_new = np.array(im_new, dtype=im_flat.dtype)
     return im_new
 
@@ -810,12 +810,12 @@ def mesh_region(region: bool, strel=None):
             strel = disk(1)
     pad_width = np.amax(strel.shape)
     if im.ndim == 3:
-        padded_mask = sp.pad(im, pad_width=pad_width, mode='constant')
+        padded_mask = np.pad(im, pad_width=pad_width, mode='constant')
         padded_mask = spim.convolve(padded_mask * 1.0,
                                     weights=strel) / np.sum(strel)
     else:
         padded_mask = sp.reshape(im, (1,) + im.shape)
-        padded_mask = sp.pad(padded_mask, pad_width=pad_width, mode='constant')
+        padded_mask = np.pad(padded_mask, pad_width=pad_width, mode='constant')
     verts, faces, norm, val = marching_cubes_lewiner(padded_mask)
     result = namedtuple('mesh', ('verts', 'faces', 'norm', 'val'))
     result.verts = verts - pad_width
@@ -1037,7 +1037,7 @@ def pad_faces(im, faces):
             faces = [(int('left' in f) * 3, int('right' in f) * 3),
                      (int('front' in f) * 3, int('back' in f) * 3),
                      (int('top' in f) * 3, int('bottom' in f) * 3)]
-        im = sp.pad(im, pad_width=faces, mode='edge')
+        im = np.pad(im, pad_width=faces, mode='edge')
     else:
         im = im
     return im

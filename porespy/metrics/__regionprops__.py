@@ -43,7 +43,7 @@ def props_to_DataFrame(regionprops):
     for item in reg.__dir__():
         if not item.startswith('_'):
             try:
-                if sp.shape(getattr(reg, item)) == ():
+                if np.shape(getattr(reg, item)) == ():
                     metrics.append(item)
             except (TypeError, NotImplementedError, AttributeError):
                 pass
@@ -183,7 +183,7 @@ def regionprops_3D(im):
     results = regionprops(im, coordinates='xy')
     for i in tqdm(range(len(results))):
         mask = results[i].image
-        mask_padded = sp.pad(mask, pad_width=1, mode='constant')
+        mask_padded = np.pad(mask, pad_width=1, mode='constant')
         temp = spim.distance_transform_edt(mask_padded)
         dt = extract_subsection(temp, shape=mask.shape)
         # ---------------------------------------------------------------------
@@ -205,7 +205,7 @@ def regionprops_3D(im):
         results[i].inscribed_sphere = inv_dt < r
         # ---------------------------------------------------------------------
         # Find surface area using marching cubes and analyze the mesh
-        tmp = sp.pad(sp.atleast_3d(mask), pad_width=1, mode='constant')
+        tmp = np.pad(sp.atleast_3d(mask), pad_width=1, mode='constant')
         tmp = spim.convolve(tmp, weights=ball(1))/5
         verts, faces, norms, vals = marching_cubes_lewiner(volume=tmp, level=0)
         results[i].surface_mesh_vertices = verts

@@ -81,7 +81,7 @@ def add_boundary_regions(regions=None, faces=['front', 'back', 'left',
     # -------------------------------------------------------------------------
     # Edge pad segmentation and distance transform
     if faces is not None:
-        regions = sp.pad(regions, 1, 'edge')
+        regions = np.pad(regions, 1, 'edge')
         # ---------------------------------------------------------------------
         if regions.ndim == 3:
             # Remove boundary nodes interconnection
@@ -104,7 +104,7 @@ def add_boundary_regions(regions=None, faces=['front', 'back', 'left',
             regions[:, -1, :] = (~find_boundaries(regions[:, -1, :],
                                                   mode='outer')) * regions[:, -1, :]
             # -----------------------------------------------------------------
-            regions = sp.pad(regions, 2, 'edge')
+            regions = np.pad(regions, 2, 'edge')
 
             # Remove unselected faces
             if 'front' not in faces:
@@ -135,7 +135,7 @@ def add_boundary_regions(regions=None, faces=['front', 'back', 'left',
             regions[:, -1] = (~find_boundaries(regions[:, -1],
                                                mode='outer')) * regions[:, -1]
             # -----------------------------------------------------------------
-            regions = sp.pad(regions, 2, 'edge')
+            regions = np.pad(regions, 2, 'edge')
 
             # Remove unselected faces
             if 'left' not in faces:

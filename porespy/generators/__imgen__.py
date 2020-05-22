@@ -237,7 +237,7 @@ def bundle_of_tubes(shape: List[int], spacing: int):
             s2 = slice(inds[1][i]-r, inds[1][i]+r+1)
             temp[s1, s2] = ps_disk(r)
         except ValueError:
-            odd_shape = sp.shape(temp[s1, s2])
+            odd_shape = np.shape(temp[s1, s2])
             temp[s1, s2] = ps_disk(r)[:odd_shape[0], :odd_shape[1]]
     im = sp.broadcast_to(array=sp.atleast_3d(temp), shape=shape)
     return im

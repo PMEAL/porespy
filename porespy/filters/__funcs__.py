@@ -128,15 +128,15 @@ def distance_transform_lin(im, axis=0, mode='both'):
         c = sp.diff(b*(im == 0), axis=axis)
         d = sp.minimum.accumulate(c, axis=axis)
         if im.ndim == 1:
-            e = sp.pad(d, pad_width=[1, 0], mode='constant', constant_values=0)
+            e = np.pad(d, pad_width=[1, 0], mode='constant', constant_values=0)
         elif im.ndim == 2:
             ax = [[[1, 0], [0, 0]], [[0, 0], [1, 0]]]
-            e = sp.pad(d, pad_width=ax[axis], mode='constant', constant_values=0)
+            e = np.pad(d, pad_width=ax[axis], mode='constant', constant_values=0)
         elif im.ndim == 3:
             ax = [[[1, 0], [0, 0], [0, 0]],
                   [[0, 0], [1, 0], [0, 0]],
                   [[0, 0], [0, 0], [1, 0]]]
-            e = sp.pad(d, pad_width=ax[axis], mode='constant', constant_values=0)
+            e = np.pad(d, pad_width=ax[axis], mode='constant', constant_values=0)
         f = im*(b + e)
         return f
 
@@ -975,7 +975,7 @@ def apply_chords(im, spacing=1, axis=0, trim_edges=True, label=False):
     slices = tuple(slxyz[:im.ndim])
     s = [[0, 1, 0], [0, 1, 0], [0, 1, 0]]  # Straight-line structuring element
     if im.ndim == 3:  # Make structuring element 3D if necessary
-        s = sp.pad(sp.atleast_3d(s), pad_width=((0, 0), (0, 0), (1, 1)),
+        s = np.pad(sp.atleast_3d(s), pad_width=((0, 0), (0, 0), (1, 1)),
                    mode='constant', constant_values=0)
     im = im[slices]
     s = sp.swapaxes(s, 0, axis)
@@ -1206,11 +1206,11 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
 
     if mode == 'mio':
         pw = int(np.floor(dt.max()))
-        impad = sp.pad(im, mode='symmetric', pad_width=pw)
-        inletspad = sp.pad(inlets, mode='symmetric', pad_width=pw)
+        impad = np.pad(im, mode='symmetric', pad_width=pw)
+        inletspad = np.pad(inlets, mode='symmetric', pad_width=pw)
         inlets = np.where(inletspad)
 #        sizes = sp.unique(sp.around(sizes, decimals=0).astype(int))[-1::-1]
-        imresults = np.zeros(sp.shape(impad))
+        imresults = np.zeros(np.shape(impad))
         for r in tqdm(sizes):
             imtemp = fftmorphology(impad, strel(r), mode='erosion')
             if access_limited:
@@ -1221,7 +1221,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
         imresults = extract_subsection(imresults, shape=im.shape)
     elif mode == 'dt':
         inlets = np.where(inlets)
-        imresults = np.zeros(sp.shape(im))
+        imresults = np.zeros(np.shape(im))
         for r in tqdm(sizes):
             imtemp = dt >= r
             if access_limited:
@@ -1231,7 +1231,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
                 imresults[(imresults == 0)*imtemp] = r
     elif mode == 'hybrid':
         inlets = np.where(inlets)
-        imresults = np.zeros(sp.shape(im))
+        imresults = np.zeros(np.shape(im))
         for r in tqdm(sizes):
             imtemp = dt >= r
             if access_limited:

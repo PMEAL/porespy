@@ -37,7 +37,7 @@ class ToolsTest():
 
     def test_extract_subsection(self):
         sec = ps.tools.extract_subsection(self.blobs, [0.5])
-        assert np.all(np.array(sp.shape(sec)) == 50)
+        assert np.all(np.array(np.shape(sec)) == 50)
 
     def test_extract_cylinder(self):
         im = np.ones([200, 300, 400], dtype=bool)

@@ -20,10 +20,10 @@ class GeneratorTest():
         # But this works
         im = ps.generators.cylinders(shape=[1, X, Y], radius=1, ncylinders=20)
         assert im.dtype == bool
-        assert sp.shape(im.squeeze()) == (X, Y)
+        assert np.shape(im.squeeze()) == (X, Y)
         im = ps.generators.cylinders(shape=[50, 50, 50], radius=1,
                                      ncylinders=20)
-        assert sp.shape(im.squeeze()) == (50, 50, 50)
+        assert np.shape(im.squeeze()) == (50, 50, 50)
 
     def test_insert_shape_center_defaults(self):
         im = np.zeros([11, 11])

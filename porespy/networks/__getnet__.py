@@ -76,7 +76,7 @@ def regions_to_network(im, dt=None, voxel_size=1):
         sub_im = im[s]
         sub_dt = dt[s]
         pore_im = sub_im == i
-        padded_mask = sp.pad(pore_im, pad_width=1, mode='constant')
+        padded_mask = np.pad(pore_im, pad_width=1, mode='constant')
         pore_dt = spim.distance_transform_edt(padded_mask)
         s_offset = np.array([i.start for i in s])
         p_label[pore] = i
