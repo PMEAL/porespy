@@ -1,4 +1,5 @@
 import scipy as sp
+import numpy as np
 import openpnm as op
 from tqdm import tqdm
 import scipy.ndimage as spim
@@ -121,7 +122,7 @@ def regions_to_network(im, dt=None, voxel_size=1):
     net['throat.volume'] = np.zeros((Nt, ), dtype=float)
     net['pore.diameter'] = sp.copy(p_dia_local)*voxel_size
     net['pore.inscribed_diameter'] = sp.copy(p_dia_local)*voxel_size
-    net['pore.equivalent_diameter'] = 2*((3/4*net['pore.volume']/sp.pi)**(1/3))
+    net['pore.equivalent_diameter'] = 2*((3/4*net['pore.volume']/np.pi)**(1/3))
     net['pore.extended_diameter'] = sp.copy(p_dia_global)*voxel_size
     net['pore.surface_area'] = sp.copy(p_area_surf)*(voxel_size)**2
     net['throat.diameter'] = np.array(t_dia_inscribed)*voxel_size

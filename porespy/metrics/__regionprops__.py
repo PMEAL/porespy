@@ -215,8 +215,8 @@ def regionprops_3D(im):
         # ---------------------------------------------------------------------
         # Find sphericity
         vol = results[i].volume
-        r = (3/4/sp.pi*vol)**(1/3)
-        a_equiv = 4*sp.pi*(r)**2
+        r = (3/4/np.pi*vol)**(1/3)
+        a_equiv = 4*np.pi*(r)**2
         a_region = results[i].surface_area
         results[i].sphericity = a_equiv/a_region
         # ---------------------------------------------------------------------

@@ -764,8 +764,8 @@ def cylinders(shape: List[int], radius: int, ncylinders: int,
         # Choose a random starting point in domain
         x = sp.rand(3)*shape
         # Chose a random phi and theta within given ranges
-        phi = (sp.pi/2 - sp.pi*sp.rand())*phi_max/90
-        theta = (sp.pi/2 - sp.pi*sp.rand())*theta_max/90
+        phi = (np.pi/2 - np.pi*sp.rand())*phi_max/90
+        theta = (np.pi/2 - np.pi*sp.rand())*theta_max/90
         X0 = R*np.array([sp.cos(phi)*sp.cos(theta),
                          sp.cos(phi)*sp.sin(theta),
                          sp.sin(phi)])
