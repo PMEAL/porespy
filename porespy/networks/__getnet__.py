@@ -53,12 +53,12 @@ def regions_to_network(im, dt=None, voxel_size=1):
     # Initialize arrays
     Ps = sp.arange(1, sp.amax(im)+1)
     Np = sp.size(Ps)
-    p_coords = sp.zeros((Np, im.ndim), dtype=float)
-    p_volume = sp.zeros((Np, ), dtype=float)
-    p_dia_local = sp.zeros((Np, ), dtype=float)
-    p_dia_global = sp.zeros((Np, ), dtype=float)
-    p_label = sp.zeros((Np, ), dtype=int)
-    p_area_surf = sp.zeros((Np, ), dtype=int)
+    p_coords = np.zeros((Np, im.ndim), dtype=float)
+    p_volume = np.zeros((Np, ), dtype=float)
+    p_dia_local = np.zeros((Np, ), dtype=float)
+    p_dia_global = np.zeros((Np, ), dtype=float)
+    p_label = np.zeros((Np, ), dtype=int)
+    p_area_surf = np.zeros((Np, ), dtype=int)
     t_conns = []
     t_dia_inscribed = []
     t_area = []
@@ -106,8 +106,8 @@ def regions_to_network(im, dt=None, voxel_size=1):
     # Clean up values
     Nt = len(t_dia_inscribed)  # Get number of throats
     if im.ndim == 2:  # If 2D, add 0's in 3rd dimension
-        p_coords = sp.vstack((p_coords.T, sp.zeros((Np, )))).T
-        t_coords = sp.vstack((sp.array(t_coords).T, sp.zeros((Nt, )))).T
+        p_coords = sp.vstack((p_coords.T, np.zeros((Np, )))).T
+        t_coords = sp.vstack((sp.array(t_coords).T, np.zeros((Nt, )))).T
 
     net = {}
     net['pore.all'] = sp.ones((Np, ), dtype=bool)
@@ -118,7 +118,7 @@ def regions_to_network(im, dt=None, voxel_size=1):
     net['throat.conns'] = sp.array(t_conns)
     net['pore.label'] = sp.array(p_label)
     net['pore.volume'] = sp.copy(p_volume)*(voxel_size**3)
-    net['throat.volume'] = sp.zeros((Nt, ), dtype=float)
+    net['throat.volume'] = np.zeros((Nt, ), dtype=float)
     net['pore.diameter'] = sp.copy(p_dia_local)*voxel_size
     net['pore.inscribed_diameter'] = sp.copy(p_dia_local)*voxel_size
     net['pore.equivalent_diameter'] = 2*((3/4*net['pore.volume']/sp.pi)**(1/3))

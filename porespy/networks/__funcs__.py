@@ -38,7 +38,7 @@ def map_to_regions(regions, values):
     values = sp.array(values).flatten()
     if sp.size(values) != regions.max() + 1:
         raise Exception('Number of values does not match number of regions')
-    im = sp.zeros_like(regions)
+    im = np.zeros_like(regions)
     im = values[regions]
     return im
 
@@ -405,7 +405,7 @@ def add_phase_interconnections(net, snow_partitioning_n, voxel_size=1,
             net['pore.boundary'] = loc5
         for j in phases_num:
             if j > i:
-                pi_pj_sa = sp.zeros_like(label)
+                pi_pj_sa = np.zeros_like(label)
                 loc6 = sp.logical_and(conns2 >= num[j - 1], conns2 < num[j])
                 pi_pj_conns = loc1 * loc6
                 net['throat.{}_{}'.format(al[i], al[j])] = pi_pj_conns

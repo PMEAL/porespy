@@ -26,12 +26,12 @@ class GeneratorTest():
         assert sp.shape(im.squeeze()) == (50, 50, 50)
 
     def test_insert_shape_center_defaults(self):
-        im = sp.zeros([11, 11])
+        im = np.zeros([11, 11])
         shape = sp.ones([3, 3])
         im = ps.generators.insert_shape(im, element=shape, center=[5, 5])
         assert sp.sum(im) == sp.prod(shape.shape)
 
-        im = sp.zeros([11, 11])
+        im = np.zeros([11, 11])
         shape = sp.ones([4, 4])
         with pytest.raises(Exception):
             im = ps.generators.insert_shape(im, element=shape, center=[5, 5])
@@ -53,68 +53,68 @@ class GeneratorTest():
         assert im[4, 5] == 1 and im[5, 4] == 1
 
     def test_insert_shape_center_outside_im(self):
-        im = sp.zeros([11, 11])
+        im = np.zeros([11, 11])
         shape = sp.ones([3, 3])
         im = ps.generators.insert_shape(im, element=shape, center=[-1, -1])
         assert sp.sum(im) == 1
 
-        im = sp.zeros([11, 11])
+        im = np.zeros([11, 11])
         shape = sp.ones([3, 3])
         im = ps.generators.insert_shape(im, element=shape, center=[0, -1])
         assert sp.sum(im) == 2
 
-        im = sp.zeros([11, 11])
+        im = np.zeros([11, 11])
         shape = sp.ones([3, 3])
         im = ps.generators.insert_shape(im, element=shape, center=[10, 10])
         assert sp.sum(im) == 4
 
-        im = sp.zeros([11, 11])
+        im = np.zeros([11, 11])
         shape = sp.ones([3, 3])
         im = ps.generators.insert_shape(im, element=shape, center=[14, 14])
         assert sp.sum(im) == 0
 
-        im = sp.zeros([11, 11])
+        im = np.zeros([11, 11])
         shape = sp.ones([4, 4])
         with pytest.raises(Exception):
             im = ps.generators.insert_shape(im, element=shape, center=[10, 10])
 
-        im = sp.zeros([11, 11])
+        im = np.zeros([11, 11])
         shape = sp.ones([4, 3])
         with pytest.raises(Exception):
             im = ps.generators.insert_shape(im, element=shape, center=[10, 10])
 
     def test_insert_shape_corner_outside_im(self):
-        im = sp.zeros([11, 11])
+        im = np.zeros([11, 11])
         shape = sp.ones([3, 3])
         im = ps.generators.insert_shape(im, element=shape, corner=[-1, -1])
         assert sp.sum(im) == 4
 
-        im = sp.zeros([11, 11])
+        im = np.zeros([11, 11])
         shape = sp.ones([3, 3])
         im = ps.generators.insert_shape(im, element=shape, corner=[-1, 1])
         assert sp.sum(im) == 6
 
-        im = sp.zeros([11, 11])
+        im = np.zeros([11, 11])
         shape = sp.ones([3, 3])
         im = ps.generators.insert_shape(im, element=shape, corner=[-3, -3])
         assert sp.sum(im) == 0
 
-        im = sp.zeros([11, 11])
+        im = np.zeros([11, 11])
         shape = sp.ones([3, 3])
         im = ps.generators.insert_shape(im, element=shape, corner=[10, 9])
         assert sp.sum(im) == 2
 
-        im = sp.zeros([11, 11])
+        im = np.zeros([11, 11])
         shape = sp.ones([3, 3])
         im = ps.generators.insert_shape(im, element=shape, corner=[13, 13])
         assert sp.sum(im) == 0
 
-        im = sp.zeros([11, 11])
+        im = np.zeros([11, 11])
         shape = sp.ones([3, 4])
         im = ps.generators.insert_shape(im, element=shape, corner=[9, 9])
         assert sp.sum(im) == 4
 
-        im = sp.zeros([11, 11])
+        im = np.zeros([11, 11])
         shape = sp.ones([3, 4])
         im = ps.generators.insert_shape(im, element=shape, corner=[0, -1])
         assert sp.sum(im) == 9
@@ -205,14 +205,14 @@ class GeneratorTest():
 
     def test_RSA_2d_single(self):
         sp.random.seed(0)
-        im = sp.zeros([100, 100], dtype=int)
+        im = np.zeros([100, 100], dtype=int)
         im = ps.generators.RSA(im, radius=10, volume_fraction=0.5)
         assert sp.sum(im > 0) == 5095
         assert sp.sum(im > 1) == 20
 
     def test_RSA_2d_multi(self):
         sp.random.seed(0)
-        im = sp.zeros([100, 100], dtype=int)
+        im = np.zeros([100, 100], dtype=int)
         im = ps.generators.RSA(im, radius=10, volume_fraction=0.5)
         im = ps.generators.RSA(im, radius=5, volume_fraction=0.75)
         assert sp.sum(im > 0) == 6520
@@ -220,13 +220,13 @@ class GeneratorTest():
 
     def test_RSA_3d_single(self):
         sp.random.seed(0)
-        im = sp.zeros([50, 50, 50], dtype=int)
+        im = np.zeros([50, 50, 50], dtype=int)
         im = ps.generators.RSA(im, radius=5, volume_fraction=0.5)
         assert sp.sum(im > 0) == 45602
         assert sp.sum(im > 1) == 121
 
     def test_RSA_mask_edge_2d(self):
-        im = sp.zeros([100, 100], dtype=int)
+        im = np.zeros([100, 100], dtype=int)
         im = ps.generators.RSA(im, radius=10, volume_fraction=0.5,
                                mode='contained')
         coords = sp.argwhere(im == 2)
@@ -234,7 +234,7 @@ class GeneratorTest():
         assert ~sp.any(coords > 90)
 
     def test_RSA_mask_edge_3d(self):
-        im = sp.zeros([50, 50, 50], dtype=int)
+        im = np.zeros([50, 50, 50], dtype=int)
         im = ps.generators.RSA(im, radius=5, volume_fraction=0.5,
                                mode='contained')
         coords = sp.argwhere(im == 2)

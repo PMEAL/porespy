@@ -1,3 +1,4 @@
+import numpy as np
 import scipy as sp
 import scipy.ndimage as spim
 import warnings
@@ -309,9 +310,9 @@ def extract_cylinder(im, r=None, axis=0):
     if r is None:
         a = list(im.shape)
         a.pop(axis)
-        r = sp.floor(sp.amin(a) / 2)
+        r = np.floor(sp.amin(a) / 2)
     dim = [range(int(-s / 2), int(s / 2) + s % 2) for s in im.shape]
-    inds = sp.meshgrid(*dim, indexing='ij')
+    inds = np.meshgrid(*dim, indexing='ij')
     inds[axis] = inds[axis] * 0
     d = sp.sqrt(sp.sum(sp.square(inds), axis=0))
     mask = d < r
@@ -529,7 +530,7 @@ def randomize_colors(im, keep_vals=[0]):
     swap_vals = ~sp.in1d(im_flat, keep_vals)
     im_vals = sp.unique(im_flat[swap_vals])
     new_vals = sp.random.permutation(im_vals)
-    im_map = sp.zeros(shape=[sp.amax(im_vals) + 1, ], dtype=int)
+    im_map = np.zeros(shape=[sp.amax(im_vals) + 1, ], dtype=int)
     im_map[im_vals] = new_vals
     im_new = im_map[im_flat]
     im_new = sp.reshape(im_new, newshape=sp.shape(im))
@@ -580,7 +581,7 @@ def make_contiguous(im, keep_zeros=True):
     im = im - im.min()
     im_flat = im.flatten()
     im_vals = sp.unique(im_flat)
-    im_map = sp.zeros(shape=sp.amax(im_flat) + 1)
+    im_map = np.zeros(shape=sp.amax(im_flat) + 1)
     im_map[im_vals] = sp.arange(0, sp.size(sp.unique(im_flat)))
     im_new = im_map[im_flat]
     im_new = sp.reshape(im_new, newshape=sp.shape(im))
@@ -964,12 +965,12 @@ def insert_cylinder(im, xyz0, xyz1, r):
     xyz0, xyz1 = [sp.array(xyz).astype(int) for xyz in (xyz0, xyz1)]
     r = int(r)
     L = sp.absolute(xyz0 - xyz1).max() + 1
-    xyz_line = [sp.linspace(xyz0[i], xyz1[i], L).astype(int) for i in range(3)]
+    xyz_line = [np.linspace(xyz0[i], xyz1[i], L).astype(int) for i in range(3)]
 
     xyz_min = sp.amin(xyz_line, axis=1) - r
     xyz_max = sp.amax(xyz_line, axis=1) + r
     shape_template = xyz_max - xyz_min + 1
-    template = sp.zeros(shape=shape_template)
+    template = np.zeros(shape=shape_template)
 
     # Shortcut for orthogonal cylinders
     if (xyz0 == xyz1).sum() == 2:
@@ -1108,7 +1109,7 @@ def extract_regions(regions, labels: list, trim=True):
     if type(labels) is int:
         labels = [labels]
     s = spim.find_objects(regions)
-    im_new = sp.zeros_like(regions)
+    im_new = np.zeros_like(regions)
     x_min, y_min, z_min = sp.inf, sp.inf, sp.inf
     x_max, y_max, z_max = 0, 0, 0
     for i in labels:

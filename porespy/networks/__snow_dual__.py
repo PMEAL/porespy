@@ -1,3 +1,4 @@
+import numpy as np
 import scipy as sp
 from porespy.networks import regions_to_network
 from porespy.networks import add_boundary_regions
@@ -130,7 +131,7 @@ def snow_dual(im,
     solid_labels = ((net['pore.label'] > solid_num) * ~
                     (net['pore.label'] > b_num))
     boundary_labels = net['pore.label'] > b_num
-    b_sa = sp.zeros(len(boundary_labels[boundary_labels == 1.0]))
+    b_sa = np.zeros(len(boundary_labels[boundary_labels == 1.0]))
     # -------------------------------------------------------------------------
     # Calculates void interfacial area that connects with solid and vice versa
     p_conns = net['throat.conns'][:, 0][pore_solid_labels]

@@ -158,7 +158,7 @@ def RSA(im: array, radius: int, volume_fraction: int = 1,
         mask = ps.tools.fftmorphology(im > 0, im_strel > 0, mode='dilate')
         mask = mask.astype(int)
     else:
-        mask = sp.zeros_like(im)
+        mask = np.zeros_like(im)
     if mode == 'contained':
         mask = _remove_edge(mask, radius)
     elif mode == 'extended':
@@ -218,7 +218,7 @@ def bundle_of_tubes(shape: List[int], spacing: int):
         shape = sp.full((3, ), int(shape))
     if sp.size(shape) == 2:
         shape = sp.hstack((shape, [1]))
-    temp = sp.zeros(shape=shape[:2])
+    temp = np.zeros(shape=shape[:2])
     Xi = sp.ceil(sp.linspace(spacing/2,
                              shape[0]-(spacing/2)-1,
                              int(shape[0]/spacing)))
@@ -227,7 +227,7 @@ def bundle_of_tubes(shape: List[int], spacing: int):
                              shape[1]-(spacing/2)-1,
                              int(shape[1]/spacing)))
     Yi = sp.array(Yi, dtype=int)
-    temp[tuple(sp.meshgrid(Xi, Yi))] = 1
+    temp[tuple(np.meshgrid(Xi, Yi))] = 1
     inds = sp.where(temp)
     for i in range(len(inds[0])):
         r = sp.random.randint(1, (spacing/2))
@@ -327,7 +327,7 @@ def voronoi_edges(shape: List[int], radius: int, ncells: int,
     shape = sp.array(shape)
     if sp.size(shape) == 1:
         shape = sp.full((3, ), int(shape))
-    im = sp.zeros(shape, dtype=bool)
+    im = np.zeros(shape, dtype=bool)
     base_pts = sp.rand(ncells, 3)*shape
     if flat_faces:
         # Reflect base points
@@ -429,7 +429,7 @@ def lattice_spheres(shape: List[int], radius: int, offset: int = 0,
     shape = sp.array(shape)
     if sp.size(shape) == 1:
         shape = sp.full((3, ), int(shape))
-    im = sp.zeros(shape, dtype=bool)
+    im = np.zeros(shape, dtype=bool)
     im = im.squeeze()
 
     # Parse lattice type
@@ -447,7 +447,7 @@ def lattice_spheres(shape: List[int], radius: int, offset: int = 0,
                           r:im.shape[1]-r:2*s]
         im[coords[0], coords[1]] = 1
     elif lattice in ['tri', 'triangular']:
-        spacing = 2*sp.floor(sp.sqrt(2*(r**2))).astype(int)
+        spacing = 2*np.floor(sp.sqrt(2*(r**2))).astype(int)
         s = int(spacing/2) + offset
         coords = sp.mgrid[r:im.shape[0]-r:2*s,
                           r:im.shape[1]-r:2*s]
@@ -463,7 +463,7 @@ def lattice_spheres(shape: List[int], radius: int, offset: int = 0,
                           r:im.shape[2]-r:2*s]
         im[coords[0], coords[1], coords[2]] = 1
     elif lattice in ['bcc', 'body cenetered cubic']:
-        spacing = 2*sp.floor(sp.sqrt(4/3*(r**2))).astype(int)
+        spacing = 2*np.floor(sp.sqrt(4/3*(r**2))).astype(int)
         s = int(spacing/2) + offset
         coords = sp.mgrid[r:im.shape[0]-r:2*s,
                           r:im.shape[1]-r:2*s,
@@ -474,7 +474,7 @@ def lattice_spheres(shape: List[int], radius: int, offset: int = 0,
                           s+r:im.shape[2]-r:2*s]
         im[coords[0], coords[1], coords[2]] = 1
     elif lattice in ['fcc', 'face centered cubic']:
-        spacing = 2*sp.floor(sp.sqrt(2*(r**2))).astype(int)
+        spacing = 2*np.floor(sp.sqrt(2*(r**2))).astype(int)
         s = int(spacing/2) + offset
         coords = sp.mgrid[r:im.shape[0]-r:2*s,
                           r:im.shape[1]-r:2*s,
@@ -646,7 +646,7 @@ def generate_noise(shape: List[int], porosity=None, octaves: int = 3,
         freq = sp.concatenate((frequency, [1]))
     else:
         freq = sp.array(frequency)
-    im = sp.zeros(shape=[Lx, Ly, Lz], dtype=float)
+    im = np.zeros(shape=[Lx, Ly, Lz], dtype=float)
     for x in range(Lx):
         for y in range(Ly):
             for z in range(Lz):
@@ -752,7 +752,7 @@ def cylinders(shape: List[int], radius: int, ncylinders: int,
         R = sp.sqrt(sp.sum(sp.square(shape))).astype(int)
     else:
         R = length/2
-    im = sp.zeros(shape)
+    im = np.zeros(shape)
     # Adjust max angles to be between 0 and 90
     if (phi_max > 90) or (phi_max < 0):
         raise Exception('phi_max must be betwen 0 and 90')

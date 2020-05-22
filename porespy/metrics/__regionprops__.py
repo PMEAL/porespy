@@ -1,3 +1,4 @@
+import numpy as np
 import scipy as sp
 import scipy.ndimage as spim
 from tqdm import tqdm
@@ -90,7 +91,7 @@ def props_to_image(regionprops, shape, prop):
     regionprops_3d
 
     """
-    im = sp.zeros(shape=shape)
+    im = np.zeros(shape=shape)
     for r in regionprops:
         if prop == 'convex':
             mask = r.convex_image

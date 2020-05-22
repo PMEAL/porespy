@@ -167,7 +167,7 @@ class FilterTest():
         assert lt.max() == self.im_dt.max()
 
     def test_local_thickness_known_sizes(self):
-        im = sp.zeros(shape=[300, 300])
+        im = np.zeros(shape=[300, 300])
         im = ps.generators.RSA(im=im, radius=20)
         im = ps.generators.RSA(im=im, radius=10)
         im = im > 0

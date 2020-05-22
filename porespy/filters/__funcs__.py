@@ -451,9 +451,9 @@ def reduce_peaks(peaks):
     inds = spim.measurements.center_of_mass(input=peaks,
                                             labels=markers,
                                             index=sp.arange(1, N+1))
-    inds = sp.floor(inds).astype(int)
+    inds = np.floor(inds).astype(int)
     # Centroid may not be on old pixel, so create a new peaks image
-    peaks_new = sp.zeros_like(peaks, dtype=bool)
+    peaks_new = np.zeros_like(peaks, dtype=bool)
     peaks_new[tuple(inds.T)] = True
     return peaks_new
 
@@ -729,8 +729,8 @@ def trim_nonpercolating_paths(im, inlet_axis=0, outlet_axis=0):
                       ' unexpected behavior.')
     im = trim_floating_solid(~im)
     labels = spim.label(~im)[0]
-    inlet = sp.zeros_like(im, dtype=int)
-    outlet = sp.zeros_like(im, dtype=int)
+    inlet = np.zeros_like(im, dtype=int)
+    outlet = np.zeros_like(im, dtype=int)
     if im.ndim == 3:
         if inlet_axis == 0:
             inlet[0, :, :] = 1
@@ -845,7 +845,7 @@ def flood(im, regions=None, mode='max'):
     I = im.flatten()
     L = labels.flatten()
     if mode.startswith('max'):
-        V = sp.zeros(shape=N+1, dtype=float)
+        V = np.zeros(shape=N+1, dtype=float)
         for i in range(len(L)):
             if V[L[i]] < I[i]:
                 V[L[i]] = I[i]
@@ -855,7 +855,7 @@ def flood(im, regions=None, mode='max'):
             if V[L[i]] > I[i]:
                 V[L[i]] = I[i]
     elif mode.startswith('size'):
-        V = sp.zeros(shape=N+1, dtype=int)
+        V = np.zeros(shape=N+1, dtype=int)
         for i in range(len(L)):
             V[L[i]] += 1
     im_flooded = sp.reshape(V[labels], newshape=im.shape)
@@ -970,7 +970,7 @@ def apply_chords(im, spacing=1, axis=0, trim_edges=True, label=False):
         raise Exception('Spacing cannot be less than 0')
     if spacing == 0:
         label = True
-    result = sp.zeros(im.shape, dtype=int)  # Will receive chords at end
+    result = np.zeros(im.shape, dtype=int)  # Will receive chords at end
     slxyz = [slice(None, None, spacing*(axis != i) + 1) for i in [0, 1, 2]]
     slices = tuple(slxyz[:im.ndim])
     s = [[0, 1, 0], [0, 1, 0], [0, 1, 0]]  # Straight-line structuring element
@@ -1033,7 +1033,7 @@ def apply_chords_3D(im, spacing=0, trim_edges=True):
         raise Exception('Must be a 3D image to use this function')
     if spacing < 0:
         raise Exception('Spacing cannot be less than 0')
-    ch = sp.zeros_like(im, dtype=int)
+    ch = np.zeros_like(im, dtype=int)
     ch[:, ::4+2*spacing, ::4+2*spacing] = 1  # X-direction
     ch[::4+2*spacing, :, 2::4+2*spacing] = 2  # Y-direction
     ch[2::4+2*spacing, 2::4+2*spacing, :] = 3  # Z-direction
@@ -1205,12 +1205,12 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
         strel = ps_ball
 
     if mode == 'mio':
-        pw = int(sp.floor(dt.max()))
+        pw = int(np.floor(dt.max()))
         impad = sp.pad(im, mode='symmetric', pad_width=pw)
         inletspad = sp.pad(inlets, mode='symmetric', pad_width=pw)
         inlets = sp.where(inletspad)
 #        sizes = sp.unique(sp.around(sizes, decimals=0).astype(int))[-1::-1]
-        imresults = sp.zeros(sp.shape(impad))
+        imresults = np.zeros(sp.shape(impad))
         for r in tqdm(sizes):
             imtemp = fftmorphology(impad, strel(r), mode='erosion')
             if access_limited:
@@ -1221,7 +1221,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
         imresults = extract_subsection(imresults, shape=im.shape)
     elif mode == 'dt':
         inlets = sp.where(inlets)
-        imresults = sp.zeros(sp.shape(im))
+        imresults = np.zeros(sp.shape(im))
         for r in tqdm(sizes):
             imtemp = dt >= r
             if access_limited:
@@ -1231,7 +1231,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
                 imresults[(imresults == 0)*imtemp] = r
     elif mode == 'hybrid':
         inlets = sp.where(inlets)
-        imresults = sp.zeros(sp.shape(im))
+        imresults = np.zeros(sp.shape(im))
         for r in tqdm(sizes):
             imtemp = dt >= r
             if access_limited:
@@ -1266,7 +1266,7 @@ def trim_disconnected_blobs(im, inlets):
     """
     if type(inlets) == tuple:
         temp = sp.copy(inlets)
-        inlets = sp.zeros_like(im, dtype=bool)
+        inlets = np.zeros_like(im, dtype=bool)
         inlets[temp] = True
     elif (inlets.shape == im.shape) and (inlets.max() == 1):
         inlets = inlets.astype(bool)
@@ -1278,7 +1278,7 @@ def trim_disconnected_blobs(im, inlets):
     if len(keep) > 0:
         im2 = sp.reshape(sp.in1d(labels, keep), newshape=im.shape)
     else:
-        im2 = sp.zeros_like(im)
+        im2 = np.zeros_like(im)
     im2 = im2*im
     return im2
 
@@ -1423,7 +1423,7 @@ def prune_branches(skel, branch_points=None, iterations=1):
     else:
         from skimage.morphology import cube
     # Create empty image to house results
-    im_result = sp.zeros_like(skel)
+    im_result = np.zeros_like(skel)
     # If branch points are not supplied, attempt to find them
     if branch_points is None:
         branch_points = spim.convolve(skel*1.0, weights=cube(3)) > 3

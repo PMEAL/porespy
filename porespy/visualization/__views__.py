@@ -1,3 +1,4 @@
+import numpy as np
 import scipy as sp
 import scipy.ndimage as spim
 # import matplotlib.pyplot as plt
@@ -69,7 +70,7 @@ def show_planes(im):
 
     new_y = im_xy.shape[1] + im_xz.shape[1] + 10
 
-    new_im = sp.zeros([new_x + 20, new_y + 20], dtype=im.dtype)
+    new_im = np.zeros([new_x + 20, new_y + 20], dtype=im.dtype)
 
     # Add xy image to upper left corner
     new_im[10:im_xy.shape[0]+10,

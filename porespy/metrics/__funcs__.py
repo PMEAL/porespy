@@ -52,14 +52,14 @@ def representative_elementary_volume(im, npoints=1000):
     (1987)
 
     """
-    im_temp = sp.zeros_like(im)
+    im_temp = np.zeros_like(im)
     crds = sp.array(sp.rand(npoints, im.ndim)*im.shape, dtype=int)
     pads = sp.array(sp.rand(npoints)*sp.amin(im.shape)/2+10, dtype=int)
     im_temp[tuple(crds.T)] = True
     labels, N = spim.label(input=im_temp)
     slices = spim.find_objects(input=labels)
-    porosity = sp.zeros(shape=(N,), dtype=float)
-    volume = sp.zeros(shape=(N,), dtype=int)
+    porosity = np.zeros(shape=(N,), dtype=float)
+    volume = np.zeros(shape=(N,), dtype=int)
     for i in tqdm(sp.arange(0, N)):
         s = slices[i]
         p = pads[i]
@@ -269,12 +269,12 @@ def two_point_correlation_bf(im, spacing=10):
                       ' Reduce dimensionality with np.squeeze(im) to avoid' +
                       ' unexpected behavior.')
     if im.ndim == 2:
-        pts = sp.meshgrid(range(0, im.shape[0], spacing),
+        pts = np.meshgrid(range(0, im.shape[0], spacing),
                           range(0, im.shape[1], spacing))
         crds = sp.vstack([pts[0].flatten(),
                           pts[1].flatten()]).T
     elif im.ndim == 3:
-        pts = sp.meshgrid(range(0, im.shape[0], spacing),
+        pts = np.meshgrid(range(0, im.shape[0], spacing),
                           range(0, im.shape[1], spacing),
                           range(0, im.shape[2], spacing))
         crds = sp.vstack([pts[0].flatten(),
@@ -666,7 +666,7 @@ def region_interface_areas(regions, areas, voxel_size=1, strel=None):
     slices = spim.find_objects(im)
     # Initialize arrays
     Ps = sp.arange(1, sp.amax(im)+1)
-    sa = sp.zeros_like(Ps, dtype=float)
+    sa = np.zeros_like(Ps, dtype=float)
     sa_combined = []  # Difficult to preallocate since number of conns unknown
     cn = []
     # Start extracting area from im
@@ -743,7 +743,7 @@ def region_surface_areas(regions, voxel_size=1, strel=None):
     slices = spim.find_objects(im)
     # Initialize arrays
     Ps = sp.arange(1, sp.amax(im)+1)
-    sa = sp.zeros_like(Ps, dtype=float)
+    sa = np.zeros_like(Ps, dtype=float)
     # Start extracting marching cube area from im
     for i in tqdm(Ps):
         reg = i - 1
@@ -822,7 +822,7 @@ def phase_fraction(im, normed=True):
     elif im.dtype != int:
         raise Exception('Image must contain integer values for each phase')
     labels = sp.arange(0, sp.amax(im)+1)
-    results = sp.zeros_like(labels)
+    results = np.zeros_like(labels)
     for i in labels:
         results[i] = sp.sum(im == i)
     if normed:

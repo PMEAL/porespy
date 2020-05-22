@@ -98,13 +98,13 @@ class ToolsTest():
         assert ps.tools.in_hull([sp.mean(X, axis=0)], hull)
 
     def test_insert_sphere_2D(self):
-        im = sp.zeros(shape=[200, 200], dtype=bool)
+        im = np.zeros(shape=[200, 200], dtype=bool)
         im = ps.tools.insert_sphere(im, [100, 100], 50)
         im = ps.tools.insert_sphere(im, [10, 100], 50)
         im = ps.tools.insert_sphere(im, [180, 100], 50)
 
     def test_insert_sphere_3D(self):
-        im = sp.zeros(shape=[200, 200, 200], dtype=bool)
+        im = np.zeros(shape=[200, 200, 200], dtype=bool)
         im = ps.tools.insert_sphere(im, [100, 100, 100], 50)
         im = ps.tools.insert_sphere(im, [10, 100, 100], 50)
         im = ps.tools.insert_sphere(im, [180, 100, 100], 50)
