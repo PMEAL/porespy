@@ -1,5 +1,6 @@
 import porespy as ps
 import scipy as sp
+import numpy as np
 import scipy.ndimage as spim
 from skimage import io
 import pytest
@@ -122,7 +123,7 @@ class MetricsTest():
     def test_region_surface_areas(self):
         regions = self.regions
         areas = ps.metrics.region_surface_areas(regions)
-        assert not sp.any(sp.isnan(areas))
+        assert not np.any(sp.isnan(areas))
 
     def test_region_interface_areas(self):
         regions = self.regions

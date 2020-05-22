@@ -295,9 +295,9 @@ class FilterTest():
                                               return_all=True, mask=True,
                                               randomize=False, alias=None)
         assert sp.amax(snow.regions) == 44
-        assert not sp.any(sp.isnan(snow.regions))
-        assert not sp.any(sp.isnan(snow.dt))
-        assert not sp.any(sp.isnan(snow.im))
+        assert not np.any(sp.isnan(snow.regions))
+        assert not np.any(sp.isnan(snow.dt))
+        assert not np.any(sp.isnan(snow.im))
 
 if __name__ == '__main__':
     t = FilterTest()

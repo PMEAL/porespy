@@ -230,16 +230,16 @@ class GeneratorTest():
         im = ps.generators.RSA(im, radius=10, volume_fraction=0.5,
                                mode='contained')
         coords = sp.argwhere(im == 2)
-        assert ~sp.any(coords < 10)
-        assert ~sp.any(coords > 90)
+        assert ~np.any(coords < 10)
+        assert ~np.any(coords > 90)
 
     def test_RSA_mask_edge_3d(self):
         im = np.zeros([50, 50, 50], dtype=int)
         im = ps.generators.RSA(im, radius=5, volume_fraction=0.5,
                                mode='contained')
         coords = sp.argwhere(im == 2)
-        assert ~sp.any(coords < 5)
-        assert ~sp.any(coords > 45)
+        assert ~np.any(coords < 5)
+        assert ~np.any(coords > 45)
 
     def test_line_segment(self):
         X0 = [3, 4]

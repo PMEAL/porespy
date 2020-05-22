@@ -40,7 +40,7 @@ def regions_to_network(im, dt=None, voxel_size=1):
     from skimage.morphology import disk, ball
     struc_elem = disk if im.ndim == 2 else ball
 
-    # if ~sp.any(im == 0):
+    # if ~np.any(im == 0):
     #     raise Exception('The received image has no solid phase (0\'s)')
 
     if dt is None:

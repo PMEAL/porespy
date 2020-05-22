@@ -153,7 +153,7 @@ def RSA(im: array, radius: int, volume_fraction: int = 1,
     else:
         im_strel = ps_ball(radius)
         mask_strel = ps_ball(mrad)
-    if sp.any(im > 0):
+    if np.any(im > 0):
         # Dilate existing objects by im_strel to remove pixels near them
         # from consideration for sphere placement
         mask = ps.tools.fftmorphology(im > 0, im_strel > 0, mode='dilate')
@@ -379,7 +379,7 @@ def _get_Voronoi_edges(vor):
         edges[0].extend(facet[:-1]+[facet[-1]])
         edges[1].extend(facet[1:]+[facet[0]])
     edges = sp.vstack(edges).T  # Convert to scipy-friendly format
-    mask = sp.any(edges == -1, axis=1)  # Identify edges at infinity
+    mask = np.any(edges == -1, axis=1)  # Identify edges at infinity
     edges = edges[~mask]  # Remove edges at infinity
     edges = sp.sort(edges, axis=1)  # Move all points to upper triangle
     # Remove duplicate pairs
@@ -771,10 +771,10 @@ def cylinders(shape: List[int], radius: int, ncylinders: int,
                          sp.sin(phi)])
         [X0, X1] = [x + X0, x - X0]
         crds = line_segment(X0, X1)
-        lower = ~sp.any(sp.vstack(crds).T < [0, 0, 0], axis=1)
-        upper = ~sp.any(sp.vstack(crds).T >= shape, axis=1)
+        lower = ~np.any(sp.vstack(crds).T < [0, 0, 0], axis=1)
+        upper = ~np.any(sp.vstack(crds).T >= shape, axis=1)
         valid = upper*lower
-        if sp.any(valid):
+        if np.any(valid):
             im[crds[0][valid], crds[1][valid], crds[2][valid]] = 1
             n += 1
     im = np.array(im, dtype=bool)

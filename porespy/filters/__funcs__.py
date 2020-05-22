@@ -215,7 +215,7 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, return_all=False,
         im = im > 0
     if dt is None:
         print('Peforming Distance Transform')
-        if sp.any(im_shape == 1):
+        if np.any(im_shape == 1):
             ax = np.where(im_shape == 1)[0][0]
             dt = spim.distance_transform_edt(input=im.squeeze())
             dt = sp.expand_dims(dt, ax)
@@ -1216,7 +1216,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
             if access_limited:
                 imtemp = trim_disconnected_blobs(imtemp, inlets)
             imtemp = fftmorphology(imtemp, strel(r), mode='dilation')
-            if sp.any(imtemp):
+            if np.any(imtemp):
                 imresults[(imresults == 0)*imtemp] = r
         imresults = extract_subsection(imresults, shape=im.shape)
     elif mode == 'dt':
@@ -1226,7 +1226,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
             imtemp = dt >= r
             if access_limited:
                 imtemp = trim_disconnected_blobs(imtemp, inlets)
-            if sp.any(imtemp):
+            if np.any(imtemp):
                 imtemp = spim.distance_transform_edt(~imtemp) < r
                 imresults[(imresults == 0)*imtemp] = r
     elif mode == 'hybrid':
@@ -1236,7 +1236,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
             imtemp = dt >= r
             if access_limited:
                 imtemp = trim_disconnected_blobs(imtemp, inlets)
-            if sp.any(imtemp):
+            if np.any(imtemp):
                 imtemp = fftconvolve(imtemp, strel(r), mode='same') > 0.0001
                 imresults[(imresults == 0)*imtemp] = r
     else:
