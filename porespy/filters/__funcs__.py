@@ -513,7 +513,7 @@ def trim_saddle_points(peaks, dt, max_iters=10):
             peaks_extended = (peaks_max == dt_i)*im_i
             if sp.all(peaks_extended == peaks_i):
                 break  # Found a true peak
-            elif sp.sum(peaks_extended*peaks_i) == 0:
+            elif np.sum(peaks_extended*peaks_i) == 0:
                 peaks_i = False
                 break  # Found a saddle point
         peaks[s] = peaks_i

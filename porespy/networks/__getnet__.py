@@ -80,10 +80,10 @@ def regions_to_network(im, dt=None, voxel_size=1):
         s_offset = np.array([i.start for i in s])
         p_label[pore] = i
         p_coords[pore, :] = spim.center_of_mass(pore_im) + s_offset
-        p_volume[pore] = sp.sum(pore_im)
+        p_volume[pore] = np.sum(pore_im)
         p_dia_local[pore] = (2*sp.amax(pore_dt)) - np.sqrt(3)
         p_dia_global[pore] = 2*sp.amax(sub_dt)
-        p_area_surf[pore] = sp.sum(pore_dt == 1)
+        p_area_surf[pore] = np.sum(pore_dt == 1)
         im_w_throats = spim.binary_dilation(input=pore_im, structure=struc_elem(1))
         im_w_throats = im_w_throats*sub_im
         Pn = sp.unique(im_w_throats)[1:] - 1
@@ -92,7 +92,7 @@ def regions_to_network(im, dt=None, voxel_size=1):
                 t_conns.append([pore, j])
                 vx = np.where(im_w_throats == (j + 1))
                 t_dia_inscribed.append(2*sp.amax(sub_dt[vx]))
-                t_perimeter.append(sp.sum(sub_dt[vx] < 2))
+                t_perimeter.append(np.sum(sub_dt[vx] < 2))
                 t_area.append(sp.size(vx[0]))
                 t_inds = tuple([i+j for i, j in zip(vx, s_offset)])
                 temp = np.where(dt[t_inds] == sp.amax(dt[t_inds]))[0][0]
@@ -130,14 +130,14 @@ def regions_to_network(im, dt=None, voxel_size=1):
     net['throat.perimeter'] = np.array(t_perimeter)*voxel_size
     net['throat.equivalent_diameter'] = (np.array(t_area) * (voxel_size**2))**0.5
     P12 = net['throat.conns']
-    PT1 = np.sqrt(sp.sum(((p_coords[P12[:, 0]]-t_coords) * voxel_size)**2, axis=1))
-    PT2 = np.sqrt(sp.sum(((p_coords[P12[:, 1]]-t_coords) * voxel_size)**2, axis=1))
+    PT1 = np.sqrt(np.sum(((p_coords[P12[:, 0]]-t_coords) * voxel_size)**2, axis=1))
+    PT2 = np.sqrt(np.sum(((p_coords[P12[:, 1]]-t_coords) * voxel_size)**2, axis=1))
     net['throat.total_length'] = PT1 + PT2
     PT1 = PT1-p_dia_local[P12[:, 0]]/2*voxel_size
     PT2 = PT2-p_dia_local[P12[:, 1]]/2*voxel_size
     net['throat.length'] = PT1 + PT2
     dist = (p_coords[P12[:, 0]]-p_coords[P12[:, 1]])*voxel_size
-    net['throat.direct_length'] = np.sqrt(sp.sum(dist**2, axis=1))
+    net['throat.direct_length'] = np.sqrt(np.sum(dist**2, axis=1))
     # Make a dummy openpnm network to get the conduit lengths
     pn = op.network.GenericNetwork()
     pn.update(net)

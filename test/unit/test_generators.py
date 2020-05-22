@@ -29,7 +29,7 @@ class GeneratorTest():
         im = np.zeros([11, 11])
         shape = np.ones([3, 3])
         im = ps.generators.insert_shape(im, element=shape, center=[5, 5])
-        assert sp.sum(im) == sp.prod(shape.shape)
+        assert np.sum(im) == sp.prod(shape.shape)
 
         im = np.zeros([11, 11])
         shape = np.ones([4, 4])
@@ -41,14 +41,14 @@ class GeneratorTest():
         shape = np.ones([3, 3])
         im = ps.generators.insert_shape(im, element=shape, center=[5, 5],
                                         value=1.0, mode='overlay')
-        assert sp.sum(im) == (sp.prod(im.shape) + sp.prod(shape.shape))
+        assert np.sum(im) == (sp.prod(im.shape) + sp.prod(shape.shape))
 
     def test_insert_shape_corner_overwrite(self):
         im = np.ones([10, 10])
         shape = np.ones([3, 3])
         im = ps.generators.insert_shape(im, element=shape, corner=[5, 5],
                                         value=1.0, mode='overlay')
-        assert sp.sum(im) == (sp.prod(im.shape) + sp.prod(shape.shape))
+        assert np.sum(im) == (sp.prod(im.shape) + sp.prod(shape.shape))
         assert im[5, 5] == 2
         assert im[4, 5] == 1 and im[5, 4] == 1
 
@@ -56,22 +56,22 @@ class GeneratorTest():
         im = np.zeros([11, 11])
         shape = np.ones([3, 3])
         im = ps.generators.insert_shape(im, element=shape, center=[-1, -1])
-        assert sp.sum(im) == 1
+        assert np.sum(im) == 1
 
         im = np.zeros([11, 11])
         shape = np.ones([3, 3])
         im = ps.generators.insert_shape(im, element=shape, center=[0, -1])
-        assert sp.sum(im) == 2
+        assert np.sum(im) == 2
 
         im = np.zeros([11, 11])
         shape = np.ones([3, 3])
         im = ps.generators.insert_shape(im, element=shape, center=[10, 10])
-        assert sp.sum(im) == 4
+        assert np.sum(im) == 4
 
         im = np.zeros([11, 11])
         shape = np.ones([3, 3])
         im = ps.generators.insert_shape(im, element=shape, center=[14, 14])
-        assert sp.sum(im) == 0
+        assert np.sum(im) == 0
 
         im = np.zeros([11, 11])
         shape = np.ones([4, 4])
@@ -87,37 +87,37 @@ class GeneratorTest():
         im = np.zeros([11, 11])
         shape = np.ones([3, 3])
         im = ps.generators.insert_shape(im, element=shape, corner=[-1, -1])
-        assert sp.sum(im) == 4
+        assert np.sum(im) == 4
 
         im = np.zeros([11, 11])
         shape = np.ones([3, 3])
         im = ps.generators.insert_shape(im, element=shape, corner=[-1, 1])
-        assert sp.sum(im) == 6
+        assert np.sum(im) == 6
 
         im = np.zeros([11, 11])
         shape = np.ones([3, 3])
         im = ps.generators.insert_shape(im, element=shape, corner=[-3, -3])
-        assert sp.sum(im) == 0
+        assert np.sum(im) == 0
 
         im = np.zeros([11, 11])
         shape = np.ones([3, 3])
         im = ps.generators.insert_shape(im, element=shape, corner=[10, 9])
-        assert sp.sum(im) == 2
+        assert np.sum(im) == 2
 
         im = np.zeros([11, 11])
         shape = np.ones([3, 3])
         im = ps.generators.insert_shape(im, element=shape, corner=[13, 13])
-        assert sp.sum(im) == 0
+        assert np.sum(im) == 0
 
         im = np.zeros([11, 11])
         shape = np.ones([3, 4])
         im = ps.generators.insert_shape(im, element=shape, corner=[9, 9])
-        assert sp.sum(im) == 4
+        assert np.sum(im) == 4
 
         im = np.zeros([11, 11])
         shape = np.ones([3, 4])
         im = ps.generators.insert_shape(im, element=shape, corner=[0, -1])
-        assert sp.sum(im) == 9
+        assert np.sum(im) == 9
 
     def test_bundle_of_tubes(self):
         im = ps.generators.bundle_of_tubes(shape=[101, 101, 1], spacing=10)
@@ -158,7 +158,7 @@ class GeneratorTest():
                                          ncells=25,
                                          flat_faces=True)
         top_slice = im[:, :, 0]
-        assert sp.sum(top_slice) == 1409
+        assert np.sum(top_slice) == 1409
 
     def test_lattice_spheres_square(self):
         im = ps.generators.lattice_spheres(shape=[101, 101], radius=5,
@@ -207,23 +207,23 @@ class GeneratorTest():
         sp.random.seed(0)
         im = np.zeros([100, 100], dtype=int)
         im = ps.generators.RSA(im, radius=10, volume_fraction=0.5)
-        assert sp.sum(im > 0) == 5095
-        assert sp.sum(im > 1) == 20
+        assert np.sum(im > 0) == 5095
+        assert np.sum(im > 1) == 20
 
     def test_RSA_2d_multi(self):
         sp.random.seed(0)
         im = np.zeros([100, 100], dtype=int)
         im = ps.generators.RSA(im, radius=10, volume_fraction=0.5)
         im = ps.generators.RSA(im, radius=5, volume_fraction=0.75)
-        assert sp.sum(im > 0) == 6520
-        assert sp.sum(im > 1) == 44
+        assert np.sum(im > 0) == 6520
+        assert np.sum(im > 1) == 44
 
     def test_RSA_3d_single(self):
         sp.random.seed(0)
         im = np.zeros([50, 50, 50], dtype=int)
         im = ps.generators.RSA(im, radius=5, volume_fraction=0.5)
-        assert sp.sum(im > 0) == 45602
-        assert sp.sum(im > 1) == 121
+        assert np.sum(im > 0) == 45602
+        assert np.sum(im > 1) == 121
 
     def test_RSA_mask_edge_2d(self):
         im = np.zeros([100, 100], dtype=int)

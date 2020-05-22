@@ -50,7 +50,7 @@ class MetricsTest():
     def test_pore_size_distribution(self):
         mip = ps.filters.porosimetry(self.im3D)
         psd = ps.metrics.pore_size_distribution(mip)
-        assert sp.sum(psd.satn) == 1.0
+        assert np.sum(psd.satn) == 1.0
 
     def test_two_point_correlation_bf(self):
         tpcf_bf = ps.metrics.two_point_correlation_bf(self.im2D)

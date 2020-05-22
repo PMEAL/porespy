@@ -95,54 +95,54 @@ class FilterTest():
 
     def test_find_disconnected_voxels_2d(self):
         h = ps.filters.find_disconnected_voxels(self.im[:, :, 0])
-        assert sp.sum(h) == 477
+        assert np.sum(h) == 477
 
     def test_find_disconnected_voxels_2d_conn4(self):
         h = ps.filters.find_disconnected_voxels(self.im[:, :, 0], conn=4)
-        assert sp.sum(h) == 652
+        assert np.sum(h) == 652
 
     def test_find_disconnected_voxels_3d(self):
         h = ps.filters.find_disconnected_voxels(self.im)
-        assert sp.sum(h) == 55
+        assert np.sum(h) == 55
 
     def test_find_disconnected_voxels_3d_conn6(self):
         h = ps.filters.find_disconnected_voxels(self.im, conn=6)
-        assert sp.sum(h) == 202
+        assert np.sum(h) == 202
 
     def test_trim_nonpercolating_paths_2d_axis0(self):
         h = ps.filters.trim_nonpercolating_paths(self.im[:, :, 0],
                                                  inlet_axis=0, outlet_axis=0)
-        assert sp.sum(h) == 3178
+        assert np.sum(h) == 3178
 
     def test_trim_nonpercolating_paths_2d_axis1(self):
         h = ps.filters.trim_nonpercolating_paths(self.im[:, :, 0],
                                                  inlet_axis=1, outlet_axis=1)
-        assert sp.sum(h) == 1067
+        assert np.sum(h) == 1067
 
     def test_trim_nonpercolating_paths_3d_axis0(self):
         h = ps.filters.trim_nonpercolating_paths(self.im,
                                                  inlet_axis=0, outlet_axis=0)
-        assert sp.sum(h) == 499733
+        assert np.sum(h) == 499733
 
     def test_trim_nonpercolating_paths_3d_axis1(self):
         h = ps.filters.trim_nonpercolating_paths(self.im,
                                                  inlet_axis=1, outlet_axis=1)
-        assert sp.sum(h) == 499693
+        assert np.sum(h) == 499693
 
     def test_trim_nonpercolating_paths_3d_axis2(self):
         h = ps.filters.trim_nonpercolating_paths(self.im,
                                                  inlet_axis=2, outlet_axis=2)
-        assert sp.sum(h) == 499611
+        assert np.sum(h) == 499611
 
     def test_fill_blind_pores(self):
         h = ps.filters.find_disconnected_voxels(self.im)
         b = ps.filters.fill_blind_pores(h)
         h = ps.filters.find_disconnected_voxels(b)
-        assert sp.sum(h) == 0
+        assert np.sum(h) == 0
 
     def test_trim_floating_solid(self):
         f = ps.filters.trim_floating_solid(~self.im)
-        assert sp.sum(f) > sp.sum(~self.im)
+        assert np.sum(f) > np.sum(~self.im)
 
     def test_trim_extrema_min(self):
         dt = self.im_dt[:, :, 45:55]

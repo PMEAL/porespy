@@ -750,7 +750,7 @@ def cylinders(shape: List[int], radius: int, ncylinders: int,
     elif sp.size(shape) == 2:
         raise Exception("2D cylinders don't make sense")
     if length is None:
-        R = np.sqrt(sp.sum(sp.square(shape))).astype(int)
+        R = np.sqrt(np.sum(sp.square(shape))).astype(int)
     else:
         R = length/2
     im = np.zeros(shape)

@@ -314,7 +314,7 @@ def extract_cylinder(im, r=None, axis=0):
     dim = [range(int(-s / 2), int(s / 2) + s % 2) for s in im.shape]
     inds = np.meshgrid(*dim, indexing='ij')
     inds[axis] = inds[axis] * 0
-    d = np.sqrt(sp.sum(sp.square(inds), axis=0))
+    d = np.sqrt(np.sum(sp.square(inds), axis=0))
     mask = d < r
     im_temp = im*mask
     return im_temp
@@ -812,7 +812,7 @@ def mesh_region(region: bool, strel=None):
     if im.ndim == 3:
         padded_mask = sp.pad(im, pad_width=pad_width, mode='constant')
         padded_mask = spim.convolve(padded_mask * 1.0,
-                                    weights=strel) / sp.sum(strel)
+                                    weights=strel) / np.sum(strel)
     else:
         padded_mask = sp.reshape(im, (1,) + im.shape)
         padded_mask = sp.pad(padded_mask, pad_width=pad_width, mode='constant')

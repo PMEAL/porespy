@@ -65,7 +65,7 @@ def representative_elementary_volume(im, npoints=1000):
         p = pads[i]
         new_s = extend_slice(s, shape=im.shape, pad=p)
         temp = im[new_s]
-        Vp = sp.sum(temp)
+        Vp = np.sum(temp)
         Vt = sp.size(temp)
         porosity[i] = Vp/Vt
         volume[i] = Vt
@@ -227,8 +227,8 @@ def porosity(im):
 
     """
     im = np.array(im, dtype=int)
-    Vp = sp.sum(im == 1)
-    Vs = sp.sum(im == 0)
+    Vp = np.sum(im == 1)
+    Vs = np.sum(im == 0)
     e = Vp/(Vs + Vp)
     return e
 
@@ -824,7 +824,7 @@ def phase_fraction(im, normed=True):
     labels = sp.arange(0, sp.amax(im)+1)
     results = np.zeros_like(labels)
     for i in labels:
-        results[i] = sp.sum(im == i)
+        results[i] = np.sum(im == i)
     if normed:
         results = results/im.size
     return results
