@@ -314,7 +314,7 @@ def extract_cylinder(im, r=None, axis=0):
     dim = [range(int(-s / 2), int(s / 2) + s % 2) for s in im.shape]
     inds = np.meshgrid(*dim, indexing='ij')
     inds[axis] = inds[axis] * 0
-    d = sp.sqrt(sp.sum(sp.square(inds), axis=0))
+    d = np.sqrt(sp.sum(sp.square(inds), axis=0))
     mask = d < r
     im_temp = im*mask
     return im_temp
@@ -343,7 +343,7 @@ def extract_subsection(im, shape):
     --------
     >>> import scipy as sp
     >>> from porespy.tools import extract_subsection
-    >>> im = sp.array([[1, 1, 1, 1], [1, 2, 2, 2], [1, 2, 3, 3], [1, 2, 3, 4]])
+    >>> im = np.array([[1, 1, 1, 1], [1, 2, 2, 2], [1, 2, 3, 3], [1, 2, 3, 4]])
     >>> print(im)
     [[1 1 1 1]
      [1 2 2 2]
@@ -356,10 +356,10 @@ def extract_subsection(im, shape):
 
     """
     # Check if shape was given as a fraction
-    shape = sp.array(shape)
+    shape = np.array(shape)
     if shape[0] < 1:
-        shape = sp.array(im.shape) * shape
-    center = sp.array(im.shape) / 2
+        shape = np.array(im.shape) * shape
+    center = np.array(im.shape) / 2
     s_im = []
     for dim in range(im.ndim):
         r = shape[dim] / 2
@@ -389,7 +389,7 @@ def get_planes(im, squeeze=True):
     planes : list
         A list of 2D-images
     """
-    x, y, z = (sp.array(im.shape) / 2).astype(int)
+    x, y, z = (np.array(im.shape) / 2).astype(int)
     planes = [im[x, :, :], im[:, y, :], im[:, :, z]]
     if not squeeze:
         imx = planes[0]
@@ -432,7 +432,7 @@ def extend_slice(s, shape, pad=1):
     --------
     >>> from scipy.ndimage import label, find_objects
     >>> from porespy.tools import extend_slice
-    >>> im = sp.array([[1, 0, 0], [1, 0, 0], [0, 0, 1]])
+    >>> im = np.array([[1, 0, 0], [1, 0, 0], [0, 0, 1]])
     >>> labels = label(im)[0]
     >>> s = find_objects(labels)
 
@@ -526,7 +526,7 @@ def randomize_colors(im, keep_vals=[0]):
 
     '''
     im_flat = im.flatten()
-    keep_vals = sp.array(keep_vals)
+    keep_vals = np.array(keep_vals)
     swap_vals = ~sp.in1d(im_flat, keep_vals)
     im_vals = sp.unique(im_flat[swap_vals])
     new_vals = sp.random.permutation(im_vals)
@@ -567,7 +567,7 @@ def make_contiguous(im, keep_zeros=True):
     -------
     >>> import porespy as ps
     >>> import scipy as sp
-    >>> im = sp.array([[0, 2, 9], [6, 8, 3]])
+    >>> im = np.array([[0, 2, 9], [6, 8, 3]])
     >>> im = ps.tools.make_contiguous(im)
     >>> print(im)
     [[0 1 5]
@@ -585,7 +585,7 @@ def make_contiguous(im, keep_zeros=True):
     im_map[im_vals] = sp.arange(0, sp.size(sp.unique(im_flat)))
     im_new = im_map[im_flat]
     im_new = sp.reshape(im_new, newshape=sp.shape(im))
-    im_new = sp.array(im_new, dtype=im_flat.dtype)
+    im_new = np.array(im_new, dtype=im_flat.dtype)
     return im_new
 
 
@@ -647,7 +647,7 @@ def get_border(shape, thickness=1, mode='edges', return_indices=False):
     """
     ndims = len(shape)
     t = thickness
-    border = sp.ones(shape, dtype=bool)
+    border = np.ones(shape, dtype=bool)
     if mode == 'faces':
         if ndims == 2:
             border[t:-t, t:-t] = False
@@ -669,7 +669,7 @@ def get_border(shape, thickness=1, mode='edges', return_indices=False):
             border[0::, t:-t, 0::] = False
             border[0::, 0::, t:-t] = False
     if return_indices:
-        border = sp.where(border)
+        border = np.where(border)
     return border
 
 
@@ -726,7 +726,7 @@ def norm_to_uniform(im, scale=None):
     if scale is None:
         scale = [im.min(), im.max()]
     im = (im - sp.mean(im)) / sp.std(im)
-    im = 1 / 2 * sp.special.erfc(-im / sp.sqrt(2))
+    im = 1 / 2 * sp.special.erfc(-im / np.sqrt(2))
     im = (im - im.min()) / (im.max() - im.min())
     im = im * (scale[1] - scale[0]) + scale[0]
     return im
@@ -840,7 +840,7 @@ def ps_disk(radius):
         A 2D numpy bool array of the structring element
     """
     rad = int(sp.ceil(radius))
-    other = sp.ones((2 * rad + 1, 2 * rad + 1), dtype=bool)
+    other = np.ones((2 * rad + 1, 2 * rad + 1), dtype=bool)
     other[rad, rad] = False
     disk = spim.distance_transform_edt(other) < radius
     return disk
@@ -861,7 +861,7 @@ def ps_ball(radius):
         A 3D numpy array of the structuring element
     """
     rad = int(sp.ceil(radius))
-    other = sp.ones((2 * rad + 1, 2 * rad + 1, 2 * rad + 1), dtype=bool)
+    other = np.ones((2 * rad + 1, 2 * rad + 1, 2 * rad + 1), dtype=bool)
     other[rad, rad, rad] = False
     ball = spim.distance_transform_edt(other) < radius
     return ball
@@ -919,7 +919,7 @@ def insert_sphere(im, c, r):
     image : ND-array
         The original image with a sphere inerted at the specified location
     """
-    c = sp.array(c, dtype=int)
+    c = np.array(c, dtype=int)
     if c.size != im.ndim:
         raise Exception('Coordinates do not match dimensionality of image')
 
@@ -929,7 +929,7 @@ def insert_sphere(im, c, r):
     bbox = sp.ravel(bbox)
     s = bbox_to_slices(bbox)
     temp = im[s]
-    blank = sp.ones_like(temp)
+    blank = np.ones_like(temp)
     blank[tuple(c - bbox[0:im.ndim])] = 0
     blank = spim.distance_transform_edt(blank) < r
     im[s] = blank
@@ -962,7 +962,7 @@ def insert_cylinder(im, xyz0, xyz1, r):
     if im.ndim != 3:
         raise Exception('This function is only implemented for 3D images')
     # Converting coordinates to numpy array
-    xyz0, xyz1 = [sp.array(xyz).astype(int) for xyz in (xyz0, xyz1)]
+    xyz0, xyz1 = [np.array(xyz).astype(int) for xyz in (xyz0, xyz1)]
     r = int(r)
     L = sp.absolute(xyz0 - xyz1).max() + 1
     xyz_line = [np.linspace(xyz0[i], xyz1[i], L).astype(int) for i in range(3)]
@@ -1077,7 +1077,7 @@ def _create_alias_map(im, alias=None):
         al[values] = 'phase{}'.format(values)
     if alias is not None:
         alias_sort = dict(sorted(alias.items()))
-        phase_labels = sp.array([*alias_sort])
+        phase_labels = np.array([*alias_sort])
         al = alias
         if set(phase_labels) != set(phases_num):
             raise Exception('Alias labels does not match with image labels '

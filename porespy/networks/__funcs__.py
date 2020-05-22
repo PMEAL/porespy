@@ -35,7 +35,7 @@ def map_to_regions(regions, values):
     the region indexing starts at 1.  That is, region 1 corresponds to pore 0.
 
     """
-    values = sp.array(values).flatten()
+    values = np.array(values).flatten()
     if sp.size(values) != regions.max() + 1:
         raise Exception('Number of values does not match number of regions')
     im = np.zeros_like(regions)

@@ -51,7 +51,7 @@ def props_to_DataFrame(regionprops):
     d = {}
     for k in metrics:
         try:
-            d[k] = sp.array([r[k] for r in regionprops])
+            d[k] = np.array([r[k] for r in regionprops])
         except ValueError:
             print('Error encountered evaluating ' + k + ' so skipping it')
     # Create pandas data frame an return

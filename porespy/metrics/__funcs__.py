@@ -53,8 +53,8 @@ def representative_elementary_volume(im, npoints=1000):
 
     """
     im_temp = np.zeros_like(im)
-    crds = sp.array(sp.rand(npoints, im.ndim)*im.shape, dtype=int)
-    pads = sp.array(sp.rand(npoints)*sp.amin(im.shape)/2+10, dtype=int)
+    crds = np.array(sp.rand(npoints, im.ndim)*im.shape, dtype=int)
+    pads = np.array(sp.rand(npoints)*sp.amin(im.shape)/2+10, dtype=int)
     im_temp[tuple(crds.T)] = True
     labels, N = spim.label(input=im_temp)
     slices = spim.find_objects(input=labels)
@@ -226,7 +226,7 @@ def porosity(im):
     calculation of accessible porosity, rather than overall porosity.
 
     """
-    im = sp.array(im, dtype=int)
+    im = np.array(im, dtype=int)
     Vp = sp.sum(im == 1)
     Vs = sp.sum(im == 0)
     e = Vp/(Vs + Vp)
@@ -313,11 +313,11 @@ def _radial_profile(autocorr, r_max, nbins=100):
     if len(autocorr.shape) == 2:
         adj = sp.reshape(autocorr.shape, [2, 1, 1])
         inds = sp.indices(autocorr.shape) - adj/2
-        dt = sp.sqrt(inds[0]**2 + inds[1]**2)
+        dt = np.sqrt(inds[0]**2 + inds[1]**2)
     elif len(autocorr.shape) == 3:
         adj = sp.reshape(autocorr.shape, [3, 1, 1, 1])
         inds = sp.indices(autocorr.shape) - adj/2
-        dt = sp.sqrt(inds[0]**2 + inds[1]**2 + inds[2]**2)
+        dt = np.sqrt(inds[0]**2 + inds[1]**2 + inds[2]**2)
     else:
         raise Exception('Image dimensions must be 2 or 3')
     bin_size = np.int(np.ceil(r_max/nbins))
@@ -475,7 +475,7 @@ def chord_counts(im):
     """
     labels, N = spim.label(im > 0)
     props = regionprops(labels, coordinates='xy')
-    chord_lens = sp.array([i.filled_area for i in props])
+    chord_lens = np.array([i.filled_area for i in props])
     return chord_lens
 
 
@@ -595,7 +595,7 @@ def chord_length_distribution(im, bins=None, log=False, voxel_size=1,
     """
     x = chord_counts(im)
     if bins is None:
-        bins = sp.array(range(0, x.max()+2))*voxel_size
+        bins = np.array(range(0, x.max()+2))*voxel_size
     x = x*voxel_size
     if log:
         x = sp.log10(x)
@@ -697,7 +697,7 @@ def region_interface_areas(regions, areas, voxel_size=1, strel=None):
                     mesh = mesh_region(region=merged_region, strel=strel)
                     sa_combined.append(mesh_surface_area(mesh))
     # Interfacial area calculation
-    cn = sp.array(cn)
+    cn = np.array(cn)
     ia = 0.5 * (sa[cn[:, 0]] + sa[cn[:, 1]] - sa_combined)
     ia[ia <= 0] = 1
     result = namedtuple('interfacial_areas', ('conns', 'area'))

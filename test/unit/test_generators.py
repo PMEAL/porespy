@@ -27,25 +27,25 @@ class GeneratorTest():
 
     def test_insert_shape_center_defaults(self):
         im = np.zeros([11, 11])
-        shape = sp.ones([3, 3])
+        shape = np.ones([3, 3])
         im = ps.generators.insert_shape(im, element=shape, center=[5, 5])
         assert sp.sum(im) == sp.prod(shape.shape)
 
         im = np.zeros([11, 11])
-        shape = sp.ones([4, 4])
+        shape = np.ones([4, 4])
         with pytest.raises(Exception):
             im = ps.generators.insert_shape(im, element=shape, center=[5, 5])
 
     def test_insert_shape_center_overlay(self):
-        im = sp.ones([10, 10])
-        shape = sp.ones([3, 3])
+        im = np.ones([10, 10])
+        shape = np.ones([3, 3])
         im = ps.generators.insert_shape(im, element=shape, center=[5, 5],
                                         value=1.0, mode='overlay')
         assert sp.sum(im) == (sp.prod(im.shape) + sp.prod(shape.shape))
 
     def test_insert_shape_corner_overwrite(self):
-        im = sp.ones([10, 10])
-        shape = sp.ones([3, 3])
+        im = np.ones([10, 10])
+        shape = np.ones([3, 3])
         im = ps.generators.insert_shape(im, element=shape, corner=[5, 5],
                                         value=1.0, mode='overlay')
         assert sp.sum(im) == (sp.prod(im.shape) + sp.prod(shape.shape))
@@ -54,68 +54,68 @@ class GeneratorTest():
 
     def test_insert_shape_center_outside_im(self):
         im = np.zeros([11, 11])
-        shape = sp.ones([3, 3])
+        shape = np.ones([3, 3])
         im = ps.generators.insert_shape(im, element=shape, center=[-1, -1])
         assert sp.sum(im) == 1
 
         im = np.zeros([11, 11])
-        shape = sp.ones([3, 3])
+        shape = np.ones([3, 3])
         im = ps.generators.insert_shape(im, element=shape, center=[0, -1])
         assert sp.sum(im) == 2
 
         im = np.zeros([11, 11])
-        shape = sp.ones([3, 3])
+        shape = np.ones([3, 3])
         im = ps.generators.insert_shape(im, element=shape, center=[10, 10])
         assert sp.sum(im) == 4
 
         im = np.zeros([11, 11])
-        shape = sp.ones([3, 3])
+        shape = np.ones([3, 3])
         im = ps.generators.insert_shape(im, element=shape, center=[14, 14])
         assert sp.sum(im) == 0
 
         im = np.zeros([11, 11])
-        shape = sp.ones([4, 4])
+        shape = np.ones([4, 4])
         with pytest.raises(Exception):
             im = ps.generators.insert_shape(im, element=shape, center=[10, 10])
 
         im = np.zeros([11, 11])
-        shape = sp.ones([4, 3])
+        shape = np.ones([4, 3])
         with pytest.raises(Exception):
             im = ps.generators.insert_shape(im, element=shape, center=[10, 10])
 
     def test_insert_shape_corner_outside_im(self):
         im = np.zeros([11, 11])
-        shape = sp.ones([3, 3])
+        shape = np.ones([3, 3])
         im = ps.generators.insert_shape(im, element=shape, corner=[-1, -1])
         assert sp.sum(im) == 4
 
         im = np.zeros([11, 11])
-        shape = sp.ones([3, 3])
+        shape = np.ones([3, 3])
         im = ps.generators.insert_shape(im, element=shape, corner=[-1, 1])
         assert sp.sum(im) == 6
 
         im = np.zeros([11, 11])
-        shape = sp.ones([3, 3])
+        shape = np.ones([3, 3])
         im = ps.generators.insert_shape(im, element=shape, corner=[-3, -3])
         assert sp.sum(im) == 0
 
         im = np.zeros([11, 11])
-        shape = sp.ones([3, 3])
+        shape = np.ones([3, 3])
         im = ps.generators.insert_shape(im, element=shape, corner=[10, 9])
         assert sp.sum(im) == 2
 
         im = np.zeros([11, 11])
-        shape = sp.ones([3, 3])
+        shape = np.ones([3, 3])
         im = ps.generators.insert_shape(im, element=shape, corner=[13, 13])
         assert sp.sum(im) == 0
 
         im = np.zeros([11, 11])
-        shape = sp.ones([3, 4])
+        shape = np.ones([3, 4])
         im = ps.generators.insert_shape(im, element=shape, corner=[9, 9])
         assert sp.sum(im) == 4
 
         im = np.zeros([11, 11])
-        shape = sp.ones([3, 4])
+        shape = np.ones([3, 4])
         im = ps.generators.insert_shape(im, element=shape, corner=[0, -1])
         assert sp.sum(im) == 9
 

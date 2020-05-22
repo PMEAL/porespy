@@ -45,7 +45,7 @@ def trim_small_clusters(im, size=1):
         raise Exception('Only 2D or 3D images are accepted')
     filtered_array = sp.copy(im)
     labels, N = spim.label(filtered_array, structure=strel)
-    id_sizes = sp.array(spim.sum(im, labels, range(N + 1)))
+    id_sizes = np.array(spim.sum(im, labels, range(N + 1)))
     area_mask = (id_sizes <= size)
     filtered_array[area_mask[labels]] = 0
     return filtered_array
@@ -209,14 +209,14 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, return_all=False,
     tup = namedtuple('results', field_names=['im', 'dt', 'peaks', 'regions'])
     print('_'*60)
     print("Beginning SNOW Algorithm")
-    im_shape = sp.array(im.shape)
+    im_shape = np.array(im.shape)
     if im.dtype is not bool:
         print('Converting supplied image (im) to boolean')
         im = im > 0
     if dt is None:
         print('Peforming Distance Transform')
         if sp.any(im_shape == 1):
-            ax = sp.where(im_shape == 1)[0][0]
+            ax = np.where(im_shape == 1)[0][0]
             dt = spim.distance_transform_edt(input=im.squeeze())
             dt = sp.expand_dims(dt, ax)
         else:
@@ -571,7 +571,7 @@ def trim_nearby_peaks(peaks, dt):
     dist_to_neighbor = temp[0][:, 1]
     del temp, tree  # Free-up memory
     dist_to_solid = dt[tuple(crds.T)]  # Get distance to solid for each peak
-    hits = sp.where(dist_to_neighbor < dist_to_solid)[0]
+    hits = np.where(dist_to_neighbor < dist_to_solid)[0]
     # Drop peak that is closer to the solid than it's neighbor
     drop_peaks = []
     for peak in hits:
@@ -850,7 +850,7 @@ def flood(im, regions=None, mode='max'):
             if V[L[i]] < I[i]:
                 V[L[i]] = I[i]
     elif mode.startswith('min'):
-        V = sp.ones(shape=N+1, dtype=float)*sp.inf
+        V = np.ones(shape=N+1, dtype=float)*sp.inf
         for i in range(len(L)):
             if V[L[i]] > I[i]:
                 V[L[i]] = I[i]
@@ -887,9 +887,9 @@ def find_dt_artifacts(dt):
         the image.  Obviously, voxels with a value of zero have no error.
 
     """
-    temp = sp.ones(shape=dt.shape)*sp.inf
+    temp = np.ones(shape=dt.shape)*sp.inf
     for ax in range(dt.ndim):
-        dt_lin = distance_transform_lin(sp.ones_like(temp, dtype=bool),
+        dt_lin = distance_transform_lin(np.ones_like(temp, dtype=bool),
                                         axis=ax, mode='both')
         temp = sp.minimum(temp, dt_lin)
     result = sp.clip(dt - temp, a_min=0, a_max=sp.inf)
@@ -1208,7 +1208,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
         pw = int(np.floor(dt.max()))
         impad = sp.pad(im, mode='symmetric', pad_width=pw)
         inletspad = sp.pad(inlets, mode='symmetric', pad_width=pw)
-        inlets = sp.where(inletspad)
+        inlets = np.where(inletspad)
 #        sizes = sp.unique(sp.around(sizes, decimals=0).astype(int))[-1::-1]
         imresults = np.zeros(sp.shape(impad))
         for r in tqdm(sizes):
@@ -1220,7 +1220,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
                 imresults[(imresults == 0)*imtemp] = r
         imresults = extract_subsection(imresults, shape=im.shape)
     elif mode == 'dt':
-        inlets = sp.where(inlets)
+        inlets = np.where(inlets)
         imresults = np.zeros(sp.shape(im))
         for r in tqdm(sizes):
             imtemp = dt >= r
@@ -1230,7 +1230,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
                 imtemp = spim.distance_transform_edt(~imtemp) < r
                 imresults[(imresults == 0)*imtemp] = r
     elif mode == 'hybrid':
-        inlets = sp.where(inlets)
+        inlets = np.where(inlets)
         imresults = np.zeros(sp.shape(im))
         for r in tqdm(sizes):
             imtemp = dt >= r

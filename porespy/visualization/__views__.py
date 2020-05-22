@@ -35,7 +35,7 @@ def show_3D(im):
     im = spim.rotate(input=im, angle=45, axes=[2, 1], order=0)
     im = spim.rotate(input=im, angle=-17, axes=[0, 1], order=0, reshape=False)
     mask = im != 0
-    view = sp.where(mask.any(axis=2), mask.argmax(axis=2), 0)
+    view = np.where(mask.any(axis=2), mask.argmax(axis=2), 0)
     view = view.max() - view
     f = view.max()/5
     view[view == view.max()] = -f
@@ -61,7 +61,7 @@ def show_planes(im):
     """
     if sp.squeeze(im.ndim) < 3:
         raise Exception('This view is only necessary for 3D images')
-    x, y, z = (sp.array(im.shape)/2).astype(int)
+    x, y, z = (np.array(im.shape)/2).astype(int)
     im_xy = im[:, :, z]
     im_xz = im[:, y, :]
     im_yz = sp.rot90(im[x, :, :])
@@ -108,7 +108,7 @@ def sem(im, direction='X'):
         A 2D greyscale image suitable for use in matplotlib\'s ```imshow```
         function.
     """
-    im = sp.array(~im, dtype=int)
+    im = np.array(~im, dtype=int)
     if direction in ['Y', 'y']:
         im = sp.transpose(im, axes=[1, 0, 2])
     if direction in ['Z', 'z']:
@@ -143,7 +143,7 @@ def xray(im, direction='X'):
         A 2D greyscale image suitable for use in matplotlib\'s ```imshow```
         function.
     """
-    im = sp.array(~im, dtype=int)
+    im = np.array(~im, dtype=int)
     if direction in ['Y', 'y']:
         im = sp.transpose(im, axes=[1, 0, 2])
     if direction in ['Z', 'z']:

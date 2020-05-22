@@ -1,10 +1,11 @@
 import porespy as ps
+import numpy as np
 import scipy as sp
 import scipy.spatial as sptl
 import scipy.ndimage as spim
 from porespy.tools import norm_to_uniform, ps_ball, ps_disk
 from typing import List
-from numpy import array
+
 
 
 def insert_shape(im, element, center=None, corner=None, value=1,
@@ -213,7 +214,7 @@ def bundle_of_tubes(shape: List[int], spacing: int):
     image : ND-array
         A boolean array with ``True`` values denoting the pore space
     """
-    shape = sp.array(shape)
+    shape = np.array(shape)
     if sp.size(shape) == 1:
         shape = sp.full((3, ), int(shape))
     if sp.size(shape) == 2:
@@ -222,13 +223,13 @@ def bundle_of_tubes(shape: List[int], spacing: int):
     Xi = sp.ceil(sp.linspace(spacing/2,
                              shape[0]-(spacing/2)-1,
                              int(shape[0]/spacing)))
-    Xi = sp.array(Xi, dtype=int)
+    Xi = np.array(Xi, dtype=int)
     Yi = sp.ceil(sp.linspace(spacing/2,
                              shape[1]-(spacing/2)-1,
                              int(shape[1]/spacing)))
-    Yi = sp.array(Yi, dtype=int)
+    Yi = np.array(Yi, dtype=int)
     temp[tuple(np.meshgrid(Xi, Yi))] = 1
-    inds = sp.where(temp)
+    inds = np.where(temp)
     for i in range(len(inds[0])):
         r = sp.random.randint(1, (spacing/2))
         try:
@@ -278,7 +279,7 @@ def polydisperse_spheres(shape: List[int], porosity: float, dist,
     image : ND-array
         A boolean array with ``True`` values denoting the pore space
     """
-    shape = sp.array(shape)
+    shape = np.array(shape)
     if sp.size(shape) == 1:
         shape = sp.full((3, ), int(shape))
     Rs = dist.interval(sp.linspace(0.05, 0.95, nbins))
@@ -286,7 +287,7 @@ def polydisperse_spheres(shape: List[int], porosity: float, dist,
     Rs = (Rs[:-1] + Rs[1:])/2
     Rs = sp.clip(Rs.flatten(), a_min=r_min, a_max=None)
     phi_desired = 1 - (1 - porosity)/(len(Rs))
-    im = sp.ones(shape, dtype=bool)
+    im = np.ones(shape, dtype=bool)
     for r in Rs:
         phi_im = im.sum() / sp.prod(shape)
         phi_corrected = 1 - (1 - phi_desired) / phi_im
@@ -324,7 +325,7 @@ def voronoi_edges(shape: List[int], radius: int, ncells: int,
     """
     print(78*'―')
     print('voronoi_edges: Generating', ncells, 'cells')
-    shape = sp.array(shape)
+    shape = np.array(shape)
     if sp.size(shape) == 1:
         shape = sp.full((3, ), int(shape))
     im = np.zeros(shape, dtype=bool)
@@ -344,7 +345,7 @@ def voronoi_edges(shape: List[int], radius: int, ncells: int,
         base_pts = sp.vstack((base_pts, [1, 1, -1] * orig_pts))
     vor = sptl.Voronoi(points=base_pts)
     vor.vertices = sp.around(vor.vertices)
-    vor.vertices *= (sp.array(im.shape)-1) / sp.array(im.shape)
+    vor.vertices *= (np.array(im.shape)-1) / np.array(im.shape)
     vor.edges = _get_Voronoi_edges(vor)
     for row in vor.edges:
         pts = vor.vertices[row].astype(int)
@@ -385,7 +386,7 @@ def _get_Voronoi_edges(vor):
     edges = edges[:, 0] + 1j*edges[:, 1]  # Convert to imaginary
     edges = sp.unique(edges)  # Remove duplicates
     edges = sp.vstack((sp.real(edges), sp.imag(edges))).T  # Back to real
-    edges = sp.array(edges, dtype=int)
+    edges = np.array(edges, dtype=int)
     return edges
 
 
@@ -426,7 +427,7 @@ def lattice_spheres(shape: List[int], radius: int, offset: int = 0,
     print(78*'―')
     print('lattice_spheres: Generating ' + lattice + ' lattice')
     r = radius
-    shape = sp.array(shape)
+    shape = np.array(shape)
     if sp.size(shape) == 1:
         shape = sp.full((3, ), int(shape))
     im = np.zeros(shape, dtype=bool)
@@ -442,12 +443,12 @@ def lattice_spheres(shape: List[int], radius: int, offset: int = 0,
 
     if lattice in ['sq', 'square']:
         spacing = 2*r
-        s = int(spacing/2) + sp.array(offset)
+        s = int(spacing/2) + np.array(offset)
         coords = sp.mgrid[r:im.shape[0]-r:2*s,
                           r:im.shape[1]-r:2*s]
         im[coords[0], coords[1]] = 1
     elif lattice in ['tri', 'triangular']:
-        spacing = 2*np.floor(sp.sqrt(2*(r**2))).astype(int)
+        spacing = 2*np.floor(np.sqrt(2*(r**2))).astype(int)
         s = int(spacing/2) + offset
         coords = sp.mgrid[r:im.shape[0]-r:2*s,
                           r:im.shape[1]-r:2*s]
@@ -457,13 +458,13 @@ def lattice_spheres(shape: List[int], radius: int, offset: int = 0,
         im[coords[0], coords[1]] = 1
     elif lattice in ['sc', 'simple cubic', 'cubic']:
         spacing = 2*r
-        s = int(spacing/2) + sp.array(offset)
+        s = int(spacing/2) + np.array(offset)
         coords = sp.mgrid[r:im.shape[0]-r:2*s,
                           r:im.shape[1]-r:2*s,
                           r:im.shape[2]-r:2*s]
         im[coords[0], coords[1], coords[2]] = 1
     elif lattice in ['bcc', 'body cenetered cubic']:
-        spacing = 2*np.floor(sp.sqrt(4/3*(r**2))).astype(int)
+        spacing = 2*np.floor(np.sqrt(4/3*(r**2))).astype(int)
         s = int(spacing/2) + offset
         coords = sp.mgrid[r:im.shape[0]-r:2*s,
                           r:im.shape[1]-r:2*s,
@@ -474,7 +475,7 @@ def lattice_spheres(shape: List[int], radius: int, offset: int = 0,
                           s+r:im.shape[2]-r:2*s]
         im[coords[0], coords[1], coords[2]] = 1
     elif lattice in ['fcc', 'face centered cubic']:
-        spacing = 2*np.floor(sp.sqrt(2*(r**2))).astype(int)
+        spacing = 2*np.floor(np.sqrt(2*(r**2))).astype(int)
         s = int(spacing/2) + offset
         coords = sp.mgrid[r:im.shape[0]-r:2*s,
                           r:im.shape[1]-r:2*s,
@@ -532,7 +533,7 @@ def overlapping_spheres(shape: List[int], radius: int, porosity: float,
     returned image.
 
     """
-    shape = sp.array(shape)
+    shape = np.array(shape)
     if sp.size(shape) == 1:
         shape = sp.full((3, ), int(shape))
     ndim = (shape != 1).sum()
@@ -627,7 +628,7 @@ def generate_noise(shape: List[int], porosity=None, octaves: int = 3,
         import noise
     except ModuleNotFoundError:
         raise Exception("The noise package must be installed")
-    shape = sp.array(shape)
+    shape = np.array(shape)
     if sp.size(shape) == 1:
         Lx, Ly, Lz = sp.full((3, ), int(shape))
     elif len(shape) == 2:
@@ -645,7 +646,7 @@ def generate_noise(shape: List[int], porosity=None, octaves: int = 3,
     elif frequency.size == 2:
         freq = sp.concatenate((frequency, [1]))
     else:
-        freq = sp.array(frequency)
+        freq = np.array(frequency)
     im = np.zeros(shape=[Lx, Ly, Lz], dtype=float)
     for x in range(Lx):
         for y in range(Ly):
@@ -690,8 +691,8 @@ def blobs(shape: List[int], porosity: float = 0.5, blobiness: int = 1):
     norm_to_uniform
 
     """
-    blobiness = sp.array(blobiness)
-    shape = sp.array(shape)
+    blobiness = np.array(blobiness)
+    shape = np.array(shape)
     if sp.size(shape) == 1:
         shape = sp.full((3, ), int(shape))
     sigma = sp.mean(shape)/(40*blobiness)
@@ -743,13 +744,13 @@ def cylinders(shape: List[int], radius: int, ncylinders: int,
     image : ND-array
         A boolean array with ``True`` values denoting the pore space
     """
-    shape = sp.array(shape)
+    shape = np.array(shape)
     if sp.size(shape) == 1:
         shape = sp.full((3, ), int(shape))
     elif sp.size(shape) == 2:
         raise Exception("2D cylinders don't make sense")
     if length is None:
-        R = sp.sqrt(sp.sum(sp.square(shape))).astype(int)
+        R = np.sqrt(sp.sum(sp.square(shape))).astype(int)
     else:
         R = length/2
     im = np.zeros(shape)
@@ -765,7 +766,7 @@ def cylinders(shape: List[int], radius: int, ncylinders: int,
         # Chose a random phi and theta within given ranges
         phi = (sp.pi/2 - sp.pi*sp.rand())*phi_max/90
         theta = (sp.pi/2 - sp.pi*sp.rand())*theta_max/90
-        X0 = R*sp.array([sp.cos(phi)*sp.cos(theta),
+        X0 = R*np.array([sp.cos(phi)*sp.cos(theta),
                          sp.cos(phi)*sp.sin(theta),
                          sp.sin(phi)])
         [X0, X1] = [x + X0, x - X0]
@@ -776,7 +777,7 @@ def cylinders(shape: List[int], radius: int, ncylinders: int,
         if sp.any(valid):
             im[crds[0][valid], crds[1][valid], crds[2][valid]] = 1
             n += 1
-    im = sp.array(im, dtype=bool)
+    im = np.array(im, dtype=bool)
     dt = spim.distance_transform_edt(~im) < radius
     return ~dt
 
@@ -890,7 +891,7 @@ def _remove_edge(im, r):
     Fill in the edges of the input image.
     Used by RSA to ensure that no elements are placed too close to the edge.
     '''
-    edge = sp.ones_like(im)
+    edge = np.ones_like(im)
     if len(im.shape) == 2:
         sx, sy = im.shape
         edge[r:sx-r, r:sy-r] = im[r:sx-r, r:sy-r]

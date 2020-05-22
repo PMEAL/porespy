@@ -25,7 +25,7 @@ class MetricsTest():
                                          blobiness=[1, 2, 3])
         path = Path(os.path.realpath(__file__),
                     '../../../test/fixtures/partitioned_regions.tif')
-        self.regions = sp.array(io.imread(path))
+        self.regions = np.array(io.imread(path))
 
     def test_porosity(self):
         phi = ps.metrics.porosity(im=self.im2D)
@@ -37,15 +37,15 @@ class MetricsTest():
         # autocorrelation fn should level off at around the porosity
         t = 0.2
         phi1 = ps.metrics.porosity(im=self.im2D)
-        assert sp.sqrt((sp.mean(tpcf_fft_1.probability[-5:]) - phi1)**2) < t
+        assert np.sqrt((sp.mean(tpcf_fft_1.probability[-5:]) - phi1)**2) < t
         phi2 = ps.metrics.porosity(im=self.im2D_big)
-        assert sp.sqrt((sp.mean(tpcf_fft_2.probability[-5:]) - phi2)**2) < t
+        assert np.sqrt((sp.mean(tpcf_fft_2.probability[-5:]) - phi2)**2) < t
 
     def test_tpcf_fft_3d(self):
         tpcf_fft = ps.metrics.two_point_correlation_fft(self.im3D)
         t = 0.2
         phi1 = ps.metrics.porosity(im=self.im3D)
-        assert sp.sqrt((sp.mean(tpcf_fft.probability[-5:]) - phi1)**2) < t
+        assert np.sqrt((sp.mean(tpcf_fft.probability[-5:]) - phi1)**2) < t
 
     def test_pore_size_distribution(self):
         mip = ps.filters.porosimetry(self.im3D)
@@ -57,7 +57,7 @@ class MetricsTest():
         # autocorrelation fn should level off at around the porosity
         t = 0.2
         phi1 = ps.metrics.porosity(im=self.im2D)
-        assert sp.sqrt((sp.mean(tpcf_bf.probability[-5:]) - phi1)**2) < t
+        assert np.sqrt((sp.mean(tpcf_bf.probability[-5:]) - phi1)**2) < t
 
     def test_rev(self):
         rev = ps.metrics.representative_elementary_volume(self.blobs)
@@ -103,7 +103,7 @@ class MetricsTest():
         ps.metrics.chord_length_distribution(chords, normalization='length')
 
     def test_chord_counts(self):
-        im = sp.ones([100, 50])
+        im = np.ones([100, 50])
         crds = ps.filters.apply_chords(im, spacing=1, trim_edges=False)
         c = ps.metrics.chord_counts(crds)
         assert sp.all(c == 100)

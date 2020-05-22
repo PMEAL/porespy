@@ -1,4 +1,5 @@
 import porespy as ps
+import numpy as np
 import scipy as sp
 import scipy.ndimage as spim
 import matplotlib.pyplot as plt
@@ -29,17 +30,17 @@ class ToolsTest():
         assert sp.all(sp.arange(sp.unique(self.im).size) == sp.unique(cont_im))
 
     def test_make_contiguous_negs(self):
-        im = sp.array([[0, 0, 1, 3], [-2, -4, 1, 3], [-4, 3, 5, 0]])
+        im = np.array([[0, 0, 1, 3], [-2, -4, 1, 3], [-4, 3, 5, 0]])
         a = ps.tools.make_contiguous(im, keep_zeros=True).max()
         b = ps.tools.make_contiguous(im, keep_zeros=False).max()
         assert a == b
 
     def test_extract_subsection(self):
         sec = ps.tools.extract_subsection(self.blobs, [0.5])
-        assert sp.all(sp.array(sp.shape(sec)) == 50)
+        assert sp.all(np.array(sp.shape(sec)) == 50)
 
     def test_extract_cylinder(self):
-        im = sp.ones([200, 300, 400], dtype=bool)
+        im = np.ones([200, 300, 400], dtype=bool)
         cx = ps.tools.extract_cylinder(im)
         assert cx.sum() == 14132200
         cy = ps.tools.extract_cylinder(im, axis=1)
@@ -82,9 +83,9 @@ class ToolsTest():
         assert c.sum() == 15002
 
     def test_align_image_w_openpnm(self):
-        im = ps.tools.align_image_with_openpnm(sp.ones([40, 50]))
+        im = ps.tools.align_image_with_openpnm(np.ones([40, 50]))
         assert im.shape == (50, 40)
-        im = ps.tools.align_image_with_openpnm(sp.ones([40, 50, 60]))
+        im = ps.tools.align_image_with_openpnm(np.ones([40, 50, 60]))
         assert im.shape == (60, 50, 40)
 
     def test_inhull(self):
@@ -110,7 +111,7 @@ class ToolsTest():
         im = ps.tools.insert_sphere(im, [180, 100, 100], 50)
 
     def test_subdivide_3D(self):
-        im = sp.ones([50, 100, 150])
+        im = np.ones([50, 100, 150])
         ims = ps.tools.subdivide(im, divs=1)
         assert ims.shape == (1, 1, 1)
         assert sp.all(im[tuple(ims[0, 0, 0])] == im)
@@ -119,7 +120,7 @@ class ToolsTest():
         assert im[tuple(ims[0, 0, 0])].sum() == sp.prod(im.shape)/8
 
     def test_subdivide_2D(self):
-        im = sp.ones([50, 100])
+        im = np.ones([50, 100])
         ims = ps.tools.subdivide(im, divs=2)
         assert ims.shape == (2, 2)
         assert im[tuple(ims[0, 0])].sum() == sp.prod(im.shape)/4

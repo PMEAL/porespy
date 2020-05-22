@@ -33,7 +33,7 @@ class FilterTest():
     def test_porosimetry_npts_10(self):
         mip = ps.filters.porosimetry(im=self.im, sizes=10)
         steps = sp.unique(mip)
-        ans = sp.array([0.00000000, 1.00000000, 1.37871571, 1.61887041,
+        ans = np.array([0.00000000, 1.00000000, 1.37871571, 1.61887041,
                         1.90085700, 2.23196205, 2.62074139, 3.07724114,
                         3.61325732, 4.24264069])
         assert sp.allclose(steps, ans)
@@ -286,7 +286,7 @@ class FilterTest():
         im = ps.generators.lattice_spheres(shape=[50, 50], radius=4, offset=5)
         dt = spim.distance_transform_edt(im)
         ar = ps.filters.find_dt_artifacts(dt)
-        inds = sp.where(ar == ar.max())
+        inds = np.where(ar == ar.max())
         assert sp.all(dt[inds] - ar[inds] == 1)
 
     def test_snow_partitioning_n(self):
