@@ -106,10 +106,10 @@ class MetricsTest():
         im = np.ones([100, 50])
         crds = ps.filters.apply_chords(im, spacing=1, trim_edges=False)
         c = ps.metrics.chord_counts(crds)
-        assert sp.all(c == 100)
+        assert np.all(c == 100)
         crds = ps.filters.apply_chords(im, spacing=1, trim_edges=False, axis=1)
         c = ps.metrics.chord_counts(crds)
-        assert sp.all(c == 50)
+        assert np.all(c == 50)
 
     def test_mesh_surface_area(self):
         region = self.regions == self.regions.max()
@@ -128,17 +128,17 @@ class MetricsTest():
         regions = self.regions
         areas = ps.metrics.region_surface_areas(regions)
         ia = ps.metrics.region_interface_areas(regions, areas)
-        assert sp.all(ia.conns[0] == [2, 19])
+        assert np.all(ia.conns[0] == [2, 19])
         assert sp.around(ia.area[0], decimals=2) == 3.59
 
     def test_phase_fraction(self):
         im = sp.reshape(sp.random.randint(0, 10, 1000), [10, 10, 10])
         labels = sp.unique(im, return_counts=True)[1]
         counts = ps.metrics.phase_fraction(im, normed=False)
-        assert sp.all(labels == counts)
+        assert np.all(labels == counts)
         fractions = ps.metrics.phase_fraction(im, normed=True)
         assert fractions.sum() == 1
-        assert sp.allclose(fractions, counts/counts.sum())
+        assert np.allclose(fractions, counts/counts.sum())
         with pytest.raises(Exception):
             ps.metrics.phase_fraction(sp.rand(10, 10, 10), normed=True)
 

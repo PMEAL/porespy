@@ -511,7 +511,7 @@ def trim_saddle_points(peaks, dt, max_iters=10):
                                              structure=cube(3))
             peaks_max = peaks_dil*sp.amax(dt_i*peaks_dil)
             peaks_extended = (peaks_max == dt_i)*im_i
-            if sp.all(peaks_extended == peaks_i):
+            if np.all(peaks_extended == peaks_i):
                 break  # Found a true peak
             elif np.sum(peaks_extended*peaks_i) == 0:
                 peaks_i = False
@@ -1455,6 +1455,6 @@ def prune_branches(skel, branch_points=None, iterations=1):
         im_result = prune_branches(skel=im_result,
                                    branch_points=None,
                                    iterations=iterations)
-        if sp.all(im_temp == im_result):
+        if np.all(im_temp == im_result):
             iterations = 0
     return im_result

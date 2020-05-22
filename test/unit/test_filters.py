@@ -27,8 +27,8 @@ class FilterTest():
         fft = ps.filters.porosimetry(im, mode='hybrid', sizes=sizes)
         mio = ps.filters.porosimetry(im, mode='mio', sizes=sizes)
         dt = ps.filters.porosimetry(im, mode='dt', sizes=sizes)
-        assert sp.all(fft == dt)
-        assert sp.all(fft == mio)
+        assert np.all(fft == dt)
+        assert np.all(fft == mio)
 
     def test_porosimetry_npts_10(self):
         mip = ps.filters.porosimetry(im=self.im, sizes=10)
@@ -36,7 +36,7 @@ class FilterTest():
         ans = np.array([0.00000000, 1.00000000, 1.37871571, 1.61887041,
                         1.90085700, 2.23196205, 2.62074139, 3.07724114,
                         3.61325732, 4.24264069])
-        assert sp.allclose(steps, ans)
+        assert np.allclose(steps, ans)
 
     def test_porosimetry_compare_modes_3D(self):
         im = self.im
@@ -44,13 +44,13 @@ class FilterTest():
         fft = ps.filters.porosimetry(im, sizes=sizes, mode='hybrid')
         mio = ps.filters.porosimetry(im, sizes=sizes, mode='mio')
         dt = ps.filters.porosimetry(im, sizes=sizes, mode='dt')
-        assert sp.all(fft == dt)
-        assert sp.all(fft == mio)
+        assert np.all(fft == dt)
+        assert np.all(fft == mio)
 
     def test_porosimetry_with_sizes(self):
         s = sp.logspace(0.01, 0.6, 5)
         mip = ps.filters.porosimetry(im=self.im, sizes=s)
-        assert sp.allclose(sp.unique(mip)[1:], s)
+        assert np.allclose(sp.unique(mip)[1:], s)
 
     def test_apply_chords_axis0(self):
         c = ps.filters.apply_chords(im=self.im, spacing=3, axis=0)
@@ -87,11 +87,11 @@ class FilterTest():
         im = ~ps.generators.lattice_spheres(shape=[100, 100], offset=3,
                                             radius=10)
         sz = ps.filters.flood(im*2.0, mode='max')
-        assert sp.all(sp.unique(sz) == [0, 2])
+        assert np.all(sp.unique(sz) == [0, 2])
         sz = ps.filters.flood(im, mode='min')
-        assert sp.all(sp.unique(sz) == [0, 1])
+        assert np.all(sp.unique(sz) == [0, 1])
         sz = ps.filters.flood(im, mode='size')
-        assert sp.all(sp.unique(sz) == [0, 305])
+        assert np.all(sp.unique(sz) == [0, 305])
 
     def test_find_disconnected_voxels_2d(self):
         h = ps.filters.find_disconnected_voxels(self.im[:, :, 0])
@@ -172,7 +172,7 @@ class FilterTest():
         im = ps.generators.RSA(im=im, radius=10)
         im = im > 0
         lt = ps.filters.local_thickness(im, sizes=[20, 10])
-        assert sp.all(sp.unique(lt) == [0, 10, 20])
+        assert np.all(sp.unique(lt) == [0, 10, 20])
 
     def test_porosimetry(self):
         im2d = self.im[:, :, 50]
@@ -187,49 +187,49 @@ class FilterTest():
         im = self.im[:, :, 50]
         truth = spim.binary_dilation(im, structure=disk(3))
         test = ps.tools.fftmorphology(im, strel=disk(3), mode='dilation')
-        assert sp.all(truth == test)
+        assert np.all(truth == test)
 
     def test_morphology_fft_erode_2D(self):
         im = self.im[:, :, 50]
         truth = spim.binary_erosion(im, structure=disk(3))
         test = ps.tools.fftmorphology(im, strel=disk(3), mode='erosion')
-        assert sp.all(truth == test)
+        assert np.all(truth == test)
 
     def test_morphology_fft_opening_2D(self):
         im = self.im[:, :, 50]
         truth = spim.binary_opening(im, structure=disk(3))
         test = ps.tools.fftmorphology(im, strel=disk(3), mode='opening')
-        assert sp.all(truth == test)
+        assert np.all(truth == test)
 
     def test_morphology_fft_closing_2D(self):
         im = self.im[:, :, 50]
         truth = spim.binary_closing(im, structure=disk(3))
         test = ps.tools.fftmorphology(im, strel=disk(3), mode='closing')
-        assert sp.all(truth == test)
+        assert np.all(truth == test)
 
     def test_morphology_fft_dilate_3D(self):
         im = self.im
         truth = spim.binary_dilation(im, structure=ball(3))
         test = ps.tools.fftmorphology(im, strel=ball(3), mode='dilation')
-        assert sp.all(truth == test)
+        assert np.all(truth == test)
 
     def test_morphology_fft_erode_3D(self):
         im = self.im
         truth = spim.binary_erosion(im, structure=ball(3))
         test = ps.tools.fftmorphology(im, strel=ball(3), mode='erosion')
-        assert sp.all(truth == test)
+        assert np.all(truth == test)
 
     def test_morphology_fft_opening_3D(self):
         im = self.im
         truth = spim.binary_opening(im, structure=ball(3))
         test = ps.tools.fftmorphology(im, strel=ball(3), mode='opening')
-        assert sp.all(truth == test)
+        assert np.all(truth == test)
 
     def test_morphology_fft_closing_3D(self):
         im = self.im
         truth = spim.binary_closing(im, structure=ball(3))
         test = ps.tools.fftmorphology(im, strel=ball(3), mode='closing')
-        assert sp.all(truth == test)
+        assert np.all(truth == test)
 
     def test_reduce_peaks(self):
         im = ~ps.generators.lattice_spheres(shape=[50, 50], radius=5, offset=3)
@@ -287,7 +287,7 @@ class FilterTest():
         dt = spim.distance_transform_edt(im)
         ar = ps.filters.find_dt_artifacts(dt)
         inds = np.where(ar == ar.max())
-        assert sp.all(dt[inds] - ar[inds] == 1)
+        assert np.all(dt[inds] - ar[inds] == 1)
 
     def test_snow_partitioning_n(self):
         im = self.im

@@ -349,7 +349,7 @@ def voronoi_edges(shape: List[int], radius: int, ncells: int,
     vor.edges = _get_Voronoi_edges(vor)
     for row in vor.edges:
         pts = vor.vertices[row].astype(int)
-        if sp.all(pts >= 0) and sp.all(pts < im.shape):
+        if np.all(pts >= 0) and np.all(pts < im.shape):
             line_pts = line_segment(pts[0], pts[1])
             im[tuple(line_pts)] = True
     im = spim.distance_transform_edt(~im) > radius

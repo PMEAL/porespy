@@ -19,7 +19,7 @@ class ToolsTest():
     def test_randomize_colors(self):
         randomized_im = ps.tools.randomize_colors(im=self.im)
         assert sp.unique(self.im).size == sp.unique(randomized_im).size
-        assert sp.all(sp.unique(self.im) == sp.unique(randomized_im))
+        assert np.all(sp.unique(self.im) == sp.unique(randomized_im))
 
     def test_make_contiguous_size(self):
         cont_im = ps.tools.make_contiguous(self.im)
@@ -27,7 +27,7 @@ class ToolsTest():
 
     def test_make_contiguous_contiguity(self):
         cont_im = ps.tools.make_contiguous(self.im)
-        assert sp.all(sp.arange(sp.unique(self.im).size) == sp.unique(cont_im))
+        assert np.all(sp.arange(sp.unique(self.im).size) == sp.unique(cont_im))
 
     def test_make_contiguous_negs(self):
         im = np.array([[0, 0, 1, 3], [-2, -4, 1, 3], [-4, 3, 5, 0]])
@@ -37,7 +37,7 @@ class ToolsTest():
 
     def test_extract_subsection(self):
         sec = ps.tools.extract_subsection(self.blobs, [0.5])
-        assert sp.all(np.array(sp.shape(sec)) == 50)
+        assert np.all(np.array(sp.shape(sec)) == 50)
 
     def test_extract_cylinder(self):
         im = np.ones([200, 300, 400], dtype=bool)
@@ -52,21 +52,21 @@ class ToolsTest():
 
     def test_bbox_to_slices(self):
         s = ps.tools.bbox_to_slices([0, 0, 0, 10, 10, 10])
-        assert sp.all(self.im3D[s].shape == (10, 10, 10))
+        assert np.all(self.im3D[s].shape == (10, 10, 10))
 
     def test_get_planes(self):
         x, y, z = ps.tools.get_planes(self.im3D)
-        assert sp.all(x.shape == (51, 51))
-        assert sp.all(y.shape == (51, 51))
-        assert sp.all(z.shape == (51, 51))
+        assert np.all(x.shape == (51, 51))
+        assert np.all(y.shape == (51, 51))
+        assert np.all(z.shape == (51, 51))
         with pytest.raises(ValueError):
             ps.tools.get_planes(self.im2D)
 
     def test_get_planes_not_squeezed(self):
         x, y, z = ps.tools.get_planes(self.im3D, squeeze=False)
-        assert sp.all(x.shape == (1, 51, 51))
-        assert sp.all(y.shape == (51, 1, 51))
-        assert sp.all(z.shape == (51, 51, 1))
+        assert np.all(x.shape == (1, 51, 51))
+        assert np.all(y.shape == (51, 1, 51))
+        assert np.all(z.shape == (51, 51, 1))
 
     def test_get_border(self):
         c = ps.tools.get_border(self.im2D.shape, thickness=1, mode='corners')
@@ -114,7 +114,7 @@ class ToolsTest():
         im = np.ones([50, 100, 150])
         ims = ps.tools.subdivide(im, divs=1)
         assert ims.shape == (1, 1, 1)
-        assert sp.all(im[tuple(ims[0, 0, 0])] == im)
+        assert np.all(im[tuple(ims[0, 0, 0])] == im)
         ims = ps.tools.subdivide(im, divs=2)
         assert ims.shape == (2, 2, 2)
         assert im[tuple(ims[0, 0, 0])].sum() == sp.prod(im.shape)/8
