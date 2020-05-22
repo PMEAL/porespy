@@ -266,7 +266,7 @@ def find_outer_region(im, r=0):
     """
     if r == 0:
         dt = spim.distance_transform_edt(input=im)
-        r = int(sp.amax(dt)) * 2
+        r = int(np.amax(dt)) * 2
     im_padded = sp.pad(array=im, pad_width=r, mode='constant',
                        constant_values=True)
     dt = spim.distance_transform_edt(input=im_padded)
@@ -310,7 +310,7 @@ def extract_cylinder(im, r=None, axis=0):
     if r is None:
         a = list(im.shape)
         a.pop(axis)
-        r = np.floor(sp.amin(a) / 2)
+        r = np.floor(np.amin(a) / 2)
     dim = [range(int(-s / 2), int(s / 2) + s % 2) for s in im.shape]
     inds = np.meshgrid(*dim, indexing='ij')
     inds[axis] = inds[axis] * 0
@@ -363,8 +363,8 @@ def extract_subsection(im, shape):
     s_im = []
     for dim in range(im.ndim):
         r = shape[dim] / 2
-        lower_im = sp.amax((center[dim] - r, 0))
-        upper_im = sp.amin((center[dim] + r, im.shape[dim]))
+        lower_im = np.amax((center[dim] - r, 0))
+        upper_im = np.amin((center[dim] + r, im.shape[dim]))
         s_im.append(slice(int(lower_im), int(upper_im)))
     return im[tuple(s_im)]
 
@@ -530,7 +530,7 @@ def randomize_colors(im, keep_vals=[0]):
     swap_vals = ~sp.in1d(im_flat, keep_vals)
     im_vals = sp.unique(im_flat[swap_vals])
     new_vals = sp.random.permutation(im_vals)
-    im_map = np.zeros(shape=[sp.amax(im_vals) + 1, ], dtype=int)
+    im_map = np.zeros(shape=[np.amax(im_vals) + 1, ], dtype=int)
     im_map[im_vals] = new_vals
     im_new = im_map[im_flat]
     im_new = sp.reshape(im_new, newshape=sp.shape(im))
@@ -581,7 +581,7 @@ def make_contiguous(im, keep_zeros=True):
     im = im - im.min()
     im_flat = im.flatten()
     im_vals = sp.unique(im_flat)
-    im_map = np.zeros(shape=sp.amax(im_flat) + 1)
+    im_map = np.zeros(shape=np.amax(im_flat) + 1)
     im_map[im_vals] = sp.arange(0, sp.size(sp.unique(im_flat)))
     im_new = im_map[im_flat]
     im_new = sp.reshape(im_new, newshape=sp.shape(im))
@@ -808,7 +808,7 @@ def mesh_region(region: bool, strel=None):
             strel = ball(1)
         if region.ndim == 2:
             strel = disk(1)
-    pad_width = sp.amax(strel.shape)
+    pad_width = np.amax(strel.shape)
     if im.ndim == 3:
         padded_mask = sp.pad(im, pad_width=pad_width, mode='constant')
         padded_mask = spim.convolve(padded_mask * 1.0,
@@ -967,8 +967,8 @@ def insert_cylinder(im, xyz0, xyz1, r):
     L = sp.absolute(xyz0 - xyz1).max() + 1
     xyz_line = [np.linspace(xyz0[i], xyz1[i], L).astype(int) for i in range(3)]
 
-    xyz_min = sp.amin(xyz_line, axis=1) - r
-    xyz_max = sp.amax(xyz_line, axis=1) + r
+    xyz_min = np.amin(xyz_line, axis=1) - r
+    xyz_max = np.amax(xyz_line, axis=1) + r
     shape_template = xyz_max - xyz_min + 1
     template = np.zeros(shape=shape_template)
 

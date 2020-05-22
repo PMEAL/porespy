@@ -59,21 +59,21 @@ def insert_shape(im, element, center=None, corner=None, value=1,
             if d == 0:
                 raise Exception('Cannot specify center point when element ' +
                                 'has one or more even dimension')
-            lower_im = sp.amax((center[dim] - r, 0))
-            upper_im = sp.amin((center[dim] + r + 1, im.shape[dim]))
+            lower_im = np.amax((center[dim] - r, 0))
+            upper_im = np.amin((center[dim] + r + 1, im.shape[dim]))
             s_im.append(slice(lower_im, upper_im))
-            lower_el = sp.amax((lower_im - center[dim] + r, 0))
-            upper_el = sp.amin((upper_im - center[dim] + r,
+            lower_el = np.amax((lower_im - center[dim] + r, 0))
+            upper_el = np.amin((upper_im - center[dim] + r,
                                 element.shape[dim]))
             s_el.append(slice(lower_el, upper_el))
     elif (corner is not None) and (center is None):
         for dim in range(im.ndim):
             L = int(element.shape[dim])
-            lower_im = sp.amax((corner[dim], 0))
-            upper_im = sp.amin((corner[dim] + L, im.shape[dim]))
+            lower_im = np.amax((corner[dim], 0))
+            upper_im = np.amin((corner[dim] + L, im.shape[dim]))
             s_im.append(slice(lower_im, upper_im))
-            lower_el = sp.amax((lower_im - corner[dim], 0))
-            upper_el = sp.amin((upper_im - corner[dim],
+            lower_el = np.amax((lower_im - corner[dim], 0))
+            upper_el = np.amin((upper_im - corner[dim],
                                 element.shape[dim]))
             s_el.append(slice(min(lower_el, upper_el), upper_el))
     else:
@@ -803,13 +803,13 @@ def line_segment(X0, X1):
     X0 = sp.around(X0).astype(int)
     X1 = sp.around(X1).astype(int)
     if len(X0) == 3:
-        L = sp.amax(sp.absolute([[X1[0]-X0[0]], [X1[1]-X0[1]], [X1[2]-X0[2]]])) + 1
+        L = np.amax(sp.absolute([[X1[0]-X0[0]], [X1[1]-X0[1]], [X1[2]-X0[2]]])) + 1
         x = sp.rint(np.linspace(X0[0], X1[0], L)).astype(int)
         y = sp.rint(np.linspace(X0[1], X1[1], L)).astype(int)
         z = sp.rint(np.linspace(X0[2], X1[2], L)).astype(int)
         return [x, y, z]
     else:
-        L = sp.amax(sp.absolute([[X1[0]-X0[0]], [X1[1]-X0[1]]])) + 1
+        L = np.amax(sp.absolute([[X1[0]-X0[0]], [X1[1]-X0[1]]])) + 1
         x = sp.rint(np.linspace(X0[0], X1[0], L)).astype(int)
         y = sp.rint(np.linspace(X0[1], X1[1], L)).astype(int)
         return [x, y]

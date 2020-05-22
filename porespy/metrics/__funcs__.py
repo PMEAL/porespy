@@ -54,7 +54,7 @@ def representative_elementary_volume(im, npoints=1000):
     """
     im_temp = np.zeros_like(im)
     crds = np.array(sp.rand(npoints, im.ndim)*im.shape, dtype=int)
-    pads = np.array(sp.rand(npoints)*sp.amin(im.shape)/2+10, dtype=int)
+    pads = np.array(sp.rand(npoints)*np.amin(im.shape)/2+10, dtype=int)
     im_temp[tuple(crds.T)] = True
     labels, N = spim.label(input=im_temp)
     slices = spim.find_objects(input=labels)
@@ -253,7 +253,7 @@ def two_point_correlation_bf(im, spacing=10):
         function.  The x array is the distances between points and the y array
         is corresponding probabilities that points of a given distance both
         lie in the void space. The distance values are binned as follows:
-        ``bins = range(start=0, stop=sp.amin(im.shape)/2, stride=spacing)``
+        ``bins = range(start=0, stop=np.amin(im.shape)/2, stride=spacing)``
 
     Notes
     -----
@@ -283,7 +283,7 @@ def two_point_correlation_bf(im, spacing=10):
     dmat = sptl.distance.cdist(XA=crds, XB=crds)
     hits = im[tuple(pts)].flatten()
     dmat = dmat[hits, :]
-    h1 = sp.histogram(dmat, bins=range(0, int(sp.amin(im.shape)/2), spacing))
+    h1 = sp.histogram(dmat, bins=range(0, int(np.amin(im.shape)/2), spacing))
     dmat = dmat[:, hits]
     h2 = sp.histogram(dmat, bins=h1[1])
     tpcf = namedtuple('two_point_correlation_function',
@@ -665,7 +665,7 @@ def region_interface_areas(regions, areas, voxel_size=1, strel=None):
     # Get 'slices' into im for each region
     slices = spim.find_objects(im)
     # Initialize arrays
-    Ps = sp.arange(1, sp.amax(im)+1)
+    Ps = sp.arange(1, np.amax(im)+1)
     sa = np.zeros_like(Ps, dtype=float)
     sa_combined = []  # Difficult to preallocate since number of conns unknown
     cn = []
@@ -742,7 +742,7 @@ def region_surface_areas(regions, voxel_size=1, strel=None):
     # Get 'slices' into im for each pore region
     slices = spim.find_objects(im)
     # Initialize arrays
-    Ps = sp.arange(1, sp.amax(im)+1)
+    Ps = sp.arange(1, np.amax(im)+1)
     sa = np.zeros_like(Ps, dtype=float)
     # Start extracting marching cube area from im
     for i in tqdm(Ps):
@@ -821,7 +821,7 @@ def phase_fraction(im, normed=True):
         im = im.astype(int)
     elif im.dtype != int:
         raise Exception('Image must contain integer values for each phase')
-    labels = sp.arange(0, sp.amax(im)+1)
+    labels = sp.arange(0, np.amax(im)+1)
     results = np.zeros_like(labels)
     for i in labels:
         results[i] = np.sum(im == i)

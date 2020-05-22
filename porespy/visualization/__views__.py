@@ -116,7 +116,7 @@ def sem(im, direction='X'):
     t = im.shape[0]
     depth = sp.reshape(sp.arange(0, t), [t, 1, 1])
     im = im*depth
-    im = sp.amax(im, axis=0)
+    im = np.amax(im, axis=0)
     return im
 
 

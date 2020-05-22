@@ -354,7 +354,7 @@ def snow_partitioning_n(im, r_max=4, sigma=0.4, return_all=True,
             phase_ws = phase_snow.regions * phase_snow.im
             phase_ws[phase_ws == num[i - 1]] = 0
             combined_region += phase_ws
-        num.append(sp.amax(combined_region))
+        num.append(np.amax(combined_region))
     if return_all:
         tup = namedtuple('results', field_names=['im', 'dt', 'phase_max_label',
                                                  'regions'])
@@ -509,7 +509,7 @@ def trim_saddle_points(peaks, dt, max_iters=10):
             iters += 1
             peaks_dil = spim.binary_dilation(input=peaks_dil,
                                              structure=cube(3))
-            peaks_max = peaks_dil*sp.amax(dt_i*peaks_dil)
+            peaks_max = peaks_dil*np.amax(dt_i*peaks_dil)
             peaks_extended = (peaks_max == dt_i)*im_i
             if np.all(peaks_extended == peaks_i):
                 break  # Found a true peak
@@ -1195,7 +1195,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
         inlets = get_border(im.shape, mode='faces')
 
     if isinstance(sizes, int):
-        sizes = sp.logspace(start=sp.log10(sp.amax(dt)), stop=0, num=sizes)
+        sizes = sp.logspace(start=sp.log10(np.amax(dt)), stop=0, num=sizes)
     else:
         sizes = sp.unique(sizes)[-1::-1]
 

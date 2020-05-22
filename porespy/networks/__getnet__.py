@@ -51,7 +51,7 @@ def regions_to_network(im, dt=None, voxel_size=1):
     slices = spim.find_objects(im)
 
     # Initialize arrays
-    Ps = sp.arange(1, sp.amax(im)+1)
+    Ps = sp.arange(1, np.amax(im)+1)
     Np = sp.size(Ps)
     p_coords = np.zeros((Np, im.ndim), dtype=float)
     p_volume = np.zeros((Np, ), dtype=float)
@@ -81,8 +81,8 @@ def regions_to_network(im, dt=None, voxel_size=1):
         p_label[pore] = i
         p_coords[pore, :] = spim.center_of_mass(pore_im) + s_offset
         p_volume[pore] = np.sum(pore_im)
-        p_dia_local[pore] = (2*sp.amax(pore_dt)) - np.sqrt(3)
-        p_dia_global[pore] = 2*sp.amax(sub_dt)
+        p_dia_local[pore] = (2*np.amax(pore_dt)) - np.sqrt(3)
+        p_dia_global[pore] = 2*np.amax(sub_dt)
         p_area_surf[pore] = np.sum(pore_dt == 1)
         im_w_throats = spim.binary_dilation(input=pore_im, structure=struc_elem(1))
         im_w_throats = im_w_throats*sub_im
@@ -91,11 +91,11 @@ def regions_to_network(im, dt=None, voxel_size=1):
             if j > pore:
                 t_conns.append([pore, j])
                 vx = np.where(im_w_throats == (j + 1))
-                t_dia_inscribed.append(2*sp.amax(sub_dt[vx]))
+                t_dia_inscribed.append(2*np.amax(sub_dt[vx]))
                 t_perimeter.append(np.sum(sub_dt[vx] < 2))
                 t_area.append(sp.size(vx[0]))
                 t_inds = tuple([i+j for i, j in zip(vx, s_offset)])
-                temp = np.where(dt[t_inds] == sp.amax(dt[t_inds]))[0][0]
+                temp = np.where(dt[t_inds] == np.amax(dt[t_inds]))[0][0]
                 if im.ndim == 2:
                     t_coords.append(tuple((t_inds[0][temp],
                                            t_inds[1][temp])))

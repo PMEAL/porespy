@@ -294,7 +294,7 @@ class FilterTest():
         snow = ps.filters.snow_partitioning_n(im + 1, r_max=4, sigma=0.4,
                                               return_all=True, mask=True,
                                               randomize=False, alias=None)
-        assert sp.amax(snow.regions) == 44
+        assert np.amax(snow.regions) == 44
         assert not np.any(sp.isnan(snow.regions))
         assert not np.any(sp.isnan(snow.dt))
         assert not np.any(sp.isnan(snow.im))

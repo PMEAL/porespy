@@ -64,7 +64,7 @@ def snow(im, voxel_size=1,
     im = regions.im
     dt = regions.dt
     regions = regions.regions
-    b_num = sp.amax(regions)
+    b_num = np.amax(regions)
     # -------------------------------------------------------------------------
     # Boundary Conditions
     regions = add_boundary_regions(regions=regions, faces=boundary_faces)

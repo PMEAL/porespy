@@ -89,11 +89,11 @@ def snow_dual(im,
     solid_regions = solid_regions.regions
     pore_region = pore_regions*im
     solid_region = solid_regions*~im
-    solid_num = sp.amax(pore_regions)
+    solid_num = np.amax(pore_regions)
     solid_region = solid_region + solid_num
     solid_region = solid_region * ~im
     regions = pore_region + solid_region
-    b_num = sp.amax(regions)
+    b_num = np.amax(regions)
     # -------------------------------------------------------------------------
     # Boundary Conditions
     regions = add_boundary_regions(regions=regions, faces=boundary_faces)
