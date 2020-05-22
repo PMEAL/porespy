@@ -220,11 +220,11 @@ def bundle_of_tubes(shape: List[int], spacing: int):
     if sp.size(shape) == 2:
         shape = sp.hstack((shape, [1]))
     temp = np.zeros(shape=shape[:2])
-    Xi = sp.ceil(sp.linspace(spacing/2,
+    Xi = sp.ceil(np.linspace(spacing/2,
                              shape[0]-(spacing/2)-1,
                              int(shape[0]/spacing)))
     Xi = np.array(Xi, dtype=int)
-    Yi = sp.ceil(sp.linspace(spacing/2,
+    Yi = sp.ceil(np.linspace(spacing/2,
                              shape[1]-(spacing/2)-1,
                              int(shape[1]/spacing)))
     Yi = np.array(Yi, dtype=int)
@@ -282,7 +282,7 @@ def polydisperse_spheres(shape: List[int], porosity: float, dist,
     shape = np.array(shape)
     if sp.size(shape) == 1:
         shape = sp.full((3, ), int(shape))
-    Rs = dist.interval(sp.linspace(0.05, 0.95, nbins))
+    Rs = dist.interval(np.linspace(0.05, 0.95, nbins))
     Rs = sp.vstack(Rs).T
     Rs = (Rs[:-1] + Rs[1:])/2
     Rs = sp.clip(Rs.flatten(), a_min=r_min, a_max=None)
@@ -804,14 +804,14 @@ def line_segment(X0, X1):
     X1 = sp.around(X1).astype(int)
     if len(X0) == 3:
         L = sp.amax(sp.absolute([[X1[0]-X0[0]], [X1[1]-X0[1]], [X1[2]-X0[2]]])) + 1
-        x = sp.rint(sp.linspace(X0[0], X1[0], L)).astype(int)
-        y = sp.rint(sp.linspace(X0[1], X1[1], L)).astype(int)
-        z = sp.rint(sp.linspace(X0[2], X1[2], L)).astype(int)
+        x = sp.rint(np.linspace(X0[0], X1[0], L)).astype(int)
+        y = sp.rint(np.linspace(X0[1], X1[1], L)).astype(int)
+        z = sp.rint(np.linspace(X0[2], X1[2], L)).astype(int)
         return [x, y, z]
     else:
         L = sp.amax(sp.absolute([[X1[0]-X0[0]], [X1[1]-X0[1]]])) + 1
-        x = sp.rint(sp.linspace(X0[0], X1[0], L)).astype(int)
-        y = sp.rint(sp.linspace(X0[1], X1[1], L)).astype(int)
+        x = sp.rint(np.linspace(X0[0], X1[0], L)).astype(int)
+        y = sp.rint(np.linspace(X0[1], X1[1], L)).astype(int)
         return [x, y]
 
 
