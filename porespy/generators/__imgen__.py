@@ -220,11 +220,11 @@ def bundle_of_tubes(shape: List[int], spacing: int):
     if sp.size(shape) == 2:
         shape = sp.hstack((shape, [1]))
     temp = np.zeros(shape=shape[:2])
-    Xi = sp.ceil(np.linspace(spacing/2,
+    Xi = np.ceil(np.linspace(spacing/2,
                              shape[0]-(spacing/2)-1,
                              int(shape[0]/spacing)))
     Xi = np.array(Xi, dtype=int)
-    Yi = sp.ceil(np.linspace(spacing/2,
+    Yi = np.ceil(np.linspace(spacing/2,
                              shape[1]-(spacing/2)-1,
                              int(shape[1]/spacing)))
     Yi = np.array(Yi, dtype=int)
@@ -540,7 +540,7 @@ def overlapping_spheres(shape: List[int], radius: int, porosity: float,
     s_vol = ps_disk(radius).sum() if ndim == 2 else ps_ball(radius).sum()
 
     bulk_vol = sp.prod(shape)
-    N = int(sp.ceil((1 - porosity)*bulk_vol/s_vol))
+    N = int(np.ceil((1 - porosity)*bulk_vol/s_vol))
     im = sp.random.random(size=shape)
 
     # Helper functions for calculating porosity: phi = g(f(N))

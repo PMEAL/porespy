@@ -839,7 +839,7 @@ def ps_disk(radius):
     strel : 2D-array
         A 2D numpy bool array of the structring element
     """
-    rad = int(sp.ceil(radius))
+    rad = int(np.ceil(radius))
     other = np.ones((2 * rad + 1, 2 * rad + 1), dtype=bool)
     other[rad, rad] = False
     disk = spim.distance_transform_edt(other) < radius
@@ -860,7 +860,7 @@ def ps_ball(radius):
     strel : 3D-array
         A 3D numpy array of the structuring element
     """
-    rad = int(sp.ceil(radius))
+    rad = int(np.ceil(radius))
     other = np.ones((2 * rad + 1, 2 * rad + 1, 2 * rad + 1), dtype=bool)
     other[rad, rad, rad] = False
     ball = spim.distance_transform_edt(other) < radius
