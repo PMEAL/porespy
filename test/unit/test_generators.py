@@ -125,7 +125,7 @@ class GeneratorTest():
         assert N == 100
 
     def test_overlapping_spheres_2d(self):
-        phis = sp.arange(0.1, 0.9, 0.2)
+        phis = np.arange(0.1, 0.9, 0.2)
         for phi in phis:
             im = ps.generators.overlapping_spheres(shape=[101, 101],
                                                    radius=5,
@@ -134,7 +134,7 @@ class GeneratorTest():
             assert abs(phi_actual - phi) < 0.02
 
     def test_overlapping_spheres_3d(self):
-        phis = sp.arange(0.1, 0.9, 0.2)
+        phis = np.arange(0.1, 0.9, 0.2)
         for phi in phis:
             im = ps.generators.overlapping_spheres(shape=[100, 100, 50],
                                                    radius=8, porosity=phi)
@@ -142,7 +142,7 @@ class GeneratorTest():
             assert abs(phi_actual - phi) < 0.02
 
     def test_polydisperse_spheres(self):
-        phis = sp.arange(0.1, 0.9, 0.2)
+        phis = np.arange(0.1, 0.9, 0.2)
         dist = sp.stats.norm(loc=7, scale=2)
         for phi in phis:
             im = ps.generators.polydisperse_spheres(shape=[100, 100, 50],

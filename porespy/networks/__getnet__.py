@@ -52,7 +52,7 @@ def regions_to_network(im, dt=None, voxel_size=1):
     slices = spim.find_objects(im)
 
     # Initialize arrays
-    Ps = sp.arange(1, np.amax(im)+1)
+    Ps = np.arange(1, np.amax(im)+1)
     Np = sp.size(Ps)
     p_coords = np.zeros((Np, im.ndim), dtype=float)
     p_volume = np.zeros((Np, ), dtype=float)

@@ -60,7 +60,7 @@ def representative_elementary_volume(im, npoints=1000):
     slices = spim.find_objects(input=labels)
     porosity = np.zeros(shape=(N,), dtype=float)
     volume = np.zeros(shape=(N,), dtype=int)
-    for i in tqdm(sp.arange(0, N)):
+    for i in tqdm(np.arange(0, N)):
         s = slices[i]
         p = pads[i]
         new_s = extend_slice(s, shape=im.shape, pad=p)
@@ -665,7 +665,7 @@ def region_interface_areas(regions, areas, voxel_size=1, strel=None):
     # Get 'slices' into im for each region
     slices = spim.find_objects(im)
     # Initialize arrays
-    Ps = sp.arange(1, np.amax(im)+1)
+    Ps = np.arange(1, np.amax(im)+1)
     sa = np.zeros_like(Ps, dtype=float)
     sa_combined = []  # Difficult to preallocate since number of conns unknown
     cn = []
@@ -742,7 +742,7 @@ def region_surface_areas(regions, voxel_size=1, strel=None):
     # Get 'slices' into im for each pore region
     slices = spim.find_objects(im)
     # Initialize arrays
-    Ps = sp.arange(1, np.amax(im)+1)
+    Ps = np.arange(1, np.amax(im)+1)
     sa = np.zeros_like(Ps, dtype=float)
     # Start extracting marching cube area from im
     for i in tqdm(Ps):
@@ -821,7 +821,7 @@ def phase_fraction(im, normed=True):
         im = im.astype(int)
     elif im.dtype != int:
         raise Exception('Image must contain integer values for each phase')
-    labels = sp.arange(0, np.amax(im)+1)
+    labels = np.arange(0, np.amax(im)+1)
     results = np.zeros_like(labels)
     for i in labels:
         results[i] = np.sum(im == i)

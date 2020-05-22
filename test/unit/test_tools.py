@@ -27,7 +27,7 @@ class ToolsTest():
 
     def test_make_contiguous_contiguity(self):
         cont_im = ps.tools.make_contiguous(self.im)
-        assert np.all(sp.arange(sp.unique(self.im).size) == sp.unique(cont_im))
+        assert np.all(np.arange(sp.unique(self.im).size) == sp.unique(cont_im))
 
     def test_make_contiguous_negs(self):
         im = np.array([[0, 0, 1, 3], [-2, -4, 1, 3], [-4, 3, 5, 0]])

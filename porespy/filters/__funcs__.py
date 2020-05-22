@@ -450,7 +450,7 @@ def reduce_peaks(peaks):
     markers, N = spim.label(input=peaks, structure=strel(3))
     inds = spim.measurements.center_of_mass(input=peaks,
                                             labels=markers,
-                                            index=sp.arange(1, N+1))
+                                            index=np.arange(1, N+1))
     inds = np.floor(inds).astype(int)
     # Centroid may not be on old pixel, so create a new peaks image
     peaks_new = np.zeros_like(peaks, dtype=bool)
@@ -562,7 +562,7 @@ def trim_nearby_peaks(peaks, dt):
         from skimage.morphology import cube
     peaks, N = spim.label(peaks, structure=cube(3))
     crds = spim.measurements.center_of_mass(peaks, labels=peaks,
-                                            index=sp.arange(1, N+1))
+                                            index=np.arange(1, N+1))
     crds = sp.vstack(crds).astype(int)  # Convert to numpy array of ints
     # Get distance between each peak as a distance map
     tree = sptl.cKDTree(data=crds)

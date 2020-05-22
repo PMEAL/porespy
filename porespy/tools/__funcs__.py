@@ -582,7 +582,7 @@ def make_contiguous(im, keep_zeros=True):
     im_flat = im.flatten()
     im_vals = sp.unique(im_flat)
     im_map = np.zeros(shape=np.amax(im_flat) + 1)
-    im_map[im_vals] = sp.arange(0, sp.size(sp.unique(im_flat)))
+    im_map[im_vals] = np.arange(0, sp.size(sp.unique(im_flat)))
     im_new = im_map[im_flat]
     im_new = sp.reshape(im_new, newshape=sp.shape(im))
     im_new = np.array(im_new, dtype=im_flat.dtype)

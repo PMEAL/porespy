@@ -419,8 +419,8 @@ def add_phase_interconnections(net, snow_partitioning_n, voxel_size=1,
                     p_sa = sp.bincount(p_conns, ps)
                     # trim zeros at head/tail position to avoid extra bins
                     p_sa = sp.trim_zeros(p_sa)
-                    i_index = sp.arange(min(p_conns), max(p_conns) + 1)
-                    j_index = sp.arange(min(s_conns), max(s_conns) + 1)
+                    i_index = np.arange(min(p_conns), max(p_conns) + 1)
+                    j_index = np.arange(min(s_conns), max(s_conns) + 1)
                     s_pa = sp.bincount(s_conns, ps)
                     s_pa = sp.trim_zeros(s_pa)
                     pi_pj_sa[i_index] = p_sa

@@ -23,7 +23,7 @@ class FilterTest():
 
     def test_porosimetry_compare_modes_2D(self):
         im = self.im[:, :, 50]
-        sizes = sp.arange(25, 1, -1)
+        sizes = np.arange(25, 1, -1)
         fft = ps.filters.porosimetry(im, mode='hybrid', sizes=sizes)
         mio = ps.filters.porosimetry(im, mode='mio', sizes=sizes)
         dt = ps.filters.porosimetry(im, mode='dt', sizes=sizes)
@@ -40,7 +40,7 @@ class FilterTest():
 
     def test_porosimetry_compare_modes_3D(self):
         im = self.im
-        sizes = sp.arange(25, 1, -1)
+        sizes = np.arange(25, 1, -1)
         fft = ps.filters.porosimetry(im, sizes=sizes, mode='hybrid')
         mio = ps.filters.porosimetry(im, sizes=sizes, mode='mio')
         dt = ps.filters.porosimetry(im, sizes=sizes, mode='dt')
