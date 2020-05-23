@@ -1195,7 +1195,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
         inlets = get_border(im.shape, mode='faces')
 
     if isinstance(sizes, int):
-        sizes = sp.logspace(start=sp.log10(np.amax(dt)), stop=0, num=sizes)
+        sizes = np.logspace(start=sp.log10(np.amax(dt)), stop=0, num=sizes)
     else:
         sizes = np.unique(sizes)[-1::-1]
 

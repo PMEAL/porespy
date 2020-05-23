@@ -48,7 +48,7 @@ class FilterTest():
         assert np.all(fft == mio)
 
     def test_porosimetry_with_sizes(self):
-        s = sp.logspace(0.01, 0.6, 5)
+        s = np.logspace(0.01, 0.6, 5)
         mip = ps.filters.porosimetry(im=self.im, sizes=s)
         assert np.allclose(np.unique(mip)[1:], s)
 
@@ -295,9 +295,9 @@ class FilterTest():
                                               return_all=True, mask=True,
                                               randomize=False, alias=None)
         assert np.amax(snow.regions) == 44
-        assert not np.any(sp.isnan(snow.regions))
-        assert not np.any(sp.isnan(snow.dt))
-        assert not np.any(sp.isnan(snow.im))
+        assert not np.any(np.isnan(snow.regions))
+        assert not np.any(np.isnan(snow.dt))
+        assert not np.any(np.isnan(snow.im))
 
 if __name__ == '__main__':
     t = FilterTest()

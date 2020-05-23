@@ -123,7 +123,7 @@ class MetricsTest():
     def test_region_surface_areas(self):
         regions = self.regions
         areas = ps.metrics.region_surface_areas(regions)
-        assert not np.any(sp.isnan(areas))
+        assert not np.any(np.isnan(areas))
 
     def test_region_interface_areas(self):
         regions = self.regions
