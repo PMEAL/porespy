@@ -78,7 +78,7 @@ def snow_n(im,
     # -------------------------------------------------------------------------
     # For only one phase extraction with boundary regions
     phases_num = np.unique(im).astype(int)
-    phases_num = sp.trim_zeros(phases_num)
+    phases_num = np.trim_zeros(phases_num)
     if len(phases_num) == 1:
         if f is not None:
             snow.im = pad_faces(im=snow.im, faces=f)

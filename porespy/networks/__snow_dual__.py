@@ -139,7 +139,7 @@ def snow_dual(im,
     p_sa = sp.bincount(p_conns, ps)
     s_conns = net['throat.conns'][:, 1][pore_solid_labels]
     s_pa = sp.bincount(s_conns, ps)
-    s_pa = sp.trim_zeros(s_pa)  # remove pore surface area labels
+    s_pa = np.trim_zeros(s_pa)  # remove pore surface area labels
     p_solid_surf = sp.concatenate((p_sa, s_pa, b_sa))
     # -------------------------------------------------------------------------
     # Calculates interfacial area using marching cube method
@@ -147,7 +147,7 @@ def snow_dual(im,
         ps_c = net['throat.area'][pore_solid_labels]
         p_sa_c = sp.bincount(p_conns, ps_c)
         s_pa_c = sp.bincount(s_conns, ps_c)
-        s_pa_c = sp.trim_zeros(s_pa_c)  # remove pore surface area labels
+        s_pa_c = np.trim_zeros(s_pa_c)  # remove pore surface area labels
         p_solid_surf = sp.concatenate((p_sa_c, s_pa_c, b_sa))
     # -------------------------------------------------------------------------
     # Adding additional information of dual network

@@ -122,11 +122,11 @@ def distance_transform_lin(im, axis=0, mode='both'):
     elif mode in ['both']:
         im_f = distance_transform_lin(im=im, axis=axis, mode='forward')
         im_b = distance_transform_lin(im=im, axis=axis, mode='backward')
-        return sp.minimum(im_f, im_b)
+        return np.minimum(im_f, im_b)
     else:
         b = sp.cumsum(im > 0, axis=axis)
         c = sp.diff(b*(im == 0), axis=axis)
-        d = sp.minimum.accumulate(c, axis=axis)
+        d = np.minimum.accumulate(c, axis=axis)
         if im.ndim == 1:
             e = np.pad(d, pad_width=[1, 0], mode='constant', constant_values=0)
         elif im.ndim == 2:
@@ -330,7 +330,7 @@ def snow_partitioning_n(im, r_max=4, sigma=0.4, return_all=True,
     al = _create_alias_map(im=im, alias=alias)
     # Perform snow on each phase and merge all segmentation and dt together
     phases_num = np.unique(im * 1)
-    phases_num = sp.trim_zeros(phases_num)
+    phases_num = np.trim_zeros(phases_num)
     combined_dt = 0
     combined_region = 0
     num = [0]
@@ -891,7 +891,7 @@ def find_dt_artifacts(dt):
     for ax in range(dt.ndim):
         dt_lin = distance_transform_lin(np.ones_like(temp, dtype=bool),
                                         axis=ax, mode='both')
-        temp = sp.minimum(temp, dt_lin)
+        temp = np.minimum(temp, dt_lin)
     result = sp.clip(dt - temp, a_min=0, a_max=sp.inf)
     return result
 

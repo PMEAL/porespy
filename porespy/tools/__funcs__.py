@@ -1071,7 +1071,7 @@ def _create_alias_map(im, alias=None):
     # -------------------------------------------------------------------------
     # Get alias if provided by user
     phases_num = np.unique(im * 1)
-    phases_num = sp.trim_zeros(phases_num)
+    phases_num = np.trim_zeros(phases_num)
     al = {}
     for values in phases_num:
         al[values] = 'phase{}'.format(values)

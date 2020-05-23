@@ -391,7 +391,7 @@ def add_phase_interconnections(net, snow_partitioning_n, voxel_size=1,
     num = snow_partitioning_n.phase_max_label
     num = [0, *num]
     phases_num = np.unique(im * 1)
-    phases_num = sp.trim_zeros(phases_num)
+    phases_num = np.trim_zeros(phases_num)
     for i in phases_num:
         loc1 = np.logical_and(conns1 >= num[i - 1], conns1 < num[i])
         loc2 = np.logical_and(conns2 >= num[i - 1], conns2 < num[i])
@@ -418,11 +418,11 @@ def add_phase_interconnections(net, snow_partitioning_n, voxel_size=1,
                     ps = net['throat.area'][pi_pj_conns]
                     p_sa = sp.bincount(p_conns, ps)
                     # trim zeros at head/tail position to avoid extra bins
-                    p_sa = sp.trim_zeros(p_sa)
+                    p_sa = np.trim_zeros(p_sa)
                     i_index = np.arange(min(p_conns), max(p_conns) + 1)
                     j_index = np.arange(min(s_conns), max(s_conns) + 1)
                     s_pa = sp.bincount(s_conns, ps)
-                    s_pa = sp.trim_zeros(s_pa)
+                    s_pa = np.trim_zeros(s_pa)
                     pi_pj_sa[i_index] = p_sa
                     pi_pj_sa[j_index] = s_pa
                     # ---------------------------------------------------------
@@ -430,9 +430,9 @@ def add_phase_interconnections(net, snow_partitioning_n, voxel_size=1,
                     if marching_cubes_area:
                         ps_c = net['throat.area'][pi_pj_conns]
                         p_sa_c = sp.bincount(p_conns, ps_c)
-                        p_sa_c = sp.trim_zeros(p_sa_c)
+                        p_sa_c = np.trim_zeros(p_sa_c)
                         s_pa_c = sp.bincount(s_conns, ps_c)
-                        s_pa_c = sp.trim_zeros(s_pa_c)
+                        s_pa_c = np.trim_zeros(s_pa_c)
                         pi_pj_sa[i_index] = p_sa_c
                         pi_pj_sa[j_index] = s_pa_c
                     net['pore.{}_{}_area'.format(al[i],
