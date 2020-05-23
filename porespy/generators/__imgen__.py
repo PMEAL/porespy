@@ -444,52 +444,52 @@ def lattice_spheres(shape: List[int], radius: int, offset: int = 0,
     if lattice in ['sq', 'square']:
         spacing = 2*r
         s = int(spacing/2) + np.array(offset)
-        coords = sp.mgrid[r:im.shape[0]-r:2*s,
+        coords = np.mgrid[r:im.shape[0]-r:2*s,
                           r:im.shape[1]-r:2*s]
         im[coords[0], coords[1]] = 1
     elif lattice in ['tri', 'triangular']:
         spacing = 2*np.floor(np.sqrt(2*(r**2))).astype(int)
         s = int(spacing/2) + offset
-        coords = sp.mgrid[r:im.shape[0]-r:2*s,
+        coords = np.mgrid[r:im.shape[0]-r:2*s,
                           r:im.shape[1]-r:2*s]
         im[coords[0], coords[1]] = 1
-        coords = sp.mgrid[s+r:im.shape[0]-r:2*s,
+        coords = np.mgrid[s+r:im.shape[0]-r:2*s,
                           s+r:im.shape[1]-r:2*s]
         im[coords[0], coords[1]] = 1
     elif lattice in ['sc', 'simple cubic', 'cubic']:
         spacing = 2*r
         s = int(spacing/2) + np.array(offset)
-        coords = sp.mgrid[r:im.shape[0]-r:2*s,
+        coords = np.mgrid[r:im.shape[0]-r:2*s,
                           r:im.shape[1]-r:2*s,
                           r:im.shape[2]-r:2*s]
         im[coords[0], coords[1], coords[2]] = 1
     elif lattice in ['bcc', 'body cenetered cubic']:
         spacing = 2*np.floor(np.sqrt(4/3*(r**2))).astype(int)
         s = int(spacing/2) + offset
-        coords = sp.mgrid[r:im.shape[0]-r:2*s,
+        coords = np.mgrid[r:im.shape[0]-r:2*s,
                           r:im.shape[1]-r:2*s,
                           r:im.shape[2]-r:2*s]
         im[coords[0], coords[1], coords[2]] = 1
-        coords = sp.mgrid[s+r:im.shape[0]-r:2*s,
+        coords = np.mgrid[s+r:im.shape[0]-r:2*s,
                           s+r:im.shape[1]-r:2*s,
                           s+r:im.shape[2]-r:2*s]
         im[coords[0], coords[1], coords[2]] = 1
     elif lattice in ['fcc', 'face centered cubic']:
         spacing = 2*np.floor(np.sqrt(2*(r**2))).astype(int)
         s = int(spacing/2) + offset
-        coords = sp.mgrid[r:im.shape[0]-r:2*s,
+        coords = np.mgrid[r:im.shape[0]-r:2*s,
                           r:im.shape[1]-r:2*s,
                           r:im.shape[2]-r:2*s]
         im[coords[0], coords[1], coords[2]] = 1
-        coords = sp.mgrid[r:im.shape[0]-r:2*s,
+        coords = np.mgrid[r:im.shape[0]-r:2*s,
                           s+r:im.shape[1]-r:2*s,
                           s+r:im.shape[2]-r:2*s]
         im[coords[0], coords[1], coords[2]] = 1
-        coords = sp.mgrid[s+r:im.shape[0]-r:2*s,
+        coords = np.mgrid[s+r:im.shape[0]-r:2*s,
                           s:im.shape[1]-r:2*s,
                           s+r:im.shape[2]-r:2*s]
         im[coords[0], coords[1], coords[2]] = 1
-        coords = sp.mgrid[s+r:im.shape[0]-r:2*s,
+        coords = np.mgrid[s+r:im.shape[0]-r:2*s,
                           s+r:im.shape[1]-r:2*s,
                           s:im.shape[2]-r:2*s]
         im[coords[0], coords[1], coords[2]] = 1
@@ -766,9 +766,9 @@ def cylinders(shape: List[int], radius: int, ncylinders: int,
         # Chose a random phi and theta within given ranges
         phi = (np.pi/2 - np.pi*sp.rand())*phi_max/90
         theta = (np.pi/2 - np.pi*sp.rand())*theta_max/90
-        X0 = R*np.array([sp.cos(phi)*sp.cos(theta),
-                         sp.cos(phi)*sp.sin(theta),
-                         sp.sin(phi)])
+        X0 = R*np.array([np.cos(phi)*np.cos(theta),
+                         np.cos(phi)*np.cos(theta),
+                         np.cos(phi)])
         [X0, X1] = [x + X0, x - X0]
         crds = line_segment(X0, X1)
         lower = ~np.any(sp.vstack(crds).T < [0, 0, 0], axis=1)
