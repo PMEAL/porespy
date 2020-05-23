@@ -133,7 +133,7 @@ class MetricsTest():
         assert np.around(ia.area[0], decimals=2) == 3.59
 
     def test_phase_fraction(self):
-        im = sp.reshape(sp.random.randint(0, 10, 1000), [10, 10, 10])
+        im = np.reshape(sp.random.randint(0, 10, 1000), [10, 10, 10])
         labels = np.unique(im, return_counts=True)[1]
         counts = ps.metrics.phase_fraction(im, normed=False)
         assert np.all(labels == counts)

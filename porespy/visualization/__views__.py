@@ -114,7 +114,7 @@ def sem(im, direction='X'):
     if direction in ['Z', 'z']:
         im = sp.transpose(im, axes=[2, 1, 0])
     t = im.shape[0]
-    depth = sp.reshape(np.arange(0, t), [t, 1, 1])
+    depth = np.reshape(np.arange(0, t), [t, 1, 1])
     im = im*depth
     im = np.amax(im, axis=0)
     return im

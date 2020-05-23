@@ -858,7 +858,7 @@ def flood(im, regions=None, mode='max'):
         V = np.zeros(shape=N+1, dtype=int)
         for i in range(len(L)):
             V[L[i]] += 1
-    im_flooded = sp.reshape(V[labels], newshape=im.shape)
+    im_flooded = np.reshape(V[labels], newshape=im.shape)
     im_flooded = im_flooded*mask
     return im_flooded
 
@@ -1276,7 +1276,7 @@ def trim_disconnected_blobs(im, inlets):
     keep = np.unique(labels[inlets])
     keep = keep[keep > 0]
     if len(keep) > 0:
-        im2 = sp.reshape(sp.in1d(labels, keep), newshape=im.shape)
+        im2 = np.reshape(sp.in1d(labels, keep), newshape=im.shape)
     else:
         im2 = np.zeros_like(im)
     im2 = im2*im

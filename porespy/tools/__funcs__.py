@@ -393,11 +393,11 @@ def get_planes(im, squeeze=True):
     planes = [im[x, :, :], im[:, y, :], im[:, :, z]]
     if not squeeze:
         imx = planes[0]
-        planes[0] = sp.reshape(imx, [1, imx.shape[0], imx.shape[1]])
+        planes[0] = np.reshape(imx, [1, imx.shape[0], imx.shape[1]])
         imy = planes[1]
-        planes[1] = sp.reshape(imy, [imy.shape[0], 1, imy.shape[1]])
+        planes[1] = np.reshape(imy, [imy.shape[0], 1, imy.shape[1]])
         imz = planes[2]
-        planes[2] = sp.reshape(imz, [imz.shape[0], imz.shape[1], 1])
+        planes[2] = np.reshape(imz, [imz.shape[0], imz.shape[1], 1])
     return planes
 
 
@@ -533,7 +533,7 @@ def randomize_colors(im, keep_vals=[0]):
     im_map = np.zeros(shape=[np.amax(im_vals) + 1, ], dtype=int)
     im_map[im_vals] = new_vals
     im_new = im_map[im_flat]
-    im_new = sp.reshape(im_new, newshape=np.shape(im))
+    im_new = np.reshape(im_new, newshape=np.shape(im))
     return im_new
 
 
@@ -584,7 +584,7 @@ def make_contiguous(im, keep_zeros=True):
     im_map = np.zeros(shape=np.amax(im_flat) + 1)
     im_map[im_vals] = np.arange(0, sp.size(np.unique(im_flat)))
     im_new = im_map[im_flat]
-    im_new = sp.reshape(im_new, newshape=np.shape(im))
+    im_new = np.reshape(im_new, newshape=np.shape(im))
     im_new = np.array(im_new, dtype=im_flat.dtype)
     return im_new
 
@@ -814,7 +814,7 @@ def mesh_region(region: bool, strel=None):
         padded_mask = spim.convolve(padded_mask * 1.0,
                                     weights=strel) / np.sum(strel)
     else:
-        padded_mask = sp.reshape(im, (1,) + im.shape)
+        padded_mask = np.reshape(im, (1,) + im.shape)
         padded_mask = np.pad(padded_mask, pad_width=pad_width, mode='constant')
     verts, faces, norm, val = marching_cubes_lewiner(padded_mask)
     result = namedtuple('mesh', ('verts', 'faces', 'norm', 'val'))

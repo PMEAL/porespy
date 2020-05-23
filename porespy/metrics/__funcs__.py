@@ -311,11 +311,11 @@ def _radial_profile(autocorr, r_max, nbins=100):
         and an array of ``counts`` in each bin.
     """
     if len(autocorr.shape) == 2:
-        adj = sp.reshape(autocorr.shape, [2, 1, 1])
+        adj = np.reshape(autocorr.shape, [2, 1, 1])
         inds = sp.indices(autocorr.shape) - adj/2
         dt = np.sqrt(inds[0]**2 + inds[1]**2)
     elif len(autocorr.shape) == 3:
-        adj = sp.reshape(autocorr.shape, [3, 1, 1, 1])
+        adj = np.reshape(autocorr.shape, [3, 1, 1, 1])
         inds = sp.indices(autocorr.shape) - adj/2
         dt = np.sqrt(inds[0]**2 + inds[1]**2 + inds[2]**2)
     else:
