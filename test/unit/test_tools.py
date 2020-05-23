@@ -117,13 +117,13 @@ class ToolsTest():
         assert np.all(im[tuple(ims[0, 0, 0])] == im)
         ims = ps.tools.subdivide(im, divs=2)
         assert ims.shape == (2, 2, 2)
-        assert im[tuple(ims[0, 0, 0])].sum() == sp.prod(im.shape)/8
+        assert im[tuple(ims[0, 0, 0])].sum() == np.prod(im.shape)/8
 
     def test_subdivide_2D(self):
         im = np.ones([50, 100])
         ims = ps.tools.subdivide(im, divs=2)
         assert ims.shape == (2, 2)
-        assert im[tuple(ims[0, 0])].sum() == sp.prod(im.shape)/4
+        assert im[tuple(ims[0, 0])].sum() == np.prod(im.shape)/4
 
 
 if __name__ == '__main__':

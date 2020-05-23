@@ -289,7 +289,7 @@ def polydisperse_spheres(shape: List[int], porosity: float, dist,
     phi_desired = 1 - (1 - porosity)/(len(Rs))
     im = np.ones(shape, dtype=bool)
     for r in Rs:
-        phi_im = im.sum() / sp.prod(shape)
+        phi_im = im.sum() / np.prod(shape)
         phi_corrected = 1 - (1 - phi_desired) / phi_im
         temp = overlapping_spheres(shape=shape, radius=r, porosity=phi_corrected)
         im = im * temp
@@ -539,13 +539,13 @@ def overlapping_spheres(shape: List[int], radius: int, porosity: float,
     ndim = (shape != 1).sum()
     s_vol = ps_disk(radius).sum() if ndim == 2 else ps_ball(radius).sum()
 
-    bulk_vol = sp.prod(shape)
+    bulk_vol = np.prod(shape)
     N = int(np.ceil((1 - porosity)*bulk_vol/s_vol))
     im = sp.random.random(size=shape)
 
     # Helper functions for calculating porosity: phi = g(f(N))
     f = lambda N: spim.distance_transform_edt(im > N/bulk_vol) < radius
-    g = lambda im: 1 - im.sum() / sp.prod(shape)
+    g = lambda im: 1 - im.sum() / np.prod(shape)
 
     # # Newton's method for getting image porosity match the given
     # w = 1.0                         # Damping factor

@@ -318,7 +318,7 @@ def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
     while err > rtol:
         im = _generate_voxel_image(network, pore_shape, throat_shape,
                                    max_dim=max_dim, verbose=verbose)
-        eps = im.astype(bool).sum() / sp.prod(im.shape)
+        eps = im.astype(bool).sum() / np.prod(im.shape)
 
         err = abs(1 - eps / eps_old)
         eps_old = eps

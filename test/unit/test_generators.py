@@ -29,7 +29,7 @@ class GeneratorTest():
         im = np.zeros([11, 11])
         shape = np.ones([3, 3])
         im = ps.generators.insert_shape(im, element=shape, center=[5, 5])
-        assert np.sum(im) == sp.prod(shape.shape)
+        assert np.sum(im) == np.prod(shape.shape)
 
         im = np.zeros([11, 11])
         shape = np.ones([4, 4])
@@ -41,14 +41,14 @@ class GeneratorTest():
         shape = np.ones([3, 3])
         im = ps.generators.insert_shape(im, element=shape, center=[5, 5],
                                         value=1.0, mode='overlay')
-        assert np.sum(im) == (sp.prod(im.shape) + sp.prod(shape.shape))
+        assert np.sum(im) == (np.prod(im.shape) + np.prod(shape.shape))
 
     def test_insert_shape_corner_overwrite(self):
         im = np.ones([10, 10])
         shape = np.ones([3, 3])
         im = ps.generators.insert_shape(im, element=shape, corner=[5, 5],
                                         value=1.0, mode='overlay')
-        assert np.sum(im) == (sp.prod(im.shape) + sp.prod(shape.shape))
+        assert np.sum(im) == (np.prod(im.shape) + np.prod(shape.shape))
         assert im[5, 5] == 2
         assert im[4, 5] == 1 and im[5, 4] == 1
 

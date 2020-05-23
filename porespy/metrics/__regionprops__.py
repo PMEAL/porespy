@@ -194,7 +194,7 @@ def regionprops_3D(im):
         results[i].volume = results[i].area
         # ---------------------------------------------------------------------
         # Volume of bounding box, in voxels
-        results[i].bbox_volume = sp.prod(mask.shape)
+        results[i].bbox_volume = np.prod(mask.shape)
         # ---------------------------------------------------------------------
         # Create an image of the border
         results[i].border = dt == 1
