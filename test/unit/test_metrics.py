@@ -147,12 +147,12 @@ class MetricsTest():
         im = ps.generators.lattice_spheres(shape=[999, 999],
                                            radius=15, offset=4)
         rev = ps.metrics.representative_elementary_volume(im)
-        assert_allclose(sp.average(rev.porosity), im.sum()/im.size, rtol=1e-1)
+        assert_allclose(np.average(rev.porosity), im.sum()/im.size, rtol=1e-1)
 
         im = ps.generators.lattice_spheres(shape=[151, 151, 151],
                                            radius=9, offset=4)
         rev = ps.metrics.representative_elementary_volume(im)
-        assert_allclose(sp.average(rev.porosity), im.sum()/im.size, rtol=1e-1)
+        assert_allclose(np.average(rev.porosity), im.sum()/im.size, rtol=1e-1)
 
 
 if __name__ == '__main__':

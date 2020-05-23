@@ -59,12 +59,12 @@ def show_planes(im):
         ``matplotlib.pyplot.imshow``.
 
     """
-    if sp.squeeze(im.ndim) < 3:
+    if np.squeeze(im.ndim) < 3:
         raise Exception('This view is only necessary for 3D images')
     x, y, z = (np.array(im.shape)/2).astype(int)
     im_xy = im[:, :, z]
     im_xz = im[:, y, :]
-    im_yz = sp.rot90(im[x, :, :])
+    im_yz = np.rot90(im[x, :, :])
 
     new_x = im_xy.shape[0] + im_yz.shape[0] + 10
 
@@ -110,9 +110,9 @@ def sem(im, direction='X'):
     """
     im = np.array(~im, dtype=int)
     if direction in ['Y', 'y']:
-        im = sp.transpose(im, axes=[1, 0, 2])
+        im = np.transpose(im, axes=[1, 0, 2])
     if direction in ['Z', 'z']:
-        im = sp.transpose(im, axes=[2, 1, 0])
+        im = np.transpose(im, axes=[2, 1, 0])
     t = im.shape[0]
     depth = np.reshape(np.arange(0, t), [t, 1, 1])
     im = im*depth
@@ -145,8 +145,8 @@ def xray(im, direction='X'):
     """
     im = np.array(~im, dtype=int)
     if direction in ['Y', 'y']:
-        im = sp.transpose(im, axes=[1, 0, 2])
+        im = np.transpose(im, axes=[1, 0, 2])
     if direction in ['Z', 'z']:
-        im = sp.transpose(im, axes=[2, 1, 0])
+        im = np.transpose(im, axes=[2, 1, 0])
     im = np.sum(im, axis=0)
     return im

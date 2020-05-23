@@ -252,7 +252,7 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200,
 
     # Subtract pore-throat overlap from throats
     im_throats = (im_throats.astype(bool) * ~im_pores.astype(bool)).astype(
-        sp.uint8)
+        np.uint8)
     im = im_pores * 1 + im_throats * 2
 
     return im[extra_clearance:-extra_clearance,
@@ -416,12 +416,12 @@ def add_phase_interconnections(net, snow_partitioning_n, voxel_size=1,
                     p_conns = net['throat.conns'][:, 0][pi_pj_conns]
                     s_conns = net['throat.conns'][:, 1][pi_pj_conns]
                     ps = net['throat.area'][pi_pj_conns]
-                    p_sa = sp.bincount(p_conns, ps)
+                    p_sa = np.bincount(p_conns, ps)
                     # trim zeros at head/tail position to avoid extra bins
                     p_sa = np.trim_zeros(p_sa)
                     i_index = np.arange(min(p_conns), max(p_conns) + 1)
                     j_index = np.arange(min(s_conns), max(s_conns) + 1)
-                    s_pa = sp.bincount(s_conns, ps)
+                    s_pa = np.bincount(s_conns, ps)
                     s_pa = np.trim_zeros(s_pa)
                     pi_pj_sa[i_index] = p_sa
                     pi_pj_sa[j_index] = s_pa
@@ -429,9 +429,9 @@ def add_phase_interconnections(net, snow_partitioning_n, voxel_size=1,
                     # Calculates interfacial area using marching cube method
                     if marching_cubes_area:
                         ps_c = net['throat.area'][pi_pj_conns]
-                        p_sa_c = sp.bincount(p_conns, ps_c)
+                        p_sa_c = np.bincount(p_conns, ps_c)
                         p_sa_c = np.trim_zeros(p_sa_c)
-                        s_pa_c = sp.bincount(s_conns, ps_c)
+                        s_pa_c = np.bincount(s_conns, ps_c)
                         s_pa_c = np.trim_zeros(s_pa_c)
                         pi_pj_sa[i_index] = p_sa_c
                         pi_pj_sa[j_index] = s_pa_c

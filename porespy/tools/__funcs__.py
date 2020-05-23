@@ -32,10 +32,10 @@ def align_image_with_openpnm(im):
                       ' unexpected behavior.')
     im = np.copy(im)
     if im.ndim == 2:
-        im = (sp.swapaxes(im, 1, 0))
+        im = (np.swapaxes(im, 1, 0))
         im = im[-1::-1, :]
     elif im.ndim == 3:
-        im = (sp.swapaxes(im, 2, 0))
+        im = (np.swapaxes(im, 2, 0))
         im = im[:, -1::-1, :]
     return im
 
@@ -527,7 +527,7 @@ def randomize_colors(im, keep_vals=[0]):
     '''
     im_flat = im.flatten()
     keep_vals = np.array(keep_vals)
-    swap_vals = ~sp.in1d(im_flat, keep_vals)
+    swap_vals = ~np.in1d(im_flat, keep_vals)
     im_vals = np.unique(im_flat[swap_vals])
     new_vals = sp.random.permutation(im_vals)
     im_map = np.zeros(shape=[np.amax(im_vals) + 1, ], dtype=int)
@@ -725,7 +725,7 @@ def norm_to_uniform(im, scale=None):
     """
     if scale is None:
         scale = [im.min(), im.max()]
-    im = (im - np.mean(im)) / sp.std(im)
+    im = (im - np.mean(im)) / np.std(im)
     im = 1 / 2 * sp.special.erfc(-im / np.sqrt(2))
     im = (im - im.min()) / (im.max() - im.min())
     im = im * (scale[1] - scale[0]) + scale[0]
@@ -924,9 +924,9 @@ def insert_sphere(im, c, r):
         raise Exception('Coordinates do not match dimensionality of image')
 
     bbox = []
-    [bbox.append(sp.clip(c[i] - r, 0, im.shape[i])) for i in range(im.ndim)]
-    [bbox.append(sp.clip(c[i] + r, 0, im.shape[i])) for i in range(im.ndim)]
-    bbox = sp.ravel(bbox)
+    [bbox.append(np.clip(c[i] - r, 0, im.shape[i])) for i in range(im.ndim)]
+    [bbox.append(np.clip(c[i] + r, 0, im.shape[i])) for i in range(im.ndim)]
+    bbox = np.ravel(bbox)
     s = bbox_to_slices(bbox)
     temp = im[s]
     blank = np.ones_like(temp)
@@ -964,7 +964,7 @@ def insert_cylinder(im, xyz0, xyz1, r):
     # Converting coordinates to numpy array
     xyz0, xyz1 = [np.array(xyz).astype(int) for xyz in (xyz0, xyz1)]
     r = int(r)
-    L = sp.absolute(xyz0 - xyz1).max() + 1
+    L = np.absolute(xyz0 - xyz1).max() + 1
     xyz_line = [np.linspace(xyz0[i], xyz1[i], L).astype(int) for i in range(3)]
 
     xyz_min = np.amin(xyz_line, axis=1) - r
@@ -977,7 +977,7 @@ def insert_cylinder(im, xyz0, xyz1, r):
         unique_dim = [xyz0[i] != xyz1[i] for i in range(3)].index(True)
         shape_template[unique_dim] = 1
         template_2D = disk(radius=r).reshape(shape_template)
-        template = sp.repeat(template_2D, repeats=L, axis=unique_dim)
+        template = np.repeat(template_2D, repeats=L, axis=unique_dim)
         xyz_min[unique_dim] += r
         xyz_max[unique_dim] += -r
     else:
@@ -1110,7 +1110,7 @@ def extract_regions(regions, labels: list, trim=True):
         labels = [labels]
     s = spim.find_objects(regions)
     im_new = np.zeros_like(regions)
-    x_min, y_min, z_min = sp.inf, sp.inf, sp.inf
+    x_min, y_min, z_min = np.inf, np.inf, np.inf
     x_max, y_max, z_max = 0, 0, 0
     for i in labels:
         im_new[s[i-1]] = regions[s[i-1]] == i

@@ -182,7 +182,7 @@ def radial_density(im, bins=10, voxel_size=1):
     mask = find_dt_artifacts(im) == 0
     im[mask] = 0
     x = im[im > 0].flatten()
-    h = sp.histogram(x, bins=bins, density=True)
+    h = np.histogram(x, bins=bins, density=True)
     h = _parse_histogram(h=h, voxel_size=voxel_size)
     rdf = namedtuple('radial_density_function',
                      ('R', 'pdf', 'cdf', 'bin_centers', 'bin_edges',
@@ -283,9 +283,9 @@ def two_point_correlation_bf(im, spacing=10):
     dmat = sptl.distance.cdist(XA=crds, XB=crds)
     hits = im[tuple(pts)].flatten()
     dmat = dmat[hits, :]
-    h1 = sp.histogram(dmat, bins=range(0, int(np.amin(im.shape)/2), spacing))
+    h1 = np.histogram(dmat, bins=range(0, int(np.amin(im.shape)/2), spacing))
     dmat = dmat[:, hits]
-    h2 = sp.histogram(dmat, bins=h1[1])
+    h2 = np.histogram(dmat, bins=h1[1])
     tpcf = namedtuple('two_point_correlation_function',
                       ('distance', 'probability'))
     return tpcf(h2[1][:-1], h2[0]/h1[0])
@@ -312,11 +312,11 @@ def _radial_profile(autocorr, r_max, nbins=100):
     """
     if len(autocorr.shape) == 2:
         adj = np.reshape(autocorr.shape, [2, 1, 1])
-        inds = sp.indices(autocorr.shape) - adj/2
+        inds = np.indices(autocorr.shape) - adj/2
         dt = np.sqrt(inds[0]**2 + inds[1]**2)
     elif len(autocorr.shape) == 3:
         adj = np.reshape(autocorr.shape, [3, 1, 1, 1])
-        inds = sp.indices(autocorr.shape) - adj/2
+        inds = np.indices(autocorr.shape) - adj/2
         dt = np.sqrt(inds[0]**2 + inds[1]**2 + inds[2]**2)
     else:
         raise Exception('Image dimensions must be 2 or 3')
@@ -364,9 +364,9 @@ def two_point_correlation_fft(im):
     # Fourier Transform and shift image
     F = sp_ft.ifftshift(sp_ft.fftn(sp_ft.fftshift(im)))
     # Compute Power Spectrum
-    P = sp.absolute(F**2)
+    P = np.absolute(F**2)
     # Auto-correlation is inverse of Power Spectrum
-    autoc = sp.absolute(sp_ft.ifftshift(sp_ft.ifftn(sp_ft.fftshift(P))))
+    autoc = np.absolute(sp_ft.ifftshift(sp_ft.ifftn(sp_ft.fftshift(P))))
     tpcf = _radial_profile(autoc, r_max=np.min(hls))
     return tpcf
 
@@ -428,8 +428,8 @@ def pore_size_distribution(im, bins=10, log=True, voxel_size=1):
     im = im.flatten()
     vals = im[im > 0]*voxel_size
     if log:
-        vals = sp.log10(vals)
-    h = _parse_histogram(sp.histogram(vals, bins=bins, density=True))
+        vals = np.log10(vals)
+    h = _parse_histogram(np.histogram(vals, bins=bins, density=True))
     psd = namedtuple('pore_size_distribution',
                      (log*'log' + 'R', 'pdf', 'cdf', 'satn',
                       'bin_centers', 'bin_edges', 'bin_widths'))
@@ -441,7 +441,7 @@ def _parse_histogram(h, voxel_size=1):
     delta_x = h[1]
     P = h[0]
     temp = P*(delta_x[1:] - delta_x[:-1])
-    C = sp.cumsum(temp[-1::-1])[-1::-1]
+    C = np.cumsum(temp[-1::-1])[-1::-1]
     S = P*(delta_x[1:] - delta_x[:-1])
     bin_edges = delta_x * voxel_size
     bin_widths = (delta_x[1:] - delta_x[:-1]) * voxel_size
@@ -469,8 +469,8 @@ def chord_counts(im):
     Notes
     ----
     The returned array can be passed to ``plt.hist`` to plot the histogram,
-    or to ``sp.histogram`` to get the histogram data directly. Another useful
-    function is ``sp.bincount`` which gives the number of chords of each
+    or to ``np.histogram`` to get the histogram data directly. Another useful
+    function is ``np.bincount`` which gives the number of chords of each
     length in a format suitable for ``plt.plot``.
     """
     labels, N = spim.label(im > 0)
@@ -514,7 +514,7 @@ def linear_density(im, bins=25, voxel_size=1, log=False):
 
     """
     x = im[im > 0]
-    h = list(sp.histogram(x, bins=bins, density=True))
+    h = list(np.histogram(x, bins=bins, density=True))
     h = _parse_histogram(h=h, voxel_size=voxel_size)
     cld = namedtuple('linear_density_function',
                      ('L', 'pdf', 'cdf', 'relfreq',
@@ -598,13 +598,13 @@ def chord_length_distribution(im, bins=None, log=False, voxel_size=1,
         bins = np.array(range(0, x.max()+2))*voxel_size
     x = x*voxel_size
     if log:
-        x = sp.log10(x)
+        x = np.log10(x)
     if normalization == 'length':
-        h = list(sp.histogram(x, bins=bins, density=False))
+        h = list(np.histogram(x, bins=bins, density=False))
         h[0] = h[0]*(h[1][1:]+h[1][:-1])/2  # Scale bin heigths by length
         h[0] = h[0]/h[0].sum()/(h[1][1:]-h[1][:-1])  # Normalize h[0] manually
     elif normalization in ['number', 'count']:
-        h = sp.histogram(x, bins=bins, density=True)
+        h = np.histogram(x, bins=bins, density=True)
     else:
         raise Exception('Unsupported normalization:', normalization)
     h = _parse_histogram(h)

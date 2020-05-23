@@ -55,7 +55,7 @@ def insert_shape(im, element, center=None, corner=None, value=1,
     s_el = []
     if (center is not None) and (corner is None):
         for dim in range(im.ndim):
-            r, d = sp.divmod(element.shape[dim], 2)
+            r, d = np.divmod(element.shape[dim], 2)
             if d == 0:
                 raise Exception('Cannot specify center point when element ' +
                                 'has one or more even dimension')
@@ -169,7 +169,7 @@ def RSA(im: array, radius: int, volume_fraction: int = 1,
     else:
         raise Exception('Unrecognized mode: ' + mode)
     vf = im.sum()/im.size
-    free_spots = sp.argwhere(mask == 0)
+    free_spots = np.argwhere(mask == 0)
     i = 0
     while vf <= volume_fraction and len(free_spots) > 0:
         choice = sp.random.randint(0, len(free_spots), size=1)
@@ -183,7 +183,7 @@ def RSA(im: array, radius: int, volume_fraction: int = 1,
             im = _fit_strel_to_im_3d(im, im_strel, radius, x, y, z)
             mask = _fit_strel_to_im_3d(mask, mask_strel, mrad, x, y, z)
             im[x, y, z] = 2
-        free_spots = sp.argwhere(mask == 0)
+        free_spots = np.argwhere(mask == 0)
         vf = im.sum()/im.size
         i += 1
     if vf > volume_fraction:
@@ -239,7 +239,7 @@ def bundle_of_tubes(shape: List[int], spacing: int):
         except ValueError:
             odd_shape = np.shape(temp[s1, s2])
             temp[s1, s2] = ps_disk(r)[:odd_shape[0], :odd_shape[1]]
-    im = np.broadcast_to(array=sp.atleast_3d(temp), shape=shape)
+    im = np.broadcast_to(array=np.atleast_3d(temp), shape=shape)
     return im
 
 
@@ -285,7 +285,7 @@ def polydisperse_spheres(shape: List[int], porosity: float, dist,
     Rs = dist.interval(np.linspace(0.05, 0.95, nbins))
     Rs = np.vstack(Rs).T
     Rs = (Rs[:-1] + Rs[1:])/2
-    Rs = sp.clip(Rs.flatten(), a_min=r_min, a_max=None)
+    Rs = np.clip(Rs.flatten(), a_min=r_min, a_max=None)
     phi_desired = 1 - (1 - porosity)/(len(Rs))
     im = np.ones(shape, dtype=bool)
     for r in Rs:
@@ -381,11 +381,11 @@ def _get_Voronoi_edges(vor):
     edges = np.vstack(edges).T  # Convert to scipy-friendly format
     mask = np.any(edges == -1, axis=1)  # Identify edges at infinity
     edges = edges[~mask]  # Remove edges at infinity
-    edges = sp.sort(edges, axis=1)  # Move all points to upper triangle
+    edges = np.sort(edges, axis=1)  # Move all points to upper triangle
     # Remove duplicate pairs
     edges = edges[:, 0] + 1j*edges[:, 1]  # Convert to imaginary
     edges = np.unique(edges)  # Remove duplicates
-    edges = np.vstack((sp.real(edges), sp.imag(edges))).T  # Back to real
+    edges = np.vstack((np.real(edges), np.imag(edges))).T  # Back to real
     edges = np.array(edges, dtype=int)
     return edges
 
@@ -640,11 +640,11 @@ def generate_noise(shape: List[int], porosity=None, octaves: int = 3,
         f = noise.snoise3
     else:
         f = noise.pnoise3
-    frequency = sp.atleast_1d(frequency)
+    frequency = np.atleast_1d(frequency)
     if frequency.size == 1:
         freq = np.full(shape=[3, ], fill_value=frequency[0])
     elif frequency.size == 2:
-        freq = sp.concatenate((frequency, [1]))
+        freq = np.concatenate((frequency, [1]))
     else:
         freq = np.array(frequency)
     im = np.zeros(shape=[Lx, Ly, Lz], dtype=float)
@@ -803,13 +803,13 @@ def line_segment(X0, X1):
     X0 = np.around(X0).astype(int)
     X1 = np.around(X1).astype(int)
     if len(X0) == 3:
-        L = np.amax(sp.absolute([[X1[0]-X0[0]], [X1[1]-X0[1]], [X1[2]-X0[2]]])) + 1
+        L = np.amax(np.absolute([[X1[0]-X0[0]], [X1[1]-X0[1]], [X1[2]-X0[2]]])) + 1
         x = np.rint(np.linspace(X0[0], X1[0], L)).astype(int)
         y = np.rint(np.linspace(X0[1], X1[1], L)).astype(int)
         z = np.rint(np.linspace(X0[2], X1[2], L)).astype(int)
         return [x, y, z]
     else:
-        L = np.amax(sp.absolute([[X1[0]-X0[0]], [X1[1]-X0[1]]])) + 1
+        L = np.amax(np.absolute([[X1[0]-X0[0]], [X1[1]-X0[1]]])) + 1
         x = np.rint(np.linspace(X0[0], X1[0], L)).astype(int)
         y = np.rint(np.linspace(X0[1], X1[1], L)).astype(int)
         return [x, y]

@@ -229,7 +229,7 @@ class GeneratorTest():
         im = np.zeros([100, 100], dtype=int)
         im = ps.generators.RSA(im, radius=10, volume_fraction=0.5,
                                mode='contained')
-        coords = sp.argwhere(im == 2)
+        coords = np.argwhere(im == 2)
         assert ~np.any(coords < 10)
         assert ~np.any(coords > 90)
 
@@ -237,7 +237,7 @@ class GeneratorTest():
         im = np.zeros([50, 50, 50], dtype=int)
         im = ps.generators.RSA(im, radius=5, volume_fraction=0.5,
                                mode='contained')
-        coords = sp.argwhere(im == 2)
+        coords = np.argwhere(im == 2)
         assert ~np.any(coords < 5)
         assert ~np.any(coords > 45)
 

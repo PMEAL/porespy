@@ -124,8 +124,8 @@ def distance_transform_lin(im, axis=0, mode='both'):
         im_b = distance_transform_lin(im=im, axis=axis, mode='backward')
         return np.minimum(im_f, im_b)
     else:
-        b = sp.cumsum(im > 0, axis=axis)
-        c = sp.diff(b*(im == 0), axis=axis)
+        b = np.cumsum(im > 0, axis=axis)
+        c = np.diff(b*(im == 0), axis=axis)
         d = np.minimum.accumulate(c, axis=axis)
         if im.ndim == 1:
             e = np.pad(d, pad_width=[1, 0], mode='constant', constant_values=0)
@@ -218,7 +218,7 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, return_all=False,
         if np.any(im_shape == 1):
             ax = np.where(im_shape == 1)[0][0]
             dt = spim.distance_transform_edt(input=im.squeeze())
-            dt = sp.expand_dims(dt, ax)
+            dt = np.expand_dims(dt, ax)
         else:
             dt = spim.distance_transform_edt(input=im)
 
@@ -758,7 +758,7 @@ def trim_nonpercolating_paths(im, inlet_axis=0, outlet_axis=0):
             outlet[:, -1] = 1
     IN = np.unique(labels*inlet)
     OUT = np.unique(labels*outlet)
-    new_im = sp.isin(labels, list(set(IN) ^ set(OUT)), invert=True)
+    new_im = np.isin(labels, list(set(IN) ^ set(OUT)), invert=True)
     im[new_im == 0] = True
     return ~im
 
@@ -850,7 +850,7 @@ def flood(im, regions=None, mode='max'):
             if V[L[i]] < I[i]:
                 V[L[i]] = I[i]
     elif mode.startswith('min'):
-        V = np.ones(shape=N+1, dtype=float)*sp.inf
+        V = np.ones(shape=N+1, dtype=float)*np.inf
         for i in range(len(L)):
             if V[L[i]] > I[i]:
                 V[L[i]] = I[i]
@@ -887,12 +887,12 @@ def find_dt_artifacts(dt):
         the image.  Obviously, voxels with a value of zero have no error.
 
     """
-    temp = np.ones(shape=dt.shape)*sp.inf
+    temp = np.ones(shape=dt.shape)*np.inf
     for ax in range(dt.ndim):
         dt_lin = distance_transform_lin(np.ones_like(temp, dtype=bool),
                                         axis=ax, mode='both')
         temp = np.minimum(temp, dt_lin)
-    result = sp.clip(dt - temp, a_min=0, a_max=sp.inf)
+    result = np.clip(dt - temp, a_min=0, a_max=np.inf)
     return result
 
 
@@ -917,7 +917,7 @@ def region_size(im):
     """
     if im.dtype == bool:
         im = spim.label(im)[0]
-    counts = sp.bincount(im.flatten())
+    counts = np.bincount(im.flatten())
     counts[0] = 0
     chords = counts[im]
     return chords
@@ -975,10 +975,10 @@ def apply_chords(im, spacing=1, axis=0, trim_edges=True, label=False):
     slices = tuple(slxyz[:im.ndim])
     s = [[0, 1, 0], [0, 1, 0], [0, 1, 0]]  # Straight-line structuring element
     if im.ndim == 3:  # Make structuring element 3D if necessary
-        s = np.pad(sp.atleast_3d(s), pad_width=((0, 0), (0, 0), (1, 1)),
+        s = np.pad(np.atleast_3d(s), pad_width=((0, 0), (0, 0), (1, 1)),
                    mode='constant', constant_values=0)
     im = im[slices]
-    s = sp.swapaxes(s, 0, axis)
+    s = np.swapaxes(s, 0, axis)
     chords = spim.label(im, structure=s)[0]
     if trim_edges:  # Label on border chords will be set to 0
         chords = clear_border(chords)
@@ -1195,7 +1195,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
         inlets = get_border(im.shape, mode='faces')
 
     if isinstance(sizes, int):
-        sizes = np.logspace(start=sp.log10(np.amax(dt)), stop=0, num=sizes)
+        sizes = np.logspace(start=np.log10(np.amax(dt)), stop=0, num=sizes)
     else:
         sizes = np.unique(sizes)[-1::-1]
 
@@ -1276,7 +1276,7 @@ def trim_disconnected_blobs(im, inlets):
     keep = np.unique(labels[inlets])
     keep = keep[keep > 0]
     if len(keep) > 0:
-        im2 = np.reshape(sp.in1d(labels, keep), newshape=im.shape)
+        im2 = np.reshape(np.in1d(labels, keep), newshape=im.shape)
     else:
         im2 = np.zeros_like(im)
     im2 = im2*im
