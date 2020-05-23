@@ -43,7 +43,7 @@ def trim_small_clusters(im, size=1):
         strel = ball(1)
     else:
         raise Exception('Only 2D or 3D images are accepted')
-    filtered_array = sp.copy(im)
+    filtered_array = np.copy(im)
     labels, N = spim.label(filtered_array, structure=strel)
     id_sizes = np.array(spim.sum(im, labels, range(N + 1)))
     area_mask = (id_sizes <= size)
@@ -115,9 +115,9 @@ def distance_transform_lin(im, axis=0, mode='both'):
                       ' Reduce dimensionality with np.squeeze(im) to avoid' +
                       ' unexpected behavior.')
     if mode in ['backward', 'reverse']:
-        im = sp.flip(im, axis)
+        im = np.flip(im, axis)
         im = distance_transform_lin(im=im, axis=axis, mode='forward')
-        im = sp.flip(im, axis)
+        im = np.flip(im, axis)
         return im
     elif mode in ['both']:
         im_f = distance_transform_lin(im=im, axis=axis, mode='forward')
@@ -491,7 +491,7 @@ def trim_saddle_points(peaks, dt, max_iters=10):
     using marker-based watershed segmenation".  Physical Review E. (2017)
 
     """
-    peaks = sp.copy(peaks)
+    peaks = np.copy(peaks)
     if dt.ndim == 2:
         from skimage.morphology import square as cube
     else:
@@ -504,7 +504,7 @@ def trim_saddle_points(peaks, dt, max_iters=10):
         dt_i = dt[s]
         im_i = dt_i > 0
         iters = 0
-        peaks_dil = sp.copy(peaks_i)
+        peaks_dil = np.copy(peaks_i)
         while iters < max_iters:
             iters += 1
             peaks_dil = spim.binary_dilation(input=peaks_dil,
@@ -555,7 +555,7 @@ def trim_nearby_peaks(peaks, dt):
     [1] Gostick, J. "A versatile and efficient network extraction algorithm
     using marker-based watershed segmenation".  Physical Review E. (2017)
     """
-    peaks = sp.copy(peaks)
+    peaks = np.copy(peaks)
     if dt.ndim == 2:
         from skimage.morphology import square as cube
     else:
@@ -656,7 +656,7 @@ def fill_blind_pores(im):
     find_disconnected_voxels
 
     """
-    im = sp.copy(im)
+    im = np.copy(im)
     holes = find_disconnected_voxels(im)
     im[holes] = False
     return im
@@ -681,7 +681,7 @@ def trim_floating_solid(im):
     find_disconnected_voxels
 
     """
-    im = sp.copy(im)
+    im = np.copy(im)
     holes = find_disconnected_voxels(~im)
     im[holes] = True
     return im
@@ -840,7 +840,7 @@ def flood(im, regions=None, mode='max'):
     if regions is None:
         labels, N = spim.label(mask)
     else:
-        labels = sp.copy(regions)
+        labels = np.copy(regions)
         N = labels.max()
     I = im.flatten()
     L = labels.flatten()
@@ -1265,7 +1265,7 @@ def trim_disconnected_blobs(im, inlets):
         voxels not connected to the ``inlets`` removed.
     """
     if type(inlets) == tuple:
-        temp = sp.copy(inlets)
+        temp = np.copy(inlets)
         inlets = np.zeros_like(im, dtype=bool)
         inlets[temp] = True
     elif (inlets.shape == im.shape) and (inlets.max() == 1):
@@ -1451,7 +1451,7 @@ def prune_branches(skel, branch_points=None, iterations=1):
     im_result += skel*pts_orig
     if iterations > 1:
         iterations -= 1
-        im_temp = sp.copy(im_result)
+        im_temp = np.copy(im_result)
         im_result = prune_branches(skel=im_result,
                                    branch_points=None,
                                    iterations=iterations)

@@ -113,18 +113,18 @@ def regions_to_network(im, dt=None, voxel_size=1):
     net = {}
     net['pore.all'] = np.ones((Np, ), dtype=bool)
     net['throat.all'] = np.ones((Nt, ), dtype=bool)
-    net['pore.coords'] = sp.copy(p_coords)*voxel_size
-    net['pore.centroid'] = sp.copy(p_coords)*voxel_size
+    net['pore.coords'] = np.copy(p_coords)*voxel_size
+    net['pore.centroid'] = np.copy(p_coords)*voxel_size
     net['throat.centroid'] = np.array(t_coords)*voxel_size
     net['throat.conns'] = np.array(t_conns)
     net['pore.label'] = np.array(p_label)
-    net['pore.volume'] = sp.copy(p_volume)*(voxel_size**3)
+    net['pore.volume'] = np.copy(p_volume)*(voxel_size**3)
     net['throat.volume'] = np.zeros((Nt, ), dtype=float)
-    net['pore.diameter'] = sp.copy(p_dia_local)*voxel_size
-    net['pore.inscribed_diameter'] = sp.copy(p_dia_local)*voxel_size
+    net['pore.diameter'] = np.copy(p_dia_local)*voxel_size
+    net['pore.inscribed_diameter'] = np.copy(p_dia_local)*voxel_size
     net['pore.equivalent_diameter'] = 2*((3/4*net['pore.volume']/np.pi)**(1/3))
-    net['pore.extended_diameter'] = sp.copy(p_dia_global)*voxel_size
-    net['pore.surface_area'] = sp.copy(p_area_surf)*(voxel_size)**2
+    net['pore.extended_diameter'] = np.copy(p_dia_global)*voxel_size
+    net['pore.surface_area'] = np.copy(p_area_surf)*(voxel_size)**2
     net['throat.diameter'] = np.array(t_dia_inscribed)*voxel_size
     net['throat.inscribed_diameter'] = np.array(t_dia_inscribed)*voxel_size
     net['throat.area'] = np.array(t_area)*(voxel_size**2)

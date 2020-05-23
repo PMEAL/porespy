@@ -28,7 +28,7 @@ def show_3D(im):
     so inverts the image to show the solid material.
 
     """
-    im = ~sp.copy(im)
+    im = ~np.copy(im)
     if im.ndim < 3:
         raise Exception('show_3D only applies to 3D images')
     im = spim.rotate(input=im, angle=22.5, axes=[0, 1], order=0)

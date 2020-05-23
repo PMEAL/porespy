@@ -30,7 +30,7 @@ def align_image_with_openpnm(im):
         warnings.warn('Input image conains a singleton axis:' + str(im.shape) +
                       ' Reduce dimensionality with np.squeeze(im) to avoid' +
                       ' unexpected behavior.')
-    im = sp.copy(im)
+    im = np.copy(im)
     if im.ndim == 2:
         im = (sp.swapaxes(im, 1, 0))
         im = im[-1::-1, :]
@@ -574,7 +574,7 @@ def make_contiguous(im, keep_zeros=True):
      [3 4 2]]
 
     """
-    im = sp.copy(im)
+    im = np.copy(im)
     if keep_zeros:
         mask = (im == 0)
         im[mask] = im.min() - 1
