@@ -12,7 +12,7 @@ from numpy.testing import assert_allclose
 class MetricsTest():
 
     def setup_class(self):
-        sp.random.seed(0)
+        np.random.seed(0)
         self.im2D = ps.generators.lattice_spheres(shape=[100, 100],
                                                   radius=5, offset=2,
                                                   lattice='square')

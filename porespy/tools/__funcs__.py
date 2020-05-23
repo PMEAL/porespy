@@ -506,7 +506,7 @@ def randomize_colors(im, keep_vals=[0]):
     --------
     >>> import porespy as ps
     >>> import scipy as sp
-    >>> sp.random.seed(0)
+    >>> np.random.seed(0)
     >>> im = sp.random.randint(low=0, high=5, size=[4, 4])
     >>> print(im)
     [[4 0 3 3]

@@ -8,7 +8,7 @@ from skimage.morphology import disk, ball
 
 class FilterTest():
     def setup_class(self):
-        sp.random.seed(0)
+        np.random.seed(0)
         self.im = ps.generators.blobs(shape=[100, 100, 100], blobiness=2)
         # Ensure that im was generated as expeccted
         assert ps.metrics.porosity(self.im) == 0.499829

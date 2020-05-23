@@ -9,7 +9,7 @@ plt.close('all')
 class GeneratorTest():
 
     def setup_class(self):
-        sp.random.seed(10)
+        np.random.seed(10)
 
     def test_cylinders(self):
         X = 100
@@ -152,7 +152,7 @@ class GeneratorTest():
             assert abs(phi_actual - phi) < 0.1
 
     def test_voronoi_edges(self):
-        sp.random.seed(0)
+        np.random.seed(0)
         im = ps.generators.voronoi_edges(shape=[50, 50, 50],
                                          radius=2,
                                          ncells=25,
@@ -204,14 +204,14 @@ class GeneratorTest():
         assert len(list(im.shape)) == 3
 
     def test_RSA_2d_single(self):
-        sp.random.seed(0)
+        np.random.seed(0)
         im = np.zeros([100, 100], dtype=int)
         im = ps.generators.RSA(im, radius=10, volume_fraction=0.5)
         assert np.sum(im > 0) == 5095
         assert np.sum(im > 1) == 20
 
     def test_RSA_2d_multi(self):
-        sp.random.seed(0)
+        np.random.seed(0)
         im = np.zeros([100, 100], dtype=int)
         im = ps.generators.RSA(im, radius=10, volume_fraction=0.5)
         im = ps.generators.RSA(im, radius=5, volume_fraction=0.75)
@@ -219,7 +219,7 @@ class GeneratorTest():
         assert np.sum(im > 1) == 44
 
     def test_RSA_3d_single(self):
-        sp.random.seed(0)
+        np.random.seed(0)
         im = np.zeros([50, 50, 50], dtype=int)
         im = ps.generators.RSA(im, radius=5, volume_fraction=0.5)
         assert np.sum(im > 0) == 45602
