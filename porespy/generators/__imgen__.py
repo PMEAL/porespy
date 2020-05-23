@@ -804,14 +804,14 @@ def line_segment(X0, X1):
     X1 = np.around(X1).astype(int)
     if len(X0) == 3:
         L = np.amax(sp.absolute([[X1[0]-X0[0]], [X1[1]-X0[1]], [X1[2]-X0[2]]])) + 1
-        x = sp.rint(np.linspace(X0[0], X1[0], L)).astype(int)
-        y = sp.rint(np.linspace(X0[1], X1[1], L)).astype(int)
-        z = sp.rint(np.linspace(X0[2], X1[2], L)).astype(int)
+        x = np.rint(np.linspace(X0[0], X1[0], L)).astype(int)
+        y = np.rint(np.linspace(X0[1], X1[1], L)).astype(int)
+        z = np.rint(np.linspace(X0[2], X1[2], L)).astype(int)
         return [x, y, z]
     else:
         L = np.amax(sp.absolute([[X1[0]-X0[0]], [X1[1]-X0[1]]])) + 1
-        x = sp.rint(np.linspace(X0[0], X1[0], L)).astype(int)
-        y = sp.rint(np.linspace(X0[1], X1[1], L)).astype(int)
+        x = np.rint(np.linspace(X0[0], X1[0], L)).astype(int)
+        y = np.rint(np.linspace(X0[1], X1[1], L)).astype(int)
         return [x, y]
 
 
