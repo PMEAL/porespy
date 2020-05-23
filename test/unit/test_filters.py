@@ -32,7 +32,7 @@ class FilterTest():
 
     def test_porosimetry_npts_10(self):
         mip = ps.filters.porosimetry(im=self.im, sizes=10)
-        steps = sp.unique(mip)
+        steps = np.unique(mip)
         ans = np.array([0.00000000, 1.00000000, 1.37871571, 1.61887041,
                         1.90085700, 2.23196205, 2.62074139, 3.07724114,
                         3.61325732, 4.24264069])
@@ -50,7 +50,7 @@ class FilterTest():
     def test_porosimetry_with_sizes(self):
         s = sp.logspace(0.01, 0.6, 5)
         mip = ps.filters.porosimetry(im=self.im, sizes=s)
-        assert np.allclose(sp.unique(mip)[1:], s)
+        assert np.allclose(np.unique(mip)[1:], s)
 
     def test_apply_chords_axis0(self):
         c = ps.filters.apply_chords(im=self.im, spacing=3, axis=0)
@@ -87,11 +87,11 @@ class FilterTest():
         im = ~ps.generators.lattice_spheres(shape=[100, 100], offset=3,
                                             radius=10)
         sz = ps.filters.flood(im*2.0, mode='max')
-        assert np.all(sp.unique(sz) == [0, 2])
+        assert np.all(np.unique(sz) == [0, 2])
         sz = ps.filters.flood(im, mode='min')
-        assert np.all(sp.unique(sz) == [0, 1])
+        assert np.all(np.unique(sz) == [0, 1])
         sz = ps.filters.flood(im, mode='size')
-        assert np.all(sp.unique(sz) == [0, 305])
+        assert np.all(np.unique(sz) == [0, 305])
 
     def test_find_disconnected_voxels_2d(self):
         h = ps.filters.find_disconnected_voxels(self.im[:, :, 0])
@@ -172,7 +172,7 @@ class FilterTest():
         im = ps.generators.RSA(im=im, radius=10)
         im = im > 0
         lt = ps.filters.local_thickness(im, sizes=[20, 10])
-        assert np.all(sp.unique(lt) == [0, 10, 20])
+        assert np.all(np.unique(lt) == [0, 10, 20])
 
     def test_porosimetry(self):
         im2d = self.im[:, :, 50]

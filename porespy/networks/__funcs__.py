@@ -390,7 +390,7 @@ def add_phase_interconnections(net, snow_partitioning_n, voxel_size=1,
 
     num = snow_partitioning_n.phase_max_label
     num = [0, *num]
-    phases_num = sp.unique(im * 1)
+    phases_num = np.unique(im * 1)
     phases_num = sp.trim_zeros(phases_num)
     for i in phases_num:
         loc1 = np.logical_and(conns1 >= num[i - 1], conns1 < num[i])

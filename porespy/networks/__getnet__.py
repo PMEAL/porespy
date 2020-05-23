@@ -87,7 +87,7 @@ def regions_to_network(im, dt=None, voxel_size=1):
         p_area_surf[pore] = np.sum(pore_dt == 1)
         im_w_throats = spim.binary_dilation(input=pore_im, structure=struc_elem(1))
         im_w_throats = im_w_throats*sub_im
-        Pn = sp.unique(im_w_throats)[1:] - 1
+        Pn = np.unique(im_w_throats)[1:] - 1
         for j in Pn:
             if j > pore:
                 t_conns.append([pore, j])

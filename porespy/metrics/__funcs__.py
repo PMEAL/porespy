@@ -680,7 +680,7 @@ def region_interface_areas(regions, areas, voxel_size=1, strel=None):
             im_w_throats = spim.binary_dilation(input=mask_im,
                                                 structure=ball(1))
             im_w_throats = im_w_throats*sub_im
-            Pn = sp.unique(im_w_throats)[1:] - 1
+            Pn = np.unique(im_w_throats)[1:] - 1
             for j in Pn:
                 if j > reg:
                     cn.append([reg, j])

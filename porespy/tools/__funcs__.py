@@ -528,7 +528,7 @@ def randomize_colors(im, keep_vals=[0]):
     im_flat = im.flatten()
     keep_vals = np.array(keep_vals)
     swap_vals = ~sp.in1d(im_flat, keep_vals)
-    im_vals = sp.unique(im_flat[swap_vals])
+    im_vals = np.unique(im_flat[swap_vals])
     new_vals = sp.random.permutation(im_vals)
     im_map = np.zeros(shape=[np.amax(im_vals) + 1, ], dtype=int)
     im_map[im_vals] = new_vals
@@ -580,9 +580,9 @@ def make_contiguous(im, keep_zeros=True):
         im[mask] = im.min() - 1
     im = im - im.min()
     im_flat = im.flatten()
-    im_vals = sp.unique(im_flat)
+    im_vals = np.unique(im_flat)
     im_map = np.zeros(shape=np.amax(im_flat) + 1)
-    im_map[im_vals] = np.arange(0, sp.size(sp.unique(im_flat)))
+    im_map[im_vals] = np.arange(0, sp.size(np.unique(im_flat)))
     im_new = im_map[im_flat]
     im_new = sp.reshape(im_new, newshape=np.shape(im))
     im_new = np.array(im_new, dtype=im_flat.dtype)
@@ -1070,7 +1070,7 @@ def _create_alias_map(im, alias=None):
     """
     # -------------------------------------------------------------------------
     # Get alias if provided by user
-    phases_num = sp.unique(im * 1)
+    phases_num = np.unique(im * 1)
     phases_num = sp.trim_zeros(phases_num)
     al = {}
     for values in phases_num:

@@ -18,16 +18,16 @@ class ToolsTest():
 
     def test_randomize_colors(self):
         randomized_im = ps.tools.randomize_colors(im=self.im)
-        assert sp.unique(self.im).size == sp.unique(randomized_im).size
-        assert np.all(sp.unique(self.im) == sp.unique(randomized_im))
+        assert np.unique(self.im).size == np.unique(randomized_im).size
+        assert np.all(np.unique(self.im) == np.unique(randomized_im))
 
     def test_make_contiguous_size(self):
         cont_im = ps.tools.make_contiguous(self.im)
-        assert sp.unique(self.im).size == sp.unique(cont_im).size
+        assert np.unique(self.im).size == np.unique(cont_im).size
 
     def test_make_contiguous_contiguity(self):
         cont_im = ps.tools.make_contiguous(self.im)
-        assert np.all(np.arange(sp.unique(self.im).size) == sp.unique(cont_im))
+        assert np.all(np.arange(np.unique(self.im).size) == np.unique(cont_im))
 
     def test_make_contiguous_negs(self):
         im = np.array([[0, 0, 1, 3], [-2, -4, 1, 3], [-4, 3, 5, 0]])

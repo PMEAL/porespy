@@ -384,7 +384,7 @@ def _get_Voronoi_edges(vor):
     edges = sp.sort(edges, axis=1)  # Move all points to upper triangle
     # Remove duplicate pairs
     edges = edges[:, 0] + 1j*edges[:, 1]  # Convert to imaginary
-    edges = sp.unique(edges)  # Remove duplicates
+    edges = np.unique(edges)  # Remove duplicates
     edges = sp.vstack((sp.real(edges), sp.imag(edges))).T  # Back to real
     edges = np.array(edges, dtype=int)
     return edges

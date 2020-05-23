@@ -329,7 +329,7 @@ def snow_partitioning_n(im, r_max=4, sigma=0.4, return_all=True,
     # Get alias if provided by user
     al = _create_alias_map(im=im, alias=alias)
     # Perform snow on each phase and merge all segmentation and dt together
-    phases_num = sp.unique(im * 1)
+    phases_num = np.unique(im * 1)
     phases_num = sp.trim_zeros(phases_num)
     combined_dt = 0
     combined_region = 0
@@ -579,7 +579,7 @@ def trim_nearby_peaks(peaks, dt):
             drop_peaks.append(peak)
         else:
             drop_peaks.append(nearest_neighbor[peak])
-    drop_peaks = sp.unique(drop_peaks)
+    drop_peaks = np.unique(drop_peaks)
     # Remove peaks from image
     slices = spim.find_objects(input=peaks)
     for s in drop_peaks:
@@ -756,8 +756,8 @@ def trim_nonpercolating_paths(im, inlet_axis=0, outlet_axis=0):
             outlet[-1, :] = 1
         elif outlet_axis == 1:
             outlet[:, -1] = 1
-    IN = sp.unique(labels*inlet)
-    OUT = sp.unique(labels*outlet)
+    IN = np.unique(labels*inlet)
+    OUT = np.unique(labels*outlet)
     new_im = sp.isin(labels, list(set(IN) ^ set(OUT)), invert=True)
     im[new_im == 0] = True
     return ~im
@@ -1197,7 +1197,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
     if isinstance(sizes, int):
         sizes = sp.logspace(start=sp.log10(np.amax(dt)), stop=0, num=sizes)
     else:
-        sizes = sp.unique(sizes)[-1::-1]
+        sizes = np.unique(sizes)[-1::-1]
 
     if im.ndim == 2:
         strel = ps_disk
@@ -1209,7 +1209,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
         impad = np.pad(im, mode='symmetric', pad_width=pw)
         inletspad = np.pad(inlets, mode='symmetric', pad_width=pw)
         inlets = np.where(inletspad)
-#        sizes = sp.unique(np.around(sizes, decimals=0).astype(int))[-1::-1]
+#        sizes = np.unique(np.around(sizes, decimals=0).astype(int))[-1::-1]
         imresults = np.zeros(np.shape(impad))
         for r in tqdm(sizes):
             imtemp = fftmorphology(impad, strel(r), mode='erosion')
@@ -1273,7 +1273,7 @@ def trim_disconnected_blobs(im, inlets):
     else:
         raise Exception('inlets not valid, refer to docstring for info')
     labels = spim.label(inlets + (im > 0))[0]
-    keep = sp.unique(labels[inlets])
+    keep = np.unique(labels[inlets])
     keep = keep[keep > 0]
     if len(keep) > 0:
         im2 = sp.reshape(sp.in1d(labels, keep), newshape=im.shape)
@@ -1445,7 +1445,7 @@ def prune_branches(skel, branch_points=None, iterations=1):
         # Find branch point labels the overlap current arc
         hits = pts_labels[s]*(arc_labels[s] == label_num)
         # If image contains 2 branch points, then it's not a tail.
-        if len(sp.unique(hits)) == 3:
+        if len(np.unique(hits)) == 3:
             im_result[s] += arc_labels[s] == label_num
     # Add missing branch points back to arc image to make complete skeleton
     im_result += skel*pts_orig

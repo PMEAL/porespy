@@ -134,7 +134,7 @@ class MetricsTest():
 
     def test_phase_fraction(self):
         im = sp.reshape(sp.random.randint(0, 10, 1000), [10, 10, 10])
-        labels = sp.unique(im, return_counts=True)[1]
+        labels = np.unique(im, return_counts=True)[1]
         counts = ps.metrics.phase_fraction(im, normed=False)
         assert np.all(labels == counts)
         fractions = ps.metrics.phase_fraction(im, normed=True)
