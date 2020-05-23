@@ -391,23 +391,23 @@ def add_phase_interconnections(net, snow_partitioning_n, voxel_size=1,
     num = [0, *num]
     phases_num = np.unique(im * 1)
     phases_num = np.trim_zeros(phases_num)
-    for i in phases_num:
-        loc1 = np.logical_and(conns1 >= num[i - 1], conns1 < num[i])
-        loc2 = np.logical_and(conns2 >= num[i - 1], conns2 < num[i])
-        loc3 = np.logical_and(label >= num[i - 1], label < num[i])
-        net['throat.{}'.format(al[i])] = loc1 * loc2
-        net['pore.{}'.format(al[i])] = loc3
+    for i0, i1 in enumerate(phases_num):
+        loc1 = np.logical_and(conns1 >= num[i0], conns1 < num[i0 + 1])
+        loc2 = np.logical_and(conns2 >= num[i0], conns2 < num[i0 + 1])
+        loc3 = np.logical_and(label >= num[i0], label < num[i0 + 1])
+        net['throat.{}'.format(al[i1])] = loc1 * loc2
+        net['pore.{}'.format(al[i1])] = loc3
         if i == phases_num[-1]:
             loc4 = np.logical_and(conns1 < num[-1], conns2 >= num[-1])
             loc5 = label >= num[-1]
             net['throat.boundary'] = loc4
             net['pore.boundary'] = loc5
-        for j in phases_num:
-            if j > i:
+        for j0, j1 in enumerate(phases_num):
+            if j0 > i0:
                 pi_pj_sa = np.zeros_like(label)
-                loc6 = np.logical_and(conns2 >= num[j - 1], conns2 < num[j])
+                loc6 = np.logical_and(conns2 >= num[j0], conns2 < num[j0 + 1])
                 pi_pj_conns = loc1 * loc6
-                net['throat.{}_{}'.format(al[i], al[j])] = pi_pj_conns
+                net['throat.{}_{}'.format(al[i1], al[j1])] = pi_pj_conns
                 if any(pi_pj_conns):
                     # ---------------------------------------------------------
                     # Calculates phase[i] interfacial area that connects with
@@ -434,9 +434,9 @@ def add_phase_interconnections(net, snow_partitioning_n, voxel_size=1,
                         s_pa_c = np.trim_zeros(s_pa_c)
                         pi_pj_sa[i_index] = p_sa_c
                         pi_pj_sa[j_index] = s_pa_c
-                    net['pore.{}_{}_area'.format(al[i],
-                                                 al[j])] = (pi_pj_sa *
-                                                            voxel_size ** 2)
+                    net['pore.{}_{}_area'.format(al[i1],
+                                                 al[j1])] = (pi_pj_sa *
+                                                             voxel_size ** 2)
     return net
 
 
