@@ -344,7 +344,7 @@ def voronoi_edges(shape: List[int], radius: int, ncells: int,
         base_pts = sp.vstack((base_pts, [1, -1, 1] * orig_pts))
         base_pts = sp.vstack((base_pts, [1, 1, -1] * orig_pts))
     vor = sptl.Voronoi(points=base_pts)
-    vor.vertices = sp.around(vor.vertices)
+    vor.vertices = np.around(vor.vertices)
     vor.vertices *= (np.array(im.shape)-1) / np.array(im.shape)
     vor.edges = _get_Voronoi_edges(vor)
     for row in vor.edges:
@@ -800,8 +800,8 @@ def line_segment(X0, X1):
         that should be drawn between the start and end points to create a solid
         line.
     """
-    X0 = sp.around(X0).astype(int)
-    X1 = sp.around(X1).astype(int)
+    X0 = np.around(X0).astype(int)
+    X1 = np.around(X1).astype(int)
     if len(X0) == 3:
         L = np.amax(sp.absolute([[X1[0]-X0[0]], [X1[1]-X0[1]], [X1[2]-X0[2]]])) + 1
         x = sp.rint(np.linspace(X0[0], X1[0], L)).astype(int)

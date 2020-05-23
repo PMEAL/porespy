@@ -116,9 +116,9 @@ class MetricsTest():
         region = self.regions == self.regions.max()
         mesh = ps.tools.mesh_region(region)
         a = ps.metrics.mesh_surface_area(mesh)
-        assert sp.around(a, decimals=2) == 258.3
+        assert np.around(a, decimals=2) == 258.3
         b = ps.metrics.mesh_surface_area(verts=mesh.verts, faces=mesh.faces)
-        assert sp.around(b, decimals=2) == sp.around(a, decimals=2)
+        assert np.around(b, decimals=2) == np.around(a, decimals=2)
 
     def test_region_surface_areas(self):
         regions = self.regions
@@ -130,7 +130,7 @@ class MetricsTest():
         areas = ps.metrics.region_surface_areas(regions)
         ia = ps.metrics.region_interface_areas(regions, areas)
         assert np.all(ia.conns[0] == [2, 19])
-        assert sp.around(ia.area[0], decimals=2) == 3.59
+        assert np.around(ia.area[0], decimals=2) == 3.59
 
     def test_phase_fraction(self):
         im = sp.reshape(sp.random.randint(0, 10, 1000), [10, 10, 10])

@@ -1209,7 +1209,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True,
         impad = np.pad(im, mode='symmetric', pad_width=pw)
         inletspad = np.pad(inlets, mode='symmetric', pad_width=pw)
         inlets = np.where(inletspad)
-#        sizes = sp.unique(sp.around(sizes, decimals=0).astype(int))[-1::-1]
+#        sizes = sp.unique(np.around(sizes, decimals=0).astype(int))[-1::-1]
         imresults = np.zeros(np.shape(impad))
         for r in tqdm(sizes):
             imtemp = fftmorphology(impad, strel(r), mode='erosion')

@@ -393,20 +393,20 @@ def add_phase_interconnections(net, snow_partitioning_n, voxel_size=1,
     phases_num = sp.unique(im * 1)
     phases_num = sp.trim_zeros(phases_num)
     for i in phases_num:
-        loc1 = sp.logical_and(conns1 >= num[i - 1], conns1 < num[i])
-        loc2 = sp.logical_and(conns2 >= num[i - 1], conns2 < num[i])
-        loc3 = sp.logical_and(label >= num[i - 1], label < num[i])
+        loc1 = np.logical_and(conns1 >= num[i - 1], conns1 < num[i])
+        loc2 = np.logical_and(conns2 >= num[i - 1], conns2 < num[i])
+        loc3 = np.logical_and(label >= num[i - 1], label < num[i])
         net['throat.{}'.format(al[i])] = loc1 * loc2
         net['pore.{}'.format(al[i])] = loc3
         if i == phases_num[-1]:
-            loc4 = sp.logical_and(conns1 < num[-1], conns2 >= num[-1])
+            loc4 = np.logical_and(conns1 < num[-1], conns2 >= num[-1])
             loc5 = label >= num[-1]
             net['throat.boundary'] = loc4
             net['pore.boundary'] = loc5
         for j in phases_num:
             if j > i:
                 pi_pj_sa = np.zeros_like(label)
-                loc6 = sp.logical_and(conns2 >= num[j - 1], conns2 < num[j])
+                loc6 = np.logical_and(conns2 >= num[j - 1], conns2 < num[j])
                 pi_pj_conns = loc1 * loc6
                 net['throat.{}_{}'.format(al[i], al[j])] = pi_pj_conns
                 if any(pi_pj_conns):
