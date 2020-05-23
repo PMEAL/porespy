@@ -216,7 +216,7 @@ def bundle_of_tubes(shape: List[int], spacing: int):
     """
     shape = np.array(shape)
     if sp.size(shape) == 1:
-        shape = sp.full((3, ), int(shape))
+        shape = np.full((3, ), int(shape))
     if sp.size(shape) == 2:
         shape = sp.hstack((shape, [1]))
     temp = np.zeros(shape=shape[:2])
@@ -281,7 +281,7 @@ def polydisperse_spheres(shape: List[int], porosity: float, dist,
     """
     shape = np.array(shape)
     if sp.size(shape) == 1:
-        shape = sp.full((3, ), int(shape))
+        shape = np.full((3, ), int(shape))
     Rs = dist.interval(np.linspace(0.05, 0.95, nbins))
     Rs = sp.vstack(Rs).T
     Rs = (Rs[:-1] + Rs[1:])/2
@@ -327,7 +327,7 @@ def voronoi_edges(shape: List[int], radius: int, ncells: int,
     print('voronoi_edges: Generating', ncells, 'cells')
     shape = np.array(shape)
     if sp.size(shape) == 1:
-        shape = sp.full((3, ), int(shape))
+        shape = np.full((3, ), int(shape))
     im = np.zeros(shape, dtype=bool)
     base_pts = sp.rand(ncells, 3)*shape
     if flat_faces:
@@ -429,7 +429,7 @@ def lattice_spheres(shape: List[int], radius: int, offset: int = 0,
     r = radius
     shape = np.array(shape)
     if sp.size(shape) == 1:
-        shape = sp.full((3, ), int(shape))
+        shape = np.full((3, ), int(shape))
     im = np.zeros(shape, dtype=bool)
     im = im.squeeze()
 
@@ -535,7 +535,7 @@ def overlapping_spheres(shape: List[int], radius: int, porosity: float,
     """
     shape = np.array(shape)
     if sp.size(shape) == 1:
-        shape = sp.full((3, ), int(shape))
+        shape = np.full((3, ), int(shape))
     ndim = (shape != 1).sum()
     s_vol = ps_disk(radius).sum() if ndim == 2 else ps_ball(radius).sum()
 
@@ -630,7 +630,7 @@ def generate_noise(shape: List[int], porosity=None, octaves: int = 3,
         raise Exception("The noise package must be installed")
     shape = np.array(shape)
     if sp.size(shape) == 1:
-        Lx, Ly, Lz = sp.full((3, ), int(shape))
+        Lx, Ly, Lz = np.full((3, ), int(shape))
     elif len(shape) == 2:
         Lx, Ly = shape
         Lz = 1
@@ -642,7 +642,7 @@ def generate_noise(shape: List[int], porosity=None, octaves: int = 3,
         f = noise.pnoise3
     frequency = sp.atleast_1d(frequency)
     if frequency.size == 1:
-        freq = sp.full(shape=[3, ], fill_value=frequency[0])
+        freq = np.full(shape=[3, ], fill_value=frequency[0])
     elif frequency.size == 2:
         freq = sp.concatenate((frequency, [1]))
     else:
@@ -694,7 +694,7 @@ def blobs(shape: List[int], porosity: float = 0.5, blobiness: int = 1):
     blobiness = np.array(blobiness)
     shape = np.array(shape)
     if sp.size(shape) == 1:
-        shape = sp.full((3, ), int(shape))
+        shape = np.full((3, ), int(shape))
     sigma = sp.mean(shape)/(40*blobiness)
     im = sp.random.random(shape)
     im = spim.gaussian_filter(im, sigma=sigma)
@@ -746,7 +746,7 @@ def cylinders(shape: List[int], radius: int, ncylinders: int,
     """
     shape = np.array(shape)
     if sp.size(shape) == 1:
-        shape = sp.full((3, ), int(shape))
+        shape = np.full((3, ), int(shape))
     elif sp.size(shape) == 2:
         raise Exception("2D cylinders don't make sense")
     if length is None:
