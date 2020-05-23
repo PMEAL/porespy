@@ -1,6 +1,5 @@
 import porespy as ps
 import numpy as np
-import scipy as sp
 import scipy.spatial as sptl
 import scipy.ndimage as spim
 from porespy.tools import norm_to_uniform, ps_ball, ps_disk

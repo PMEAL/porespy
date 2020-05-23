@@ -1,5 +1,4 @@
 from collections import namedtuple
-import scipy as sp
 import numpy as np
 import operator as op
 import scipy.ndimage as spim

@@ -341,7 +341,7 @@ def extract_subsection(im, shape):
 
     Examples
     --------
-    >>> import scipy as sp
+    >>> import numpy as np
     >>> from porespy.tools import extract_subsection
     >>> im = np.array([[1, 1, 1, 1], [1, 2, 2, 2], [1, 2, 3, 3], [1, 2, 3, 4]])
     >>> print(im)
@@ -505,7 +505,7 @@ def randomize_colors(im, keep_vals=[0]):
     Examples
     --------
     >>> import porespy as ps
-    >>> import scipy as sp
+    >>> import numpy as np
     >>> np.random.seed(0)
     >>> im = np.random.randint(low=0, high=5, size=[4, 4])
     >>> print(im)
@@ -566,7 +566,7 @@ def make_contiguous(im, keep_zeros=True):
     Example
     -------
     >>> import porespy as ps
-    >>> import scipy as sp
+    >>> import numpy as np
     >>> im = np.array([[0, 2, 9], [6, 8, 3]])
     >>> im = ps.tools.make_contiguous(im)
     >>> print(im)
@@ -632,7 +632,7 @@ def get_border(shape, thickness=1, mode='edges', return_indices=False):
     Examples
     --------
     >>> import porespy as ps
-    >>> import scipy as sp
+    >>> import numpy as np
     >>> mask = ps.tools.get_border(shape=[3, 3], mode='corners')
     >>> print(mask)
     [[ True False  True]

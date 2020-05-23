@@ -1,5 +1,4 @@
 import porespy as ps
-import scipy as sp
 import numpy as np
 import scipy.ndimage as spim
 from skimage import io

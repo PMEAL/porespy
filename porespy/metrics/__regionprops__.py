@@ -1,5 +1,4 @@
 import numpy as np
-import scipy as sp
 import scipy.ndimage as spim
 from tqdm import tqdm
 from porespy.tools import extract_subsection, bbox_to_slices

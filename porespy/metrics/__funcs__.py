@@ -1,4 +1,3 @@
-import scipy as sp
 import numpy as np
 import warnings
 from skimage.measure import regionprops

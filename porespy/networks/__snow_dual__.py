@@ -1,5 +1,4 @@
 import numpy as np
-import scipy as sp
 from porespy.networks import regions_to_network
 from porespy.networks import add_boundary_regions
 from porespy.networks import label_boundary_cells
