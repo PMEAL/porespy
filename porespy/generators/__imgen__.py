@@ -218,7 +218,7 @@ def bundle_of_tubes(shape: List[int], spacing: int):
     if sp.size(shape) == 1:
         shape = np.full((3, ), int(shape))
     if sp.size(shape) == 2:
-        shape = sp.hstack((shape, [1]))
+        shape = np.hstack((shape, [1]))
     temp = np.zeros(shape=shape[:2])
     Xi = np.ceil(np.linspace(spacing/2,
                              shape[0]-(spacing/2)-1,
@@ -283,7 +283,7 @@ def polydisperse_spheres(shape: List[int], porosity: float, dist,
     if sp.size(shape) == 1:
         shape = np.full((3, ), int(shape))
     Rs = dist.interval(np.linspace(0.05, 0.95, nbins))
-    Rs = sp.vstack(Rs).T
+    Rs = np.vstack(Rs).T
     Rs = (Rs[:-1] + Rs[1:])/2
     Rs = sp.clip(Rs.flatten(), a_min=r_min, a_max=None)
     phi_desired = 1 - (1 - porosity)/(len(Rs))
@@ -334,15 +334,15 @@ def voronoi_edges(shape: List[int], radius: int, ncells: int,
         # Reflect base points
         Nx, Ny, Nz = shape
         orig_pts = base_pts
-        base_pts = sp.vstack((base_pts,
+        base_pts = np.vstack((base_pts,
                               [-1, 1, 1] * orig_pts + [2.0*Nx, 0, 0]))
-        base_pts = sp.vstack((base_pts,
+        base_pts = np.vstack((base_pts,
                               [1, -1, 1] * orig_pts + [0, 2.0*Ny, 0]))
-        base_pts = sp.vstack((base_pts,
+        base_pts = np.vstack((base_pts,
                               [1, 1, -1] * orig_pts + [0, 0, 2.0*Nz]))
-        base_pts = sp.vstack((base_pts, [-1, 1, 1] * orig_pts))
-        base_pts = sp.vstack((base_pts, [1, -1, 1] * orig_pts))
-        base_pts = sp.vstack((base_pts, [1, 1, -1] * orig_pts))
+        base_pts = np.vstack((base_pts, [-1, 1, 1] * orig_pts))
+        base_pts = np.vstack((base_pts, [1, -1, 1] * orig_pts))
+        base_pts = np.vstack((base_pts, [1, 1, -1] * orig_pts))
     vor = sptl.Voronoi(points=base_pts)
     vor.vertices = np.around(vor.vertices)
     vor.vertices *= (np.array(im.shape)-1) / np.array(im.shape)
@@ -378,14 +378,14 @@ def _get_Voronoi_edges(vor):
         # Create a closed cycle of vertices that define the facet
         edges[0].extend(facet[:-1]+[facet[-1]])
         edges[1].extend(facet[1:]+[facet[0]])
-    edges = sp.vstack(edges).T  # Convert to scipy-friendly format
+    edges = np.vstack(edges).T  # Convert to scipy-friendly format
     mask = np.any(edges == -1, axis=1)  # Identify edges at infinity
     edges = edges[~mask]  # Remove edges at infinity
     edges = sp.sort(edges, axis=1)  # Move all points to upper triangle
     # Remove duplicate pairs
     edges = edges[:, 0] + 1j*edges[:, 1]  # Convert to imaginary
     edges = np.unique(edges)  # Remove duplicates
-    edges = sp.vstack((sp.real(edges), sp.imag(edges))).T  # Back to real
+    edges = np.vstack((sp.real(edges), sp.imag(edges))).T  # Back to real
     edges = np.array(edges, dtype=int)
     return edges
 
@@ -771,8 +771,8 @@ def cylinders(shape: List[int], radius: int, ncylinders: int,
                          np.cos(phi)])
         [X0, X1] = [x + X0, x - X0]
         crds = line_segment(X0, X1)
-        lower = ~np.any(sp.vstack(crds).T < [0, 0, 0], axis=1)
-        upper = ~np.any(sp.vstack(crds).T >= shape, axis=1)
+        lower = ~np.any(np.vstack(crds).T < [0, 0, 0], axis=1)
+        upper = ~np.any(np.vstack(crds).T >= shape, axis=1)
         valid = upper*lower
         if np.any(valid):
             im[crds[0][valid], crds[1][valid], crds[2][valid]] = 1

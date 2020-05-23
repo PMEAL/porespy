@@ -563,7 +563,7 @@ def trim_nearby_peaks(peaks, dt):
     peaks, N = spim.label(peaks, structure=cube(3))
     crds = spim.measurements.center_of_mass(peaks, labels=peaks,
                                             index=np.arange(1, N+1))
-    crds = sp.vstack(crds).astype(int)  # Convert to numpy array of ints
+    crds = np.vstack(crds).astype(int)  # Convert to numpy array of ints
     # Get distance between each peak as a distance map
     tree = sptl.cKDTree(data=crds)
     temp = tree.query(x=crds, k=2)

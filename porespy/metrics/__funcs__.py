@@ -271,13 +271,13 @@ def two_point_correlation_bf(im, spacing=10):
     if im.ndim == 2:
         pts = np.meshgrid(range(0, im.shape[0], spacing),
                           range(0, im.shape[1], spacing))
-        crds = sp.vstack([pts[0].flatten(),
+        crds = np.vstack([pts[0].flatten(),
                           pts[1].flatten()]).T
     elif im.ndim == 3:
         pts = np.meshgrid(range(0, im.shape[0], spacing),
                           range(0, im.shape[1], spacing),
                           range(0, im.shape[2], spacing))
-        crds = sp.vstack([pts[0].flatten(),
+        crds = np.vstack([pts[0].flatten(),
                           pts[1].flatten(),
                           pts[2].flatten()]).T
     dmat = sptl.distance.cdist(XA=crds, XB=crds)

@@ -107,8 +107,8 @@ def regions_to_network(im, dt=None, voxel_size=1):
     # Clean up values
     Nt = len(t_dia_inscribed)  # Get number of throats
     if im.ndim == 2:  # If 2D, add 0's in 3rd dimension
-        p_coords = sp.vstack((p_coords.T, np.zeros((Np, )))).T
-        t_coords = sp.vstack((np.array(t_coords).T, np.zeros((Nt, )))).T
+        p_coords = np.vstack((p_coords.T, np.zeros((Np, )))).T
+        t_coords = np.vstack((np.array(t_coords).T, np.zeros((Nt, )))).T
 
     net = {}
     net['pore.all'] = np.ones((Np, ), dtype=bool)
