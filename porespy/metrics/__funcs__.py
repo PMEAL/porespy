@@ -53,8 +53,8 @@ def representative_elementary_volume(im, npoints=1000):
 
     """
     im_temp = np.zeros_like(im)
-    crds = np.array(sp.rand(npoints, im.ndim)*im.shape, dtype=int)
-    pads = np.array(sp.rand(npoints)*np.amin(im.shape)/2+10, dtype=int)
+    crds = np.array(np.random.rand(npoints, im.ndim)*im.shape, dtype=int)
+    pads = np.array(np.random.rand(npoints)*np.amin(im.shape)/2+10, dtype=int)
     im_temp[tuple(crds.T)] = True
     labels, N = spim.label(input=im_temp)
     slices = spim.find_objects(input=labels)
@@ -66,7 +66,7 @@ def representative_elementary_volume(im, npoints=1000):
         new_s = extend_slice(s, shape=im.shape, pad=p)
         temp = im[new_s]
         Vp = np.sum(temp)
-        Vt = sp.size(temp)
+        Vt = np.size(temp)
         porosity[i] = Vp/Vt
         volume[i] = Vt
     profile = namedtuple('profile', ('volume', 'porosity'))

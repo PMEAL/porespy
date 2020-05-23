@@ -36,7 +36,7 @@ def map_to_regions(regions, values):
 
     """
     values = np.array(values).flatten()
-    if sp.size(values) != regions.max() + 1:
+    if np.size(values) != regions.max() + 1:
         raise Exception('Number of values does not match number of regions')
     im = np.zeros_like(regions)
     im = values[regions]

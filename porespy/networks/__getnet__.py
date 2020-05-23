@@ -53,7 +53,7 @@ def regions_to_network(im, dt=None, voxel_size=1):
 
     # Initialize arrays
     Ps = np.arange(1, np.amax(im)+1)
-    Np = sp.size(Ps)
+    Np = np.size(Ps)
     p_coords = np.zeros((Np, im.ndim), dtype=float)
     p_volume = np.zeros((Np, ), dtype=float)
     p_dia_local = np.zeros((Np, ), dtype=float)
@@ -94,7 +94,7 @@ def regions_to_network(im, dt=None, voxel_size=1):
                 vx = np.where(im_w_throats == (j + 1))
                 t_dia_inscribed.append(2*np.amax(sub_dt[vx]))
                 t_perimeter.append(np.sum(sub_dt[vx] < 2))
-                t_area.append(sp.size(vx[0]))
+                t_area.append(np.size(vx[0]))
                 t_inds = tuple([i+j for i, j in zip(vx, s_offset)])
                 temp = np.where(dt[t_inds] == np.amax(dt[t_inds]))[0][0]
                 if im.ndim == 2:

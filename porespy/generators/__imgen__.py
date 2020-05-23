@@ -88,7 +88,7 @@ def insert_shape(im, element, center=None, corner=None, value=1,
     return im
 
 
-def RSA(im: array, radius: int, volume_fraction: int = 1,
+def RSA(im: np.array, radius: int, volume_fraction: int = 1,
         mode: str = 'extended'):
     r"""
     Generates a sphere or disk packing using Random Sequential Addition
@@ -172,7 +172,7 @@ def RSA(im: array, radius: int, volume_fraction: int = 1,
     free_spots = np.argwhere(mask == 0)
     i = 0
     while vf <= volume_fraction and len(free_spots) > 0:
-        choice = sp.random.randint(0, len(free_spots), size=1)
+        choice = np.random.randint(0, len(free_spots), size=1)
         if d2:
             [x, y] = free_spots[choice].flatten()
             im = _fit_strel_to_im_2d(im, im_strel, radius, x, y)
@@ -215,9 +215,9 @@ def bundle_of_tubes(shape: List[int], spacing: int):
         A boolean array with ``True`` values denoting the pore space
     """
     shape = np.array(shape)
-    if sp.size(shape) == 1:
+    if np.size(shape) == 1:
         shape = np.full((3, ), int(shape))
-    if sp.size(shape) == 2:
+    if np.size(shape) == 2:
         shape = np.hstack((shape, [1]))
     temp = np.zeros(shape=shape[:2])
     Xi = np.ceil(np.linspace(spacing/2,
@@ -231,7 +231,7 @@ def bundle_of_tubes(shape: List[int], spacing: int):
     temp[tuple(np.meshgrid(Xi, Yi))] = 1
     inds = np.where(temp)
     for i in range(len(inds[0])):
-        r = sp.random.randint(1, (spacing/2))
+        r = np.random.randint(1, (spacing/2))
         try:
             s1 = slice(inds[0][i]-r, inds[0][i]+r+1)
             s2 = slice(inds[1][i]-r, inds[1][i]+r+1)
@@ -280,7 +280,7 @@ def polydisperse_spheres(shape: List[int], porosity: float, dist,
         A boolean array with ``True`` values denoting the pore space
     """
     shape = np.array(shape)
-    if sp.size(shape) == 1:
+    if np.size(shape) == 1:
         shape = np.full((3, ), int(shape))
     Rs = dist.interval(np.linspace(0.05, 0.95, nbins))
     Rs = np.vstack(Rs).T
@@ -326,10 +326,10 @@ def voronoi_edges(shape: List[int], radius: int, ncells: int,
     print(78*'―')
     print('voronoi_edges: Generating', ncells, 'cells')
     shape = np.array(shape)
-    if sp.size(shape) == 1:
+    if np.size(shape) == 1:
         shape = np.full((3, ), int(shape))
     im = np.zeros(shape, dtype=bool)
-    base_pts = sp.rand(ncells, 3)*shape
+    base_pts = np.random.rand(ncells, 3)*shape
     if flat_faces:
         # Reflect base points
         Nx, Ny, Nz = shape
@@ -428,7 +428,7 @@ def lattice_spheres(shape: List[int], radius: int, offset: int = 0,
     print('lattice_spheres: Generating ' + lattice + ' lattice')
     r = radius
     shape = np.array(shape)
-    if sp.size(shape) == 1:
+    if np.size(shape) == 1:
         shape = np.full((3, ), int(shape))
     im = np.zeros(shape, dtype=bool)
     im = im.squeeze()
@@ -534,14 +534,14 @@ def overlapping_spheres(shape: List[int], radius: int, porosity: float,
 
     """
     shape = np.array(shape)
-    if sp.size(shape) == 1:
+    if np.size(shape) == 1:
         shape = np.full((3, ), int(shape))
     ndim = (shape != 1).sum()
     s_vol = ps_disk(radius).sum() if ndim == 2 else ps_ball(radius).sum()
 
     bulk_vol = np.prod(shape)
     N = int(np.ceil((1 - porosity)*bulk_vol/s_vol))
-    im = sp.random.random(size=shape)
+    im = np.random.random(size=shape)
 
     # Helper functions for calculating porosity: phi = g(f(N))
     f = lambda N: spim.distance_transform_edt(im > N/bulk_vol) < radius
@@ -629,7 +629,7 @@ def generate_noise(shape: List[int], porosity=None, octaves: int = 3,
     except ModuleNotFoundError:
         raise Exception("The noise package must be installed")
     shape = np.array(shape)
-    if sp.size(shape) == 1:
+    if np.size(shape) == 1:
         Lx, Ly, Lz = np.full((3, ), int(shape))
     elif len(shape) == 2:
         Lx, Ly = shape
@@ -693,10 +693,10 @@ def blobs(shape: List[int], porosity: float = 0.5, blobiness: int = 1):
     """
     blobiness = np.array(blobiness)
     shape = np.array(shape)
-    if sp.size(shape) == 1:
+    if np.size(shape) == 1:
         shape = np.full((3, ), int(shape))
     sigma = np.mean(shape)/(40*blobiness)
-    im = sp.random.random(shape)
+    im = np.random.random(shape)
     im = spim.gaussian_filter(im, sigma=sigma)
     im = norm_to_uniform(im, scale=[0, 1])
     if porosity:
@@ -745,12 +745,12 @@ def cylinders(shape: List[int], radius: int, ncylinders: int,
         A boolean array with ``True`` values denoting the pore space
     """
     shape = np.array(shape)
-    if sp.size(shape) == 1:
+    if np.size(shape) == 1:
         shape = np.full((3, ), int(shape))
-    elif sp.size(shape) == 2:
+    elif np.size(shape) == 2:
         raise Exception("2D cylinders don't make sense")
     if length is None:
-        R = np.sqrt(np.sum(sp.square(shape))).astype(int)
+        R = np.sqrt(np.sum(np.square(shape))).astype(int)
     else:
         R = length/2
     im = np.zeros(shape)
@@ -762,10 +762,10 @@ def cylinders(shape: List[int], radius: int, ncylinders: int,
     n = 0
     while n < ncylinders:
         # Choose a random starting point in domain
-        x = sp.rand(3)*shape
+        x = np.random.rand(3)*shape
         # Chose a random phi and theta within given ranges
-        phi = (np.pi/2 - np.pi*sp.rand())*phi_max/90
-        theta = (np.pi/2 - np.pi*sp.rand())*theta_max/90
+        phi = (np.pi/2 - np.pi*np.random.rand())*phi_max/90
+        theta = (np.pi/2 - np.pi*np.random.rand())*theta_max/90
         X0 = R*np.array([np.cos(phi)*np.cos(theta),
                          np.cos(phi)*np.cos(theta),
                          np.cos(phi)])

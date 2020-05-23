@@ -1,4 +1,5 @@
 import porespy as ps
+import numpy as np
 import scipy as sp
 import pytest
 import scipy.ndimage as spim
@@ -130,7 +131,7 @@ class GeneratorTest():
             im = ps.generators.overlapping_spheres(shape=[101, 101],
                                                    radius=5,
                                                    porosity=phi)
-            phi_actual = im.sum() / sp.size(im)
+            phi_actual = im.sum() / np.size(im)
             assert abs(phi_actual - phi) < 0.02
 
     def test_overlapping_spheres_3d(self):
@@ -138,7 +139,7 @@ class GeneratorTest():
         for phi in phis:
             im = ps.generators.overlapping_spheres(shape=[100, 100, 50],
                                                    radius=8, porosity=phi)
-            phi_actual = im.sum() / sp.size(im)
+            phi_actual = im.sum() / np.size(im)
             assert abs(phi_actual - phi) < 0.02
 
     def test_polydisperse_spheres(self):
@@ -148,7 +149,7 @@ class GeneratorTest():
             im = ps.generators.polydisperse_spheres(shape=[100, 100, 50],
                                                     porosity=phi, dist=dist,
                                                     nbins=10)
-            phi_actual = im.sum() / sp.size(im)
+            phi_actual = im.sum() / np.size(im)
             assert abs(phi_actual - phi) < 0.1
 
     def test_voronoi_edges(self):

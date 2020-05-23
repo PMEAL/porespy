@@ -9,7 +9,7 @@ import pytest
 class ToolsTest():
     def setup_class(self):
         plt.close('all')
-        self.im = sp.random.randint(0, 10, 20)
+        self.im = np.random.randint(0, 10, 20)
         np.random.seed(0)
         self.blobs = ps.generators.blobs(shape=[101, 101])
         self.im2D = ps.generators.blobs(shape=[51, 51])
@@ -89,11 +89,11 @@ class ToolsTest():
         assert im.shape == (60, 50, 40)
 
     def test_inhull(self):
-        X = sp.rand(25, 2)
+        X = np.random.rand(25, 2)
         hull = sp.spatial.ConvexHull(X)
         assert not ps.tools.in_hull([[0, 0]], hull)
         assert ps.tools.in_hull([np.mean(X, axis=0)], hull)
-        X = sp.rand(25, 3)
+        X = np.random.rand(25, 3)
         hull = sp.spatial.ConvexHull(X)
         assert not ps.tools.in_hull([[0, 0, 0]], hull)
         assert ps.tools.in_hull([np.mean(X, axis=0)], hull)

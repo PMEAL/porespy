@@ -314,7 +314,7 @@ def extract_cylinder(im, r=None, axis=0):
     dim = [range(int(-s / 2), int(s / 2) + s % 2) for s in im.shape]
     inds = np.meshgrid(*dim, indexing='ij')
     inds[axis] = inds[axis] * 0
-    d = np.sqrt(np.sum(sp.square(inds), axis=0))
+    d = np.sqrt(np.sum(np.square(inds), axis=0))
     mask = d < r
     im_temp = im*mask
     return im_temp
@@ -507,7 +507,7 @@ def randomize_colors(im, keep_vals=[0]):
     >>> import porespy as ps
     >>> import scipy as sp
     >>> np.random.seed(0)
-    >>> im = sp.random.randint(low=0, high=5, size=[4, 4])
+    >>> im = np.random.randint(low=0, high=5, size=[4, 4])
     >>> print(im)
     [[4 0 3 3]
      [3 1 3 2]
@@ -529,7 +529,7 @@ def randomize_colors(im, keep_vals=[0]):
     keep_vals = np.array(keep_vals)
     swap_vals = ~np.in1d(im_flat, keep_vals)
     im_vals = np.unique(im_flat[swap_vals])
-    new_vals = sp.random.permutation(im_vals)
+    new_vals = np.random.permutation(im_vals)
     im_map = np.zeros(shape=[np.amax(im_vals) + 1, ], dtype=int)
     im_map[im_vals] = new_vals
     im_new = im_map[im_flat]
@@ -582,7 +582,7 @@ def make_contiguous(im, keep_zeros=True):
     im_flat = im.flatten()
     im_vals = np.unique(im_flat)
     im_map = np.zeros(shape=np.amax(im_flat) + 1)
-    im_map[im_vals] = np.arange(0, sp.size(np.unique(im_flat)))
+    im_map[im_vals] = np.arange(0, np.size(np.unique(im_flat)))
     im_new = im_map[im_flat]
     im_new = np.reshape(im_new, newshape=np.shape(im))
     im_new = np.array(im_new, dtype=im_flat.dtype)

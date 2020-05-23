@@ -6,6 +6,7 @@ from porespy.filters import snow_partitioning
 from porespy.tools import make_contiguous
 from porespy.metrics import region_surface_areas, region_interface_areas
 import scipy as sp
+import numpy as np
 
 
 def snow(im, voxel_size=1,
