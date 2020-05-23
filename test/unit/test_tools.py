@@ -92,11 +92,11 @@ class ToolsTest():
         X = sp.rand(25, 2)
         hull = sp.spatial.ConvexHull(X)
         assert not ps.tools.in_hull([[0, 0]], hull)
-        assert ps.tools.in_hull([sp.mean(X, axis=0)], hull)
+        assert ps.tools.in_hull([np.mean(X, axis=0)], hull)
         X = sp.rand(25, 3)
         hull = sp.spatial.ConvexHull(X)
         assert not ps.tools.in_hull([[0, 0, 0]], hull)
-        assert ps.tools.in_hull([sp.mean(X, axis=0)], hull)
+        assert ps.tools.in_hull([np.mean(X, axis=0)], hull)
 
     def test_insert_sphere_2D(self):
         im = np.zeros(shape=[200, 200], dtype=bool)

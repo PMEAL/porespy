@@ -563,7 +563,7 @@ def overlapping_spheres(shape: List[int], radius: int, porosity: float,
     # Bisection search: N is always undershoot (bc. of overlaps)
     N_low, N_high = N, 4*N
     for i in range(iter_max):
-        N = sp.mean([N_high, N_low], dtype=int)
+        N = np.mean([N_high, N_low], dtype=int)
         err = g(f(N)) - porosity
         if err > 0:
             N_low = N
@@ -695,7 +695,7 @@ def blobs(shape: List[int], porosity: float = 0.5, blobiness: int = 1):
     shape = np.array(shape)
     if sp.size(shape) == 1:
         shape = np.full((3, ), int(shape))
-    sigma = sp.mean(shape)/(40*blobiness)
+    sigma = np.mean(shape)/(40*blobiness)
     im = sp.random.random(shape)
     im = spim.gaussian_filter(im, sigma=sigma)
     im = norm_to_uniform(im, scale=[0, 1])

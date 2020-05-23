@@ -38,15 +38,15 @@ class MetricsTest():
         # autocorrelation fn should level off at around the porosity
         t = 0.2
         phi1 = ps.metrics.porosity(im=self.im2D)
-        assert np.sqrt((sp.mean(tpcf_fft_1.probability[-5:]) - phi1)**2) < t
+        assert np.sqrt((np.mean(tpcf_fft_1.probability[-5:]) - phi1)**2) < t
         phi2 = ps.metrics.porosity(im=self.im2D_big)
-        assert np.sqrt((sp.mean(tpcf_fft_2.probability[-5:]) - phi2)**2) < t
+        assert np.sqrt((np.mean(tpcf_fft_2.probability[-5:]) - phi2)**2) < t
 
     def test_tpcf_fft_3d(self):
         tpcf_fft = ps.metrics.two_point_correlation_fft(self.im3D)
         t = 0.2
         phi1 = ps.metrics.porosity(im=self.im3D)
-        assert np.sqrt((sp.mean(tpcf_fft.probability[-5:]) - phi1)**2) < t
+        assert np.sqrt((np.mean(tpcf_fft.probability[-5:]) - phi1)**2) < t
 
     def test_pore_size_distribution(self):
         mip = ps.filters.porosimetry(self.im3D)
@@ -58,11 +58,11 @@ class MetricsTest():
         # autocorrelation fn should level off at around the porosity
         t = 0.2
         phi1 = ps.metrics.porosity(im=self.im2D)
-        assert np.sqrt((sp.mean(tpcf_bf.probability[-5:]) - phi1)**2) < t
+        assert np.sqrt((np.mean(tpcf_bf.probability[-5:]) - phi1)**2) < t
 
     def test_rev(self):
         rev = ps.metrics.representative_elementary_volume(self.blobs)
-        assert (sp.mean(rev.porosity) - 0.5)**2 < 0.05
+        assert (np.mean(rev.porosity) - 0.5)**2 < 0.05
 
     def test_radial_density(self):
         den = ps.metrics.radial_density(self.blobs)
