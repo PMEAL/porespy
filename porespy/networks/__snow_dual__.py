@@ -1,4 +1,4 @@
-import scipy as sp
+import numpy as np
 from porespy.networks import regions_to_network
 from porespy.networks import add_boundary_regions
 from porespy.networks import label_boundary_cells
@@ -88,11 +88,11 @@ def snow_dual(im,
     solid_regions = solid_regions.regions
     pore_region = pore_regions*im
     solid_region = solid_regions*~im
-    solid_num = sp.amax(pore_regions)
+    solid_num = np.amax(pore_regions)
     solid_region = solid_region + solid_num
     solid_region = solid_region * ~im
     regions = pore_region + solid_region
-    b_num = sp.amax(regions)
+    b_num = np.amax(regions)
     # -------------------------------------------------------------------------
     # Boundary Conditions
     regions = add_boundary_regions(regions=regions, faces=boundary_faces)
@@ -130,24 +130,24 @@ def snow_dual(im,
     solid_labels = ((net['pore.label'] > solid_num) * ~
                     (net['pore.label'] > b_num))
     boundary_labels = net['pore.label'] > b_num
-    b_sa = sp.zeros(len(boundary_labels[boundary_labels == 1.0]))
+    b_sa = np.zeros(len(boundary_labels[boundary_labels == 1.0]))
     # -------------------------------------------------------------------------
     # Calculates void interfacial area that connects with solid and vice versa
     p_conns = net['throat.conns'][:, 0][pore_solid_labels]
     ps = net['throat.area'][pore_solid_labels]
-    p_sa = sp.bincount(p_conns, ps)
+    p_sa = np.bincount(p_conns, ps)
     s_conns = net['throat.conns'][:, 1][pore_solid_labels]
-    s_pa = sp.bincount(s_conns, ps)
-    s_pa = sp.trim_zeros(s_pa)  # remove pore surface area labels
-    p_solid_surf = sp.concatenate((p_sa, s_pa, b_sa))
+    s_pa = np.bincount(s_conns, ps)
+    s_pa = np.trim_zeros(s_pa)  # remove pore surface area labels
+    p_solid_surf = np.concatenate((p_sa, s_pa, b_sa))
     # -------------------------------------------------------------------------
     # Calculates interfacial area using marching cube method
     if marching_cubes_area:
         ps_c = net['throat.area'][pore_solid_labels]
-        p_sa_c = sp.bincount(p_conns, ps_c)
-        s_pa_c = sp.bincount(s_conns, ps_c)
-        s_pa_c = sp.trim_zeros(s_pa_c)  # remove pore surface area labels
-        p_solid_surf = sp.concatenate((p_sa_c, s_pa_c, b_sa))
+        p_sa_c = np.bincount(p_conns, ps_c)
+        s_pa_c = np.bincount(s_conns, ps_c)
+        s_pa_c = np.trim_zeros(s_pa_c)  # remove pore surface area labels
+        p_solid_surf = np.concatenate((p_sa_c, s_pa_c, b_sa))
     # -------------------------------------------------------------------------
     # Adding additional information of dual network
     net['pore.solid_void_area'] = (p_solid_surf * voxel_size**2)

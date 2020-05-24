@@ -1,4 +1,4 @@
-import scipy as sp
+import numpy as np
 import scipy.ndimage as spim
 from tqdm import tqdm
 from porespy.tools import extract_subsection, bbox_to_slices
@@ -42,7 +42,7 @@ def props_to_DataFrame(regionprops):
     for item in reg.__dir__():
         if not item.startswith('_'):
             try:
-                if sp.shape(getattr(reg, item)) == ():
+                if np.shape(getattr(reg, item)) == ():
                     metrics.append(item)
             except (TypeError, NotImplementedError, AttributeError):
                 pass
@@ -50,7 +50,7 @@ def props_to_DataFrame(regionprops):
     d = {}
     for k in metrics:
         try:
-            d[k] = sp.array([r[k] for r in regionprops])
+            d[k] = np.array([r[k] for r in regionprops])
         except ValueError:
             print('Error encountered evaluating ' + k + ' so skipping it')
     # Create pandas data frame an return
@@ -90,7 +90,7 @@ def props_to_image(regionprops, shape, prop):
     regionprops_3d
 
     """
-    im = sp.zeros(shape=shape)
+    im = np.zeros(shape=shape)
     for r in regionprops:
         if prop == 'convex':
             mask = r.convex_image
@@ -182,7 +182,7 @@ def regionprops_3D(im):
     results = regionprops(im, coordinates='xy')
     for i in tqdm(range(len(results))):
         mask = results[i].image
-        mask_padded = sp.pad(mask, pad_width=1, mode='constant')
+        mask_padded = np.pad(mask, pad_width=1, mode='constant')
         temp = spim.distance_transform_edt(mask_padded)
         dt = extract_subsection(temp, shape=mask.shape)
         # ---------------------------------------------------------------------
@@ -193,7 +193,7 @@ def regionprops_3D(im):
         results[i].volume = results[i].area
         # ---------------------------------------------------------------------
         # Volume of bounding box, in voxels
-        results[i].bbox_volume = sp.prod(mask.shape)
+        results[i].bbox_volume = np.prod(mask.shape)
         # ---------------------------------------------------------------------
         # Create an image of the border
         results[i].border = dt == 1
@@ -204,7 +204,7 @@ def regionprops_3D(im):
         results[i].inscribed_sphere = inv_dt < r
         # ---------------------------------------------------------------------
         # Find surface area using marching cubes and analyze the mesh
-        tmp = sp.pad(sp.atleast_3d(mask), pad_width=1, mode='constant')
+        tmp = np.pad(np.atleast_3d(mask), pad_width=1, mode='constant')
         tmp = spim.convolve(tmp, weights=ball(1))/5
         verts, faces, norms, vals = marching_cubes_lewiner(volume=tmp, level=0)
         results[i].surface_mesh_vertices = verts
@@ -214,8 +214,8 @@ def regionprops_3D(im):
         # ---------------------------------------------------------------------
         # Find sphericity
         vol = results[i].volume
-        r = (3/4/sp.pi*vol)**(1/3)
-        a_equiv = 4*sp.pi*(r)**2
+        r = (3/4/np.pi*vol)**(1/3)
+        a_equiv = 4*np.pi*(r)**2
         a_region = results[i].surface_area
         results[i].sphericity = a_equiv/a_region
         # ---------------------------------------------------------------------
