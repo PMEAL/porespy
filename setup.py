@@ -1,6 +1,5 @@
 import os
 import sys
-from distutils.util import convert_path
 import versioneer
 
 sys.path.append(os.getcwd())
@@ -9,13 +8,6 @@ try:
     from setuptools import setup
 except ImportError:
     from distutils.core import setup
-
-main_ = {}
-ver_path = convert_path('porespy/__init__.py')
-with open(ver_path) as f:
-    for line in f:
-        if line.startswith('__version__'):
-            exec(line, main_)
 
 # Read the contents of README file
 this_directory = os.path.abspath(os.path.dirname(__file__))
