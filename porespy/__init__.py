@@ -79,8 +79,6 @@ Use some filters from PoreSpy:
 
 '''
 
-__version__ = "1.3.0-dev002"
-
 from . import tools
 from . import filters
 from . import metrics
@@ -89,3 +87,7 @@ from . import generators
 from . import visualization
 from . import io
 from .visualization import imshow
+
+from ._version import get_versions
+__version__ = get_versions()['version']
+del get_versions

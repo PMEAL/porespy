@@ -1,6 +1,7 @@
 import os
 import sys
 from distutils.util import convert_path
+import versioneer
 
 sys.path.append(os.getcwd())
 
@@ -27,7 +28,9 @@ setup(
     long_description=long_description,
     zip_safe=False,
     # long_description_content_type="text/x-rst",
-    version=main_['__version__'],
+    version=versioneer.get_version(),
+    cmdclass=versioneer.get_cmdclass(),
+    # version=main_['__version__'],
     classifiers=['Development Status :: 3 - Alpha',
                  'License :: OSI Approved :: MIT License',
                  'Programming Language :: Python',
