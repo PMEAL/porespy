@@ -397,7 +397,7 @@ def add_phase_interconnections(net, snow_partitioning_n, voxel_size=1,
         loc3 = np.logical_and(label >= num[i0], label < num[i0 + 1])
         net['throat.{}'.format(al[i1])] = loc1 * loc2
         net['pore.{}'.format(al[i1])] = loc3
-        if i == phases_num[-1]:
+        if i1 == phases_num[-1]:
             loc4 = np.logical_and(conns1 < num[-1], conns2 >= num[-1])
             loc5 = label >= num[-1]
             net['throat.boundary'] = loc4
