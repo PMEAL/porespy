@@ -9,9 +9,9 @@ import scipy.ndimage as spim
 import scipy.spatial as sptl
 from collections import namedtuple
 from scipy.signal import fftconvolve
-from skimage.segmentation import clear_border
+from skimage.segmentation import clear_border, watershed
 from skimage.morphology import ball, disk, square, cube, diamond, octahedron
-from skimage.morphology import reconstruction, watershed
+from skimage.morphology import reconstruction
 from porespy.tools import randomize_colors, fftmorphology
 from porespy.tools import get_border, extend_slice, extract_subsection
 from porespy.tools import _create_alias_map
@@ -375,7 +375,6 @@ def snow_partitioning_n(
     combined_region = 0
     num = [0]
     for i, j in enumerate(phases_num):
-        print(i, j)
         print("_" * 60)
         if alias is None:
             print("Processing Phase {}".format(j))
