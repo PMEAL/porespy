@@ -1,11 +1,11 @@
-name: Examples
+name: Ubuntu
 
 on: [push]
 
 jobs:
   build:
 
-    if: "!contains(github.event.head_commit.message, 'ci min')"
+    if: contains(github.event.head_commit.message, 'ci min')
 
     runs-on: ${{ matrix.operating-system }}
     strategy:
@@ -29,13 +29,21 @@ jobs:
           ${{ runner.os }}-pip-
 
     - name: Install Dependencies
-      # if: steps.cache.outputs.cache-hit != 'true'
       run: |
         pip install -r requirements/pip_requirements.txt
         pip install -r requirements/test_requirements.txt
         pip uninstall porespy --yes
-        pip install -e .
+        python setup.py install
 
     - name: Running tests
-      run:
-        pytest --nbval -p no:python --ignore=test/
+      run: pytest --pep8 --cov=./ --cov-report=xml --nbval
+
+    - name: Upload coverage to Codecov
+      if: matrix.python-version == 3.7
+      uses: codecov/codecov-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+        yml: ./codecov.yml
