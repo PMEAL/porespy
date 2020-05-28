@@ -780,12 +780,29 @@ def cylinders(shape: List[int], radius: int, ncylinders: int,
     dt = spim.distance_transform_edt(~im) < radius
     return ~dt
 
-def cylinders_porosity(shape, radius: int ,porosity:float,  phi_max: float =0, theta_max: float = 90, length: float = None, iterations: int=3 ):
+def cylinders_porosity(shape, radius: int ,porosity:float,  phi_max: float =0, theta_max: float = 90, length: float = None, iterations: int=3,return_fiber_number: bool = False ):
     r"""
     Generates a binary image of overlapping cylinders, with a target
     porosity input. Delegates cylinder creation to generators.cylinders.
 
     This is a good approximation of a fibrous mat.
+
+    The cylinders_porosity function works by estimating the number of 
+    cylinders needed to be inserted into the domain by estimating 
+    cylinder length, and exploiting the fact that, when inserting any 
+    potentially overlapping objects randomly into a volume v_total (which 
+    has units of pixels and is equal to dimx x dimy x dimz, for example), 
+    such that the total volume of objects added to the volume is v_added 
+    (and includes any volume that was inserted but overlapped with already 
+    occupied space), the resulting porosity will be equal to 
+    exp(-v_added/v_total).
+
+    After intially estimating the cylinder number and inserting a small 
+    fraction of the estimated number, the true cylinder volume is 
+    calculated, the estimate refined, and a larger fraction of cylinders 
+    inserted. This is repeated a number of times according to the 
+    'iterations' argument, yielding an image with a porosity close to 
+    the goal.
 
     Parameters
     ----------
@@ -821,14 +838,24 @@ def cylinders_porosity(shape, radius: int ,porosity:float,  phi_max: float =0, t
         porosity. By default a value of 3 is used (and this is typically
         effective in getting very close to the targeted porosity), but a 
         greater number can be input to improve the achieved porosity.
+    return_fiber_number : bool
+        Determines whether the function will return the number of fibers
+        along with the image
 
     Returns
     -------
     image : ND-array
         A boolean array with ``True`` values denoting the pore space
+    fiber_number : scalar
+        The number of fibers added to the image. This is optional, and whether
+        it is returned is determined by 'return_fiber_number'
     """
+    
+    if iterations<3:
+        raise Exception('iterations must be greater than or equal to 3')
+    
     vol_total = float(shape[0]*shape[1]*shape[2])
-    n_pixels_from_poro = lambda poro: -math.log(poro)*vol_total
+    n_pixels_from_poro = lambda poro: -np.log(poro)*vol_total
 
     # Crudely estimate fiber length as cube root of product of dims if not input.
     if length==None:
@@ -848,12 +875,11 @@ def cylinders_porosity(shape, radius: int ,porosity:float,  phi_max: float =0, t
     fraction_per_iteration = [0.2,]
     for i in range(1,iterations):
         fraction_per_iteration.append(fraction_per_iteration[i-1]+(iterations-i)**2*subdif)
-    print(fraction_per_iteration)
 
     im = np.ones(shape,dtype=bool) 
     for iteration_fraction in fraction_per_iteration:
         n_fiber_total_estimate = n_pixels_to_add/single_fiber_vol_est
-        n_fibers_this_iteration = math.ceil(iteration_fraction*n_fiber_total_estimate) - n_fibers_added
+        n_fibers_this_iteration = np.ceil(iteration_fraction*n_fiber_total_estimate) - n_fibers_added
         if n_fibers_this_iteration >0:
             im = im & ps.generators.cylinders(shape,radius,n_fibers_this_iteration,phi_max,theta_max,length)
         n_fibers_added +=n_fibers_this_iteration
@@ -862,7 +888,12 @@ def cylinders_porosity(shape, radius: int ,porosity:float,  phi_max: float =0, t
         iteration_added_volume = n_pixels_from_poro(iteration_porosity)
         single_fiber_vol_est = iteration_added_volume/n_fibers_added
     
-    return im
+    print('{} fibers were added to reach the target porosity.'.format(str(n_fibers_added)))
+
+    if return_fiber_number:
+        return im,n_fibers_added
+    else:
+        return im
 
 
 def line_segment(X0, X1):

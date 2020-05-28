@@ -15,6 +15,7 @@ illustration purposes.
     porespy.generators.blobs
     porespy.generators.bundle_of_tubes
     porespy.generators.cylinders
+    porespy.generators.cylinders_porosity
     porespy.generators.generate_noise
     porespy.generators.insert_shape
     porespy.generators.lattice_spheres
@@ -27,6 +28,7 @@ illustration purposes.
 .. autofunction:: blobs
 .. autofunction:: bundle_of_tubes
 .. autofunction:: cylinders
+.. autofunction:: cylinders_porosity
 .. autofunction:: generate_noise
 .. autofunction:: insert_shape
 .. autofunction:: lattice_spheres
@@ -41,6 +43,7 @@ illustration purposes.
 from .__imgen__ import blobs
 from .__imgen__ import bundle_of_tubes
 from .__imgen__ import cylinders
+from .__imgen__ import cylinders_porosity
 from .__imgen__ import generate_noise
 from .__imgen__ import insert_shape
 from .__imgen__ import lattice_spheres
