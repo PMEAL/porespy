@@ -36,7 +36,7 @@ jobs:
         python setup.py install
 
     - name: Running tests
-      run: pytest --pep8 --cov=./ --cov-report=xml --nbval
+      run: pytest --pep8 --cov=./ --cov-report=xml
 
     - name: Upload coverage to Codecov
       if: matrix.python-version == 3.7
