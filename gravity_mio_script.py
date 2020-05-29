@@ -8,7 +8,7 @@ import shutil
 from collections import namedtuple
 from mpl_toolkits.mplot3d import Axes3D
 import time
-from porespy.filters import _erode_im, _dilate_im, dilate_im_gravity
+from porespy.filters import _erode_im, _dilate_im, dilate_im_gravity, eliminate_overlapping
 from porespy.filters import Connectivity_Check
 
 
@@ -27,6 +27,7 @@ gravity = True            # Regard gravity effects [Yes=True, No=False]
 Sat_Curve = True          # Decides if Saturation Curve is created or specific intrusion pressure is selected
 int_pressure = 407.5      # Pressure of intrusion if Sat_Curve==False [Pa]
 saturation_steps = 40     # Number of Steps for creating the saturation curve
+dirname = ''
 
 
 # %% Generate an image
@@ -80,6 +81,8 @@ P = ps.metrics.porosity(im)
 # Approach: different im_distance arrays for each solid phase with
 # specific contact angle costheta
 
+img_different_solid_phase = im
+
 solidelements = np.unique(img_different_solid_phase)
 solidelements = np.delete(solidelements, np.where(solidelements == 0))
 solidelements_amount = len(solidelements)
@@ -116,7 +119,7 @@ if Sat_Curve is True:
 
     # Calculate maxmimum sphere diameter
 
-    D_max = np.max(spim.distance_transform_edt(img)) * 2
+    D_max = np.max(spim.distance_transform_edt(im)) * 2
     if gravity is True:
         # Minimum pressure to intrude into pore structure
         D_max2 = (4 * gamma) / (rhoWP * g * h_max * dr)
@@ -251,12 +254,12 @@ while D > D_min:
             im_opened_static = dilate_im_gravity(im_distance2, im,
                                                  step, Deros0, gamma,
                                                  rhoWP, rhoNWP,
-                                                 h_max, g, p0, D2img)
+                                                 h_max, g, p0, D2img, dr, upp)
         else:
             im_opened_static = _dilate_im(im_distance2, im, D/2, 0, upp)
 
         # Eliminate overlapping phase
-        im_opened_static = (im_opened_static, NwpR, D2img)
+        im_opened_static = eliminate_overlapping(im_opened_static, NwpR, D2img)
 
         # Create flow behaviour picture by multiply new intruded NWP
         # with value 'count'

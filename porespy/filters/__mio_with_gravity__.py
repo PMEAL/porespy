@@ -49,7 +49,8 @@ def dilate_im_gravity(im_distance2,
                       g,
                       p0,
                       D2image,
-                      dr):
+                      dr,
+                      upp):
     r"""
     #elation of the Image with various diameter Rdila which depends on height h
     Returns an array with delated pore space on original image im_background
@@ -101,18 +102,16 @@ def dilate_im_gravity(im_distance2,
             else:
                 Rdila[int(i / step)] = 2 * gamma / (p0 - rhoWP * g * h_max) / dr
         if D2image is True:
-            temp = dilate_im(
-                im_distance2[lower:higher, :],
-                im_array[lower:higher, :],
-                Rdila[int(i / step)],
-                0,
-                upp,
-            )
+            temp = _dilate_im(im_distance2[lower:higher, :],
+                              im_array[lower:higher, :],
+                              Rdila[int(i / step)],
+                              0,
+                              upp,)
             im_opened_static[lower:higher, :] = temp
         else:
-            temp = dilate_im(im_distance2[lower:higher, :, :],
-                             im_array[lower:higher, :, :],
-                             Rdila[int(i / step)], 0, upp)
+            temp = _dilate_im(im_distance2[lower:higher, :, :],
+                              im_array[lower:higher, :, :],
+                              Rdila[int(i / step)], 0, upp)
             im_opened_static[lower:higher, :, :] = temp
     return im_opened_static
 
