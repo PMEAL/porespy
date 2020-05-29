@@ -13,5 +13,9 @@ if 'cov' in sys.argv:
                  '--cov=porespy',
                  '--cov-config=.coveragerc'])
 
+if 'docs' in sys.argv:
+    args.extend(['--doctest-modules',
+                 ])
+
 exit_code = pytest.main(args)
 exit(exit_code)

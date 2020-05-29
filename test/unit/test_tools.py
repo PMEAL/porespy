@@ -98,17 +98,47 @@ class ToolsTest():
         assert not ps.tools.in_hull([[0, 0, 0]], hull)
         assert ps.tools.in_hull([np.mean(X, axis=0)], hull)
 
-    def test_insert_sphere_2D(self):
+    def test_insert_sphere_2D_no_overwrite(self):
         im = np.zeros(shape=[200, 200], dtype=bool)
-        im = ps.tools.insert_sphere(im, [100, 100], 50)
-        im = ps.tools.insert_sphere(im, [10, 100], 50)
-        im = ps.tools.insert_sphere(im, [180, 100], 50)
+        im = ps.tools.insert_sphere(im, c=[100, 100], r=50, v=1, overwrite=False)
+        im = ps.tools.insert_sphere(im, c=[110, 100], r=50, v=2, overwrite=False)
+        im = ps.tools.insert_sphere(im, c=[90, 100], r=50, v=3, overwrite=False)
+        vals, counts = np.unique(im, return_counts=True)
+        assert sp.all(np.unique(im) == vals)
+        assert counts[1] > counts[2]
 
-    def test_insert_sphere_3D(self):
+    def test_insert_sphere_2D_w_overwrite(self):
+        im = np.zeros(shape=[200, 200], dtype=bool)
+        im = ps.tools.insert_sphere(im, c=[100, 100], r=50, v=1, overwrite=True)
+        im = ps.tools.insert_sphere(im, c=[110, 100], r=50, v=2, overwrite=True)
+        im = ps.tools.insert_sphere(im, c=[90, 100], r=50, v=3, overwrite=True)
+        vals, counts = np.unique(im, return_counts=True)
+        assert sp.all(np.unique(im) == vals)
+        assert counts[1] < counts[2]
+
+    def test_insert_sphere_3D_no_overwrite(self):
         im = np.zeros(shape=[200, 200, 200], dtype=bool)
-        im = ps.tools.insert_sphere(im, [100, 100, 100], 50)
-        im = ps.tools.insert_sphere(im, [10, 100, 100], 50)
-        im = ps.tools.insert_sphere(im, [180, 100, 100], 50)
+        im = ps.tools.insert_sphere(im, c=[100, 100, 100], r=50, v=1,
+                                    overwrite=False)
+        im = ps.tools.insert_sphere(im, c=[110, 100, 100], r=50, v=2,
+                                    overwrite=False)
+        im = ps.tools.insert_sphere(im, c=[90, 100, 100], r=50, v=3,
+                                    overwrite=False)
+        vals, counts = np.unique(im, return_counts=True)
+        assert sp.all(np.unique(im) == vals)
+        assert counts[1] > counts[2]
+
+    def test_insert_sphere_3D_w_overwrite(self):
+        im = np.zeros(shape=[200, 200, 200], dtype=bool)
+        im = ps.tools.insert_sphere(im, c=[100, 100, 100], r=50, v=1,
+                                    overwrite=True)
+        im = ps.tools.insert_sphere(im, c=[110, 100, 100], r=50, v=2,
+                                    overwrite=True)
+        im = ps.tools.insert_sphere(im, c=[90, 100, 100], r=50, v=3,
+                                    overwrite=True)
+        vals, counts = np.unique(im, return_counts=True)
+        assert sp.all(np.unique(im) == vals)
+        assert counts[1] < counts[2]
 
     def test_subdivide_3D(self):
         im = np.ones([50, 100, 150])
@@ -124,6 +154,43 @@ class ToolsTest():
         ims = ps.tools.subdivide(im, divs=2)
         assert ims.shape == (2, 2)
         assert im[tuple(ims[0, 0])].sum() == np.prod(im.shape)/4
+
+    def test_size_to_seq(self):
+        im = self.im2D
+        sz = ps.filters.porosimetry(im)
+        nsizes = np.size(np.unique(sz))
+        sq = ps.tools.size_to_seq(sz)
+        nsteps = np.size(np.unique(sq))
+        assert nsteps == nsizes
+
+    def test_size_to_seq_int_bins(self):
+        im = self.im2D
+        sz = ps.filters.porosimetry(im)
+        sq = ps.tools.size_to_seq(sz, bins=5)
+        nsteps = np.size(np.unique(sq))
+        assert nsteps == 5
+
+    def test_size_to_seq_too_many_bins(self):
+        im = self.im2D
+        sz = ps.filters.porosimetry(im)
+        sq = ps.tools.size_to_seq(sz, bins=20)
+        nsteps = np.size(np.unique(sq))
+        assert nsteps < 20
+
+    def test_seq_to_sat_fully_filled(self):
+        im = self.im2D
+        sz = ps.filters.porosimetry(im)
+        sq = ps.tools.size_to_seq(sz)
+        sat = ps.tools.seq_to_satn(sq)
+        assert sat.max() == 1
+
+    def test_seq_to_sat_partially_filled(self):
+        im = self.im2D
+        sz = ps.filters.porosimetry(im)
+        sq = ps.tools.size_to_seq(sz)
+        sq[sq == sq.max()] = -1
+        sat = ps.tools.seq_to_satn(sq)
+        assert sat.max() < 1
 
 
 if __name__ == '__main__':

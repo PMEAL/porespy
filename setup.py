@@ -16,13 +16,16 @@ with open(ver_path) as f:
         if line.startswith('__version__'):
             exec(line, main_)
 
-with open("README.rst", "r") as fh:
-    long_description = fh.read()
+# Read the contents of README file
+this_directory = os.path.abspath(os.path.dirname(__file__))
+with open(os.path.join(this_directory, 'README.md'), encoding='utf-8') as f:
+    long_description = f.read()
 
 setup(
     name='porespy',
     description='A set of tools for analyzing 3D images of porous materials',
     long_description=long_description,
+    zip_safe=False,
     # long_description_content_type="text/x-rst",
     version=main_['__version__'],
     classifiers=['Development Status :: 3 - Alpha',
@@ -49,7 +52,9 @@ setup(
                       'pytrax',
                       'pyevtk',
                       'numba',
-                      'openpnm'],
+                      'openpnm',
+                      'dask',
+                      'edt'],
     author='Jeff Gostick',
     author_email='jgostick@gmail.com',
     url='http://porespy.org',

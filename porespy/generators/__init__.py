@@ -21,6 +21,7 @@ illustration purposes.
     porespy.generators.lattice_spheres
     porespy.generators.line_segment
     porespy.generators.overlapping_spheres
+    porespy.generators.perlin_noise
     porespy.generators.polydisperse_spheres
     porespy.generators.RSA
     porespy.generators.voronoi_edges
@@ -34,6 +35,7 @@ illustration purposes.
 .. autofunction:: lattice_spheres
 .. autofunction:: line_segment
 .. autofunction:: overlapping_spheres
+.. autofunction:: perlin_noise
 .. autofunction:: polydisperse_spheres
 .. autofunction:: RSA
 .. autofunction:: voronoi_edges
@@ -49,6 +51,7 @@ from .__imgen__ import insert_shape
 from .__imgen__ import lattice_spheres
 from .__imgen__ import line_segment
 from .__imgen__ import overlapping_spheres
+from .__imgen__ import perlin_noise
 from .__imgen__ import polydisperse_spheres
 from .__imgen__ import RSA
 from .__imgen__ import voronoi_edges

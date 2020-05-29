@@ -12,7 +12,6 @@ def snow_dual(im,
               voxel_size=1,
               boundary_faces=['top', 'bottom', 'left', 'right', 'front', 'back'],
               marching_cubes_area=False):
-
     r"""
     Analyzes an image that has been partitioned into void and solid regions
     and extracts the void and solid phase geometry as well as network
