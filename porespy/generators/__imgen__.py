@@ -851,14 +851,14 @@ def cylinders_porosity(shape, radius: int ,porosity:float,  phi_max: float =0, t
         it is returned is determined by 'return_fiber_number'
     """
     
-    if iterations<3:
+    if iterations < 3:
         raise Exception('iterations must be greater than or equal to 3')
     
     vol_total = float(shape[0]*shape[1]*shape[2])
     n_pixels_from_poro = lambda poro: -np.log(poro)*vol_total
 
     # Crudely estimate fiber length as cube root of product of dims if not input.
-    if length==None:
+    if length is None:
         length_est = (shape[0]*shape[1]*shape[2])**(1./3)
     else:
         length_est = length
@@ -880,7 +880,7 @@ def cylinders_porosity(shape, radius: int ,porosity:float,  phi_max: float =0, t
     for iteration_fraction in fraction_per_iteration:
         n_fiber_total_estimate = n_pixels_to_add/single_fiber_vol_est
         n_fibers_this_iteration = np.ceil(iteration_fraction*n_fiber_total_estimate) - n_fibers_added
-        if n_fibers_this_iteration >0:
+        if n_fibers_this_iteration > 0:
             im = im & ps.generators.cylinders(shape,radius,n_fibers_this_iteration,phi_max,theta_max,length)
         n_fibers_added +=n_fibers_this_iteration
 
