@@ -179,9 +179,10 @@ def distance_transform_lin(im, axis=0, mode="both"):
         return f
 
 
-def snow_partitioning(
-    im, dt=None, r_max=4, sigma=0.4, return_all=False, mask=True, randomize=True, skip_trim_saddle=False, skip_trim_nearby=False
-):
+def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, return_all=False, 
+                        mask=True, randomize=True, skip_trim_saddle=False, 
+                        skip_trim_nearby=False):
+    
     r"""
     Partitions the void space into pore regions using a marker-based watershed
     algorithm, with specially filtered peaks as markers.
@@ -218,6 +219,14 @@ def snow_partitioning(
         If ``True`` (default), then the region colors will be randomized before
         returning.  This is helpful for visualizing otherwise neighboring
         regions have simlar coloring are are hard to distinguish.
+    skip_trim_saddle : bool
+        If ``True`` then saddle point removal is not performed as part of the 
+        SNOW algorithm. This makes the algorithm not a true SNOW algorithm, but
+        this may be useful for comparison purposes.
+    skip_trim_nearby : bool
+        If ``True`` then nearby point removal is not performed as part of the 
+        SNOW algorithm. This makes the algorithm not a true SNOW algorithm, but
+        this may be useful for comparison purposes.
 
     Returns
     -------
@@ -277,6 +286,8 @@ def snow_partitioning(
         peaks = trim_nearby_peaks(peaks=peaks, dt=dt)
         peaks, N = spim.label(peaks)
         print("Peaks after trimming nearby peaks: ", N)
+    if skip_trim_nearby:
+        peaks, N = spim.label(peaks)
     tup.peaks = peaks
     if mask:
         mask_solid = im > 0
