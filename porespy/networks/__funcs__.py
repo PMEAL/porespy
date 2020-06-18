@@ -404,7 +404,7 @@ def add_phase_interconnections(net, snow_partitioning_n, voxel_size=1,
             net['pore.boundary'] = loc5
         for j0, j1 in enumerate(phases_num):
             if j0 > i0:
-                pi_pj_sa = np.zeros_like(label)
+                pi_pj_sa = np.zeros_like(label, dtype=float)
                 loc6 = np.logical_and(conns2 >= num[j0], conns2 < num[j0 + 1])
                 pi_pj_conns = loc1 * loc6
                 net['throat.{}_{}'.format(al[i1], al[j1])] = pi_pj_conns
