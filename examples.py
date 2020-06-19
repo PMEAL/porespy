@@ -1,7 +1,6 @@
 import porespy as ps
 import matplotlib.pyplot as plt
-import numpy as np
-import scipy.ndimage as spim
+
 
 # Generate an image of spheres using the imgen class
 im = ps.generators.blobs(shape=[500, 500], porosity=0.7, blobiness=1)

@@ -377,14 +377,14 @@ def snow_partitioning_n(
     combined_dt = 0
     combined_region = 0
     num = [0]
-    for i in phases_num:
+    for i, j in enumerate(phases_num):
         print("_" * 60)
         if alias is None:
-            print("Processing Phase {}".format(i))
+            print("Processing Phase {}".format(j))
         else:
-            print("Processing Phase {}".format(al[i]))
+            print("Processing Phase {}".format(al[j]))
         phase_snow = snow_partitioning(
-            im == i,
+            im == j,
             dt=None,
             r_max=r_max,
             sigma=sigma,
@@ -392,16 +392,12 @@ def snow_partitioning_n(
             mask=mask,
             randomize=randomize,
         )
-        if len(phases_num) == 1 and phases_num == 1:
-            combined_dt = phase_snow.dt
-            combined_region = phase_snow.regions
-        else:
-            combined_dt += phase_snow.dt
-            phase_snow.regions *= phase_snow.im
-            phase_snow.regions += num[i - 1]
-            phase_ws = phase_snow.regions * phase_snow.im
-            phase_ws[phase_ws == num[i - 1]] = 0
-            combined_region += phase_ws
+        combined_dt += phase_snow.dt
+        phase_snow.regions *= phase_snow.im
+        phase_snow.regions += num[i]
+        phase_ws = phase_snow.regions * phase_snow.im
+        phase_ws[phase_ws == num[i]] = 0
+        combined_region += phase_ws
         num.append(np.amax(combined_region))
     if return_all:
         tup = namedtuple(

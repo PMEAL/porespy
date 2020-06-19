@@ -1,11 +1,15 @@
 name: Ubuntu
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   build:
 
+<<<<<<< HEAD
     if: "!contains(github.event.head_commit.message, 'ci min') && !contains(github.event.head_commit.message, 'ci skip')"
+=======
+    if: "!contains(github.event.head_commit.message, 'ci min')"
+>>>>>>> snow_n_labelling_issue_1
 
     runs-on: ${{ matrix.operating-system }}
     strategy:
@@ -46,4 +50,4 @@ jobs:
         file: ./coverage.xml
         flags: unittests
         name: codecov-umbrella
-        yml: ./codecov.yml
+        # yml: ./codecov.yml  # arg deprecated
