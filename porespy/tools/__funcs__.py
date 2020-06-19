@@ -1093,7 +1093,7 @@ def _create_alias_map(im, alias=None):
     """
     # -------------------------------------------------------------------------
     # Get alias if provided by user
-    phases_num = np.unique(im * 1)
+    phases_num = np.unique(im).astype(int)
     phases_num = np.trim_zeros(phases_num)
     al = {}
     wrong_labels = []
