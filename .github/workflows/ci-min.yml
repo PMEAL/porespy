@@ -1,11 +1,11 @@
 name: Minimal
 
-on: [push, pull_request]
+on: [push]
 
 jobs:
   build:
 
-    if: contains(github.event.head_commit.message, 'ci min')
+    if: "contains(github.event.head_commit.message, 'ci min') && !contains(github.event.head_commit.message, 'ci skip')"
 
     runs-on: ${{ matrix.operating-system }}
     strategy:
@@ -46,4 +46,3 @@ jobs:
         file: ./coverage.xml
         flags: unittests
         name: codecov-umbrella
-        # yml: ./codecov.yml  # arg deprecated
