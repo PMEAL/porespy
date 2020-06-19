@@ -1,9 +1,11 @@
 name: Ubuntu
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   build:
+
+    if: "!contains(github.event.head_commit.message, 'ci min')"
 
     runs-on: ${{ matrix.operating-system }}
     strategy:
@@ -44,4 +46,4 @@ jobs:
         file: ./coverage.xml
         flags: unittests
         name: codecov-umbrella
-        yml: ./codecov.yml
+        # yml: ./codecov.yml  # arg deprecated
