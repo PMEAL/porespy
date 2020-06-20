@@ -13,7 +13,9 @@
 
 .. image:: https://img.shields.io/badge/DOI-10.5281%2Fzenodo.2633284-blue.svg
    :target: https://www.doi.org/10.5281/zenodo.2633284
-
+  
+.. image:: http://joss.theoj.org/papers/10.21105/joss.01296/status.svg
+   :target: https://doi.org/10.21105/joss.01296
 ----
 
 **Cite as:**
@@ -21,7 +23,7 @@
    Gostick J, Khan ZA, Tranter TG, Kok MDR, Agnaou M, Sadeghi MA, Jervis R.
    PoreSpy: A Python Toolkit for Quantitative Analysis of Porous Media Images.
    Journal of Open Source Software, 2019.
-   doi:10.5281/zenodo.2633284
+   doi:10.21105/joss.01296
 
 
 -------------------------------------------------------------------------------
