@@ -11,9 +11,6 @@
 .. image:: https://img.shields.io/pypi/v/porespy.svg
    :target: https://pypi.python.org/pypi/porespy/
 
-.. image:: https://img.shields.io/badge/DOI-10.5281%2Fzenodo.2633284-blue.svg
-   :target: https://www.doi.org/10.5281/zenodo.2633284
-  
 .. image:: http://joss.theoj.org/papers/10.21105/joss.01296/status.svg
    :target: https://doi.org/10.21105/joss.01296
 ----
