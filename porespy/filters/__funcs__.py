@@ -257,6 +257,10 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, return_all=False,
     tup = namedtuple("results", field_names=["im", "dt", "peaks", "regions"])
     print("-" * 60)
     print("Beginning SNOW Algorithm")
+    if skip_trim_saddle:
+        print('   Skipping saddle point trim.')
+    if skip_trim_nearby:
+        print('   Skipping nearby point trim.')
     im_shape = np.array(im.shape)
     if im.dtype is not bool:
         print("Converting supplied image (im) to boolean")
