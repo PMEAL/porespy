@@ -6,7 +6,7 @@ import scipy.ndimage as spim
 from skimage.morphology import disk, ball, skeletonize_3d
 
 
-class FilterTest():
+class ParallelTest():
     def setup_class(self):
         np.random.seed(0)
         self.im = ps.generators.blobs(shape=[100, 100, 100], blobiness=2)
@@ -55,9 +55,16 @@ class FilterTest():
         skel3 = ps.filters.prune_branches(skel1, parallel=True, iterations=5)
         assert np.all(skel2 == skel3)
 
+    def test_blobs(self):
+        np.random.seed(0)
+        im1 = ps.generators.blobs(shape=[100, 100, 100])
+        np.random.seed(0)
+        im2 = ps.generators.blobs(shape=[100, 100, 100], parallel=True)
+        assert np.all(im1 == im2)
+
 
 if __name__ == '__main__':
-    t = FilterTest()
+    t = ParallelTest()
     self = t
     t.setup_class()
     for item in t.__dir__():
