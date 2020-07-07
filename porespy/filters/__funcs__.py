@@ -427,11 +427,6 @@ def find_peaks(dt, r_max=4, footprint=None, **kwargs):
         Specifies the shape of the structuring element used to define the
         neighborhood when looking for peaks.  If ``None`` (the default) is
         specified then a spherical shape is used (or circular in 2D).
-    kwargs : dictionary
-        Additional keyword arguments that control the parallelization.
-        ``'parallel'`` must be set to ``True``, while ``cores`` and ``divs``
-        are optional.  See the documenation for ``chuncked_func`` for more
-        details.
 
     Returns
     -------
@@ -463,11 +458,10 @@ def find_peaks(dt, r_max=4, footprint=None, **kwargs):
             footprint = ball
         else:
             raise Exception("only 2-d and 3-d images are supported")
-    parallel = kwargs.pop('parallel', None)
+    parallel = kwargs.pop('parallel', False)
+    cores = kwargs.pop('cores', None)
+    divs = kwargs.pop('cores', 2)
     if parallel:
-        print('Performing find_peaks in parallel')
-        cores = kwargs.pop('cores', None)
-        divs = kwargs.pop('cores', 2)
         overlap = max(footprint(r_max).shape)
         peaks = chunked_func(func=find_peaks, overlap=overlap,
                              im_arg='dt', dt=dt, footprint=footprint,
@@ -1299,7 +1293,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
         strel = ps_ball
 
     # Parse kwargs for any parallelization arguments
-    parallel = kwargs.pop('parallel', None)
+    parallel = kwargs.pop('parallel', False)
     cores = kwargs.pop('cores', None)
     divs = kwargs.pop('divs', 2)
 
