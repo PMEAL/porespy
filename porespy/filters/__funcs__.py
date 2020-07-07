@@ -620,9 +620,8 @@ def trim_nearby_peaks(peaks, dt):
     else:
         from skimage.morphology import cube
     peaks, N = spim.label(peaks, structure=cube(3))
-    crds = spim.measurements.center_of_mass(
-        peaks, labels=peaks, index=np.arange(1, N + 1)
-    )
+    crds = spim.measurements.center_of_mass(peaks, labels=peaks,
+                                            index=np.arange(1, N + 1))
     crds = np.vstack(crds).astype(int)  # Convert to numpy array of ints
     # Get distance between each peak as a distance map
     tree = sptl.cKDTree(data=crds)
@@ -761,9 +760,8 @@ def trim_floating_solid(im, conn=None):
     return im
 
 
-def trim_nonpercolating_paths(
-    im, inlet_axis=0, outlet_axis=0, inlets=None, outlets=None
-):
+def trim_nonpercolating_paths(im, inlet_axis=0, outlet_axis=0,
+                              inlets=None, outlets=None):
     r"""
     Removes all nonpercolating paths between specified edges
 
@@ -968,9 +966,8 @@ def find_dt_artifacts(dt):
     """
     temp = np.ones(shape=dt.shape) * np.inf
     for ax in range(dt.ndim):
-        dt_lin = distance_transform_lin(
-            np.ones_like(temp, dtype=bool), axis=ax, mode="both"
-        )
+        dt_lin = distance_transform_lin(np.ones_like(temp, dtype=bool),
+                                        axis=ax, mode="both")
         temp = np.minimum(temp, dt_lin)
     result = np.clip(dt - temp, a_min=0, a_max=np.inf)
     return result
@@ -994,6 +991,10 @@ def region_size(im):
         A copy of ``im`` with each voxel value indicating the size of the
         region to which it belongs.  This is particularly useful for finding
         chord sizes on the image produced by ``apply_chords``.
+
+    See Also
+    --------
+    flood
     """
     if im.dtype == bool:
         im = spim.label(im)[0]
@@ -1058,12 +1059,8 @@ def apply_chords(im, spacing=1, axis=0, trim_edges=True, label=False):
     slices = tuple(slxyz[: im.ndim])
     s = [[0, 1, 0], [0, 1, 0], [0, 1, 0]]  # Straight-line structuring element
     if im.ndim == 3:  # Make structuring element 3D if necessary
-        s = np.pad(
-            np.atleast_3d(s),
-            pad_width=((0, 0), (0, 0), (1, 1)),
-            mode="constant",
-            constant_values=0,
-        )
+        s = np.pad(np.atleast_3d(s), pad_width=((0, 0), (0, 0), (1, 1)),
+                   mode="constant", constant_values=0)
     im = im[slices]
     s = np.swapaxes(s, 0, axis)
     chords = spim.label(im, structure=s)[0]
@@ -1281,12 +1278,10 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
 
     """
     if im.ndim != im.squeeze().ndim:
-        warnings.warn(
-            "Input image contains a singleton axis:"
-            + str(im.shape)
-            + " Reduce dimensionality with np.squeeze(im) to avoid"
-            + " unexpected behavior."
-        )
+        warnings.warn("Input image contains a singleton axis:"
+                      + str(im.shape)
+                      + " Reduce dimensionality with np.squeeze(im) to avoid"
+                      + " unexpected behavior.")
 
     dt = edt(im > 0)
 

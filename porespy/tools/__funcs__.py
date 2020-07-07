@@ -733,7 +733,7 @@ def norm_to_uniform(im, scale=None):
     return im
 
 
-def functions_to_table(mod, colwidth=[27, 48]):
+def _functions_to_table(mod, colwidth=[27, 48]):
     r"""
     Given a module of functions, returns a ReST formatted text string that
     outputs a table when printed.
