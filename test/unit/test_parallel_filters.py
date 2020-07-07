@@ -35,6 +35,12 @@ class FilterTest():
         mio_parallel = ps.filters.porosimetry(im, mode='mio', parallel=True)
         assert np.all(mio_serial == mio_parallel)
 
+    def test_local_thickness(self):
+        im = ps.generators.blobs(shape=[100, 100, 100], blobiness=2)
+        lt_serial = ps.filters.local_thickness(im, mode='mio', parallel=False)
+        lt_parallel = ps.filters.local_thickness(im, mode='mio', parallel=True)
+        assert np.all(lt_serial == lt_parallel)
+
 
 if __name__ == '__main__':
     t = FilterTest()

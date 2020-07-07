@@ -1134,7 +1134,7 @@ def apply_chords_3D(im, spacing=0, trim_edges=True):
     return chords
 
 
-def local_thickness(im, sizes=25, mode="hybrid"):
+def local_thickness(im, sizes=25, mode="hybrid", **kwargs):
     r"""
     For each voxel, this function calculates the radius of the largest sphere
     that both engulfs the voxel and fits entirely within the foreground.
@@ -1195,7 +1195,8 @@ def local_thickness(im, sizes=25, mode="hybrid"):
     function.  This is not needed in ``local_thickness`` however.
 
     """
-    im_new = porosimetry(im=im, sizes=sizes, access_limited=False, mode=mode)
+    im_new = porosimetry(im=im, sizes=sizes, access_limited=False, mode=mode,
+                         **kwargs)
     return im_new
 
 
