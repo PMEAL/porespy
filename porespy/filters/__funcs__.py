@@ -179,9 +179,8 @@ def distance_transform_lin(im, axis=0, mode="both"):
         return f
 
 
-def snow_partitioning(
-    im, dt=None, r_max=4, sigma=0.4, return_all=False, mask=True, randomize=True
-):
+def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, return_all=False,
+                      mask=True, randomize=True):
     r"""
     Partitions the void space into pore regions using a marker-based watershed
     algorithm, with specially filtered peaks as markers.
@@ -290,9 +289,8 @@ def snow_partitioning(
         return regions
 
 
-def snow_partitioning_n(
-    im, r_max=4, sigma=0.4, return_all=True, mask=True, randomize=False, alias=None
-):
+def snow_partitioning_n(im, r_max=4, sigma=0.4, return_all=True,
+                        mask=True, randomize=False, alias=None):
     r"""
     This function partitions an imaging oontain an arbitrary number of phases
     into regions using a marker-based watershed segmentation. Its an extension
@@ -413,24 +411,27 @@ def snow_partitioning_n(
         return combined_region
 
 
-def find_peaks(dt, r_max=4, footprint=None):
+def find_peaks(dt, r_max=4, footprint=None, **kwargs):
     r"""
-    Returns all local maxima in the distance transform
+    Finds local maxima in the distance transform
 
     Parameters
     ----------
     dt : ND-array
         The distance transform of the pore space.  This may be calculated and
         filtered using any means desired.
-
     r_max : scalar
         The size of the structuring element used in the maximum filter.  This
         controls the localness of any maxima. The default is 4 voxels.
-
     footprint : ND-array
         Specifies the shape of the structuring element used to define the
-        neighborhood when looking for peaks.  If none is specified then a
-        spherical shape is used (or circular in 2D).
+        neighborhood when looking for peaks.  If ``None`` (the default) is
+        specified then a spherical shape is used (or circular in 2D).
+    kwargs : dictionary
+        Additional keyword arguments that control the parallelization.
+        ``'parallel'`` must be set to ``True``, while ``cores`` and ``divs``
+        are optional.  See the documenation for ``chuncked_func`` for more
+        details.
 
     Returns
     -------
@@ -446,17 +447,15 @@ def find_peaks(dt, r_max=4, footprint=None):
     ``peaks = peak_local_max(image=dt, min_distance=r, exclude_border=0,
     indices=False)``
 
-    This automatically uses a square structuring element which is significantly
-    faster than using a circular or spherical element.
+    The *skimage* function automatically uses a square structuring element
+    which is significantly faster than using a circular or spherical element.
     """
     im = dt > 0
     if im.ndim != im.squeeze().ndim:
-        warnings.warn(
-            "Input image conains a singleton axis:"
-            + str(im.shape)
-            + " Reduce dimensionality with np.squeeze(im) to avoid"
-            + " unexpected behavior."
-        )
+        warnings.warn("Input image conains a singleton axis:"
+                      + str(im.shape)
+                      + " Reduce dimensionality with np.squeeze(im) to avoid"
+                      + " unexpected behavior.")
     if footprint is None:
         if im.ndim == 2:
             footprint = disk
@@ -464,8 +463,18 @@ def find_peaks(dt, r_max=4, footprint=None):
             footprint = ball
         else:
             raise Exception("only 2-d and 3-d images are supported")
-    mx = spim.maximum_filter(dt + 2 * (~im), footprint=footprint(r_max))
-    peaks = (dt == mx) * im
+    parallel = kwargs.pop('parallel', None)
+    if parallel:
+        print('Performing find_peaks in parallel')
+        cores = kwargs.pop('cores', None)
+        divs = kwargs.pop('cores', 2)
+        overlap = max(footprint(r_max).shape)
+        peaks = chunked_func(func=find_peaks, overlap=overlap,
+                             im_arg='dt', dt=dt, footprint=footprint,
+                             cores=cores, divs=divs)
+    else:
+        mx = spim.maximum_filter(dt + 2 * (~im), footprint=footprint(r_max))
+        peaks = (dt == mx) * im
     return peaks
 
 
@@ -477,14 +486,14 @@ def reduce_peaks(peaks):
     Parameters
     ----------
     peaks : ND-image
-        An image containing True values indicating peaks in the distance
+        An image containing ``True`` values indicating peaks in the distance
         transform
 
     Returns
     -------
     image : ND-array
         An array with the same number of isolated peaks as the original image,
-        but fewer total voxels.
+        but fewer total ``True`` voxels.
 
     Notes
     -----
