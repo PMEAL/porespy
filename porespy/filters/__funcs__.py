@@ -1199,7 +1199,8 @@ def local_thickness(im, sizes=25, mode="hybrid"):
     return im_new
 
 
-def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode="hybrid"):
+def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
+                fft=True, **kwargs):
     r"""
     Performs a porosimetry simulution on an image
 
@@ -1249,6 +1250,12 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode="hybrid"):
         included mostly for comparison purposes.  The morphological operations
         are done using fft-based method implementations.
 
+    fft : boolean (default is ``True``)
+        Indicates whether to use the ``fftmorphology`` function in
+        ``porespy.filters`` or to use the standard morphology functions in
+        ``scipy.ndimage``.  Always use ``fft=True`` unless you have a good
+        reason not to.
+
     Returns
     -------
     image : ND-array
@@ -1295,38 +1302,77 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode="hybrid"):
     else:
         strel = ps_ball
 
+    # Parse kwargs for any parallelization arguments
+    parallel = kwargs.pop('parallel', None)
+    cores = kwargs.pop('cores', None)
+    divs = kwargs.pop('divs', 2)
+
     if mode == "mio":
         pw = int(np.floor(dt.max()))
         impad = np.pad(im, mode="symmetric", pad_width=pw)
         inlets = np.pad(inlets, mode="symmetric", pad_width=pw)
         # sizes = np.unique(np.around(sizes, decimals=0).astype(int))[-1::-1]
         imresults = np.zeros(np.shape(impad))
-        for r in tqdm(sizes, file=sys.stdout):
-            imtemp = fftmorphology(impad, strel(r), mode="erosion")
-            if access_limited:
-                imtemp = trim_disconnected_blobs(imtemp, inlets)
-            imtemp = fftmorphology(imtemp, strel(r), mode="dilation")
-            if np.any(imtemp):
-                imresults[(imresults == 0) * imtemp] = r
+        with tqdm(sizes) as pbar:
+            for r in sizes:
+                pbar.update()
+                if parallel:
+                    imtemp = chunked_func(func=spim.binary_erosion,
+                                          input=impad, structure=strel(r),
+                                          overlap=int(2*r) + 1,
+                                          cores=cores, divs=divs)
+                elif fft:
+                    imtemp = fftmorphology(impad, strel(r), mode="erosion")
+                else:
+                    imtemp = spim.binary_erosion(input=impad,
+                                                 structure=strel(r))
+                if access_limited:
+                    imtemp = trim_disconnected_blobs(imtemp, inlets)
+                if parallel:
+                    imtemp = chunked_func(func=spim.binary_dilation,
+                                          input=imtemp, structure=strel(r),
+                                          overlap=int(2*r) + 1,
+                                          cores=cores, divs=divs)
+                elif fft:
+                    imtemp = fftmorphology(imtemp, strel(r), mode="dilation")
+                else:
+                    imtemp = spim.binary_dilation(input=imtemp,
+                                                  structure=strel(r))
+                if np.any(imtemp):
+                    imresults[(imresults == 0) * imtemp] = r
         imresults = extract_subsection(imresults, shape=im.shape)
     elif mode == "dt":
         imresults = np.zeros(np.shape(im))
-        for r in tqdm(sizes, file=sys.stdout):
-            imtemp = dt >= r
-            if access_limited:
-                imtemp = trim_disconnected_blobs(imtemp, inlets)
-            if np.any(imtemp):
-                imtemp = edt(~imtemp) < r
-                imresults[(imresults == 0) * imtemp] = r
+        with tqdm(sizes) as pbar:
+            for r in sizes:
+                pbar.update()
+                imtemp = dt >= r
+                if access_limited:
+                    imtemp = trim_disconnected_blobs(imtemp, inlets)
+                if np.any(imtemp):
+                    imtemp = edt(~imtemp) < r
+                    imresults[(imresults == 0) * imtemp] = r
     elif mode == "hybrid":
         imresults = np.zeros(np.shape(im))
-        for r in tqdm(sizes, file=sys.stdout):
-            imtemp = dt >= r
-            if access_limited:
-                imtemp = trim_disconnected_blobs(imtemp, inlets)
-            if np.any(imtemp):
-                imtemp = fftconvolve(imtemp, strel(r), mode="same") > 0.0001
-                imresults[(imresults == 0) * imtemp] = r
+        with tqdm(sizes) as pbar:
+            for r in sizes:
+                pbar.update()
+                imtemp = dt >= r
+                if access_limited:
+                    imtemp = trim_disconnected_blobs(imtemp, inlets)
+                if np.any(imtemp):
+                    if parallel:
+                        imtemp = chunked_func(func=spim.binary_dilation,
+                                              input=imtemp, structure=strel(r),
+                                              overlap=int(2*r) + 1,
+                                              cores=cores, divs=divs)
+                    elif fft:
+                        imtemp = fftmorphology(imtemp, strel(r),
+                                               mode="dilation")
+                    else:
+                        imtemp = spim.binary_dilation(input=imtemp,
+                                                      structure=strel(r))
+                    imresults[(imresults == 0) * imtemp] = r
     else:
         raise Exception("Unrecognized mode " + mode)
     return imresults
