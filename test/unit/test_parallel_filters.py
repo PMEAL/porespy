@@ -41,6 +41,20 @@ class FilterTest():
         lt_parallel = ps.filters.local_thickness(im, mode='mio', parallel=True)
         assert np.all(lt_serial == lt_parallel)
 
+    def test_prune_branches(self):
+        im = ps.generators.lattice_spheres(shape=[100, 100, 100], radius=4)
+        skel1 = skeletonize_3d(im)
+        skel2 = ps.filters.prune_branches(skel1, parallel=False)
+        skel3 = ps.filters.prune_branches(skel1, parallel=True)
+        assert np.all(skel2 == skel3)
+
+    def test_prune_branches_w_iterations(self):
+        im = ps.generators.lattice_spheres(shape=[100, 100, 100], radius=4)
+        skel1 = skeletonize_3d(im)
+        skel2 = ps.filters.prune_branches(skel1, parallel=False, ierations=5)
+        skel3 = ps.filters.prune_branches(skel1, parallel=True, iterations=5)
+        assert np.all(skel2 == skel3)
+
 
 if __name__ == '__main__':
     t = FilterTest()

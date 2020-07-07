@@ -1541,7 +1541,7 @@ def nphase_border(im, include_diagonals=False):
         return out[1:-1, 1:-1, 1:-1].copy()
 
 
-def prune_branches(skel, branch_points=None, iterations=1):
+def prune_branches(skel, branch_points=None, iterations=1, **kwargs):
     r"""
     Removes all dangling ends or tails of a skeleton.
 
@@ -1566,6 +1566,9 @@ def prune_branches(skel, branch_points=None, iterations=1):
         from skimage.morphology import square as cube
     else:
         from skimage.morphology import cube
+    parallel = kwargs.pop('parallel', False)
+    divs = kwargs.pop('divs', 2)
+    cores = kwargs.pop('cores', None)
     # Create empty image to house results
     im_result = np.zeros_like(skel)
     # If branch points are not supplied, attempt to find them
@@ -1579,7 +1582,12 @@ def prune_branches(skel, branch_points=None, iterations=1):
     # Label arcs
     arc_labels = spim.label(arcs, structure=cube(3))[0]
     # Dilate branch points so they overlap with the arcs
-    branch_points = spim.binary_dilation(branch_points, structure=cube(3))
+    if parallel:
+        branch_points = chunked_func(func=spim.binary_dilation,
+                                     input=branch_points, structure=cube(3),
+                                     overlap=3, divs=divs, cores=cores)
+    else:
+        branch_points = spim.binary_dilation(branch_points, structure=cube(3))
     pts_labels = spim.label(branch_points, structure=cube(3))[0]
     # Now scan through each arc to see if it's connected to two branch points
     slices = spim.find_objects(arc_labels)
@@ -1596,9 +1604,11 @@ def prune_branches(skel, branch_points=None, iterations=1):
     if iterations > 1:
         iterations -= 1
         im_temp = np.copy(im_result)
-        im_result = prune_branches(
-            skel=im_result, branch_points=None, iterations=iterations
-        )
+        im_result = prune_branches(skel=im_result,
+                                   branch_points=None,
+                                   iterations=iterations,
+                                   parallel=parallel,
+                                   divs=divs, cores=cores)
         if np.all(im_temp == im_result):
             iterations = 0
     return im_result
@@ -1612,11 +1622,11 @@ def chunked_func(func,
                  strel_arg=["strel", "structure", "footprint"],
                  **kwargs):
     r"""
-    Performs the specfied operation "chunk-wise" in parallel
+    Performs the specfied operation "chunk-wise" in parallel using dask
 
     This can be used to save memory by doing one chunk at a time (``cores=1``)
     or to increase computation speed by spreading the work across multiple
-    cores (e.g. ``core = 8``)
+    cores (e.g. ``cores=8``)
 
     This function can be used with any operation that applies a structuring
     element of some sort, since this implies that the operation is local
