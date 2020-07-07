@@ -875,7 +875,8 @@ def pc_curve_from_ibip(im, sizes, seq, sigma=0.072, theta=180, voxel_size=1):
     return pc_curve
 
 
-def pc_curve_from_mio(im, sizes, sigma=0.072, theta=180, voxel_size=1):
+def pc_curve_from_mio(im, sizes, sigma=0.072, theta=180, voxel_size=1,
+                      stepped=True):
     r"""
     """
     sz = np.unique(sizes)[:0:-1]
@@ -889,6 +890,15 @@ def pc_curve_from_mio(im, sizes, sigma=0.072, theta=180, voxel_size=1):
             x.append(pc)
             snwp = ((sizes >= n)*(im == 1)).sum()/im.sum()
             y.append(snwp)
+    if stepped:
+        pc = x.copy()
+        snwp = y.copy()
+        for i in range(0, len(x)-1):
+            j = 2*i + 1
+            pc.insert(j, x[i+1])
+            snwp.insert(j, y[i])
+        x = pc
+        y = snwp
     pc_curve = namedtuple('data', field_names=['pc', 'snwp'])
     pc_curve.pc = x
     pc_curve.snwp = y
