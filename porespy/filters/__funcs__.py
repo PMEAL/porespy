@@ -1790,7 +1790,7 @@ def chunked_func(func,
 
 
 def invade_region(im, bd, dt=None, inv=None, mode='morph', return_sizes=False,
-                  max_iter=10000):
+                  max_iter=10000, **kwargs):
     r"""
     Performs invasion percolation on given image using iterative image dilation
 
@@ -1852,6 +1852,10 @@ def invade_region(im, bd, dt=None, inv=None, mode='morph', return_sizes=False,
         strel = ball
     else:
         strel = disk
+    if 'thickness' in kwargs.keys():
+        t = kwargs['thickness']
+    else:
+        t = 1
     # Intialize scratch array so it can be cleared and refilled inside loop
     scratch = np.zeros_like(bd)
     with tqdm(range(1, max_iter)) as pbar:
@@ -1859,14 +1863,14 @@ def invade_region(im, bd, dt=None, inv=None, mode='morph', return_sizes=False,
             pbar.update()
             # Dilate the boundary by given 'thickness'
             if mode == 'morph':
-                temp = spim.binary_dilation(input=bd, structure=strel(1))
+                temp = spim.binary_dilation(input=bd, structure=strel(t))
             elif mode == 'insert':
                 pt = np.vstack(np.where(bd))
                 # scratch.fill(True)
                 # scratch *= bd
                 scratch = np.copy(bd)
                 temp = _insert_disks_at_points(im=scratch, coords=pt,
-                                               r=1, v=1, smooth=False)
+                                               r=t, v=1, smooth=False)
             # Reduce to only the 'new' boundary
             edge = temp*(bd == 0)*im
             if ~np.any(edge):
@@ -1898,50 +1902,6 @@ def invade_region(im, bd, dt=None, inv=None, mode='morph', return_sizes=False,
         sizes[temp] = -1
         inv = (inv, sizes)
     return inv
-
-
-def pc_curve_from_sizes(im, sizes, seq, sigma=0.072, theta=0, voxel_size=1):
-    r"""
-    Produces a Pc-Snwp curve from the output of ``invade_regions``
-
-    Parameters
-    ----------
-    im : ND-array
-        The voxel image of the porous media
-    sizes : ND-array
-        This image is returned from ``invade_regions`` when ``return_sizes``
-        is set to ``True``.
-    seq : ND-array
-        The image containing the invasion sequence values returned from
-        ``invaded_regions``.
-    sigma : float
-        The surface tension of the fluid-fluid system of interest
-    theta : float
-        The contact angle through defending phase in degrees
-    voxel_size : float
-        The voxel resolution of the image
-
-    Returns
-    -------
-    pc_curve : namedtuple
-        A namedtuple containing the capillary pressure (``Pc``) and
-        non-wetting phase saturation (``snwp``).
-
-    """
-    seqs = np.unique(seq)[1:]
-    x = []
-    y = []
-    for n in tqdm(seqs):
-        mask = seq == n
-        r = sizes[mask][0]*voxel_size
-        pc = -2*sigma*np.cos(np.deg2rad(theta))/r
-        x.append(pc)
-        snwp = ((seq <= n)*(im == 1)).sum()/im.size
-        y.append(snwp)
-    pc_curve = namedtuple('data', field_names=['Pc', 'snwp'])
-    pc_curve.Pc = x
-    pc_curve.snwp = y
-    return pc_curve
 
 
 @numba.jit(nopython=True, parallel=False)
@@ -2130,11 +2090,13 @@ def find_trapped_regions(seq, outlets=None, bins=25, return_mask=True):
         bins = bins[bins > 0]
     else:
         bins = np.linspace(seq.max(), 1, bins)
-    for i in tqdm(bins):
-        temp = seq > i
-        labels = spim.label(temp)[0]
-        keep = np.unique(labels[outlets])[1:]
-        trapped += temp*np.isin(labels, keep, invert=True)
+    with tqdm(bins) as pbar:
+        for i in bins:
+            pbar.update()
+            temp = seq > i
+            labels = spim.label(temp)[0]
+            keep = np.unique(labels[outlets])[1:]
+            trapped += temp*np.isin(labels, keep, invert=True)
     if return_mask:
         return trapped
     else:

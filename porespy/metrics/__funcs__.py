@@ -827,3 +827,69 @@ def phase_fraction(im, normed=True):
     if normed:
         results = results/im.size
     return results
+
+
+def pc_curve_from_ibip(im, sizes, seq, sigma=0.072, theta=180, voxel_size=1):
+    r"""
+    Produces a Pc-Snwp curve from the output of ``invade_regions``
+
+    Parameters
+    ----------
+    im : ND-array
+        The voxel image of the porous media
+    sizes : ND-array
+        This image is returned from ``invade_regions`` when ``return_sizes``
+        is set to ``True``.
+    seq : ND-array
+        The image containing the invasion sequence values returned from
+        ``invaded_regions``.
+    sigma : float
+        The surface tension of the fluid-fluid system of interest
+    theta : float
+        The contact angle through the invading phase in degrees
+    voxel_size : float
+        The voxel resolution of the image
+
+    Returns
+    -------
+    pc_curve : namedtuple
+        A namedtuple containing the capillary pressure (``pc``) and
+        non-wetting phase saturation (``snwp``).
+
+    """
+    seqs = np.unique(seq)[1:]
+    x = []
+    y = []
+    with tqdm(seqs) as pbar:
+        for n in seqs:
+            pbar.update()
+            mask = seq == n
+            r = sizes[mask].min()*voxel_size
+            pc = -2*sigma*np.cos(np.deg2rad(theta))/r
+            x.append(pc)
+            snwp = ((seq <= n)*(seq > 0)*(im == 1)).sum()/im.sum()
+            y.append(snwp)
+    pc_curve = namedtuple('data', field_names=['pc', 'snwp'])
+    pc_curve.pc = x
+    pc_curve.snwp = y
+    return pc_curve
+
+
+def pc_curve_from_mio(im, sizes, sigma=0.072, theta=180, voxel_size=1):
+    r"""
+    """
+    sz = np.unique(sizes)[:0:-1]
+    x = []
+    y = []
+    with tqdm(sz) as pbar:
+        for n in sz:
+            pbar.update()
+            r = n*voxel_size
+            pc = -2*sigma*np.cos(np.deg2rad(theta))/r
+            x.append(pc)
+            snwp = ((sizes >= n)*(im == 1)).sum()/im.sum()
+            y.append(snwp)
+    pc_curve = namedtuple('data', field_names=['pc', 'snwp'])
+    pc_curve.pc = x
+    pc_curve.snwp = y
+    return pc_curve
