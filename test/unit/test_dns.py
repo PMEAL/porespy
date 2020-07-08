@@ -21,8 +21,6 @@ class DNSTest():
         t = ps.dns.tortuosity(im=im, axis=1, solver_family='scipy',
                               solver_type='bicg')
         assert np.around(t.tortuosity, decimals=6) == 1.353148
-        t = ps.dns.tortuosity(im=im, axis=1, solver_family='pyamg')
-        assert np.around(t.tortuosity, decimals=6) == 1.353148
         with pytest.raises(AttributeError):
             t = ps.dns.tortuosity(im=im, axis=1, solver_family='scipy',
                                   solver_type='blah')
