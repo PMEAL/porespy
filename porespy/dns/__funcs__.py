@@ -48,21 +48,33 @@ def tortuosity(im, axis, return_im=False):
     # running Fickian Diffusion
     fd = op.algorithms.FickianDiffusion(network=net, phase=water)
     # choosing axis of concentration gradient
-    inlet = net['pore.coords'][:, axis] <= 1
-    outlet = net['pore.coords'][:, axis] >= im.shape[axis]-1
+    inlets = net['pore.coords'][:, axis] <= 1
+    outlets = net['pore.coords'][:, axis] >= im.shape[axis]-1
     # boundary conditions on concentration
-    fd.set_value_BC(pores=inlet, values=1)
-    fd.set_value_BC(pores=outlet, values=0)
-    fd.settings['solver_type'] = 'spsolve'
+    C_in = 1.0
+    C_out = 0.0
+    fd.set_value_BC(pores=inlets, values=C_in)
+    fd.set_value_BC(pores=outlets, values=C_out)
+    fd.settings['solver_family'] = 'pyamg'
     fd.run()
     # calculating molar flow rate, effective diffusivity and tortuosity
-    rate_outlet = fd.rate(pores=outlet)[0]
-    tau = porosity_true*(1/abs(rate_outlet))
+    rate_out = fd.rate(pores=outlets)[0]
+    rate_in = fd.rate(pores=inlets)[0]
+    if not np.allclose(-rate_out, rate_in):
+        raise Exception('Something went wrong, inlet and outlet rate do not match')
+    delta_C = C_in - C_out
+    L = im.shape[axis]
+    A = np.prod(im.shape)/L
+    N_A = A/L*delta_C
+    Deff = rate_in/N_A
+    tau = porosity_true/(Deff)
     result = collections.namedtuple('tortuosity_result', ['tortuosity',
+                                                          'formation_factor',
                                                           'original_porosity',
                                                           'effective_porosity',
                                                           'image'])
     result.tortuosity = tau
+    result.formation_factor = 1/Deff
     result.original_porosity = porosity_orig
     result.effective_porosity = porosity_true
     if return_im:
