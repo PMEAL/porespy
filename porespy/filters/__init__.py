@@ -15,6 +15,7 @@ altered values.
 
     porespy.filters.apply_chords
     porespy.filters.apply_chords_3D
+    porespy.filters.apply_padded
     porespy.filters.chunked_func
     porespy.filters.distance_transform_lin
     porespy.filters.fftmorphology
@@ -23,7 +24,9 @@ altered values.
     porespy.filters.find_dt_artifacts
     porespy.filters.find_peaks
     porespy.filters.flood
+    porespy.filters.hold_peaks
     porespy.filters.local_thickness
+    porespy.filters.nphase_border
     porespy.filters.porosimetry
     porespy.filters.prune_branches
     porespy.filters.reduce_peaks
@@ -41,6 +44,7 @@ altered values.
 
 .. autofunction:: apply_chords
 .. autofunction:: apply_chords_3D
+.. autofunction:: apply_padded
 .. autofunction:: chunked_func
 .. autofunction:: distance_transform_lin
 .. autofunction:: fftmorphology
@@ -70,6 +74,7 @@ altered values.
 
 from .__funcs__ import apply_chords
 from .__funcs__ import apply_chords_3D
+from .__funcs__ import apply_padded
 from .__funcs__ import chunked_func
 from .__funcs__ import distance_transform_lin
 from .__funcs__ import fftmorphology
