@@ -15,19 +15,19 @@ class VisualizationTest():
         assert np.sum(xray) == np.sum(~self.im)
 
     def test_sem_y(self):
-        sem = ps.visualization.sem(self.im, direction='Y')
+        sem = ps.visualization.sem(self.im, axis=1)
         assert sem.ndim == 2
 
     def test_xray_y(self):
-        xray = ps.visualization.xray(self.im, direction='Y')
+        xray = ps.visualization.xray(self.im, axis=1)
         assert np.sum(xray) == np.sum(~self.im)
 
     def test_sem_z(self):
-        sem = ps.visualization.sem(self.im, direction='Z')
+        sem = ps.visualization.sem(self.im, axis=2)
         assert sem.ndim == 2
 
     def test_xray_z(self):
-        xray = ps.visualization.xray(self.im, direction='Z')
+        xray = ps.visualization.xray(self.im, axis=2)
         assert np.sum(xray) == np.sum(~self.im)
 
     def test_imshow_single(self):
