@@ -21,11 +21,16 @@ def tortuosity(im, axis, return_im=False, **kwargs):
     Returns
     -------
     results :  tuple
-        A named-tuple containing the calculated ``tortuosity`` value, the
-        ``original_porosity`` of the image, the ``effective_porosity`` (with
-        blind and non-percolating regions removed), and ``return_im`` is
-        ``True``, then ``image`` will contain a copy of ``im`` with
-        concentration values from the simulation.
+        A named-tuple containing:
+        * ``tortuosity`` calculated using the ``effective_porosity`` as
+        * ``effective_porosity`` of the image after applying
+        ``trim_nonpercolating_paths``.  This removes disconnected
+        voxels which cause singular matrices.
+        :math:`(D_{AB}/D_{eff}) \cdot \varepsilon`.
+        * ``original_porosity`` of the image as given
+        * ``formation_factor`` found as :math:`D_{AB}/D_{eff}`.
+        * ``image`` containing the concentration values from the simulation.
+        This is only returned if ``return_im`` is ``True``.
 
     """
     if axis > (im.ndim - 1):
@@ -55,16 +60,19 @@ def tortuosity(im, axis, return_im=False, **kwargs):
     C_out = 0.0
     fd.set_value_BC(pores=inlets, values=C_in)
     fd.set_value_BC(pores=outlets, values=C_out)
+    # Use specified solver if given
     if 'solver_family' in kwargs.keys():
         fd.settings.update(kwargs)
-    else:
+    else:  # Use pyamg otherwise, if presnet
         try:
             import pyamg
             fd.settings['solver_family'] = 'pyamg'
-        except ModuleNotFoundError:
+        except ModuleNotFoundError:  # Use scipy cg as last resort
             fd.settings['solver_family'] = 'scipy'
             fd.settings['solver_type'] = 'cg'
+    op.utils.tic()
     fd.run()
+    op.utils.toc()
     # calculating molar flow rate, effective diffusivity and tortuosity
     rate_out = fd.rate(pores=outlets)[0]
     rate_in = fd.rate(pores=inlets)[0]
@@ -77,9 +85,9 @@ def tortuosity(im, axis, return_im=False, **kwargs):
     Deff = rate_in/N_A
     tau = porosity_true/(Deff)
     result = collections.namedtuple('tortuosity_result', ['tortuosity',
-                                                          'formation_factor',
-                                                          'original_porosity',
                                                           'effective_porosity',
+                                                          'original_porosity',
+                                                          'formation_factor',
                                                           'image'])
     result.tortuosity = tau
     result.formation_factor = 1/Deff
