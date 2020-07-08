@@ -10,7 +10,7 @@ from porespy.metrics import region_surface_areas, region_interface_areas
 
 def snow(im, voxel_size=1,
          boundary_faces=['top', 'bottom', 'left', 'right', 'front', 'back'],
-         marching_cubes_area=False, skip_trim_saddle=False, 
+         marching_cubes_area=False, skip_trim_saddle=False,
          skip_trim_nearby=False):
     r"""
     Analyzes an image that has been partitioned into void and solid regions
@@ -41,11 +41,11 @@ def snow(im, voxel_size=1,
         it is ``False`` by default.  The default method simply counts voxels
         so does not correctly account for the voxelated nature of the images.
     skip_trim_saddle : bool
-        If ``True`` then saddle point removal is not performed as part of the 
+        If ``True`` then saddle point removal is not performed as part of the
         SNOW algorithm. This makes the algorithm not a true SNOW algorithm, but
         this may be useful for comparison purposes.
     skip_trim_nearby : bool
-        If ``True`` then nearby point removal is not performed as part of the 
+        If ``True`` then nearby point removal is not performed as part of the
         SNOW algorithm. This makes the algorithm not a true SNOW algorithm, but
         this may be useful for comparison purposes.
 
@@ -69,7 +69,7 @@ def snow(im, voxel_size=1,
 
     # -------------------------------------------------------------------------
     # SNOW void phase
-    regions = snow_partitioning(im=im, return_all=True, 
+    regions = snow_partitioning(im=im, return_all=True,
                                 skip_trim_saddle=skip_trim_saddle,
                                 skip_trim_nearby=skip_trim_nearby)
     im = regions.im
