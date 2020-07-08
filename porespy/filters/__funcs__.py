@@ -284,7 +284,7 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, return_all=False,
     peaks = find_peaks(dt=dt, r_max=r_max)
     print("Initial number of peaks: ", spim.label(peaks)[1])
     if not skip_trim_saddle:
-        peaks = trim_saddle_points(peaks=peaks, dt=dt, max_iters=1000)
+        peaks = trim_saddle_points(peaks=peaks, dt=dt, max_iters=500)
         print("Peaks after trimming saddle points: ", spim.label(peaks)[1])
     if not skip_trim_nearby:
         peaks = trim_nearby_peaks(peaks=peaks, dt=dt)
