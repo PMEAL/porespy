@@ -56,7 +56,7 @@ def fftmorphology(im, strel, mode='opening'):
 
     mode : string
         The type of operation to perform.  Options are 'dilation', 'erosion',
-        'opening' and 'closing'.
+        'opening', 'closing' and 'convolve'.
 
     Returns
     -------
