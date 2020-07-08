@@ -4,7 +4,7 @@ from porespy.filters import trim_nonpercolating_paths
 import collections
 
 
-def tortuosity(im, axis, return_im=False):
+def tortuosity(im, axis, return_im=False, **kwargs):
     r"""
     Calculates tortuosity of given image in specified direction
 
@@ -55,7 +55,10 @@ def tortuosity(im, axis, return_im=False):
     C_out = 0.0
     fd.set_value_BC(pores=inlets, values=C_in)
     fd.set_value_BC(pores=outlets, values=C_out)
-    fd.settings['solver_family'] = 'pyamg'
+    if 'solver_family' in kwargs.keys():
+        fd.settings.update(kwargs)
+    else:
+        fd.settings['solver_family'] = 'pyamg'
     fd.run()
     # calculating molar flow rate, effective diffusivity and tortuosity
     rate_out = fd.rate(pores=outlets)[0]
