@@ -259,6 +259,18 @@ class FilterTest():
         test = ps.tools.fftmorphology(im, strel=ball(3), mode='closing')
         assert np.all(truth == test)
 
+    def test_morphology_fft_convolve_3D(self):
+        im = self.im
+        truth = spim.convolve(im, weights=ball(3))
+        test = ps.tools.fftmorphology(im, strel=ball(3), mode='convolve')
+        assert np.all(truth == test)
+
+    def test_morphology_fft_convolve_2D(self):
+        im = self.im[:, :, 50]
+        truth = spim.convolve(im, weights=disk(3))
+        test = ps.tools.fftmorphology(im, strel=disk(3), mode='convolve')
+        assert np.all(truth == test)
+
     def test_reduce_peaks(self):
         im = ~ps.generators.lattice_spheres(shape=[50, 50], radius=5, offset=3)
         peaks = ps.filters.reduce_peaks(im)
