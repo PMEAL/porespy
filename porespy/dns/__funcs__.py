@@ -58,7 +58,12 @@ def tortuosity(im, axis, return_im=False, **kwargs):
     if 'solver_family' in kwargs.keys():
         fd.settings.update(kwargs)
     else:
-        fd.settings['solver_family'] = 'pyamg'
+        try:
+            import pyamg
+            fd.settings['solver_family'] = 'pyamg'
+        except ModuleNotFoundError:
+            fd.settings['solver_family'] = 'scipy'
+            fd.settings['solver_type'] = 'cg'
     fd.run()
     # calculating molar flow rate, effective diffusivity and tortuosity
     rate_out = fd.rate(pores=outlets)[0]
