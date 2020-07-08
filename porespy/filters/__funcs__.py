@@ -179,9 +179,8 @@ def distance_transform_lin(im, axis=0, mode="both"):
         return f
 
 
-def snow_partitioning(
-    im, dt=None, r_max=4, sigma=0.4, return_all=False, mask=True, randomize=True
-):
+def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, return_all=False,
+                      mask=True, randomize=True):
     r"""
     Partitions the void space into pore regions using a marker-based watershed
     algorithm, with specially filtered peaks as markers.
@@ -290,9 +289,8 @@ def snow_partitioning(
         return regions
 
 
-def snow_partitioning_n(
-    im, r_max=4, sigma=0.4, return_all=True, mask=True, randomize=False, alias=None
-):
+def snow_partitioning_n(im, r_max=4, sigma=0.4, return_all=True,
+                        mask=True, randomize=False, alias=None):
     r"""
     This function partitions an imaging oontain an arbitrary number of phases
     into regions using a marker-based watershed segmentation. Its an extension
@@ -409,24 +407,22 @@ def snow_partitioning_n(
         return combined_region
 
 
-def find_peaks(dt, r_max=4, footprint=None):
+def find_peaks(dt, r_max=4, footprint=None, **kwargs):
     r"""
-    Returns all local maxima in the distance transform
+    Finds local maxima in the distance transform
 
     Parameters
     ----------
     dt : ND-array
         The distance transform of the pore space.  This may be calculated and
         filtered using any means desired.
-
     r_max : scalar
         The size of the structuring element used in the maximum filter.  This
         controls the localness of any maxima. The default is 4 voxels.
-
     footprint : ND-array
         Specifies the shape of the structuring element used to define the
-        neighborhood when looking for peaks.  If none is specified then a
-        spherical shape is used (or circular in 2D).
+        neighborhood when looking for peaks.  If ``None`` (the default) is
+        specified then a spherical shape is used (or circular in 2D).
 
     Returns
     -------
@@ -442,17 +438,15 @@ def find_peaks(dt, r_max=4, footprint=None):
     ``peaks = peak_local_max(image=dt, min_distance=r, exclude_border=0,
     indices=False)``
 
-    This automatically uses a square structuring element which is significantly
-    faster than using a circular or spherical element.
+    The *skimage* function automatically uses a square structuring element
+    which is significantly faster than using a circular or spherical element.
     """
     im = dt > 0
     if im.ndim != im.squeeze().ndim:
-        warnings.warn(
-            "Input image conains a singleton axis:"
-            + str(im.shape)
-            + " Reduce dimensionality with np.squeeze(im) to avoid"
-            + " unexpected behavior."
-        )
+        warnings.warn("Input image conains a singleton axis:"
+                      + str(im.shape)
+                      + " Reduce dimensionality with np.squeeze(im) to avoid"
+                      + " unexpected behavior.")
     if footprint is None:
         if im.ndim == 2:
             footprint = disk
@@ -460,8 +454,17 @@ def find_peaks(dt, r_max=4, footprint=None):
             footprint = ball
         else:
             raise Exception("only 2-d and 3-d images are supported")
-    mx = spim.maximum_filter(dt + 2 * (~im), footprint=footprint(r_max))
-    peaks = (dt == mx) * im
+    parallel = kwargs.pop('parallel', False)
+    cores = kwargs.pop('cores', None)
+    divs = kwargs.pop('cores', 2)
+    if parallel:
+        overlap = max(footprint(r_max).shape)
+        peaks = chunked_func(func=find_peaks, overlap=overlap,
+                             im_arg='dt', dt=dt, footprint=footprint,
+                             cores=cores, divs=divs)
+    else:
+        mx = spim.maximum_filter(dt + 2 * (~im), footprint=footprint(r_max))
+        peaks = (dt == mx) * im
     return peaks
 
 
@@ -473,14 +476,14 @@ def reduce_peaks(peaks):
     Parameters
     ----------
     peaks : ND-image
-        An image containing True values indicating peaks in the distance
+        An image containing ``True`` values indicating peaks in the distance
         transform
 
     Returns
     -------
     image : ND-array
         An array with the same number of isolated peaks as the original image,
-        but fewer total voxels.
+        but fewer total ``True`` voxels.
 
     Notes
     -----
@@ -607,9 +610,8 @@ def trim_nearby_peaks(peaks, dt):
     else:
         from skimage.morphology import cube
     peaks, N = spim.label(peaks, structure=cube(3))
-    crds = spim.measurements.center_of_mass(
-        peaks, labels=peaks, index=np.arange(1, N + 1)
-    )
+    crds = spim.measurements.center_of_mass(peaks, labels=peaks,
+                                            index=np.arange(1, N + 1))
     crds = np.vstack(crds).astype(int)  # Convert to numpy array of ints
     # Get distance between each peak as a distance map
     tree = sptl.cKDTree(data=crds)
@@ -748,9 +750,8 @@ def trim_floating_solid(im, conn=None):
     return im
 
 
-def trim_nonpercolating_paths(
-    im, inlet_axis=0, outlet_axis=0, inlets=None, outlets=None
-):
+def trim_nonpercolating_paths(im, inlet_axis=0, outlet_axis=0,
+                              inlets=None, outlets=None):
     r"""
     Removes all nonpercolating paths between specified edges
 
@@ -955,9 +956,8 @@ def find_dt_artifacts(dt):
     """
     temp = np.ones(shape=dt.shape) * np.inf
     for ax in range(dt.ndim):
-        dt_lin = distance_transform_lin(
-            np.ones_like(temp, dtype=bool), axis=ax, mode="both"
-        )
+        dt_lin = distance_transform_lin(np.ones_like(temp, dtype=bool),
+                                        axis=ax, mode="both")
         temp = np.minimum(temp, dt_lin)
     result = np.clip(dt - temp, a_min=0, a_max=np.inf)
     return result
@@ -981,6 +981,10 @@ def region_size(im):
         A copy of ``im`` with each voxel value indicating the size of the
         region to which it belongs.  This is particularly useful for finding
         chord sizes on the image produced by ``apply_chords``.
+
+    See Also
+    --------
+    flood
     """
     if im.dtype == bool:
         im = spim.label(im)[0]
@@ -1045,12 +1049,8 @@ def apply_chords(im, spacing=1, axis=0, trim_edges=True, label=False):
     slices = tuple(slxyz[: im.ndim])
     s = [[0, 1, 0], [0, 1, 0], [0, 1, 0]]  # Straight-line structuring element
     if im.ndim == 3:  # Make structuring element 3D if necessary
-        s = np.pad(
-            np.atleast_3d(s),
-            pad_width=((0, 0), (0, 0), (1, 1)),
-            mode="constant",
-            constant_values=0,
-        )
+        s = np.pad(np.atleast_3d(s), pad_width=((0, 0), (0, 0), (1, 1)),
+                   mode="constant", constant_values=0)
     im = im[slices]
     s = np.swapaxes(s, 0, axis)
     chords = spim.label(im, structure=s)[0]
@@ -1121,7 +1121,7 @@ def apply_chords_3D(im, spacing=0, trim_edges=True):
     return chords
 
 
-def local_thickness(im, sizes=25, mode="hybrid"):
+def local_thickness(im, sizes=25, mode="hybrid", **kwargs):
     r"""
     For each voxel, this function calculates the radius of the largest sphere
     that both engulfs the voxel and fits entirely within the foreground.
@@ -1182,11 +1182,13 @@ def local_thickness(im, sizes=25, mode="hybrid"):
     function.  This is not needed in ``local_thickness`` however.
 
     """
-    im_new = porosimetry(im=im, sizes=sizes, access_limited=False, mode=mode)
+    im_new = porosimetry(im=im, sizes=sizes, access_limited=False, mode=mode,
+                         **kwargs)
     return im_new
 
 
-def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode="hybrid"):
+def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
+                fft=True, **kwargs):
     r"""
     Performs a porosimetry simulution on an image
 
@@ -1236,6 +1238,12 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode="hybrid"):
         included mostly for comparison purposes.  The morphological operations
         are done using fft-based method implementations.
 
+    fft : boolean (default is ``True``)
+        Indicates whether to use the ``fftmorphology`` function in
+        ``porespy.filters`` or to use the standard morphology functions in
+        ``scipy.ndimage``.  Always use ``fft=True`` unless you have a good
+        reason not to.
+
     Returns
     -------
     image : ND-array
@@ -1260,12 +1268,10 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode="hybrid"):
 
     """
     if im.ndim != im.squeeze().ndim:
-        warnings.warn(
-            "Input image contains a singleton axis:"
-            + str(im.shape)
-            + " Reduce dimensionality with np.squeeze(im) to avoid"
-            + " unexpected behavior."
-        )
+        warnings.warn("Input image contains a singleton axis:"
+                      + str(im.shape)
+                      + " Reduce dimensionality with np.squeeze(im) to avoid"
+                      + " unexpected behavior.")
 
     dt = edt(im > 0)
 
@@ -1282,38 +1288,77 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode="hybrid"):
     else:
         strel = ps_ball
 
+    # Parse kwargs for any parallelization arguments
+    parallel = kwargs.pop('parallel', False)
+    cores = kwargs.pop('cores', None)
+    divs = kwargs.pop('divs', 2)
+
     if mode == "mio":
         pw = int(np.floor(dt.max()))
         impad = np.pad(im, mode="symmetric", pad_width=pw)
         inlets = np.pad(inlets, mode="symmetric", pad_width=pw)
         # sizes = np.unique(np.around(sizes, decimals=0).astype(int))[-1::-1]
         imresults = np.zeros(np.shape(impad))
-        for r in tqdm(sizes, file=sys.stdout):
-            imtemp = fftmorphology(impad, strel(r), mode="erosion")
-            if access_limited:
-                imtemp = trim_disconnected_blobs(imtemp, inlets)
-            imtemp = fftmorphology(imtemp, strel(r), mode="dilation")
-            if np.any(imtemp):
-                imresults[(imresults == 0) * imtemp] = r
+        with tqdm(sizes) as pbar:
+            for r in sizes:
+                pbar.update()
+                if parallel:
+                    imtemp = chunked_func(func=spim.binary_erosion,
+                                          input=impad, structure=strel(r),
+                                          overlap=int(2*r) + 1,
+                                          cores=cores, divs=divs)
+                elif fft:
+                    imtemp = fftmorphology(impad, strel(r), mode="erosion")
+                else:
+                    imtemp = spim.binary_erosion(input=impad,
+                                                 structure=strel(r))
+                if access_limited:
+                    imtemp = trim_disconnected_blobs(imtemp, inlets)
+                if parallel:
+                    imtemp = chunked_func(func=spim.binary_dilation,
+                                          input=imtemp, structure=strel(r),
+                                          overlap=int(2*r) + 1,
+                                          cores=cores, divs=divs)
+                elif fft:
+                    imtemp = fftmorphology(imtemp, strel(r), mode="dilation")
+                else:
+                    imtemp = spim.binary_dilation(input=imtemp,
+                                                  structure=strel(r))
+                if np.any(imtemp):
+                    imresults[(imresults == 0) * imtemp] = r
         imresults = extract_subsection(imresults, shape=im.shape)
     elif mode == "dt":
         imresults = np.zeros(np.shape(im))
-        for r in tqdm(sizes, file=sys.stdout):
-            imtemp = dt >= r
-            if access_limited:
-                imtemp = trim_disconnected_blobs(imtemp, inlets)
-            if np.any(imtemp):
-                imtemp = edt(~imtemp) < r
-                imresults[(imresults == 0) * imtemp] = r
+        with tqdm(sizes) as pbar:
+            for r in sizes:
+                pbar.update()
+                imtemp = dt >= r
+                if access_limited:
+                    imtemp = trim_disconnected_blobs(imtemp, inlets)
+                if np.any(imtemp):
+                    imtemp = edt(~imtemp) < r
+                    imresults[(imresults == 0) * imtemp] = r
     elif mode == "hybrid":
         imresults = np.zeros(np.shape(im))
-        for r in tqdm(sizes, file=sys.stdout):
-            imtemp = dt >= r
-            if access_limited:
-                imtemp = trim_disconnected_blobs(imtemp, inlets)
-            if np.any(imtemp):
-                imtemp = fftconvolve(imtemp, strel(r), mode="same") > 0.0001
-                imresults[(imresults == 0) * imtemp] = r
+        with tqdm(sizes) as pbar:
+            for r in sizes:
+                pbar.update()
+                imtemp = dt >= r
+                if access_limited:
+                    imtemp = trim_disconnected_blobs(imtemp, inlets)
+                if np.any(imtemp):
+                    if parallel:
+                        imtemp = chunked_func(func=spim.binary_dilation,
+                                              input=imtemp, structure=strel(r),
+                                              overlap=int(2*r) + 1,
+                                              cores=cores, divs=divs)
+                    elif fft:
+                        imtemp = fftmorphology(imtemp, strel(r),
+                                               mode="dilation")
+                    else:
+                        imtemp = spim.binary_dilation(input=imtemp,
+                                                      structure=strel(r))
+                    imresults[(imresults == 0) * imtemp] = r
     else:
         raise Exception("Unrecognized mode " + mode)
     return imresults
@@ -1481,7 +1526,7 @@ def nphase_border(im, include_diagonals=False):
         return out[1:-1, 1:-1, 1:-1].copy()
 
 
-def prune_branches(skel, branch_points=None, iterations=1):
+def prune_branches(skel, branch_points=None, iterations=1, **kwargs):
     r"""
     Removes all dangling ends or tails of a skeleton.
 
@@ -1506,6 +1551,9 @@ def prune_branches(skel, branch_points=None, iterations=1):
         from skimage.morphology import square as cube
     else:
         from skimage.morphology import cube
+    parallel = kwargs.pop('parallel', False)
+    divs = kwargs.pop('divs', 2)
+    cores = kwargs.pop('cores', None)
     # Create empty image to house results
     im_result = np.zeros_like(skel)
     # If branch points are not supplied, attempt to find them
@@ -1519,7 +1567,12 @@ def prune_branches(skel, branch_points=None, iterations=1):
     # Label arcs
     arc_labels = spim.label(arcs, structure=cube(3))[0]
     # Dilate branch points so they overlap with the arcs
-    branch_points = spim.binary_dilation(branch_points, structure=cube(3))
+    if parallel:
+        branch_points = chunked_func(func=spim.binary_dilation,
+                                     input=branch_points, structure=cube(3),
+                                     overlap=3, divs=divs, cores=cores)
+    else:
+        branch_points = spim.binary_dilation(branch_points, structure=cube(3))
     pts_labels = spim.label(branch_points, structure=cube(3))[0]
     # Now scan through each arc to see if it's connected to two branch points
     slices = spim.find_objects(arc_labels)
@@ -1536,9 +1589,11 @@ def prune_branches(skel, branch_points=None, iterations=1):
     if iterations > 1:
         iterations -= 1
         im_temp = np.copy(im_result)
-        im_result = prune_branches(
-            skel=im_result, branch_points=None, iterations=iterations
-        )
+        im_result = prune_branches(skel=im_result,
+                                   branch_points=None,
+                                   iterations=iterations,
+                                   parallel=parallel,
+                                   divs=divs, cores=cores)
         if np.all(im_temp == im_result):
             iterations = 0
     return im_result
@@ -1552,11 +1607,11 @@ def chunked_func(func,
                  strel_arg=["strel", "structure", "footprint"],
                  **kwargs):
     r"""
-    Performs the specfied operation "chunk-wise" in parallel
+    Performs the specfied operation "chunk-wise" in parallel using dask
 
     This can be used to save memory by doing one chunk at a time (``cores=1``)
     or to increase computation speed by spreading the work across multiple
-    cores (e.g. ``core = 8``)
+    cores (e.g. ``cores=8``)
 
     This function can be used with any operation that applies a structuring
     element of some sort, since this implies that the operation is local
