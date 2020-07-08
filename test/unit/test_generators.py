@@ -143,7 +143,7 @@ class GeneratorTest():
             assert abs(phi_actual - phi) < 0.02
 
     def test_polydisperse_spheres(self):
-        phis = np.arange(0.1, 0.9, 0.2)
+        phis = np.arange(0.1, 0.5, 0.2)
         dist = sp.stats.norm(loc=7, scale=2)
         for phi in phis:
             im = ps.generators.polydisperse_spheres(shape=[100, 100, 50],

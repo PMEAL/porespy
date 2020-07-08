@@ -841,7 +841,8 @@ def _perlin_noise_2D(shape, res):
     return np.sqrt(2)*((1-t[:, :, 1])*n0 + t[:, :, 1]*n1)
 
 
-def blobs(shape: List[int], porosity: float = 0.5, blobiness: int = 1):
+def blobs(shape: List[int], porosity: float = 0.5, blobiness: int = 1,
+          **kwargs):
     """
     Generates an image containing amorphous blobs
 
@@ -874,11 +875,20 @@ def blobs(shape: List[int], porosity: float = 0.5, blobiness: int = 1):
     """
     blobiness = np.array(blobiness)
     shape = np.array(shape)
+    parallel = kwargs.pop('parallel', False)
+    divs = kwargs.pop('divs', 2)
+    cores = kwargs.pop('cores', None)
     if np.size(shape) == 1:
         shape = np.full((3, ), int(shape))
     sigma = np.mean(shape)/(40*blobiness)
     im = np.random.random(shape)
-    im = spim.gaussian_filter(im, sigma=sigma)
+    if parallel:
+        # TODO: The determination of the overlap should be done rigorously
+        im = ps.filters.chunked_func(func=spim.gaussian_filter,
+                                     input=im, sigma=sigma,
+                                     divs=divs, cores=cores, overlap=10)
+    else:
+        im = spim.gaussian_filter(im, sigma=sigma)
     im = norm_to_uniform(im, scale=[0, 1])
     if porosity:
         im = im < porosity
@@ -888,8 +898,9 @@ def blobs(shape: List[int], porosity: float = 0.5, blobiness: int = 1):
 def cylinders(shape: List[int], radius: int, ncylinders: int,
               phi_max: float = 0, theta_max: float = 90, length: float = None):
     r"""
-    Generates a binary image of overlapping cylinders.  This is a good
-    approximation of a fibrous mat.
+    Generates a binary image of overlapping cylinders.
+
+    This is a good approximation of a fibrous mat.
 
     Parameters
     ----------
@@ -902,16 +913,16 @@ def cylinders(shape: List[int], radius: int, ncylinders: int,
         The number of cylinders to add to the domain. Adjust this value to
         control the final porosity, which is not easily specified since
         cylinders overlap and intersect different fractions of the domain.
-    theta_max : scalar
-        A value between 0 and 90 that controls the amount of rotation *in the*
-        XY plane, with 0 meaning all cylinders point in the X-direction, and
-        90 meaning they are randomly rotated about the Z axis by as much
-        as +/- 90 degrees.
     phi_max : scalar
         A value between 0 and 90 that controls the amount that the cylinders
         lie *out of* the XY plane, with 0 meaning all cylinders lie in the XY
         plane, and 90 meaning that cylinders are randomly oriented out of the
         plane by as much as +/- 90 degrees.
+    theta_max : scalar
+        A value between 0 and 90 that controls the amount of rotation *in the*
+        XY plane, with 0 meaning all cylinders point in the X-direction, and
+        90 meaning they are randomly rotated about the Z axis by as much
+        as +/- 90 degrees.
     length : scalar
         The length of the cylinders to add.  If ``None`` (default) then the
         cylinders will extend beyond the domain in both directions so no ends
@@ -930,34 +941,39 @@ def cylinders(shape: List[int], radius: int, ncylinders: int,
         shape = np.full((3, ), int(shape))
     elif np.size(shape) == 2:
         raise Exception("2D cylinders don't make sense")
-    if length is None:
-        R = np.sqrt(np.sum(np.square(shape))).astype(int)
-    else:
-        R = length/2
-    im = np.zeros(shape)
+    # Find hypotenuse of domain from [0,0,0] to [Nx,Ny,Nz]
+    H = np.sqrt(np.sum(np.square(shape))).astype(int)
+    if length is None:  # Assume cylinders span domain if length not given
+        length = 2*H
+    R = min(int(length/2), 2*H)  # Trim given length to 2H if too long
     # Adjust max angles to be between 0 and 90
     if (phi_max > 90) or (phi_max < 0):
         raise Exception('phi_max must be betwen 0 and 90')
     if (theta_max > 90) or (theta_max < 0):
         raise Exception('theta_max must be betwen 0 and 90')
+    # Create empty image for inserting into
+    im = np.zeros(shape, dtype=bool)
     n = 0
-    while n < ncylinders:
-        # Choose a random starting point in domain
-        x = np.random.rand(3)*shape
-        # Chose a random phi and theta within given ranges
-        phi = (np.pi/2 - np.pi*np.random.rand())*phi_max/90
-        theta = (np.pi/2 - np.pi*np.random.rand())*theta_max/90
-        X0 = R*np.array([np.cos(phi)*np.cos(theta),
-                         np.cos(phi)*np.sin(theta),
-                         np.sin(phi)])
-        [X0, X1] = [x + X0, x - X0]
-        crds = line_segment(X0, X1)
-        lower = ~np.any(np.vstack(crds).T < [0, 0, 0], axis=1)
-        upper = ~np.any(np.vstack(crds).T >= shape, axis=1)
-        valid = upper*lower
-        if np.any(valid):
-            im[crds[0][valid], crds[1][valid], crds[2][valid]] = 1
-            n += 1
+    L = min(H, R)
+    with tqdm(range(1, ncylinders)) as pbar:
+        while n < ncylinders:
+            # Choose a random starting point in domain
+            x = np.random.rand(3)*(shape + 2*L)
+            # Chose a random phi and theta within given ranges
+            phi = (np.pi/2 - np.pi*np.random.rand())*phi_max/90
+            theta = (np.pi/2 - np.pi*np.random.rand())*theta_max/90
+            X0 = R*np.array([np.cos(phi)*np.cos(theta),
+                             np.cos(phi)*np.sin(theta),
+                             np.sin(phi)])
+            [X0, X1] = [x + X0, x - X0]
+            crds = line_segment(X0, X1)
+            lower = ~np.any(np.vstack(crds).T < [L, L, L], axis=1)
+            upper = ~np.any(np.vstack(crds).T >= shape + L, axis=1)
+            valid = upper*lower
+            if np.any(valid):
+                im[crds[0][valid] - L, crds[1][valid] - L, crds[2][valid] - L] = 1
+                n += 1
+                pbar.update()
     im = np.array(im, dtype=bool)
     dt = edt(~im) < radius
     return ~dt

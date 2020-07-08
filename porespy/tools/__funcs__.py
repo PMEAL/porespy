@@ -739,7 +739,7 @@ def norm_to_uniform(im, scale=None):
     return im
 
 
-def functions_to_table(mod, colwidth=[27, 48]):
+def _functions_to_table(mod, colwidth=[27, 48]):
     r"""
     Given a module of functions, returns a ReST formatted text string that
     outputs a table when printed.
@@ -1099,18 +1099,37 @@ def _create_alias_map(im, alias=None):
     """
     # -------------------------------------------------------------------------
     # Get alias if provided by user
-    phases_num = sp.unique(im * 1)
-    phases_num = sp.trim_zeros(phases_num)
+    phases_num = np.unique(im).astype(int)
+    phases_num = np.trim_zeros(phases_num)
     al = {}
+    wrong_labels = []
     for values in phases_num:
         al[values] = 'phase{}'.format(values)
     if alias is not None:
         alias_sort = dict(sorted(alias.items()))
-        phase_labels = sp.array([*alias_sort])
+        phase_labels = np.array([*alias_sort])
         al = alias
-        if set(phase_labels) != set(phases_num):
-            raise Exception('Alias labels does not match with image labels '
-                            'please provide correct image labels')
+        for i in phase_labels:
+            if i == 0:
+                raise Exception("Label 0 is not allowed in alias. "
+                                + "Please specify alias with a positive "
+                                  "integer")
+            elif i not in phases_num:
+                wrong_labels.append(i)
+        if wrong_labels:
+            raise Exception("Alias label(s) {} does not "
+                            "match with image "
+                            "label(s).".format(wrong_labels)
+                            + "Please provide correct labels from image.")
+        if phase_labels.size < phases_num.size:
+            missed_labels = np.setdiff1d(phases_num, phase_labels)
+            for i in missed_labels:
+                warnings.warn(
+                    "label_{} alias is not provided although it "
+                    "exists in the input image.".format(i)
+                    + "The default label alias phase{} is assigned to "
+                      "label_{}".format(i, i))
+                al[i] = 'phase{}'.format(i)
     return al
 
 

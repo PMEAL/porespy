@@ -5,7 +5,7 @@
 [![image](https://codecov.io/gh/PMEAL/PoreSpy/branch/master/graph/badge.svg)](https://codecov.io/gh/PMEAL/PoreSpy)
 [![image](https://img.shields.io/badge/ReadTheDocs-GO-blue.svg)](http://porespy.readthedocs.io/en/master/)
 [![image](https://img.shields.io/pypi/v/porespy.svg)](https://pypi.python.org/pypi/porespy/)
-[![image](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.2633284-blue.svg)](https://www.doi.org/10.5281/zenodo.2633284)
+[![image](https://img.shields.io/badge/DOI-10.21105/joss.01296-blue.svg)](https://doi.org/10.21105/joss.01296)
 
 -----
 
@@ -14,7 +14,7 @@
 > *Gostick J, Khan ZA, Tranter TG, Kok MDR, Agnaou M, Sadeghi MA, Jervis
 > R.* **PoreSpy: A Python Toolkit for Quantitative Analysis of Porous Media
 > Images.** Journal of Open Source Software, 2019.
-> [doi:10.5281/zenodo.2633284](https://joss.theoj.org/papers/10.21105/joss.01296)
+> [doi:10.21105/joss.01296](https://doi.org/10.21105/joss.01296)
 
 # What is PoreSpy?
 
