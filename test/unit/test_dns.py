@@ -1,10 +1,6 @@
 import porespy as ps
 import numpy as np
-import scipy as sp
 import pytest
-import scipy.ndimage as spim
-import matplotlib.pyplot as plt
-plt.close('all')
 
 
 class DNSTest():
@@ -16,6 +12,20 @@ class DNSTest():
         im = ps.generators.lattice_spheres(shape=[200, 200], radius=8, offset=5)
         t = ps.dns.tortuosity(im=im, axis=1)
         assert np.around(t.tortuosity, decimals=6) == 1.353148
+
+    def test_tortuosity_different_solvers(self):
+        im = ps.generators.lattice_spheres(shape=[200, 200], radius=8, offset=5)
+        t = ps.dns.tortuosity(im=im, axis=1, solver_family='scipy',
+                              solver_type='cg')
+        assert np.around(t.tortuosity, decimals=6) == 1.353148
+        t = ps.dns.tortuosity(im=im, axis=1, solver_family='scipy',
+                              solver_type='bicg')
+        assert np.around(t.tortuosity, decimals=6) == 1.353148
+        t = ps.dns.tortuosity(im=im, axis=1, solver_family='pyamg')
+        assert np.around(t.tortuosity, decimals=6) == 1.353148
+        with pytest.raises(AttributeError):
+            t = ps.dns.tortuosity(im=im, axis=1, solver_family='scipy',
+                                  solver_type='blah')
 
 
 if __name__ == '__main__':
