@@ -6,7 +6,7 @@ from edt import edt
 from collections import namedtuple
 from skimage.morphology import ball, disk
 from skimage.measure import marching_cubes_lewiner
-from array_split import shape_split
+from array_split import shape_split, ARRAY_BOUNDS
 from scipy.signal import fftconvolve
 
 
@@ -142,7 +142,7 @@ def fftmorphology(im, strel, mode='opening'):
     return result
 
 
-def subdivide(im, divs=2):
+def subdivide(im, divs=2, overlap=0, flatten=False):
     r"""
     Returns slices into an image describing the specified number of sub-arrays.
 
@@ -159,18 +159,34 @@ def subdivide(im, divs=2):
         The number of sub-divisions to create in each axis of the image.  If a
         scalar is given it is assumed this value applies in all dimensions.
 
+    overlap : scalar or array_like
+        The amount of overlap to use when dividing along each axis.  If a
+        scalar is given it is assumed this value applies in all dimensions.
+
+    flatten : boolean
+        If set to ``True`` then the slice objects are returned as a flat
+        list, while if ``False`` they are returned in a ND-array where each
+        subdivision is accessed using row-col or row-col-layer indexing.
+
     Returns
     -------
-    slices : 1D-array
-        A 1-D array containing slice objects for indexing into ``im`` that
-        extract the sub-divided arrays.
+    slices : list
+        A list containing sets of slice objects for indexing into ``im`` that
+        extract subdivisions of an image.  If ``flatten`` was ``True``, then
+        this list is a flat, suitable  for iterating.  If ``flatten`` was
+        ``False`` then the slice objects must be accessed by row, col, layer
+        indices.
 
     Notes
     -----
     This method uses the
     `array_split package <https://github.com/array-split/array_split>`_ which
     offers the same functionality as the ``split`` method of Numpy's ND-array,
-    but supports the splitting multidimensional arrays in all dimensions.
+    but supports the splitting of multidimensional arrays in all dimensions.
+
+    See Also
+    --------
+    chunked_func
 
     Examples
     --------
@@ -196,11 +212,16 @@ def subdivide(im, divs=2):
     (100, 100)
     (100, 100)
     """
-    # Expand scalar divs
-    if isinstance(divs, int):
-        divs = [divs for i in range(im.ndim)]
-    s = shape_split(im.shape, axis=divs)
-    return s
+    divs = np.ones((im.ndim,), dtype=int) * np.array(divs)
+    halo = overlap * (divs > 1)
+    slices = shape_split(im.shape, axis=divs, halo=halo.tolist(),
+                         tile_bounds_policy=ARRAY_BOUNDS)
+    if flatten is True:
+        temp = np.ravel(slices)
+        slices = [tuple(s) for s in temp]
+    else:
+        slices = slices.tolist()
+    return slices
 
 
 def bbox_to_slices(bbox):
