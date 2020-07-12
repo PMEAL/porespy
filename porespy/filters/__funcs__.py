@@ -1817,10 +1817,10 @@ def invade_region(im, bd, dt=None, inv=None, mode='morph', return_sizes=False,
         give identical results, but may some may have better performance than
         other depending on image size and dimensions.  Options are:
 
-            'morph' - Uses ``scipy.ndimage.binary_dilation`` with a spherical
-            or cirular structuring element of radius 1.  This is the default.
+            'morph' - (default) Uses ``scipy.ndimage.binary_dilation`` with a
+            spherical or cirular structuring element of radius ``thickness.
 
-            'insert' - Using a ``numba`` jit for-loop to insert spheres or
+            'insert' - Uses a ``numba`` jit for-loop to insert spheres or
             disks of radius 1 at all border locations.
 
     Returns
@@ -1864,6 +1864,8 @@ def invade_region(im, bd, dt=None, inv=None, mode='morph', return_sizes=False,
             # Dilate the boundary by given 'thickness'
             if mode == 'morph':
                 temp = spim.binary_dilation(input=bd, structure=strel(t))
+            elif mode == 'fft':  # Strangely slow!
+                temp = fftmorphology(im=bd, strel=strel(t), mode='dilation')
             elif mode == 'insert':
                 pt = np.vstack(np.where(bd))
                 # scratch.fill(True)
