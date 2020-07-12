@@ -140,21 +140,6 @@ class ToolsTest():
         assert np.all(np.unique(im) == vals)
         assert counts[1] < counts[2]
 
-    def test_subdivide_3D(self):
-        im = np.ones([50, 100, 150])
-        ims = ps.tools.subdivide(im, divs=1)
-        assert ims.shape == (1, 1, 1)
-        assert np.all(im[tuple(ims[0, 0, 0])] == im)
-        ims = ps.tools.subdivide(im, divs=2)
-        assert ims.shape == (2, 2, 2)
-        assert im[tuple(ims[0, 0, 0])].sum() == np.prod(im.shape)/8
-
-    def test_subdivide_2D(self):
-        im = np.ones([50, 100])
-        ims = ps.tools.subdivide(im, divs=2)
-        assert ims.shape == (2, 2)
-        assert im[tuple(ims[0, 0])].sum() == np.prod(im.shape)/4
-
     def test_subdivide_2D_with_scalar_overlap(self):
         im = np.ones([150, 150])
         s = ps.tools.subdivide(im, divs=3, overlap=10)
