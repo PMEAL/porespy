@@ -196,6 +196,16 @@ class ToolsTest():
         assert np.all(im[s[1]].shape == (60, 70, 110))
         assert np.all(im[s[13]].shape == (70, 90, 110))
 
+    def test_subdivided_shape_flattened(self):
+        im = np.ones([150, 150, 150])
+        s = ps.tools.subdivide(im, divs=3, overlap=[10, 20, 30], flatten=True)
+        assert np.all(s.shape == (27, ))
+
+    def test_subdivided_shape_not_flattened(self):
+        im = np.ones([150, 150, 150])
+        s = ps.tools.subdivide(im, divs=3, overlap=[10, 20, 30], flatten=False)
+        assert np.all(s.shape == (3, 3, 3))
+
     def test_size_to_seq(self):
         im = self.im2D
         sz = ps.filters.porosimetry(im)

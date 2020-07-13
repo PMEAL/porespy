@@ -170,12 +170,13 @@ def subdivide(im, divs=2, overlap=0, flatten=False):
 
     Returns
     -------
-    slices : list
-        A list containing sets of slice objects for indexing into ``im`` that
-        extract subdivisions of an image.  If ``flatten`` was ``True``, then
-        this list is a flat, suitable  for iterating.  If ``flatten`` was
+    slices : ND-array
+        An ND-array containing sets of slice objects for indexing into ``im``
+        that extract subdivisions of an image.  If ``flatten`` was ``True``,
+        then this array is flat, suitable  for iterating.  If ``flatten`` was
         ``False`` then the slice objects must be accessed by row, col, layer
-        indices.
+        indices.  An ND-array is the preferred container since it's shape can
+        be easily queried.
 
     Notes
     -----
@@ -201,12 +202,9 @@ def subdivide(im, divs=2, overlap=0, flatten=False):
     divs = np.ones((im.ndim,), dtype=int) * np.array(divs)
     halo = overlap * (divs > 1)
     slices = shape_split(im.shape, axis=divs, halo=halo.tolist(),
-                         tile_bounds_policy=ARRAY_BOUNDS)
+                         tile_bounds_policy=ARRAY_BOUNDS).astype(object)
     if flatten is True:
-        temp = np.ravel(slices)
-        slices = [tuple(s) for s in temp]
-    else:
-        slices = slices.tolist()
+        slices = np.ravel(slices)
     return slices
 
 
