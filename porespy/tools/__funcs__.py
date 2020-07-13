@@ -193,24 +193,10 @@ def subdivide(im, divs=2, overlap=0, flatten=False):
     >>> import porespy as ps
     >>> import matplotlib.pyplot as plt
     >>> im = ps.generators.blobs(shape=[200, 200])
-    >>> s = ps.tools.subdivide(im, divs=[2, 2])
+    >>> s = ps.tools.subdivide(im, divs=[2, 2], flatten=True)
+    >>> print(len(s))
+    4
 
-    ``s`` contains an array with the shape given by ``divs``.  To access the
-    first and last quadrants of ``im`` use:
-    >>> print(im[tuple(s[0, 0])].shape)
-    (100, 100)
-    >>> print(im[tuple(s[1, 1])].shape)
-    (100, 100)
-
-    It can be easier to index the array with the slices by applying ``flatten``
-    first:
-    >>> s_flat = s.flatten()
-    >>> for i in s_flat:
-    ...     print(im[i].shape)
-    (100, 100)
-    (100, 100)
-    (100, 100)
-    (100, 100)
     """
     divs = np.ones((im.ndim,), dtype=int) * np.array(divs)
     halo = overlap * (divs > 1)
