@@ -52,6 +52,20 @@ class FilterTest():
         mip = ps.filters.porosimetry(im=self.im, sizes=s)
         assert np.allclose(np.unique(mip)[1:], s)
 
+    def test_porosimetry_mio_mode_without_fft(self):
+        im = ps.generators.blobs(shape=[200, 200])
+        sizes = np.arange(25, 1, -1)
+        fft = ps.filters.porosimetry(im, sizes=sizes, mode='mio', fft=True)
+        mio = ps.filters.porosimetry(im, sizes=sizes, mode='mio', fft=False)
+        assert np.all(fft == mio)
+
+    def test_porosimetry_hybrid_mode_without_fft(self):
+        im = ps.generators.blobs(shape=[200, 200])
+        sizes = np.arange(25, 1, -1)
+        fft = ps.filters.porosimetry(im, sizes=sizes, mode='hybrid', fft=True)
+        mio = ps.filters.porosimetry(im, sizes=sizes, mode='hybrid', fft=False)
+        assert np.all(fft == mio)
+
     def test_apply_chords_axis0(self):
         c = ps.filters.apply_chords(im=self.im, spacing=3, axis=0)
         assert c.sum() == 23722
