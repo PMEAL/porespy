@@ -48,6 +48,30 @@ class NetExtractTest():
                 found_nans = True
         assert found_nans is False
 
+    def test_snow_skip_steps_nearby(self):
+        net = ps.networks.snow(self.im3d, skip_trim_nearby=True)
+        found_nans = False
+        for key in net.keys():
+            if np.any(np.isnan(net[key])):
+                found_nans = True
+        assert found_nans is False
+
+    def test_snow_skip_steps_saddle(self):
+        net = ps.networks.snow(self.im3d, skip_trim_saddle=True)
+        found_nans = False
+        for key in net.keys():
+            if np.any(np.isnan(net[key])):
+                found_nans = True
+        assert found_nans is False
+    
+    def test_snow_skip_steps_both(self):
+        net = ps.networks.snow(self.im3d, skip_trim_saddle=True, skip_trim_nearby=True)
+        found_nans = False
+        for key in net.keys():
+            if np.any(np.isnan(net[key])):
+                found_nans = True
+        assert found_nans is False
+
     def test_snow_n(self):
         net = ps.networks.snow_n(self.im3d+1, voxel_size=1,
                                  boundary_faces=['left', 'right', 'front',
