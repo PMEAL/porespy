@@ -63,7 +63,7 @@ class NetExtractTest():
             if np.any(np.isnan(net[key])):
                 found_nans = True
         assert found_nans is False
-    
+
     def test_snow_skip_steps_both(self):
         net = ps.networks.snow(self.im3d, skip_trim_saddle=True, skip_trim_nearby=True)
         found_nans = False
