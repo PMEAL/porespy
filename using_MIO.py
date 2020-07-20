@@ -7,13 +7,11 @@ import imageio
 plt.rcParams['figure.facecolor'] = "#FFFFFF"  # "#002b36"
 
 # %%  Generate or load a test image
-np.random.seed(3)
+np.random.seed(0)
 # im = ps.generators.perlin_noise(shape=[512, 512], frequency=8, octaves=4, porosity=0.6)
 # im = imageio.imread(r"C:\Users\Jeff\OneDrive - University of Waterloo\Manuscripts\Paper 061 - MIO-based IP\IP_2D_1.tif")
 # im = im != 0
 im = ps.generators.blobs(shape=[500, 500], porosity=0.6, blobiness=2)
-pad = 1
-im = np.pad(im, pad_width=[[0, 0], [pad, 0]], mode='edge')
 # Generate border
 bd = np.zeros_like(im, dtype=bool)
 bd[:, 0] = 1
@@ -24,8 +22,6 @@ dt = edt(im)
 # %% Apply IP on image in single pass
 inv_seq, inv_size = ps.filters.invade_region(im=im, bd=bd, mode='morph',
                                              return_sizes=True)
-inv_seq = inv_seq[:, pad:]
-inv_size = inv_size[:, pad:]
 # Do some post-processing
 inv_satn = ps.tools.seq_to_satn(seq=inv_seq)
 # inv_seq_trapping = ps.filters.find_trapped_regions(seq=inv_seq, bins=None,
@@ -33,10 +29,6 @@ inv_satn = ps.tools.seq_to_satn(seq=inv_seq)
 # inv_satn = ps.tools.seq_to_satn(seq=inv_seq_trapping)
 
 # %%
-im = im[..., pad:]
-bd = np.zeros_like(im, dtype=bool)
-bd[:, 0] = 1
-bd *= im
 sizes = np.arange(int(dt.max())+1, 0, -1)
 mio = ps.filters.porosimetry(im=im, inlets=bd, sizes=sizes, mode='dt')
 # mio_satn = ps.tools.size_to_satn(size=mio, im=im)

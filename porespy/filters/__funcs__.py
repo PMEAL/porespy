@@ -1874,7 +1874,7 @@ def invade_region(im, bd, dt=None, inv=None, mode='morph', return_sizes=False,
                 temp = _insert_disks_at_points(im=scratch, coords=pt,
                                                r=t, v=1, smooth=False)
             # Reduce to only the 'new' boundary
-            edge = temp*(bd == 0)*im
+            edge = temp*(dt > 0)
             if ~np.any(edge):
                 print('\nNo more accessible invasion sites found...exiting')
                 break
@@ -1890,6 +1890,7 @@ def invade_region(im, bd, dt=None, inv=None, mode='morph', return_sizes=False,
                 sizes = _insert_disks_at_points(im=sizes, coords=np.vstack(pt),
                                                 r=r_max, v=r_max, smooth=True)
             bd[pt] = True  # Update boundary image with newly invaded points
+            dt[pt] = 0.0
             if step == (max_iter - 1):  # If max_iters reached, end loop
                 print('\nMaximum number of iterations reached...exiting')
                 break
