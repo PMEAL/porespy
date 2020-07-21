@@ -625,7 +625,7 @@ def make_contiguous(im, mode='keep_zeros'):
         numbers are ranked starting at 1, include negative numbers,
         so [-1, 0, 4] becomes [1, 0, 2]
 
-        'symmetric' : Negative and positive voxels are ranks based on their
+        'symmetric' : Negative and positive voxels are ranked based on their
         respective distances to 0, so [-4, -1, 0, 5] becomes [-2, -1, 0, 1]
 
         'clipped' : Voxels less than or equal to 0 are set to 0, while
@@ -634,7 +634,7 @@ def make_contiguous(im, mode='keep_zeros'):
 
         'none' : Voxels are ranked such that the smallest or most
         negative number becomes 1, so [-4, 2, 0] becomes [1, 3, 2].
-        This is equivalent to calling ``scipy.stats.randdata`` directly,
+        This is equivalent to calling ``scipy.stats.rankdata`` directly,
         and reshaping the result to match ``im``.
 
     Returns
