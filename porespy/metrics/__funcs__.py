@@ -867,7 +867,8 @@ def pc_curve_from_ibip(im, sizes, seq, sigma=0.072, theta=180, voxel_size=1, ste
         for n in seqs:
             pbar.update()
             mask = seq == n
-            r = sizes[mask].min()*voxel_size
+            # The following assumes only one size found, which was confirmed
+            r = sizes[mask][0]*voxel_size
             pc = -2*sigma*np.cos(np.deg2rad(theta))/r
             x.append(pc)
             snwp = ((seq <= n)*(seq > 0)*(im == 1)).sum()/im.sum()

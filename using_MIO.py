@@ -7,7 +7,7 @@ import imageio
 plt.rcParams['figure.facecolor'] = "#FFFFFF"  # "#002b36"
 
 # %%  Generate or load a test image
-np.random.seed(0)
+np.random.seed(1)
 # im = ps.generators.perlin_noise(shape=[512, 512], frequency=8, octaves=4, porosity=0.6)
 # im = imageio.imread(r"C:\Users\Jeff\OneDrive - University of Waterloo\Manuscripts\Paper 061 - MIO-based IP\IP_2D_1.tif")
 # im = im != 0
@@ -30,7 +30,7 @@ inv_satn = ps.tools.seq_to_satn(seq=inv_seq)
 
 # %%
 sizes = np.arange(int(dt.max())+1, 0, -1)
-mio = ps.filters.porosimetry(im=im, inlets=bd, sizes=sizes, mode='dt')
+mio = ps.filters.porosimetry(im=im, inlets=bd, sizes=sizes, mode='mio')
 # mio_satn = ps.tools.size_to_satn(size=mio, im=im)
 mio_seq = ps.tools.size_to_seq(mio)
 mio_seq[im*(mio_seq == 0)] = -1  # Adjust to set uninvaded to -1
@@ -56,15 +56,21 @@ if 0:
 
 # %%
 if 1:
-    satns = np.unique(mio_satn)[1:]
+    inv_satn_t = np.around(inv_satn, decimals=4)
+    mio_satn_t = np.around(mio_satn, decimals=4)
+    satns = np.unique(mio_satn_t)[1:]
+    err = []
     diff = np.zeros_like(im, dtype=float)
-    for i, s in enumerate(satns):
-        ip_mask = (inv_satn <= s) * (inv_satn > 0)
-        mio_mask = (mio_satn <= s) * (mio_satn > 0)
-        diff[(mio_mask == 1)*(ip_mask == 0)] = 1
-        diff[(mio_mask == 0)*(ip_mask == 1)] = -1
-    plt.figure()
-    plt.imshow(diff/im, origin='xy')
+    for s in satns:
+        ip_mask = (inv_satn_t <= s) * (inv_satn_t > 0)
+        mio_mask = (mio_satn_t <= s) * (mio_satn_t > 0)
+        diff[(mio_mask == 1)*(ip_mask == 0)*(im == 1)] = 1
+        diff[(mio_mask == 0)*(ip_mask == 1)*(im == 1)] = -1
+        err.append((mio_mask != ip_mask).sum())
+    # plt.figure()
+    # plt.imshow(diff/im, origin='xy')
+    # plt.figure()
+    plt.plot(satns, err, 'o-')
 
 # %%
 if 0:
@@ -73,7 +79,7 @@ if 0:
     ax[1].imshow(mio_satn/im, origin='xy')
 
 # %%
-if 0:
+if 1:
     d = ps.metrics.pc_curve_from_ibip(im, inv_size, inv_seq, voxel_size=1e-5)
     e = ps.metrics.pc_curve_from_mio(im=im, sizes=mio, voxel_size=1e-5, stepped=True)
 
