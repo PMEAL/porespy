@@ -1840,13 +1840,13 @@ def invade_region(im, bd, dt=None, inv=None, mode='morph', return_sizes=False,
     # Initialize inv image with -1 in the solid, and 0's in the void
     inv = -1*((~im).astype(int))
     sizes = -1*((~im).astype(int))
+    # Process the boundary image
+    bd = np.copy(bd > 0)
+    edge = np.copy(bd)
     if dt is None:  # Find dt if not given
         dt = edt(im)
     # Conert the dt to nearest integer or more
     dt = dt.astype(int)
-    # Process the boundary image
-    bd = np.copy(bd > 0)
-    edge = np.copy(bd)
     # Fetch the correct strel for dilation
     if im.ndim == 3:
         strel = ball
@@ -1856,8 +1856,12 @@ def invade_region(im, bd, dt=None, inv=None, mode='morph', return_sizes=False,
         t = kwargs['thickness']
     else:
         t = 1
+    if 'coarseness' in kwargs.keys():
+        c = kwargs['coarseness']
+        dt = (dt/c).astype(int)*c
     # Intialize scratch array so it can be cleared and refilled inside loop
-    scratch = np.zeros_like(bd)
+    if mode == 'insert':
+        scratch = np.zeros_like(bd)
     with tqdm(range(1, max_iter)) as pbar:
         for step in range(1, max_iter):
             pbar.update()
@@ -1890,7 +1894,7 @@ def invade_region(im, bd, dt=None, inv=None, mode='morph', return_sizes=False,
                 sizes = _insert_disks_at_points(im=sizes, coords=np.vstack(pt),
                                                 r=r_max, v=r_max, smooth=True)
             bd[pt] = True  # Update boundary image with newly invaded points
-            dt[pt] = 0.0
+            dt[pt] = 0
             if step == (max_iter - 1):  # If max_iters reached, end loop
                 print('\nMaximum number of iterations reached...exiting')
                 break
