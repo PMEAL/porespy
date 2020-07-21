@@ -829,7 +829,7 @@ def phase_fraction(im, normed=True):
     return results
 
 
-def pc_curve_from_ibip(im, sizes, seq, sigma=0.072, theta=180, voxel_size=1):
+def pc_curve_from_ibip(im, sizes, seq, sigma=0.072, theta=180, voxel_size=1, stepped=True):
     r"""
     Produces a Pc-Snwp curve from the output of ``invade_regions``
 
@@ -842,13 +842,16 @@ def pc_curve_from_ibip(im, sizes, seq, sigma=0.072, theta=180, voxel_size=1):
         is set to ``True``.
     seq : ND-array
         The image containing the invasion sequence values returned from
-        ``invaded_regions``.
+        ``invade_regions``.
     sigma : float
         The surface tension of the fluid-fluid system of interest
     theta : float
         The contact angle through the invading phase in degrees
     voxel_size : float
         The voxel resolution of the image
+    stepped : boolean
+        If ``True`` (default) the returned data has steps between each point
+        instead of connecting points directly with sloped lines.
 
     Returns
     -------
@@ -869,6 +872,15 @@ def pc_curve_from_ibip(im, sizes, seq, sigma=0.072, theta=180, voxel_size=1):
             x.append(pc)
             snwp = ((seq <= n)*(seq > 0)*(im == 1)).sum()/im.sum()
             y.append(snwp)
+    if stepped:
+        pc = x.copy()
+        snwp = y.copy()
+        for i in range(0, len(x)-1):
+            j = 2*i + 1
+            pc.insert(j, x[i+1])
+            snwp.insert(j, y[i])
+        x = pc
+        y = snwp
     pc_curve = namedtuple('data', field_names=['pc', 'snwp'])
     pc_curve.pc = x
     pc_curve.snwp = y
