@@ -6,8 +6,8 @@ from tqdm import tqdm
 def set_mpl_style():
 
     sfont = 15
-    mfont = 15
-    lfont = 15
+    mfont = 25
+    lfont = 35
 
     line_props = {'linewidth': 4,
                   'markersize': 10}
@@ -16,12 +16,12 @@ def set_mpl_style():
                   'labelsize': mfont,
                   'linewidth': 3,
                   'labelpad': 10}
-    xtick_props = {'labelsize': sfont,
+    xtick_props = {'labelsize': lfont,
                    'top': True,
                    'direction': 'in',
                    'major.size': 10,
                    'major.width': 3}
-    ytick_props = {'labelsize': sfont,
+    ytick_props = {'labelsize': lfont,
                    'right': True,
                    'direction': 'in',
                    'major.size': 10,

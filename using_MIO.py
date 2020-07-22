@@ -7,7 +7,7 @@ import imageio
 plt.rcParams['figure.facecolor'] = "#FFFFFF"  # "#002b36"
 
 # %%  Generate or load a test image
-np.random.seed(1)
+np.random.seed(5)
 # im = ps.generators.perlin_noise(shape=[512, 512], frequency=8, octaves=4, porosity=0.6)
 # im = imageio.imread(r"C:\Users\Jeff\OneDrive - University of Waterloo\Manuscripts\Paper 061 - MIO-based IP\IP_2D_1.tif")
 # im = im != 0
@@ -21,7 +21,8 @@ dt = edt(im)
 
 # %% Apply IP on image in single pass
 inv_seq, inv_size = ps.filters.invade_region(im=im, bd=bd, mode='morph',
-                                             return_sizes=True)
+                                             return_sizes=True, max_iters=15000,
+                                             thickness=1, coarseness=2)
 # Do some post-processing
 inv_satn = ps.tools.seq_to_satn(seq=inv_seq)
 # inv_seq_trapping = ps.filters.find_trapped_regions(seq=inv_seq, bins=None,
@@ -67,9 +68,9 @@ if 1:
         diff[(mio_mask == 1)*(ip_mask == 0)*(im == 1)] = 1
         diff[(mio_mask == 0)*(ip_mask == 1)*(im == 1)] = -1
         err.append((mio_mask != ip_mask).sum())
-    # plt.figure()
-    # plt.imshow(diff/im, origin='xy')
-    # plt.figure()
+    plt.figure()
+    plt.imshow(diff/im, origin='xy')
+    plt.figure()
     plt.plot(satns, err, 'o-')
 
 # %%
