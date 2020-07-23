@@ -68,7 +68,7 @@ def satn_to_movie(im, satn, cmap='viridis',
             seq += v*(target == v)
             seq[~im] = target.max() + 10
             frame1 = ax.imshow(seq, vmin=v_under, vmax=v_over,
-                               animated=True, cmap=cmap, origin='xy')
+                               animated=True, cmap=cmap, origin='lower')
             movie.append([frame1])
     if repeat is not None:
         repeat_delay = repeat/100

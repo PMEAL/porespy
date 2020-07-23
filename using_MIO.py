@@ -22,7 +22,7 @@ dt = edt(im)
 # %% Apply IP on image in single pass
 inv_seq, inv_size = ps.filters.invade_region(im=im, bd=bd, mode='morph',
                                              return_sizes=True, max_iters=15000,
-                                             thickness=1, coarseness=2)
+                                             thickness=1, coarseness=1)
 # Do some post-processing
 inv_satn = ps.tools.seq_to_satn(seq=inv_seq)
 # inv_seq_trapping = ps.filters.find_trapped_regions(seq=inv_seq, bins=None,
@@ -47,12 +47,14 @@ if 0:
     cmap.set_over(color='white')
     cmap.set_under(color='grey')
     fig, ax = plt.subplots(1, 3)
-    ax[0].imshow((inv_seq_trapping > 0)/im, vmin=1e-3, vmax=2, cmap=cmap, origin='xy')
+    ax[0].imshow((inv_seq_trapping > 0)/im, vmin=1e-3, vmax=2,
+                 cmap=cmap, origin='lower')
     ax[0].axis('off')
-    ax[1].imshow((mio_seq_trapping > 0)/im, vmin=1e-3, vmax=1, cmap=cmap, origin='xy')
+    ax[1].imshow((mio_seq_trapping > 0)/im, vmin=1e-3, vmax=1,
+                 cmap=cmap, origin='lower')
     ax[1].axis('off')
     temp = (mio_seq_trapping > 0)*2.0 - (inv_seq_trapping > 0)*1.0
-    ax[2].imshow(temp/im, vmin=1e-3, vmax=2.0, cmap=cmap, origin='xy')
+    ax[2].imshow(temp/im, vmin=1e-3, vmax=2.0, cmap=cmap, origin='lower')
     ax[2].axis('off')
 
 # %%
@@ -76,8 +78,8 @@ if 1:
 # %%
 if 0:
     fig, ax = plt.subplots(1, 2)
-    ax[0].imshow(inv_satn/im, origin='xy')
-    ax[1].imshow(mio_satn/im, origin='xy')
+    ax[0].imshow(inv_satn/im, origin='lower')
+    ax[1].imshow(mio_satn/im, origin='lower')
 
 # %%
 if 1:

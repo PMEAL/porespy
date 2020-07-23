@@ -44,7 +44,7 @@ def imshow(*im, ind=None, axis=None):
     This automatically:
         * slices a 3D image in the middle of the last axis
         * uses a masked array to make 0's white
-        * sets the origin to 'xy' so bottom-left corner is [0, 0]
+        * sets the origin to 'lower' so bottom-left corner is [0, 0]
 
     Parameters
     ----------
@@ -74,7 +74,7 @@ def imshow(*im, ind=None, axis=None):
             image = image.take(indices=ind, axis=axis)
         image = np.ma.array(image, mask=image == 0)
         fig = plt.subplot(1, len(im), i+1)
-        plt.imshow(image, origin='xy')
+        plt.imshow(image, origin='lower')
     return fig
 
 
