@@ -1,6 +1,6 @@
 import porespy as ps
 import numpy as np
-import scipy as sp
+import scipy.spatial as sptl
 import scipy.ndimage as spim
 import matplotlib.pyplot as plt
 import pytest
@@ -95,11 +95,11 @@ class ToolsTest():
 
     def test_inhull(self):
         X = np.random.rand(25, 2)
-        hull = sp.spatial.ConvexHull(X)
+        hull = sptl.ConvexHull(X)
         assert not ps.tools.in_hull([[0, 0]], hull)
         assert ps.tools.in_hull([np.mean(X, axis=0)], hull)
         X = np.random.rand(25, 3)
-        hull = sp.spatial.ConvexHull(X)
+        hull = sptl.ConvexHull(X)
         assert not ps.tools.in_hull([[0, 0, 0]], hull)
         assert ps.tools.in_hull([np.mean(X, axis=0)], hull)
 
@@ -109,7 +109,7 @@ class ToolsTest():
         im = ps.tools.insert_sphere(im, c=[110, 100], r=50, v=2, overwrite=False)
         im = ps.tools.insert_sphere(im, c=[90, 100], r=50, v=3, overwrite=False)
         vals, counts = np.unique(im, return_counts=True)
-        assert sp.all(np.unique(im) == vals)
+        assert np.all(np.unique(im) == vals)
         assert counts[1] > counts[2]
 
     def test_insert_sphere_2D_w_overwrite(self):
@@ -118,7 +118,7 @@ class ToolsTest():
         im = ps.tools.insert_sphere(im, c=[110, 100], r=50, v=2, overwrite=True)
         im = ps.tools.insert_sphere(im, c=[90, 100], r=50, v=3, overwrite=True)
         vals, counts = np.unique(im, return_counts=True)
-        assert sp.all(np.unique(im) == vals)
+        assert np.all(np.unique(im) == vals)
         assert counts[1] < counts[2]
 
     def test_insert_sphere_3D_no_overwrite(self):
@@ -130,7 +130,7 @@ class ToolsTest():
         im = ps.tools.insert_sphere(im, c=[90, 100, 100], r=50, v=3,
                                     overwrite=False)
         vals, counts = np.unique(im, return_counts=True)
-        assert sp.all(np.unique(im) == vals)
+        assert np.all(np.unique(im) == vals)
         assert counts[1] > counts[2]
 
     def test_insert_sphere_3D_w_overwrite(self):
@@ -142,23 +142,74 @@ class ToolsTest():
         im = ps.tools.insert_sphere(im, c=[90, 100, 100], r=50, v=3,
                                     overwrite=True)
         vals, counts = np.unique(im, return_counts=True)
-        assert sp.all(np.unique(im) == vals)
+        assert np.all(np.unique(im) == vals)
         assert counts[1] < counts[2]
 
-    def test_subdivide_3D(self):
-        im = np.ones([50, 100, 150])
-        ims = ps.tools.subdivide(im, divs=1)
-        assert ims.shape == (1, 1, 1)
-        assert np.all(im[tuple(ims[0, 0, 0])] == im)
-        ims = ps.tools.subdivide(im, divs=2)
-        assert ims.shape == (2, 2, 2)
-        assert im[tuple(ims[0, 0, 0])].sum() == np.prod(im.shape)/8
+    def test_subdivide_2D_with_scalar_overlap(self):
+        im = np.ones([150, 150])
+        s = ps.tools.subdivide(im, divs=3, overlap=10)
+        assert np.all(im[s[0][0]].shape == (60, 60))
+        assert np.all(im[s[0][1]].shape == (60, 70))
+        assert np.all(im[s[1][1]].shape == (70, 70))
 
-    def test_subdivide_2D(self):
-        im = np.ones([50, 100])
-        ims = ps.tools.subdivide(im, divs=2)
-        assert ims.shape == (2, 2)
-        assert im[tuple(ims[0, 0])].sum() == np.prod(im.shape)/4
+    def test_subdivide_2D_with_vector_overlap(self):
+        im = np.ones([150, 150])
+        s = ps.tools.subdivide(im, divs=3, overlap=[10, 20])
+        assert np.all(im[s[0][0]].shape == (60, 70))
+        assert np.all(im[s[0][1]].shape == (60, 90))
+        assert np.all(im[s[1][1]].shape == (70, 90))
+
+    def test_subdivide_2D_with_scalar_overlap_flattened(self):
+        im = np.ones([150, 150])
+        s = ps.tools.subdivide(im, divs=3, overlap=10, flatten=True)
+        assert np.all(im[s[0]].shape == (60, 60))
+        assert np.all(im[s[1]].shape == (60, 70))
+        assert np.all(im[s[4]].shape == (70, 70))
+
+    def test_subdivide_2D_with_vector_overlap_flattened(self):
+        im = np.ones([150, 150])
+        s = ps.tools.subdivide(im, divs=3, overlap=[10, 20], flatten=True)
+        assert np.all(im[s[0]].shape == (60, 70))
+        assert np.all(im[s[1]].shape == (60, 90))
+        assert np.all(im[s[4]].shape == (70, 90))
+
+    def test_subdivide_3D_with_scalar_overlap(self):
+        im = np.ones([150, 150, 150])
+        s = ps.tools.subdivide(im, divs=3, overlap=10)
+        assert np.all(im[s[0][0][0]].shape == (60, 60, 60))
+        assert np.all(im[s[0][0][1]].shape == (60, 60, 70))
+        assert np.all(im[s[1][1][1]].shape == (70, 70, 70))
+
+    def test_subdivide_3D_with_vector_overlap(self):
+        im = np.ones([150, 150, 150])
+        s = ps.tools.subdivide(im, divs=3, overlap=[10, 20, 30])
+        assert np.all(im[s[0][0][0]].shape == (60, 70, 80))
+        assert np.all(im[s[0][0][1]].shape == (60, 70, 110))
+        assert np.all(im[s[1][1][1]].shape == (70, 90, 110))
+
+    def test_subdivide_3D_with_scalar_overlap_flattened(self):
+        im = np.ones([150, 150, 150])
+        s = ps.tools.subdivide(im, divs=3, overlap=10, flatten=True)
+        assert np.all(im[s[0]].shape == (60, 60, 60))
+        assert np.all(im[s[1]].shape == (60, 60, 70))
+        assert np.all(im[s[13]].shape == (70, 70, 70))
+
+    def test_subdivide_3D_with_vector_overlap_flattened(self):
+        im = np.ones([150, 150, 150])
+        s = ps.tools.subdivide(im, divs=3, overlap=[10, 20, 30], flatten=True)
+        assert np.all(im[s[0]].shape == (60, 70, 80))
+        assert np.all(im[s[1]].shape == (60, 70, 110))
+        assert np.all(im[s[13]].shape == (70, 90, 110))
+
+    def test_subdivided_shape_flattened(self):
+        im = np.ones([150, 150, 150])
+        s = ps.tools.subdivide(im, divs=3, overlap=[10, 20, 30], flatten=True)
+        assert np.all(s.shape == (27, ))
+
+    def test_subdivided_shape_not_flattened(self):
+        im = np.ones([150, 150, 150])
+        s = ps.tools.subdivide(im, divs=3, overlap=[10, 20, 30], flatten=False)
+        assert np.all(s.shape == (3, 3, 3))
 
     def test_size_to_seq(self):
         im = self.im2D

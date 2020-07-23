@@ -841,7 +841,8 @@ def _perlin_noise_2D(shape, res):
     return np.sqrt(2)*((1-t[:, :, 1])*n0 + t[:, :, 1]*n1)
 
 
-def blobs(shape: List[int], porosity: float = 0.5, blobiness: int = 1):
+def blobs(shape: List[int], porosity: float = 0.5, blobiness: int = 1,
+          **kwargs):
     """
     Generates an image containing amorphous blobs
 
@@ -874,11 +875,20 @@ def blobs(shape: List[int], porosity: float = 0.5, blobiness: int = 1):
     """
     blobiness = np.array(blobiness)
     shape = np.array(shape)
+    parallel = kwargs.pop('parallel', False)
+    divs = kwargs.pop('divs', 2)
+    cores = kwargs.pop('cores', None)
     if np.size(shape) == 1:
         shape = np.full((3, ), int(shape))
     sigma = np.mean(shape)/(40*blobiness)
     im = np.random.random(shape)
-    im = spim.gaussian_filter(im, sigma=sigma)
+    if parallel:
+        # TODO: The determination of the overlap should be done rigorously
+        im = ps.filters.chunked_func(func=spim.gaussian_filter,
+                                     input=im, sigma=sigma,
+                                     divs=divs, cores=cores, overlap=10)
+    else:
+        im = spim.gaussian_filter(im, sigma=sigma)
     im = norm_to_uniform(im, scale=[0, 1])
     if porosity:
         im = im < porosity
