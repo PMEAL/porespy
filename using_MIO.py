@@ -71,7 +71,7 @@ if 1:
         diff[(mio_mask == 0)*(ip_mask == 1)*(im == 1)] = -1
         err.append((mio_mask != ip_mask).sum())
     plt.figure()
-    plt.imshow(diff/im, origin='xy')
+    plt.imshow(diff/im, origin='lower')
     plt.figure()
     plt.plot(satns, err, 'o-')
 
