@@ -829,7 +829,8 @@ def phase_fraction(im, normed=True):
     return results
 
 
-def pc_curve_from_ibip(im, sizes, seq, sigma=0.072, theta=180, voxel_size=1, stepped=True):
+def pc_curve_from_ibip(im, sizes, seq, sigma=0.072, theta=180, voxel_size=1,
+                       stepped=True):
     r"""
     Produces a Pc-Snwp curve from the output of ``invade_regions``
 
