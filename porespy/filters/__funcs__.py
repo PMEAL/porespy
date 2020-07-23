@@ -1,4 +1,3 @@
-import sys
 import dask
 import warnings
 import numpy as np
@@ -8,7 +7,6 @@ from tqdm import tqdm
 import scipy.ndimage as spim
 import scipy.spatial as sptl
 from collections import namedtuple
-from scipy.signal import fftconvolve
 from skimage.segmentation import clear_border
 from skimage.morphology import ball, disk, square, cube, diamond, octahedron
 from skimage.morphology import reconstruction, watershed
@@ -409,7 +407,6 @@ def snow_partitioning_n(im, r_max=4, sigma=0.4, return_all=True,
         return combined_region
 
 
-def find_peaks(dt, r_max=4, footprint=None, **kwargs):
 def ICE_peaks(dt):
     r"""
     Find peaks in the distance transform using iterative cluster expansion
@@ -446,6 +443,7 @@ def ICE_peaks(dt):
     return labels_prev > 0
 
 
+def find_peaks(dt, r_max=4, footprint=None, **kwargs):
     r"""
     Finds local maxima in the distance transform
 
@@ -1396,7 +1394,8 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
                     imtemp = spim.binary_erosion(input=impad,
                                                  structure=strel(r))
                 if access_limited:
-                imtemp = trim_disconnected_blobs(imtemp, inlets, strel=strel_2(1))
+                    imtemp = trim_disconnected_blobs(imtemp, inlets,
+                                                     strel=strel_2(1))
                 if parallel:
                     imtemp = chunked_func(func=spim.binary_dilation,
                                           input=imtemp, structure=strel(r),
@@ -1417,7 +1416,8 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
                 pbar.update()
                 imtemp = dt >= r
                 if access_limited:
-                imtemp = trim_disconnected_blobs(imtemp, inlets, strel=strel_2(1))
+                    imtemp = trim_disconnected_blobs(imtemp, inlets,
+                                                     strel=strel_2(1))
                 if np.any(imtemp):
                     imtemp = edt(~imtemp) < r
                     imresults[(imresults == 0) * imtemp] = r
@@ -1428,7 +1428,8 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
                 pbar.update()
                 imtemp = dt >= r
                 if access_limited:
-                imtemp = trim_disconnected_blobs(imtemp, inlets, strel=strel_2(1))
+                    imtemp = trim_disconnected_blobs(imtemp, inlets,
+                                                     strel=strel_2(1))
                 if np.any(imtemp):
                     if parallel:
                         imtemp = chunked_func(func=spim.binary_dilation,
