@@ -39,6 +39,7 @@ setup(
               'porespy.metrics',
               'porespy.filters',
               'porespy.networks',
+              'porespy.dns',
               'porespy.visualization',
               'porespy.io'],
     install_requires=['numpy',
