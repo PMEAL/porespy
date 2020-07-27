@@ -15,27 +15,46 @@ class VisualizationTest():
         assert np.sum(xray) == np.sum(~self.im)
 
     def test_sem_y(self):
-        sem = ps.visualization.sem(self.im, direction='Y')
+        sem = ps.visualization.sem(self.im, axis=1)
         assert sem.ndim == 2
 
     def test_xray_y(self):
-        xray = ps.visualization.xray(self.im, direction='Y')
+        xray = ps.visualization.xray(self.im, axis=1)
         assert np.sum(xray) == np.sum(~self.im)
 
     def test_sem_z(self):
-        sem = ps.visualization.sem(self.im, direction='Z')
+        sem = ps.visualization.sem(self.im, axis=2)
         assert sem.ndim == 2
 
     def test_xray_z(self):
-        xray = ps.visualization.xray(self.im, direction='Z')
+        xray = ps.visualization.xray(self.im, axis=2)
         assert np.sum(xray) == np.sum(~self.im)
+
+    def test_imshow_single(self):
+        im = ps.generators.blobs(shape=[10, 20, 30])
+        fig = ps.visualization.imshow(im)
+        assert fig.numCols == 1
+        assert fig.numRows == 1
+
+    def test_imshow_multi(self):
+        im = ps.generators.blobs(shape=[10, 20, 30])
+        fig = ps.visualization.imshow(im, im)
+        assert fig.numCols == 2
+        assert fig.numRows == 1
+
+    def test_bar(self):
+        im = ps.generators.blobs(shape=[101, 200])
+        chords = ps.filters.apply_chords(im)
+        h = ps.metrics.chord_length_distribution(chords)
+        fig = ps.visualization.bar(h)
+        assert len(h.pdf) == len(fig.patches)
+
 
 if __name__ == '__main__':
     t = VisualizationTest()
+    self = t
     t.setup_class()
-    t.test_sem_x()
-    t.test_xray_x()
-    t.test_sem_y()
-    t.test_xray_y()
-    t.test_sem_z()
-    t.test_xray_z()
+    for item in t.__dir__():
+        if item.startswith('test'):
+            print('running test: '+item)
+            t.__getattribute__(item)()

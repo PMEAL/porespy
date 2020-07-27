@@ -1,8 +1,9 @@
-import porespy as ps
 import pytest
 import numpy as np
+from edt import edt
+import porespy as ps
 import scipy.ndimage as spim
-from skimage.morphology import disk, ball
+from skimage.morphology import disk, ball, skeletonize_3d
 
 
 class FilterTest():
@@ -11,7 +12,7 @@ class FilterTest():
         self.im = ps.generators.blobs(shape=[100, 100, 100], blobiness=2)
         # Ensure that im was generated as expeccted
         assert ps.metrics.porosity(self.im) == 0.499829
-        self.im_dt = spim.distance_transform_edt(self.im)
+        self.im_dt = edt(self.im)
 
     def test_im_in_not_im_out(self):
         im = self.im[:, :, 50]
@@ -50,6 +51,20 @@ class FilterTest():
         s = np.logspace(0.01, 0.6, 5)
         mip = ps.filters.porosimetry(im=self.im, sizes=s)
         assert np.allclose(np.unique(mip)[1:], s)
+
+    def test_porosimetry_mio_mode_without_fft(self):
+        im = ps.generators.blobs(shape=[200, 200])
+        sizes = np.arange(25, 1, -1)
+        fft = ps.filters.porosimetry(im, sizes=sizes, mode='mio', fft=True)
+        mio = ps.filters.porosimetry(im, sizes=sizes, mode='mio', fft=False)
+        assert np.all(fft == mio)
+
+    def test_porosimetry_hybrid_mode_without_fft(self):
+        im = ps.generators.blobs(shape=[200, 200])
+        sizes = np.arange(25, 1, -1)
+        fft = ps.filters.porosimetry(im, sizes=sizes, mode='hybrid', fft=True)
+        mio = ps.filters.porosimetry(im, sizes=sizes, mode='hybrid', fft=False)
+        assert np.all(fft == mio)
 
     def test_apply_chords_axis0(self):
         c = ps.filters.apply_chords(im=self.im, spacing=3, axis=0)
@@ -173,11 +188,11 @@ class FilterTest():
 
     def test_local_thickness(self):
         lt = ps.filters.local_thickness(self.im, mode='dt')
-        assert lt.max() == self.im_dt.max()
+        np.testing.assert_almost_equal(lt.max(), self.im_dt.max(), decimal=6)
         lt = ps.filters.local_thickness(self.im, mode='mio')
-        assert lt.max() == self.im_dt.max()
+        np.testing.assert_almost_equal(lt.max(), self.im_dt.max(), decimal=6)
         lt = ps.filters.local_thickness(self.im, mode='hybrid')
-        assert lt.max() == self.im_dt.max()
+        np.testing.assert_almost_equal(lt.max(), self.im_dt.max(), decimal=6)
 
     def test_local_thickness_known_sizes(self):
         im = np.zeros(shape=[300, 300])
@@ -317,7 +332,8 @@ class FilterTest():
         im = disk(50)
         f = ps.filters.fftmorphology
         s = disk(1)
-        a = ps.filters.chunked_func(func=f, im=im, strel=s, mode='erosion')
+        a = ps.filters.chunked_func(func=f, im=im, overlap=3, im_arg='im',
+                                    strel=s, mode='erosion')
         b = ps.filters.fftmorphology(im, strel=s, mode='erosion')
         assert np.all(a == b)
 
@@ -326,9 +342,33 @@ class FilterTest():
         im = ball(50)
         f = ps.filters.fftmorphology
         s = ball(1)
-        a = ps.filters.chunked_func(func=f, im=im, strel=s, mode='erosion')
+        a = ps.filters.chunked_func(func=f, im=im, im_arg='im', overlap=3,
+                                    strel=s, mode='erosion')
         b = ps.filters.fftmorphology(im, strel=s, mode='erosion')
         assert np.all(a == b)
+
+    def test_chunked_func_3D_w_strel(self):
+        from skimage.morphology import ball
+        im = ball(50)
+        f = ps.filters.fftmorphology
+        s = ball(1)
+        a = ps.filters.chunked_func(func=f, im=im, im_arg='im',
+                                    strel_arg='strel', strel=s, mode='erosion')
+        b = ps.filters.fftmorphology(im, strel=s, mode='erosion')
+        assert np.all(a == b)
+
+    def test_prune_branches(self):
+        im = ps.generators.lattice_spheres(shape=[100, 100, 100], radius=4)
+        skel1 = skeletonize_3d(im)
+        skel2 = ps.filters.prune_branches(skel1)
+        assert skel1.sum() > skel2.sum()
+
+    def test_apply_padded(self):
+        im = ps.generators.blobs(shape=[100, 100])
+        skel1 = skeletonize_3d(im)
+        skel2 = ps.filters.apply_padded(im=im, pad_width=20, pad_val=1,
+                                        func=skeletonize_3d)
+        assert (skel1.astype(bool)).sum() != (skel2.astype(bool)).sum()
 
 
 if __name__ == '__main__':

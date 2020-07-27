@@ -16,8 +16,10 @@ with open(ver_path) as f:
         if line.startswith('__version__'):
             exec(line, main_)
 
-with open("README.rst", "r") as fh:
-    long_description = fh.read()
+# Read the contents of README file
+this_directory = os.path.abspath(os.path.dirname(__file__))
+with open(os.path.join(this_directory, 'README.md'), encoding='utf-8') as f:
+    long_description = f.read()
 
 setup(
     name='porespy',
@@ -37,6 +39,7 @@ setup(
               'porespy.metrics',
               'porespy.filters',
               'porespy.networks',
+              'porespy.dns',
               'porespy.visualization',
               'porespy.io'],
     install_requires=['numpy',
@@ -51,7 +54,8 @@ setup(
                       'pyevtk',
                       'numba',
                       'openpnm',
-                      'dask'],
+                      'dask',
+                      'edt'],
     author='Jeff Gostick',
     author_email='jgostick@gmail.com',
     url='http://porespy.org',
