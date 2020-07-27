@@ -314,38 +314,33 @@ mergePatchPairs
 
         # Inserting faces
         if label:
-            str3 = """top\n    {\n        type patch;
-            faces\n        (\n"""
+            str3 = 'top\n    {\ntype patch;\nfaces\n(\n'
+#            str3 = "top\n    {\n        type patch;\
+#            faces\n        (\n"
             index3 = file.find(str3) + len(str3)
             file = file[:index3] + str(string_top) + file[index3:]
 
-            str4 = """back\n    {\n        type patch;
-            faces\n        (\n"""
+            str4 = 'back\n    {\ntype patch;\nfaces\n(\n'
             index4 = file.find(str4) + len(str4)
             file = file[:index4] + str(string_back) + file[index4:]
 
-            str5 = """bottom\n    {\n        type patch;
-            faces\n        (\n"""
+            str5 = 'bottom\n    {\ntype patch;\nfaces\n(\n'
             index5 = file.find(str5) + len(str5)
             file = file[:index5] + str(string_bottom) + file[index5:]
 
-            str6 = """front\n    {\n        type patch;
-            faces\n        (\n"""
+            str6 = 'front\n    {\ntype patch;\nfaces\n(\n'
             index6 = file.find(str6) + len(str6)
             file = file[:index6] + str(string_front) + file[index6:]
 
-            str7 = """left\n    {\n        type patch;
-            faces\n        (\n"""
+            str7 = 'left\n    {\ntype patch;\nfaces\n(\n'
             index7 = file.find(str7) + len(str7)
             file = file[:index7] + str(string_left) + file[index7:]
 
-            str8 = """right\n    {\n        type patch;
-            faces\n        (\n"""
+            str8 = 'right\n    {\ntype patch;\nfaces\n(\n'
             index8 = file.find(str8) + len(str8)
             file = file[:index8] + str(string_right) + file[index8:]
 
-            str9 = """walls\n    {\n        type wall;
-            faces\n        (\n"""
+            str9 = 'walls\n    {\ntype patch;\nfaces\n(\n'
             if string_walls != "()":
                 index8 = file.find(str9) + len(str9)
                 file = file[:index8] + str(string_walls) + file[index8:]
