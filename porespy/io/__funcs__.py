@@ -3,6 +3,8 @@ from scipy import ndimage as spim
 import scipy.ndimage as nd
 from porespy.networks import generate_voxel_image
 from pyevtk.hl import imageToVTK
+import skimage.measure as ms
+from stl import mesh
 
 
 def dict_to_vtk(data, path='./dictvtk', voxel_size=1, origin=(0, 0, 0)):
@@ -196,3 +198,76 @@ def openpnm_to_im(network, pore_shape="sphere", throat_shape="cylinder",
     return generate_voxel_image(network, pore_shape=pore_shape,
                                 throat_shape=throat_shape, max_dim=max_dim,
                                 verbose=verbose, rtol=rtol)
+
+
+def to_stl(im, path='./voxstl', divide=False, downsample=False, voxel_size=1,
+           vox=False):
+    r"""
+    Converts an array to an stl file.
+
+    Parameters
+    ----------
+    im : 3D image
+        The image of the porous material
+    path : string
+        Path to output file
+    divide : bool
+        vtk files can get very large, this option allows you for two output
+        files, divided at z = half. This allows for large data sets to be
+        imaged without loss of information
+    downsample : bool
+        very large images acan be downsampled to half the size in each
+        dimension, this doubles the effective voxel size
+    voxel_size : int
+        The side length of the voxels (voxels  are cubic)
+    vox : bool
+        For an image that is binary (1's and 0's) this reduces the file size by
+        using int8 format (can also be used to reduce file size when accuracy
+        is not necessary ie: just visulization)
+
+    Notes
+    -----
+    Outputs an stl file that can opened in Paraview
+    """
+    if len(im.shape) == 2:
+        im = im[:, :, np.newaxis]
+    if im.dtype == bool:
+        vox = True
+    if vox:
+        im = im.astype(np.int8)
+    vs = voxel_size
+    if divide:
+        split = np.round(im.shape[2]/2).astype(np.int)
+        im1 = im[:, :, 0:split]
+        im2 = im[:, :, split:]
+        _im_to_stl(im1, vs, path+'1')
+        _im_to_stl(im2, vs, path+'2')
+    elif downsample:
+        im = spim.interpolation.zoom(im, zoom=0.5, order=0, mode='reflect')
+        _im_to_stl(im, vs*2, path)
+    else:
+        _im_to_stl(im, vs, path)
+
+
+def _im_to_stl(im, vs, path):
+    r"""
+    Converts an array to an stl file.
+
+    Parameters
+    ----------
+    im : 3D image
+        The image of the porous material
+    voxel_size : int
+        The side length of the voxels (voxels  are cubic)
+    path : string
+        Path to output file
+    """
+    im = np.pad(im, pad_width=10, mode='constant', constant_values=True)
+    vertices, faces, norms, values = ms.marching_cubes_lewiner(im)
+    vertices *= vs
+    # export the stl file
+    export = mesh.Mesh(np.zeros(faces.shape[0], dtype=mesh.Mesh.dtype))
+    for i, f in enumerate(faces):
+        for j in range(3):
+            export.vectors[i][j] = vertices[f[j], :]
+    export.save(path+'.stl')
