@@ -3,8 +3,6 @@ from scipy import ndimage as spim
 import scipy.ndimage as nd
 from porespy.networks import generate_voxel_image
 from pyevtk.hl import imageToVTK
-import skimage.measure as ms
-from stl import mesh
 
 
 def dict_to_vtk(data, path='./dictvtk', voxel_size=1, origin=(0, 0, 0)):
@@ -229,6 +227,7 @@ def to_stl(im, path='./voxstl', divide=False, downsample=False, voxel_size=1,
     -----
     Outputs an stl file that can opened in Paraview
     """
+    from .stl import stl
     if len(im.shape) == 2:
         im = im[:, :, np.newaxis]
     if im.dtype == bool:
@@ -240,34 +239,10 @@ def to_stl(im, path='./voxstl', divide=False, downsample=False, voxel_size=1,
         split = np.round(im.shape[2]/2).astype(np.int)
         im1 = im[:, :, 0:split]
         im2 = im[:, :, split:]
-        _im_to_stl(im1, vs, path+'1')
-        _im_to_stl(im2, vs, path+'2')
+        stl.save(im1, vs, path+'1')
+        stl.save(im2, vs, path+'2')
     elif downsample:
         im = spim.interpolation.zoom(im, zoom=0.5, order=0, mode='reflect')
-        _im_to_stl(im, vs*2, path)
+        stl.save(im, vs*2, path)
     else:
-        _im_to_stl(im, vs, path)
-
-
-def _im_to_stl(im, vs, path):
-    r"""
-    Converts an array to an stl file.
-
-    Parameters
-    ----------
-    im : 3D image
-        The image of the porous material
-    voxel_size : int
-        The side length of the voxels (voxels  are cubic)
-    path : string
-        Path to output file
-    """
-    im = np.pad(im, pad_width=10, mode='constant', constant_values=True)
-    vertices, faces, norms, values = ms.marching_cubes_lewiner(im)
-    vertices *= vs
-    # export the stl file
-    export = mesh.Mesh(np.zeros(faces.shape[0], dtype=mesh.Mesh.dtype))
-    for i, f in enumerate(faces):
-        for j in range(3):
-            export.vectors[i][j] = vertices[f[j], :]
-    export.save(path+'.stl')
+        stl.save(im, vs, path)
