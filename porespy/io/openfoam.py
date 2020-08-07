@@ -5,10 +5,9 @@ import sys
 np.set_printoptions(threshold=sys.maxsize)
 
 
-class OPENFOAM():
+class openfoam():
     """
     """
-
     def save(im, scale=1, zoom_factor=1, label=True):
         """
         Given a boolean numpy array where True is void and False is solid,
@@ -314,36 +313,77 @@ mergePatchPairs
 
         # Inserting faces
         if label:
-            str3 = 'top\n    {\ntype patch;\nfaces\n(\n'
-#            str3 = "top\n    {\n        type patch;\
-#            faces\n        (\n"
+            str3 = """
+    top
+    {
+        type patch;
+        faces
+        (
+"""
             index3 = file.find(str3) + len(str3)
             file = file[:index3] + str(string_top) + file[index3:]
 
-            str4 = 'back\n    {\ntype patch;\nfaces\n(\n'
+            str4 = """
+    back
+    {
+        type patch;
+        faces
+        (
+"""
             index4 = file.find(str4) + len(str4)
             file = file[:index4] + str(string_back) + file[index4:]
 
-            str5 = 'bottom\n    {\ntype patch;\nfaces\n(\n'
+            str5 = """
+    bottom
+    {
+        type patch;
+        faces
+        (
+"""
             index5 = file.find(str5) + len(str5)
             file = file[:index5] + str(string_bottom) + file[index5:]
 
-            str6 = 'front\n    {\ntype patch;\nfaces\n(\n'
+            str6 = """
+    front
+    {
+        type patch;
+        faces
+        (
+"""
             index6 = file.find(str6) + len(str6)
             file = file[:index6] + str(string_front) + file[index6:]
 
-            str7 = 'left\n    {\ntype patch;\nfaces\n(\n'
+            str7 = """
+    left
+    {
+        type patch;
+        faces
+        (
+"""
             index7 = file.find(str7) + len(str7)
             file = file[:index7] + str(string_left) + file[index7:]
 
-            str8 = 'right\n    {\ntype patch;\nfaces\n(\n'
+            str8 = """
+    right
+    {
+        type patch;
+        faces
+        (
+"""
             index8 = file.find(str8) + len(str8)
             file = file[:index8] + str(string_right) + file[index8:]
 
-            str9 = 'walls\n    {\ntype patch;\nfaces\n(\n'
+            str9 = """
+    walls
+    {
+        type wall;
+        faces
+        (
+"""
+
             if string_walls != "()":
-                index8 = file.find(str9) + len(str9)
-                file = file[:index8] + str(string_walls) + file[index8:]
+                index9 = file.find(str9) + len(str9)
+                file = file[:index9] + str(string_walls) + file[index9:]
 
         # Deletes all empty labels if labeling is disabled
         if not label:
@@ -362,6 +402,7 @@ mergePatchPairs
         file = file.replace(",", "")
 
         # Returns the doc as a string
+
         with open("blockMeshDict", "w+") as a:
             return a.write(file)
 

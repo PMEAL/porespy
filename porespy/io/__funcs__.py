@@ -198,7 +198,7 @@ def openpnm_to_im(network, pore_shape="sphere", throat_shape="cylinder",
                                 verbose=verbose, rtol=rtol)
 
 
-def im_to_openfoam(im, scale=1, zoom_factor=1, label=True):
+def to_openfoam(im, scale=1, zoom_factor=1, label=True):
     r"""
     Save the image as an instruction file for OpenFoam to build an equivalent
     hexahedral mesh with (optionally) defined boundaries.
@@ -213,5 +213,5 @@ def im_to_openfoam(im, scale=1, zoom_factor=1, label=True):
         extension.
 
     """
-    from .OPENFOAM import OPENFOAM
-    OPENFOAM.save(im, scale, zoom_factor, label)
+    from .openfoam import openfoam
+    openfoam.save(im, scale, zoom_factor, label)
