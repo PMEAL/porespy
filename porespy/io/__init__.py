@@ -13,14 +13,14 @@ io
     porespy.io.to_palabos
     porespy.io.to_openpnm
     porespy.io.openpnm_to_im
-    porespy.io.im_to_openfoam
+    porespy.io.to_openfoam
 
 .. autofunction:: to_vtk
 .. autofunction:: dict_to_vtk
 .. autofunction:: to_palabos
 .. autofunction:: to_openpnm
 .. autofunction:: openpnm_to_im
-.. autofunction:: im_to_openfoam
+.. autofunction:: to_openfoam
 
 
 """
