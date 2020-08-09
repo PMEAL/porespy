@@ -1,5 +1,4 @@
 import numpy as np
-from stl import mesh
 import skimage.measure as ms
 
 
@@ -19,6 +18,11 @@ class stl():
         path : string
             Path to output file
         """
+        try:
+            from stl import mesh
+        except ModuleNotFoundError:
+            print('Error: Module "stl" not found.')
+            return
         im = np.pad(im, pad_width=10, mode='constant', constant_values=True)
         vertices, faces, norms, values = ms.marching_cubes_lewiner(im)
         vertices *= vs
