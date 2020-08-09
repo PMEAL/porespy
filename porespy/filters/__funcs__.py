@@ -1105,7 +1105,7 @@ def local_thickness(im, sizes=25, mode='hybrid'):
 
     """
     im_new = porosimetry(im=im, sizes=sizes, access_limited=False, mode=mode)
-    return im_new
+    return im_new * 2
 
 
 def porosimetry(im, sizes=25, inlets=None, access_limited=True,
