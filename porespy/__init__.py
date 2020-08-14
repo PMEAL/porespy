@@ -86,6 +86,7 @@ from . import filters
 from . import metrics
 from . import networks
 from . import generators
+from . import dns
 from . import visualization
 from . import io
 from .visualization import imshow

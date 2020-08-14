@@ -6,7 +6,7 @@ from edt import edt
 from collections import namedtuple
 from skimage.morphology import ball, disk
 from skimage.measure import marching_cubes_lewiner
-from array_split import shape_split
+from array_split import shape_split, ARRAY_BOUNDS
 from scipy.signal import fftconvolve
 
 
@@ -142,7 +142,7 @@ def fftmorphology(im, strel, mode='opening'):
     return result
 
 
-def subdivide(im, divs=2):
+def subdivide(im, divs=2, overlap=0, flatten=False):
     r"""
     Returns slices into an image describing the specified number of sub-arrays.
 
@@ -159,48 +159,53 @@ def subdivide(im, divs=2):
         The number of sub-divisions to create in each axis of the image.  If a
         scalar is given it is assumed this value applies in all dimensions.
 
+    overlap : scalar or array_like
+        The amount of overlap to use when dividing along each axis.  If a
+        scalar is given it is assumed this value applies in all dimensions.
+
+    flatten : boolean
+        If set to ``True`` then the slice objects are returned as a flat
+        list, while if ``False`` they are returned in a ND-array where each
+        subdivision is accessed using row-col or row-col-layer indexing.
+
     Returns
     -------
-    slices : 1D-array
-        A 1-D array containing slice objects for indexing into ``im`` that
-        extract the sub-divided arrays.
+    slices : ND-array
+        An ND-array containing sets of slice objects for indexing into ``im``
+        that extract subdivisions of an image.  If ``flatten`` was ``True``,
+        then this array is flat, suitable  for iterating.  If ``flatten`` was
+        ``False`` then the slice objects must be accessed by row, col, layer
+        indices.  An ND-array is the preferred container since it's shape can
+        be easily queried.
 
     Notes
     -----
     This method uses the
     `array_split package <https://github.com/array-split/array_split>`_ which
     offers the same functionality as the ``split`` method of Numpy's ND-array,
-    but supports the splitting multidimensional arrays in all dimensions.
+    but supports the splitting of multidimensional arrays in all dimensions.
+
+    See Also
+    --------
+    chunked_func
 
     Examples
     --------
     >>> import porespy as ps
     >>> import matplotlib.pyplot as plt
     >>> im = ps.generators.blobs(shape=[200, 200])
-    >>> s = ps.tools.subdivide(im, divs=[2, 2])
+    >>> s = ps.tools.subdivide(im, divs=[2, 2], flatten=True)
+    >>> print(len(s))
+    4
 
-    ``s`` contains an array with the shape given by ``divs``.  To access the
-    first and last quadrants of ``im`` use:
-    >>> print(im[tuple(s[0, 0])].shape)
-    (100, 100)
-    >>> print(im[tuple(s[1, 1])].shape)
-    (100, 100)
-
-    It can be easier to index the array with the slices by applying ``flatten``
-    first:
-    >>> s_flat = s.flatten()
-    >>> for i in s_flat:
-    ...     print(im[i].shape)
-    (100, 100)
-    (100, 100)
-    (100, 100)
-    (100, 100)
     """
-    # Expand scalar divs
-    if isinstance(divs, int):
-        divs = [divs for i in range(im.ndim)]
-    s = shape_split(im.shape, axis=divs)
-    return s
+    divs = np.ones((im.ndim,), dtype=int) * np.array(divs)
+    halo = overlap * (divs > 1)
+    slices = shape_split(im.shape, axis=divs, halo=halo.tolist(),
+                         tile_bounds_policy=ARRAY_BOUNDS).astype(object)
+    if flatten is True:
+        slices = np.ravel(slices)
+    return slices
 
 
 def bbox_to_slices(bbox):
@@ -733,7 +738,7 @@ def norm_to_uniform(im, scale=None):
     return im
 
 
-def functions_to_table(mod, colwidth=[27, 48]):
+def _functions_to_table(mod, colwidth=[27, 48]):
     r"""
     Given a module of functions, returns a ReST formatted text string that
     outputs a table when printed.

@@ -1,39 +1,27 @@
 name: Minimal
 
-<<<<<<< HEAD
 on: [push]
-=======
-on: [push, pull_request]
->>>>>>> snow_n_labelling_issue_1
 
 jobs:
   build:
 
-<<<<<<< HEAD
     if: "contains(github.event.head_commit.message, 'ci min') && !contains(github.event.head_commit.message, 'ci skip')"
 
     runs-on: ${{ matrix.operating-system }}
     strategy:
-      max-parallel: 1
-=======
-    if: contains(github.event.head_commit.message, 'ci min')
-
-    runs-on: ${{ matrix.operating-system }}
-    strategy:
       max-parallel: 4
->>>>>>> snow_n_labelling_issue_1
       matrix:
         python-version: [3.7]
         operating-system: [ubuntu-latest]
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v1
+      uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
 
-    - uses: actions/cache@v1
+    - uses: actions/cache@v2
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/pip_requirements.txt') }}
@@ -58,7 +46,3 @@ jobs:
         file: ./coverage.xml
         flags: unittests
         name: codecov-umbrella
-<<<<<<< HEAD
-=======
-        # yml: ./codecov.yml  # arg deprecated
->>>>>>> snow_n_labelling_issue_1
