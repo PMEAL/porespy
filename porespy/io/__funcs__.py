@@ -196,3 +196,25 @@ def openpnm_to_im(network, pore_shape="sphere", throat_shape="cylinder",
     return generate_voxel_image(network, pore_shape=pore_shape,
                                 throat_shape=throat_shape, max_dim=max_dim,
                                 verbose=verbose, rtol=rtol)
+
+
+def spheres_to_comsol(path='./spheres_comsol', centers, radii):
+    r"""
+    Exports a sphere pack into a Comsol file.
+
+    Parameters
+    ----------
+    path : string
+        Path to output file
+    centers : Np array
+        An array (Ns, 3) of the spheres centers where Ns is the number of
+        spheres
+    radii : Np array
+        An Ns length array of the spheres's radii
+
+    Notes
+    -----
+    Outputs a Comsol geometry file that can be imported in Comsol.
+    """
+    from .comsol import comsol
+    comsol.save(filename=path, centers, radii)
