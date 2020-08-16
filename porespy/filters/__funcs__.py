@@ -2184,7 +2184,7 @@ def copy(im, output):
         for i in prange(im.shape[0]):
             for j in prange(im.shape[1]):
                 for k in prange(im.shape[2]):
-                        output[i, j, k] = im[i, j, k]
+                    output[i, j, k] = im[i, j, k]
     elif im.ndim == 2:
         for i in prange(im.shape[0]):
             for j in prange(im.shape[1]):
