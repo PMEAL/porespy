@@ -434,9 +434,7 @@ def add_phase_interconnections(net, snow_partitioning_n, voxel_size=1,
                         s_pa_c = np.trim_zeros(s_pa_c)
                         pi_pj_sa[i_index] = p_sa_c
                         pi_pj_sa[j_index] = s_pa_c
-                    net['pore.{}_{}_area'.format(al[i1],
-                                                 al[j1])] = (pi_pj_sa *
-                                                             voxel_size ** 2)
+                    net[f'pore.{al[i1]}_{al[j1]}_area'] = pi_pj_sa * voxel_size ** 2
     return net
 
 
@@ -479,10 +477,12 @@ def label_boundary_cells(network=None, boundary_faces=None):
             dic['bottom'] = 1
         for i in f:
             if i in ['left', 'front', 'bottom']:
-                network['pore.{}'.format(i)] = (coords[:, dic[i]] <
-                                                min(condition[:, dic[i]]))
+                network['pore.{}'.format(i)] = (
+                    coords[:, dic[i]] < min(condition[:, dic[i]])
+                )
             elif i in ['right', 'back', 'top']:
-                network['pore.{}'.format(i)] = (coords[:, dic[i]] >
-                                                max(condition[:, dic[i]]))
+                network['pore.{}'.format(i)] = (
+                    coords[:, dic[i]] > max(condition[:, dic[i]])
+                )
 
     return network
