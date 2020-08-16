@@ -509,7 +509,7 @@ def reduce_peaks(peaks):
     return peaks_new
 
 
-def trim_saddle_points(peaks, dt, max_iters=10):
+def trim_saddle_points(peaks, dt, max_iters=10, verbose=1):
     r"""
     Removes peaks that were mistakenly identified because they lied on a
     saddle or ridge in the distance transform that was not actually a true
@@ -567,7 +567,7 @@ def trim_saddle_points(peaks, dt, max_iters=10):
                 peaks_i = False
                 break  # Found a saddle point
         peaks[s] = peaks_i
-        if iters >= max_iters:
+        if iters >= max_iters and verbose:
             print(
                 "Maximum number of iterations reached, consider "
                 + "running again with a larger value of max_iters"
@@ -1849,17 +1849,17 @@ def snow_partitioning_parallel(im,
                 im = im.swapaxes(0, i)
                 im = im[:shape[i], ...]
                 im = im.swapaxes(i, 0)
-            print('Image is cropped to shape {}.'.format(shape))
+            print(f'Image is cropped to shape {shape}.')
         else:
-            print('_' * 60)
-            print("Possible image shape for "
-                  "specified divisions is {}. ".format(shape))
+            print('-' * 80)
+            print(f"Possible image shape for specified divisions is {shape}.")
             print("To crop the image please set crop argument to 'True'.")
             return
     # --------------------------------------------------------------------------
     # Get overlap thickness from distance transform
     chunk_shape = (np.array(shape) / np.array(divs)).astype(int)
-    print('_' * 60)
+    print('# Beginning parallel SNOW algorithm...')
+    print('=' * 80)
     print('Calculating overlap thickness')
     if overlap == 'dt':
         dt = edt((im > 0), parallel=0)
@@ -1901,19 +1901,20 @@ def snow_partitioning_parallel(im,
     else:
         raise Exception('Mode of operation can either be parallel or serial')
     with ProgressBar():
-        print('_' * 60)
+        # print('-' * 80)
         print('Applying snow to image chunks')
         regions = im.compute(num_workers=num_workers)
     # --------------------------------------------------------------------------
     # Relabelling watershed chunks
-    print('_' * 60)
+    # print('-' * 80)
     print('Relabelling watershed chunks')
     regions = relabel_chunks(im=regions, chunk_shape=chunk_shape)
     # --------------------------------------------------------------------------
     # Stitching watershed chunks
-    print('_' * 60)
+    # print('-' * 80)
     print('Stitching watershed chunks')
     regions = watershed_stitching(im=regions, chunk_shape=chunk_shape)
+    print('=' * 80)
     if return_all:
         tup.regions = regions
         return tup
@@ -1960,7 +1961,7 @@ def chunked_snow(im, r_max=5, sigma=0.4):
 
     dt = spim.gaussian_filter(input=im, sigma=sigma)
     peaks = find_peaks(dt=dt, r_max=r_max)
-    peaks = trim_saddle_points(peaks=peaks, dt=dt, max_iters=99)
+    peaks = trim_saddle_points(peaks=peaks, dt=dt, max_iters=99, verbose=0)
     peaks = trim_nearby_peaks(peaks=peaks, dt=dt)
     peaks, N = spim.label(peaks)
     regions = watershed(image=-dt, markers=peaks, mask=im > 0)
