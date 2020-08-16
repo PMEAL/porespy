@@ -1,7 +1,6 @@
+import sys
 import numpy as np
 from scipy.ndimage import zoom
-import sys
-
 np.set_printoptions(threshold=sys.maxsize)
 
 
@@ -156,7 +155,7 @@ mergePatchPairs
                       -0.5, -0.5, 0.5, -0.5]).reshape(-1, 3)
 
         # Adjusting the scale
-    #    d = d * scale / compression
+        # d = d * scale / compression
 
         # Matrix to face coords that have an outward facing normal
         d_left = np.array([0, 0, 0, 0, 0, 1,
@@ -174,13 +173,13 @@ mergePatchPairs
                            -1, -1, 0, 0, -1, 0]).reshape(-1, 3)
 
         # Adjusting the scale
-    #     d_left = d_left * scale / compression
-    #     d_bottom = d_bottom * scale / compression
-    #     d_front = d_front * scale / compression
-    #
-    #     d_right = d_right * scale / compression
-    #     d_top = d_top * scale / compression
-    #     d_back = d_back * scale / compression
+        # d_left = d_left * scale / compression
+        # d_bottom = d_bottom * scale / compression
+        # d_front = d_front * scale / compression
+
+        # d_right = d_right * scale / compression
+        # d_top = d_top * scale / compression
+        # d_back = d_back * scale / compression
 
         # Initialize vertices matrix
         vertices = np.zeros(len(centers) * len(d) * 3).reshape(-1, 8, 3)
@@ -264,9 +263,9 @@ mergePatchPairs
 
             # This sorts out the faces on a boundary and keeps the rest
             # Will be labelled walls
-            walls_u, walls_index, walls_count = np.unique(walls_sorted, axis=0,
-                                                          return_counts=True,
-                                                          return_index=True)
+            walls_u, walls_index, walls_count = np.unique(
+                walls_sorted, axis=0, return_counts=True, return_index=True
+            )
             walls = walls[walls_index][walls_count == 1]
 
             string_top = stringify(top_faces)
@@ -408,6 +407,7 @@ mergePatchPairs
 
 
 def boundary(points, d, vert_unique):
+    r""""""
     # Initialization
     boundary_points = np.zeros(len(points) * len(d) * 3).reshape(-1, 4, 3)
 
@@ -419,10 +419,12 @@ def boundary(points, d, vert_unique):
 
     # Creates tuples of each row and stores them in a numpy array
     # This allows for the vectorization of np.where
-    vert_tuple = vert_unique.view([('', vert_unique.dtype)] *
-                                  vert_unique.shape[1])
-    boundary_tuple = boundary_points.view([('', boundary_points.dtype)] *
-                                          boundary_points.shape[1])
+    vert_tuple = vert_unique.view(
+        [('', vert_unique.dtype)] * vert_unique.shape[1]
+    )
+    boundary_tuple = boundary_points.view(
+        [('', boundary_points.dtype)] * boundary_points.shape[1]
+    )
     # Replaces vertices with corresponding index in vert_unique
     num = np.array([np.arange(0, len(vert_tuple))]).reshape(-1, 1)
     bool_mat = boundary_tuple[:, None] == vert_tuple
@@ -431,15 +433,14 @@ def boundary(points, d, vert_unique):
     # Replacment for np.where
     for i in bool_mat:
         faces = np.append(faces, num[i])
-
     faces = faces.astype(int).reshape(-1, 4)
 
     return faces
 
 
 def stringify(thelist):
+    r""""""
     string = str(thelist).replace("[", "(")
     string = string.replace("]", ")")
     string = "(" + string.strip("[()]") + ")"
-
     return string
