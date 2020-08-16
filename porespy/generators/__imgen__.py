@@ -631,8 +631,12 @@ def overlapping_spheres(shape: List[int], radius: int, porosity: float,
     im = np.random.random(size=shape)
 
     # Helper functions for calculating porosity: phi = g(f(N))
-    f = lambda N: edt(im > N/bulk_vol) < radius
-    g = lambda im: 1 - im.sum() / np.prod(shape)
+    def f(N):
+        return edt(im > N/bulk_vol) < radius
+
+    def g(im):
+        r"""Returns fraction of 0s, given a binary image"""
+        return 1 - im.sum() / np.prod(shape)
 
     # # Newton's method for getting image porosity match the given
     # w = 1.0                         # Damping factor
