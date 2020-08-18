@@ -40,6 +40,9 @@ class MetricsTest():
         assert np.sqrt((np.mean(tpcf_fft_1.probability[-5:]) - phi1)**2) < t
         phi2 = ps.metrics.porosity(im=self.im2D_big)
         assert np.sqrt((np.mean(tpcf_fft_2.probability[-5:]) - phi2)**2) < t
+        # Must raise error if 1D image is supplied
+        with pytest.raises(Exception):
+            _ = ps._metrics.two_point_correlation_fft(np.random.rand(10))
 
     def test_tpcf_fft_3d(self):
         tpcf_fft = ps.metrics.two_point_correlation_fft(self.im3D)
@@ -58,6 +61,9 @@ class MetricsTest():
         t = 0.2
         phi1 = ps.metrics.porosity(im=self.im2D)
         assert np.sqrt((np.mean(tpcf_bf.probability[-5:]) - phi1)**2) < t
+        # Throw warning if image contains a singleton axis
+        with pytest.warns(UserWarning):
+            _ = ps.metrics.two_point_correlation_bf(np.atleast_3d(self.im2D))
 
     def test_rev(self):
         rev = ps.metrics.representative_elementary_volume(self.blobs)
@@ -81,8 +87,8 @@ class MetricsTest():
         im = ps.generators.lattice_spheres(shape=[999, 999],
                                            radius=15, offset=4)
         p = ps.metrics.porosity_profile(im, axis=0)
-        assert p.max() == 100
-        assert_allclose(p.min(), 24.524524524524523)
+        assert p.max() == 1.0
+        assert_allclose(p.min(), 0.24524524524524523)
 
     def test_porosity_profile_ndim_check(self):
         ps.metrics.porosity_profile(self.im2D, axis=0)
@@ -96,7 +102,13 @@ class MetricsTest():
 
     def test_chord_length_distribution_2D(self):
         chords = ps.filters.apply_chords(self.im2D)
-        ps.metrics.chord_length_distribution(chords, normalization='length')
+        cld = ps.metrics.chord_length_distribution(chords, normalization='length')
+        assert not hasattr(cld, "logL")
+        cld = ps.metrics.chord_length_distribution(chords, normalization='length', log=1)
+        assert hasattr(cld, "logL")
+        with pytest.raises(Exception):
+            cld = ps.metrics.chord_length_distribution(chords,
+                                                       normalization='unsupported_norm')
 
     def test_chord_length_distribution_3D(self):
         chords = ps.filters.apply_chords(self.im3D)
@@ -118,6 +130,8 @@ class MetricsTest():
         assert np.around(a, decimals=2) == 258.3
         b = ps.metrics.mesh_surface_area(verts=mesh.verts, faces=mesh.faces)
         assert np.around(b, decimals=2) == np.around(a, decimals=2)
+        with pytest.raises(Exception):
+            mesh = ps.metrics.mesh_surface_area(mesh=None)
 
     def test_region_surface_areas(self):
         regions = self.regions
@@ -130,6 +144,9 @@ class MetricsTest():
         ia = ps.metrics.region_interface_areas(regions, areas)
         assert np.all(ia.conns[0] == [2, 19])
         assert np.around(ia.area[0], decimals=2) == 3.59
+        with pytest.warns(UserWarning):
+            im2D = (np.random.rand(5, 5) * 10).astype(int)
+            _ = ps.metrics.region_interface_areas(np.atleast_3d(im2D), areas)
 
     def test_phase_fraction(self):
         im = np.reshape(np.random.randint(0, 10, 1000), [10, 10, 10])
@@ -137,10 +154,14 @@ class MetricsTest():
         counts = ps.metrics.phase_fraction(im, normed=False)
         assert np.all(labels == counts)
         fractions = ps.metrics.phase_fraction(im, normed=True)
-        assert fractions.sum() == 1
+        assert np.isclose(fractions.sum(), 1)
         assert np.allclose(fractions, counts/counts.sum())
         with pytest.raises(Exception):
-            ps.metrics.phase_fraction(numpy.random.rand(10, 10, 10), normed=True)
+            ps.metrics.phase_fraction(np.random.rand(10, 10, 10), normed=True)
+        # The method must also work on boolean images
+        counts = ps.metrics.phase_fraction(im.astype(bool))
+        assert counts[0] == (im == 0).sum() / im.size
+        assert counts[1] == (im != 0).sum() / im.size
 
     def test_representative_elementary_volume(self):
         im = ps.generators.lattice_spheres(shape=[999, 999],

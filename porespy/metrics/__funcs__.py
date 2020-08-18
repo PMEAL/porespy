@@ -3,6 +3,7 @@ import warnings
 from skimage.measure import regionprops
 import scipy.ndimage as spim
 import scipy.spatial as sptl
+from edt import edt
 from porespy.tools import extend_slice, mesh_region
 from porespy.filters import find_dt_artifacts
 from collections import namedtuple
@@ -74,7 +75,7 @@ def representative_elementary_volume(im, npoints=1000):
     return profile
 
 
-def porosity_profile(im, axis):
+def porosity_profile(im, axis=0):
     r"""
     Returns a porosity profile along the specified axis
 
@@ -98,7 +99,7 @@ def porosity_profile(im, axis):
     a = set(range(im.ndim)).difference(set([axis]))
     a1, a2 = a
     prof = np.sum(np.sum(im, axis=a2), axis=a1)/(im.shape[a2]*im.shape[a1])
-    return prof*100
+    return prof
 
 
 def radial_density(im, bins=10, voxel_size=1):
@@ -177,7 +178,7 @@ def radial_density(im, bins=10, voxel_size=1):
     Macroscopic Properties. Springer, New York (2002) - See page 48 & 292
     """
     if im.dtype == bool:
-        im = spim.distance_transform_edt(im)
+        im = edt(im)
     mask = find_dt_artifacts(im) == 0
     im[mask] = 0
     x = im[im > 0].flatten()
@@ -264,9 +265,9 @@ def two_point_correlation_bf(im, spacing=10):
     large 3D images and/or close spacing.
     """
     if im.ndim != im.squeeze().ndim:
-        warnings.warn('Input image conains a singleton axis:' + str(im.shape) +
-                      ' Reduce dimensionality with np.squeeze(im) to avoid' +
-                      ' unexpected behavior.')
+        warnings.warn('Input image conains a singleton axis:' + str(im.shape)
+                      + ' Reduce dimensionality with np.squeeze(im) to avoid'
+                      + ' unexpected behavior.')
     if im.ndim == 2:
         pts = np.meshgrid(range(0, im.shape[0], spacing),
                           range(0, im.shape[1], spacing))
@@ -473,7 +474,7 @@ def chord_counts(im):
     length in a format suitable for ``plt.plot``.
     """
     labels, N = spim.label(im > 0)
-    props = regionprops(labels, coordinates='xy')
+    props = regionprops(labels)
     chord_lens = np.array([i.filled_area for i in props])
     return chord_lens
 
@@ -650,17 +651,16 @@ def region_interface_areas(regions, areas, voxel_size=1, strel=None):
         area shared by regions 0 and 5.
 
     """
-    print('_'*60)
+    print('-'*60)
     print('Finding interfacial areas between each region')
-    from skimage.morphology import disk, square, ball, cube
+    from skimage.morphology import disk, ball
     im = regions.copy()
     if im.ndim != im.squeeze().ndim:
-        warnings.warn('Input image conains a singleton axis:' + str(im.shape) +
-                      ' Reduce dimensionality with np.squeeze(im) to avoid' +
-                      ' unexpected behavior.')
-    if im.ndim == 2:
-        cube = square
-        ball = disk
+        warnings.warn('Input image conains a singleton axis:' + str(im.shape)
+                      + ' Reduce dimensionality with np.squeeze(im) to avoid'
+                      + ' unexpected behavior.')
+    # cube_elem = square if im.ndim == 2 else cube
+    ball_elem = disk if im.ndim == 2 else ball
     # Get 'slices' into im for each region
     slices = spim.find_objects(im)
     # Initialize arrays
@@ -677,7 +677,7 @@ def region_interface_areas(regions, areas, voxel_size=1, strel=None):
             mask_im = sub_im == i
             sa[reg] = areas[reg]
             im_w_throats = spim.binary_dilation(input=mask_im,
-                                                structure=ball(1))
+                                                structure=ball_elem(1))
             im_w_throats = im_w_throats*sub_im
             Pn = np.unique(im_w_throats)[1:] - 1
             for j in Pn:
@@ -691,8 +691,8 @@ def region_interface_areas(regions, areas, voxel_size=1, strel=None):
                                             slices[j][1].start)):
                                        max(slices[reg][1].stop,
                                            slices[j][1].stop)]
-                    merged_region = ((merged_region == reg + 1) +
-                                     (merged_region == j + 1))
+                    merged_region = ((merged_region == reg + 1)
+                                     + (merged_region == j + 1))
                     mesh = mesh_region(region=merged_region, strel=strel)
                     sa_combined.append(mesh_surface_area(mesh))
     # Interfacial area calculation
@@ -735,7 +735,7 @@ def region_surface_areas(regions, voxel_size=1, strel=None):
         that the surface area of region 1 is stored in element 0 of the list.
 
     """
-    print('_'*60)
+    print('-'*60)
     print('Finding surface area of each region')
     im = regions.copy()
     # Get 'slices' into im for each pore region
