@@ -34,15 +34,15 @@ jobs:
 
     - name: Bump version (patch)
       if: contains(github.event.head_commit.message, '#patch')
-      run: bump2version --current-version $VER patch openpnm/__version__.py
+      run: bump2version --current-version $VER patch porespy/__version__.py
 
     - name: Bump version (minor)
       if: contains(github.event.head_commit.message, '#minor')
-      run: bump2version --current-version $VER minor openpnm/__version__.py
+      run: bump2version --current-version $VER minor porespy/__version__.py
 
     - name: Bump version (major)
       if: contains(github.event.head_commit.message, '#major')
-      run: bump2version --current-version $VER major openpnm/__version__.py
+      run: bump2version --current-version $VER major porespy/__version__.py
 
     - name: Commit files
       if:
