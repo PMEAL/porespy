@@ -40,8 +40,8 @@ jobs:
         echo ${{ github.event.ref }}
         echo $TAG_MISMATCH
 
-    # - name: Build distribution 📦
-    #   run: python setup.py sdist bdist_wheel
+    - name: Build distribution 📦
+      run: python setup.py sdist bdist_wheel
 
     # - name: Publish distribution 📦 to PyPI
     #   if: startsWith(github.event.ref, 'refs/tags') && contains(env.TAG_MISMATCH, 'false')
