@@ -108,7 +108,7 @@ reading/writing/storing of large tomograms.
 ``` python
 import porespy as ps
 import matplotlib.pyplot as plt
-im = ps.generators.blobs(shape=[200, 200], porosity=0.5, blobiness=2)
+im = ps.generators.blobs(shape=[500, 500], porosity=0.6, blobiness=2)
 plt.imshow(im)
 ```
 <!--
