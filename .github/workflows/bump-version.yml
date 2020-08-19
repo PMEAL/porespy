@@ -53,7 +53,9 @@ jobs:
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         git commit -m "Bump version number [ci skip]" -a
-        git push -f origin release:release release:dev
+        REPOSITORY=${INPUT_REPOSITORY:-$GITHUB_REPOSITORY}
+        remote_repo="https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${REPOSITORY}.git"
+        git push "${remote_repo}" origin release:release release:dev --force
 
     # - name: Push changes
     #   uses: ad-m/github-push-action@master
