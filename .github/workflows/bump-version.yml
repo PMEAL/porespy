@@ -60,7 +60,8 @@ jobs:
         remote_repo="https://${GITHUB_ACTOR}:${{ secrets.PUSH_ACTION_TOKEN }}@github.com/${REPOSITORY}.git"
         git push "${remote_repo}" release   # commit version bump to release
         git checkout dev
-        git merge release
+        git cherry-pick release             # this cherry-picks the most recent commit (version bump) on release
+        # git merge release                 # this breaks if dev contains code that release doesn't (e.g. hotfix directly pushed to release)
         git push "${remote_repo}" dev       # commit version bump to dev
         git checkout release                # checkout the Action branch (release)
 
