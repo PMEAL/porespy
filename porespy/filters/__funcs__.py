@@ -2163,7 +2163,7 @@ def watershed_stitching(im, chunk_shape):
 
 
 @njit(parallel=True)
-def copy(im, output):
+def copy(im, output):  # pragma: no cover
     r"""
     The function copy the input array and make output array that is allocated
     in different memory space. This a numba version of copy function of numpy.
@@ -2198,7 +2198,7 @@ def copy(im, output):
 
 
 @njit(parallel=True)
-def _replace(array, keys, values, ind_sort):
+def _replace(array, keys, values, ind_sort):  # pragma: no cover
     r"""
     This function replace keys elements in input array with new value elements.
     This function is used as internal function of replace_relabels.
@@ -2257,7 +2257,7 @@ def replace_labels(array, keys, values):
 
 
 @njit()
-def _sequence(array, count):
+def _sequence(array, count):  # pragma: no cover
     r"""
     Internal function of resequnce_labels method. This function resquence array
     elements in an ascending order using numba technique which is many folds
@@ -2292,7 +2292,7 @@ def _sequence(array, count):
 
 
 @njit(parallel=True)
-def amax(array):
+def amax(array):  # pragma: no cover
     r"""
     Find largest element in an array using fast parallel numba technique
 
