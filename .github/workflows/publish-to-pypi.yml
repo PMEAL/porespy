@@ -45,21 +45,21 @@ jobs:
     - name: Build distribution 📦
       run: python setup.py sdist bdist_wheel
 
-    - name: Publish distribution 📦 to PyPI
-      if: startsWith(github.event.ref, 'refs/tags') && contains(env.TAG_MISMATCH, 'false')
-      uses: pypa/gh-action-pypi-publish@master
-      with:
-        user: __token__
-        password: ${{ secrets.PYPI_TOKEN }}
-        skip_existing: true
-
-    # - name: Publish distribution 📦 to TestPyPI
+    # - name: Publish distribution 📦 to PyPI
     #   if: startsWith(github.event.ref, 'refs/tags') && contains(env.TAG_MISMATCH, 'false')
     #   uses: pypa/gh-action-pypi-publish@master
     #   with:
     #     user: __token__
-    #     password: ${{ secrets.TESTPYPI_TOKEN }}
-    #     repository_url: https://test.pypi.org/legacy/
+    #     password: ${{ secrets.PYPI_TOKEN }}
+    #     skip_existing: true
+
+    - name: Publish distribution 📦 to TestPyPI
+      if: startsWith(github.event.ref, 'refs/tags') && contains(env.TAG_MISMATCH, 'false')
+      uses: pypa/gh-action-pypi-publish@master
+      with:
+        user: __token__
+        password: ${{ secrets.TESTPYPI_TOKEN }}
+        repository_url: https://test.pypi.org/legacy/
 
     - name: Delete tag if doesn't match with version
       if: contains(env.TAG_MISMATCH, 'true')
