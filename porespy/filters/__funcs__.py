@@ -1786,7 +1786,7 @@ def snow_partitioning_parallel(im,
         A binary image of porous media with 'True' values indicating phase of
         interest
 
-    overlap: float or int
+    overlap: float or int or str
         Overlapping thickness between two subdomains that is used to merge
         watershed segmented regions at intersection of two or more subdomains.
         If 'dt' the overlap will be calculated based on maximum
@@ -1810,7 +1810,7 @@ def snow_partitioning_parallel(im,
         if 'serial' then all subdomains will be processed one by one in one core
         of CPU.
 
-    num_workers: int
+    num_workers: int or None
         Number of cores that will be used to parallel process all domains.
         If None then all cores will be used but user can specify any integer
         values to control the memory usage.
@@ -2006,7 +2006,7 @@ def pad(im, pad_width=1, constant_value=0):
     return temp
 
 
-def relabel_chunks(im, chunk_shape):
+def relabel_chunks(im, chunk_shape):  # pragma: no cover
     r"""
     Assign new labels to each chunk or sub-domain of actual image. This
     prevents from two or more regions to have same label.
@@ -2060,7 +2060,7 @@ def relabel_chunks(im, chunk_shape):
     return im
 
 
-def trim_internal_slice(im, chunk_shape):
+def trim_internal_slice(im, chunk_shape):  # pragma: no cover
     r"""
     Delete extra slices from image that were used to stitch two or more chunks
     together.

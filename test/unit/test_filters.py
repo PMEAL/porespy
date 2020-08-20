@@ -331,17 +331,18 @@ class FilterTest():
         np.random.seed(1)
         im = ps.generators.overlapping_spheres([1000, 1000], radius=10,
                                                porosity=0.5)
-        snow = ps.filters.snow_partitioning_parallel(im, overlap='dt',
-                                                     divs=[2, 2],
-                                                     num_workers=None,
-                                                     mode='parallel',
-                                                     zoom_factor=0.5,
-                                                     r_max=5, sigma=0.4,
-                                                     return_all=True)
-        assert np.amax(snow.regions) == 918
-        assert not np.any(np.isnan(snow.regions))
-        assert not np.any(np.isnan(snow.dt))
-        assert not np.any(np.isnan(snow.im))
+        for overlap in ['dt', 'ws']:
+            snow = ps.filters.snow_partitioning_parallel(im, overlap=overlap,
+                                                         divs=[2, 2],
+                                                         num_workers=None,
+                                                         mode='parallel',
+                                                         zoom_factor=0.5,
+                                                         r_max=5, sigma=0.4,
+                                                         return_all=True)
+            assert np.amax(snow.regions) == 918
+            assert not np.any(np.isnan(snow.regions))
+            assert not np.any(np.isnan(snow.dt))
+            assert not np.any(np.isnan(snow.im))
 
     def test_chunked_func_2D(self):
         from skimage.morphology import disk
