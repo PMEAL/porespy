@@ -111,9 +111,6 @@ import matplotlib.pyplot as plt
 im = ps.generators.blobs(shape=[500, 500], porosity=0.6, blobiness=2)
 plt.imshow(im)
 ```
-<!--
-![image](https://github.com/PMEAL/porespy/raw/dev/docs/_static/fig1.png)
--->
 <p align="center">
   <img src="https://github.com/PMEAL/porespy/raw/dev/docs/_static/fig1.png" width="50%"></img>
 </p>
@@ -146,9 +143,6 @@ cr = ps.filters.apply_chords(im)
 cr = ps.filters.flood(cr, mode='size')
 plt.imshow(cr)
 ```
-<!--
-![image](https://github.com/PMEAL/porespy/raw/dev/docs/_static/fig3.png)
--->
 <p align="center">
   <img src="https://github.com/PMEAL/porespy/raw/dev/docs/_static/fig3.png" width="50%"></img>
 </p>
@@ -165,9 +159,6 @@ fig = plt.plot(*data, 'bo-')
 plt.ylabel('probability')
 plt.xlabel('correlation length [voxels]')
 ```
-<!--
-![image](https://github.com/PMEAL/porespy/raw/dev/docs/_static/fig4.png)
--->
 <p align="center">
   <img src="https://github.com/PMEAL/porespy/raw/dev/docs/_static/fig4.png" width="50%"></img>
 </p>
@@ -185,10 +176,6 @@ plt.plot(data.R, data.cdf, 'bo-')
 plt.xlabel('invasion size [voxels]')
 plt.ylabel('volume fraction invaded [voxels]')
 ```
-<!--
-![image](https://github.com/PMEAL/porespy/raw/dev/docs/_static/fig5.png)
-![image](https://github.com/PMEAL/porespy/raw/dev/docs/_static/fig6.png)
--->
 <p align="center">
   <img src="https://github.com/PMEAL/porespy/raw/dev/docs/_static/fig5.png" width="50%"></img>
   <img src="https://github.com/PMEAL/porespy/raw/dev/docs/_static/fig6.png" width="50%"></img>
