@@ -1,0 +1,48 @@
+name: 🐤 Minimal
+
+on: [push]
+
+jobs:
+  build:
+
+    if: "contains(github.event.head_commit.message, 'ci min') && !contains(github.event.head_commit.message, 'ci skip')"
+
+    runs-on: ${{ matrix.operating-system }}
+    strategy:
+      max-parallel: 4
+      matrix:
+        python-version: [3.7]
+        operating-system: [ubuntu-latest]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - uses: actions/cache@v2
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/pip_requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - name: Install Dependencies
+      run: |
+        pip install -r requirements/pip_requirements.txt
+        pip install -r requirements/test_requirements.txt
+        pip uninstall porespy --yes
+        pip install -e .
+
+    - name: Running tests
+      run: pytest --pycodestyle --cov=./ --cov-report=xml
+
+    - name: Upload coverage to Codecov
+      if: matrix.python-version == 3.7
+      uses: codecov/codecov-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella

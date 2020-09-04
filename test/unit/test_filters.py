@@ -1,8 +1,9 @@
-import porespy as ps
 import pytest
 import numpy as np
+from edt import edt
+import porespy as ps
 import scipy.ndimage as spim
-from skimage.morphology import disk, ball
+from skimage.morphology import disk, ball, skeletonize_3d
 
 
 class FilterTest():
@@ -11,7 +12,7 @@ class FilterTest():
         self.im = ps.generators.blobs(shape=[100, 100, 100], blobiness=2)
         # Ensure that im was generated as expeccted
         assert ps.metrics.porosity(self.im) == 0.499829
-        self.im_dt = spim.distance_transform_edt(self.im)
+        self.im_dt = edt(self.im)
 
     def test_im_in_not_im_out(self):
         im = self.im[:, :, 50]
@@ -34,7 +35,7 @@ class FilterTest():
         steps = np.unique(mip)
         ans = np.array([0.00000000, 1.00000000, 1.37871571, 1.61887041,
                         1.90085700, 2.23196205, 2.62074139, 3.07724114,
-                        3.61325732, 4.24264069])
+                        3.61325732])
         assert np.allclose(steps, ans)
 
     def test_porosimetry_compare_modes_3D(self):
@@ -50,6 +51,20 @@ class FilterTest():
         s = np.logspace(0.01, 0.6, 5)
         mip = ps.filters.porosimetry(im=self.im, sizes=s)
         assert np.allclose(np.unique(mip)[1:], s)
+
+    def test_porosimetry_mio_mode_without_fft(self):
+        im = ps.generators.blobs(shape=[200, 200])
+        sizes = np.arange(25, 1, -1)
+        fft = ps.filters.porosimetry(im, sizes=sizes, mode='mio', fft=True)
+        mio = ps.filters.porosimetry(im, sizes=sizes, mode='mio', fft=False)
+        assert np.all(fft == mio)
+
+    def test_porosimetry_hybrid_mode_without_fft(self):
+        im = ps.generators.blobs(shape=[200, 200])
+        sizes = np.arange(25, 1, -1)
+        fft = ps.filters.porosimetry(im, sizes=sizes, mode='hybrid', fft=True)
+        mio = ps.filters.porosimetry(im, sizes=sizes, mode='hybrid', fft=False)
+        assert np.all(fft == mio)
 
     def test_apply_chords_axis0(self):
         c = ps.filters.apply_chords(im=self.im, spacing=3, axis=0)
@@ -133,6 +148,20 @@ class FilterTest():
                                                  inlet_axis=2, outlet_axis=2)
         assert np.sum(h) == 499611
 
+    def test_trim_nonpercolating_paths_masks(self):
+        im = ps.generators.blobs(shape=[200, 200])
+        im1 = ps.filters.trim_nonpercolating_paths(im,
+                                                   inlet_axis=0,
+                                                   outlet_axis=0)
+        inlets = np.zeros_like(im)
+        inlets[0, :] = True
+        outlets = np.zeros_like(im)
+        outlets[-1, :] = True
+        im2 = ps.filters.trim_nonpercolating_paths(im,
+                                                   inlets=inlets,
+                                                   outlets=outlets)
+        assert np.all(im2 == im1)
+
     def test_fill_blind_pores(self):
         h = ps.filters.find_disconnected_voxels(self.im)
         b = ps.filters.fill_blind_pores(h)
@@ -159,11 +188,11 @@ class FilterTest():
 
     def test_local_thickness(self):
         lt = ps.filters.local_thickness(self.im, mode='dt')
-        assert lt.max() == self.im_dt.max()
+        np.testing.assert_almost_equal(lt.max(), self.im_dt.max(), decimal=6)
         lt = ps.filters.local_thickness(self.im, mode='mio')
-        assert lt.max() == self.im_dt.max()
+        np.testing.assert_almost_equal(lt.max(), self.im_dt.max(), decimal=6)
         lt = ps.filters.local_thickness(self.im, mode='hybrid')
-        assert lt.max() == self.im_dt.max()
+        np.testing.assert_almost_equal(lt.max(), self.im_dt.max(), decimal=6)
 
     def test_local_thickness_known_sizes(self):
         im = np.zeros(shape=[300, 300])
@@ -297,6 +326,67 @@ class FilterTest():
         assert not np.any(np.isnan(snow.regions))
         assert not np.any(np.isnan(snow.dt))
         assert not np.any(np.isnan(snow.im))
+
+    def test_snow_partitioning_parallel(self):
+        np.random.seed(1)
+        im = ps.generators.overlapping_spheres([1000, 1000], radius=10,
+                                               porosity=0.5)
+        for overlap in ['dt', 'ws']:
+            snow = ps.filters.snow_partitioning_parallel(im, overlap=overlap,
+                                                         divs=[2, 2],
+                                                         num_workers=None,
+                                                         mode='parallel',
+                                                         zoom_factor=0.5,
+                                                         r_max=5, sigma=0.4,
+                                                         return_all=True)
+            assert np.amax(snow.regions) == 918
+            assert not np.any(np.isnan(snow.regions))
+            assert not np.any(np.isnan(snow.dt))
+            assert not np.any(np.isnan(snow.im))
+
+    def test_chunked_func_2D(self):
+        from skimage.morphology import disk
+        im = disk(50)
+        f = ps.filters.fftmorphology
+        s = disk(1)
+        a = ps.filters.chunked_func(func=f, im=im, overlap=3, im_arg='im',
+                                    strel=s, mode='erosion')
+        b = ps.filters.fftmorphology(im, strel=s, mode='erosion')
+        assert np.all(a == b)
+
+    def test_chunked_func_3D(self):
+        from skimage.morphology import ball
+        im = ball(50)
+        f = ps.filters.fftmorphology
+        s = ball(1)
+        a = ps.filters.chunked_func(func=f, im=im, im_arg='im', overlap=3,
+                                    strel=s, mode='erosion')
+        b = ps.filters.fftmorphology(im, strel=s, mode='erosion')
+        assert np.all(a == b)
+
+    def test_chunked_func_3D_w_strel(self):
+        from skimage.morphology import ball
+        im = ball(50)
+        f = ps.filters.fftmorphology
+        s = ball(1)
+        a = ps.filters.chunked_func(func=f, im=im, im_arg='im',
+                                    strel_arg='strel', strel=s, mode='erosion')
+        b = ps.filters.fftmorphology(im, strel=s, mode='erosion')
+        assert np.all(a == b)
+
+    def test_prune_branches(self):
+        im = ps.generators.lattice_spheres(shape=[100, 100, 100], radius=4)
+        skel1 = skeletonize_3d(im)
+        skel2 = ps.filters.prune_branches(skel1)
+        assert skel1.sum() > skel2.sum()
+
+    def test_apply_padded(self):
+        im = ps.generators.blobs(shape=[100, 100])
+        skel1 = skeletonize_3d(im)
+        skel2 = ps.filters.apply_padded(im=im, pad_width=20, pad_val=1,
+                                        func=skeletonize_3d)
+        assert (skel1.astype(bool)).sum() != (skel2.astype(bool)).sum()
+
 
 if __name__ == '__main__':
     t = FilterTest()
