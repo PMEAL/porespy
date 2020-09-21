@@ -53,7 +53,7 @@ setup(
                       'pyevtk',
                       'numba',
                       'openpnm',
-                      'dask',
+                      'dask[complete]',
                       'edt'],
     author='PoreSpy Team',
     author_email='jgostick@gmail.com',
