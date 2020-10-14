@@ -84,12 +84,12 @@ def add_boundary_regions(regions=None, faces=['front', 'back', 'left',
         # ---------------------------------------------------------------------
         if regions.ndim == 3:
             # Remove boundary nodes interconnection
-            regions[:, :, 0] = regions[:, :, 0] + regions.max()
-            regions[:, :, -1] = regions[:, :, -1] + regions.max()
-            regions[0, :, :] = regions[0, :, :] + regions.max()
-            regions[-1, :, :] = regions[-1, :, :] + regions.max()
-            regions[:, 0, :] = regions[:, 0, :] + regions.max()
-            regions[:, -1, :] = regions[:, -1, :] + regions.max()
+            regions[:, :, 0] = regions[:, :, 0] + regions.max() + 1
+            regions[:, :, -1] = regions[:, :, -1] + regions.max() + 1
+            regions[0, :, :] = regions[0, :, :] + regions.max() + 1
+            regions[-1, :, :] = regions[-1, :, :] + regions.max() + 1
+            regions[:, 0, :] = regions[:, 0, :] + regions.max() + 1
+            regions[:, -1, :] = regions[:, -1, :] + regions.max() + 1
             regions[:, :, 0] = (~find_boundaries(regions[:, :, 0],
                                                  mode='outer')) * regions[:, :, 0]
             regions[:, :, -1] = (~find_boundaries(regions[:, :, -1],
