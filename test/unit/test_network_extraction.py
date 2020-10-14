@@ -50,9 +50,9 @@ class NetExtractTest():
 
     def test_snow_n(self):
         net = ps.networks.snow_n(self.im3d+1, voxel_size=1,
-                                 boundary_faces=['left', 'right', 'front',
-                                                 'back', 'top', 'bottom'],
-                                 marching_cubes_area=True)
+                                  boundary_faces=['left', 'right', 'front',
+                                                  'back', 'top', 'bottom'],
+                                  marching_cubes_area=True)
         found_nans = False
         for key in net.keys():
             if np.any(np.isnan(net[key])):
@@ -142,20 +142,20 @@ class NetExtractTest():
                                               dt=snow_out3.dt,
                                               voxel_size=1)
         assert np.allclose(net1['pore.coords'][:, 0],
-                           net2['pore.coords'][:, 0])
+                            net2['pore.coords'][:, 0])
         assert np.allclose(net1['pore.coords'][:, 1],
-                           net2['pore.coords'][:, 2])
+                            net2['pore.coords'][:, 2])
         assert np.allclose(net1['pore.coords'][:, 0],
-                           net3['pore.coords'][:, 1])
+                            net3['pore.coords'][:, 1])
 
     def test_generate_voxel_image(self):
         net = op.network.Cubic(shape=[5, 5, 5])
         geom = op.geometry.StickAndBall(network=net,
                                         pores=net.Ps, throats=net.Ts)
         geom.add_model(propname="pore.volume",
-                       model=op.models.geometry.pore_volume.cube)
+                        model=op.models.geometry.pore_volume.cube)
         geom.add_model(propname="throat.volume",
-                       model=op.models.geometry.throat_volume.cylinder)
+                        model=op.models.geometry.throat_volume.cylinder)
         im = ps.networks.generate_voxel_image(network=net,
                                               pore_shape="cube",
                                               throat_shape="cylinder",
@@ -168,6 +168,17 @@ class NetExtractTest():
 
         assert_allclose(actual=porosity_actual, desired=porosity_desired,
                         rtol=0.05)
+
+    def test_verify_no_unlabeled_regions(self):
+        np.random.seed(0)
+        alias = {1: "void", 2: "solid"}
+        boundary_faces = ["bottom", "top", "left", "right", "front", "back"]
+        im = ps.generators.blobs([100, 100, 100]) + 1
+        temp = ps.networks.snow_n(im=im, alias=alias, boundary_faces=boundary_faces)
+        proj = op.io.PoreSpy.import_data(temp)
+        net = proj.network
+        Ps = net.pores(["void", "solid"] + boundary_faces)
+        assert Ps.size == net.Np
 
 
 if __name__ == '__main__':
