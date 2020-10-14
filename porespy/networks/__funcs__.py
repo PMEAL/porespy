@@ -81,27 +81,17 @@ def add_boundary_regions(regions=None, faces=['front', 'back', 'left',
     # Edge pad segmentation and distance transform
     if faces is not None:
         regions = np.pad(regions, 1, 'edge')
+        mask = regions == 0
         # ---------------------------------------------------------------------
         if regions.ndim == 3:
             # Remove boundary nodes interconnection
-            regions[:, :, 0] = regions[:, :, 0] + regions.max() + 1
-            regions[:, :, -1] = regions[:, :, -1] + regions.max() + 1
-            regions[0, :, :] = regions[0, :, :] + regions.max() + 1
-            regions[-1, :, :] = regions[-1, :, :] + regions.max() + 1
-            regions[:, 0, :] = regions[:, 0, :] + regions.max() + 1
-            regions[:, -1, :] = regions[:, -1, :] + regions.max() + 1
-            regions[:, :, 0] = (~find_boundaries(regions[:, :, 0],
-                                                 mode='outer')) * regions[:, :, 0]
-            regions[:, :, -1] = (~find_boundaries(regions[:, :, -1],
-                                                  mode='outer')) * regions[:, :, -1]
-            regions[0, :, :] = (~find_boundaries(regions[0, :, :],
-                                                 mode='outer')) * regions[0, :, :]
-            regions[-1, :, :] = (~find_boundaries(regions[-1, :, :],
-                                                  mode='outer')) * regions[-1, :, :]
-            regions[:, 0, :] = (~find_boundaries(regions[:, 0, :],
-                                                 mode='outer')) * regions[:, 0, :]
-            regions[:, -1, :] = (~find_boundaries(regions[:, -1, :],
-                                                  mode='outer')) * regions[:, -1, :]
+            regions[:, :, 0] = regions[:, :, 0] + regions.max()
+            regions[:, :, -1] = regions[:, :, -1] + regions.max()
+            regions[0, :, :] = regions[0, :, :] + regions.max()
+            regions[-1, :, :] = regions[-1, :, :] + regions.max()
+            regions[:, 0, :] = regions[:, 0, :] + regions.max()
+            regions[:, -1, :] = regions[:, -1, :] + regions.max()
+            regions *= mask
             # -----------------------------------------------------------------
             regions = np.pad(regions, 2, 'edge')
 
