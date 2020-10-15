@@ -265,7 +265,7 @@ def two_point_correlation_bf(im, spacing=10):
     This approach uses a distance matrix so can consume memory very quickly for
     large 3D images and/or close spacing.
     """
-    if im.ndim != im.squeeze().ndim:
+    if im.ndim != im.squeeze().ndim:    # pragma: no cover
         warnings.warn((
             f"Input image conains a singleton axis: {im.shape}."
             " Reduce dimensionality with np.squeeze(im) to avoid"
@@ -658,7 +658,7 @@ def region_interface_areas(regions, areas, voxel_size=1, strel=None):
     print('Finding interfacial areas between each region')
     from skimage.morphology import disk, ball
     im = regions.copy()
-    if im.ndim != im.squeeze().ndim:
+    if im.ndim != im.squeeze().ndim:    # pragma: no cover
         warnings.warn((
             f"Input image conains a singleton axis: {im.shape}."
             " Reduce dimensionality with np.squeeze(im) to avoid"

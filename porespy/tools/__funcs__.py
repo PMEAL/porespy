@@ -27,7 +27,7 @@ def align_image_with_openpnm(im):
     image : ND-array
         Returns a copy of ``im`` rotated accordingly.
     """
-    if im.ndim != im.squeeze().ndim:
+    if im.ndim != im.squeeze().ndim:    # pragma: no cover
         warnings.warn((
             f"Input image conains a singleton axis: {im.shape}."
             " Reduce dimensionality with np.squeeze(im) to avoid"
@@ -114,7 +114,7 @@ def fftmorphology(im, strel, mode='opening'):
         t = fftconvolve(im, strel, mode='same') > 0.1
         return t
 
-    if im.ndim != im.squeeze().ndim:
+    if im.ndim != im.squeeze().ndim:    # pragma: no cover
         warnings.warn((
             f"Input image conains a singleton axis: {im.shape}."
             " Reduce dimensionality with np.squeeze(im) to avoid"
@@ -809,7 +809,7 @@ def mesh_region(region: bool, strel=None):
 
     """
     im = region
-    if im.ndim != im.squeeze().ndim:
+    if im.ndim != im.squeeze().ndim:    # pragma: no cover
         warnings.warn((
             f"Input image conains a singleton axis: {im.shape}."
             " Reduce dimensionality with np.squeeze(im) to avoid"
@@ -1056,7 +1056,7 @@ def pad_faces(im, faces):
     --------
     add_boundary_regions
     """
-    if im.ndim != im.squeeze().ndim:
+    if im.ndim != im.squeeze().ndim:    # pragma: no cover
         warnings.warn((
             f"Input image conains a singleton axis: {im.shape}."
             " Reduce dimensionality with np.squeeze(im) to avoid"
