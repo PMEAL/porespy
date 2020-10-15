@@ -49,10 +49,12 @@ class NetExtractTest():
         assert found_nans is False
 
     def test_snow_n(self):
-        net = ps.networks.snow_n(self.im3d+1, voxel_size=1,
-                                  boundary_faces=['left', 'right', 'front',
-                                                  'back', 'top', 'bottom'],
-                                  marching_cubes_area=True)
+        net = ps.networks.snow_n(
+            self.im3d + 1,
+            voxel_size=1,
+            boundary_faces=['left', 'right', 'front', 'back', 'top', 'bottom'],
+            marching_cubes_area=True
+        )
         found_nans = False
         for key in net.keys():
             if np.any(np.isnan(net[key])):
@@ -70,16 +72,18 @@ class NetExtractTest():
     def test_add_bounadary_regions_2D(self):
         im = self.im
         regions = ps.filters.snow_partitioning(im)
+        # 2D should break with "bottom"/"top" labels
+        with pytest.raises(Exception):
+            f = ['bottom', 'top']
+            bd = ps.networks.add_boundary_regions(regions, faces=f)
+        # Test valid labels
         f = ['left', 'right']
         bd = ps.networks.add_boundary_regions(regions, faces=f)
         assert bd.shape[0] > regions.shape[0]
-        f = ['bottom', 'top']
-        bd = ps.networks.add_boundary_regions(regions, faces=f)
-        assert bd.shape[1] > regions.shape[1]
         f = ['front', 'back']
         bd = ps.networks.add_boundary_regions(regions, faces=f)
         assert bd.shape[1] > regions.shape[1]
-        f = ['bottom', 'top', 'left', 'right', 'front', 'back']
+        f = ['left', 'right', 'front', 'back']
         bd = ps.networks.add_boundary_regions(regions, faces=f)
         assert bd.shape[0] > regions.shape[0]
         assert bd.shape[1] > regions.shape[1]
@@ -141,21 +145,18 @@ class NetExtractTest():
         net3 = ps.networks.regions_to_network(im=pore_map3,
                                               dt=snow_out3.dt,
                                               voxel_size=1)
-        assert np.allclose(net1['pore.coords'][:, 0],
-                            net2['pore.coords'][:, 0])
-        assert np.allclose(net1['pore.coords'][:, 1],
-                            net2['pore.coords'][:, 2])
-        assert np.allclose(net1['pore.coords'][:, 0],
-                            net3['pore.coords'][:, 1])
+        assert np.allclose(net1['pore.coords'][:, 0], net2['pore.coords'][:, 0])
+        assert np.allclose(net1['pore.coords'][:, 1], net2['pore.coords'][:, 2])
+        assert np.allclose(net1['pore.coords'][:, 0], net3['pore.coords'][:, 1])
 
     def test_generate_voxel_image(self):
         net = op.network.Cubic(shape=[5, 5, 5])
         geom = op.geometry.StickAndBall(network=net,
                                         pores=net.Ps, throats=net.Ts)
         geom.add_model(propname="pore.volume",
-                        model=op.models.geometry.pore_volume.cube)
+                       model=op.models.geometry.pore_volume.cube)
         geom.add_model(propname="throat.volume",
-                        model=op.models.geometry.throat_volume.cylinder)
+                       model=op.models.geometry.throat_volume.cylinder)
         im = ps.networks.generate_voxel_image(network=net,
                                               pore_shape="cube",
                                               throat_shape="cylinder",
@@ -178,7 +179,7 @@ class NetExtractTest():
         proj = op.io.PoreSpy.load(temp)
         net = proj.network
         Ps = net.pores(["void", "solid"] + boundary_faces)
-        assert Ps.size == net.Np
+        assert Ps.size == net.Np == 74
 
 
 if __name__ == '__main__':
