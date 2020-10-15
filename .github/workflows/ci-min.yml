@@ -1,4 +1,4 @@
-name: Minimal
+name: 🐤 Minimal
 
 on: [push]
 
@@ -33,7 +33,7 @@ jobs:
         pip install -r requirements/pip_requirements.txt
         pip install -r requirements/test_requirements.txt
         pip uninstall porespy --yes
-        python setup.py install
+        pip install -e .
 
     - name: Running tests
       run: pytest --pycodestyle --cov=./ --cov-report=xml
