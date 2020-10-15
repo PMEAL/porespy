@@ -170,12 +170,12 @@ class NetExtractTest():
                         rtol=0.05)
 
     def test_verify_no_unlabeled_regions(self):
-        np.random.seed(0)
+        np.random.seed(1999)
         alias = {1: "void", 2: "solid"}
         boundary_faces = ["bottom", "top", "left", "right", "front", "back"]
-        im = ps.generators.blobs([100, 100, 100]) + 1
+        im = ps.generators.blobs([50, 50, 50]) + 1
         temp = ps.networks.snow_n(im=im, alias=alias, boundary_faces=boundary_faces)
-        proj = op.io.PoreSpy.import_data(temp)
+        proj = op.io.PoreSpy.load(temp)
         net = proj.network
         Ps = net.pores(["void", "solid"] + boundary_faces)
         assert Ps.size == net.Np

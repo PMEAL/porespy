@@ -1,5 +1,6 @@
-import numpy as np
+import sys
 import warnings
+import numpy as np
 from skimage.measure import regionprops
 import scipy.ndimage as spim
 import scipy.spatial as sptl
@@ -651,8 +652,8 @@ def region_interface_areas(regions, areas, voxel_size=1, strel=None):
         area shared by regions 0 and 5.
 
     """
-    print('-'*60)
-    print('Finding interfacial areas between each region')
+    print('-' * 60, flush=True)
+    print('Finding interfacial areas between each region', flush=True)
     from skimage.morphology import disk, ball
     im = regions.copy()
     if im.ndim != im.squeeze().ndim:
@@ -669,7 +670,8 @@ def region_interface_areas(regions, areas, voxel_size=1, strel=None):
     sa_combined = []  # Difficult to preallocate since number of conns unknown
     cn = []
     # Start extracting area from im
-    for i in tqdm(Ps):
+    tqdm_Ps = tqdm(Ps, file=sys.stdout)
+    for i in tqdm_Ps:
         reg = i - 1
         if slices[reg] is not None:
             s = extend_slice(slices[reg], im.shape)
@@ -695,6 +697,7 @@ def region_interface_areas(regions, areas, voxel_size=1, strel=None):
                                      + (merged_region == j + 1))
                     mesh = mesh_region(region=merged_region, strel=strel)
                     sa_combined.append(mesh_surface_area(mesh))
+    tqdm_Ps.close()
     # Interfacial area calculation
     cn = np.array(cn)
     ia = 0.5 * (sa[cn[:, 0]] + sa[cn[:, 1]] - sa_combined)
@@ -735,8 +738,8 @@ def region_surface_areas(regions, voxel_size=1, strel=None):
         that the surface area of region 1 is stored in element 0 of the list.
 
     """
-    print('-'*60)
-    print('Finding surface area of each region')
+    print('-' * 60, flush=True)
+    print('Finding surface area of each region', flush=True)
     im = regions.copy()
     # Get 'slices' into im for each pore region
     slices = spim.find_objects(im)
@@ -744,7 +747,8 @@ def region_surface_areas(regions, voxel_size=1, strel=None):
     Ps = np.arange(1, np.amax(im)+1)
     sa = np.zeros_like(Ps, dtype=float)
     # Start extracting marching cube area from im
-    for i in tqdm(Ps):
+    tqdm_Ps = tqdm(Ps, file=sys.stdout)
+    for i in tqdm_Ps:
         reg = i - 1
         if slices[reg] is not None:
             s = extend_slice(slices[reg], im.shape)
@@ -752,6 +756,7 @@ def region_surface_areas(regions, voxel_size=1, strel=None):
             mask_im = sub_im == i
             mesh = mesh_region(region=mask_im, strel=strel)
             sa[reg] = mesh_surface_area(mesh)
+    tqdm_Ps.close()
     result = sa * voxel_size**2
     return result
 
