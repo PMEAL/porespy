@@ -902,7 +902,7 @@ def overlay(im1, im2, c):
     nx, ny, nz = [(ni - 1) // 2 for ni in shape]
     cx, cy, cz = c
 
-    im1[cx-nx:cx+nx+1, cy-ny:cy+ny+1, cz-nz:cz+nz+1] += im2
+    im1[cx - nx:cx + nx + 1, cy - ny:cy + ny + 1, cz - nz:cz + nz + 1] += im2
 
     return im1
 
@@ -956,11 +956,11 @@ def insert_sphere(im, c, r, v=True, overwrite=True):
     blank[tuple(c - bbox[0:im.ndim])] = 0
     sph = edt(blank) < r
     if overwrite:  # Clear voxles under sphere to be zero
-        temp = im[s]*sph > 0
+        temp = im[s] * sph > 0
         im[s][temp] = 0
     else:  # Clear portions of sphere to prevent overwriting
         sph *= im[s] == 0
-    im[s] = im[s] + sph*v
+    im[s] = im[s] + sph * v
     return im
 
 
