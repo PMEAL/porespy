@@ -5,7 +5,7 @@ import warnings
 from edt import edt
 from collections import namedtuple
 from skimage.morphology import ball, disk
-from skimage.measure import marching_cubes_lewiner
+from skimage.measure import marching_cubes
 from array_split import shape_split, ARRAY_BOUNDS
 from scipy.signal import fftconvolve
 
@@ -822,7 +822,7 @@ def mesh_region(region: bool, strel=None):
     else:
         padded_mask = np.reshape(im, (1,) + im.shape)
         padded_mask = np.pad(padded_mask, pad_width=pad_width, mode='constant')
-    verts, faces, norm, val = marching_cubes_lewiner(padded_mask)
+    verts, faces, norm, val = marching_cubes(padded_mask)
     result = namedtuple('mesh', ('verts', 'faces', 'norm', 'val'))
     result.verts = verts - pad_width
     result.faces = faces
