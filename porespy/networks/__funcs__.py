@@ -223,10 +223,10 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200, verbos
     if throat_shape == "cuboid":
         raise Exception("Not yet implemented, try 'cylinder'.")
 
+    tqdm_settings = {"disable": not verbose, "file": sys.stdout}
+
     # Generating voxels for pores
-    Ps = tqdm(
-        network.Ps, disable=not verbose, desc="  - Generating pores  ", file=sys.stdout
-    )
+    Ps = tqdm(network.Ps, desc="  - Generating pores  ", **tqdm_settings)
     for i, pore in enumerate(Ps):
         elem = pore_elem(rp[i])
         try:
@@ -238,9 +238,7 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200, verbos
     im_pores[im_pores > 0] = 1
 
     # Generating voxels for throats
-    Ts = tqdm(
-        network.Ts, disable=not verbose, desc="  - Generating throats", file=sys.stdout
-    )
+    Ts = tqdm(network.Ts, desc="  - Generating throats", **tqdm_settings)
     for i, throat in enumerate(Ts):
         try:
             im_throats = insert_cylinder(im_throats, r=throat_radi[i],

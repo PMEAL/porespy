@@ -1,19 +1,17 @@
+import sys
 import numpy as np
 from edt import edt
 import porespy as ps
+from numba import njit
 import scipy.spatial as sptl
 import scipy.ndimage as spim
-from numba import njit, jit
 from porespy.tools import norm_to_uniform, ps_ball, ps_disk, get_border
-from porespy.tools import insert_sphere, fftmorphology
 from typing import List
 from numpy import array
 from tqdm import tqdm
-from skimage.morphology import ball, disk
 
 
-def insert_shape(im, element, center=None, corner=None, value=1,
-                 mode='overwrite'):
+def insert_shape(im, element, center=None, corner=None, value=1, mode="overwrite"):
     r"""
     Inserts sub-image into a larger image at the specified location.
 
@@ -52,23 +50,24 @@ def insert_shape(im, element, center=None, corner=None, value=1,
     """
     im = im.copy()
     if im.ndim != element.ndim:
-        raise Exception('Image shape ' + str(im.shape)
-                        + ' and element shape ' + str(element.shape)
-                        + ' do not match')
+        raise Exception(
+            f"Image shape {im.shape} and element shape {element.shape} do not match"
+        )
     s_im = []
     s_el = []
     if (center is not None) and (corner is None):
         for dim in range(im.ndim):
             r, d = np.divmod(element.shape[dim], 2)
             if d == 0:
-                raise Exception('Cannot specify center point when element '
-                                + 'has one or more even dimension')
+                raise Exception(
+                    "Cannot specify center point when element "
+                    + "has one or more even dimension"
+                )
             lower_im = np.amax((center[dim] - r, 0))
             upper_im = np.amin((center[dim] + r + 1, im.shape[dim]))
             s_im.append(slice(lower_im, upper_im))
             lower_el = np.amax((lower_im - center[dim] + r, 0))
-            upper_el = np.amin((upper_im - center[dim] + r,
-                                element.shape[dim]))
+            upper_el = np.amin((upper_im - center[dim] + r, element.shape[dim]))
             s_el.append(slice(lower_el, upper_el))
     elif (corner is not None) and (center is None):
         for dim in range(im.ndim):
@@ -77,23 +76,25 @@ def insert_shape(im, element, center=None, corner=None, value=1,
             upper_im = np.amin((corner[dim] + L, im.shape[dim]))
             s_im.append(slice(lower_im, upper_im))
             lower_el = np.amax((lower_im - corner[dim], 0))
-            upper_el = np.amin((upper_im - corner[dim],
-                                element.shape[dim]))
+            upper_el = np.amin((upper_im - corner[dim], element.shape[dim]))
             s_el.append(slice(min(lower_el, upper_el), upper_el))
     else:
-        raise Exception('Cannot specify both corner and center')
+        raise Exception("Cannot specify both corner and center")
 
-    if mode == 'overlay':
-        im[tuple(s_im)] = im[tuple(s_im)] + element[tuple(s_el)]*value
-    elif mode == 'overwrite':
-        im[tuple(s_im)] = element[tuple(s_el)]*value
+    if mode == "overlay":
+        im[tuple(s_im)] = im[tuple(s_im)] + element[tuple(s_el)] * value
+    elif mode == "overwrite":
+        im[tuple(s_im)] = element[tuple(s_el)] * value
     else:
-        raise Exception('Invalid mode ' + mode)
+        raise Exception("Invalid mode " + mode)
     return im
 
 
-def RSA(im: array, radius: int, volume_fraction: int = 1, n_max: int = None,
-        mode: str = 'contained'):
+def RSA(im: array,
+        radius: int,
+        volume_fraction: int = 1,
+        n_max: int = None,
+        mode: str = "contained"):
     r"""
     Generates a sphere or disk packing using Random Sequential Addition
 
@@ -154,37 +155,37 @@ def RSA(im: array, radius: int, volume_fraction: int = 1, n_max: int = None,
     [1] Random Heterogeneous Materials, S. Torquato (2001)
 
     """
-    print(80*'-')
-    print(f'RSA: Adding spheres of size {radius}')
+    print(80 * "-")
+    print(f"RSA: Adding spheres of size {radius}")
     im = im.astype(bool)
     if n_max is None:
         n_max = 10000
     vf_final = volume_fraction
-    vf_start = im.sum()/im.size
-    print('Initial volume fraction:', vf_start)
+    vf_start = im.sum() / im.size
+    print("Initial volume fraction:", vf_start)
     if im.ndim == 2:
-        template_lg = ps_disk(radius*2)
+        template_lg = ps_disk(radius * 2)
         template_sm = ps_disk(radius)
     else:
-        template_lg = ps_ball(radius*2)
+        template_lg = ps_ball(radius * 2)
         template_sm = ps_ball(radius)
-    vf_template = template_sm.sum()/im.size
+    vf_template = template_sm.sum() / im.size
     # Pad image by the radius of large template to enable insertion near edges
-    im = np.pad(im, pad_width=2*radius, mode='edge')
+    im = np.pad(im, pad_width=2 * radius, mode="edge")
     # Depending on mode, adjust mask to remove options around edge
-    if mode == 'contained':
-        border = get_border(im.shape, thickness=2*radius, mode='faces')
-    elif mode == 'extended':
-        border = get_border(im.shape, thickness=radius+1, mode='faces')
+    if mode == "contained":
+        border = get_border(im.shape, thickness=2 * radius, mode="faces")
+    elif mode == "extended":
+        border = get_border(im.shape, thickness=radius + 1, mode="faces")
     else:
-        raise Exception('Unrecognized mode: ', mode)
+        raise Exception("Unrecognized mode: ", mode)
     # Remove border pixels
     im[border] = True
     # Dilate existing objects by strel to remove pixels near them
     # from consideration for sphere placement
-    print('Dilating foreground features by sphere radius')
+    print("Dilating foreground features by sphere radius")
     dt = edt(im == 0)
-    options_im = (dt >= radius)
+    options_im = dt >= radius
     # ------------------------------------------------------------------------
     # Begin inserting the spheres
     vf = vf_start
@@ -195,23 +196,23 @@ def RSA(im: array, radius: int, volume_fraction: int = 1, n_max: int = None,
         # The 100 below is arbitrary and may change performance
         if count > 100:
             # Regenerate list of free_sites
-            print('Regenerating free_sites after', i, 'iterations')
+            print("Regenerating free_sites after", i, "iterations")
             free_sites = np.flatnonzero(options_im)
         if all(np.array(c) == -1):
             break
         s_sm = tuple([slice(x - radius, x + radius + 1, None) for x in c])
-        s_lg = tuple([slice(x - 2*radius, x + 2*radius + 1, None) for x in c])
+        s_lg = tuple([slice(x - 2 * radius, x + 2 * radius + 1, None) for x in c])
         im[s_sm] += template_sm  # Add ball to image
         options_im[s_lg][template_lg] = False  # Update extended region
         vf += vf_template
         i += 1
-    print('Number of spheres inserted:', i)
+    print("Number of spheres inserted:", i)
     # ------------------------------------------------------------------------
     # Get slice into returned image to retain original size
-    s = tuple([slice(2*radius, d-2*radius, None) for d in im.shape])
+    s = tuple([slice(2 * radius, d - 2 * radius, None) for d in im.shape])
     im = im[s]
-    vf = im.sum()/im.size
-    print('Final volume fraction:', vf)
+    vf = im.sum() / im.size
+    print("Final volume fraction:", vf)
     return im
 
 
@@ -245,7 +246,7 @@ def _make_choice(options_im, free_sites):
     choice = False
     count = 0
     upper_limit = len(free_sites)
-    max_iters = upper_limit*20
+    max_iters = upper_limit * 20
     if options_im.ndim == 2:
         coords = [-1, -1]
         Nx, Ny = options_im.shape
@@ -303,35 +304,36 @@ def bundle_of_tubes(shape: List[int], spacing: int):
     """
     shape = np.array(shape)
     if np.size(shape) == 1:
-        shape = np.full((3, ), int(shape))
+        shape = np.full((3,), int(shape))
     if np.size(shape) == 2:
         shape = np.hstack((shape, [1]))
     temp = np.zeros(shape=shape[:2])
-    Xi = np.ceil(np.linspace(spacing/2,
-                             shape[0]-(spacing/2)-1,
-                             int(shape[0]/spacing)))
+    Xi = np.ceil(
+        np.linspace(spacing / 2, shape[0] - (spacing / 2) - 1, int(shape[0] / spacing))
+    )
     Xi = np.array(Xi, dtype=int)
-    Yi = np.ceil(np.linspace(spacing/2,
-                             shape[1]-(spacing/2)-1,
-                             int(shape[1]/spacing)))
+    Yi = np.ceil(
+        np.linspace(spacing / 2, shape[1] - (spacing / 2) - 1, int(shape[1] / spacing))
+    )
     Yi = np.array(Yi, dtype=int)
     temp[tuple(np.meshgrid(Xi, Yi))] = 1
     inds = np.where(temp)
     for i in range(len(inds[0])):
-        r = np.random.randint(1, (spacing/2))
+        r = np.random.randint(1, (spacing / 2))
         try:
-            s1 = slice(inds[0][i]-r, inds[0][i]+r+1)
-            s2 = slice(inds[1][i]-r, inds[1][i]+r+1)
+            s1 = slice(inds[0][i] - r, inds[0][i] + r + 1)
+            s2 = slice(inds[1][i] - r, inds[1][i] + r + 1)
             temp[s1, s2] = ps_disk(r)
         except ValueError:
             odd_shape = np.shape(temp[s1, s2])
-            temp[s1, s2] = ps_disk(r)[:odd_shape[0], :odd_shape[1]]
+            temp[s1, s2] = ps_disk(r)[: odd_shape[0], : odd_shape[1]]
     im = np.broadcast_to(array=np.atleast_3d(temp), shape=shape)
     return im
 
 
-def polydisperse_spheres(shape: List[int], porosity: float, dist,
-                         nbins: int = 5, r_min: int = 5):
+def polydisperse_spheres(
+    shape: List[int], porosity: float, dist, nbins: int = 5, r_min: int = 5
+):
     r"""
     Create an image of randomly place, overlapping spheres with a distribution
     of radii.
@@ -368,12 +370,12 @@ def polydisperse_spheres(shape: List[int], porosity: float, dist,
     """
     shape = np.array(shape)
     if np.size(shape) == 1:
-        shape = np.full((3, ), int(shape))
+        shape = np.full((3,), int(shape))
     Rs = dist.interval(np.linspace(0.05, 0.95, nbins))
     Rs = np.vstack(Rs).T
-    Rs = (Rs[:-1] + Rs[1:])/2
+    Rs = (Rs[:-1] + Rs[1:]) / 2
     Rs = np.clip(Rs.flatten(), a_min=r_min, a_max=None)
-    phi_desired = 1 - (1 - porosity)/(len(Rs))
+    phi_desired = 1 - (1 - porosity) / (len(Rs))
     im = np.ones(shape, dtype=bool)
     for r in Rs:
         phi_im = im.sum() / np.prod(shape)
@@ -383,8 +385,7 @@ def polydisperse_spheres(shape: List[int], porosity: float, dist,
     return im
 
 
-def voronoi_edges(shape: List[int], radius: int, ncells: int,
-                  flat_faces: bool = True):
+def voronoi_edges(shape: List[int], radius: int, ncells: int, flat_faces: bool = True):
     r"""
     Create an image of the edges in a Voronoi tessellation
 
@@ -410,29 +411,26 @@ def voronoi_edges(shape: List[int], radius: int, ncells: int,
         A boolean array with ``True`` values denoting the pore space
 
     """
-    print(78*'―')
-    print('voronoi_edges: Generating', ncells, 'cells')
+    print(60 * "-")
+    print("voronoi_edges: Generating", ncells, "cells")
     shape = np.array(shape)
     if np.size(shape) == 1:
-        shape = np.full((3, ), int(shape))
+        shape = np.full((3,), int(shape))
     im = np.zeros(shape, dtype=bool)
-    base_pts = np.random.rand(ncells, 3)*shape
+    base_pts = np.random.rand(ncells, 3) * shape
     if flat_faces:
         # Reflect base points
         Nx, Ny, Nz = shape
         orig_pts = base_pts
-        base_pts = np.vstack((base_pts,
-                              [-1, 1, 1] * orig_pts + [2.0*Nx, 0, 0]))
-        base_pts = np.vstack((base_pts,
-                              [1, -1, 1] * orig_pts + [0, 2.0*Ny, 0]))
-        base_pts = np.vstack((base_pts,
-                              [1, 1, -1] * orig_pts + [0, 0, 2.0*Nz]))
+        base_pts = np.vstack((base_pts, [-1, 1, 1] * orig_pts + [2.0 * Nx, 0, 0]))
+        base_pts = np.vstack((base_pts, [1, -1, 1] * orig_pts + [0, 2.0 * Ny, 0]))
+        base_pts = np.vstack((base_pts, [1, 1, -1] * orig_pts + [0, 0, 2.0 * Nz]))
         base_pts = np.vstack((base_pts, [-1, 1, 1] * orig_pts))
         base_pts = np.vstack((base_pts, [1, -1, 1] * orig_pts))
         base_pts = np.vstack((base_pts, [1, 1, -1] * orig_pts))
     vor = sptl.Voronoi(points=base_pts)
     vor.vertices = np.around(vor.vertices)
-    vor.vertices *= (np.array(im.shape)-1) / np.array(im.shape)
+    vor.vertices *= (np.array(im.shape) - 1) / np.array(im.shape)
     vor.edges = _get_Voronoi_edges(vor)
     for row in vor.edges:
         pts = vor.vertices[row].astype(int)
@@ -463,22 +461,23 @@ def _get_Voronoi_edges(vor):
     edges = [[], []]
     for facet in vor.ridge_vertices:
         # Create a closed cycle of vertices that define the facet
-        edges[0].extend(facet[:-1]+[facet[-1]])
-        edges[1].extend(facet[1:]+[facet[0]])
+        edges[0].extend(facet[:-1] + [facet[-1]])
+        edges[1].extend(facet[1:] + [facet[0]])
     edges = np.vstack(edges).T  # Convert to scipy-friendly format
     mask = np.any(edges == -1, axis=1)  # Identify edges at infinity
     edges = edges[~mask]  # Remove edges at infinity
     edges = np.sort(edges, axis=1)  # Move all points to upper triangle
     # Remove duplicate pairs
-    edges = edges[:, 0] + 1j*edges[:, 1]  # Convert to imaginary
+    edges = edges[:, 0] + 1j * edges[:, 1]  # Convert to imaginary
     edges = np.unique(edges)  # Remove duplicates
     edges = np.vstack((np.real(edges), np.imag(edges))).T  # Back to real
     edges = np.array(edges, dtype=int)
     return edges
 
 
-def lattice_spheres(shape: List[int], radius: int, offset: int = 0,
-                    lattice: str = 'sc'):
+def lattice_spheres(
+    shape: List[int], radius: int, offset: int = 0, lattice: str = "sc"
+):
     r"""
     Generates a cubic packing of spheres in a specified lattice arrangement
 
@@ -511,81 +510,97 @@ def lattice_spheres(shape: List[int], radius: int, offset: int = 0,
     image : ND-array
         A boolean array with ``True`` values denoting the pore space
     """
-    print(78*'―')
-    print('lattice_spheres: Generating ' + lattice + ' lattice')
+    print(60 * "-")
+    print("lattice_spheres: Generating " + lattice + " lattice")
     r = radius
     shape = np.array(shape)
     if np.size(shape) == 1:
-        shape = np.full((3, ), int(shape))
+        shape = np.full((3,), int(shape))
     im = np.zeros(shape, dtype=bool)
     im = im.squeeze()
 
     # Parse lattice type
     lattice = lattice.lower()
     if im.ndim == 2:
-        if lattice in ['sc']:
-            lattice = 'sq'
-        if lattice in ['bcc', 'fcc']:
-            lattice = 'tri'
+        if lattice in ["sc"]:
+            lattice = "sq"
+        if lattice in ["bcc", "fcc"]:
+            lattice = "tri"
 
-    if lattice in ['sq', 'square']:
-        spacing = 2*r
-        s = int(spacing/2) + np.array(offset)
-        coords = np.mgrid[r:im.shape[0]-r:2*s,
-                          r:im.shape[1]-r:2*s]
+    if lattice in ["sq", "square"]:
+        spacing = 2 * r
+        s = int(spacing / 2) + np.array(offset)
+        coords = np.mgrid[r : im.shape[0] - r : 2 * s, r : im.shape[1] - r : 2 * s]
         im[coords[0], coords[1]] = 1
-    elif lattice in ['tri', 'triangular']:
-        spacing = 2*np.floor(np.sqrt(2*(r**2))).astype(int)
-        s = int(spacing/2) + offset
-        coords = np.mgrid[r:im.shape[0]-r:2*s,
-                          r:im.shape[1]-r:2*s]
+    elif lattice in ["tri", "triangular"]:
+        spacing = 2 * np.floor(np.sqrt(2 * (r ** 2))).astype(int)
+        s = int(spacing / 2) + offset
+        coords = np.mgrid[r : im.shape[0] - r : 2 * s, r : im.shape[1] - r : 2 * s]
         im[coords[0], coords[1]] = 1
-        coords = np.mgrid[s+r:im.shape[0]-r:2*s,
-                          s+r:im.shape[1]-r:2*s]
+        coords = np.mgrid[
+            s + r : im.shape[0] - r : 2 * s, s + r : im.shape[1] - r : 2 * s
+        ]
         im[coords[0], coords[1]] = 1
-    elif lattice in ['sc', 'simple cubic', 'cubic']:
-        spacing = 2*r
-        s = int(spacing/2) + np.array(offset)
-        coords = np.mgrid[r:im.shape[0]-r:2*s,
-                          r:im.shape[1]-r:2*s,
-                          r:im.shape[2]-r:2*s]
+    elif lattice in ["sc", "simple cubic", "cubic"]:
+        spacing = 2 * r
+        s = int(spacing / 2) + np.array(offset)
+        coords = np.mgrid[
+            r : im.shape[0] - r : 2 * s,
+            r : im.shape[1] - r : 2 * s,
+            r : im.shape[2] - r : 2 * s,
+        ]
         im[coords[0], coords[1], coords[2]] = 1
-    elif lattice in ['bcc', 'body cenetered cubic']:
-        spacing = 2*np.floor(np.sqrt(4/3*(r**2))).astype(int)
-        s = int(spacing/2) + offset
-        coords = np.mgrid[r:im.shape[0]-r:2*s,
-                          r:im.shape[1]-r:2*s,
-                          r:im.shape[2]-r:2*s]
+    elif lattice in ["bcc", "body cenetered cubic"]:
+        spacing = 2 * np.floor(np.sqrt(4 / 3 * (r ** 2))).astype(int)
+        s = int(spacing / 2) + offset
+        coords = np.mgrid[
+            r : im.shape[0] - r : 2 * s,
+            r : im.shape[1] - r : 2 * s,
+            r : im.shape[2] - r : 2 * s,
+        ]
         im[coords[0], coords[1], coords[2]] = 1
-        coords = np.mgrid[s+r:im.shape[0]-r:2*s,
-                          s+r:im.shape[1]-r:2*s,
-                          s+r:im.shape[2]-r:2*s]
+        coords = np.mgrid[
+            s + r : im.shape[0] - r : 2 * s,
+            s + r : im.shape[1] - r : 2 * s,
+            s + r : im.shape[2] - r : 2 * s,
+        ]
         im[coords[0], coords[1], coords[2]] = 1
-    elif lattice in ['fcc', 'face centered cubic']:
-        spacing = 2*np.floor(np.sqrt(2*(r**2))).astype(int)
-        s = int(spacing/2) + offset
-        coords = np.mgrid[r:im.shape[0]-r:2*s,
-                          r:im.shape[1]-r:2*s,
-                          r:im.shape[2]-r:2*s]
+    elif lattice in ["fcc", "face centered cubic"]:
+        spacing = 2 * np.floor(np.sqrt(2 * (r ** 2))).astype(int)
+        s = int(spacing / 2) + offset
+        coords = np.mgrid[
+            r : im.shape[0] - r : 2 * s,
+            r : im.shape[1] - r : 2 * s,
+            r : im.shape[2] - r : 2 * s,
+        ]
         im[coords[0], coords[1], coords[2]] = 1
-        coords = np.mgrid[r:im.shape[0]-r:2*s,
-                          s+r:im.shape[1]-r:2*s,
-                          s+r:im.shape[2]-r:2*s]
+        coords = np.mgrid[
+            r : im.shape[0] - r : 2 * s,
+            s + r : im.shape[1] - r : 2 * s,
+            s + r : im.shape[2] - r : 2 * s,
+        ]
         im[coords[0], coords[1], coords[2]] = 1
-        coords = np.mgrid[s+r:im.shape[0]-r:2*s,
-                          s:im.shape[1]-r:2*s,
-                          s+r:im.shape[2]-r:2*s]
+        coords = np.mgrid[
+            s + r : im.shape[0] - r : 2 * s,
+            s : im.shape[1] - r : 2 * s,
+            s + r : im.shape[2] - r : 2 * s,
+        ]
         im[coords[0], coords[1], coords[2]] = 1
-        coords = np.mgrid[s+r:im.shape[0]-r:2*s,
-                          s+r:im.shape[1]-r:2*s,
-                          s:im.shape[2]-r:2*s]
+        coords = np.mgrid[
+            s + r : im.shape[0] - r : 2 * s,
+            s + r : im.shape[1] - r : 2 * s,
+            s : im.shape[2] - r : 2 * s,
+        ]
         im[coords[0], coords[1], coords[2]] = 1
     im = ~(edt(~im) < r)
     return im
 
 
-def overlapping_spheres(shape: List[int], radius: int, porosity: float,
-                        iter_max: int = 10, tol: float = 0.01):
+def overlapping_spheres(shape: List[int],
+                        radius: int,
+                        porosity: float,
+                        iter_max: int = 10,
+                        tol: float = 0.01):
     r"""
     Generate a packing of overlapping mono-disperse spheres
 
@@ -627,12 +642,12 @@ def overlapping_spheres(shape: List[int], radius: int, porosity: float,
     s_vol = ps_disk(radius).sum() if ndim == 2 else ps_ball(radius).sum()
 
     bulk_vol = np.prod(shape)
-    N = int(np.ceil((1 - porosity)*bulk_vol/s_vol))
+    N = int(np.ceil((1 - porosity) * bulk_vol / s_vol))
     im = np.random.random(size=shape)
 
     # Helper functions for calculating porosity: phi = g(f(N))
     def f(N):
-        return edt(im > N/bulk_vol) < radius
+        return edt(im > N / bulk_vol) < radius
 
     def g(im):
         r"""Returns fraction of 0s, given a binary image"""
@@ -652,7 +667,7 @@ def overlapping_spheres(shape: List[int], radius: int, porosity: float,
     #     N = w * N2 + (1-w) * N
 
     # Bisection search: N is always undershoot (bc. of overlaps)
-    N_low, N_high = N, 4*N
+    N_low, N_high = N, 4 * N
     for i in range(iter_max):
         N = np.mean([N_high, N_low], dtype=int)
         err = g(f(N)) - porosity
@@ -713,19 +728,19 @@ def perlin_noise(shape: List[int], porosity=None, octaves: int = 3,
     # Parse args
     shape = np.array(shape)
     if shape.size == 1:  # Assume 3D
-        shape = np.ones(3, dtype=int)*shape
+        shape = np.ones(3, dtype=int) * shape
     res = np.array(frequency)
     if res.size == 1:  # Assume shape as shape
-        res = np.ones(shape.size, dtype=int)*res
+        res = np.ones(shape.size, dtype=int) * res
 
     # Check inputs for various sins
     if res.size != shape.size:
         raise Exception('shape and res must have same dimensions')
     if np.any(np.mod(shape, res) > 0):
         raise Exception('res must be a multiple of shape along each axis')
-    if np.any(shape/res**octaves < 1):
+    if np.any(shape / res**octaves < 1):
         raise Exception('(res[i])**octaves must be <= shape[i]')
-    check = shape/(res**octaves)
+    check = shape / (res**octaves)
     if np.any(check % 1):
         raise Exception("Image size must be factor of res**octaves")
 
@@ -733,11 +748,11 @@ def perlin_noise(shape: List[int], porosity=None, octaves: int = 3,
     noise = np.zeros(shape)
     frequency = 1
     amplitude = 1
-    for _ in tqdm(range(octaves)):
+    for _ in tqdm(range(octaves), file=sys.stdout):
         if noise.ndim == 2:
-            noise += amplitude * _perlin_noise_2D(shape, frequency*res)
+            noise += amplitude * _perlin_noise_2D(shape, frequency * res)
         elif noise.ndim == 3:
-            noise += amplitude * _perlin_noise_3D(shape, frequency*res)
+            noise += amplitude * _perlin_noise_3D(shape, frequency * res)
         frequency *= 2
         amplitude *= persistence
 
@@ -750,17 +765,17 @@ def perlin_noise(shape: List[int], porosity=None, octaves: int = 3,
 
 def _perlin_noise_3D(shape, res):
     def f(t):
-        return 6*t**5 - 15*t**4 + 10*t**3
+        return 6 * t**5 - 15 * t**4 + 10 * t**3
 
     delta = res / shape
     d = shape // res
     grid = np.mgrid[0:res[0]:delta[0], 0:res[1]:delta[1], 0:res[2]:delta[2]]
     grid = grid.transpose(1, 2, 3, 0) % 1
     # Gradients
-    theta = 2*np.pi*np.random.rand(*(res + 1))
-    phi = 2*np.pi*np.random.rand(*(res + 1))
-    gradients = np.stack((np.sin(phi)*np.cos(theta),
-                          np.sin(phi)*np.sin(theta),
+    theta = 2 * np.pi * np.random.rand(*(res + 1))
+    phi = 2 * np.pi * np.random.rand(*(res + 1))
+    gradients = np.stack((np.sin(phi) * np.cos(theta),
+                          np.sin(phi) * np.sin(theta),
                           np.cos(phi)), axis=3)
     g000 = gradients[0:-1, 0:-1, 0:-1]
     g000 = g000.repeat(d[0], 0).repeat(d[1], 1).repeat(d[2], 2)
@@ -781,42 +796,42 @@ def _perlin_noise_3D(shape, res):
     # Ramps
     n000 = np.sum(np.stack((grid[..., 0],
                             grid[..., 1],
-                            grid[..., 2]), axis=3)*g000, 3)
-    n100 = np.sum(np.stack((grid[..., 0]-1,
+                            grid[..., 2]), axis=3) * g000, 3)
+    n100 = np.sum(np.stack((grid[..., 0] - 1,
                             grid[..., 1],
-                            grid[..., 2]), axis=3)*g100, 3)
+                            grid[..., 2]), axis=3) * g100, 3)
     n010 = np.sum(np.stack((grid[..., 0],
-                            grid[..., 1]-1,
-                            grid[..., 2]), axis=3)*g010, 3)
-    n110 = np.sum(np.stack((grid[..., 0]-1,
-                            grid[..., 1]-1,
-                            grid[..., 2]), axis=3)*g110, 3)
+                            grid[..., 1] - 1,
+                            grid[..., 2]), axis=3) * g010, 3)
+    n110 = np.sum(np.stack((grid[..., 0] - 1,
+                            grid[..., 1] - 1,
+                            grid[..., 2]), axis=3) * g110, 3)
     n001 = np.sum(np.stack((grid[..., 0],
                             grid[..., 1],
-                            grid[..., 2]-1), axis=3)*g001, 3)
-    n101 = np.sum(np.stack((grid[..., 0]-1,
+                            grid[..., 2] - 1), axis=3) * g001, 3)
+    n101 = np.sum(np.stack((grid[..., 0] - 1,
                             grid[..., 1],
-                            grid[..., 2]-1), axis=3)*g101, 3)
+                            grid[..., 2] - 1), axis=3) * g101, 3)
     n011 = np.sum(np.stack((grid[..., 0],
-                            grid[..., 1]-1,
-                            grid[..., 2]-1), axis=3)*g011, 3)
-    n111 = np.sum(np.stack((grid[..., 0]-1,
-                            grid[..., 1]-1,
-                            grid[..., 2]-1), axis=3)*g111, 3)
+                            grid[..., 1] - 1,
+                            grid[..., 2] - 1), axis=3) * g011, 3)
+    n111 = np.sum(np.stack((grid[..., 0] - 1,
+                            grid[..., 1] - 1,
+                            grid[..., 2] - 1), axis=3) * g111, 3)
     # Interpolation
     t = f(grid)
-    n00 = n000*(1-t[..., 0]) + t[..., 0]*n100
-    n10 = n010*(1-t[..., 0]) + t[..., 0]*n110
-    n01 = n001*(1-t[..., 0]) + t[..., 0]*n101
-    n11 = n011*(1-t[..., 0]) + t[..., 0]*n111
-    n0 = (1-t[..., 1])*n00 + t[..., 1]*n10
-    n1 = (1-t[..., 1])*n01 + t[..., 1]*n11
-    return ((1-t[..., 2])*n0 + t[..., 2]*n1)
+    n00 = n000 * (1 - t[..., 0]) + t[..., 0] * n100
+    n10 = n010 * (1 - t[..., 0]) + t[..., 0] * n110
+    n01 = n001 * (1 - t[..., 0]) + t[..., 0] * n101
+    n11 = n011 * (1 - t[..., 0]) + t[..., 0] * n111
+    n0 = (1 - t[..., 1]) * n00 + t[..., 1] * n10
+    n1 = (1 - t[..., 1]) * n01 + t[..., 1] * n11
+    return ((1 - t[..., 2]) * n0 + t[..., 2] * n1)
 
 
 def _perlin_noise_2D(shape, res):
     def f(t):
-        return 6*t**5 - 15*t**4 + 10*t**3
+        return 6 * t**5 - 15 * t**4 + 10 * t**3
 
     delta = res / shape
     d = shape // res
@@ -824,7 +839,7 @@ def _perlin_noise_2D(shape, res):
                     0:res[1]:delta[1]].transpose(1, 2, 0) % 1
 
     # Gradients
-    angles = 2*np.pi*np.random.rand(res[0]+1, res[1]+1)
+    angles = 2 * np.pi * np.random.rand(res[0] + 1, res[1] + 1)
     gradients = np.dstack((np.cos(angles), np.sin(angles)))
     g00 = gradients[0:-1, 0:-1].repeat(d[0], 0).repeat(d[1], 1)
     g10 = gradients[1:, 0:-1].repeat(d[0], 0).repeat(d[1], 1)
@@ -833,16 +848,16 @@ def _perlin_noise_2D(shape, res):
 
     # Ramps
     n00 = np.sum(np.dstack((grid[..., 0], grid[..., 1])) * g00, 2)
-    n10 = np.sum(np.dstack((grid[..., 0]-1, grid[..., 1])) * g10, 2)
-    n01 = np.sum(np.dstack((grid[..., 0], grid[..., 1]-1)) * g01, 2)
-    n11 = np.sum(np.dstack((grid[..., 0]-1, grid[..., 1]-1)) * g11, 2)
+    n10 = np.sum(np.dstack((grid[..., 0] - 1, grid[..., 1])) * g10, 2)
+    n01 = np.sum(np.dstack((grid[..., 0], grid[..., 1] - 1)) * g01, 2)
+    n11 = np.sum(np.dstack((grid[..., 0] - 1, grid[..., 1] - 1)) * g11, 2)
 
     # Interpolation
     t = f(grid)
-    n0 = n00*(1-t[:, :, 0]) + t[:, :, 0]*n10
-    n1 = n01*(1-t[:, :, 0]) + t[:, :, 0]*n11
+    n0 = n00 * (1 - t[:, :, 0]) + t[:, :, 0] * n10
+    n1 = n01 * (1 - t[:, :, 0]) + t[:, :, 0] * n11
 
-    return np.sqrt(2)*((1-t[:, :, 1])*n0 + t[:, :, 1]*n1)
+    return np.sqrt(2) * ((1 - t[:, :, 1]) * n0 + t[:, :, 1] * n1)
 
 
 def blobs(shape: List[int], porosity: float = 0.5, blobiness: int = 1,
@@ -884,7 +899,7 @@ def blobs(shape: List[int], porosity: float = 0.5, blobiness: int = 1,
     cores = kwargs.pop('cores', None)
     if np.size(shape) == 1:
         shape = np.full((3, ), int(shape))
-    sigma = np.mean(shape)/(40*blobiness)
+    sigma = np.mean(shape) / (40 * blobiness)
     im = np.random.random(shape)
     if parallel:
         # TODO: The determination of the overlap should be done rigorously
@@ -948,8 +963,8 @@ def cylinders(shape: List[int], radius: int, ncylinders: int,
     # Find hypotenuse of domain from [0,0,0] to [Nx,Ny,Nz]
     H = np.sqrt(np.sum(np.square(shape))).astype(int)
     if length is None:  # Assume cylinders span domain if length not given
-        length = 2*H
-    R = min(int(length/2), 2*H)  # Trim given length to 2H if too long
+        length = 2 * H
+    R = min(int(length / 2), 2 * H)  # Trim given length to 2H if too long
     # Adjust max angles to be between 0 and 90
     if (phi_max > 90) or (phi_max < 0):
         raise Exception('phi_max must be betwen 0 and 90')
@@ -959,21 +974,21 @@ def cylinders(shape: List[int], radius: int, ncylinders: int,
     im = np.zeros(shape, dtype=bool)
     n = 0
     L = min(H, R)
-    with tqdm(range(1, ncylinders)) as pbar:
+    with tqdm(range(1, ncylinders), file=sys.stdout) as pbar:
         while n < ncylinders:
             # Choose a random starting point in domain
-            x = np.random.rand(3)*(shape + 2*L)
+            x = np.random.rand(3) * (shape + 2 * L)
             # Chose a random phi and theta within given ranges
-            phi = (np.pi/2 - np.pi*np.random.rand())*phi_max/90
-            theta = (np.pi/2 - np.pi*np.random.rand())*theta_max/90
-            X0 = R*np.array([np.cos(phi)*np.cos(theta),
-                             np.cos(phi)*np.sin(theta),
-                             np.sin(phi)])
+            phi = (np.pi / 2 - np.pi * np.random.rand()) * phi_max / 90
+            theta = (np.pi / 2 - np.pi * np.random.rand()) * theta_max / 90
+            X0 = R * np.array([np.cos(phi) * np.cos(theta),
+                               np.cos(phi) * np.sin(theta),
+                               np.sin(phi)])
             [X0, X1] = [x + X0, x - X0]
             crds = line_segment(X0, X1)
             lower = ~np.any(np.vstack(crds).T < [L, L, L], axis=1)
             upper = ~np.any(np.vstack(crds).T >= shape + L, axis=1)
-            valid = upper*lower
+            valid = upper * lower
             if np.any(valid):
                 im[crds[0][valid] - L, crds[1][valid] - L, crds[2][valid] - L] = 1
                 n += 1
@@ -1004,13 +1019,13 @@ def line_segment(X0, X1):
     X0 = np.around(X0).astype(int)
     X1 = np.around(X1).astype(int)
     if len(X0) == 3:
-        L = np.amax(np.absolute([[X1[0]-X0[0]], [X1[1]-X0[1]], [X1[2]-X0[2]]])) + 1
+        L = np.amax(np.absolute([[X1[0] - X0[0]], [X1[1] - X0[1]], [X1[2] - X0[2]]])) + 1
         x = np.rint(np.linspace(X0[0], X1[0], L)).astype(int)
         y = np.rint(np.linspace(X0[1], X1[1], L)).astype(int)
         z = np.rint(np.linspace(X0[2], X1[2], L)).astype(int)
         return [x, y, z]
     else:
-        L = np.amax(np.absolute([[X1[0]-X0[0]], [X1[1]-X0[1]]])) + 1
+        L = np.amax(np.absolute([[X1[0] - X0[0]], [X1[1] - X0[1]]])) + 1
         x = np.rint(np.linspace(X0[0], X1[0], L)).astype(int)
         y = np.rint(np.linspace(X0[1], X1[1], L)).astype(int)
         return [x, y]

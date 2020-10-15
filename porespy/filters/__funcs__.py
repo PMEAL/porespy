@@ -143,12 +143,11 @@ def distance_transform_lin(im, axis=0, mode="both"):
         the nearest background along the specified axis.
     """
     if im.ndim != im.squeeze().ndim:
-        warnings.warn(
-            "Input image conains a singleton axis:"
-            + str(im.shape)
-            + " Reduce dimensionality with np.squeeze(im) to avoid"
-            + " unexpected behavior."
-        )
+        warnings.warn((
+            f"Input image conains a singleton axis: {im.shape}."
+            " Reduce dimensionality with np.squeeze(im) to avoid"
+            " unexpected behavior."
+        ))
     if mode in ["backward", "reverse"]:
         im = np.flip(im, axis)
         im = distance_transform_lin(im=im, axis=axis, mode="forward")
@@ -442,10 +441,11 @@ def find_peaks(dt, r_max=4, footprint=None, **kwargs):
     """
     im = dt > 0
     if im.ndim != im.squeeze().ndim:
-        warnings.warn("Input image conains a singleton axis:"
-                      + str(im.shape)
-                      + " Reduce dimensionality with np.squeeze(im) to avoid"
-                      + " unexpected behavior.")
+        warnings.warn((
+            f"Input image conains a singleton axis: {im.shape}."
+            " Reduce dimensionality with np.squeeze(im) to avoid"
+            " unexpected behavior."
+        ))
     if footprint is None:
         if im.ndim == 2:
             footprint = disk
@@ -666,12 +666,11 @@ def find_disconnected_voxels(im, conn=None):
 
     """
     if im.ndim != im.squeeze().ndim:
-        warnings.warn(
-            "Input image conains a singleton axis:"
-            + str(im.shape)
-            + " Reduce dimensionality with np.squeeze(im) to avoid"
-            + " unexpected behavior."
-        )
+        warnings.warn((
+            f"Input image conains a singleton axis: {im.shape}."
+            " Reduce dimensionality with np.squeeze(im) to avoid"
+            " unexpected behavior."
+        ))
     if im.ndim == 2:
         if conn == 4:
             strel = disk(1)
@@ -791,12 +790,11 @@ def trim_nonpercolating_paths(im, inlet_axis=0, outlet_axis=0,
 
     """
     if im.ndim != im.squeeze().ndim:
-        warnings.warn(
-            "Input image conains a singleton axis:"
-            + str(im.shape)
-            + " Reduce dimensionality with np.squeeze(im) to avoid"
-            + " unexpected behavior."
-        )
+        warnings.warn((
+            f"Input image conains a singleton axis: {im.shape}."
+            " Reduce dimensionality with np.squeeze(im) to avoid"
+            " unexpected behavior."
+        ))
     im = trim_floating_solid(~im)
     labels = spim.label(~im)[0]
     if inlets is None:
@@ -1033,12 +1031,11 @@ def apply_chords(im, spacing=1, axis=0, trim_edges=True, label=False):
 
     """
     if im.ndim != im.squeeze().ndim:
-        warnings.warn(
-            "Input image conains a singleton axis:"
-            + str(im.shape)
-            + " Reduce dimensionality with np.squeeze(im) to avoid"
-            + " unexpected behavior."
-        )
+        warnings.warn((
+            f"Input image conains a singleton axis: {im.shape}."
+            " Reduce dimensionality with np.squeeze(im) to avoid"
+            " unexpected behavior."
+        ))
     if spacing < 0:
         raise Exception("Spacing cannot be less than 0")
     if spacing == 0:
@@ -1099,12 +1096,11 @@ def apply_chords_3D(im, spacing=0, trim_edges=True):
 
     """
     if im.ndim != im.squeeze().ndim:
-        warnings.warn(
-            "Input image conains a singleton axis:"
-            + str(im.shape)
-            + " Reduce dimensionality with np.squeeze(im) to avoid"
-            + " unexpected behavior."
-        )
+        warnings.warn((
+            f"Input image conains a singleton axis: {im.shape}."
+            " Reduce dimensionality with np.squeeze(im) to avoid"
+            " unexpected behavior."
+        ))
     if im.ndim < 3:
         raise Exception("Must be a 3D image to use this function")
     if spacing < 0:
@@ -1267,10 +1263,11 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
 
     """
     if im.ndim != im.squeeze().ndim:
-        warnings.warn("Input image contains a singleton axis:"
-                      + str(im.shape)
-                      + " Reduce dimensionality with np.squeeze(im) to avoid"
-                      + " unexpected behavior.")
+        warnings.warn((
+            f"Input image conains a singleton axis: {im.shape}."
+            " Reduce dimensionality with np.squeeze(im) to avoid"
+            " unexpected behavior."
+        ))
 
     dt = edt(im > 0)
 
@@ -1493,12 +1490,11 @@ def nphase_border(im, include_diagonals=False):
         different bordering values
     """
     if im.ndim != im.squeeze().ndim:
-        warnings.warn(
-            "Input image conains a singleton axis:"
-            + str(im.shape)
-            + " Reduce dimensionality with np.squeeze(im) to avoid"
-            + " unexpected behavior."
-        )
+        warnings.warn((
+            f"Input image conains a singleton axis: {im.shape}."
+            " Reduce dimensionality with np.squeeze(im) to avoid"
+            " unexpected behavior."
+        ))
     # Get dimension of image
     ndim = len(np.shape(im))
     if ndim not in [2, 3]:
