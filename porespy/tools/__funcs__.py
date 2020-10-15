@@ -28,9 +28,9 @@ def align_image_with_openpnm(im):
         Returns a copy of ``im`` rotated accordingly.
     """
     if im.ndim != im.squeeze().ndim:
-        warnings.warn(f'Input image conains a singleton axis: {im.shape}'
-                      + ' Reduce dimensionality with np.squeeze(im) to avoid'
-                      + ' unexpected behavior.')
+        warnings.warn(f"Input image conains a singleton axis: {im.shape}.",
+                      "Reduce dimensionality with np.squeeze(im) to avoid",
+                      "unexpected behavior.")
     im = np.copy(im)
     if im.ndim == 2:
         im = (np.swapaxes(im, 1, 0))
@@ -113,9 +113,9 @@ def fftmorphology(im, strel, mode='opening'):
         return t
 
     if im.ndim != im.squeeze().ndim:
-        warnings.warn(f'Input image conains a singleton axis: {im.shape}'
-                      + ' Reduce dimensionality with np.squeeze(im) to avoid'
-                      + ' unexpected behavior.')
+        warnings.warn(f"Input image conains a singleton axis: {im.shape}.",
+                      "Reduce dimensionality with np.squeeze(im) to avoid",
+                      "unexpected behavior.")
 
     # Perform erosion and dilation
     # The array must be padded with 0's so it works correctly at edges
@@ -806,9 +806,9 @@ def mesh_region(region: bool, strel=None):
     """
     im = region
     if im.ndim != im.squeeze().ndim:
-        warnings.warn(f'Input image conains a singleton axis: {im.shape}'
-                      + ' Reduce dimensionality with np.squeeze(im) to avoid'
-                      + ' unexpected behavior.')
+        warnings.warn(f"Input image conains a singleton axis: {im.shape}.",
+                      "Reduce dimensionality with np.squeeze(im) to avoid",
+                      "unexpected behavior.")
     if strel is None:
         if region.ndim == 3:
             strel = ball(1)
@@ -1051,9 +1051,9 @@ def pad_faces(im, faces):
     add_boundary_regions
     """
     if im.ndim != im.squeeze().ndim:
-        warnings.warn(f'Input image conains a singleton axis: {im.shape}'
-                      + ' Reduce dimensionality with np.squeeze(im) to avoid'
-                      + ' unexpected behavior.')
+        warnings.warn(f"Input image conains a singleton axis: {im.shape}.",
+                      "Reduce dimensionality with np.squeeze(im) to avoid",
+                      "unexpected behavior.")
     f = faces
     if f is not None:
         if im.ndim == 2:
@@ -1250,3 +1250,33 @@ def seq_to_satn(seq):
     satn[solid] = 0.0
     satn[uninvaded] = -1.0
     return satn
+
+
+def sanitize_filename(filename, ext, exclude_ext=False):
+    r"""
+    Returns a sanitized string in the form of name.extension
+
+    Parameters
+    ----------
+    filename : str
+        Unsanitized filename, could be 'test.vtk' or just 'test'
+
+    ext : str
+        Extension of the file, could be 'vtk'
+
+    exclude_ext : bool
+        If True, the returned string doesn't have the extension
+
+    Returns
+    -------
+    sanitized : str
+        Sanitized filename in form of name.extension
+
+    """
+    ext.strip(".")
+    if filename.endswith(f".{ext}"):
+        name = ".".join(filename.split(".")[:-1])
+    else:
+        name = filename
+    filename_formatted = f"{name}" if exclude_ext else f"{name}.{ext}"
+    return filename_formatted

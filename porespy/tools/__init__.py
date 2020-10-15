@@ -89,3 +89,4 @@ from .__funcs__ import pad_faces
 from .__funcs__ import seq_to_satn
 from .__funcs__ import size_to_seq
 from .__funcs__ import subdivide
+from .__funcs__ import sanitize_filename
