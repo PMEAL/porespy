@@ -3,7 +3,7 @@ import numpy as np
 from tqdm import tqdm
 import scipy.ndimage as spim
 from porespy.tools import extract_subsection, bbox_to_slices
-from skimage.measure import mesh_surface_area, marching_cubes_lewiner
+from skimage.measure import mesh_surface_area, marching_cubes
 from skimage.morphology import skeletonize_3d, ball
 from skimage.measure import regionprops
 from pandas import DataFrame
@@ -177,53 +177,54 @@ def regionprops_3D(im):
     which may be helpful.
 
     """
-    print('-'*60)
+    print('-' * 60)
     print('Calculating regionprops')
 
     results = regionprops(im)
-    with tqdm(range(len(results))) as pbar:
+    with tqdm(range(len(results)), file=sys.stdout) as pbar:
         for i in range(len(results)):
             pbar.update()
             mask = results[i].image
             mask_padded = np.pad(mask, pad_width=1, mode='constant')
             temp = spim.distance_transform_edt(mask_padded)
             dt = extract_subsection(temp, shape=mask.shape)
+
             # Slice indices
             results[i].slice = results[i]._slice
-            # ----------------------------------------------------------------
+
             # Volume of regions in voxels
             results[i].volume = results[i].area
-            # ----------------------------------------------------------------
+
             # Volume of bounding box, in voxels
             results[i].bbox_volume = np.prod(mask.shape)
-            # ----------------------------------------------------------------
+
             # Create an image of the border
             results[i].border = dt == 1
-            # ----------------------------------------------------------------
+
             # Create an image of the maximal inscribed sphere
             r = dt.max()
             inv_dt = spim.distance_transform_edt(dt < r)
             results[i].inscribed_sphere = inv_dt < r
-            # ----------------------------------------------------------------
+
             # Find surface area using marching cubes and analyze the mesh
             tmp = np.pad(np.atleast_3d(mask), pad_width=1, mode='constant')
-            tmp = spim.convolve(tmp, weights=ball(1))/5
-            verts, faces, norms, vals = marching_cubes_lewiner(volume=tmp, level=0)
+            tmp = spim.convolve(tmp, weights=ball(1)) / 5
+            verts, faces, norms, vals = marching_cubes(volume=tmp, level=0)
             results[i].surface_mesh_vertices = verts
             results[i].surface_mesh_simplices = faces
             area = mesh_surface_area(verts, faces)
             results[i].surface_area = area
-            # ----------------------------------------------------------------
+
             # Find sphericity
             vol = results[i].volume
-            r = (3/4/np.pi*vol)**(1/3)
-            a_equiv = 4*np.pi*(r)**2
+            r = (3 / 4 / np.pi * vol)**(1 / 3)
+            a_equiv = 4 * np.pi * r**2
             a_region = results[i].surface_area
-            results[i].sphericity = a_equiv/a_region
-            # ----------------------------------------------------------------
+            results[i].sphericity = a_equiv / a_region
+
             # Find skeleton of region
             results[i].skeleton = skeletonize_3d(mask)
-            # ----------------------------------------------------------------
+
             # Volume of convex image, equal to area in 2D, so just translating
             results[i].convex_volume = results[i].convex_area
 

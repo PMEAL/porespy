@@ -63,6 +63,7 @@ that do NOT return a modified version of the original image.
 .. autofunction:: size_to_seq
 .. autofunction:: subdivide
 .. autofunction:: zero_corners
+.. autofunction:: sanitize_filename
 
 '''
 
@@ -92,3 +93,4 @@ from .__funcs__ import seq_to_satn
 from .__funcs__ import size_to_seq
 from .__funcs__ import subdivide
 from .__funcs__ import zero_corners
+from .__funcs__ import sanitize_filename

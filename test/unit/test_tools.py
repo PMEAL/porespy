@@ -267,6 +267,12 @@ class ToolsTest():
         ps.tools.zero_corners(im3, 1)
         np.testing.assert_allclose(im3, desired)
 
+    def test_sanitize_filename(self):
+        fname = "test.stl.stl"
+        assert ps.tools.sanitize_filename(fname, "stl") == "test.stl.stl"
+        assert ps.tools.sanitize_filename(fname, "vtk") == "test.stl.stl.vtk"
+        assert ps.tools.sanitize_filename(fname, "stl", exclude_ext=True) == "test.stl"
+
 
 if __name__ == '__main__':
     t = ToolsTest()
