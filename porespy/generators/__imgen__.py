@@ -1123,8 +1123,7 @@ def cylinders_porosity(shape: list,
 
     if return_fiber_number:
         return im, n_fibers_added
-    else:
-        return im
+    return im
 
 
 def line_segment(X0, X1):
