@@ -700,7 +700,6 @@ def region_interface_areas(regions, areas, voxel_size=1, strel=None):
                                      + (merged_region == j + 1))
                     mesh = mesh_region(region=merged_region, strel=strel)
                     sa_combined.append(mesh_surface_area(mesh))
-    tqdm_Ps.close()
     # Interfacial area calculation
     cn = np.array(cn)
     ia = 0.5 * (sa[cn[:, 0]] + sa[cn[:, 1]] - sa_combined)
@@ -758,7 +757,6 @@ def region_surface_areas(regions, voxel_size=1, strel=None):
             mask_im = sub_im == i
             mesh = mesh_region(region=mask_im, strel=strel)
             sa[reg] = mesh_surface_area(mesh)
-    tqdm_Ps.close()
     result = sa * voxel_size**2
     return result
 
