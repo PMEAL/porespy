@@ -24,7 +24,7 @@ jobs:
       run: |
         chmod +x .github/workflows/utils.sh
         source .github/workflows/utils.sh
-        VERSION_FILE=openpnm/__version__.py
+        VERSION_FILE=porespy/__version__.py
         echo "TAG=$(get_most_recent_tag)" >> $GITHUB_ENV
         echo "VERSION=$(get_version $VERSION_FILE)" >> $GITHUB_ENV
 
