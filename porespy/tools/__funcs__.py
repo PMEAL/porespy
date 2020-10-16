@@ -5,9 +5,12 @@ import warnings
 from edt import edt
 from collections import namedtuple
 from skimage.morphology import ball, disk
-from skimage.measure import marching_cubes
 from array_split import shape_split, ARRAY_BOUNDS
 from scipy.signal import fftconvolve
+try:
+    from skimage.measure import marching_cubes
+except ImportError:
+    from skimage.measure import marching_cubes_lewiner as marching_cubes
 
 
 def align_image_with_openpnm(im):
@@ -1258,6 +1261,90 @@ def seq_to_satn(seq):
     satn[solid] = 0.0
     satn[uninvaded] = -1.0
     return satn
+
+
+def zero_corners(im, pad_width):
+    r"""
+    Fills corners of a padded-image with 0, given a pad width and list of
+    faces such as ["left", "front"] at which the image has been padded.
+
+    Parameters
+    ----------
+    im : ndarray
+        Padded image whose corners are to be filled with 0.
+
+    pad_width : int or list
+        Pad width of the padded image. If a scalar value is passed, a uniform
+        pad width for all dimensions is assumed. Otherwise, a list of lists
+        should be passed with each inner list being two-element long,
+        pertaining to pad_before and pad_after for each axis.
+
+    Example
+    -------
+    >>> import numpy as np
+    >>> im = np.arange(48).reshape(6, 8)
+    >>> im
+    array([[ 0,  1,  2,  3,  4,  5,  6,  7],
+           [ 8,  9, 10, 11, 12, 13, 14, 15],
+           [16, 17, 18, 19, 20, 21, 22, 23],
+           [24, 25, 26, 27, 28, 29, 30, 31],
+           [32, 33, 34, 35, 36, 37, 38, 39],
+           [40, 41, 42, 43, 44, 45, 46, 47]])
+    >>> zero_corners(im, pad_width=[[2, 2], [1, 3]])
+    >>> im
+    array([[ 0,  1,  2,  3,  4,  0,  0,  0],
+           [ 0,  9, 10, 11, 12,  0,  0,  0],
+           [16, 17, 18, 19, 20, 21, 22, 23],
+           [24, 25, 26, 27, 28, 29, 30, 31],
+           [ 0, 33, 34, 35, 36,  0,  0,  0],
+           [ 0, 41, 42, 43, 44,  0,  0,  0]])
+
+    Notes
+    -----
+    This modifies the given image in-place.
+
+    """
+    pad_width = _parse_pad_width(pad_width, im.ndim)
+    idx_corners = []
+    for axis in range(im.ndim):
+        pad_before, pad_after = pad_width[axis]
+        idx_before = list(range(pad_before))
+        idx_after = list(range(-pad_after, 0))
+        idx_corners.append(idx_before + idx_after)
+    idx_corners = np.ix_(*idx_corners)
+    im[idx_corners] = 0
+
+
+def _parse_pad_width(pad_width, ndim):
+    r"""
+    """
+    # Example: pad_width = 3
+    try:
+        len(pad_width)
+    except TypeError:
+        return [[pad_width, pad_width] for i in range(ndim)]
+
+    # Example: pad_width = [3]
+    if len(pad_width) == 1:
+        return [[pad_width[0], pad_width[0]] for i in range(ndim)]
+
+    # Example: pad_width = [3, 1, 3, 0] and ndim = 3
+    if len(pad_width) != ndim:
+        raise Exception("Length of 'pad_width' must match the number of dimensions")
+
+    out = []
+    for elem in pad_width:
+        # Example: pad_width = [3, 1, 0]
+        if np.size(elem) == 1:
+            out.append(np.squeeze([elem, elem]))
+        # Example: pad_width = [[3, 1], 1, 0]
+        elif np.size(elem) == 2:
+            out.append(np.squeeze(elem))
+        # Example: pad_width = [[3, 1, 2], 1, 0]
+        else:
+            raise Exception("Each element inside 'pad_width' can only be scalar"
+                            " or a list of length 2")
+    return out
 
 
 def sanitize_filename(filename, ext, exclude_ext=False):

@@ -7,6 +7,7 @@ from skimage.segmentation import find_boundaries
 from skimage.morphology import ball, cube
 from porespy.tools import _create_alias_map, overlay
 from porespy.tools import insert_cylinder
+from porespy.tools import zero_corners
 
 
 def map_to_regions(regions, values):
@@ -78,81 +79,61 @@ def add_boundary_regions(regions=None, faces=['front', 'back', 'left',
         slightly larger in each direction where boundaries were added.
 
     """
-    # -------------------------------------------------------------------------
-    # Edge pad segmentation and distance transform
-    if faces is not None:
-        regions = np.pad(regions, 1, 'edge')
-        # ---------------------------------------------------------------------
-        if regions.ndim == 3:
-            # Remove boundary nodes interconnection
-            regions[:, :, 0] = regions[:, :, 0] + regions.max()
-            regions[:, :, -1] = regions[:, :, -1] + regions.max()
-            regions[0, :, :] = regions[0, :, :] + regions.max()
-            regions[-1, :, :] = regions[-1, :, :] + regions.max()
-            regions[:, 0, :] = regions[:, 0, :] + regions.max()
-            regions[:, -1, :] = regions[:, -1, :] + regions.max()
-            regions[:, :, 0] = (~find_boundaries(regions[:, :, 0],
-                                                 mode='outer')) * regions[:, :, 0]
-            regions[:, :, -1] = (~find_boundaries(regions[:, :, -1],
-                                                  mode='outer')) * regions[:, :, -1]
-            regions[0, :, :] = (~find_boundaries(regions[0, :, :],
-                                                 mode='outer')) * regions[0, :, :]
-            regions[-1, :, :] = (~find_boundaries(regions[-1, :, :],
-                                                  mode='outer')) * regions[-1, :, :]
-            regions[:, 0, :] = (~find_boundaries(regions[:, 0, :],
-                                                 mode='outer')) * regions[:, 0, :]
-            regions[:, -1, :] = (~find_boundaries(regions[:, -1, :],
-                                                  mode='outer')) * regions[:, -1, :]
-            # -----------------------------------------------------------------
-            regions = np.pad(regions, 2, 'edge')
+    if faces is None:
+        return regions
 
-            # Remove unselected faces
-            if 'front' not in faces:
-                regions = regions[:, 3:, :]  # y
-            if 'back' not in faces:
-                regions = regions[:, :-3, :]
-            if 'left' not in faces:
-                regions = regions[3:, :, :]  # x
-            if 'right' not in faces:
-                regions = regions[:-3, :, :]
-            if 'bottom' not in faces:
-                regions = regions[:, :, 3:]  # z
-            if 'top' not in faces:
-                regions = regions[:, :, :-3]
+    if regions.ndim not in [2, 3]:
+        raise Exception("add_boundary_regions works only on 2D and 3D images")
 
-        elif regions.ndim == 2:
-            # Remove boundary nodes interconnection
-            regions[0, :] = regions[0, :] + regions.max()
-            regions[-1, :] = regions[-1, :] + regions.max()
-            regions[:, 0] = regions[:, 0] + regions.max()
-            regions[:, -1] = regions[:, -1] + regions.max()
-            regions[0, :] = (~find_boundaries(regions[0, :],
-                                              mode='outer')) * regions[0, :]
-            regions[-1, :] = (~find_boundaries(regions[-1, :],
-                                               mode='outer')) * regions[-1, :]
-            regions[:, 0] = (~find_boundaries(regions[:, 0],
-                                              mode='outer')) * regions[:, 0]
-            regions[:, -1] = (~find_boundaries(regions[:, -1],
-                                               mode='outer')) * regions[:, -1]
-            # -----------------------------------------------------------------
-            regions = np.pad(regions, 2, 'edge')
+    if regions.ndim == 2:
+        if set(["bottom", "top"]).intersection(faces):
+            raise Exception("For 2D images, use 'left', 'right', 'front', 'back' labels")
 
-            # Remove unselected faces
-            if 'left' not in faces:
-                regions = regions[3:, :]  # x
-            if 'right' not in faces:
-                regions = regions[:-3, :]
-            if 'front' not in faces and 'bottom' not in faces:
-                regions = regions[:, 3:]  # y
-            if 'back' not in faces and 'top' not in faces:
-                regions = regions[:, :-3]
-        else:
-            print('add_boundary_regions works only on 2D and 3D images')
-        # ---------------------------------------------------------------------
-        # Make labels contiguous
-        regions = make_contiguous(regions)
-    else:
-        regions = regions
+    # Map which image slice corresponds to which face
+    face_to_slice = {
+        "left": 0, "right": -1, "front": 0, "back": -1, "bottom": 0, "top": -1
+    }
+    # Map face label to corresponding axis
+    face_to_axis = {
+        "left": 0, "right": 0, "front": 1, "back": 1, "bottom": 2, "top": 2
+    }
+
+    ndim = regions.ndim
+    indices = []
+    # Note: pad_width format: each elem is [pad_before, pad_after]
+    pad_width = [[0, 0] for i in range(ndim)]
+    # 1. Create indices for boundary faces, ex. bottom" => [:, :, -1]
+    # Note: slice(None) is equivalent to ":" in fancy indexing, ex. [0, 0, :]
+    # 2. populate pad_width based on labels
+    for face in faces:
+        temp = [slice(None) for i in range(ndim)]
+        axis = face_to_axis[face]
+        plane = face_to_slice[face]
+        temp[axis] = plane
+        indices.append(tuple(temp))
+        pad_width[axis][plane] = 1      # Pad each face by 1 pixel
+
+    regions = np.pad(regions, pad_width=pad_width, mode="edge")
+
+    # Increment boundary regions to distinguish from internal regions
+    for idx in indices:
+        # Only increment non-background regions (i.e. != 0)
+        non_background = regions[idx] != 0
+        regions[idx][non_background] += regions.max()
+
+    # Remove connections between boundary regions
+    for idx in indices:
+        regions[idx] *= ~find_boundaries(regions[idx], mode="outer")
+
+    # Pad twice to make boundary regions 3-pixel thick -> required for marching_cube
+    regions = np.pad(regions, pad_width=pad_width, mode="edge")
+    regions = np.pad(regions, pad_width=pad_width, mode="edge")
+
+    # Convert pad-induced corners to 0
+    zero_corners(regions, pad_width)
+
+    # Make labels contiguous
+    regions = make_contiguous(regions)
 
     return regions
 

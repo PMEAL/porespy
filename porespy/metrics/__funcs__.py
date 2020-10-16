@@ -654,8 +654,8 @@ def region_interface_areas(regions, areas, voxel_size=1, strel=None):
         area shared by regions 0 and 5.
 
     """
-    print('-' * 60)
-    print('Finding interfacial areas between each region')
+    print('-' * 60, flush=True)
+    print('Finding interfacial areas between each region', flush=True)
     from skimage.morphology import disk, ball
     im = regions.copy()
     if im.ndim != im.squeeze().ndim:    # pragma: no cover
@@ -740,8 +740,8 @@ def region_surface_areas(regions, voxel_size=1, strel=None):
         that the surface area of region 1 is stored in element 0 of the list.
 
     """
-    print('-' * 60)
-    print('Finding surface area of each region')
+    print('-' * 60, flush=True)
+    print('Finding surface area of each region', flush=True)
     im = regions.copy()
     # Get 'slices' into im for each pore region
     slices = spim.find_objects(im)
