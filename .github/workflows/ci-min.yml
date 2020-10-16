@@ -1,18 +1,18 @@
-name: macOS
+name: 🐤 Minimal
 
 on: [push]
 
 jobs:
   build:
 
-    if: "!contains(github.event.head_commit.message, 'ci min') && !contains(github.event.head_commit.message, 'ci skip')"
+    if: "contains(github.event.head_commit.message, 'ci min') && !contains(github.event.head_commit.message, 'ci skip')"
 
     runs-on: ${{ matrix.operating-system }}
     strategy:
       max-parallel: 4
       matrix:
         python-version: [3.7]
-        operating-system: [macos-latest]
+        operating-system: [ubuntu-latest]
 
     steps:
     - uses: actions/checkout@v2
@@ -23,7 +23,7 @@ jobs:
 
     - uses: actions/cache@v2
       with:
-        path: ~/Library/Caches/pip
+        path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/pip_requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
@@ -36,4 +36,13 @@ jobs:
         pip install -e .
 
     - name: Running tests
-      run: pytest --pycodestyle
+      run: pytest --pycodestyle --cov=./ --cov-report=xml
+
+    - name: Upload coverage to Codecov
+      if: matrix.python-version == 3.7
+      uses: codecov/codecov-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella

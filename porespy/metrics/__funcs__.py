@@ -1,15 +1,16 @@
-import numpy as np
+import sys
 import warnings
-from skimage.measure import regionprops
+import numpy as np
+from edt import edt
 import scipy.ndimage as spim
 import scipy.spatial as sptl
-from edt import edt
+from scipy import fftpack as sp_ft
+from skimage.measure import regionprops
 from porespy.tools import extend_slice, mesh_region
 from porespy.filters import find_dt_artifacts
 from collections import namedtuple
-from tqdm import tqdm
-from scipy import fftpack as sp_ft
 from skimage import measure
+from tqdm import tqdm
 
 
 def representative_elementary_volume(im, npoints=1000):
@@ -53,21 +54,21 @@ def representative_elementary_volume(im, npoints=1000):
 
     """
     im_temp = np.zeros_like(im)
-    crds = np.array(np.random.rand(npoints, im.ndim)*im.shape, dtype=int)
-    pads = np.array(np.random.rand(npoints)*np.amin(im.shape)/2+10, dtype=int)
+    crds = np.array(np.random.rand(npoints, im.ndim) * im.shape, dtype=int)
+    pads = np.array(np.random.rand(npoints) * np.amin(im.shape) / 2 + 10, dtype=int)
     im_temp[tuple(crds.T)] = True
     labels, N = spim.label(input=im_temp)
     slices = spim.find_objects(input=labels)
     porosity = np.zeros(shape=(N,), dtype=float)
     volume = np.zeros(shape=(N,), dtype=int)
-    for i in tqdm(np.arange(0, N)):
+    for i in tqdm(np.arange(0, N), file=sys.stdout):
         s = slices[i]
         p = pads[i]
         new_s = extend_slice(s, shape=im.shape, pad=p)
         temp = im[new_s]
         Vp = np.sum(temp)
         Vt = np.size(temp)
-        porosity[i] = Vp/Vt
+        porosity[i] = Vp / Vt
         volume[i] = Vt
     profile = namedtuple('profile', ('volume', 'porosity'))
     profile.volume = volume
@@ -98,7 +99,7 @@ def porosity_profile(im, axis=0):
     im = np.atleast_3d(im)
     a = set(range(im.ndim)).difference(set([axis]))
     a1, a2 = a
-    prof = np.sum(np.sum(im, axis=a2), axis=a1)/(im.shape[a2]*im.shape[a1])
+    prof = np.sum(np.sum(im, axis=a2), axis=a1) / (im.shape[a2] * im.shape[a1])
     return prof
 
 
@@ -229,7 +230,7 @@ def porosity(im):
     im = np.array(im, dtype=int)
     Vp = np.sum(im == 1)
     Vs = np.sum(im == 0)
-    e = Vp/(Vs + Vp)
+    e = Vp / (Vs + Vp)
     return e
 
 
@@ -264,10 +265,12 @@ def two_point_correlation_bf(im, spacing=10):
     This approach uses a distance matrix so can consume memory very quickly for
     large 3D images and/or close spacing.
     """
-    if im.ndim != im.squeeze().ndim:
-        warnings.warn('Input image conains a singleton axis:' + str(im.shape)
-                      + ' Reduce dimensionality with np.squeeze(im) to avoid'
-                      + ' unexpected behavior.')
+    if im.ndim != im.squeeze().ndim:    # pragma: no cover
+        warnings.warn((
+            f"Input image conains a singleton axis: {im.shape}."
+            " Reduce dimensionality with np.squeeze(im) to avoid"
+            " unexpected behavior."
+        ))
     if im.ndim == 2:
         pts = np.meshgrid(range(0, im.shape[0], spacing),
                           range(0, im.shape[1], spacing))
@@ -283,12 +286,12 @@ def two_point_correlation_bf(im, spacing=10):
     dmat = sptl.distance.cdist(XA=crds, XB=crds)
     hits = im[tuple(pts)].flatten()
     dmat = dmat[hits, :]
-    h1 = np.histogram(dmat, bins=range(0, int(np.amin(im.shape)/2), spacing))
+    h1 = np.histogram(dmat, bins=range(0, int(np.amin(im.shape) / 2), spacing))
     dmat = dmat[:, hits]
     h2 = np.histogram(dmat, bins=h1[1])
     tpcf = namedtuple('two_point_correlation_function',
                       ('distance', 'probability'))
-    return tpcf(h2[1][:-1], h2[0]/h1[0])
+    return tpcf(h2[1][:-1], h2[0] / h1[0])
 
 
 def _radial_profile(autocorr, r_max, nbins=100):
@@ -312,23 +315,23 @@ def _radial_profile(autocorr, r_max, nbins=100):
     """
     if len(autocorr.shape) == 2:
         adj = np.reshape(autocorr.shape, [2, 1, 1])
-        inds = np.indices(autocorr.shape) - adj/2
+        inds = np.indices(autocorr.shape) - adj / 2
         dt = np.sqrt(inds[0]**2 + inds[1]**2)
     elif len(autocorr.shape) == 3:
         adj = np.reshape(autocorr.shape, [3, 1, 1, 1])
-        inds = np.indices(autocorr.shape) - adj/2
+        inds = np.indices(autocorr.shape) - adj / 2
         dt = np.sqrt(inds[0]**2 + inds[1]**2 + inds[2]**2)
     else:
         raise Exception('Image dimensions must be 2 or 3')
-    bin_size = np.int(np.ceil(r_max/nbins))
+    bin_size = np.int(np.ceil(r_max / nbins))
     bins = np.arange(bin_size, r_max, step=bin_size)
     radial_sum = np.zeros_like(bins)
     for i, r in enumerate(bins):
         # Generate Radial Mask from dt using bins
-        mask = (dt <= r) * (dt > (r-bin_size))
-        radial_sum[i] = np.sum(autocorr[mask])/np.sum(mask)
+        mask = (dt <= r) * (dt > (r - bin_size))
+        radial_sum[i] = np.sum(autocorr[mask]) / np.sum(mask)
     # Return normalized bin and radially summed autoc
-    norm_autoc_radial = radial_sum/np.max(autocorr)
+    norm_autoc_radial = radial_sum / np.max(autocorr)
     tpcf = namedtuple('two_point_correlation_function',
                       ('distance', 'probability'))
     return tpcf(bins, norm_autoc_radial)
@@ -360,7 +363,7 @@ def two_point_correlation_fft(im):
     http://www.ucl.ac.uk/~ucapikr/projects/KamilaSuankulova_BSc_Project.pdf
     """
     # Calculate half lengths of the image
-    hls = (np.ceil(np.shape(im))/2).astype(int)
+    hls = (np.ceil(np.shape(im)) / 2).astype(int)
     # Fourier Transform and shift image
     F = sp_ft.ifftshift(sp_ft.fftn(sp_ft.fftshift(im)))
     # Compute Power Spectrum
@@ -426,12 +429,12 @@ def pore_size_distribution(im, bins=10, log=True, voxel_size=1):
 
     """
     im = im.flatten()
-    vals = im[im > 0]*voxel_size
+    vals = im[im > 0] * voxel_size
     if log:
         vals = np.log10(vals)
     h = _parse_histogram(np.histogram(vals, bins=bins, density=True))
     psd = namedtuple('pore_size_distribution',
-                     (log*'log' + 'R', 'pdf', 'cdf', 'satn',
+                     (log * 'log' + 'R', 'pdf', 'cdf', 'satn',
                       'bin_centers', 'bin_edges', 'bin_widths'))
     return psd(h.bin_centers, h.pdf, h.cdf, h.relfreq,
                h.bin_centers, h.bin_edges, h.bin_widths)
@@ -440,12 +443,12 @@ def pore_size_distribution(im, bins=10, log=True, voxel_size=1):
 def _parse_histogram(h, voxel_size=1):
     delta_x = h[1]
     P = h[0]
-    temp = P*(delta_x[1:] - delta_x[:-1])
+    temp = P * (delta_x[1:] - delta_x[:-1])
     C = np.cumsum(temp[-1::-1])[-1::-1]
-    S = P*(delta_x[1:] - delta_x[:-1])
+    S = P * (delta_x[1:] - delta_x[:-1])
     bin_edges = delta_x * voxel_size
     bin_widths = (delta_x[1:] - delta_x[:-1]) * voxel_size
-    bin_centers = ((delta_x[1:] + delta_x[:-1])/2) * voxel_size
+    bin_centers = ((delta_x[1:] + delta_x[:-1]) / 2) * voxel_size
     psd = namedtuple('histogram', ('pdf', 'cdf', 'relfreq',
                                    'bin_centers', 'bin_edges', 'bin_widths'))
     return psd(P, C, S, bin_centers, bin_edges, bin_widths)
@@ -595,21 +598,21 @@ def chord_length_distribution(im, bins=None, log=False, voxel_size=1,
     """
     x = chord_counts(im)
     if bins is None:
-        bins = np.array(range(0, x.max()+2))*voxel_size
-    x = x*voxel_size
+        bins = np.array(range(0, x.max() + 2)) * voxel_size
+    x = x * voxel_size
     if log:
         x = np.log10(x)
     if normalization == 'length':
         h = list(np.histogram(x, bins=bins, density=False))
-        h[0] = h[0]*(h[1][1:]+h[1][:-1])/2  # Scale bin heigths by length
-        h[0] = h[0]/h[0].sum()/(h[1][1:]-h[1][:-1])  # Normalize h[0] manually
+        h[0] = h[0] * (h[1][1:] + h[1][:-1]) / 2  # Scale bin heigths by length
+        h[0] = h[0] / h[0].sum() / (h[1][1:] - h[1][:-1])  # Normalize h[0] manually
     elif normalization in ['number', 'count']:
         h = np.histogram(x, bins=bins, density=True)
     else:
         raise Exception('Unsupported normalization:', normalization)
     h = _parse_histogram(h)
     cld = namedtuple('chord_length_distribution',
-                     (log*'log' + 'L', 'pdf', 'cdf', 'relfreq',
+                     (log * 'log' + 'L', 'pdf', 'cdf', 'relfreq',
                       'bin_centers', 'bin_edges', 'bin_widths'))
     return cld(h.bin_centers, h.pdf, h.cdf, h.relfreq,
                h.bin_centers, h.bin_edges, h.bin_widths)
@@ -651,25 +654,27 @@ def region_interface_areas(regions, areas, voxel_size=1, strel=None):
         area shared by regions 0 and 5.
 
     """
-    print('-'*60)
-    print('Finding interfacial areas between each region')
+    print('-' * 60, flush=True)
+    print('Finding interfacial areas between each region', flush=True)
     from skimage.morphology import disk, ball
     im = regions.copy()
-    if im.ndim != im.squeeze().ndim:
-        warnings.warn('Input image conains a singleton axis:' + str(im.shape)
-                      + ' Reduce dimensionality with np.squeeze(im) to avoid'
-                      + ' unexpected behavior.')
+    if im.ndim != im.squeeze().ndim:    # pragma: no cover
+        warnings.warn((
+            f"Input image conains a singleton axis: {im.shape}."
+            " Reduce dimensionality with np.squeeze(im) to avoid"
+            " unexpected behavior."
+        ))
     # cube_elem = square if im.ndim == 2 else cube
     ball_elem = disk if im.ndim == 2 else ball
     # Get 'slices' into im for each region
     slices = spim.find_objects(im)
     # Initialize arrays
-    Ps = np.arange(1, np.amax(im)+1)
+    Ps = np.arange(1, np.amax(im) + 1)
     sa = np.zeros_like(Ps, dtype=float)
     sa_combined = []  # Difficult to preallocate since number of conns unknown
     cn = []
     # Start extracting area from im
-    for i in tqdm(Ps):
+    for i in tqdm(Ps, file=sys.stdout):
         reg = i - 1
         if slices[reg] is not None:
             s = extend_slice(slices[reg], im.shape)
@@ -678,7 +683,7 @@ def region_interface_areas(regions, areas, voxel_size=1, strel=None):
             sa[reg] = areas[reg]
             im_w_throats = spim.binary_dilation(input=mask_im,
                                                 structure=ball_elem(1))
-            im_w_throats = im_w_throats*sub_im
+            im_w_throats = im_w_throats * sub_im
             Pn = np.unique(im_w_throats)[1:] - 1
             for j in Pn:
                 if j > reg:
@@ -735,16 +740,16 @@ def region_surface_areas(regions, voxel_size=1, strel=None):
         that the surface area of region 1 is stored in element 0 of the list.
 
     """
-    print('-'*60)
-    print('Finding surface area of each region')
+    print('-' * 60, flush=True)
+    print('Finding surface area of each region', flush=True)
     im = regions.copy()
     # Get 'slices' into im for each pore region
     slices = spim.find_objects(im)
     # Initialize arrays
-    Ps = np.arange(1, np.amax(im)+1)
+    Ps = np.arange(1, np.amax(im) + 1)
     sa = np.zeros_like(Ps, dtype=float)
     # Start extracting marching cube area from im
-    for i in tqdm(Ps):
+    for i in tqdm(Ps, file=sys.stdout):
         reg = i - 1
         if slices[reg] is not None:
             s = extend_slice(slices[reg], im.shape)
@@ -820,10 +825,10 @@ def phase_fraction(im, normed=True):
         im = im.astype(int)
     elif im.dtype != int:
         raise Exception('Image must contain integer values for each phase')
-    labels = np.arange(0, np.amax(im)+1)
+    labels = np.arange(0, np.amax(im) + 1)
     results = np.zeros_like(labels)
     for i in labels:
         results[i] = np.sum(im == i)
     if normed:
-        results = results/im.size
+        results = results / im.size
     return results

@@ -1,8 +1,8 @@
 import porespy as ps
 import numpy as np
-import scipy as sp
 import pytest
 import scipy.ndimage as spim
+import scipy.stats as spst
 import matplotlib.pyplot as plt
 plt.close('all')
 
@@ -143,8 +143,8 @@ class GeneratorTest():
             assert abs(phi_actual - phi) < 0.02
 
     def test_polydisperse_spheres(self):
-        phis = np.arange(0.1, 0.9, 0.2)
-        dist = sp.stats.norm(loc=7, scale=2)
+        phis = np.arange(0.1, 0.5, 0.2)
+        dist = spst.norm(loc=7, scale=2)
         for phi in phis:
             im = ps.generators.polydisperse_spheres(shape=[100, 100, 50],
                                                     porosity=phi, dist=dist,
@@ -223,14 +223,14 @@ class GeneratorTest():
         assert len(np.unique(lt)) > 2
 
     def test_RSA_3d_contained(self):
-        im = sp.zeros([100, 100, 100], dtype=int)
+        im = np.zeros([100, 100, 100], dtype=int)
         im = ps.generators.RSA(im, radius=10, volume_fraction=0.5,
                                mode='contained')
         lt = ps.filters.local_thickness(im, sizes=[10, 9, 8, 7, 6, 5])
         assert len(np.unique(lt)) == 2
 
     def test_RSA_3d_extended(self):
-        im = sp.zeros([100, 100, 100], dtype=int)
+        im = np.zeros([100, 100, 100], dtype=int)
         im = ps.generators.RSA(im, radius=10, volume_fraction=0.5,
                                mode='extended')
         im = np.pad(im, pad_width=1, mode='constant', constant_values=False)
@@ -238,7 +238,7 @@ class GeneratorTest():
         assert len(np.unique(lt)) > 2
 
     def test_RSA_2d_seqential_additions(self):
-        im = sp.zeros([100, 100], dtype=int)
+        im = np.zeros([100, 100], dtype=int)
         im = ps.generators.RSA(im, radius=10)
         phi1 = ps.metrics.porosity(im)
         im = ps.generators.RSA(im, radius=5)

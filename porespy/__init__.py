@@ -79,13 +79,18 @@ Use some filters from PoreSpy:
 
 '''
 
-__version__ = "1.3.0-dev002"
+from .__version__ import __version__
 
 from . import tools
 from . import filters
 from . import metrics
 from . import networks
 from . import generators
+from . import dns
 from . import visualization
 from . import io
+
 from .visualization import imshow
+
+import numpy
+numpy.seterr(divide='ignore', invalid='ignore')
