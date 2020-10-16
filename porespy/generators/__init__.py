@@ -15,7 +15,6 @@ illustration purposes.
     porespy.generators.blobs
     porespy.generators.bundle_of_tubes
     porespy.generators.cylinders
-    porespy.generators.cylinders_porosity
     porespy.generators.insert_shape
     porespy.generators.lattice_spheres
     porespy.generators.line_segment
@@ -43,7 +42,6 @@ illustration purposes.
 from .__imgen__ import blobs
 from .__imgen__ import bundle_of_tubes
 from .__imgen__ import cylinders
-from .__imgen__ import cylinders_porosity
 from .__imgen__ import insert_shape
 from .__imgen__ import lattice_spheres
 from .__imgen__ import line_segment

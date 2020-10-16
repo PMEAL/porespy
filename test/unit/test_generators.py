@@ -13,6 +13,7 @@ class GeneratorTest():
         np.random.seed(10)
 
     def test_cylinders(self):
+        # Testing cylinders with number of cylinders as input
         X = Y = 100
         # Fibers don't work in 2D
         with pytest.raises(Exception):
@@ -23,14 +24,13 @@ class GeneratorTest():
         assert np.shape(im.squeeze()) == (X, Y)
         im = ps.generators.cylinders(shape=[50, 50, 50], radius=1, ncylinders=20)
         assert np.shape(im.squeeze()) == (50, 50, 50)
-
-    def test_cylinders_porosity(self):
+        # Now, testing cylinders with porosity as input
         # max_iter must at least be 3
         with pytest.raises(Exception):
-            im = ps.generators.cylinders_porosity(
+            im = ps.generators.cylinders(
                 shape=[50, 50, 50], radius=4, porosity=0.5, max_iter=2
             )
-        im = ps.generators.cylinders_porosity(
+        im = ps.generators.cylinders(
             shape=[50, 50, 50], radius=3, porosity=0.5, max_iter=10
         )
         assert im.dtype == bool
