@@ -36,8 +36,8 @@ def regions_to_network(im, dt=None, voxel_size=1):
     directly to an OpenPNM network object using the ``update`` command.
 
     """
-    print('-'*60)
-    print('Extracting pore and throat information from image')
+    print('-' * 60, flush=True)
+    print('Extracting pore and throat information from image', flush=True)
     from skimage.morphology import disk, ball
     struc_elem = disk if im.ndim == 2 else ball
 
