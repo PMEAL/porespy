@@ -915,7 +915,8 @@ def blobs(shape: List[int], porosity: float = 0.5, blobiness: int = 1,
 
 
 def cylinders(shape: List[int], radius: int, ncylinders: int,
-              phi_max: float = 0, theta_max: float = 90, length: float = None):
+              phi_max: float = 0, theta_max: float = 90, length: float = None,
+              verbose: bool = True):
     r"""
     Generates a binary image of overlapping cylinders.
 
@@ -974,51 +975,60 @@ def cylinders(shape: List[int], radius: int, ncylinders: int,
     im = np.zeros(shape, dtype=bool)
     n = 0
     L = min(H, R)
-    with tqdm(range(1, ncylinders), file=sys.stdout) as pbar:
-        while n < ncylinders:
-            # Choose a random starting point in domain
-            x = np.random.rand(3) * (shape + 2 * L)
-            # Chose a random phi and theta within given ranges
-            phi = (np.pi / 2 - np.pi * np.random.rand()) * phi_max / 90
-            theta = (np.pi / 2 - np.pi * np.random.rand()) * theta_max / 90
-            X0 = R * np.array([np.cos(phi) * np.cos(theta),
-                               np.cos(phi) * np.sin(theta),
-                               np.sin(phi)])
-            [X0, X1] = [x + X0, x - X0]
-            crds = line_segment(X0, X1)
-            lower = ~np.any(np.vstack(crds).T < [L, L, L], axis=1)
-            upper = ~np.any(np.vstack(crds).T >= shape + L, axis=1)
-            valid = upper * lower
-            if np.any(valid):
-                im[crds[0][valid] - L, crds[1][valid] - L, crds[2][valid] - L] = 1
-                n += 1
-                pbar.update()
+    pbar = tqdm(total=ncylinders, file=sys.stdout, disable=not verbose)
+    while n < ncylinders:
+        # Choose a random starting point in domain
+        x = np.random.rand(3) * (shape + 2 * L)
+        # Chose a random phi and theta within given ranges
+        phi = (np.pi / 2 - np.pi * np.random.rand()) * phi_max / 90
+        theta = (np.pi / 2 - np.pi * np.random.rand()) * theta_max / 90
+        X0 = R * np.array([np.cos(phi) * np.cos(theta),
+                           np.cos(phi) * np.sin(theta),
+                           np.sin(phi)])
+        [X0, X1] = [x + X0, x - X0]
+        crds = line_segment(X0, X1)
+        lower = ~np.any(np.vstack(crds).T < [L, L, L], axis=1)
+        upper = ~np.any(np.vstack(crds).T >= shape + L, axis=1)
+        valid = upper * lower
+        if np.any(valid):
+            im[crds[0][valid] - L, crds[1][valid] - L, crds[2][valid] - L] = 1
+            n += 1
+            pbar.update()
     im = np.array(im, dtype=bool)
     dt = edt(~im) < radius
     return ~dt
 
-def cylinders_porosity(shape, radius: int ,porosity:float,  phi_max: float =0, theta_max: float = 90, length: float = None, iterations: int=3,return_fiber_number: bool = False ):
+
+def cylinders_porosity(shape: list,
+                       radius: int,
+                       porosity: float,
+                       phi_max: float = 0,
+                       theta_max: float = 90,
+                       length: float = None,
+                       max_iter: int = 3,
+                       return_fiber_number: bool = False,
+                       verbose: bool = True):
     r"""
     Generates a binary image of overlapping cylinders, with a target
     porosity input. Delegates cylinder creation to generators.cylinders.
 
     This is a good approximation of a fibrous mat.
 
-    The cylinders_porosity function works by estimating the number of 
-    cylinders needed to be inserted into the domain by estimating 
-    cylinder length, and exploiting the fact that, when inserting any 
-    potentially overlapping objects randomly into a volume v_total (which 
-    has units of pixels and is equal to dimx x dimy x dimz, for example), 
-    such that the total volume of objects added to the volume is v_added 
-    (and includes any volume that was inserted but overlapped with already 
-    occupied space), the resulting porosity will be equal to 
+    The cylinders_porosity function works by estimating the number of
+    cylinders needed to be inserted into the domain by estimating
+    cylinder length, and exploiting the fact that, when inserting any
+    potentially overlapping objects randomly into a volume v_total (which
+    has units of pixels and is equal to dimx x dimy x dimz, for example),
+    such that the total volume of objects added to the volume is v_added
+    (and includes any volume that was inserted but overlapped with already
+    occupied space), the resulting porosity will be equal to
     exp(-v_added/v_total).
 
-    After intially estimating the cylinder number and inserting a small 
-    fraction of the estimated number, the true cylinder volume is 
-    calculated, the estimate refined, and a larger fraction of cylinders 
-    inserted. This is repeated a number of times according to the 
-    'iterations' argument, yielding an image with a porosity close to 
+    After intially estimating the cylinder number and inserting a small
+    fraction of the estimated number, the true cylinder volume is
+    calculated, the estimate refined, and a larger fraction of cylinders
+    inserted. This is repeated a number of times according to the
+    'iterations' argument, yielding an image with a porosity close to
     the goal.
 
     Parameters
@@ -1029,9 +1039,9 @@ def cylinders_porosity(shape, radius: int ,porosity:float,  phi_max: float =0, t
     radius : scalar
         The radius of the cylinders in voxels
     porosity : scalar
-        The targeted value for the porosity of the generated mat. The 
-        function uses an algorithm for predicted the number of required 
-        number of cylinder, and refines this over a certain number of 
+        The targeted value for the porosity of the generated mat. The
+        function uses an algorithm for predicted the number of required
+        number of cylinder, and refines this over a certain number of
         fractional insertions (according to the 'iterations' input).
     phi_max : scalar
         A value between 0 and 90 that controls the amount that the cylinders
@@ -1050,10 +1060,10 @@ def cylinders_porosity(shape, radius: int ,porosity:float,  phi_max: float =0, t
         Euclidean distance between the two ends of the cylinder.  Note that
         one or both of the ends *may* still lie outside the domain, depending
         on the randomly chosen center point of the cylinder.
-    iterations : scalar
+    max_iter : scalar
         The number of fractional fiber insertions used to target the requested
         porosity. By default a value of 3 is used (and this is typically
-        effective in getting very close to the targeted porosity), but a 
+        effective in getting very close to the targeted porosity), but a
         greater number can be input to improve the achieved porosity.
     return_fiber_number : bool
         Determines whether the function will return the number of fibers
@@ -1067,48 +1077,52 @@ def cylinders_porosity(shape, radius: int ,porosity:float,  phi_max: float =0, t
         The number of fibers added to the image. This is optional, and whether
         it is returned is determined by 'return_fiber_number'
     """
-    
-    if iterations < 3:
-        raise Exception('iterations must be greater than or equal to 3')
-    
-    vol_total = float(shape[0]*shape[1]*shape[2])
-    n_pixels_from_poro = lambda poro: -np.log(poro)*vol_total
+    if max_iter < 3:
+        raise Exception("Iterations must be greater than or equal to 3")
 
-    # Crudely estimate fiber length as cube root of product of dims if not input.
-    if length is None:
-        length_est = (shape[0]*shape[1]*shape[2])**(1./3)
-    else:
-        length_est = length
+    vol_total = float(np.prod(shape))
+
+    def get_num_pixels(porosity):
+        r"""
+        Helper method to calculate number of pixels given a porosity
+        """
+        return -np.log(porosity) * vol_total
+
+    # Crudely estimate fiber length as cube root of product of dims
+    length_estimate = vol_total ** (1 / 3) if length is None else length
 
     # Rough fiber volume estimate
-    single_fiber_vol_est = length_est*3.1415*radius*radius
-    n_pixels_to_add = n_pixels_from_poro(porosity)
+    vol_fiber = length_estimate * np.pi * radius * radius
+    n_pixels_to_add = get_num_pixels(porosity)
+
     # Rough estimate of n_fibers
-    
     n_fibers_added = 0
-    
     # Calculate fraction of fibers to be added in each iteration.
-    subdif = 0.8/sum(np.arange(1,iterations)**2)
-    fraction_per_iteration = [0.2,]
-    for i in range(1,iterations):
-        fraction_per_iteration.append(fraction_per_iteration[i-1]+(iterations-i)**2*subdif)
+    subdif = 0.8 / np.sum(np.arange(1, max_iter) ** 2)
+    fractions = [0.2]
+    for i in range(1, max_iter):
+        fractions.append(fractions[i - 1] + (max_iter - i) ** 2 * subdif)
 
-    im = np.ones(shape,dtype=bool) 
-    for iteration_fraction in fraction_per_iteration:
-        n_fiber_total_estimate = n_pixels_to_add/single_fiber_vol_est
-        n_fibers_this_iteration = np.ceil(iteration_fraction*n_fiber_total_estimate) - n_fibers_added
-        if n_fibers_this_iteration > 0:
-            im = im & ps.generators.cylinders(shape,radius,n_fibers_this_iteration,phi_max,theta_max,length)
-        n_fibers_added +=n_fibers_this_iteration
+    im = np.ones(shape, dtype=bool)
+    for frac in tqdm(fractions, disable=not verbose, file=sys.stdout,
+                     desc="Adding fibers"):
+        n_fibers_total = n_pixels_to_add / vol_fiber
+        n_fibers = int(np.ceil(frac * n_fibers_total) - n_fibers_added)
+        if n_fibers > 0:
+            im = im & ps.generators.cylinders(
+                shape, radius, n_fibers, phi_max, theta_max, length, verbose=False
+            )
+        n_fibers_added += n_fibers
+        # Update parameters for next iteration
+        porosity = ps.metrics.porosity(im)
+        vol_added = get_num_pixels(porosity)
+        vol_fiber = vol_added / n_fibers_added
 
-        iteration_porosity = ps.metrics.porosity(im)
-        iteration_added_volume = n_pixels_from_poro(iteration_porosity)
-        single_fiber_vol_est = iteration_added_volume/n_fibers_added
-    
-    print('{} fibers were added to reach the target porosity.'.format(str(n_fibers_added)))
+    if verbose:
+        print(f"{n_fibers_added} fibers were added to reach the target porosity.\n")
 
     if return_fiber_number:
-        return im,n_fibers_added
+        return im, n_fibers_added
     else:
         return im
 
