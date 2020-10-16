@@ -5,13 +5,15 @@ on: [push, pull_request]
 jobs:
   build:
 
-    if: "!contains(github.event.head_commit.message, 'ci min') && !contains(github.event.head_commit.message, 'ci skip')"
+    if: (! contains(github.event.head_commit.message, 'ci min')) &&
+        (! contains(github.event.head_commit.message, 'ci skip')) &&
+        (! contains(github.event.head_commit.message, 'ci examples'))
 
     runs-on: ${{ matrix.operating-system }}
     strategy:
       max-parallel: 4
       matrix:
-        python-version: [3.6, 3.7, 3.8]
+        python-version: [3.7, 3.8]
         operating-system: [ubuntu-latest]
 
     steps:
