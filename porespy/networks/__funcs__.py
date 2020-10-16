@@ -2,10 +2,10 @@ import sys
 import numpy as np
 import openpnm as op
 from tqdm import tqdm
-from porespy.tools import make_contiguous
-import skimage as skim
-from skimage.segmentation import find_boundaries
+from skimage.util import crop
 from skimage.morphology import ball, cube
+from skimage.segmentation import find_boundaries
+from porespy.tools import make_contiguous
 from porespy.tools import _create_alias_map, overlay
 from porespy.tools import insert_cylinder
 from porespy.tools import zero_corners
@@ -245,8 +245,8 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200, verbos
     im_pores[im_pores==-1] = -10
     im_throats[im_throats==-1] = -10
     # Removing the added padding
-    im_pores = skim.util.crop(im_pores, extra_clearance)
-    im_throats = skim.util.crop(im_throats, extra_clearance)
+    im_pores = crop(im_pores, extra_clearance)
+    im_throats = crop(im_throats, extra_clearance)
 
     return im_pores, im_throats
 
