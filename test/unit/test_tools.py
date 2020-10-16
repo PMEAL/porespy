@@ -243,6 +243,12 @@ class ToolsTest():
         sat = ps.tools.seq_to_satn(sq)
         assert sat.max() < 1
 
+    def test_sanitize_filename(self):
+        fname = "test.stl.stl"
+        assert ps.tools.sanitize_filename(fname, "stl") == "test.stl.stl"
+        assert ps.tools.sanitize_filename(fname, "vtk") == "test.stl.stl.vtk"
+        assert ps.tools.sanitize_filename(fname, "stl", exclude_ext=True) == "test.stl"
+
 
 if __name__ == '__main__':
     t = ToolsTest()
@@ -250,5 +256,5 @@ if __name__ == '__main__':
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: '+item)
+            print(f"Running test: {item}")
             t.__getattribute__(item)()

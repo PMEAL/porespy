@@ -5,7 +5,7 @@ import warnings
 from edt import edt
 from collections import namedtuple
 from skimage.morphology import ball, disk
-from skimage.measure import marching_cubes_lewiner
+from skimage.measure import marching_cubes
 from array_split import shape_split, ARRAY_BOUNDS
 from scipy.signal import fftconvolve
 
@@ -27,10 +27,12 @@ def align_image_with_openpnm(im):
     image : ND-array
         Returns a copy of ``im`` rotated accordingly.
     """
-    if im.ndim != im.squeeze().ndim:
-        warnings.warn(f'Input image conains a singleton axis: {im.shape}'
-                      + ' Reduce dimensionality with np.squeeze(im) to avoid'
-                      + ' unexpected behavior.')
+    if im.ndim != im.squeeze().ndim:    # pragma: no cover
+        warnings.warn((
+            f"Input image conains a singleton axis: {im.shape}."
+            " Reduce dimensionality with np.squeeze(im) to avoid"
+            " unexpected behavior."
+        ))
     im = np.copy(im)
     if im.ndim == 2:
         im = (np.swapaxes(im, 1, 0))
@@ -112,10 +114,12 @@ def fftmorphology(im, strel, mode='opening'):
         t = fftconvolve(im, strel, mode='same') > 0.1
         return t
 
-    if im.ndim != im.squeeze().ndim:
-        warnings.warn(f'Input image conains a singleton axis: {im.shape}'
-                      + ' Reduce dimensionality with np.squeeze(im) to avoid'
-                      + ' unexpected behavior.')
+    if im.ndim != im.squeeze().ndim:    # pragma: no cover
+        warnings.warn((
+            f"Input image conains a singleton axis: {im.shape}."
+            " Reduce dimensionality with np.squeeze(im) to avoid"
+            " unexpected behavior."
+        ))
 
     # Perform erosion and dilation
     # The array must be padded with 0's so it works correctly at edges
@@ -322,7 +326,7 @@ def extract_cylinder(im, r=None, axis=0):
     inds[axis] = inds[axis] * 0
     d = np.sqrt(np.sum(sp.square(inds), axis=0))
     mask = d < r
-    im_temp = im*mask
+    im_temp = im * mask
     return im_temp
 
 
@@ -758,9 +762,9 @@ def _functions_to_table(mod, colwidth=[27, 48]):
     temp = mod.__dir__()
     funcs = [i for i in temp if not i[0].startswith('_')]
     funcs.sort()
-    row = '+' + '-'*colwidth[0] + '+' + '-'*colwidth[1] + '+'
-    fmt = '{0:1s} {1:' + str(colwidth[0]-2) + 's} {2:1s} {3:' \
-          + str(colwidth[1]-2) + 's} {4:1s}'
+    row = '+' + '-' * colwidth[0] + '+' + '-' * colwidth[1] + '+'
+    fmt = '{0:1s} {1:' + str(colwidth[0] - 2) + 's} {2:1s} {3:' \
+          + str(colwidth[1] - 2) + 's} {4:1s}'
     lines = []
     lines.append(row)
     lines.append(fmt.format('|', 'Method', '|', 'Description', '|'))
@@ -805,10 +809,12 @@ def mesh_region(region: bool, strel=None):
 
     """
     im = region
-    if im.ndim != im.squeeze().ndim:
-        warnings.warn(f'Input image conains a singleton axis: {im.shape}'
-                      + ' Reduce dimensionality with np.squeeze(im) to avoid'
-                      + ' unexpected behavior.')
+    if im.ndim != im.squeeze().ndim:    # pragma: no cover
+        warnings.warn((
+            f"Input image conains a singleton axis: {im.shape}."
+            " Reduce dimensionality with np.squeeze(im) to avoid"
+            " unexpected behavior."
+        ))
     if strel is None:
         if region.ndim == 3:
             strel = ball(1)
@@ -822,7 +828,7 @@ def mesh_region(region: bool, strel=None):
     else:
         padded_mask = np.reshape(im, (1,) + im.shape)
         padded_mask = np.pad(padded_mask, pad_width=pad_width, mode='constant')
-    verts, faces, norm, val = marching_cubes_lewiner(padded_mask)
+    verts, faces, norm, val = marching_cubes(padded_mask)
     result = namedtuple('mesh', ('verts', 'faces', 'norm', 'val'))
     result.verts = verts - pad_width
     result.faces = faces
@@ -902,7 +908,7 @@ def overlay(im1, im2, c):
     nx, ny, nz = [(ni - 1) // 2 for ni in shape]
     cx, cy, cz = c
 
-    im1[cx-nx:cx+nx+1, cy-ny:cy+ny+1, cz-nz:cz+nz+1] += im2
+    im1[cx - nx:cx + nx + 1, cy - ny:cy + ny + 1, cz - nz:cz + nz + 1] += im2
 
     return im1
 
@@ -956,11 +962,11 @@ def insert_sphere(im, c, r, v=True, overwrite=True):
     blank[tuple(c - bbox[0:im.ndim])] = 0
     sph = edt(blank) < r
     if overwrite:  # Clear voxles under sphere to be zero
-        temp = im[s]*sph > 0
+        temp = im[s] * sph > 0
         im[s][temp] = 0
     else:  # Clear portions of sphere to prevent overwriting
         sph *= im[s] == 0
-    im[s] = im[s] + sph*v
+    im[s] = im[s] + sph * v
     return im
 
 
@@ -1013,9 +1019,9 @@ def insert_cylinder(im, xyz0, xyz1, r):
         template[tuple(xyz_line_in_template_coords)] = 1
         template = edt(template == 0) <= r
 
-    im[xyz_min[0]:xyz_max[0]+1,
-       xyz_min[1]:xyz_max[1]+1,
-       xyz_min[2]:xyz_max[2]+1] += template
+    im[xyz_min[0] : xyz_max[0] + 1,
+       xyz_min[1] : xyz_max[1] + 1,
+       xyz_min[2] : xyz_max[2] + 1] += template
 
     return im
 
@@ -1050,10 +1056,12 @@ def pad_faces(im, faces):
     --------
     add_boundary_regions
     """
-    if im.ndim != im.squeeze().ndim:
-        warnings.warn(f'Input image conains a singleton axis: {im.shape}'
-                      + ' Reduce dimensionality with np.squeeze(im) to avoid'
-                      + ' unexpected behavior.')
+    if im.ndim != im.squeeze().ndim:    # pragma: no cover
+        warnings.warn((
+            f"Input image conains a singleton axis: {im.shape}."
+            " Reduce dimensionality with np.squeeze(im) to avoid"
+            " unexpected behavior."
+        ))
     f = faces
     if f is not None:
         if im.ndim == 2:
@@ -1160,11 +1168,11 @@ def extract_regions(regions, labels: list, trim=True):
     x_min, y_min, z_min = sp.inf, sp.inf, sp.inf
     x_max, y_max, z_max = 0, 0, 0
     for i in labels:
-        im_new[s[i-1]] = regions[s[i-1]] == i
-        x_min, x_max = min(s[i-1][0].start, x_min), max(s[i-1][0].stop, x_max)
-        y_min, y_max = min(s[i-1][1].start, y_min), max(s[i-1][1].stop, y_max)
+        im_new[s[i - 1]] = regions[s[i - 1]] == i
+        x_min, x_max = min(s[i - 1][0].start, x_min), max(s[i - 1][0].stop, x_max)
+        y_min, y_max = min(s[i - 1][1].start, y_min), max(s[i - 1][1].stop, y_max)
         if regions.ndim == 3:
-            z_min, z_max = min(s[i-1][2].start, z_min), max(s[i-1][2].stop, z_max)
+            z_min, z_max = min(s[i - 1][2].start, z_min), max(s[i - 1][2].stop, z_max)
     if trim:
         if regions.ndim == 3:
             bbox = bbox_to_slices([x_min, y_min, z_min, x_max, y_max, z_max])
@@ -1207,7 +1215,7 @@ def size_to_seq(size, bins=None):
         bins = np.linspace(0, size.max(), bins)
     vals = np.digitize(size, bins=bins, right=True)
     # Invert the vals so smallest size has largest sequence
-    vals = -(vals - vals.max() - 1)*~solid
+    vals = -(vals - vals.max() - 1) * ~solid
     # In case too many bins are given, remove empty ones
     vals = make_contiguous(vals)
 
@@ -1246,7 +1254,37 @@ def seq_to_satn(seq):
     b = np.bincount(seq.flatten())
     b[0] = 0
     c = np.cumsum(b)
-    satn = c[seq]/((seq > 0).sum() + uninvaded.sum())
+    satn = c[seq] / ((seq > 0).sum() + uninvaded.sum())
     satn[solid] = 0.0
     satn[uninvaded] = -1.0
     return satn
+
+
+def sanitize_filename(filename, ext, exclude_ext=False):
+    r"""
+    Returns a sanitized string in the form of name.extension
+
+    Parameters
+    ----------
+    filename : str
+        Unsanitized filename, could be 'test.vtk' or just 'test'
+
+    ext : str
+        Extension of the file, could be 'vtk'
+
+    exclude_ext : bool
+        If True, the returned string doesn't have the extension
+
+    Returns
+    -------
+    sanitized : str
+        Sanitized filename in form of name.extension
+
+    """
+    ext.strip(".")
+    if filename.endswith(f".{ext}"):
+        name = ".".join(filename.split(".")[:-1])
+    else:
+        name = filename
+    filename_formatted = f"{name}" if exclude_ext else f"{name}.{ext}"
+    return filename_formatted
