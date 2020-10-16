@@ -5,7 +5,8 @@ from skimage.segmentation import find_boundaries
 from skimage.morphology import ball, cube
 from tqdm import tqdm
 from porespy.tools import _create_alias_map, overlay
-from porespy.tools import insert_sphere, insert_cylinder
+from porespy.tools import insert_cylinder
+from porespy.tools import zero_corners
 
 
 def map_to_regions(regions, values):
@@ -128,57 +129,12 @@ def add_boundary_regions(regions=None, faces=['front', 'back', 'left',
     regions = np.pad(regions, pad_width=pad_width, mode="edge")
 
     # Convert pad-induced corners to 0
-    _zero_corners(regions, pad_width=3, faces=faces)
+    zero_corners(regions, pad_width)
 
     # Make labels contiguous
     regions = make_contiguous(regions)
 
     return regions
-
-
-def _zero_corners(im, pad_width: int, faces: list):
-    r"""
-    Fills corners of a padded-image with 0, given a pad width and list of
-    faces such as ["left", "front"] at which the image has been padded.
-
-    Example
-    -------
-    Let `im` be:
-
-                    [[ 0  1  2  3  4  5  6  7]
-                     [ 8  9 10 11 12 13 14 15]
-                     [16 17 18 19 20 21 22 23]
-                     [24 25 26 27 28 29 30 31]
-                     [32 33 34 35 36 37 38 39]
-                     [40 41 42 43 44 45 46 47]]
-
-    Calling _zero_corners(im, pad_width=2, faces=["left", "back"]) gives:
-
-                    [[ 0  1  2  3  4  5  0  0]
-                     [ 8  9 10 11 12 13  0  0]
-                     [16 17 18 19 20 21 22 23]
-                     [24 25 26 27 28 29 30 31]
-                     [32 33 34 35 36 37 38 39]
-                     [40 41 42 43 44 45 46 47]]
-
-    Notes
-    -----
-    This method operates in-place.
-
-    """
-    labels_dict = {0: ["left", "right"], 1: ["front", "back"], 2: ["bottom", "top"]}
-    idx_corners = []
-    for axis in range(im.ndim):
-        temp = []
-        for i, label in enumerate(labels_dict[axis]):
-            if label in faces:
-                if i == 0:      # i.e. label in ["left", "front", "bottom"]
-                    temp.extend(range(pad_width))
-                if i == 1:      # i.e. label in ["right", "back", "top"]
-                    temp.extend(range(-pad_width, 0))
-        idx_corners.append(temp)
-    idx_corners = np.ix_(*idx_corners)
-    im[idx_corners] = 0
 
 
 def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200,
