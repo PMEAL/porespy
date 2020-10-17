@@ -1,11 +1,13 @@
+import sys
 import numpy as np
 import openpnm as op
+from tqdm import tqdm
 from porespy.tools import make_contiguous
 from skimage.segmentation import find_boundaries
 from skimage.morphology import ball, cube
-from tqdm import tqdm
 from porespy.tools import _create_alias_map, overlay
-from porespy.tools import insert_sphere, insert_cylinder
+from porespy.tools import insert_cylinder
+from porespy.tools import zero_corners
 
 
 def map_to_regions(regions, values):
@@ -77,87 +79,66 @@ def add_boundary_regions(regions=None, faces=['front', 'back', 'left',
         slightly larger in each direction where boundaries were added.
 
     """
-    # -------------------------------------------------------------------------
-    # Edge pad segmentation and distance transform
-    if faces is not None:
-        regions = np.pad(regions, 1, 'edge')
-        # ---------------------------------------------------------------------
-        if regions.ndim == 3:
-            # Remove boundary nodes interconnection
-            regions[:, :, 0] = regions[:, :, 0] + regions.max()
-            regions[:, :, -1] = regions[:, :, -1] + regions.max()
-            regions[0, :, :] = regions[0, :, :] + regions.max()
-            regions[-1, :, :] = regions[-1, :, :] + regions.max()
-            regions[:, 0, :] = regions[:, 0, :] + regions.max()
-            regions[:, -1, :] = regions[:, -1, :] + regions.max()
-            regions[:, :, 0] = (~find_boundaries(regions[:, :, 0],
-                                                 mode='outer')) * regions[:, :, 0]
-            regions[:, :, -1] = (~find_boundaries(regions[:, :, -1],
-                                                  mode='outer')) * regions[:, :, -1]
-            regions[0, :, :] = (~find_boundaries(regions[0, :, :],
-                                                 mode='outer')) * regions[0, :, :]
-            regions[-1, :, :] = (~find_boundaries(regions[-1, :, :],
-                                                  mode='outer')) * regions[-1, :, :]
-            regions[:, 0, :] = (~find_boundaries(regions[:, 0, :],
-                                                 mode='outer')) * regions[:, 0, :]
-            regions[:, -1, :] = (~find_boundaries(regions[:, -1, :],
-                                                  mode='outer')) * regions[:, -1, :]
-            # -----------------------------------------------------------------
-            regions = np.pad(regions, 2, 'edge')
+    if faces is None:
+        return regions
 
-            # Remove unselected faces
-            if 'front' not in faces:
-                regions = regions[:, 3:, :]  # y
-            if 'back' not in faces:
-                regions = regions[:, :-3, :]
-            if 'left' not in faces:
-                regions = regions[3:, :, :]  # x
-            if 'right' not in faces:
-                regions = regions[:-3, :, :]
-            if 'bottom' not in faces:
-                regions = regions[:, :, 3:]  # z
-            if 'top' not in faces:
-                regions = regions[:, :, :-3]
+    if regions.ndim not in [2, 3]:
+        raise Exception("add_boundary_regions works only on 2D and 3D images")
 
-        elif regions.ndim == 2:
-            # Remove boundary nodes interconnection
-            regions[0, :] = regions[0, :] + regions.max()
-            regions[-1, :] = regions[-1, :] + regions.max()
-            regions[:, 0] = regions[:, 0] + regions.max()
-            regions[:, -1] = regions[:, -1] + regions.max()
-            regions[0, :] = (~find_boundaries(regions[0, :],
-                                              mode='outer')) * regions[0, :]
-            regions[-1, :] = (~find_boundaries(regions[-1, :],
-                                               mode='outer')) * regions[-1, :]
-            regions[:, 0] = (~find_boundaries(regions[:, 0],
-                                              mode='outer')) * regions[:, 0]
-            regions[:, -1] = (~find_boundaries(regions[:, -1],
-                                               mode='outer')) * regions[:, -1]
-            # -----------------------------------------------------------------
-            regions = np.pad(regions, 2, 'edge')
+    if regions.ndim == 2:
+        if set(["bottom", "top"]).intersection(faces):
+            raise Exception("For 2D images, use 'left', 'right', 'front', 'back' labels")
 
-            # Remove unselected faces
-            if 'left' not in faces:
-                regions = regions[3:, :]  # x
-            if 'right' not in faces:
-                regions = regions[:-3, :]
-            if 'front' not in faces and 'bottom' not in faces:
-                regions = regions[:, 3:]  # y
-            if 'back' not in faces and 'top' not in faces:
-                regions = regions[:, :-3]
-        else:
-            print('add_boundary_regions works only on 2D and 3D images')
-        # ---------------------------------------------------------------------
-        # Make labels contiguous
-        regions = make_contiguous(regions)
-    else:
-        regions = regions
+    # Map which image slice corresponds to which face
+    face_to_slice = {
+        "left": 0, "right": -1, "front": 0, "back": -1, "bottom": 0, "top": -1
+    }
+    # Map face label to corresponding axis
+    face_to_axis = {
+        "left": 0, "right": 0, "front": 1, "back": 1, "bottom": 2, "top": 2
+    }
+
+    ndim = regions.ndim
+    indices = []
+    # Note: pad_width format: each elem is [pad_before, pad_after]
+    pad_width = [[0, 0] for i in range(ndim)]
+    # 1. Create indices for boundary faces, ex. bottom" => [:, :, -1]
+    # Note: slice(None) is equivalent to ":" in fancy indexing, ex. [0, 0, :]
+    # 2. populate pad_width based on labels
+    for face in faces:
+        temp = [slice(None) for i in range(ndim)]
+        axis = face_to_axis[face]
+        plane = face_to_slice[face]
+        temp[axis] = plane
+        indices.append(tuple(temp))
+        pad_width[axis][plane] = 1      # Pad each face by 1 pixel
+
+    regions = np.pad(regions, pad_width=pad_width, mode="edge")
+
+    # Increment boundary regions to distinguish from internal regions
+    for idx in indices:
+        # Only increment non-background regions (i.e. != 0)
+        non_background = regions[idx] != 0
+        regions[idx][non_background] += regions.max()
+
+    # Remove connections between boundary regions
+    for idx in indices:
+        regions[idx] *= ~find_boundaries(regions[idx], mode="outer")
+
+    # Pad twice to make boundary regions 3-pixel thick -> required for marching_cube
+    regions = np.pad(regions, pad_width=pad_width, mode="edge")
+    regions = np.pad(regions, pad_width=pad_width, mode="edge")
+
+    # Convert pad-induced corners to 0
+    zero_corners(regions, pad_width)
+
+    # Make labels contiguous
+    regions = make_contiguous(regions)
 
     return regions
 
 
-def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200,
-                          verbose=1):
+def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200, verbose=1):
     r"""
     Generates a 3d numpy array from a network model.
 
@@ -223,9 +204,11 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200,
     if throat_shape == "cuboid":
         raise Exception("Not yet implemented, try 'cylinder'.")
 
+    tqdm_settings = {"disable": not verbose, "file": sys.stdout}
+
     # Generating voxels for pores
-    for i, pore in enumerate(tqdm(network.pores(), disable=not verbose,
-                                  desc="Generating pores  ")):
+    Ps = tqdm(network.Ps, desc="  - Generating pores  ", **tqdm_settings)
+    for i, pore in enumerate(Ps):
         elem = pore_elem(rp[i])
         try:
             im_pores = overlay(im1=im_pores, im2=elem, c=xyz[i])
@@ -236,8 +219,8 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200,
     im_pores[im_pores > 0] = 1
 
     # Generating voxels for throats
-    for i, throat in enumerate(tqdm(network.throats(), disable=not verbose,
-                                    desc="Generating throats")):
+    Ts = tqdm(network.Ts, desc="  - Generating throats", **tqdm_settings)
+    for i, throat in enumerate(Ts):
         try:
             im_throats = insert_cylinder(im_throats, r=throat_radi[i],
                                          xyz0=xyz[cn[i, 0]],
@@ -299,9 +282,10 @@ def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
     further increasing it doesn't change porosity by much.
 
     """
-    print("\n" + "-" * 44, flush=True)
-    print("| Generating voxel image from pore network |", flush=True)
-    print("-" * 44, flush=True)
+    if verbose:
+        print("\n" + "-" * 44, flush=True)
+        print("| Generating voxel image from pore network |", flush=True)
+        print("-" * 44, flush=True)
 
     # If max_dim is provided, generate voxel image using max_dim
     if max_dim is not None:
@@ -315,6 +299,8 @@ def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
     err = 100  # percent
 
     while err > rtol:
+        if verbose:
+            print(f"\nMaximum dimension in voxels: {max_dim}", flush=True)
         im = _generate_voxel_image(network, pore_shape, throat_shape,
                                    max_dim=max_dim, verbose=verbose)
         eps = im.astype(bool).sum() / np.prod(im.shape)
@@ -324,7 +310,7 @@ def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
         max_dim = int(max_dim * 1.25)
 
     if verbose:
-        print("\nConverged at max_dim = {max_dim} voxels.\n")
+        print(f"\nConverged at max_dim = {max_dim} voxels.\n")
 
     return im
 

@@ -243,6 +243,36 @@ class ToolsTest():
         sat = ps.tools.seq_to_satn(sq)
         assert sat.max() < 1
 
+    def test_zero_coners(self):
+        im = np.arange(1, 16).reshape(3, 5)
+        desired = np.array([[1, 2, 3, 4, 5],
+                            [0, 7, 0, 0, 0],
+                            [0, 12, 0, 0, 0]])
+        im1 = im.copy()
+        ps.tools.zero_corners(im1, [[0, 2], [1, 3]])
+        np.testing.assert_allclose(im1, desired)
+
+        with pytest.raises(Exception):
+            im2 = im.copy()
+            ps.tools.zero_corners(im2, [[0, 2], [1, 3], [0, 0]])
+
+        with pytest.raises(Exception):
+            im2 = im.copy()
+            ps.tools.zero_corners(im2, [[0, 2], [1, 3, 3]])
+
+        desired = np.array([[0, 2, 3, 4, 0],
+                            [6, 7, 8, 9, 10],
+                            [0, 12, 13, 14, 0]])
+        im3 = im.copy()
+        ps.tools.zero_corners(im3, 1)
+        np.testing.assert_allclose(im3, desired)
+
+    def test_sanitize_filename(self):
+        fname = "test.stl.stl"
+        assert ps.tools.sanitize_filename(fname, "stl") == "test.stl.stl"
+        assert ps.tools.sanitize_filename(fname, "vtk") == "test.stl.stl.vtk"
+        assert ps.tools.sanitize_filename(fname, "stl", exclude_ext=True) == "test.stl"
+
 
 if __name__ == '__main__':
     t = ToolsTest()
@@ -250,5 +280,5 @@ if __name__ == '__main__':
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: '+item)
+            print(f"Running test: {item}")
             t.__getattribute__(item)()
