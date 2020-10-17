@@ -27,6 +27,7 @@ illustration purposes.
 .. autofunction:: blobs
 .. autofunction:: bundle_of_tubes
 .. autofunction:: cylinders
+.. autofunction:: cylinders_porosity
 .. autofunction:: insert_shape
 .. autofunction:: lattice_spheres
 .. autofunction:: line_segment
