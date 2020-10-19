@@ -7,7 +7,7 @@ np.set_printoptions(threshold=sys.maxsize)
 class openfoam():
     """
     """
-    def save(im, scale=1, zoom_factor=1, label=True):
+    def save(im, scale=1, zoom_factor=1, label=True, path='./'):
         """
         Given a boolean numpy array where True is void and False is solid,
         creates a blockMesh file for use in OpenFOAM
@@ -401,8 +401,9 @@ mergePatchPairs
         file = file.replace(",", "")
 
         # Returns the doc as a string
-
-        with open("blockMeshDict", "w+") as a:
+        if not path.endswith('/'):
+            path += '/'
+        with open(path+"blockMeshDict", "w+") as a:
             return a.write(file)
 
 
