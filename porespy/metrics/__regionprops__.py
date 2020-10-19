@@ -3,7 +3,7 @@ import numpy as np
 from tqdm import tqdm
 import scipy.ndimage as spim
 from porespy.tools import extract_subsection, bbox_to_slices
-from skimage.measure import mesh_surface_area, marching_cubes
+from skimage.measure import mesh_surface_area, marching_cubes_classic
 from skimage.morphology import skeletonize_3d, ball
 from skimage.measure import regionprops
 from pandas import DataFrame
@@ -209,7 +209,7 @@ def regionprops_3D(im):
         # Find surface area using marching cubes and analyze the mesh
         tmp = np.pad(np.atleast_3d(mask), pad_width=1, mode='constant')
         tmp = spim.convolve(tmp, weights=ball(1)) / 5
-        verts, faces, norms, vals = marching_cubes(volume=tmp, level=0)
+        verts, faces, norms, vals = marching_cubes_classic(volume=tmp, level=0)
         results[i].surface_mesh_vertices = verts
         results[i].surface_mesh_simplices = faces
         area = mesh_surface_area(verts, faces)
