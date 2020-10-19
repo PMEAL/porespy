@@ -292,7 +292,7 @@ def _save_stl(im, vs, filename):
     export.save(f"{filename}.stl")
 
 
-def to_openfoam(im, scale=1, zoom_factor=1, label=True):
+def to_openfoam(im, scale=1, zoom_factor=1, label=True, path='./'):
     r"""
     Save the image as an instruction file for OpenFoam to build an equivalent
     hexahedral mesh with (optionally) defined boundaries.
@@ -308,4 +308,4 @@ def to_openfoam(im, scale=1, zoom_factor=1, label=True):
 
     """
     from .openfoam import openfoam
-    openfoam.save(im, scale, zoom_factor, label)
+    openfoam.save(im, scale, zoom_factor, label, path)
