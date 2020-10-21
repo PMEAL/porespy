@@ -1,7 +1,7 @@
 import porespy as ps
 import numpy as np
 import scipy.ndimage as spim
-from skimage.morphology import disk, ball
+from skimage.morphology import disk, ball, square, cube
 from tqdm import tqdm
 
 
@@ -14,19 +14,21 @@ def pseudo_gravity_packing(im, r, max_iter=1000):
 
 def _monodisperse(im, r, max_iter=1000):
     print('_'*60)
-    print('Adding monodisperse spheres of size ', r)
+    print('Adding monodisperse spheres of raddius', r)
+    r = r - 1
     if im.ndim == 2:
         strel = disk
     else:
         strel = ball
     sites = ps.tools.fftmorphology(im == 1, strel=strel(r), mode='erosion')
+    x_min = 0
     with tqdm(range(max_iter)) as pbar:
         for _ in range(max_iter):
             pbar.update()
             if im.ndim == 2:
-                x, y = np.where(sites)
+                x, y = np.where(sites[x_min:x_min+2*r, ...])
             else:
-                x, y, z = np.where(sites)
+                x, y, z = np.where(sites[x_min:x_min+2*r, ...])
             if len(x) == 0:
                 break
             options = np.where(x == x.min())[0]
@@ -35,21 +37,22 @@ def _monodisperse(im, r, max_iter=1000):
             else:
                 choice = 0
             if im.ndim == 2:
-                cen = np.array([x[options[choice]],
+                cen = np.array([x[options[choice]] + x_min,
                                 y[options[choice]]])
             else:
-                cen = np.array([x[options[choice]],
+                cen = np.array([x[options[choice]] + x_min,
                                 y[options[choice]],
                                 z[options[choice]]])
             im = ps.tools.insert_sphere(im, c=cen, r=r, v=0)
             sites = ps.tools.insert_sphere(sites, c=cen, r=2*r, v=0)
-    print('A total of ', _, 'spheres were added')
-    im = spim.minimum_filter(input=im, footprint=ball(1))
+            x_min += x.min()
+    print('A total of', _, 'spheres were added')
+    im = spim.minimum_filter(input=im, footprint=strel(1))
     return im
 
 def _polydisperse(im, r_min, r_max, max_iter=1000):
     print('_'*60)
-    print('Adding polydisperse spheres of sizes ', r_min, ' to ', r_max)
+    print('Adding polydisperse spheres of radii between', r_min, '->', r_max)
     bd = np.zeros_like(im)
     bd[-r_max:, ...] = 1
     if im.ndim == 2:
@@ -84,8 +87,8 @@ def _polydisperse(im, r_min, r_max, max_iter=1000):
                                 y[options[choice]],
                                 z[options[choice]]])
             im = ps.tools.insert_sphere(im, c=cen, r=r, v=0)
-    im = spim.minimum_filter(input=im, footprint=ball(1))
-    print('A total of ', _, 'spheres were added')
+    # im = spim.minimum_filter(input=im, footprint=strel(1))
+    print('A total of', _, 'spheres were added')
     return im
 
 # im = np.ones([1000, 250, 250])
