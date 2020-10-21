@@ -16,7 +16,7 @@ def _monodisperse(im, r, max_iter=1000):
         strel = disk
     else:
         strel = ball
-    sites = ps.tools.fftmorphology(im, strel=strel(r), mode='erosion')
+    sites = ps.tools.fftmorphology(im == 1, strel=strel(r), mode='erosion')
     for _ in tqdm(range(max_iter)):
         if im.ndim == 2:
             x, y = np.where(sites)
@@ -36,7 +36,7 @@ def _monodisperse(im, r, max_iter=1000):
             cen = np.array([x[options[choice]],
                             y[options[choice]],
                             z[options[choice]]])
-        im = ps.tools.insert_sphere(im, c=cen, r=r, v=-_)
+        im = ps.tools.insert_sphere(im, c=cen, r=r, v=0)
         sites = ps.tools.insert_sphere(sites, c=cen, r=2*r, v=0)
     im = spim.minimum_filter(input=im, footprint=ball(1))
     return im
@@ -52,7 +52,7 @@ def _polydisperse(im, r_min, r_max, max_iter=1000):
         r = np.random.randint(r_min, r_max)
         sites = ps.filters.chunked_func(func=ps.tools.fftmorphology,
                                         overlap=r, divs=3, cores=None,
-                                        im=im > 0, strel=strel(r),
+                                        im=im == 0, strel=strel(r),
                                         mode='erosion')
         sites = ps.filters.trim_disconnected_blobs(sites, inlets=bd)
         if im.ndim == 2:
@@ -73,10 +73,10 @@ def _polydisperse(im, r_min, r_max, max_iter=1000):
             cen = np.array([x[options[choice]],
                             y[options[choice]],
                             z[options[choice]]])
-        im = ps.tools.insert_sphere(im, c=cen, r=r, v=-_)
+        im = ps.tools.insert_sphere(im, c=cen, r=r, v=0)
     im = spim.minimum_filter(input=im, footprint=ball(1))
     return im
 
-im = np.ones([1000, 250, 250])
-packing = pseudo_gravity_packing(im, 15, 2000)
-ps.imshow(packing)
+# im = np.ones([1000, 250, 250])
+# packing = pseudo_gravity_packing(im, 15, 2000)
+# ps.imshow(packing)
