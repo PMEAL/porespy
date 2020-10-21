@@ -14,7 +14,7 @@ def pseudo_gravity_packing(im, r, max_iter=1000):
 
 def _monodisperse(im, r, max_iter=1000):
     print('_'*60)
-    print('Adding monodisperse spheres of raddius', r)
+    print('Adding monodisperse spheres of radius', r)
     r = r - 1
     if im.ndim == 2:
         strel = disk
