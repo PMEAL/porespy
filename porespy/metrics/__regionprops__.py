@@ -55,7 +55,8 @@ def props_to_DataFrame(regionprops):
                 pass
     # Create a dictionary of all metrics that are simple scalar properties
     d = {}
-    for k in metrics:
+    for i, k in enumerate(metrics):
+        print(i, ": " + k)
         try:
             d[k] = np.array([r[k] for r in regionprops])
         except ValueError:
@@ -65,7 +66,7 @@ def props_to_DataFrame(regionprops):
     return df
 
 
-def props_to_image(regionprops, shape, prop):
+def prop_to_image(regionprops, shape, prop):
     r"""
     Creates an image with each region colored according the specified ``prop``,
     as obtained by ``regionprops_3d``.
@@ -75,10 +76,8 @@ def props_to_image(regionprops, shape, prop):
     regionprops : list
         This is a list of properties for each region that is computed
         by PoreSpy's ``regionprops_3D`` or Skimage's ``regionsprops``.
-
     shape : array_like
         The shape of the original image for which ``regionprops`` was obtained.
-
     prop : string
         The region property of interest.  Can be a scalar item such as 'volume'
         in which case the the regions will be colored by their respective
@@ -134,7 +133,7 @@ def regionprops_3D(im):
         The returned list contains all the metrics normally returned by
         **skimage.measure.regionprops** plus the following:
 
-        'slice': Slice indices into the image that can be used to extract the
+        'slices': Slice indices into the image that can be used to extract the
         region
 
         'volume': Volume of the region in number of voxels.
@@ -182,16 +181,14 @@ def regionprops_3D(im):
     print('Calculating regionprops')
 
     results = regionprops(im)
-    with tqdm(results) as pbar:
-        for i, obj in enumerate(results):
-            pbar.update()
-            a = results[i]
-            b = RegionPropertiesPS(a.slice,
-                                   a.label,
-                                   a._label_image,
-                                   a._intensity_image,
-                                   a._cache_active)
-            results[i] = b
+    for i, obj in enumerate(results):
+        a = results[i]
+        b = RegionPropertiesPS(a.slice,
+                               a.label,
+                               a._label_image,
+                               a._intensity_image,
+                               a._cache_active)
+        results[i] = b
 
     return results
 
@@ -251,10 +248,22 @@ class RegionPropertiesPS(RegionProperties):
         tmp = np.pad(np.atleast_3d(mask), pad_width=1, mode='constant')
         tmp = spim.convolve(tmp, weights=ball(1)) / 5
         verts, faces, norms, vals = marching_cubes(volume=tmp, level=0)
-        self.surface_mesh_vertices = verts
-        self.surface_mesh_simplices = faces
+        self._surface_mesh_vertices = verts
+        self._surface_mesh_simplices = faces
         area = mesh_surface_area(verts, faces)
         return area
+
+    @property
+    def surface_mesh_vertices(self):
+        if not hasattr(self, '_surface_mesh_vertices'):
+            self.surface_area
+        return self._surface_mesh_vertices
+
+    @property
+    def surface_mesh_simplices(self):
+        if not hasattr(self, '_surface_mesh_simplices'):
+            self.surface_area
+        return self._surface_mesh_simplices
 
     @property
     def convex_volume(self):
