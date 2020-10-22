@@ -3,7 +3,11 @@ import numpy as np
 from tqdm import tqdm
 import scipy.ndimage as spim
 from porespy.tools import extract_subsection, bbox_to_slices
-from skimage.measure import mesh_surface_area, marching_cubes
+from skimage.measure import mesh_surface_area
+try:
+    from skimage.measure import marching_cubes
+except ImportError:
+    from skimage.measure import marching_cubes_lewiner as marching_cubes
 from skimage.morphology import skeletonize_3d, ball
 from skimage.measure import regionprops
 from pandas import DataFrame
