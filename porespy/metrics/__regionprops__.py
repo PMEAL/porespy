@@ -40,7 +40,7 @@ def props_to_DataFrame(regionprops):
 
     See Also
     --------
-    props_to_image
+    prop_to_image
     regionprops_3d
     """
     # Parse the regionprops list and pull out all props with scalar values
