@@ -55,12 +55,14 @@ def props_to_DataFrame(regionprops):
                 pass
     # Create a dictionary of all metrics that are simple scalar properties
     d = {}
+    print('Processing the following properties: ', end="")
     for i, k in enumerate(metrics):
-        print(i, ": " + k)
+        print(k + ", ", end="")
         try:
             d[k] = np.array([r[k] for r in regionprops])
         except ValueError:
             print('Error encountered evaluating ' + k + ' so skipping it')
+    print('... done')
     # Create pandas data frame an return
     df = DataFrame(d)
     return df
