@@ -114,51 +114,31 @@ def regions_to_network(im, dt=None, voxel_size=1):
     net['pore.all'] = np.ones((Np, ), dtype=bool)
     net['throat.all'] = np.ones((Nt, ), dtype=bool)
     net['pore.coords'] = np.copy(p_coords)*voxel_size
+    net['pore.local_peak'] = 0
+    net['pore.global_peak'] = 0
+    net['pore.geometric_centroid'] = 0
     net['pore.centroid'] = np.copy(p_coords)*voxel_size
     net['throat.centroid'] = np.array(t_coords)*voxel_size
     net['throat.conns'] = np.array(t_conns)
-    net['pore.label'] = np.array(p_label)
-    net['pore.volume'] = np.copy(p_volume)*(voxel_size**3)
-    net['throat.volume'] = np.zeros((Nt, ), dtype=float)
-    net['pore.diameter'] = np.copy(p_dia_local)*voxel_size
+    net['pore.region_label'] = np.array(p_label)
+    net['pore.region_volume'] = np.copy(p_volume)*(voxel_size**3)
     net['pore.inscribed_diameter'] = np.copy(p_dia_local)*voxel_size
     net['pore.equivalent_diameter'] = 2*((3/4*net['pore.volume']/np.pi)**(1/3))
     net['pore.extended_diameter'] = np.copy(p_dia_global)*voxel_size
     net['pore.surface_area'] = np.copy(p_area_surf)*(voxel_size)**2
-    net['throat.diameter'] = np.array(t_dia_inscribed)*voxel_size
     net['throat.inscribed_diameter'] = np.array(t_dia_inscribed)*voxel_size
-    net['throat.area'] = np.array(t_area)*(voxel_size**2)
     net['throat.perimeter'] = np.array(t_perimeter)*voxel_size
     net['throat.equivalent_diameter'] = (np.array(t_area) * (voxel_size**2))**0.5
     P12 = net['throat.conns']
-    PT1 = np.sqrt(np.sum(((p_coords[P12[:, 0]]-t_coords) * voxel_size)**2, axis=1))
-    PT2 = np.sqrt(np.sum(((p_coords[P12[:, 1]]-t_coords) * voxel_size)**2, axis=1))
+    PT1 = np.sqrt(np.sum(((p_coords[P12[:, 0]]-t_coords) * voxel_size)**2,
+                         axis=1))
+    PT2 = np.sqrt(np.sum(((p_coords[P12[:, 1]]-t_coords) * voxel_size)**2,
+                         axis=1))
     net['throat.total_length'] = PT1 + PT2
     PT1 = PT1-p_dia_local[P12[:, 0]]/2*voxel_size
     PT2 = PT2-p_dia_local[P12[:, 1]]/2*voxel_size
     net['throat.length'] = PT1 + PT2
     dist = (p_coords[P12[:, 0]]-p_coords[P12[:, 1]])*voxel_size
     net['throat.direct_length'] = np.sqrt(np.sum(dist**2, axis=1))
-    # Make a dummy openpnm network to get the conduit lengths
-    pn = op.network.GenericNetwork()
-    pn.update(net)
-    pn.add_model(propname='throat.endpoints',
-                 model=op_gm.throat_endpoints.spherical_pores,
-                 pore_diameter='pore.inscribed_diameter',
-                 throat_diameter='throat.inscribed_diameter')
-    pn.add_model(propname='throat.conduit_lengths',
-                 model=op_gm.throat_length.conduit_lengths)
-    pn.add_model(propname='pore.area',
-                 model=op_gm.pore_area.sphere)
-    net['throat.endpoints.head'] = pn['throat.endpoints.head']
-    net['throat.endpoints.tail'] = pn['throat.endpoints.tail']
-    net['throat.conduit_lengths.pore1'] = pn['throat.conduit_lengths.pore1']
-    net['throat.conduit_lengths.pore2'] = pn['throat.conduit_lengths.pore2']
-    net['throat.conduit_lengths.throat'] = pn['throat.conduit_lengths.throat']
-    net['pore.area'] = pn['pore.area']
-    prj = pn.project
-    prj.clear()
-    wrk = op.Workspace()
-    wrk.close_project(prj)
 
     return net
