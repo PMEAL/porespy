@@ -47,5 +47,7 @@ jobs:
           pip install -e .
 
       - name: Running tests
-        run:
-          pytest --nbval examples/
+        run: |
+          # Install pycodestyle
+          pip install pytest-pycodestyle
+          pytest --nbval examples/ --pycodestyle

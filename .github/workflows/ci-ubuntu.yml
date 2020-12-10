@@ -49,7 +49,9 @@ jobs:
 
       - name: Running tests
         run: |
-          pytest --cov=./ --cov-report=xml
+          # Install pycodestyle
+          pip install pytest-pycodestyle
+          pytest --cov=./ --cov-report=xml --pycodestyle
 
       - name: Upload coverage to Codecov
         if: matrix.python-version == 3.8

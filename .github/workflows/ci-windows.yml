@@ -52,5 +52,7 @@ jobs:
           pip install -e .
 
       - name: Running tests
-        run:
-          pytest
+        run: |
+          # Install pycodestyle
+          pip install pytest-pycodestyle
+          pytest --pycodestyle
