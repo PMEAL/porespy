@@ -1,3 +1,4 @@
+import imageio
 import numpy as np
 from stl import mesh
 import scipy.ndimage as nd
@@ -39,7 +40,7 @@ def dict_to_vtk(data, filename, voxel_size=1, origin=(0, 0, 0)):
     for entry in data:
         if data[entry].dtype == bool:
             data[entry] = data[entry].astype(np.int8)
-        if data[entry].flags['C_CONTIGUOUS']:
+        if data[entry].flags["C_CONTIGUOUS"]:
             data[entry] = np.ascontiguousarray(data[entry])
     imageToVTK(filename, cellData=data, spacing=(vs, vs, vs), origin=origin)
 
@@ -60,6 +61,7 @@ def to_openpnm(net, filename):
 
     """
     from openpnm.network import GenericNetwork
+
     # Convert net dict to an openpnm Network
     pn = GenericNetwork()
     pn.update(net)
@@ -113,18 +115,28 @@ def to_vtk(im, filename, divide=False, downsample=False, voxel_size=1, vox=False
         split = np.round(im.shape[2] / 2).astype(np.int)
         im1 = im[:, :, 0:split]
         im2 = im[:, :, split:]
-        imageToVTK(f"{filename}_1", cellData={'im': np.ascontiguousarray(im1)},
-                   spacing=(vs, vs, vs))
-        imageToVTK(f"{filename}_2", origin=(0.0, 0.0, split * vs),
-                   cellData={'im': np.ascontiguousarray(im2)},
-                   spacing=(vs, vs, vs))
+        imageToVTK(
+            f"{filename}_1",
+            cellData={"im": np.ascontiguousarray(im1)},
+            spacing=(vs, vs, vs),
+        )
+        imageToVTK(
+            f"{filename}_2",
+            origin=(0.0, 0.0, split * vs),
+            cellData={"im": np.ascontiguousarray(im2)},
+            spacing=(vs, vs, vs),
+        )
     elif downsample:
-        im = spim.interpolation.zoom(im, zoom=0.5, order=0, mode='reflect')
-        imageToVTK(filename, cellData={'im': np.ascontiguousarray(im)},
-                   spacing=(2 * vs, 2 * vs, 2 * vs))
+        im = spim.interpolation.zoom(im, zoom=0.5, order=0, mode="reflect")
+        imageToVTK(
+            filename,
+            cellData={"im": np.ascontiguousarray(im)},
+            spacing=(2 * vs, 2 * vs, 2 * vs),
+        )
     else:
-        imageToVTK(filename, cellData={'im': np.ascontiguousarray(im)},
-                   spacing=(vs, vs, vs))
+        imageToVTK(
+            filename, cellData={"im": np.ascontiguousarray(im)}, spacing=(vs, vs, vs)
+        )
 
 
 def to_palabos(im, filename, solid=0):
@@ -164,13 +176,19 @@ def to_palabos(im, filename, solid=0):
     dt[(dt > 0) * (dt <= np.sqrt(2))] = 1
     dt = dt.astype(int)
     # Write out data
-    with open(filename, 'w') as f:
+    with open(filename, "w") as f:
         out_data = dt.flatten().tolist()
-        f.write('\n'.join(map(repr, out_data)))
+        f.write("\n".join(map(repr, out_data)))
 
 
-def openpnm_to_im(network, pore_shape="sphere", throat_shape="cylinder",
-                  max_dim=None, verbose=1, rtol=0.1):
+def openpnm_to_im(
+    network,
+    pore_shape="sphere",
+    throat_shape="cylinder",
+    max_dim=None,
+    verbose=1,
+    rtol=0.1,
+):
     r"""
     Generates voxel image from an OpenPNM network object.
 
@@ -207,9 +225,14 @@ def openpnm_to_im(network, pore_shape="sphere", throat_shape="cylinder",
     further increasing it doesn't change porosity by much.
 
     """
-    return generate_voxel_image(network, pore_shape=pore_shape,
-                                throat_shape=throat_shape, max_dim=max_dim,
-                                verbose=verbose, rtol=rtol)
+    return generate_voxel_image(
+        network,
+        pore_shape=pore_shape,
+        throat_shape=throat_shape,
+        max_dim=max_dim,
+        verbose=verbose,
+        rtol=rtol,
+    )
 
 
 def to_stl(im, filename, divide=False, downsample=False, voxel_size=1, vox=False):
@@ -261,7 +284,7 @@ def to_stl(im, filename, divide=False, downsample=False, voxel_size=1, vox=False
         _save_stl(im1, vs, f"{filename}_1")
         _save_stl(im2, vs, f"{filename}_2")
     elif downsample:
-        im = spim.interpolation.zoom(im, zoom=0.5, order=0, mode='reflect')
+        im = spim.interpolation.zoom(im, zoom=0.5, order=0, mode="reflect")
         _save_stl(im, vs * 2, filename)
     else:
         _save_stl(im, vs, filename)
@@ -293,146 +316,155 @@ def _save_stl(im, vs, filename):
             export.vectors[i][j] = vertices[f[j], :]
     export.save(f"{filename}.stl")
 
+
 def to_paraview(im, filename, phase=2):
     r"""
-    Converts an array to a paraview state file
+    Converts an array to a paraview state file.
 
     Parameters
     ----------
-    im : 2D or 3D image
-        The image of the porous material
+    im : ndarray
+        The image of the porous material.
+    filename : str
+        Path to output file.
+    phase : str
+        The desired phase of output image where phase = 0 represent the
+        pore phase, phase = 1 represents the solid phase, and phase= 2 is
+        the whole domain. The default value is 2.
 
-    filename : string
-        Path to output file
-
-    phase : integer
-        The desired phase of output image where phase = 0 represent the pore
-        phase, phase = 1 represents the solid phase, and phase= 2 is the whole 
-        domain. The default value is 2.
     Notes
     -----
-    Outputs an pvsm file that can opened in Paraview
+    Outputs an pvsm file that can opened in Paraview.
+
     """
-    data = im.astype('uint8')
-    path = filename+'.tiff'
+    data = im.astype("uint8")
+    path = filename + ".tiff"
     if len(im.shape) == 2:
         imageio.imwrite(path, np.array(data))
-        mode = '2D'
-        view = 'Slice'
+        mode = "2D"
+        view = "Slice"
         zshape = 0
         xshape = im.shape[1]
         yshape = im.shape[0]
     elif len(im.shape) == 3:
         imageio.mimsave(path, np.array(data))
-        mode = '2D'
-        view = 'Volume'
+        mode = "2D"
+        view = "Volume"
         zshape = im.shape[0]
         xshape = im.shape[2]
         yshape = im.shape[1]
-    maxshape = max(xshape,yshape)
+    maxshape = max(xshape, yshape)
     paraview.simple._DisableFirstRenderCameraReset()
     # create a new 'TIFF Series Reader'
-    dtiff = TIFFSeriesReader(FileNames = [path])
+    dtiff = TIFFSeriesReader(FileNames=[path])
     # get active view
-    renderView1 = GetActiveViewOrCreate('RenderView')
+    renderView1 = GetActiveViewOrCreate("RenderView")
     # uncomment following to set a specific view size
     # renderView1.ViewSize = [1612, 552]
     # get layout
     layout1 = GetLayout()
-    
+
     # show data in view
-    dtiffDisplay = Show(dtiff, renderView1, 'UniformGridRepresentation')
-    
+    dtiffDisplay = Show(dtiff, renderView1, "UniformGridRepresentation")
+
     # get color transfer function/color map for 'TiffScalars'
-    tiffScalarsLUT = GetColorTransferFunction('TiffScalars')
-    
+    tiffScalarsLUT = GetColorTransferFunction("TiffScalars")
+
     # get opacity transfer function/opacity map for 'TiffScalars'
-    tiffScalarsPWF = GetOpacityTransferFunction('TiffScalars')
-    
+    tiffScalarsPWF = GetOpacityTransferFunction("TiffScalars")
+
     # trace defaults for the display properties.
     dtiffDisplay.Representation = view
-    dtiffDisplay.ColorArrayName = ['POINTS', 'Tiff Scalars']
+    dtiffDisplay.ColorArrayName = ["POINTS", "Tiff Scalars"]
     dtiffDisplay.LookupTable = tiffScalarsLUT
-    dtiffDisplay.OSPRayScaleArray = 'Tiff Scalars'
-    dtiffDisplay.OSPRayScaleFunction = 'PiecewiseFunction'
-    dtiffDisplay.SelectOrientationVectors = 'None'
-    dtiffDisplay.ScaleFactor = maxshape/10-.1
-    dtiffDisplay.SelectScaleArray = 'Tiff Scalars'
-    dtiffDisplay.GlyphType = 'Arrow'
-    dtiffDisplay.GlyphTableIndexArray = 'Tiff Scalars'
-    dtiffDisplay.GaussianRadius = maxshape/200-0.005
-    dtiffDisplay.SetScaleArray = ['POINTS', 'Tiff Scalars']
-    dtiffDisplay.ScaleTransferFunction = 'PiecewiseFunction'
-    dtiffDisplay.OpacityArray = ['POINTS', 'Tiff Scalars']
-    dtiffDisplay.OpacityTransferFunction = 'PiecewiseFunction'
-    dtiffDisplay.DataAxesGrid = 'GridAxesRepresentation'
-    dtiffDisplay.PolarAxes = 'PolarAxesRepresentation'
+    dtiffDisplay.OSPRayScaleArray = "Tiff Scalars"
+    dtiffDisplay.OSPRayScaleFunction = "PiecewiseFunction"
+    dtiffDisplay.SelectOrientationVectors = "None"
+    dtiffDisplay.ScaleFactor = maxshape / 10 - 0.1
+    dtiffDisplay.SelectScaleArray = "Tiff Scalars"
+    dtiffDisplay.GlyphType = "Arrow"
+    dtiffDisplay.GlyphTableIndexArray = "Tiff Scalars"
+    dtiffDisplay.GaussianRadius = maxshape / 200 - 0.005
+    dtiffDisplay.SetScaleArray = ["POINTS", "Tiff Scalars"]
+    dtiffDisplay.ScaleTransferFunction = "PiecewiseFunction"
+    dtiffDisplay.OpacityArray = ["POINTS", "Tiff Scalars"]
+    dtiffDisplay.OpacityTransferFunction = "PiecewiseFunction"
+    dtiffDisplay.DataAxesGrid = "GridAxesRepresentation"
+    dtiffDisplay.PolarAxes = "PolarAxesRepresentation"
     dtiffDisplay.ScalarOpacityUnitDistance = 8.256564094912507
     dtiffDisplay.ScalarOpacityFunction = tiffScalarsPWF
     dtiffDisplay.IsosurfaceValues = [0.5]
-    dtiffDisplay.SliceFunction = 'Plane'
-    
-    
-    
+    dtiffDisplay.SliceFunction = "Plane"
+
+    shape = np.array([xshape, yshape, zshape])
+
     # init the 'Plane' selected for 'SliceFunction'
-    dtiffDisplay.SliceFunction.Origin = [xshape/2-.5, yshape/2-.5, zshape/2-.5]
-    
+    dtiffDisplay.SliceFunction.Origin = [xi / 2 - 0.5 for xi in shape]
+
     # reset view to fit data
     renderView1.ResetCamera()
-    
-    #changing interaction mode based on data extents
-    #renderView1.InteractionMode = mode
-    renderView1.CameraPosition = [xshape/2-.5, yshape/2-.5, 4.6 * ((xshape/2-.5)**2 + (yshape/2-.5)**2 + (zshape/2-.5)**2)**0.5]
-    renderView1.CameraFocalPoint = [xshape/2-.5, yshape/2-.5, zshape/2-.5]
-    
+
+    # changing interaction mode based on data extents
+    # renderView1.InteractionMode = mode
+    renderView1.CameraPosition = [
+        xshape / 2 - 0.5,
+        yshape / 2 - 0.5,
+        4.6 * np.sqrt(np.sum(shape / 2 - 0.5)**2)
+    ]
+    renderView1.CameraFocalPoint = [xi / 2 - 0.5 for xi in shape]
+
     # get the material library
     materialLibrary1 = GetMaterialLibrary()
-    
+
     # show color bar/color legend
     dtiffDisplay.SetScalarBarVisibility(renderView1, True)
-    
+
     # update the view to ensure updated data information
     renderView1.Update()
-    
-    #### saving camera placements for all active views
-    
+
+    # saving camera placements for all active views
     # current camera placement for renderView1
-    #renderView1.InteractionMode = mode
-    renderView1.CameraPosition = [xshape/2-0.5, yshape/2-.5, 4.6*(((xshape/2-.5)**2+(yshape/2-.5)**2+(zshape/2-.5)**2)**0.5)]
-    renderView1.CameraFocalPoint = [xshape/2-.5, yshape/2-.5, zshape/2-.5]
-    renderView1.CameraParallelScale = ((xshape/2-.5)**2+(yshape/2-.5)**2+(zshape/2-.5)**2)**0.5
-    
-    #### uncomment the following to render all views
-    #RenderAllViews()
+    # renderView1.InteractionMode = mode
+    renderView1.CameraPosition = [
+        xshape / 2 - 0.5,
+        yshape / 2 - 0.5,
+        4.6 * np.sqrt(np.sum(shape / 2 - 0.5)**2)
+    ]
+    renderView1.CameraFocalPoint = [xi / 2 - 0.5 for xi in shape]
+    renderView1.CameraParallelScale = np.sqrt(np.sum(shape / 2 - 0.5)**2)
+
+    # uncomment the following to render all views
+    # RenderAllViews()
     # alternatively, if you want to write images, you can use SaveScreenshot(...).
-    threshold1 = Threshold(Input = dtiff)
-    threshold1.Scalars = ['POINTS', 'Tiff Scalars']
+    threshold1 = Threshold(Input=dtiff)
+    threshold1.Scalars = ["POINTS", "Tiff Scalars"]
     if phase == 0:
-        range = [.5,1]
+        range = [0.5, 1]
     elif phase == 1:
-        range = [0,.5]
+        range = [0, 0.5]
     else:
-        range = [0,1]
+        range = [0, 1]
     threshold1.ThresholdRange = range
 
     # show data in view
-    threshold1Display = Show(threshold1, renderView1, 'UnstructuredGridRepresentation')    
-    
+    threshold1Display = Show(threshold1, renderView1, "UnstructuredGridRepresentation")
+
     # hide data in view
     Hide(dtiff, renderView1)
-    
-    SaveState(filename+'.pvsm')
+
+    SaveState(filename + ".pvsm")
 
 
 def open_paraview(filename):
     r"""
-    open a paraview state file directly in paraview
+    Open a paraview state file directly in paraview.
 
     Parameters
     --------
-    filename : string
-        Path to input state file
+    filename : str
+        Path to input state file.
+
     """
-    statefile = filename + '.pvsm'
-    paraview_path = 'paraview.exe'
+    statefile = filename + ".pvsm"
+    paraview_path = "paraview.exe"
     subprocess.Popen([paraview_path, statefile])
