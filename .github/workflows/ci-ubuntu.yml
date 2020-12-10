@@ -2,7 +2,6 @@ name: 🏃 Ubuntu
 
 on: [push]
 
-
 jobs:
   build:
 
@@ -49,7 +48,9 @@ jobs:
           pip install -e .
 
       - name: Running tests
-        run:
+        run: |
+          conda info
+          conda list
           pytest --cov=./ --cov-report=xml
 
       - name: Upload coverage to Codecov
