@@ -18,7 +18,7 @@ jobs:
       max-parallel: 4
       matrix:
         python-version: [3.7, 3.8]
-        operating-system: [ubuntu-18.04]
+        operating-system: [ubuntu-latest]
 
     steps:
       - uses: actions/checkout@v2
@@ -38,14 +38,7 @@ jobs:
           condarc-file: requirements/.condarc
           channels: conda-forge, defaults
           mamba-version: "*"
-          allow-softlinks: true
-          channel-priority: flexible
-          show-channel-urls: false
-          use-only-tar-bz2: true
           auto-activate-base: true
-
-      - name: Test conda env
-        run: conda info
 
       - name: Install dependencies (conda)
         shell: bash -l {0}
