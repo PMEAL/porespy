@@ -41,7 +41,6 @@ jobs:
           auto-activate-base: true
 
       - name: Install dependencies (conda)
-        shell: bash -l {0}
         run: |
           mamba install --file requirements/conda_requirements.txt
           mamba install --file requirements/test_requirements.txt
