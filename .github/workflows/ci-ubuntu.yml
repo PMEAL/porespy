@@ -17,7 +17,7 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        python-version: [3.7, 3.8]
+        python-version: [3.8]
         operating-system: [ubuntu-18.04]
 
     steps:
@@ -49,8 +49,6 @@ jobs:
 
       - name: Running tests
         run: |
-          conda info
-          conda list
           pytest --cov=./ --cov-report=xml
 
       - name: Upload coverage to Codecov
