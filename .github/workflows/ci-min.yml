@@ -40,6 +40,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           condarc-file: requirements/.condarc
+          channels: conda-forge, defaults
           mamba-version: "*"
           allow-softlinks: true
           channel-priority: flexible
