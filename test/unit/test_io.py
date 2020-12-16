@@ -5,6 +5,7 @@ import numpy as np
 import porespy as ps
 import openpnm as op
 from numpy.testing import assert_allclose
+import psutil
 
 
 class ExportTest():
@@ -87,6 +88,17 @@ class ExportTest():
         im = ps.generators.blobs(shape=[50, 50, 50], spacing=0.1)
         ps.io.to_stl(im, filename="im2stl")
         os.remove("im2stl.stl")
+
+    def test_to_paraview(self):
+        im = ps.generators.blobs(shape=[50, 50, 50], spacing=0.1)
+        ps.io.to_paraview(im=im, filename='test_to_paraview.pvsm')
+        os.remove('test_to_paraview.pvsm')
+
+    def test_open_paraview(self):
+        im = ps.generators.blobs(shape=[50, 50, 50], spacing=0.1)
+        ps.io.to_paraview(im=im, filename='test_to_paraview.pvsm')
+        ps.io.open_paraview(filename='test_to_paraview.pvsm')
+        # assert "paraview" in (p.name() for p in psutil.process_iter())
 
 
 if __name__ == "__main__":
