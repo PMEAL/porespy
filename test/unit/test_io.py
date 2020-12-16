@@ -98,7 +98,7 @@ class ExportTest():
         im = ps.generators.blobs(shape=[50, 50, 50], spacing=0.1)
         ps.io.to_paraview(im=im, filename='test_to_paraview.pvsm')
         ps.io.open_paraview(filename='test_to_paraview.pvsm')
-        # assert "paraview" in (p.name() for p in psutil.process_iter())
+        assert "paraview" in (p.name().split('.')[0] for p in psutil.process_iter())
 
 
 if __name__ == "__main__":
