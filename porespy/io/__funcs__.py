@@ -9,6 +9,7 @@ from porespy.networks import generate_voxel_image
 from pyevtk.hl import imageToVTK
 from paraview.simple import *
 import subprocess
+import os
 
 
 def dict_to_vtk(data, filename, voxel_size=1, origin=(0, 0, 0)):
@@ -338,7 +339,8 @@ def to_paraview(im, filename, phase=2):
 
     """
     data = im.astype("uint8")
-    path = filename + ".tiff"
+    file = os.path.splitext(filename)[0]
+    path = file + ".tiff"
     if len(im.shape) == 2:
         imageio.imwrite(path, np.array(data))
         mode = "2D"
@@ -452,7 +454,7 @@ def to_paraview(im, filename, phase=2):
     # hide data in view
     Hide(dtiff, renderView1)
 
-    SaveState(filename + ".pvsm")
+    SaveState(path + ".pvsm")
 
 
 def open_paraview(filename):
@@ -465,6 +467,8 @@ def open_paraview(filename):
         Path to input state file.
 
     """
-    statefile = filename + ".pvsm"
-    paraview_path = "paraview.exe"
+    file = os.path.splitext(filename)[0]
+    statefile = file + ".pvsm"
+    # paraview_path = "paraview.exe"
+    paraview_path = "paraview"
     subprocess.Popen([paraview_path, statefile])
