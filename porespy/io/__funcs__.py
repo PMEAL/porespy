@@ -454,7 +454,7 @@ def to_paraview(im, filename, phase=2):
     # hide data in view
     Hide(dtiff, renderView1)
 
-    SaveState(path + ".pvsm")
+    SaveState(file + ".pvsm")
 
 
 def open_paraview(filename):
