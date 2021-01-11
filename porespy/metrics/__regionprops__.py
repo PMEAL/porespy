@@ -179,9 +179,6 @@ def regionprops_3D(im):
     which may be helpful.
 
     """
-    print('-' * 60)
-    print('Calculating regionprops')
-
     results = regionprops(im)
     for i, obj in enumerate(results):
         a = results[i]
