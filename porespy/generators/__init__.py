@@ -21,6 +21,7 @@ illustration purposes.
     porespy.generators.overlapping_spheres
     porespy.generators.perlin_noise
     porespy.generators.polydisperse_spheres
+    porespy.generators.pseudo_gravity_packing
     porespy.generators.RSA
     porespy.generators.voronoi_edges
 
@@ -34,6 +35,7 @@ illustration purposes.
 .. autofunction:: overlapping_spheres
 .. autofunction:: perlin_noise
 .. autofunction:: polydisperse_spheres
+.. autofunction:: pseudo_gravity_packing
 .. autofunction:: RSA
 .. autofunction:: voronoi_edges
 
@@ -50,3 +52,4 @@ from .__imgen__ import perlin_noise
 from .__imgen__ import polydisperse_spheres
 from .__imgen__ import RSA
 from .__imgen__ import voronoi_edges
+from .__pgp__ import pseudo_gravity_packing
