@@ -52,6 +52,7 @@ setup(
                       'pytrax',
                       'pyevtk',
                       'numba',
+                      'numpy-stl',
                       'openpnm',
                       'dask[complete]',
                       'edt'],

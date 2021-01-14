@@ -908,7 +908,7 @@ def flood(im, regions=None, mode="max"):
 
     See Also
     --------
-    props_to_image
+    prop_to_image
 
     """
     mask = im > 0
