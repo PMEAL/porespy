@@ -52,4 +52,4 @@ from .__imgen__ import perlin_noise
 from .__imgen__ import polydisperse_spheres
 from .__imgen__ import RSA
 from .__imgen__ import voronoi_edges
-from .__pgp__ import pseudo_gravity_packing
+from .__imgen__ import pseudo_gravity_packing
