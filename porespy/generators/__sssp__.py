@@ -21,7 +21,7 @@ def _monodisperse(im, r, max_iter=1000):
     else:
         strel = ball
     sites = ps.tools.fftmorphology(im == 1, strel=strel(r), mode='erosion')
-    x_min = 0
+    x_min = np.where(sites)[0].min()
     with tqdm(range(max_iter)) as pbar:
         for _ in range(max_iter):
             pbar.update()
