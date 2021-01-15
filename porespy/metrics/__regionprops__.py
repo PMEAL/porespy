@@ -255,13 +255,13 @@ class RegionPropertiesPS(RegionProperties):
     @property
     def surface_mesh_vertices(self):
         if not hasattr(self, '_surface_mesh_vertices'):
-            return self.surface_area
+            _ = self.surface_area
         return self._surface_mesh_vertices
 
     @property
     def surface_mesh_simplices(self):
         if not hasattr(self, '_surface_mesh_simplices'):
-            return self.surface_area
+            _ = self.surface_area
         return self._surface_mesh_simplices
 
     @property
