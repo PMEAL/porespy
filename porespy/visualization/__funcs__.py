@@ -43,7 +43,7 @@ def set_mpl_style():
 
 def satn_to_movie(im, satn, cmap='viridis',
                   c_under='grey', c_over='white',
-                  v_under=1e-3, v_over=1.0, fps=10, repeat=None):
+                  v_under=1e-3, v_over=1.0, fps=10, repeat=True):
     r"""
 
     Notes
@@ -71,12 +71,7 @@ def satn_to_movie(im, satn, cmap='viridis',
                                animated=True, cmap=cmap, origin='lower',
                                interpolation='none')
             movie.append([frame1])
-    if repeat is not None:
-        repeat = True
-    else:
-        repeat = False
-    repeat_delay = repeat/10
     ani = animation.ArtistAnimation(fig, movie, interval=int(1000/fps),
                                     blit=True, repeat=repeat,
-                                    repeat_delay=repeat_delay)
+                                    repeat_delay=1.0)
     return ani
