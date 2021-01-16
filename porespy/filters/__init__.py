@@ -100,3 +100,4 @@ from .__funcs__ import trim_nonpercolating_paths
 from .__funcs__ import trim_nearby_peaks
 from .__funcs__ import trim_saddle_points
 from .__funcs__ import trim_small_clusters
+from .__gravity_mio__ import gravity_mio
