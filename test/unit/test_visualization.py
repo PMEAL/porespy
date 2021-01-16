@@ -49,6 +49,16 @@ class VisualizationTest():
         fig = ps.visualization.bar(h)
         assert len(h.pdf) == len(fig.patches)
 
+    def test_show_planes(self):
+        fig = ps.visualization.show_planes(self.im)
+        assert fig.ndim == 2
+        assert fig.shape[0] > self.im.shape[0]
+
+    def test_view_3D(self):
+        fig = ps.visualization.view_3D(self.im)
+        assert fig.ndim == 2
+        assert fig.shape[0] > self.im.shape[0]
+
 
 if __name__ == '__main__':
     t = VisualizationTest()
