@@ -134,7 +134,7 @@ def add_boundary_regions(regions=None, faces=['front', 'back', 'left',
     zero_corners(regions, pw * 3)
 
     # Make labels contiguous
-        regions = make_contiguous(regions, mode='keep_zeros')
+    regions = make_contiguous(regions, mode='keep_zeros')
 
     return regions
 

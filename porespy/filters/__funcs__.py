@@ -19,6 +19,7 @@ from porespy.tools import make_contiguous
 from porespy.tools import _create_alias_map
 from porespy.tools import ps_disk, ps_ball
 import numba
+import sys
 
 
 def apply_padded(im, pad_width, func, pad_val=1, **kwargs):
