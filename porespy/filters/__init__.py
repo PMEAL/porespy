@@ -111,3 +111,5 @@ from .__funcs__ import trim_nonpercolating_paths
 from .__funcs__ import trim_nearby_peaks
 from .__funcs__ import trim_saddle_points
 from .__funcs__ import trim_small_clusters
+from .__ibip__ import invade_region
+from .__ibip__ import find_trapped_regions
