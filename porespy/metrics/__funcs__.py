@@ -834,21 +834,22 @@ def phase_fraction(im, normed=True):
     return results
 
 
-def pc_curve_from_ibip(im, sizes, seq, sigma=0.072, theta=180, voxel_size=1,
+def pc_curve_from_ibip(seq, sizes, im=None, sigma=0.072, theta=180, voxel_size=1,
                        stepped=True):
     r"""
-    Produces a Pc-Snwp curve from the output of ``invade_regions``
+    Produces a Pc-Snwp curve from the output of ``ibip``
 
     Parameters
     ----------
-    im : ND-array
-        The voxel image of the porous media
-    sizes : ND-array
-        This image is returned from ``invade_regions`` when ``return_sizes``
-        is set to ``True``.
     seq : ND-array
-        The image containing the invasion sequence values returned from
-        ``invade_regions``.
+        The image containing the invasion sequence values returned from the
+        ``ibip`` function.
+    sizes : ND-array
+        This image is returned from ``ibip`` when ``return_sizes``
+        is set to ``True``.
+    im : ND-array
+        The voxel image of the porous media.  It not provided then the void
+        space is assumed to be ``im = !(seq == 0)``.
     sigma : float
         The surface tension of the fluid-fluid system of interest
     theta : float
@@ -863,9 +864,13 @@ def pc_curve_from_ibip(im, sizes, seq, sigma=0.072, theta=180, voxel_size=1,
     -------
     pc_curve : namedtuple
         A namedtuple containing the capillary pressure (``pc``) and
-        non-wetting phase saturation (``snwp``).
+        non-wetting phase saturation (``snwp``). If ``stepped`` was set to
+        ``True`` then the values in this tuple include the corners of the
+        steps.
 
     """
+    if im is None:
+        im = ~(seq == 0)
     seqs = np.unique(seq)[1:]
     x = []
     y = []
@@ -894,9 +899,36 @@ def pc_curve_from_ibip(im, sizes, seq, sigma=0.072, theta=180, voxel_size=1,
     return pc_curve
 
 
-def pc_curve_from_mio(im, sizes, sigma=0.072, theta=180, voxel_size=1,
+def pc_curve_from_mio(sizes, im=None, sigma=0.072, theta=180, voxel_size=1,
                       stepped=True):
     r"""
+    Produces a Pc-Snwp curve from the output of ``porosimetry``
+
+    Parameters
+    ----------
+    sizes : ND-array
+        This image is returned from ``porosimetry``
+    im : ND-array
+        The voxel image of the porous media.  It not provided then the void
+        space is assumed to be ``im = ~(sizes == 0)``.
+    sigma : float
+        The surface tension of the fluid-fluid system of interest
+    theta : float
+        The contact angle through the invading phase in degrees
+    voxel_size : float
+        The voxel resolution of the image
+    stepped : boolean
+        If ``True`` (default) the returned data has steps between each point
+        instead of connecting points directly with sloped lines.
+
+    Returns
+    -------
+    pc_curve : namedtuple
+        A namedtuple containing the capillary pressure (``pc``) and
+        non-wetting phase saturation (``snwp``).  If ``stepped`` was set to
+        ``True`` then the values in this tuple include the corners of the
+        steps.
+
     """
     sz = np.unique(sizes)[:0:-1]
     x = []
