@@ -4,6 +4,7 @@ import scipy.spatial as sptl
 import scipy.ndimage as spim
 import matplotlib.pyplot as plt
 import pytest
+from edt import edt
 
 
 class ToolsTest():
@@ -255,6 +256,17 @@ class ToolsTest():
         assert satn.max() == 1.0
         satn = ps.tools.size_to_satn(sz, bins=4)
         assert satn.max() == 1.0
+
+    def test_compare_size_and_seq_to_satn(self):
+        im = ps.generators.blobs(shape=[250, 250])
+        dt = edt(im)
+        sizes = np.arange(int(dt.max())+1, 0, -1)
+        mio = ps.filters.porosimetry(im, sizes=sizes)
+        mio_satn = ps.tools.size_to_satn(size=mio, im=im)
+        mio_seq = ps.tools.size_to_seq(mio)
+        mio_seq[im*(mio_seq == 0)] = -1  # Adjust to set uninvaded to -1
+        mio_satn_2 = ps.tools.seq_to_satn(mio_seq)
+        assert np.all(mio_satn == mio_satn_2)
 
     def test_zero_coners(self):
         im = np.arange(1, 16).reshape(3, 5)
