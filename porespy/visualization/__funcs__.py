@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from tqdm import tqdm
 from matplotlib import animation
+from copy import copy
 
 
 def set_mpl_style():
@@ -51,7 +52,7 @@ def satn_to_movie(im, satn, cmap='viridis',
     ``ani.save('image_based_ip.gif', writer='imagemagick', fps=3)``
     """
     # Define nice color map
-    cmap = plt.cm.get_cmap(name=cmap)
+    cmap = copy(plt.cm.get_cmap(name=cmap))
     cmap.set_over(color=c_over)
     cmap.set_under(color=c_under)
 
@@ -67,13 +68,14 @@ def satn_to_movie(im, satn, cmap='viridis',
             seq += v*(target == v)
             seq[~im] = target.max() + 10
             frame1 = ax.imshow(seq, vmin=v_under, vmax=v_over,
-                               animated=True, cmap=cmap, origin='lower')
+                               animated=True, cmap=cmap, origin='lower',
+                               interpolation='none')
             movie.append([frame1])
     if repeat is not None:
-        repeat_delay = repeat/100
         repeat = True
     else:
         repeat = False
+    repeat_delay = repeat/10
     ani = animation.ArtistAnimation(fig, movie, interval=int(1000/fps),
                                     blit=True, repeat=repeat,
                                     repeat_delay=repeat_delay)
