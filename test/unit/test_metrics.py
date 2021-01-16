@@ -174,6 +174,17 @@ class MetricsTest():
         rev = ps.metrics.representative_elementary_volume(im)
         assert_allclose(np.average(rev.porosity), im.sum() / im.size, rtol=1e-1)
 
+    def test_pc_curve_from_ibip_and_mio(self):
+        im = ps.generators.blobs(shape=[100, 100], porosity=0.7)
+        sizes = ps.filters.porosimetry(im=im)
+        pc1 = ps.metrics.pc_curve_from_mio(sizes=sizes)
+        seq, sizes = ps.filters.ibip(im=im, return_sizes=True)
+        pc2 = ps.metrics.pc_curve_from_ibip(sizes=sizes, seq=seq)
+        assert hasattr(pc1, 'pc')
+        assert hasattr(pc1, 'snwp')
+        assert hasattr(pc2, 'pc')
+        assert hasattr(pc2, 'snwp')
+
 
 if __name__ == '__main__':
     t = MetricsTest()

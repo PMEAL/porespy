@@ -930,6 +930,8 @@ def pc_curve_from_mio(sizes, im=None, sigma=0.072, theta=180, voxel_size=1,
         steps.
 
     """
+    if im is None:
+        im = ~(sizes == 0)
     sz = np.unique(sizes)[:0:-1]
     x = []
     y = []
