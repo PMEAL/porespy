@@ -233,20 +233,28 @@ class ToolsTest():
         nsteps = np.size(np.unique(sq))
         assert nsteps < 20
 
-    def test_seq_to_sat_fully_filled(self):
+    def test_seq_to_satn_fully_filled(self):
         im = self.im2D
         sz = ps.filters.porosimetry(im)
         sq = ps.tools.size_to_seq(sz)
         sat = ps.tools.seq_to_satn(sq)
         assert sat.max() == 1
 
-    def test_seq_to_sat_partially_filled(self):
+    def test_seq_to_satn_partially_filled(self):
         im = self.im2D
         sz = ps.filters.porosimetry(im)
         sq = ps.tools.size_to_seq(sz)
         sq[sq == sq.max()] = -1
         sat = ps.tools.seq_to_satn(sq)
         assert sat.max() < 1
+
+    def test_size_to_satn(self):
+        im = self.im2D
+        sz = ps.filters.porosimetry(im)
+        satn = ps.tools.size_to_satn(sz)
+        assert satn.max() == 1.0
+        satn = ps.tools.size_to_satn(sz, bins=4)
+        assert satn.max() == 1.0
 
     def test_zero_coners(self):
         im = np.arange(1, 16).reshape(3, 5)
