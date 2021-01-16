@@ -1365,7 +1365,7 @@ def size_to_satn(size, im=None, bins=None):
         im = (size != 0)
     void_vol = im.sum()
     satn = -np.ones_like(size, dtype=float)
-    for r in bins[-1:0:-1]:
+    for r in bins[-1::-1]:
         hits = (size >= r) * (size > 0)
         temp = hits.sum()/void_vol
         satn[hits * (satn == -1)] = temp
