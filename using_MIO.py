@@ -22,8 +22,8 @@ inv_seq, inv_size = ps.filters.invade_region(im=im, bd=bd, mode='morph',
                                              thickness=1, coarseness=1)
 # Do some post-processing
 inv_satn = ps.tools.seq_to_satn(seq=inv_seq)
-# inv_seq_trapping = ps.filters.find_trapped_regions(seq=inv_seq, bins=None,
-#                                                     return_mask=False)
+inv_seq_trapping = ps.filters.find_trapped_regions(seq=inv_seq, bins=None,
+                                                   return_mask=False)
 # inv_satn = ps.tools.seq_to_satn(seq=inv_seq_trapping)
 
 # %%
@@ -34,12 +34,12 @@ mio_seq = ps.tools.size_to_seq(mio)
 mio_seq[im*(mio_seq == 0)] = -1  # Adjust to set uninvaded to -1
 mio_satn = ps.tools.seq_to_satn(mio_seq)
 # np.all(mio_satn == mio_satn_2)  # Use this as a test
-# mio_seq_trapping = ps.filters.find_trapped_regions(seq=mio_seq, bins=None,
-#                                                    return_mask=False)
+mio_seq_trapping = ps.filters.find_trapped_regions(seq=mio_seq, bins=None,
+                                                   return_mask=False)
 
 
 # %%  Plot results with and without trapping
-if 0:
+if 1:
     cmap = plt.cm.viridis
     cmap.set_over(color='white')
     cmap.set_under(color='grey')
