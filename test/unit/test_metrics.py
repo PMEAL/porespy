@@ -1,10 +1,10 @@
-import porespy as ps
-import numpy as np
-import scipy.ndimage as spim
-from skimage import io
-import pytest
-from pathlib import Path
 import os
+import pytest
+import numpy as np
+import porespy as ps
+from skimage import io
+from pathlib import Path
+import scipy.ndimage as spim
 from numpy.testing import assert_allclose
 
 
@@ -78,10 +78,10 @@ class MetricsTest():
         rp = ps.metrics.regionprops_3D(label)
         ps.metrics.props_to_DataFrame(rp)
 
-    def test_props_to_image(self):
+    def test_prop_to_image(self):
         label = spim.label(self.im2D)[0]
         rp = ps.metrics.regionprops_3D(label)
-        ps.metrics.props_to_image(rp, self.im2D.shape, 'solidity')
+        ps.metrics.prop_to_image(rp, self.im2D.shape, 'solidity')
 
     def test_porosity_profile(self):
         im = ps.generators.lattice_spheres(shape=[999, 999],
@@ -155,7 +155,7 @@ class MetricsTest():
         assert np.all(labels == counts)
         fractions = ps.metrics.phase_fraction(im, normed=True)
         assert np.isclose(fractions.sum(), 1)
-        assert np.allclose(fractions, counts/counts.sum())
+        assert np.allclose(fractions, counts / counts.sum())
         with pytest.raises(Exception):
             ps.metrics.phase_fraction(np.random.rand(10, 10, 10), normed=True)
         # The method must also work on boolean images
@@ -167,12 +167,12 @@ class MetricsTest():
         im = ps.generators.lattice_spheres(shape=[999, 999],
                                            radius=15, offset=4)
         rev = ps.metrics.representative_elementary_volume(im)
-        assert_allclose(np.average(rev.porosity), im.sum()/im.size, rtol=1e-1)
+        assert_allclose(np.average(rev.porosity), im.sum() / im.size, rtol=1e-1)
 
         im = ps.generators.lattice_spheres(shape=[151, 151, 151],
                                            radius=9, offset=4)
         rev = ps.metrics.representative_elementary_volume(im)
-        assert_allclose(np.average(rev.porosity), im.sum()/im.size, rtol=1e-1)
+        assert_allclose(np.average(rev.porosity), im.sum() / im.size, rtol=1e-1)
 
 
 if __name__ == '__main__':
@@ -181,5 +181,5 @@ if __name__ == '__main__':
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: '+item)
+            print(f"Running test: {item}")
             t.__getattribute__(item)()

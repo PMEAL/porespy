@@ -1,9 +1,9 @@
 [![image](https://github.com/PMEAL/porespy/workflows/Ubuntu/badge.svg)](https://github.com/PMEAL/porespy/actions)
 [![image](https://github.com/PMEAL/porespy/workflows/macOS/badge.svg)](https://github.com/PMEAL/porespy/actions)
 [![image](https://github.com/PMEAL/porespy/workflows/Windows/badge.svg)](https://github.com/PMEAL/porespy/actions)
-[![image](https://github.com/PMEAL/porespy/workflows/Examples/badge.svg)](https://github.com/PMEAL/porespy/actions)<br/>
-[![image](https://codecov.io/gh/PMEAL/PoreSpy/branch/master/graph/badge.svg)](https://codecov.io/gh/PMEAL/PoreSpy)
-[![image](https://img.shields.io/badge/ReadTheDocs-GO-blue.svg)](http://porespy.readthedocs.io/en/master/)
+[![image](https://github.com/PMEAL/porespy/workflows/Examples/badge.svg)](https://github.com/PMEAL/porespy/actions)<br>
+[![image](https://codecov.io/gh/PMEAL/PoreSpy/branch/dev/graph/badge.svg)](https://codecov.io/gh/PMEAL/PoreSpy)
+[![image](https://img.shields.io/badge/ReadTheDocs-GO-blue.svg)](http://porespy.readthedocs.io/en/dev/)
 [![image](https://img.shields.io/pypi/v/porespy.svg)](https://pypi.python.org/pypi/porespy/)
 [![image](https://img.shields.io/badge/DOI-10.21105/joss.01296-blue.svg)](https://doi.org/10.21105/joss.01296)
 
@@ -18,7 +18,7 @@
 
 # What is PoreSpy?
 
-PoreSpy is a collection of image analysis tool used to extract
+PoreSpy is a collection of image analysis tools used to extract
 information from 3D images of porous materials (typically obtained from
 X-ray tomography). There are many packages that offer generalized image
 analysis tools (i.e Skimage and Scipy.NDimage in the Python environment,
@@ -90,14 +90,14 @@ and install it using the following PIP command:
     pip install -e "C:\path\to\the\local\files\"
 
 For information about contributing, refer to the [contributors
-guide](https://github.com/PMEAL/porespy/blob/master/CONTRIBUTING.md)
+guide](https://github.com/PMEAL/porespy/blob/dev/CONTRIBUTING.md)
 
 # Examples
 
 The following code snippets illustrate generating a 2D image, applying
 several filters, and calculating some common metrics. A set of examples
 is included in this repo, and can be [browsed
-here](https://github.com/PMEAL/porespy/tree/master/examples).
+here](https://github.com/PMEAL/porespy/tree/dev/examples).
 
 ## Generating an image
 
@@ -108,14 +108,11 @@ reading/writing/storing of large tomograms.
 ``` python
 import porespy as ps
 import matplotlib.pyplot as plt
-im = ps.generators.blobs(shape=[200, 200], porosity=0.5, blobiness=2)
+im = ps.generators.blobs(shape=[500, 500], porosity=0.6, blobiness=2)
 plt.imshow(im)
 ```
-<!--
-![image](https://github.com/PMEAL/porespy/raw/master/docs/_static/fig1.png)
--->
 <p align="center">
-  <img src="https://github.com/PMEAL/porespy/raw/master/docs/_static/fig1.png" width="50%"></img>
+  <img src="https://github.com/PMEAL/porespy/raw/dev/docs/_static/fig1.png" width="50%"></img>
 </p>
 
 ## Applying filters
@@ -130,10 +127,10 @@ lt = ps.filters.local_thickness(im)
 plt.imshow(lt)
 ```
 <!--
-![image](https://github.com/PMEAL/porespy/raw/master/docs/_static/fig2.png)
+![image](https://github.com/PMEAL/porespy/raw/dev/docs/_static/fig2.png)
 -->
 <p align="center">
-  <img src="https://github.com/PMEAL/porespy/raw/master/docs/_static/fig2.png" width="50%"></img>
+  <img src="https://github.com/PMEAL/porespy/raw/dev/docs/_static/fig2.png" width="50%"></img>
 </p>
 
 A less common filter is the application of chords that span the pore
@@ -146,11 +143,8 @@ cr = ps.filters.apply_chords(im)
 cr = ps.filters.flood(cr, mode='size')
 plt.imshow(cr)
 ```
-<!--
-![image](https://github.com/PMEAL/porespy/raw/master/docs/_static/fig3.png)
--->
 <p align="center">
-  <img src="https://github.com/PMEAL/porespy/raw/master/docs/_static/fig3.png" width="50%"></img>
+  <img src="https://github.com/PMEAL/porespy/raw/dev/docs/_static/fig3.png" width="50%"></img>
 </p>
 
 ## Calculating metrics
@@ -165,11 +159,8 @@ fig = plt.plot(*data, 'bo-')
 plt.ylabel('probability')
 plt.xlabel('correlation length [voxels]')
 ```
-<!--
-![image](https://github.com/PMEAL/porespy/raw/master/docs/_static/fig4.png)
--->
 <p align="center">
-  <img src="https://github.com/PMEAL/porespy/raw/master/docs/_static/fig4.png" width="50%"></img>
+  <img src="https://github.com/PMEAL/porespy/raw/dev/docs/_static/fig4.png" width="50%"></img>
 </p>
 
 The metrics sub-module also contains a suite of functions that produce
@@ -185,11 +176,7 @@ plt.plot(data.R, data.cdf, 'bo-')
 plt.xlabel('invasion size [voxels]')
 plt.ylabel('volume fraction invaded [voxels]')
 ```
-<!--
-![image](https://github.com/PMEAL/porespy/raw/master/docs/_static/fig5.png)
-![image](https://github.com/PMEAL/porespy/raw/master/docs/_static/fig6.png)
--->
 <p align="center">
-  <img src="https://github.com/PMEAL/porespy/raw/master/docs/_static/fig5.png" width="50%"></img>
-  <img src="https://github.com/PMEAL/porespy/raw/master/docs/_static/fig6.png" width="50%"></img>
+  <img src="https://github.com/PMEAL/porespy/raw/dev/docs/_static/fig5.png" width="50%"></img>
+  <img src="https://github.com/PMEAL/porespy/raw/dev/docs/_static/fig6.png" width="50%"></img>
 </p>

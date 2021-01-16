@@ -20,7 +20,7 @@ functions can be applied directly to the binary image.
     porespy.metrics.pore_size_distribution
     porespy.metrics.porosity
     porespy.metrics.porosity_profile
-    porespy.metrics.props_to_image
+    porespy.metrics.prop_to_image
     porespy.metrics.props_to_DataFrame
     porespy.metrics.radial_density
     porespy.metrics.region_interface_areas
@@ -38,7 +38,7 @@ functions can be applied directly to the binary image.
 .. autofunction:: pore_size_distribution
 .. autofunction:: porosity
 .. autofunction:: porosity_profile
-.. autofunction:: props_to_image
+.. autofunction:: prop_to_image
 .. autofunction:: props_to_DataFrame
 .. autofunction:: radial_density
 .. autofunction:: region_interface_areas
@@ -52,7 +52,7 @@ functions can be applied directly to the binary image.
 
 from .__regionprops__ import regionprops_3D
 from .__regionprops__ import props_to_DataFrame
-from .__regionprops__ import props_to_image
+from .__regionprops__ import prop_to_image
 from .__funcs__ import chord_counts
 from .__funcs__ import chord_length_distribution
 from .__funcs__ import linear_density

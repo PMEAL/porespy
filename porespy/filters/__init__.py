@@ -36,6 +36,7 @@ altered values.
     porespy.filters.region_size
     porespy.filters.snow_partitioning
     porespy.filters.snow_partitioning_n
+    porespy.filters.snow_partitioning_parallel
     porespy.filters.trim_disconnected_blobs
     porespy.filters.trim_extrema
     porespy.filters.trim_floating_solid
@@ -68,6 +69,7 @@ altered values.
 .. autofunction:: region_size
 .. autofunction:: snow_partitioning
 .. autofunction:: snow_partitioning_n
+.. autofunction:: snow_partitioning_parallel
 .. autofunction:: trim_disconnected_blobs
 .. autofunction:: trim_extrema
 .. autofunction:: trim_floating_solid
@@ -99,6 +101,7 @@ from .__funcs__ import reduce_peaks
 from .__funcs__ import region_size
 from .__funcs__ import snow_partitioning
 from .__funcs__ import snow_partitioning_n
+from .__funcs__ import snow_partitioning_parallel
 from .__funcs__ import trim_disconnected_blobs
 from .__funcs__ import trim_extrema
 from .__funcs__ import trim_floating_solid
