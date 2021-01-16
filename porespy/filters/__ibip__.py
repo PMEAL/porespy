@@ -9,8 +9,8 @@ from porespy.tools import fftmorphology
 import numba
 
 
-def invade_region(im, bd, dt=None, inv=None, mode='morph', return_sizes=False,
-                  max_iters=10000, **kwargs):
+def ibip(im, inlets=None, dt=None, inv=None, mode='morph', return_sizes=False,
+         max_iters=10000, **kwargs):
     r"""
     Performs invasion percolation on given image using iterative image dilation
 
@@ -18,9 +18,9 @@ def invade_region(im, bd, dt=None, inv=None, mode='morph', return_sizes=False,
     ----------
     im : ND-array
         Boolean array with ``True`` values indicating void voxels
-    bd : ND-array
+    inlets : ND-array
         Boolean array with ``True`` values indicating where the invading fluid
-        is injected from
+        is injected from.  If ``None``, all faces will be used.
     dt : ND-array (optional)
         The distance transform of ``im``.  If not provided it will be
         calculated, so supplying it saves time.
@@ -61,7 +61,9 @@ def invade_region(im, bd, dt=None, inv=None, mode='morph', return_sizes=False,
     inv = -1*((~im).astype(int))
     sizes = -1*((~im).astype(int))
     # Process the boundary image
-    bd = np.copy(bd > 0)
+    if inlets is None:
+        inlets = get_border(shape=im.shape, mode='faces')
+    bd = np.copy(inlets > 0)
     edge = np.copy(bd)
     if dt is None:  # Find dt if not given
         dt = edt(im)
