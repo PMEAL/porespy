@@ -286,6 +286,24 @@ class GeneratorTest():
         assert np.all(L2 == [4, 5, 5, 6, 6, 7, 8, 8, 9])
         assert np.all(L3 == [5, 6, 7, 8, 9, 10, 11, 12, 13])
 
+    def test_pseudo_gravity_packing_monodisperse(self):
+        im = np.ones([400, 400], dtype=bool)
+        np.random.seed(0)
+        im = ps.generators.pseudo_gravity_packing(im=im, r=20, clearance=0)
+        e1 = im.sum()/im.size
+        im = np.ones([400, 400], dtype=bool)
+        np.random.seed(0)
+        im = ps.generators.pseudo_gravity_packing(im=im, r=20, clearance=5)
+        e2 = im.sum()/im.size
+        assert e2 > e1
+        im = np.ones([400, 400], dtype=bool)
+        np.random.seed(0)
+        im = ps.generators.pseudo_gravity_packing(im=im, r=20, max_iter=10)
+        e3 = im.sum()/im.size
+        im = ps.generators.pseudo_gravity_packing(im=im, r=50, max_iter=10)
+        e4 = im.sum()/im.size
+        assert e4 < e3
+
 
 if __name__ == '__main__':
     t = GeneratorTest()
