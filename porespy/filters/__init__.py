@@ -27,7 +27,6 @@ altered values.
     porespy.filters.flood
     porespy.filters.hold_peaks
     porespy.filters.flood_func
-    porespy.filters.ICE_peaks
     porespy.filters.invade_region
     porespy.filters.local_thickness
     porespy.filters.nphase_border
@@ -59,7 +58,6 @@ altered values.
 .. autofunction:: find_trapped_regions
 .. autofunction:: flood
 .. autofunction:: flood_func
-.. autofunction:: ICE_peaks
 .. autofunction:: invade_region
 .. autofunction:: hold_peaks
 .. autofunction:: local_thickness
@@ -92,7 +90,6 @@ from .__funcs__ import find_dt_artifacts
 from .__funcs__ import find_peaks
 from .__funcs__ import flood
 from .__funcs__ import flood_func
-from .__funcs__ import ICE_peaks
 from .__funcs__ import hold_peaks
 from .__funcs__ import local_thickness
 from .__funcs__ import nphase_border
