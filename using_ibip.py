@@ -17,9 +17,9 @@ im = ps.filters.trim_disconnected_blobs(im=im, inlets=bd)
 dt = edt(im)
 
 # %% Apply IP on image in single pass
-inv_seq, inv_size = ps.filters.invade_region(im=im, bd=bd, mode='morph',
-                                             return_sizes=True, max_iters=15000,
-                                             thickness=1, coarseness=1)
+inv_seq, inv_size = ps.filters.ibip(im=im, inlets=bd, mode='morph',
+                                    return_sizes=True, max_iters=15000,
+                                    thickness=1, coarseness=1)
 # Do some post-processing
 inv_satn = ps.tools.seq_to_satn(seq=inv_seq)
 inv_seq_trapping = ps.filters.find_trapped_regions(seq=inv_seq, bins=None,
