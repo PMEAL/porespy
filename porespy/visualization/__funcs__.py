@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from tqdm import tqdm
+from matplotlib import animation
 
 
 def set_mpl_style():
@@ -49,8 +50,6 @@ def satn_to_movie(im, satn, cmap='viridis',
     To save animation as a file use:
     ``ani.save('image_based_ip.gif', writer='imagemagick', fps=3)``
     """
-    import matplotlib.pyplot as plt
-    from matplotlib import animation
     # Define nice color map
     cmap = plt.cm.get_cmap(name=cmap)
     cmap.set_over(color=c_over)
