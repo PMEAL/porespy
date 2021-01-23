@@ -290,22 +290,3 @@ def _save_stl(im, vs, filename):
         for j in range(3):
             export.vectors[i][j] = vertices[f[j], :]
     export.save(f"{filename}.stl")
-
-
-def to_openfoam(im, scale=1, zoom_factor=1, label=True, path='./'):
-    r"""
-    Save the image as an instruction file for OpenFoam to build an equivalent
-    hexahedral mesh with (optionally) defined boundaries.
-
-    Parameters
-    ----------
-    im : ND-array
-        The image of the porous material
-
-    filename : string or path object
-        The name and location to save the file, which will have `.net` file
-        extension.
-
-    """
-    from .openfoam import openfoam
-    openfoam.save(im, scale, zoom_factor, label, path)

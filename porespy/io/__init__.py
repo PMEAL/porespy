@@ -33,4 +33,4 @@ from .__funcs__ import to_palabos
 from .__funcs__ import to_openpnm
 from .__funcs__ import openpnm_to_im
 from .__funcs__ import to_stl
-from .__funcs__ import to_openfoam
+from .__openfoam__ import to_openfoam
