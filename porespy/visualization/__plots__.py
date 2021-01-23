@@ -74,7 +74,7 @@ def imshow(*im, ind=None, axis=None):
             image = image.take(indices=ind, axis=axis)
         image = np.ma.array(image, mask=image == 0)
         fig = plt.subplot(1, len(im), i+1)
-        plt.imshow(image, origin='lower')
+        plt.imshow(image, origin='lower', interpolation='none')
     return fig
 
 
