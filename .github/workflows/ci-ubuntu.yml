@@ -1,6 +1,6 @@
 name: 🏃 Ubuntu
 
-on: [push, pull_request]
+on: [push]
 
 jobs:
   build:
@@ -17,15 +17,11 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        python-version: [3.7, 3.8]
-        operating-system: [ubuntu-latest]
+        python-version: [3.8]
+        operating-system: [ubuntu-18.04]
 
     steps:
       - uses: actions/checkout@v2
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python-version }}
 
       - name: Cache conda
         uses: actions/cache@v2
@@ -35,28 +31,27 @@ jobs:
           path: ~/conda_pkgs_dir
           key: ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{ hashFiles('**/conda_requirements.txt') }}
 
-      - name: Set up conda
+      - name: Set up conda/mamba
         uses: conda-incubator/setup-miniconda@v2
         with:
           python-version: ${{ matrix.python-version }}
           condarc-file: requirements/.condarc
-          allow-softlinks: true
-          channel-priority: flexible
-          show-channel-urls: false
-          use-only-tar-bz2: true
+          channels: conda-forge, defaults
+          mamba-version: "*"
           auto-activate-base: true
 
       - name: Install dependencies (conda)
-        shell: bash -l {0}
         run: |
-          conda install --file requirements/conda_requirements.txt
-          conda install --file requirements/test_requirements.txt
+          mamba install --file requirements/conda_requirements.txt
+          mamba install --file requirements/test_requirements.txt
           # Install porespy from the checked-out branch
           pip install -e .
 
       - name: Running tests
-        run:
-          pytest --cov=./ --cov-report=xml
+        run: |
+          # Install pycodestyle
+          pip install pytest-pycodestyle
+          pytest --cov=./ --cov-report=xml --pycodestyle
 
       - name: Upload coverage to Codecov
         if: matrix.python-version == 3.8
