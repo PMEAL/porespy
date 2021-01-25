@@ -179,9 +179,6 @@ def regionprops_3D(im):
     which may be helpful.
 
     """
-    print('-' * 60)
-    print('Calculating regionprops')
-
     results = regionprops(im)
     for i, obj in enumerate(results):
         a = results[i]
@@ -258,13 +255,13 @@ class RegionPropertiesPS(RegionProperties):
     @property
     def surface_mesh_vertices(self):
         if not hasattr(self, '_surface_mesh_vertices'):
-            self.surface_area
+            _ = self.surface_area
         return self._surface_mesh_vertices
 
     @property
     def surface_mesh_simplices(self):
         if not hasattr(self, '_surface_mesh_simplices'):
-            self.surface_area
+            _ = self.surface_area
         return self._surface_mesh_simplices
 
     @property
