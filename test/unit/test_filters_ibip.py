@@ -7,6 +7,7 @@ from skimage.morphology import disk, ball, skeletonize_3d, square
 
 
 class IBIPTest():
+    
     def setup_class(self):
         im = ps.generators.lattice_spheres(shape=[107, 107],
                                            radius=5, offset=9,

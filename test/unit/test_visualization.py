@@ -71,7 +71,7 @@ class VisualizationTest():
                                              c_under='grey', c_over='white',
                                              v_under=1e-3, v_over=1.0, fps=10, 
                                              repeat=False)
-        mov.save('image_based_ip.gif', writer='pillow', fps=10)
+        # mov.save('image_based_ip.gif', writer='pillow', fps=10)
         
         
 if __name__ == '__main__':

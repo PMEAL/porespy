@@ -8,6 +8,7 @@ from edt import edt
 
 
 class ToolsTest():
+    
     def setup_class(self):
         plt.close('all')
         self.im = np.random.randint(0, 10, 20)
@@ -302,6 +303,20 @@ class ToolsTest():
         im = spim.label(self.im2D)[0]
         im = im*ps.tools.extract_regions(im, labels=[2, 3], trim=False)
         assert np.all(np.unique(im) == [0, 2, 3])
+        
+    def test_marching_map(self):
+        im = ps.generators.lattice_spheres(shape=[107, 107],
+                                           radius=5, offset=9,
+                                           lattice='tri')
+        im = im[5:102, 5:102]
+        bd = np.zeros_like(im)
+        bd[:, 0] = True
+        from porespy.tools import marching_map
+        # At present scikit-fmm is not installed with porespy, however,
+        # when we switch to conda install, we can include it in our requirements
+        # at which point this test will no longer raise an exception and fail
+        with pytest.raises(Exception):
+            fmm = marching_map(path=im, start=bd)
 
 
 if __name__ == '__main__':
