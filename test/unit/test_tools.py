@@ -297,6 +297,11 @@ class ToolsTest():
         assert ps.tools.sanitize_filename(fname, "stl") == "test.stl.stl"
         assert ps.tools.sanitize_filename(fname, "vtk") == "test.stl.stl.vtk"
         assert ps.tools.sanitize_filename(fname, "stl", exclude_ext=True) == "test.stl"
+        
+    def test_extract_regions(self):
+        im = spim.label(self.im2D)[0]
+        im = im*ps.tools.extract_regions(im, labels=[2, 3], trim=False)
+        assert np.all(np.unique(im) == [0, 2, 3])
 
 
 if __name__ == '__main__':
