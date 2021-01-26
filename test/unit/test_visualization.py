@@ -66,6 +66,7 @@ class VisualizationTest():
         im = im[5:102, 5:102]
         bd = np.zeros_like(im)
         bd[:, 0] = True
+        inv = ps.filters.ibip(im=im, inlets=bd)
         satn = ps.tools.seq_to_satn(seq=inv, im=im)
         mov = ps.visualization.satn_to_movie(im, satn, cmap='viridis',
                                              c_under='grey', c_over='white',
