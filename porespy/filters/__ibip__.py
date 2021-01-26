@@ -38,7 +38,7 @@ def ibip(im, inlets=None, dt=None, inv=None, mode='morph', return_sizes=False,
         other depending on image size and dimensions.  Options are:
 
             'morph' - (default) Uses ``scipy.ndimage.binary_dilation`` with a
-            spherical or cirular structuring element of radius ``thickness.
+            spherical or cirular structuring element of radius ``thickness``.
 
             'insert' - Uses a ``numba`` jit for-loop to insert spheres or
             disks of radius 1 at all border locations.
@@ -134,7 +134,7 @@ def ibip(im, inlets=None, dt=None, inv=None, mode='morph', return_sizes=False,
 
 
 @numba.jit(nopython=True, parallel=False)
-def _make_disks(r, smooth=True):
+def _make_disks(r, smooth=True):  # pragma: no cover
     r"""
     Returns a list of disks from size 0 to ``r``
 

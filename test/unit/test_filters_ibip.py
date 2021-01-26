@@ -51,6 +51,14 @@ class IBIPTest():
         inv_w_trapping = ps.filters.find_trapped_regions(seq=seq,
                                                          return_mask=False)
         assert (inv_w_trapping == -1).sum() == 236
+        
+    def test_ibip_w_modes(self):
+        inv = ps.filters.ibip(self.im, inlets=self.bd)
+        assert inv.max() == 119
+        inv = ps.filters.ibip(self.im, inlets=self.bd, mode='fft')
+        assert inv.max() == 119
+        inv = ps.filters.ibip(self.im, inlets=self.bd, mode='insert')
+        assert inv.max() == 119
 
 
 if __name__ == '__main__':
