@@ -161,7 +161,7 @@ def _make_disks(r, smooth=True):
 
 
 @numba.jit(nopython=True, parallel=False)
-def _make_balls(r, smooth=True):
+def _make_balls(r, smooth=True):  # pragma: no cover
     r"""
     Returns a list of balls from size 0 to ``r``
 
@@ -188,7 +188,7 @@ def _make_balls(r, smooth=True):
 
 
 @numba.jit(nopython=True, parallel=False)
-def _insert_disks_at_points(im, coords, r, v, smooth=True):
+def _insert_disks_at_points(im, coords, r, v, smooth=True):  # pragma: no cover
     r"""
     Insert spheres (or disks) into the given ND-image at given locations
 
@@ -243,7 +243,7 @@ def _insert_disks_at_points(im, coords, r, v, smooth=True):
 
 
 @numba.jit(nopython=True, parallel=False)
-def _make_disk(r, smooth=True):
+def _make_disk(r, smooth=True):  # pragma: no cover
     s = np.zeros((2*r+1, 2*r+1), dtype=type(r))
     if smooth:
         thresh = r - 0.001
@@ -257,7 +257,7 @@ def _make_disk(r, smooth=True):
 
 
 @numba.jit(nopython=True, parallel=False)
-def _make_ball(r, smooth=True):
+def _make_ball(r, smooth=True):  # pragma: no cover
     s = np.zeros((2*r+1, 2*r+1, 2*r+1), dtype=type(r))
     if smooth:
         thresh = r - 0.001
