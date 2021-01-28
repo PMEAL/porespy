@@ -96,7 +96,8 @@ class ExportTest():
 
     def test_open_paraview(self):
         ps.io.open_paraview(filename='../fixtures/image.pvsm')
-        assert "paraview" in (p.name().split('.')[0] for p in psutil.process_iter())
+        if sys.platform != "darwin":
+            assert "paraview" in (p.name().split('.')[0] for p in psutil.process_iter())
 
 
 if __name__ == "__main__":
