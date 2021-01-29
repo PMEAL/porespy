@@ -798,8 +798,9 @@ def trim_nonpercolating_paths(im, inlet_axis=0, outlet_axis=0,
             " Reduce dimensionality with np.squeeze(im) to avoid"
             " unexpected behavior."
         ))
-    im = trim_floating_solid(~im)
-    labels = spim.label(~im)[0]
+    labels = spim.label(im)[0]
+    # The following non-sense is only needed to support the inlet/outlet_axis
+    # arguments which will be removed in V2.0
     if inlets is None:
         inlets = np.zeros_like(im, dtype=bool)
         if im.ndim == 3:
@@ -830,9 +831,9 @@ def trim_nonpercolating_paths(im, inlet_axis=0, outlet_axis=0,
                 outlets[:, -1] = True
     IN = np.unique(labels * inlets)
     OUT = np.unique(labels * outlets)
-    new_im = np.isin(labels, list(set(IN) ^ set(OUT)), invert=True)
-    im[new_im == 0] = True
-    return ~im
+    hits = np.array(list(set(IN).intersection(set(OUT))))
+    new_im = np.isin(labels, hits[hits > 0])
+    return new_im
 
 
 def trim_extrema(im, h, mode="maxima"):
