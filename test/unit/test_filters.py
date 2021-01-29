@@ -149,6 +149,19 @@ class FilterTest():
                                                  outlets=outlets)
         assert spim.label(h)[1] == 1
 
+    def test_trim_nonpercolating_paths_no_paths(self):
+        np.random.seed(0)
+        im = ps.generators.blobs([200, 200], porosity=0.25, blobiness=2)
+        inlets = np.zeros_like(im)
+        inlets[:, 0] = 1
+        outlets = np.zeros_like(im)
+        outlets[:, -1] = 1
+        assert spim.label(im)[1] > 1
+        h = ps.filters.trim_nonpercolating_paths(im=im,
+                                                 inlets=inlets,
+                                                 outlets=outlets)
+        assert h.sum() == 0
+
     def test_trim_nonpercolating_paths_3d_axis2(self):
         np.random.seed(0)
         im = ps.generators.blobs([100, 100, 100], porosity=0.55, blobiness=2)
@@ -188,10 +201,16 @@ class FilterTest():
                                                  outlets=outlets)
         assert spim.label(h)[1] == 1
 
-    def test_trim_nonpercolating_paths_3d_axis2(self):
-        h = ps.filters.trim_nonpercolating_paths(self.im,
-                                                 inlet_axis=2, outlet_axis=2)
-        assert np.sum(h) == 499611
+    def test_trim_disconnected_blobs(self):
+        np.random.seed(0)
+        im = ps.generators.blobs([200, 200], porosity=0.55, blobiness=2)
+        inlets = np.zeros_like(im)
+        inlets[0, ...] = 1
+        n1 = spim.label(im)[1]
+        h = ps.filters.trim_disconnected_blobs(im=im, inlets=inlets)
+        n2 = spim.label(h)[1]
+        assert n1 > n2
+        assert spim.label(h + inlets)[1] == 1
 
     def test_fill_blind_pores(self):
         h = ps.filters.find_disconnected_voxels(self.im)
