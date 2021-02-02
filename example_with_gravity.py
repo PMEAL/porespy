@@ -2,25 +2,25 @@ import porespy as ps
 import numpy as np
 import matplotlib.pyplot as plt
 
-im = ps.generators.overlapping_spheres(shape=[600, 600], radius=15, porosity=0.7)
+# im = ps.generators.overlapping_spheres(shape=[600, 600], radius=15, porosity=0.7)
 # im[:, 0] = False
 # im[:, -1] = False
 
 # Generate tubes
-# im = np.ones([600, 10], dtype=bool)
-# im[:, 0] = False
-# im[:, -1] = False
-# for i in range(20, 100, 10):
-#     temp = np.ones([600, i], dtype=bool)
-#     temp[:, 0] = False
-#     temp[:, -1] = False
-#     im = np.concatenate((im, temp), axis=1)
-# im[-2:, :] = False
+im = np.ones([600, 10], dtype=bool)
+im[:, 0] = False
+im[:, -1] = False
+for i in range(20, 100, 10):
+    temp = np.ones([600, i], dtype=bool)
+    temp[:, 0] = False
+    temp[:, -1] = False
+    im = np.concatenate((im, temp), axis=1)
+im[-2:, :] = False
 
 # Define invading fluid inlets
 inlets = np.zeros_like(im)
-# inlets[0, :] = True  # Inlets at bottom
-inlets[:, 0] = True  # Inlets on left
+inlets[0, :] = True  # Inlets at bottom
+# inlets[:, 0] = True  # Inlets on left
 
 # Define constants for this simulation
 rho = 1000  # Density difference between phases
