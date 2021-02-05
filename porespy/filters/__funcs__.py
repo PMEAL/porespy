@@ -268,7 +268,7 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, return_all=False,
         print("Applying Gaussian blur with sigma =", str(sigma))
         dt = spim.gaussian_filter(input=dt, sigma=sigma)
 
-    peaks = find_peaks(dt=dt, r_max=r_max)
+    peaks = find_peaks(dt=dt, im=im, r_max=r_max)
     print("Initial number of peaks: ", spim.label(peaks)[1])
     peaks = trim_saddle_points(peaks=peaks, dt=dt, max_iters=500)
     print("Peaks after trimming saddle points: ", spim.label(peaks)[1])
@@ -408,7 +408,7 @@ def snow_partitioning_n(im, r_max=4, sigma=0.4, return_all=True,
         return combined_region
 
 
-def find_peaks(dt, r_max=4, footprint=None, **kwargs):
+def find_peaks(dt, r_max=4, footprint=None, im=None, **kwargs):
     r"""
     Finds local maxima in the distance transform
 
@@ -424,6 +424,10 @@ def find_peaks(dt, r_max=4, footprint=None, **kwargs):
         Specifies the shape of the structuring element used to define the
         neighborhood when looking for peaks.  If ``None`` (the default) is
         specified then a spherical shape is used (or circular in 2D).
+    im : ND-array (optional)
+        A boolean image of the domain, with ``True`` indicating the pore space
+        and ``False`` elsewhere.
+        If unspecified, the image will be built from ``dt``.
 
     Returns
     -------
@@ -442,7 +446,9 @@ def find_peaks(dt, r_max=4, footprint=None, **kwargs):
     The *skimage* function automatically uses a square structuring element
     which is significantly faster than using a circular or spherical element.
     """
-    im = dt > 0
+    if im is None:
+        im = dt > 0
+
     if im.ndim != im.squeeze().ndim:    # pragma: no cover
         warnings.warn((
             f"Input image conains a singleton axis: {im.shape}."
@@ -1956,7 +1962,7 @@ def chunked_snow(im, r_max=5, sigma=0.4):
     """
 
     dt = spim.gaussian_filter(input=im, sigma=sigma)
-    peaks = find_peaks(dt=dt, r_max=r_max)
+    peaks = find_peaks(dt=dt, im=im, r_max=r_max)
     peaks = trim_saddle_points(peaks=peaks, dt=dt, max_iters=99, verbose=0)
     peaks = trim_nearby_peaks(peaks=peaks, dt=dt)
     peaks, N = spim.label(peaks)
