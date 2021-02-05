@@ -249,7 +249,7 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, return_all=False,
     print("-" * 60)
     print("Beginning SNOW Algorithm")
     im_shape = np.array(im.shape)
-    if im.dtype is not bool:
+    if im.dtype is not np.dtype("bool"):
         print("Converting supplied image (im) to boolean")
         im = im > 0
     if dt is None:
