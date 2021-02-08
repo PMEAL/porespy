@@ -47,6 +47,7 @@ jobs:
       - name: Install dependencies (conda)
         run: |
           mamba install --file requirements/conda_requirements.txt
+          mamba install --file requirements/optional_requirements.txt
           mamba install --file requirements/test_requirements.txt
           # Install porespy from the checked-out branch
           pip install -e .
