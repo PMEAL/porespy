@@ -307,5 +307,5 @@ def to_openfoam(im, scale=1, zoom_factor=1, label=True, path='./'):
         extension.
 
     """
-    from .openfoam import openfoam
-    openfoam.save(im, scale, zoom_factor, label, path)
+    from .OPENFOAM import OPENFOAM
+    OPENFOAM.save(im, scale, zoom_factor, label, path)

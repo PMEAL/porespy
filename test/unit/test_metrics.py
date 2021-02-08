@@ -78,10 +78,10 @@ class MetricsTest():
         rp = ps.metrics.regionprops_3D(label)
         ps.metrics.props_to_DataFrame(rp)
 
-    def test_props_to_image(self):
+    def test_prop_to_image(self):
         label = spim.label(self.im2D)[0]
         rp = ps.metrics.regionprops_3D(label)
-        ps.metrics.props_to_image(rp, self.im2D.shape, 'solidity')
+        ps.metrics.prop_to_image(rp, self.im2D.shape, 'solidity')
 
     def test_porosity_profile(self):
         im = ps.generators.lattice_spheres(shape=[999, 999],

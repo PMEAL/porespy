@@ -8,6 +8,7 @@ from skimage.morphology import ball, cube
 from porespy.tools import _create_alias_map, overlay
 from porespy.tools import insert_cylinder
 from porespy.tools import zero_corners
+from skimage.segmentation import relabel_sequential
 
 
 def map_to_regions(regions, values):
@@ -126,14 +127,14 @@ def add_boundary_regions(regions=None, faces=['front', 'back', 'left',
         regions[idx] *= ~find_boundaries(regions[idx], mode="outer")
 
     # Pad twice to make boundary regions 3-pixel thick -> required for marching_cube
-    regions = np.pad(regions, pad_width=pad_width, mode="edge")
-    regions = np.pad(regions, pad_width=pad_width, mode="edge")
+    pw = np.array(pad_width) * 1
+    regions = np.pad(regions, pad_width=pw * 2, mode="edge")
 
     # Convert pad-induced corners to 0
-    zero_corners(regions, pad_width)
+    zero_corners(regions, pw * 3)
 
     # Make labels contiguous
-    regions = make_contiguous(regions)
+    regions = relabel_sequential(regions, offset=1)[0]
 
     return regions
 
