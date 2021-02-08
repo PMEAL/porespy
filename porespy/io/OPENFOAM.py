@@ -4,7 +4,7 @@ from scipy.ndimage import zoom
 np.set_printoptions(threshold=sys.maxsize)
 
 
-class openfoam():
+class OPENFOAM():
     """
     """
     def save(im, scale=1, zoom_factor=1, label=True, path='./'):
