@@ -290,3 +290,23 @@ def _save_stl(im, vs, filename):
         for j in range(3):
             export.vectors[i][j] = vertices[f[j], :]
     export.save(f"{filename}.stl")
+
+
+def sphere_pack_to_comsol(filename, centers, radii):
+    r"""
+    Exports a sphere pack into a Comsol file.
+    Parameters
+    ----------
+    path : string
+        Path to output file
+    centers : Np array
+        An array (Ns, 3) of the spheres centers where Ns is the number of
+        spheres
+    radii : Np array
+        An Ns length array of the spheres's radii
+    Notes
+    -----
+    Outputs a Comsol geometry file that can be imported in Comsol.
+    """
+    from .COMSOL import COMSOL
+    COMSOL.save(filename, centers, radii)
