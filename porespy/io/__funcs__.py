@@ -7,7 +7,6 @@ from scipy import ndimage as spim
 from porespy.tools import sanitize_filename
 from porespy.networks import generate_voxel_image
 from pyevtk.hl import imageToVTK
-from paraview.simple import *
 import subprocess
 import os
 
@@ -338,6 +337,17 @@ def to_paraview(im, filename, phase=2):
     Outputs an pvsm file that can opened in Paraview.
 
     """
+    try:
+        import paraview.simple
+    except ModuleNotFoundError:
+        msg = (
+            "The paraview python bindings must be installed using "
+            "conda install -c conda-forge paraview, however this may require"
+            " using a virtualenv since conflicts with other packages are common."
+            " This is why it is not explicitly included as a dependency in"
+            " porespy."
+        )
+        raise ModuleNotFoundError(msg)
     data = im.astype("uint8")
     file = os.path.splitext(filename)[0]
     path = file + ".tiff"
@@ -358,22 +368,22 @@ def to_paraview(im, filename, phase=2):
     maxshape = max(xshape, yshape)
     paraview.simple._DisableFirstRenderCameraReset()
     # create a new 'TIFF Series Reader'
-    dtiff = TIFFSeriesReader(FileNames=[path])
+    dtiff = paraview.simple.TIFFSeriesReader(FileNames=[path])
     # get active view
-    renderView1 = GetActiveViewOrCreate("RenderView")
+    renderView1 = paraview.simple.GetActiveViewOrCreate("RenderView")
     # uncomment following to set a specific view size
     # renderView1.ViewSize = [1612, 552]
     # get layout
-    layout1 = GetLayout()
+    layout1 = paraview.simple.GetLayout()
 
     # show data in view
-    dtiffDisplay = Show(dtiff, renderView1, "UniformGridRepresentation")
+    dtiffDisplay = paraview.simple.Show(dtiff, renderView1, "UniformGridRepresentation")
 
     # get color transfer function/color map for 'TiffScalars'
-    tiffScalarsLUT = GetColorTransferFunction("TiffScalars")
+    tiffScalarsLUT = paraview.simple.GetColorTransferFunction("TiffScalars")
 
     # get opacity transfer function/opacity map for 'TiffScalars'
-    tiffScalarsPWF = GetOpacityTransferFunction("TiffScalars")
+    tiffScalarsPWF = paraview.simple.GetOpacityTransferFunction("TiffScalars")
 
     # trace defaults for the display properties.
     dtiffDisplay.Representation = view
@@ -416,7 +426,7 @@ def to_paraview(im, filename, phase=2):
     renderView1.CameraFocalPoint = [xi / 2 - 0.5 for xi in shape]
 
     # get the material library
-    materialLibrary1 = GetMaterialLibrary()
+    materialLibrary1 = paraview.simple.GetMaterialLibrary()
 
     # show color bar/color legend
     dtiffDisplay.SetScalarBarVisibility(renderView1, True)
@@ -438,7 +448,7 @@ def to_paraview(im, filename, phase=2):
     # uncomment the following to render all views
     # RenderAllViews()
     # alternatively, if you want to write images, you can use SaveScreenshot(...).
-    threshold1 = Threshold(Input=dtiff)
+    threshold1 = paraview.simple.Threshold(Input=dtiff)
     threshold1.Scalars = ["POINTS", "Tiff Scalars"]
     if phase == 0:
         range = [0.5, 1]
@@ -449,24 +459,33 @@ def to_paraview(im, filename, phase=2):
     threshold1.ThresholdRange = range
 
     # show data in view
-    threshold1Display = Show(threshold1, renderView1, "UnstructuredGridRepresentation")
+    threshold1Display = paraview.simple.Show(threshold1, renderView1,
+                                             "UnstructuredGridRepresentation")
 
     # hide data in view
-    Hide(dtiff, renderView1)
+    paraview.simple.Hide(dtiff, renderView1)
 
-    SaveState(file + ".pvsm")
+    paraview.simple.SaveState(file + ".pvsm")
 
 
-def open_paraview(filename):
+def open_paraview(filename=None, im=None, **kwargs):
     r"""
-    Open a paraview state file directly in paraview.
+    Open a paraview state file or image directly in paraview.
 
     Parameters
-    --------
+    ----------
     filename : str
         Path to input state file.
+    im : ND-array
+        An image to open directly.  If no filename given, then this image is
+        sent to ``to_paraview`` and a state file is created with a random name.
+        Any additional keyword arguments are sent to ``to_paraview``.
 
     """
+    if filename is None:
+        import uuid
+        filename = str(uuid.uuid4())[:8]
+        to_paraview(im=im, filename=filename, **kwargs)
     file = os.path.splitext(filename)[0]
     statefile = file + ".pvsm"
     # paraview_path = "paraview.exe"
