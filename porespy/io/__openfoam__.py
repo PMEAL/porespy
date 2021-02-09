@@ -125,7 +125,8 @@ mergePatchPairs
 """
 
     im = im.astype(bool)
-    im = np.atleast_3d(im)
+    if im.ndim != 3:
+        raise Exception("This method only works for 3D images")
 
     # Finds and voids unpacks coords
     x, y, z = np.where(im)

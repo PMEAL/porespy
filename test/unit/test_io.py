@@ -106,6 +106,13 @@ class ExportTest():
                                 im=im)
         os.remove("sphere_pack.mphtxt")
 
+    def test_openfoam_export_3D(self):
+        # either generate an image or read and existing one
+        im = ps.generators.blobs(shape=[50, 50, 50], porosity=0.8)
+        # this should generate an "blockMeshDict" file
+        ps.io.to_openfoam(im, label_boundaries=True,
+                          path='../fixtures/openfoam_case/system/')
+
 
 if __name__ == "__main__":
     t = ExportTest()
