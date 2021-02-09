@@ -409,7 +409,7 @@ mergePatchPairs
     # Gets rid of all commas in the file
     file = file.replace(",", "")
 
-    with open(Path(path+"blockMeshDict"), "w+") as a:
+    with open(Path(path).joinpath("blockMeshDict"), "w+") as a:
         a.write(file)
 
 
