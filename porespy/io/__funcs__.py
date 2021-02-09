@@ -5,7 +5,10 @@ import skimage.measure as ms
 from scipy import ndimage as spim
 from porespy.tools import sanitize_filename
 from porespy.networks import generate_voxel_image
+from porespy.filters import reduce_peaks
 from pyevtk.hl import imageToVTK
+from edt import edt
+from skimage.morphology import ball
 
 
 def dict_to_vtk(data, filename, voxel_size=1, origin=(0, 0, 0)):
@@ -292,21 +295,44 @@ def _save_stl(im, vs, filename):
     export.save(f"{filename}.stl")
 
 
-def sphere_pack_to_comsol(filename, centers, radii):
+def spheres_to_comsol(filename, im=None, centers=None, radii=None):
     r"""
-    Exports a sphere pack into a Comsol file.
+    Exports a sphere pack into a Comsol geometry file.
+
+    An image containing spheres can be specified.  Alternatively as list of
+    ``centers`` and ``radii`` can be given if known.  If ``im`` is
+    given then some image analysis is performed to find sphere centers so it
+    may not perfectly represent the spheres in the original image.
+
     Parameters
     ----------
-    path : string
-        Path to output file
-    centers : Np array
+    filename : string or path object
+        Location and namge to output file
+    im : ND-array (optional)
+        A voxel image containing spheres indicated by non-zeros values.
+        Spheres can be generated using a variety of methods and can overlap.
+        The sphere centers and radii are found as the peaks in the
+        distance transform.  If ``im`` is not supplied, then ``centers`` and
+        ``radii`` must be given.
+    centers : array_like (optional)
         An array (Ns, 3) of the spheres centers where Ns is the number of
-        spheres
-    radii : Np array
-        An Ns length array of the spheres's radii
+        spheres.  This must be specified if ``im`` is not suppplied.
+    radii : array_like (optional)
+        An Ns length array of the spheres's. This must be specified if ``im``
+        is not suppplied.
+
     Notes
     -----
-    Outputs a Comsol geometry file that can be imported in Comsol.
+    Creates a geometry file that can be imported in Comsol.
+
     """
+    if im is not None:
+        if im.ndims != 3:
+            raise Exception('Image must be 3D')
+        dt = nd.gaussian_filter(edt(im > 0), sigma=0.1)
+        peaks = (im > 0)*(nd.maximum_filter(dt, footprint=ball(3)) == dt)
+        peaks = reduce_peaks(peaks)
+        centers = np.vstack(np.where(peaks)).T
+        radii = dt[tuple(centers.T)].astype(int)
     from .COMSOL import COMSOL
     COMSOL.save(filename, centers, radii)
