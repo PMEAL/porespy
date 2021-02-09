@@ -1,14 +1,17 @@
+import os
 import imageio
+import subprocess
 import numpy as np
 from stl import mesh
 import scipy.ndimage as nd
-import skimage.measure as ms
 from scipy import ndimage as spim
+import skimage.measure as ms
 from porespy.tools import sanitize_filename
 from porespy.networks import generate_voxel_image
+from porespy.filters import reduce_peaks
 from pyevtk.hl import imageToVTK
-import subprocess
-import os
+from skimage.morphology import ball
+from edt import edt
 
 
 def dict_to_vtk(data, filename, voxel_size=1, origin=(0, 0, 0)):
@@ -491,3 +494,48 @@ def open_paraview(filename=None, im=None, **kwargs):
     # paraview_path = "paraview.exe"
     paraview_path = "paraview"
     subprocess.Popen([paraview_path, statefile])
+
+
+def spheres_to_comsol(filename, im=None, centers=None, radii=None):
+    r"""
+    Exports a sphere pack into a Comsol geometry file.
+
+    An image containing spheres can be specified.  Alternatively as list of
+    ``centers`` and ``radii`` can be given if known.
+
+    Parameters
+    ----------
+    filename : string or path object
+        Location and namge to output file
+    im : ND-array (optional)
+        A voxel image containing spheres indicated by non-zeros values.
+        Spheres can be generated using a variety of methods and can overlap.
+        The sphere centers and radii are found as the peaks in the
+        distance transform.  If ``im`` is not supplied, then ``centers`` and
+        ``radii`` must be given.
+    centers : array_like (optional)
+        An array (Ns, 3) of the spheres centers where Ns is the number of
+        spheres.  This must be specified if ``im`` is not suppplied.
+    radii : array_like (optional)
+        An Ns length array of the spheres's. This must be specified if ``im``
+        is not suppplied.
+
+    Notes
+    -----
+    If ``im`` is given then some image analysis is performed to find sphere
+    centers so it may not perfectly represent the spheres in the original
+    image. This is especially true for overlapping sphere and sphere extending
+    beyond the edge of the image.
+
+    """
+    if im is not None:
+        if im.ndim != 3:
+            raise Exception('Image must be 3D')
+        dt = edt(im > 0)
+        dt2 = nd.gaussian_filter(dt, sigma=0.1)
+        peaks = (im > 0)*(nd.maximum_filter(dt2, footprint=ball(3)) == dt)
+        peaks = reduce_peaks(peaks)
+        centers = np.vstack(np.where(peaks)).T
+        radii = dt[tuple(centers.T)].astype(int)
+    from .COMSOL import COMSOL
+    COMSOL.save(filename, centers, radii)

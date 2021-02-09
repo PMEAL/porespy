@@ -99,6 +99,21 @@ class ExportTest():
         if sys.platform != "darwin":
             assert "paraview" in (p.name().split('.')[0] for p in psutil.process_iter())
 
+    def test_spheres_to_comsol_radii_centers(self):
+        radii = np.array([10, 20, 25, 5])
+        centers = np.array([[0, 10, 3],
+                            [20, 20, 13],
+                            [40, 25, 55],
+                            [60, 0, 89]])
+        ps.io.spheres_to_comsol(filename='sphere_pack', centers=centers, radii=radii)
+        os.remove("sphere_pack.mphtxt")
+
+    def test_spheres_to_comsol_im(self):
+        im = ps.generators.overlapping_spheres(shape=[100, 100, 100],
+                                               radius=10, porosity=0.6)
+        ps.io.spheres_to_comsol(filename='sphere_pack', im=im)
+        os.remove("sphere_pack.mphtxt")
+
 
 if __name__ == "__main__":
     t = ExportTest()
