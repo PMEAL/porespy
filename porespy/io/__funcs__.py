@@ -300,9 +300,7 @@ def spheres_to_comsol(filename, im=None, centers=None, radii=None):
     Exports a sphere pack into a Comsol geometry file.
 
     An image containing spheres can be specified.  Alternatively as list of
-    ``centers`` and ``radii`` can be given if known.  If ``im`` is
-    given then some image analysis is performed to find sphere centers so it
-    may not perfectly represent the spheres in the original image.
+    ``centers`` and ``radii`` can be given if known.
 
     Parameters
     ----------
@@ -323,14 +321,18 @@ def spheres_to_comsol(filename, im=None, centers=None, radii=None):
 
     Notes
     -----
-    Creates a geometry file that can be imported in Comsol.
+    If ``im`` is given then some image analysis is performed to find sphere
+    centers so it may not perfectly represent the spheres in the original
+    image. This is especially true for overlapping sphere and sphere extending
+    beyond the edge of the image.
 
     """
     if im is not None:
-        if im.ndims != 3:
+        if im.ndim != 3:
             raise Exception('Image must be 3D')
-        dt = nd.gaussian_filter(edt(im > 0), sigma=0.1)
-        peaks = (im > 0)*(nd.maximum_filter(dt, footprint=ball(3)) == dt)
+        dt = edt(im > 0)
+        dt2 = nd.gaussian_filter(dt, sigma=0.1)
+        peaks = (im > 0)*(nd.maximum_filter(dt2, footprint=ball(3)) == dt)
         peaks = reduce_peaks(peaks)
         centers = np.vstack(np.where(peaks)).T
         radii = dt[tuple(centers.T)].astype(int)
