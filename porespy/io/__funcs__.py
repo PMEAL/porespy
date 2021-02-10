@@ -344,11 +344,11 @@ def to_paraview(im, filename, phase=2):
         import paraview.simple
     except ModuleNotFoundError:
         msg = (
-            "The paraview python bindings must be installed using "
-            "conda install -c conda-forge paraview, however this may require"
-            " using a virtualenv since conflicts with other packages are common."
-            " This is why it is not explicitly included as a dependency in"
-            " porespy."
+            "The paraview python bindings must be installed using conda"
+            " install -c conda-forge paraview, however this may require"
+            " using a virtualenv since conflicts with other packages are"
+            " common. This is why it is not explicitly included as a"
+            " dependency in porespy."
         )
         raise ModuleNotFoundError(msg)
     data = im.astype("uint8")
@@ -370,25 +370,25 @@ def to_paraview(im, filename, phase=2):
         yshape = im.shape[1]
     maxshape = max(xshape, yshape)
     paraview.simple._DisableFirstRenderCameraReset()
-    # create a new 'TIFF Series Reader'
+    # Create a new 'TIFF Series Reader'
     dtiff = paraview.simple.TIFFSeriesReader(FileNames=[path])
-    # get active view
+    # Get active view
     renderView1 = paraview.simple.GetActiveViewOrCreate("RenderView")
-    # uncomment following to set a specific view size
+    # Uncomment following to set a specific view size
     # renderView1.ViewSize = [1612, 552]
-    # get layout
+    # Get layout
     layout1 = paraview.simple.GetLayout()
 
-    # show data in view
+    # Show data in view
     dtiffDisplay = paraview.simple.Show(dtiff, renderView1, "UniformGridRepresentation")
 
-    # get color transfer function/color map for 'TiffScalars'
+    # Get color transfer function/color map for 'TiffScalars'
     tiffScalarsLUT = paraview.simple.GetColorTransferFunction("TiffScalars")
 
-    # get opacity transfer function/opacity map for 'TiffScalars'
+    # Get opacity transfer function/opacity map for 'TiffScalars'
     tiffScalarsPWF = paraview.simple.GetOpacityTransferFunction("TiffScalars")
 
-    # trace defaults for the display properties.
+    # Trace defaults for the display properties.
     dtiffDisplay.Representation = view
     dtiffDisplay.ColorArrayName = ["POINTS", "Tiff Scalars"]
     dtiffDisplay.LookupTable = tiffScalarsLUT
@@ -413,13 +413,13 @@ def to_paraview(im, filename, phase=2):
 
     shape = np.array([xshape, yshape, zshape])
 
-    # init the 'Plane' selected for 'SliceFunction'
+    # Init the 'Plane' selected for 'SliceFunction'
     dtiffDisplay.SliceFunction.Origin = [xi / 2 - 0.5 for xi in shape]
 
-    # reset view to fit data
+    # Reset view to fit data
     renderView1.ResetCamera()
 
-    # changing interaction mode based on data extents
+    # Changing interaction mode based on data extents
     # renderView1.InteractionMode = mode
     renderView1.CameraPosition = [
         xshape / 2 - 0.5,
@@ -428,17 +428,17 @@ def to_paraview(im, filename, phase=2):
     ]
     renderView1.CameraFocalPoint = [xi / 2 - 0.5 for xi in shape]
 
-    # get the material library
+    # Get the material library
     materialLibrary1 = paraview.simple.GetMaterialLibrary()
 
-    # show color bar/color legend
+    # Show color bar/color legend
     dtiffDisplay.SetScalarBarVisibility(renderView1, True)
 
-    # update the view to ensure updated data information
+    # Update the view to ensure updated data information
     renderView1.Update()
 
-    # saving camera placements for all active views
-    # current camera placement for renderView1
+    # Saving camera placements for all active views
+    # Current camera placement for renderView1
     # renderView1.InteractionMode = mode
     renderView1.CameraPosition = [
         xshape / 2 - 0.5,
@@ -448,9 +448,9 @@ def to_paraview(im, filename, phase=2):
     renderView1.CameraFocalPoint = [xi / 2 - 0.5 for xi in shape]
     renderView1.CameraParallelScale = np.sqrt(np.sum(shape / 2 - 0.5)**2)
 
-    # uncomment the following to render all views
+    # Uncomment the following to render all views
     # RenderAllViews()
-    # alternatively, if you want to write images, you can use SaveScreenshot(...).
+    # Alternatively, if you want to write images, you can use SaveScreenshot(...).
     threshold1 = paraview.simple.Threshold(Input=dtiff)
     threshold1.Scalars = ["POINTS", "Tiff Scalars"]
     if phase == 0:
@@ -461,11 +461,12 @@ def to_paraview(im, filename, phase=2):
         range = [0, 1]
     threshold1.ThresholdRange = range
 
-    # show data in view
-    threshold1Display = paraview.simple.Show(threshold1, renderView1,
-                                             "UnstructuredGridRepresentation")
+    # Show data in view
+    threshold1Display = paraview.simple.Show(
+        threshold1, renderView1, "UnstructuredGridRepresentation"
+    )
 
-    # hide data in view
+    # Hide data in view
     paraview.simple.Hide(dtiff, renderView1)
 
     paraview.simple.SaveState(file + ".pvsm")
@@ -528,14 +529,14 @@ def spheres_to_comsol(filename, im=None, centers=None, radii=None):
     beyond the edge of the image.
 
     """
+    from .COMSOL import _save_to_comsol
     if im is not None:
         if im.ndim != 3:
-            raise Exception('Image must be 3D')
+            raise Exception('Image must be 3D.')
         dt = edt(im > 0)
         dt2 = nd.gaussian_filter(dt, sigma=0.1)
         peaks = (im > 0)*(nd.maximum_filter(dt2, footprint=ball(3)) == dt)
         peaks = reduce_peaks(peaks)
         centers = np.vstack(np.where(peaks)).T
         radii = dt[tuple(centers.T)].astype(int)
-    from .COMSOL import COMSOL
-    COMSOL.save(filename, centers, radii)
+    _save_to_comsol(filename, centers, radii)
