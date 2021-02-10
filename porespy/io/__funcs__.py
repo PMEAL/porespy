@@ -454,12 +454,12 @@ def to_paraview(im, filename, phase=2):
     threshold1 = paraview.simple.Threshold(Input=dtiff)
     threshold1.Scalars = ["POINTS", "Tiff Scalars"]
     if phase == 0:
-        range = [0.5, 1]
+        threshold_range = [0.5, 1]
     elif phase == 1:
-        range = [0, 0.5]
+        threshold_range = [0, 0.5]
     else:
-        range = [0, 1]
-    threshold1.ThresholdRange = range
+        threshold_range = [0, 1]
+    threshold1.ThresholdRange = threshold_range
 
     # Show data in view
     threshold1Display = paraview.simple.Show(

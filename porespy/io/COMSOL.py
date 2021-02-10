@@ -17,10 +17,9 @@ def _save_to_comsol(filename, centers, radii):
     The exported files contain COMSOL geometry objects, not meshes.
 
     """
-    f = open(filename + ".mphtxt", "w")
-    _header(file=f, Np=len(radii))
-    _spheres(file=f, centers=centers, radii=radii)
-    f.close()
+    with open(filename + ".mphtxt", "w") as f:
+        _header(file=f, Np=len(radii))
+        _spheres(file=f, centers=centers, radii=radii)
 
 
 def _header(file, Np):
@@ -46,8 +45,6 @@ def _header(file, Np):
         f.write('3 obj'+'\n')
 
     f.write('\n')
-
-    return
 
 
 def _spheres(file, centers, radii):
@@ -1421,5 +1418,3 @@ def _spheres(file, centers, radii):
 
         f.write('# Attributes' + ' ' + '\n')
         f.write('0 # nof attributes' + ' ' + '\n')
-
-    return
