@@ -109,9 +109,9 @@ class ExportTest():
 
     def test_openfoam_export_3D(self):
         # either generate an image or read and existing one
-        im = ps.generators.blobs(shape=[50, 50, 50], porosity=0.8)
+        im = ps.generators.blobs(shape=[40, 40, 40], porosity=0.8)
         # this should generate an "blockMeshDict" file
-        path = Path(self.path).joinpath('../fixtures/openfoam_case/system/')
+        path = Path(os.getcwd()).joinpath('../fixtures/openfoam_case/system/')
         ps.io.to_openfoam(im, label_boundaries=True,
                           path=path.resolve())
 
