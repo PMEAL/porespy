@@ -1,34 +1,29 @@
-
-
-class COMSOL():
+def _save_to_comsol(filename, centers, radii):
     r"""
-    Writes files containing pores and throats of the considered network in a
-    COMSOL object format.
+    Generates a COMSOL-compatible sphere pack and writes to file.
+
+    Parameters
+    ----------
+    filename : str
+        The name of the file to export.
+    centers : ndarray
+        An (Ns, 3) array containing the spheres centers where Ns is the
+        number of the spheres.
+    radii : ndarray
+        An (Ns, 1) array containing the spheres's radii.
+
     Notes
     -----
     The exported files contain COMSOL geometry objects, not meshes.
-    This class exports in 2D only.
+
     """
-    def save(filename, centers, radii):
-        r"""
-        Saves the sphere pack into the specified Comsol file.
-        Parameters
-        ----------
-        filename : String
-            The name of the file to export
-        centers : Np array
-            An array (Ns, 3) of the spheres centers where Ns is the number of
-            spheres
-        radii : Np array
-            An Ns length array of the spheres's radii
-        """
-        f = open(filename+'.mphtxt', 'w')
-        header(file=f, Np=len(radii))
-        spheres(file=f, centers=centers, radii=radii)
-        f.close()
+    f = open(filename + ".mphtxt", "w")
+    _header(file=f, Np=len(radii))
+    _spheres(file=f, centers=centers, radii=radii)
+    f.close()
 
 
-def header(file, Np):
+def _header(file, Np):
     f = file
 
     f.write('# Geometry exported by OpenPNM'+2*'\n')
@@ -55,7 +50,7 @@ def header(file, Np):
     return
 
 
-def spheres(file, centers, radii):
+def _spheres(file, centers, radii):
 
     f = file
 
