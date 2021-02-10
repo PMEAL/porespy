@@ -205,7 +205,7 @@ mergePatchPairs
     blocks = np.zeros((len(centers), 8), dtype=int)
 
     # Combining centers and distance to create vertices, uses broadcasting
-    for i in range(len(centers)):
+    for i, c in enumerate(centers):
         vertices[i] = centers[i] + d
 
     vertices = vertices.reshape(-1, 3)
@@ -225,7 +225,7 @@ mergePatchPairs
         right_faces = boundary(right_points, d_right, vertices_unique)
 
         # Expanding faces (patches)
-        for i in range(len(centers)):
+        for i, c in enumerate(centers):
             top[i] = np.array([2, 6, 7, 3]) + 8 * i
             back[i] = np.array([2, 3, 0, 1]) + 8 * i
             bottom[i] = np.array([4, 5, 1, 0]) + 8 * i
@@ -286,7 +286,7 @@ mergePatchPairs
         string_walls = stringify(walls)
 
     # Expanding blocks matrix
-    for i in range(len(centers)):
+    for i, c in enumerate(centers):
         blocks[i] = np.array([4, 5, 6, 7, 0, 1, 2, 3]) + 8 * i
 
     # Replaces duplicates vertices with their corresponding index in the
@@ -419,7 +419,7 @@ def boundary(points, d, vert_unique):
     boundary_points = np.zeros(len(points) * len(d) * 3).reshape(-1, 4, 3)
 
     # Creates all points at mesh boundary
-    for i in range(len(points)):
+    for i, p in enumerate(points):
         boundary_points[i] = points[i] + d
 
     boundary_points = boundary_points.reshape(-1, 3)
