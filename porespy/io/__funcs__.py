@@ -487,8 +487,9 @@ def open_paraview(filename=None, im=None, **kwargs):
 
     """
     if filename is None:
-        import uuid
-        filename = str(uuid.uuid4())[:8]
+        from datetime import datetime
+        now = datetime.now()
+        filename = now.strftime("%d-%m-%Y_%H-%M-%S")
         to_paraview(im=im, filename=filename, **kwargs)
     file = os.path.splitext(filename)[0]
     statefile = file + ".pvsm"
