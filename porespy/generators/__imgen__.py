@@ -91,41 +91,38 @@ def insert_shape(im, element, center=None, corner=None, value=1, mode="overwrite
     return im
 
 
-def RSA(im: array,
+def RSA(im_or_shape: array,
         radius: int,
         volume_fraction: int = 1,
+        clearance: int = 0,
         n_max: int = None,
-        mode: str = "contained"):
+        mode: str = "contained",
+        return_spheres: bool = False,
+        ):
     r"""
     Generates a sphere or disk packing using Random Sequential Addition
 
-    This algorithm ensures that spheres do not overlap but does not
-    guarantee they are tightly packed.
-
-    This function adds spheres to the background of the received ``im``, which
-    allows iteratively adding spheres of different radii to the unfilled space,
-    be repeatedly passing in the result of previous calls to RSA.
-
     Parameters
     ----------
-    im : ND-array
-        The image into which the spheres should be inserted.  By accepting an
-        image rather than a shape, it allows users to insert spheres into an
-        already existing image.  To begin the process, start with an array of
-        zeros such as ``im = np.zeros([200, 200, 200], dtype=bool)``.
+    im_or_shape : ND-array or list
+        To provide flexibility, this argument accepts either an image into
+        which the spheres are inserted, or a shape which is used to create an
+        empty image.  In both cases the spheres are added as ``True`` values
+        to the background.  Since ``True`` is considered the pore space, then
+        the added spheres represent holes.
     radius : int
         The radius of the disk or sphere to insert.
     volume_fraction : scalar (default is 1.0)
         The fraction of the image that should be filled with spheres.  The
-        spheres are added as 1's, so each sphere addition increases the
-        ``volume_fraction`` until the specified limit is reach.  Note that if
+        spheres are added as ``True``'s, so each sphere addition increases the
+        ``volume_fraction`` until the specified limit is reached.  Note that if
         ``n_max`` is reached first, then ``volume_fraction`` will not be
-        acheived.
+        acheived.  Also, ``volume_fraction`` is not counted correctly if the
+        ``mode`` is ``'extended'``.
     n_max : int (default is 10,000)
-        The maximum number of spheres to add.  By default the value of
-        ``n_max`` is high so that the addition of spheres will go indefinately
-        until ``volume_fraction`` is met, but specifying a smaller value
-        will halt addition after the given number of spheres are added.
+        The maximum number of spheres to add.  Using a low value may halt
+        the addition process prior to reaching the specified
+        ``volume_fraction``.
     mode : string (default is 'contained')
         Controls how the edges of the image are handled.  Options are:
 
@@ -135,21 +132,24 @@ def RSA(im: array,
         image.  In this mode the volume fraction will be less that requested
         since some spheres extend beyond the image, but their entire volume
         is counted as added for computational efficiency.
+    return_spheres : bool
+        If ``True`` then an image containing only the spheres is returned
+        rather than the input image with the spheres added, which is the
+        default behavior.
 
     Returns
     -------
     image : ND-array
-        A handle to the input ``im`` with spheres of specified radius
-        *added* to the background.
+        An image with spheres of specified radius *added* to the background.
 
     Notes
     -----
-    This function uses Numba to speed up the search for valid sphere insertion
-    points.  It seems that Numba does not look at the state of the scipy
-    random number generator, so setting the seed to a known value has no
-    effect on the output of this function. Each call to this function will
-    produce a unique image.  If you wish to use the same realization multiple
-    times you must save the array (e.g. ``numpy.save``).
+    This algorithm ensures that spheres do not overlap but does not
+    guarantee they are tightly packed.
+
+    This function adds spheres to the background of the received ``im``, which
+    allows iteratively adding spheres of different radii to the unfilled space
+    by repeatedly passing in the result of previous calls to RSA.
 
     References
     ----------
@@ -158,17 +158,23 @@ def RSA(im: array,
     """
     print(80 * "-")
     print(f"RSA: Adding spheres of size {radius}")
+    if len(im_or_shape) <= 3:
+        im = np.zeros(shape=im_or_shape, dtype=bool)
+    else:
+        im = im_or_shape
     im = im.astype(bool)
+    if return_spheres:
+        im_temp = np.copy(im)
     if n_max is None:
         n_max = 10000
     vf_final = volume_fraction
     vf_start = im.sum() / im.size
     print("Initial volume fraction:", vf_start)
     if im.ndim == 2:
-        template_lg = ps_disk(radius * 2)
+        template_lg = ps_disk((radius + clearance) * 2)
         template_sm = ps_disk(radius)
     else:
-        template_lg = ps_ball(radius * 2)
+        template_lg = ps_ball((radius + clearance) * 2)
         template_sm = ps_ball(radius)
     vf_template = template_sm.sum() / im.size
     # Pad image by the radius of large template to enable insertion near edges
@@ -202,7 +208,8 @@ def RSA(im: array,
         if all(np.array(c) == -1):
             break
         s_sm = tuple([slice(x - radius, x + radius + 1, None) for x in c])
-        s_lg = tuple([slice(x - 2 * radius, x + 2 * radius + 1, None) for x in c])
+        s_lg = tuple([slice(x - 2 * (radius + clearance),
+                            x + 2 * (radius + clearance) + 1, None) for x in c])
         im[s_sm] += template_sm  # Add ball to image
         options_im[s_lg][template_lg] = False  # Update extended region
         vf += vf_template
@@ -214,6 +221,8 @@ def RSA(im: array,
     im = im[s]
     vf = im.sum() / im.size
     print("Final volume fraction:", vf)
+    if return_spheres:
+        im = im * (~im_temp)
     return im
 
 
