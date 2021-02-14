@@ -27,21 +27,6 @@ class ExportTest():
         assert np.sum(val == 0) + np.sum(val == 1) + np.sum(val == 2) == S
         os.remove(tmp)
 
-    def test_to_openpnm_writing(self):
-        im = ps.generators.blobs(shape=[100, 100])
-        net = ps.networks.snow(im, boundary_faces=None)
-        ps.io.to_openpnm(net, 'test.pnm')
-        # Now open it in openpnm
-        import openpnm as op
-        ws = op.Workspace()
-        len_ws = len(ws)
-        ws.load_project('test.pnm')
-        assert len(ws) == len_ws + 1
-        # Now remove file
-        os.remove('test.pnm')
-        with pytest.raises(FileNotFoundError):
-            os.remove('test.pnm')
-
     def test_to_vtk_2d(self):
         im = ps.generators.blobs(shape=[20, 20])
         ps.io.to_vtk(im, filename='vtk_func_test')
@@ -82,7 +67,9 @@ class ExportTest():
         volume_total = np.prod(net.spacing * net.shape)
         porosity_desired = volume_void / volume_total
 
-        assert_allclose(actual=porosity_actual, desired=porosity_desired, rtol=0.05)
+        assert_allclose(actual=porosity_actual,
+                        desired=porosity_desired,
+                        rtol=0.05)
 
     def test_to_stl(self):
         im = ps.generators.blobs(shape=[50, 50, 50], spacing=0.1)
