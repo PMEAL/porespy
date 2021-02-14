@@ -62,7 +62,7 @@ def representative_elementary_volume(im, npoints=1000):
     slices = spim.find_objects(input=labels)
     porosity = np.zeros(shape=(N,), dtype=float)
     volume = np.zeros(shape=(N,), dtype=int)
-    with tqdm(np.arange(0, N), disable=not settings['show_progress']) as pbar:
+    with tqdm(np.arange(0, N), disable=not settings.show_progress) as pbar:
         for i in np.arange(0, N):
             pbar.update()
             s = slices[i]
@@ -677,7 +677,7 @@ def region_interface_areas(regions, areas, voxel_size=1, strel=None):
     sa_combined = []  # Difficult to preallocate since number of conns unknown
     cn = []
     # Start extracting area from im
-    with tqdm(Ps, disable=not settings['show_progress']) as pbar:
+    with tqdm(Ps, disable=not settings.show_progress) as pbar:
         for i in Ps:
             pbar.update()
             reg = i - 1
@@ -754,7 +754,7 @@ def region_surface_areas(regions, voxel_size=1, strel=None):
     Ps = np.arange(1, np.amax(im) + 1)
     sa = np.zeros_like(Ps, dtype=float)
     # Start extracting marching cube area from im
-    with tqdm(Ps, disable=not settings['show_progress']) as pbar:
+    with tqdm(Ps, disable=not settings.show_progress) as pbar:
         for i in Ps:
             pbar.update()
             reg = i - 1

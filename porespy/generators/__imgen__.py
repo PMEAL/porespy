@@ -750,7 +750,7 @@ def perlin_noise(shape: List[int], porosity=None, octaves: int = 3,
     noise = np.zeros(shape)
     frequency = 1
     amplitude = 1
-    with tqdm(range(octaves), disable=not settings['show_progress']) as pbar:
+    with tqdm(range(octaves), disable=not settings.show_progress) as pbar:
         for _ in range(octaves):
             pbar.update()
             if noise.ndim == 2:
@@ -983,7 +983,7 @@ def _cylinders(shape: List[int],
     im = np.zeros(shape, dtype=bool)
     n = 0
     L = min(H, R)
-    with tqdm(ncylinders, disable=not settings['show_progress']) as pbar:
+    with tqdm(ncylinders, disable=not settings.show_progress) as pbar:
         while n < ncylinders:
             # Choose a random starting point in domain
             x = np.random.rand(3) * (shape + 2 * L)
@@ -1129,7 +1129,7 @@ def cylinders(shape: List[int],
         fractions.append(fractions[i - 1] + (max_iter - i) ** 2 * subdif)
 
     im = np.ones(shape, dtype=bool)
-    with tqdm(fractions, disable=not settings['show_progress']) as pbar:
+    with tqdm(fractions, disable=not settings.show_progress) as pbar:
         for frac in fractions:
             pbar.update()
             n_fibers_total = n_pixels_to_add / vol_fiber
@@ -1222,7 +1222,7 @@ def pseudo_gravity_packing(im, r, clearance=0, max_iter=1000):
     inlets[-(r+1), ...] = True
     sites = ps.filters.trim_disconnected_blobs(im=sites, inlets=inlets)
     x_min = np.where(sites)[0].min()
-    with tqdm(range(max_iter), disable=not settings['show_progress']) as pbar:
+    with tqdm(range(max_iter), disable=not settings.show_progress) as pbar:
         for _ in range(max_iter):
             pbar.update()
             if im.ndim == 2:

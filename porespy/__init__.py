@@ -82,7 +82,7 @@ Use some filters from PoreSpy:
 from .__version__ import __version__
 
 from . import tools
-settings = tools.SettingsDict()
+settings = tools.Settings()
 
 from . import filters
 from . import metrics

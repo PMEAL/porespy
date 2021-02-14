@@ -1,21 +1,17 @@
+from dataclasses import dataclass
 
 
-class SettingsDict(dict):
+@dataclass
+class Settings:
     r"""
-    A settings dictionary for use at the moduel level.  This class is a
-    singleton so can be instantiated anywhere within the package to access
-    the common settings.
+    A dataclass for use at the module level to store settings.  This class
+    is defined as a Singleton so now matter how or where it gets instantiated
+    the same object is returned, containing all existing settings.
     """
-
     __instance__ = None
+    show_progress: bool = True
 
     def __new__(cls):
-        if SettingsDict.__instance__ is None:
-            SettingsDict.__instance__ = dict.__new__(cls)
-        return SettingsDict.__instance__
-
-    def __init__(self):
-        super().__init__()
-        self.__dict__ = self
-        # Apply package settings
-        self['show_progress'] = True
+        if Settings.__instance__ is None:
+            Settings.__instance__ = super().__new__(cls)
+        return Settings.__instance__

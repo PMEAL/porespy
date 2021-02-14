@@ -1300,7 +1300,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
         inlets = np.pad(inlets, mode="symmetric", pad_width=pw)
         # sizes = np.unique(np.around(sizes, decimals=0).astype(int))[-1::-1]
         imresults = np.zeros(np.shape(impad))
-        with tqdm(sizes, disable=not settings['show_progress']) as pbar:
+        with tqdm(sizes, disable=not settings.show_progress) as pbar:
             for r in sizes:
                 pbar.update()
                 if parallel:
@@ -1330,7 +1330,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
         imresults = extract_subsection(imresults, shape=im.shape)
     elif mode == "dt":
         imresults = np.zeros(np.shape(im))
-        with tqdm(sizes, disable=not settings['show_progress']) as pbar:
+        with tqdm(sizes, disable=not settings.show_progress) as pbar:
             for r in sizes:
                 pbar.update()
                 imtemp = dt >= r
@@ -1341,7 +1341,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
                     imresults[(imresults == 0) * imtemp] = r
     elif mode == "hybrid":
         imresults = np.zeros(np.shape(im))
-        with tqdm(sizes, disable=not settings['show_progress']) as pbar:
+        with tqdm(sizes, disable=not settings.show_progress) as pbar:
             for r in sizes:
                 pbar.update()
                 imtemp = dt >= r
