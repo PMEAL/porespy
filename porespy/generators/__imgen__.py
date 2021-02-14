@@ -480,6 +480,7 @@ def lattice_spheres(shape: List[int],
                     radius: int,
                     spacing: int = None,
                     offset: int = None,
+                    smooth: bool = True,
                     lattice: str = "sc"):
     r"""
     Generates a cubic packing of spheres in a specified lattice arrangement
@@ -492,14 +493,17 @@ def lattice_spheres(shape: List[int],
     radius : int
         The radius of spheres (circles) in the packing
     spacing : int or list of ints
-        The spacing between sphere centers.  If less than ``radius`` then
-        spheres will overlap. A single ``int`` will be applied in all
+        The spacing between unit cells. If the spacing is too small then
+        spheres may overlap. If an ``int`` is given it will be applied in all
         directions, while a list of ``int``s will be interpreted to apply
         along each axis.
     offset : int or list of ints
-        The amount offset add between sphere centers and the edges of the
+        The amount offset to add between sphere centers and the edges of the
         image.  A single ``int`` will be applied in all directions, while a
         list of ``int``s will be interpreted to apply along each axis.
+    smooth : bool
+        If ``True`` (default) the outer extremities of the sphere will not
+        have the little bumps on each face.
     lattice : string
         Specifies the type of lattice to create.  Options are:
 
@@ -521,71 +525,75 @@ def lattice_spheres(shape: List[int],
     print("lattice_spheres: Generating " + lattice + " lattice")
     r = radius
     shape = np.array(shape)
-    if np.size(shape) == 1:
-        shape = np.full((3,), int(shape))
     im = np.zeros(shape, dtype=bool)
-    im = im.squeeze()
 
     # Parse lattice type
     lattice = lattice.lower()
     if im.ndim == 2:
-        if lattice in ["sc"]:
-            lattice = "sq"
-        if lattice in ["bcc", "fcc"]:
-            lattice = "tri"
+        if lattice in ['sc', 'square', 'cubic', 'simple cubic']:
+            lattice = 'sq'
+        elif lattice in ['tri', 'triangular']:
+            lattice = 'tri'
+        else:
+            raise Exception(f'Unrecognized mode: {lattice}')
+    else:
+        if lattice in ['sc', 'cubic', 'simple cubic']:
+            lattice = 'sc'
+        elif lattice in ['bcc', 'body centered cubic']:
+            lattice = 'bcc'
+        elif lattice in ['fcc', 'face centered cubic']:
+            lattice = 'fcc'
+        else:
+            raise Exception(f'Unrecognized mode: {lattice}')
 
-    if lattice in ["sq", "square"]:
-        spacing = 2 * r
-        s = int(spacing / 2) + np.array(offset)
-        coords = np.mgrid[r:im.shape[0] - r:2 * s, r:im.shape[1] - r:2 * s]
-        im[coords[0], coords[1]] = 1
-    elif lattice in ["tri", "triangular"]:
-        spacing = 2 * np.floor(np.sqrt(2 * (r ** 2))).astype(int)
-        s = int(spacing / 2) + offset
-        coords = np.mgrid[r: im.shape[0] - r: 2 * s,
-                          r: im.shape[1] - r: 2 * s]
-        im[coords[0], coords[1]] = 1
-        coords = np.mgrid[s + r: im.shape[0] - r: 2 * s,
-                          s + r: im.shape[1] - r: 2 * s]
-        im[coords[0], coords[1]] = 1
-    elif lattice in ["sc", "simple cubic", "cubic"]:
-        spacing = 2 * r
-        s = int(spacing / 2) + np.array(offset)
-        coords = np.mgrid[r: im.shape[0] - r: 2 * s,
-                          r: im.shape[1] - r: 2 * s,
-                          r: im.shape[2] - r: 2 * s]
-        im[coords[0], coords[1], coords[2]] = 1
-    elif lattice in ["bcc", "body cenetered cubic"]:
-        spacing = 2 * np.floor(np.sqrt(4 / 3 * (r ** 2))).astype(int)
-        s = int(spacing / 2) + offset
-        coords = np.mgrid[r: im.shape[0] - r: 2 * s,
-                          r: im.shape[1] - r: 2 * s,
-                          r: im.shape[2] - r: 2 * s]
-        im[coords[0], coords[1], coords[2]] = 1
-        coords = np.mgrid[s + r: im.shape[0] - r: 2 * s,
-                          s + r: im.shape[1] - r: 2 * s,
-                          s + r: im.shape[2] - r: 2 * s]
-        im[coords[0], coords[1], coords[2]] = 1
-    elif lattice in ["fcc", "face centered cubic"]:
-        spacing = 2 * np.floor(np.sqrt(2 * (r ** 2))).astype(int)
-        s = int(spacing / 2) + offset
-        coords = np.mgrid[r: im.shape[0] - r: 2 * s,
-                          r: im.shape[1] - r: 2 * s,
-                          r: im.shape[2] - r: 2 * s]
-        im[coords[0], coords[1], coords[2]] = 1
-        coords = np.mgrid[r: im.shape[0] - r: 2 * s,
-                          s + r: im.shape[1] - r: 2 * s,
-                          s + r: im.shape[2] - r: 2 * s]
-        im[coords[0], coords[1], coords[2]] = 1
-        coords = np.mgrid[s + r: im.shape[0] - r: 2 * s,
-                          s: im.shape[1] - r: 2 * s,
-                          s + r: im.shape[2] - r: 2 * s]
-        im[coords[0], coords[1], coords[2]] = 1
-        coords = np.mgrid[s + r: im.shape[0] - r: 2 * s,
-                          s + r: im.shape[1] - r: 2 * s,
-                          s: im.shape[2] - r: 2 * s]
-        im[coords[0], coords[1], coords[2]] = 1
-    im = ~(edt(~im) < r)
+    # Parse offset and spacing args
+    if isinstance(offset, int):
+        offset = [offset]*im.ndim
+    if isinstance(spacing, int):
+        spacing = [spacing]*im.ndim
+
+    if lattice == 'sq':
+        im[offset[0]::spacing[0],
+           offset[1]::spacing[1]] = True
+    elif lattice == 'tri':
+        im[offset[0]::spacing[0],
+           offset[1]::spacing[1]] = True
+        im[offset[0]+int(spacing[0]/2)::spacing[0],
+           offset[1]+int(spacing[1]/2)::spacing[1]] = True
+    elif lattice == 'sc':
+        im[offset[0]::spacing[0],
+           offset[1]::spacing[1],
+           offset[2]::spacing[2]] = True
+    elif lattice == 'bcc':
+        im[offset[0]::spacing[0],
+           offset[1]::spacing[1],
+           offset[2]::spacing[2]] = True
+        im[offset[0]+int(spacing[0]/2)::spacing[0],
+           offset[1]+int(spacing[1]/2)::spacing[1],
+           offset[2]+int(spacing[2]/2)::spacing[2]] = True
+    elif lattice == 'fcc':
+        im[offset[0]::spacing[0],
+           offset[1]::spacing[1],
+           offset[2]::spacing[2]] = True
+        # xy-plane
+        im[offset[0]+int(spacing[0]/2)::spacing[0],
+           offset[1]+int(spacing[1]/2)::spacing[1],
+           offset[2]::spacing[2]] = True
+        # xz-plane
+        im[offset[0]+int(spacing[0]/2)::spacing[0],
+           offset[1]::spacing[1],
+           offset[2]+int(spacing[2]/2)::spacing[2]] = True
+        # yz-plane
+        im[offset[0]::spacing[0],
+           offset[1]+int(spacing[1]/2)::spacing[1],
+           offset[2]+int(spacing[2]/2)::spacing[2]] = True
+    # TODO: The following might be faster to use np.where to find points
+    # the directly insert spheres at each location using the numba jit
+    # versions of insert_spheres
+    if smooth:
+        im = ~(edt(~im) < r)
+    else:
+        im = ~(edt(~im) <= r)
     return im
 
 
