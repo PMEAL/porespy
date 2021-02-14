@@ -857,7 +857,7 @@ def ps_disk(radius, smooth=True):
     strel : 2D-array
         A 2D numpy bool array of the structring element
     """
-    ps_ball(radius=radius, ndim=2, smooth=smooth)
+    disk = ps_ball(radius=radius, ndim=2, smooth=smooth)
     return disk
 
 
