@@ -840,45 +840,74 @@ def mesh_region(region: bool, strel=None):
     return result
 
 
-def ps_disk(radius):
+def ps_disk(r, smooth=True):
     r"""
     Creates circular disk structuring element for morphological operations
 
     Parameters
     ----------
-    radius : float or int
+    r : float or int
         The desired radius of the structuring element
+    smooth : boolean
+        Indicates whether the faces of the sphere should have the little
+        nibs (``True``) or not (``False``, default)
 
     Returns
     -------
-    strel : 2D-array
+    disk : 2D-array
         A 2D numpy bool array of the structring element
     """
-    rad = int(np.ceil(radius))
-    other = np.ones((2 * rad + 1, 2 * rad + 1), dtype=bool)
-    other[rad, rad] = False
-    disk = edt(other) < radius
+    disk = ps_round(r=r, ndim=2, smooth=smooth)
     return disk
 
 
-def ps_ball(radius):
+def ps_ball(r, smooth=True):
     r"""
     Creates spherical ball structuring element for morphological operations
 
     Parameters
     ----------
-    radius : float or int
+    r : scalar
         The desired radius of the structuring element
+    smooth : boolean
+        Indicates whether the faces of the sphere should have the little
+        nibs (``True``) or not (``False``, default)
+
+    Returns
+    -------
+    ball : 3D-array
+        A 3D numpy array of the structuring element
+    """
+    ball = ps_round(r=r, ndim=3, smooth=smooth)
+    return ball
+
+
+def ps_round(r, ndim, smooth=True):
+    r"""
+    Creates round structuring element with the given radius and dimensionality
+
+    Parameters
+    ----------
+    r : scalar
+        The desired radius of the structuring element
+    ndim : int
+        The dimensionality of the element, either 2 or 3.
+    smooth : boolean
+        Indicates whether the faces of the sphere should have the little
+        nibs (``True``) or not (``False``, default)
 
     Returns
     -------
     strel : 3D-array
         A 3D numpy array of the structuring element
     """
-    rad = int(np.ceil(radius))
-    other = np.ones((2 * rad + 1, 2 * rad + 1, 2 * rad + 1), dtype=bool)
-    other[rad, rad, rad] = False
-    ball = edt(other) < radius
+    rad = int(np.ceil(r))
+    other = np.ones([2*rad + 1 for i in range(ndim)], dtype=bool)
+    other[tuple(rad for i in range(ndim))] = False
+    if smooth:
+        ball = edt(other) < r
+    else:
+        ball = edt(other) <= r
     return ball
 
 
