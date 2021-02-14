@@ -91,6 +91,7 @@ from . import visualization
 from . import io
 
 from .visualization import imshow
+settings = tools.SettingsDict()
 
-import numpy
-numpy.seterr(divide='ignore', invalid='ignore')
+import numpy as _np
+_np.seterr(divide='ignore', invalid='ignore')
