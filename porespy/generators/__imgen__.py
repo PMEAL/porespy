@@ -98,6 +98,7 @@ def RSA(im_or_shape: array,
         n_max: int = None,
         mode: str = "contained",
         return_spheres: bool = False,
+        smooth: bool = True,
         ):
     r"""
     Generates a sphere or disk packing using Random Sequential Addition
@@ -136,6 +137,9 @@ def RSA(im_or_shape: array,
         If ``True`` then an image containing only the spheres is returned
         rather than the input image with the spheres added, which is the
         default behavior.
+    smooth : bool
+        Indicates whether balls should have smooth faces (``True``) or should
+        include the bumps on the extremities (``False``).
 
     Returns
     -------
@@ -172,10 +176,10 @@ def RSA(im_or_shape: array,
     print("Initial volume fraction:", vf_start)
     if im.ndim == 2:
         template_lg = ps_disk((radius + clearance) * 2)
-        template_sm = ps_disk(radius)
+        template_sm = ps_disk(radius, smooth=smooth)
     else:
         template_lg = ps_ball((radius + clearance) * 2)
-        template_sm = ps_ball(radius)
+        template_sm = ps_ball(radius, smooth=smooth)
     vf_template = template_sm.sum() / im.size
     # Pad image by the radius of large template to enable insertion near edges
     im = np.pad(im, pad_width=2 * radius, mode="edge")
