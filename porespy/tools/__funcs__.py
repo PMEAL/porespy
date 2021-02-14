@@ -912,6 +912,32 @@ def ps_round(r, ndim, smooth=True):
     return ball
 
 
+def ps_rect(w, ndim):
+    r"""
+    Creates rectilinear structuring element with the given size and
+    dimensionality
+
+    Parameters
+    ----------
+    w : scalar
+        The desired width of the structuring element
+    ndim : int
+        The dimensionality of the element, either 2 or 3.
+
+    Returns
+    -------
+    strel : D-aNrray
+        A numpy array of the structuring element
+    """
+    if ndim == 2:
+        from skimage.morphology import square
+        strel = square(w)
+    if ndim == 3:
+        from skimage.morphology import cube
+        strel = cube(w)
+    return strel
+
+
 def overlay(im1, im2, c):
     r"""
     Overlays ``im2`` onto ``im1``, given voxel coords of center of ``im2``
