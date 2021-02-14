@@ -33,10 +33,11 @@ def cylindrical_plug(shape, r=None, axis=2):
         dt = edt(im2d)
         if r is None:
             r = int(min(shape[axes])/2)
-        circ = dt <= r
+        circ = dt < r
         tile_ax = [1, 1, 1]
         tile_ax[axis] = shape[axis]
-        cyl = np.tile(np.atleast_3d(circ), tile_ax)
+        circ = np.expand_dims(circ, axis)
+        cyl = np.tile(circ, tile_ax)
     if len(shape) == 2:
         im2d = np.ones(shape=shape)
         im2d[int(shape[0]/2), int(shape[1]/2)] = 0
