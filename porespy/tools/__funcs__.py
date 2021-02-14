@@ -320,15 +320,16 @@ def extract_cylinder(im, r=None, axis=0):
         ``False``.
 
     """
-    if r is None:
-        a = list(im.shape)
-        a.pop(axis)
-        r = np.floor(np.amin(a) / 2)
-    dim = [range(int(-s / 2), int(s / 2) + s % 2) for s in im.shape]
-    inds = np.meshgrid(*dim, indexing='ij')
-    inds[axis] = inds[axis] * 0
-    d = np.sqrt(np.sum(sp.square(inds), axis=0))
-    mask = d < r
+    # This needs to be imported here since the tools module is imported
+    # before the generators module, so placing it at the top of the file
+    # causes an error since the generators module does not exist yet.
+    # Strangly, if I import the ENTIRE package at the top of the file then
+    # things work ok, but this seems quite silly compared to just importing
+    # the function on demand. This is explained in the following
+    # stackoverflow answer: https://stackoverflow.com/a/129810.
+
+    from porespy.generators import cylindrical_plug
+    mask = cylindrical_plug(shape=im.shape, r=r, axis=axis)
     im_temp = im * mask
     return im_temp
 
@@ -640,7 +641,7 @@ def get_border(shape, thickness=1, mode='edges', return_indices=False):
     ``return_indices`` it finds them using ``np.where``.  Since these arrays
     are cubic it should be possible to use more elegant and efficient
     index-based logic to find the indices, then use them to fill an empty
-    image with ``True`` using these     indices.
+    image with ``True`` using these indices.
 
     Examples
     --------
