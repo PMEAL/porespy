@@ -499,7 +499,7 @@ def spheres_to_comsol(filename, im=None, centers=None, radii=None):
     beyond the edge of the image.
 
     """
-    from .__COMSOL__ import _save_to_comsol
+    from .__comsol__ import _save_to_comsol
     if im is not None:
         if im.ndim != 3:
             raise Exception('Image must be 3D.')
