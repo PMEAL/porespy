@@ -8,6 +8,7 @@ from skimage.morphology import ball, cube
 from porespy.tools import _create_alias_map, overlay
 from porespy.tools import insert_cylinder
 from porespy.tools import zero_corners
+from porespy import settings
 from skimage.segmentation import relabel_sequential
 
 
@@ -139,7 +140,7 @@ def add_boundary_regions(regions=None, faces=['front', 'back', 'left',
     return regions
 
 
-def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200, verbose=1):
+def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200):
     r"""
     Generates a 3d numpy array from a network model.
 
@@ -205,31 +206,31 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200, verbos
     if throat_shape == "cuboid":
         raise Exception("Not yet implemented, try 'cylinder'.")
 
-    tqdm_settings = {"disable": not verbose, "file": sys.stdout}
-
     # Generating voxels for pores
-    Ps = tqdm(network.Ps, desc="  - Generating pores  ", **tqdm_settings)
-    for i, pore in enumerate(Ps):
-        elem = pore_elem(rp[i])
-        try:
-            im_pores = overlay(im1=im_pores, im2=elem, c=xyz[i])
-        except ValueError:
-            elem = pore_elem(rp_max)
-            im_pores = overlay(im1=im_pores, im2=elem, c=xyz[i])
+    with tqdm(network.Ps, disable=not settings['show_progress']) as pbar:
+        for i, pore in enumerate(network.Ps):
+            pbar.update()
+            elem = pore_elem(rp[i])
+            try:
+                im_pores = overlay(im1=im_pores, im2=elem, c=xyz[i])
+            except ValueError:
+                elem = pore_elem(rp_max)
+                im_pores = overlay(im1=im_pores, im2=elem, c=xyz[i])
     # Get rid of pore overlaps
     im_pores[im_pores > 0] = 1
 
     # Generating voxels for throats
-    Ts = tqdm(network.Ts, desc="  - Generating throats", **tqdm_settings)
-    for i, throat in enumerate(Ts):
-        try:
-            im_throats = insert_cylinder(im_throats, r=throat_radi[i],
-                                         xyz0=xyz[cn[i, 0]],
-                                         xyz1=xyz[cn[i, 1]])
-        except ValueError:
-            im_throats = insert_cylinder(im_throats, r=rp_max,
-                                         xyz0=xyz[cn[i, 0]],
-                                         xyz1=xyz[cn[i, 1]])
+    with tqdm(network.Ts, disable=not settings['show_progress']) as pbar:
+        for i, throat in enumerate(network.Ts):
+            pbar.update()
+            try:
+                im_throats = insert_cylinder(im_throats, r=throat_radi[i],
+                                             xyz0=xyz[cn[i, 0]],
+                                             xyz1=xyz[cn[i, 1]])
+            except ValueError:
+                im_throats = insert_cylinder(im_throats, r=rp_max,
+                                             xyz0=xyz[cn[i, 0]],
+                                             xyz1=xyz[cn[i, 1]])
     # Get rid of throat overlaps
     im_throats[im_throats > 0] = 1
 

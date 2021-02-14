@@ -7,6 +7,7 @@ from skimage.morphology import disk, ball
 import scipy.spatial as sptl
 import scipy.ndimage as spim
 from porespy.tools import norm_to_uniform, ps_ball, ps_disk, get_border
+from porespy import settings
 from typing import List
 from numpy import array
 from tqdm import tqdm
@@ -749,13 +750,15 @@ def perlin_noise(shape: List[int], porosity=None, octaves: int = 3,
     noise = np.zeros(shape)
     frequency = 1
     amplitude = 1
-    for _ in tqdm(range(octaves), file=sys.stdout):
-        if noise.ndim == 2:
-            noise += amplitude * _perlin_noise_2D(shape, frequency * res)
-        elif noise.ndim == 3:
-            noise += amplitude * _perlin_noise_3D(shape, frequency * res)
-        frequency *= 2
-        amplitude *= persistence
+    with tqdm(range(octaves), disable=not settings['show_progress']) as pbar:
+        for _ in range(octaves):
+            pbar.update()
+            if noise.ndim == 2:
+                noise += amplitude * _perlin_noise_2D(shape, frequency * res)
+            elif noise.ndim == 3:
+                noise += amplitude * _perlin_noise_3D(shape, frequency * res)
+            frequency *= 2
+            amplitude *= persistence
 
     if porosity is not None:
         noise = norm_to_uniform(noise, scale=[0, 1])
@@ -980,25 +983,25 @@ def _cylinders(shape: List[int],
     im = np.zeros(shape, dtype=bool)
     n = 0
     L = min(H, R)
-    pbar = tqdm(total=ncylinders, file=sys.stdout, disable=not verbose)
-    while n < ncylinders:
-        # Choose a random starting point in domain
-        x = np.random.rand(3) * (shape + 2 * L)
-        # Chose a random phi and theta within given ranges
-        phi = (np.pi / 2 - np.pi * np.random.rand()) * phi_max / 90
-        theta = (np.pi / 2 - np.pi * np.random.rand()) * theta_max / 90
-        X0 = R * np.array([np.cos(phi) * np.cos(theta),
-                           np.cos(phi) * np.sin(theta),
-                           np.sin(phi)])
-        [X0, X1] = [x + X0, x - X0]
-        crds = line_segment(X0, X1)
-        lower = ~np.any(np.vstack(crds).T < [L, L, L], axis=1)
-        upper = ~np.any(np.vstack(crds).T >= shape + L, axis=1)
-        valid = upper * lower
-        if np.any(valid):
-            im[crds[0][valid] - L, crds[1][valid] - L, crds[2][valid] - L] = 1
-            n += 1
-            pbar.update()
+    with tqdm(ncylinders, disable=not settings['show_progress']) as pbar:
+        while n < ncylinders:
+            # Choose a random starting point in domain
+            x = np.random.rand(3) * (shape + 2 * L)
+            # Chose a random phi and theta within given ranges
+            phi = (np.pi / 2 - np.pi * np.random.rand()) * phi_max / 90
+            theta = (np.pi / 2 - np.pi * np.random.rand()) * theta_max / 90
+            X0 = R * np.array([np.cos(phi) * np.cos(theta),
+                               np.cos(phi) * np.sin(theta),
+                               np.sin(phi)])
+            [X0, X1] = [x + X0, x - X0]
+            crds = line_segment(X0, X1)
+            lower = ~np.any(np.vstack(crds).T < [L, L, L], axis=1)
+            upper = ~np.any(np.vstack(crds).T >= shape + L, axis=1)
+            valid = upper * lower
+            if np.any(valid):
+                im[crds[0][valid] - L, crds[1][valid] - L, crds[2][valid] - L] = 1
+                n += 1
+                pbar.update()
     im = np.array(im, dtype=bool)
     dt = edt(~im) < radius
     return ~dt
@@ -1126,18 +1129,20 @@ def cylinders(shape: List[int],
         fractions.append(fractions[i - 1] + (max_iter - i) ** 2 * subdif)
 
     im = np.ones(shape, dtype=bool)
-    for frac in tqdm(fractions, file=sys.stdout, desc="Adding fibers"):
-        n_fibers_total = n_pixels_to_add / vol_fiber
-        n_fibers = int(np.ceil(frac * n_fibers_total) - n_fibers_added)
-        if n_fibers > 0:
-            im = im & _cylinders(
-                shape, radius, n_fibers, phi_max, theta_max, length, verbose=False
-            )
-        n_fibers_added += n_fibers
-        # Update parameters for next iteration
-        porosity = ps.metrics.porosity(im)
-        vol_added = get_num_pixels(porosity)
-        vol_fiber = vol_added / n_fibers_added
+    with tqdm(fractions, disable=not settings['show_progress']) as pbar:
+        for frac in fractions:
+            pbar.update()
+            n_fibers_total = n_pixels_to_add / vol_fiber
+            n_fibers = int(np.ceil(frac * n_fibers_total) - n_fibers_added)
+            if n_fibers > 0:
+                im = im & _cylinders(shape, radius, n_fibers,
+                                     phi_max, theta_max, length,
+                                     verbose=False)
+            n_fibers_added += n_fibers
+            # Update parameters for next iteration
+            porosity = ps.metrics.porosity(im)
+            vol_added = get_num_pixels(porosity)
+            vol_fiber = vol_added / n_fibers_added
 
     print(f"{n_fibers_added} fibers were added to reach the target porosity.\n")
 
@@ -1217,7 +1222,7 @@ def pseudo_gravity_packing(im, r, clearance=0, max_iter=1000):
     inlets[-(r+1), ...] = True
     sites = ps.filters.trim_disconnected_blobs(im=sites, inlets=inlets)
     x_min = np.where(sites)[0].min()
-    with tqdm(range(max_iter)) as pbar:
+    with tqdm(range(max_iter), disable=not settings['show_progress']) as pbar:
         for _ in range(max_iter):
             pbar.update()
             if im.ndim == 2:

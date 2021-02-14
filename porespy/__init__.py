@@ -82,6 +82,8 @@ Use some filters from PoreSpy:
 from .__version__ import __version__
 
 from . import tools
+settings = tools.SettingsDict()
+
 from . import filters
 from . import metrics
 from . import networks
@@ -91,7 +93,6 @@ from . import visualization
 from . import io
 
 from .visualization import imshow
-settings = tools.SettingsDict()
 
 import numpy as _np
 _np.seterr(divide='ignore', invalid='ignore')

@@ -1,9 +1,9 @@
-import sys
 import numpy as np
 import openpnm as op
 from tqdm import tqdm
 import scipy.ndimage as spim
 from porespy.tools import extend_slice
+from porespy import settings
 import openpnm.models.geometry as op_gm
 
 
@@ -68,42 +68,43 @@ def regions_to_network(im, dt=None, voxel_size=1):
     # dt_shape = np.array(dt.shape)
 
     # Start extracting size information for pores and throats
-    for i in tqdm(Ps, file=sys.stdout):
-        pore = i - 1
-        if slices[pore] is None:
-            continue
-        s = extend_slice(slices[pore], im.shape)
-        sub_im = im[s]
-        sub_dt = dt[s]
-        pore_im = sub_im == i
-        padded_mask = np.pad(pore_im, pad_width=1, mode='constant')
-        pore_dt = spim.distance_transform_edt(padded_mask)
-        s_offset = np.array([i.start for i in s])
-        p_label[pore] = i
-        p_coords[pore, :] = spim.center_of_mass(pore_im) + s_offset
-        p_volume[pore] = np.sum(pore_im)
-        p_dia_local[pore] = (2*np.amax(pore_dt)) - np.sqrt(3)
-        p_dia_global[pore] = 2*np.amax(sub_dt)
-        p_area_surf[pore] = np.sum(pore_dt == 1)
-        im_w_throats = spim.binary_dilation(input=pore_im, structure=struc_elem(1))
-        im_w_throats = im_w_throats*sub_im
-        Pn = np.unique(im_w_throats)[1:] - 1
-        for j in Pn:
-            if j > pore:
-                t_conns.append([pore, j])
-                vx = np.where(im_w_throats == (j + 1))
-                t_dia_inscribed.append(2*np.amax(sub_dt[vx]))
-                t_perimeter.append(np.sum(sub_dt[vx] < 2))
-                t_area.append(np.size(vx[0]))
-                t_inds = tuple([i+j for i, j in zip(vx, s_offset)])
-                temp = np.where(dt[t_inds] == np.amax(dt[t_inds]))[0][0]
-                if im.ndim == 2:
-                    t_coords.append(tuple((t_inds[0][temp],
-                                           t_inds[1][temp])))
-                else:
-                    t_coords.append(tuple((t_inds[0][temp],
-                                           t_inds[1][temp],
-                                           t_inds[2][temp])))
+    with tqdm(Ps, disable=not settings['show_progress']) as pbar:
+        for i in Ps:
+            pore = i - 1
+            if slices[pore] is None:
+                continue
+            s = extend_slice(slices[pore], im.shape)
+            sub_im = im[s]
+            sub_dt = dt[s]
+            pore_im = sub_im == i
+            padded_mask = np.pad(pore_im, pad_width=1, mode='constant')
+            pore_dt = spim.distance_transform_edt(padded_mask)
+            s_offset = np.array([i.start for i in s])
+            p_label[pore] = i
+            p_coords[pore, :] = spim.center_of_mass(pore_im) + s_offset
+            p_volume[pore] = np.sum(pore_im)
+            p_dia_local[pore] = (2*np.amax(pore_dt)) - np.sqrt(3)
+            p_dia_global[pore] = 2*np.amax(sub_dt)
+            p_area_surf[pore] = np.sum(pore_dt == 1)
+            im_w_throats = spim.binary_dilation(input=pore_im, structure=struc_elem(1))
+            im_w_throats = im_w_throats*sub_im
+            Pn = np.unique(im_w_throats)[1:] - 1
+            for j in Pn:
+                if j > pore:
+                    t_conns.append([pore, j])
+                    vx = np.where(im_w_throats == (j + 1))
+                    t_dia_inscribed.append(2*np.amax(sub_dt[vx]))
+                    t_perimeter.append(np.sum(sub_dt[vx] < 2))
+                    t_area.append(np.size(vx[0]))
+                    t_inds = tuple([i+j for i, j in zip(vx, s_offset)])
+                    temp = np.where(dt[t_inds] == np.amax(dt[t_inds]))[0][0]
+                    if im.ndim == 2:
+                        t_coords.append(tuple((t_inds[0][temp],
+                                               t_inds[1][temp])))
+                    else:
+                        t_coords.append(tuple((t_inds[0][temp],
+                                               t_inds[1][temp],
+                                               t_inds[2][temp])))
     # Clean up values
     Nt = len(t_dia_inscribed)  # Get number of throats
     if im.ndim == 2:  # If 2D, add 0's in 3rd dimension
