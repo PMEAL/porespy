@@ -70,7 +70,7 @@ class MetricsTest():
         assert (np.mean(rev.porosity) - 0.5)**2 < 0.05
 
     def test_radial_density(self):
-        den = ps.metrics.radial_density(self.blobs)
+        den = ps.metrics.radial_density_distribution(self.blobs)
         assert den.cdf.max() == 1
 
     def test_props_to_DataFrame(self):
@@ -98,7 +98,7 @@ class MetricsTest():
 
     def test_linear_density(self):
         im = ps.filters.distance_transform_lin(self.im2D, axis=0, mode='both')
-        ps.metrics.linear_density(im)
+        ps.metrics.lineal_path_distribution(im)
 
     def test_chord_length_distribution_2D(self):
         chords = ps.filters.apply_chords(self.im2D)

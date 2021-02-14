@@ -103,7 +103,7 @@ def porosity_profile(im, axis=0):
     return prof
 
 
-def radial_density(im, bins=10, voxel_size=1):
+def radial_density_distribution(im, bins=10, log=False, voxel_size=1):
     r"""
     Computes radial density function by analyzing the histogram of voxel
     values in the distance transform.  This function is defined by
@@ -137,6 +137,12 @@ def radial_density(im, bins=10, voxel_size=1):
         This argument is passed directly to Scipy's ``histogram`` function so
         see that docstring for more information.  The default is 10 bins, which
         reduces produces a relatively smooth distribution.
+    log : boolean
+        If ``True`` the size data is converted to log (base-10)
+        values before processing.  This can help to plot wide size
+        distributions or to better visualize the in the small size region.
+        Note that you should not anti-log the radii values in the retunred
+        ``tuple``, since the binning is performed on the logged radii values.
     voxel_size : scalar
         The size of a voxel side in preferred units.  The default is 1, so the
         user can apply the scaling to the returned results after the fact.
@@ -185,53 +191,222 @@ def radial_density(im, bins=10, voxel_size=1):
     x = im[im > 0].flatten()
     h = np.histogram(x, bins=bins, density=True)
     h = _parse_histogram(h=h, voxel_size=voxel_size)
-    rdf = namedtuple('radial_density_function',
+    rdf = namedtuple('radial_density_distribution',
                      ('R', 'pdf', 'cdf', 'bin_centers', 'bin_edges',
                       'bin_widths'))
     return rdf(h.bin_centers, h.pdf, h.cdf, h.bin_centers, h.bin_edges,
                h.bin_widths)
 
 
-def porosity(im):
+def lineal_path_distribution(im, bins=25, voxel_size=1, log=False):
     r"""
-    Calculates the porosity of an image assuming 1's are void space and 0's are
-    solid phase.
+    Determines the probability that a point lies within a certain distance
+    of the opposite phase *along a specified direction*
 
-    All other values are ignored, so this can also return the relative
-    fraction of a phase of interest in trinary or multiphase images.
+    This relates directly the radial density function defined by Torquato [1],
+    but instead of reporting the probability of lying within a stated distance
+    to the nearest solid in any direciton, it considers only linear distances
+    along orthogonal directions.The benefit of this is that anisotropy can be
+    detected in materials by performing the analysis in multiple orthogonal
+    directions.
 
     Parameters
     ----------
     im : ND-array
-        Image of the void space with 1's indicating void phase (or True) and
-        0's indicating the solid phase (or False).
+        An image with each voxel containing the distance to the nearest solid
+        along a linear path, as produced by ``distance_transform_lin``.
+    bins : int or array_like
+        The number of bins or a list of specific bins to use
+    voxel_size : scalar
+        The side length of a voxel.  This is used to scale the chord lengths
+        into real units.  Note this is applied *after* the binning, so
+        ``bins``, if supplied, should be in terms of voxels, not length units.
+    log : boolean
+        If ``True`` (default) the size data is converted to log (base-10)
+        values before processing.  This can help to plot wide size
+        distributions or to better visualize the in the small size region.
+        Note that you should not anti-log the radii values in the retunred
+        ``tuple``, since the binning is performed on the logged radii values.
 
     Returns
     -------
-    porosity : float
-        Calculated as the sum of all 1's divided by the sum of all 1's and 0's.
+    result : named_tuple
 
-    See Also
-    --------
-    phase_fraction
+    References
+    ----------
+    [1] Torquato, S. Random Heterogeneous Materials: Mircostructure and
+    Macroscopic Properties. Springer, New York (2002)
+
+    """
+    x = im[im > 0]
+    h = list(np.histogram(x, bins=bins, density=True))
+    h = _parse_histogram(h=h, voxel_size=voxel_size)
+    cld = namedtuple('lineal_path_distribution',
+                     ('L', 'pdf', 'cdf', 'relfreq',
+                      'bin_centers', 'bin_edges', 'bin_widths'))
+    return cld(h.bin_centers, h.pdf, h.cdf, h.relfreq,
+               h.bin_centers, h.bin_edges, h.bin_widths)
+
+
+def chord_length_distribution(im, bins=None, log=False, voxel_size=1,
+                              normalization='count'):
+    r"""
+    Determines the distribution of chord lengths in an image containing chords.
+
+    Parameters
+    ----------
+    im : ND-image
+        An image with chords drawn in the pore space, as produced by
+        ``apply_chords`` or ``apply_chords_3d``.
+
+        ``im`` can be either boolean, in which case each chord will be
+        identified using ``scipy.ndimage.label``, or numerical values in which
+        case it is assumed that chords have already been identifed and labeled.
+        In both cases, the size of each chord will be computed as the number
+        of voxels belonging to each labelled region.
+
+    bins : scalar or array_like
+        If a scalar is given it is interpreted as the number of bins to use,
+        and if an array is given they are used as the bins directly.
+
+    log : boolean
+        If ``True`` (default) the size data is converted to log (base-10)
+        values before processing.  This can help to plot wide size
+        distributions or to better visualize the in the small size region.
+        Note that you should not anti-log the radii values in the retunred
+        ``tuple``, since the binning is performed on the logged radii values.
+
+    normalization : string
+        Indicates how to normalize the bin heights.  Options are:
+
+        *'count' or 'number'* - (default) This simply counts the number of
+        chords in each bin in the normal sense of a histogram.  This is the
+        rigorous definition according to Torquato [1].
+
+        *'length'* - This multiplies the number of chords in each bin by the
+        chord length (i.e. bin size).  The normalization scheme accounts for
+        the fact that long chords are less frequent than shorert chords,
+        thus giving a more balanced distribution.
+
+    voxel_size : scalar
+        The size of a voxel side in preferred units.  The default is 1, so the
+        user can apply the scaling to the returned results after the fact.
+
+    Returns
+    -------
+    result : named_tuple
+        A tuple containing the following elements, which can be retrieved by
+        attribute name:
+
+        *L* or *logL* - chord length, equivalent to ``bin_centers``
+
+        *pdf* - probability density function
+
+        *cdf* - cumulative density function
+
+        *relfreq* - relative frequency chords in each bin.  The sum of all bin
+        heights is 1.0.  For the cumulative relativce, use *cdf* which is
+        already normalized to 1.
+
+        *bin_centers* - the center point of each bin
+
+        *bin_edges* - locations of bin divisions, including 1 more value than
+        the number of bins
+
+        *bin_widths* - useful for passing to the ``width`` argument of
+        ``matplotlib.pyplot.bar``
+
+    References
+    ----------
+    [1] Torquato, S. Random Heterogeneous Materials: Mircostructure and
+    Macroscopic Properties. Springer, New York (2002) - See page 45 & 292
+    """
+    x = chord_counts(im)
+    if bins is None:
+        bins = np.array(range(0, x.max() + 2)) * voxel_size
+    x = x * voxel_size
+    if log:
+        x = np.log10(x)
+    if normalization == 'length':
+        h = list(np.histogram(x, bins=bins, density=False))
+        h[0] = h[0] * (h[1][1:] + h[1][:-1]) / 2  # Scale bin heigths by length
+        h[0] = h[0] / h[0].sum() / (h[1][1:] - h[1][:-1])  # Normalize h[0] manually
+    elif normalization in ['number', 'count']:
+        h = np.histogram(x, bins=bins, density=True)
+    else:
+        raise Exception('Unsupported normalization:', normalization)
+    h = _parse_histogram(h)
+    cld = namedtuple('chord_length_distribution',
+                     (log * 'log' + 'L', 'pdf', 'cdf', 'relfreq',
+                      'bin_centers', 'bin_edges', 'bin_widths'))
+    return cld(h.bin_centers, h.pdf, h.cdf, h.relfreq,
+               h.bin_centers, h.bin_edges, h.bin_widths)
+
+
+def pore_size_distribution(im, bins=10, log=True, voxel_size=1):
+    r"""
+    Calculate a pore-size distribution based on the image produced by the
+    ``porosimetry`` or ``local_thickness`` functions.
+
+    Parameters
+    ----------
+    im : ND-array
+        The array of containing the sizes of the largest sphere that overlaps
+        each voxel.  Obtained from either ``porosimetry`` or
+        ``local_thickness``.
+    bins : scalar or array_like
+        Either an array of bin sizes to use, or the number of bins that should
+        be automatically generated that span the data range.
+    log : boolean
+        If ``True`` (default) the size data is converted to log (base-10)
+        values before processing.  This can help to plot wide size
+        distributions or to better visualize the in the small size region.
+        Note that you should not anti-log the radii values in the retunred
+        ``tuple``, since the binning is performed on the logged radii values.
+    voxel_size : scalar
+        The size of a voxel side in preferred units.  The default is 1, so the
+        user can apply the scaling to the returned results after the fact.
+
+    Returns
+    -------
+    result : named_tuple
+        A named-tuple containing several values:
+
+        *R* or *logR* - radius, equivalent to ``bin_centers``
+
+        *pdf* - probability density function
+
+        *cdf* - cumulative density function
+
+        *satn* - phase saturation in differential form.  For the cumulative
+        saturation, just use *cfd* which is already normalized to 1.
+
+        *bin_centers* - the center point of each bin
+
+        *bin_edges* - locations of bin divisions, including 1 more value than
+        the number of bins
+
+        *bin_widths* - useful for passing to the ``width`` argument of
+        ``matplotlib.pyplot.bar``
 
     Notes
     -----
-    This function assumes void is represented by 1 and solid by 0, and all
-    other values are ignored.  This is useful, for example, for images of
-    cylindrical cores, where all voxels outside the core are labelled with 2.
+    (1) To ensure the returned values represent actual sizes you can manually
+    scale the input image by the voxel size first (``im *= voxel_size``)
 
-    Alternatively, images can be processed with ``find_disconnected_voxels``
-    to get an image of only blind pores.  This can then be added to the orignal
-    image such that blind pores have a value of 2, thus allowing the
-    calculation of accessible porosity, rather than overall porosity.
+    plt.bar(psd.R, psd.satn, width=psd.bin_widths, edgecolor='k')
 
     """
-    im = np.array(im, dtype=int)
-    Vp = np.sum(im == 1)
-    Vs = np.sum(im == 0)
-    e = Vp / (Vs + Vp)
-    return e
+    im = im.flatten()
+    vals = im[im > 0] * voxel_size
+    if log:
+        vals = np.log10(vals)
+    h = _parse_histogram(np.histogram(vals, bins=bins, density=True))
+    psd = namedtuple('pore_size_distribution',
+                     (log * 'log' + 'R', 'pdf', 'cdf', 'satn',
+                      'bin_centers', 'bin_edges', 'bin_widths'))
+    return psd(h.bin_centers, h.pdf, h.cdf, h.relfreq,
+               h.bin_centers, h.bin_edges, h.bin_widths)
 
 
 def two_point_correlation_bf(im, spacing=10):
@@ -374,72 +549,6 @@ def two_point_correlation_fft(im):
     return tpcf
 
 
-def pore_size_distribution(im, bins=10, log=True, voxel_size=1):
-    r"""
-    Calculate a pore-size distribution based on the image produced by the
-    ``porosimetry`` or ``local_thickness`` functions.
-
-    Parameters
-    ----------
-    im : ND-array
-        The array of containing the sizes of the largest sphere that overlaps
-        each voxel.  Obtained from either ``porosimetry`` or
-        ``local_thickness``.
-    bins : scalar or array_like
-        Either an array of bin sizes to use, or the number of bins that should
-        be automatically generated that span the data range.
-    log : boolean
-        If ``True`` (default) the size data is converted to log (base-10)
-        values before processing.  This can help to plot wide size
-        distributions or to better visualize the in the small size region.
-        Note that you can anti-log the radii values in the retunred ``tuple``,
-        but the binning is performed on the logged radii values.
-    voxel_size : scalar
-        The size of a voxel side in preferred units.  The default is 1, so the
-        user can apply the scaling to the returned results after the fact.
-
-    Returns
-    -------
-    result : named_tuple
-        A named-tuple containing several values:
-
-        *R* or *logR* - radius, equivalent to ``bin_centers``
-
-        *pdf* - probability density function
-
-        *cdf* - cumulative density function
-
-        *satn* - phase saturation in differential form.  For the cumulative
-        saturation, just use *cfd* which is already normalized to 1.
-
-        *bin_centers* - the center point of each bin
-
-        *bin_edges* - locations of bin divisions, including 1 more value than
-        the number of bins
-
-        *bin_widths* - useful for passing to the ``width`` argument of
-        ``matplotlib.pyplot.bar``
-
-    Notes
-    -----
-    (1) To ensure the returned values represent actual sizes you can manually
-    scale the input image by the voxel size first (``im *= voxel_size``)
-
-    plt.bar(psd.R, psd.satn, width=psd.bin_widths, edgecolor='k')
-
-    """
-    im = im.flatten()
-    vals = im[im > 0] * voxel_size
-    if log:
-        vals = np.log10(vals)
-    h = _parse_histogram(np.histogram(vals, bins=bins, density=True))
-    psd = namedtuple('pore_size_distribution',
-                     (log * 'log' + 'R', 'pdf', 'cdf', 'satn',
-                      'bin_centers', 'bin_edges', 'bin_widths'))
-    return psd(h.bin_centers, h.pdf, h.cdf, h.relfreq,
-               h.bin_centers, h.bin_edges, h.bin_widths)
-
-
 def _parse_histogram(h, voxel_size=1):
     delta_x = h[1]
     P = h[0]
@@ -480,142 +589,6 @@ def chord_counts(im):
     props = regionprops(labels)
     chord_lens = np.array([i.filled_area for i in props])
     return chord_lens
-
-
-def linear_density(im, bins=25, voxel_size=1, log=False):
-    r"""
-    Determines the probability that a point lies within a certain distance
-    of the opposite phase *along a specified direction*
-
-    This relates directly the radial density function defined by Torquato [1],
-    but instead of reporting the probability of lying within a stated distance
-    to the nearest solid in any direciton, it considers only linear distances
-    along orthogonal directions.The benefit of this is that anisotropy can be
-    detected in materials by performing the analysis in multiple orthogonal
-    directions.
-
-    Parameters
-    ----------
-    im : ND-array
-        An image with each voxel containing the distance to the nearest solid
-        along a linear path, as produced by ``distance_transform_lin``.
-    bins : int or array_like
-        The number of bins or a list of specific bins to use
-    voxel_size : scalar
-        The side length of a voxel.  This is used to scale the chord lengths
-        into real units.  Note this is applied *after* the binning, so
-        ``bins``, if supplied, should be in terms of voxels, not length units.
-
-    Returns
-    -------
-    result : named_tuple
-
-    References
-    ----------
-    [1] Torquato, S. Random Heterogeneous Materials: Mircostructure and
-    Macroscopic Properties. Springer, New York (2002)
-
-    """
-    x = im[im > 0]
-    h = list(np.histogram(x, bins=bins, density=True))
-    h = _parse_histogram(h=h, voxel_size=voxel_size)
-    cld = namedtuple('linear_density_function',
-                     ('L', 'pdf', 'cdf', 'relfreq',
-                      'bin_centers', 'bin_edges', 'bin_widths'))
-    return cld(h.bin_centers, h.pdf, h.cdf, h.relfreq,
-               h.bin_centers, h.bin_edges, h.bin_widths)
-
-
-def chord_length_distribution(im, bins=None, log=False, voxel_size=1,
-                              normalization='count'):
-    r"""
-    Determines the distribution of chord lengths in an image containing chords.
-
-    Parameters
-    ----------
-    im : ND-image
-        An image with chords drawn in the pore space, as produced by
-        ``apply_chords`` or ``apply_chords_3d``.
-
-        ``im`` can be either boolean, in which case each chord will be
-        identified using ``scipy.ndimage.label``, or numerical values in which
-        case it is assumed that chords have already been identifed and labeled.
-        In both cases, the size of each chord will be computed as the number
-        of voxels belonging to each labelled region.
-
-    bins : scalar or array_like
-        If a scalar is given it is interpreted as the number of bins to use,
-        and if an array is given they are used as the bins directly.
-
-    log : Boolean
-        If true, the logarithm of the chord lengths will be used, which can
-        make the data more clear.
-
-    normalization : string
-        Indicates how to normalize the bin heights.  Options are:
-
-        *'count' or 'number'* - (default) This simply counts the number of
-        chords in each bin in the normal sense of a histogram.  This is the
-        rigorous definition according to Torquato [1].
-
-        *'length'* - This multiplies the number of chords in each bin by the
-        chord length (i.e. bin size).  The normalization scheme accounts for
-        the fact that long chords are less frequent than shorert chords,
-        thus giving a more balanced distribution.
-
-    voxel_size : scalar
-        The size of a voxel side in preferred units.  The default is 1, so the
-        user can apply the scaling to the returned results after the fact.
-
-    Returns
-    -------
-    result : named_tuple
-        A tuple containing the following elements, which can be retrieved by
-        attribute name:
-
-        *L* or *logL* - chord length, equivalent to ``bin_centers``
-
-        *pdf* - probability density function
-
-        *cdf* - cumulative density function
-
-        *relfreq* - relative frequency chords in each bin.  The sum of all bin
-        heights is 1.0.  For the cumulative relativce, use *cdf* which is
-        already normalized to 1.
-
-        *bin_centers* - the center point of each bin
-
-        *bin_edges* - locations of bin divisions, including 1 more value than
-        the number of bins
-
-        *bin_widths* - useful for passing to the ``width`` argument of
-        ``matplotlib.pyplot.bar``
-
-    References
-    ----------
-    [1] Torquato, S. Random Heterogeneous Materials: Mircostructure and
-    Macroscopic Properties. Springer, New York (2002) - See page 45 & 292
-    """
-    x = chord_counts(im)
-    if bins is None:
-        bins = np.array(range(0, x.max() + 2)) * voxel_size
-    x = x * voxel_size
-    if log:
-        x = np.log10(x)
-    if normalization == 'length':
-        h = list(np.histogram(x, bins=bins, density=False))
-        h[0] = h[0] * (h[1][1:] + h[1][:-1]) / 2  # Scale bin heigths by length
-        h[0] = h[0] / h[0].sum() / (h[1][1:] - h[1][:-1])  # Normalize h[0] manually
-    elif normalization in ['number', 'count']:
-        h = np.histogram(x, bins=bins, density=True)
-    else:
-        raise Exception('Unsupported normalization:', normalization)
-    h = _parse_histogram(h)
-    cld = namedtuple('chord_length_distribution',
-                     (log * 'log' + 'L', 'pdf', 'cdf', 'relfreq',
-                      'bin_centers', 'bin_edges', 'bin_widths'))
-    return cld(h.bin_centers, h.pdf, h.cdf, h.relfreq,
-               h.bin_centers, h.bin_edges, h.bin_widths)
 
 
 def region_interface_areas(regions, areas, voxel_size=1, strel=None):
@@ -832,3 +805,45 @@ def phase_fraction(im, normed=True):
     if normed:
         results = results / im.size
     return results
+
+
+def porosity(im):
+    r"""
+    Calculates the porosity of an image assuming 1's are void space and 0's are
+    solid phase.
+
+    All other values are ignored, so this can also return the relative
+    fraction of a phase of interest in trinary or multiphase images.
+
+    Parameters
+    ----------
+    im : ND-array
+        Image of the void space with 1's indicating void phase (or True) and
+        0's indicating the solid phase (or False).
+
+    Returns
+    -------
+    porosity : float
+        Calculated as the sum of all 1's divided by the sum of all 1's and 0's.
+
+    See Also
+    --------
+    phase_fraction
+
+    Notes
+    -----
+    This function assumes void is represented by 1 and solid by 0, and all
+    other values are ignored.  This is useful, for example, for images of
+    cylindrical cores, where all voxels outside the core are labelled with 2.
+
+    Alternatively, images can be processed with ``find_disconnected_voxels``
+    to get an image of only blind pores.  This can then be added to the orignal
+    image such that blind pores have a value of 2, thus allowing the
+    calculation of accessible porosity, rather than overall porosity.
+
+    """
+    im = np.array(im, dtype=int)
+    Vp = np.sum(im == 1)
+    Vs = np.sum(im == 0)
+    e = Vp / (Vs + Vp)
+    return e
