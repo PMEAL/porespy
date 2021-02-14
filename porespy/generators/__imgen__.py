@@ -476,9 +476,11 @@ def _get_Voronoi_edges(vor):
     return edges
 
 
-def lattice_spheres(
-    shape: List[int], radius: int, offset: int = 0, lattice: str = "sc"
-):
+def lattice_spheres(shape: List[int],
+                    radius: int,
+                    spacing: int = None,
+                    offset: int = None,
+                    lattice: str = "sc"):
     r"""
     Generates a cubic packing of spheres in a specified lattice arrangement
 
@@ -487,13 +489,17 @@ def lattice_spheres(
     shape : list
         The size of the image to generate in [Nx, Ny, Nz] where N is the
         number of voxels in each direction.  For a 2D image, use [Nx, Ny].
-
-    radius : scalar
+    radius : int
         The radius of spheres (circles) in the packing
-
-    offset : scalar
-        The amount offset (+ or -) to add between sphere centers.
-
+    spacing : int or list of ints
+        The spacing between sphere centers.  If less than ``radius`` then
+        spheres will overlap. A single ``int`` will be applied in all
+        directions, while a list of ``int``s will be interpreted to apply
+        along each axis.
+    offset : int or list of ints
+        The amount offset add between sphere centers and the edges of the
+        image.  A single ``int`` will be applied in all directions, while a
+        list of ``int``s will be interpreted to apply along each axis.
     lattice : string
         Specifies the type of lattice to create.  Options are:
 
@@ -531,67 +537,53 @@ def lattice_spheres(
     if lattice in ["sq", "square"]:
         spacing = 2 * r
         s = int(spacing / 2) + np.array(offset)
-        coords = np.mgrid[r : im.shape[0] - r : 2 * s, r : im.shape[1] - r : 2 * s]
+        coords = np.mgrid[r:im.shape[0] - r:2 * s, r:im.shape[1] - r:2 * s]
         im[coords[0], coords[1]] = 1
     elif lattice in ["tri", "triangular"]:
         spacing = 2 * np.floor(np.sqrt(2 * (r ** 2))).astype(int)
         s = int(spacing / 2) + offset
-        coords = np.mgrid[r : im.shape[0] - r : 2 * s, r : im.shape[1] - r : 2 * s]
+        coords = np.mgrid[r: im.shape[0] - r: 2 * s,
+                          r: im.shape[1] - r: 2 * s]
         im[coords[0], coords[1]] = 1
-        coords = np.mgrid[
-            s + r : im.shape[0] - r : 2 * s, s + r : im.shape[1] - r : 2 * s
-        ]
+        coords = np.mgrid[s + r: im.shape[0] - r: 2 * s,
+                          s + r: im.shape[1] - r: 2 * s]
         im[coords[0], coords[1]] = 1
     elif lattice in ["sc", "simple cubic", "cubic"]:
         spacing = 2 * r
         s = int(spacing / 2) + np.array(offset)
-        coords = np.mgrid[
-            r : im.shape[0] - r : 2 * s,
-            r : im.shape[1] - r : 2 * s,
-            r : im.shape[2] - r : 2 * s,
-        ]
+        coords = np.mgrid[r: im.shape[0] - r: 2 * s,
+                          r: im.shape[1] - r: 2 * s,
+                          r: im.shape[2] - r: 2 * s]
         im[coords[0], coords[1], coords[2]] = 1
     elif lattice in ["bcc", "body cenetered cubic"]:
         spacing = 2 * np.floor(np.sqrt(4 / 3 * (r ** 2))).astype(int)
         s = int(spacing / 2) + offset
-        coords = np.mgrid[
-            r : im.shape[0] - r : 2 * s,
-            r : im.shape[1] - r : 2 * s,
-            r : im.shape[2] - r : 2 * s,
-        ]
+        coords = np.mgrid[r: im.shape[0] - r: 2 * s,
+                          r: im.shape[1] - r: 2 * s,
+                          r: im.shape[2] - r: 2 * s]
         im[coords[0], coords[1], coords[2]] = 1
-        coords = np.mgrid[
-            s + r : im.shape[0] - r : 2 * s,
-            s + r : im.shape[1] - r : 2 * s,
-            s + r : im.shape[2] - r : 2 * s,
-        ]
+        coords = np.mgrid[s + r: im.shape[0] - r: 2 * s,
+                          s + r: im.shape[1] - r: 2 * s,
+                          s + r: im.shape[2] - r: 2 * s]
         im[coords[0], coords[1], coords[2]] = 1
     elif lattice in ["fcc", "face centered cubic"]:
         spacing = 2 * np.floor(np.sqrt(2 * (r ** 2))).astype(int)
         s = int(spacing / 2) + offset
-        coords = np.mgrid[
-            r : im.shape[0] - r : 2 * s,
-            r : im.shape[1] - r : 2 * s,
-            r : im.shape[2] - r : 2 * s,
-        ]
+        coords = np.mgrid[r: im.shape[0] - r: 2 * s,
+                          r: im.shape[1] - r: 2 * s,
+                          r: im.shape[2] - r: 2 * s]
         im[coords[0], coords[1], coords[2]] = 1
-        coords = np.mgrid[
-            r : im.shape[0] - r : 2 * s,
-            s + r : im.shape[1] - r : 2 * s,
-            s + r : im.shape[2] - r : 2 * s,
-        ]
+        coords = np.mgrid[r: im.shape[0] - r: 2 * s,
+                          s + r: im.shape[1] - r: 2 * s,
+                          s + r: im.shape[2] - r: 2 * s]
         im[coords[0], coords[1], coords[2]] = 1
-        coords = np.mgrid[
-            s + r : im.shape[0] - r : 2 * s,
-            s : im.shape[1] - r : 2 * s,
-            s + r : im.shape[2] - r : 2 * s,
-        ]
+        coords = np.mgrid[s + r: im.shape[0] - r: 2 * s,
+                          s: im.shape[1] - r: 2 * s,
+                          s + r: im.shape[2] - r: 2 * s]
         im[coords[0], coords[1], coords[2]] = 1
-        coords = np.mgrid[
-            s + r : im.shape[0] - r : 2 * s,
-            s + r : im.shape[1] - r : 2 * s,
-            s : im.shape[2] - r : 2 * s,
-        ]
+        coords = np.mgrid[s + r: im.shape[0] - r: 2 * s,
+                          s + r: im.shape[1] - r: 2 * s,
+                          s: im.shape[2] - r: 2 * s]
         im[coords[0], coords[1], coords[2]] = 1
     im = ~(edt(~im) < r)
     return im
