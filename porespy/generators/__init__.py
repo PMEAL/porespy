@@ -53,3 +53,4 @@ from .__imgen__ import polydisperse_spheres
 from .__imgen__ import RSA
 from .__imgen__ import voronoi_edges
 from .__imgen__ import pseudo_gravity_packing
+from .__cylinder__ import cylindrical_plug
