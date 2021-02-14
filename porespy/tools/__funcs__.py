@@ -840,13 +840,13 @@ def mesh_region(region: bool, strel=None):
     return result
 
 
-def ps_disk(radius, smooth=True):
+def ps_disk(r, smooth=True):
     r"""
     Creates circular disk structuring element for morphological operations
 
     Parameters
     ----------
-    radius : float or int
+    r : float or int
         The desired radius of the structuring element
     smooth : boolean
         Indicates whether the faces of the sphere should have the little
@@ -854,23 +854,44 @@ def ps_disk(radius, smooth=True):
 
     Returns
     -------
-    strel : 2D-array
+    disk : 2D-array
         A 2D numpy bool array of the structring element
     """
-    disk = ps_ball(radius=radius, ndim=2, smooth=smooth)
+    disk = ps_round(r=r, ndim=2, smooth=smooth)
     return disk
 
 
-def ps_ball(radius, ndim=3, smooth=True):
+def ps_ball(r, smooth=True):
     r"""
     Creates spherical ball structuring element for morphological operations
 
     Parameters
     ----------
-    radius : scalar
+    r : scalar
         The desired radius of the structuring element
-    ndim : scalar
-        The dimensionality of the ball, either 2 or 3.  Default is 3.
+    smooth : boolean
+        Indicates whether the faces of the sphere should have the little
+        nibs (``True``) or not (``False``, default)
+
+    Returns
+    -------
+    ball : 3D-array
+        A 3D numpy array of the structuring element
+    """
+    ball = ps_round(r=r, ndim=3, smooth=smooth)
+    return ball
+
+
+def ps_round(r, ndim, smooth=True):
+    r"""
+    Creates round structuring element with the given radius and dimensionality
+
+    Parameters
+    ----------
+    r : scalar
+        The desired radius of the structuring element
+    ndim : int
+        The dimensionality of the element, either 2 or 3.
     smooth : boolean
         Indicates whether the faces of the sphere should have the little
         nibs (``True``) or not (``False``, default)
@@ -880,13 +901,13 @@ def ps_ball(radius, ndim=3, smooth=True):
     strel : 3D-array
         A 3D numpy array of the structuring element
     """
-    rad = int(np.ceil(radius))
+    rad = int(np.ceil(r))
     other = np.ones([2*rad + 1 for i in range(ndim)], dtype=bool)
     other[tuple(rad for i in range(ndim))] = False
     if smooth:
-        ball = edt(other) < radius
+        ball = edt(other) < r
     else:
-        ball = edt(other) <= radius
+        ball = edt(other) <= r
     return ball
 
 
