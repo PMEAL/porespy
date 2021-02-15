@@ -62,17 +62,15 @@ def representative_elementary_volume(im, npoints=1000):
     slices = spim.find_objects(input=labels)
     porosity = np.zeros(shape=(N,), dtype=float)
     volume = np.zeros(shape=(N,), dtype=int)
-    with tqdm(np.arange(0, N), disable=not settings.show_progress) as pbar:
-        for i in np.arange(0, N):
-            pbar.update()
-            s = slices[i]
-            p = pads[i]
-            new_s = extend_slice(s, shape=im.shape, pad=p)
-            temp = im[new_s]
-            Vp = np.sum(temp)
-            Vt = np.size(temp)
-            porosity[i] = Vp / Vt
-            volume[i] = Vt
+    for i in tqdm(np.arange(0, N), disable=not settings.show_progress):
+        s = slices[i]
+        p = pads[i]
+        new_s = extend_slice(s, shape=im.shape, pad=p)
+        temp = im[new_s]
+        Vp = np.sum(temp)
+        Vt = np.size(temp)
+        porosity[i] = Vp / Vt
+        volume[i] = Vt
     profile = namedtuple('profile', ('volume', 'porosity'))
     profile.volume = volume
     profile.porosity = porosity
@@ -677,34 +675,32 @@ def region_interface_areas(regions, areas, voxel_size=1, strel=None):
     sa_combined = []  # Difficult to preallocate since number of conns unknown
     cn = []
     # Start extracting area from im
-    with tqdm(Ps, disable=not settings.show_progress) as pbar:
-        for i in Ps:
-            pbar.update()
-            reg = i - 1
-            if slices[reg] is not None:
-                s = extend_slice(slices[reg], im.shape)
-                sub_im = im[s]
-                mask_im = sub_im == i
-                sa[reg] = areas[reg]
-                im_w_throats = spim.binary_dilation(input=mask_im,
-                                                    structure=ball_elem(1))
-                im_w_throats = im_w_throats * sub_im
-                Pn = np.unique(im_w_throats)[1:] - 1
-                for j in Pn:
-                    if j > reg:
-                        cn.append([reg, j])
-                        merged_region = im[(min(slices[reg][0].start,
-                                                slices[j][0].start)):
-                                           max(slices[reg][0].stop,
-                                               slices[j][0].stop),
-                                           (min(slices[reg][1].start,
-                                                slices[j][1].start)):
-                                           max(slices[reg][1].stop,
-                                               slices[j][1].stop)]
-                        merged_region = ((merged_region == reg + 1)
-                                         + (merged_region == j + 1))
-                        mesh = mesh_region(region=merged_region, strel=strel)
-                        sa_combined.append(mesh_surface_area(mesh))
+    for i in tqdm(Ps, disable=not settings.show_progress):
+        reg = i - 1
+        if slices[reg] is not None:
+            s = extend_slice(slices[reg], im.shape)
+            sub_im = im[s]
+            mask_im = sub_im == i
+            sa[reg] = areas[reg]
+            im_w_throats = spim.binary_dilation(input=mask_im,
+                                                structure=ball_elem(1))
+            im_w_throats = im_w_throats * sub_im
+            Pn = np.unique(im_w_throats)[1:] - 1
+            for j in Pn:
+                if j > reg:
+                    cn.append([reg, j])
+                    merged_region = im[(min(slices[reg][0].start,
+                                            slices[j][0].start)):
+                                       max(slices[reg][0].stop,
+                                           slices[j][0].stop),
+                                       (min(slices[reg][1].start,
+                                            slices[j][1].start)):
+                                       max(slices[reg][1].stop,
+                                           slices[j][1].stop)]
+                    merged_region = ((merged_region == reg + 1)
+                                     + (merged_region == j + 1))
+                    mesh = mesh_region(region=merged_region, strel=strel)
+                    sa_combined.append(mesh_surface_area(mesh))
     # Interfacial area calculation
     cn = np.array(cn)
     ia = 0.5 * (sa[cn[:, 0]] + sa[cn[:, 1]] - sa_combined)
@@ -754,16 +750,14 @@ def region_surface_areas(regions, voxel_size=1, strel=None):
     Ps = np.arange(1, np.amax(im) + 1)
     sa = np.zeros_like(Ps, dtype=float)
     # Start extracting marching cube area from im
-    with tqdm(Ps, disable=not settings.show_progress) as pbar:
-        for i in Ps:
-            pbar.update()
-            reg = i - 1
-            if slices[reg] is not None:
-                s = extend_slice(slices[reg], im.shape)
-                sub_im = im[s]
-                mask_im = sub_im == i
-                mesh = mesh_region(region=mask_im, strel=strel)
-                sa[reg] = mesh_surface_area(mesh)
+    for i in tqdm(Ps, disable=not settings.show_progress):
+        reg = i - 1
+        if slices[reg] is not None:
+            s = extend_slice(slices[reg], im.shape)
+            sub_im = im[s]
+            mask_im = sub_im == i
+            mesh = mesh_region(region=mask_im, strel=strel)
+            sa[reg] = mesh_surface_area(mesh)
     result = sa * voxel_size**2
     return result
 

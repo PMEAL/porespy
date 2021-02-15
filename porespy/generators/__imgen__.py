@@ -750,15 +750,13 @@ def perlin_noise(shape: List[int], porosity=None, octaves: int = 3,
     noise = np.zeros(shape)
     frequency = 1
     amplitude = 1
-    with tqdm(range(octaves), disable=not settings.show_progress) as pbar:
-        for _ in range(octaves):
-            pbar.update()
-            if noise.ndim == 2:
-                noise += amplitude * _perlin_noise_2D(shape, frequency * res)
-            elif noise.ndim == 3:
-                noise += amplitude * _perlin_noise_3D(shape, frequency * res)
-            frequency *= 2
-            amplitude *= persistence
+    for _ in tqdm(range(octaves), disable=not settings.show_progress):
+        if noise.ndim == 2:
+            noise += amplitude * _perlin_noise_2D(shape, frequency * res)
+        elif noise.ndim == 3:
+            noise += amplitude * _perlin_noise_3D(shape, frequency * res)
+        frequency *= 2
+        amplitude *= persistence
 
     if porosity is not None:
         noise = norm_to_uniform(noise, scale=[0, 1])
@@ -1129,20 +1127,18 @@ def cylinders(shape: List[int],
         fractions.append(fractions[i - 1] + (max_iter - i) ** 2 * subdif)
 
     im = np.ones(shape, dtype=bool)
-    with tqdm(fractions, disable=not settings.show_progress) as pbar:
-        for frac in fractions:
-            pbar.update()
-            n_fibers_total = n_pixels_to_add / vol_fiber
-            n_fibers = int(np.ceil(frac * n_fibers_total) - n_fibers_added)
-            if n_fibers > 0:
-                im = im & _cylinders(shape, radius, n_fibers,
-                                     phi_max, theta_max, length,
-                                     verbose=False)
-            n_fibers_added += n_fibers
-            # Update parameters for next iteration
-            porosity = ps.metrics.porosity(im)
-            vol_added = get_num_pixels(porosity)
-            vol_fiber = vol_added / n_fibers_added
+    for frac in tqdm(fractions, disable=not settings.show_progress):
+        n_fibers_total = n_pixels_to_add / vol_fiber
+        n_fibers = int(np.ceil(frac * n_fibers_total) - n_fibers_added)
+        if n_fibers > 0:
+            im = im & _cylinders(shape, radius, n_fibers,
+                                 phi_max, theta_max, length,
+                                 verbose=False)
+        n_fibers_added += n_fibers
+        # Update parameters for next iteration
+        porosity = ps.metrics.porosity(im)
+        vol_added = get_num_pixels(porosity)
+        vol_fiber = vol_added / n_fibers_added
 
     print(f"{n_fibers_added} fibers were added to reach the target porosity.\n")
 
@@ -1222,30 +1218,28 @@ def pseudo_gravity_packing(im, r, clearance=0, max_iter=1000):
     inlets[-(r+1), ...] = True
     sites = ps.filters.trim_disconnected_blobs(im=sites, inlets=inlets)
     x_min = np.where(sites)[0].min()
-    with tqdm(range(max_iter), disable=not settings.show_progress) as pbar:
-        for _ in range(max_iter):
-            pbar.update()
-            if im.ndim == 2:
-                x, y = np.where(sites[x_min:x_min+2*r, ...])
-            else:
-                x, y, z = np.where(sites[x_min:x_min+2*r, ...])
-            if len(x) == 0:
-                break
-            options = np.where(x == x.min())[0]
-            if len(options) > 1:
-                choice = np.random.randint(0, len(options)-1)
-            else:
-                choice = 0
-            if im.ndim == 2:
-                cen = np.array([x[options[choice]] + x_min,
-                                y[options[choice]]])
-            else:
-                cen = np.array([x[options[choice]] + x_min,
-                                y[options[choice]],
-                                z[options[choice]]])
-            im = ps.tools.insert_sphere(im, c=cen, r=r - clearance, v=0)
-            sites = ps.tools.insert_sphere(sites, c=cen, r=2*r, v=0)
-            x_min += x.min()
+    for _ in tqdm(range(max_iter), disable=not settings.show_progress):
+        if im.ndim == 2:
+            x, y = np.where(sites[x_min:x_min+2*r, ...])
+        else:
+            x, y, z = np.where(sites[x_min:x_min+2*r, ...])
+        if len(x) == 0:
+            break
+        options = np.where(x == x.min())[0]
+        if len(options) > 1:
+            choice = np.random.randint(0, len(options)-1)
+        else:
+            choice = 0
+        if im.ndim == 2:
+            cen = np.array([x[options[choice]] + x_min,
+                            y[options[choice]]])
+        else:
+            cen = np.array([x[options[choice]] + x_min,
+                            y[options[choice]],
+                            z[options[choice]]])
+        im = ps.tools.insert_sphere(im, c=cen, r=r - clearance, v=0)
+        sites = ps.tools.insert_sphere(sites, c=cen, r=2*r, v=0)
+        x_min += x.min()
     print('A total of', _, 'spheres were added')
     im = spim.minimum_filter(input=im, footprint=strel(1))
     return im
