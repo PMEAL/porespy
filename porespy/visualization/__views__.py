@@ -50,6 +50,8 @@ def show_planes(im, spacing=10):
     ----------
     im : ND-array
         A 3D image of the porous material
+    spacing : int (optional, default=10)
+        Controls the amount of space to put between each panel
 
     Returns
     -------
