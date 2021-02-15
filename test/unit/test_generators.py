@@ -274,6 +274,20 @@ class GeneratorTest():
         phi2 = im.sum()/im.size
         assert phi2 == phi1
 
+    def test_RSA_shape(self):
+        rsa = ps.generators.RSA(im_or_shape=[200, 200], radius=10)
+        assert np.all(rsa.shape == (200, 200))
+
+    def test_RSA_clearance(self):
+        np.random.seed(0)
+        rsa0 = ps.generators.RSA(im_or_shape=[200, 200], radius=9, clearance=0)
+        np.random.seed(0)
+        rsa2p = ps.generators.RSA(im_or_shape=[200, 200], radius=9, clearance=2)
+        assert rsa0.sum() > rsa2p.sum()
+        np.random.seed(0)
+        rsa1n = ps.generators.RSA(im_or_shape=[200, 200], radius=9, clearance=-1)
+        assert rsa0.sum() < rsa1n.sum()
+
     def test_line_segment(self):
         X0 = [3, 4]
         X1 = [5, 9]
