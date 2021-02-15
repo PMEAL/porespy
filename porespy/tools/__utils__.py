@@ -9,9 +9,20 @@ class Settings:
     the same object is returned, containing all existing settings.
     """
     __instance__ = None
-    show_progress: bool = True
+    notebook = False
+    tqdm = {'disable': False,
+            'colour': None,
+            'ncols': None}
 
     def __new__(cls):
         if Settings.__instance__ is None:
             Settings.__instance__ = super().__new__(cls)
         return Settings.__instance__
+
+    def __repr__(self):
+        s = ''
+        for item in self.__dir__():
+            if not item.startswith('_'):
+                s += ''.join((item, ':\t'))
+                s += ''.join((getattr(self, item).__repr__(), '\n'))
+        return s

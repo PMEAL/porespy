@@ -1300,7 +1300,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
         inlets = np.pad(inlets, mode="symmetric", pad_width=pw)
         # sizes = np.unique(np.around(sizes, decimals=0).astype(int))[-1::-1]
         imresults = np.zeros(np.shape(impad))
-        for r in tqdm(sizes, disable=not settings.show_progress):
+        for r in tqdm(sizes, **settings.tqdm):
             if parallel:
                 imtemp = chunked_func(func=spim.binary_erosion,
                                       input=impad, structure=strel(r),
@@ -1328,7 +1328,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
         imresults = extract_subsection(imresults, shape=im.shape)
     elif mode == "dt":
         imresults = np.zeros(np.shape(im))
-        for r in tqdm(sizes, disable=not settings.show_progress):
+        for r in tqdm(sizes, **settings.tqdm):
             imtemp = dt >= r
             if access_limited:
                 imtemp = trim_disconnected_blobs(imtemp, inlets)
@@ -1337,7 +1337,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
                 imresults[(imresults == 0) * imtemp] = r
     elif mode == "hybrid":
         imresults = np.zeros(np.shape(im))
-        for r in tqdm(sizes, disable=not settings.show_progress):
+        for r in tqdm(sizes, **settings.tqdm):
             imtemp = dt >= r
             if access_limited:
                 imtemp = trim_disconnected_blobs(imtemp, inlets)

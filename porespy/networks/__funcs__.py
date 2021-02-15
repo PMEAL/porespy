@@ -207,7 +207,7 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200):
         raise Exception("Not yet implemented, try 'cylinder'.")
 
     # Generating voxels for pores
-    with tqdm(network.Ps, disable=not settings.show_progress) as pbar:
+    with tqdm(network.Ps, **settings.tqdm) as pbar:
         for i, pore in enumerate(network.Ps):
             pbar.update()
             elem = pore_elem(rp[i])
@@ -220,7 +220,7 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200):
     im_pores[im_pores > 0] = 1
 
     # Generating voxels for throats
-    with tqdm(network.Ts, disable=not settings.show_progress) as pbar:
+    with tqdm(network.Ts, **settings.tqdm) as pbar:
         for i, throat in enumerate(network.Ts):
             pbar.update()
             try:
