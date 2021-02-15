@@ -7,6 +7,7 @@ import openpnm.models.geometry as op_gm
 from porespy.tools import get_tqdm
 tqdm = get_tqdm()
 
+
 def regions_to_network(im, dt=None, voxel_size=1):
     r"""
     Analyzes an image that has been partitioned into pore regions and extracts

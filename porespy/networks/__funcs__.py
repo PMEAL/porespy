@@ -1,4 +1,3 @@
-import sys
 import numpy as np
 import openpnm as op
 from porespy.tools import make_contiguous
@@ -11,6 +10,7 @@ from porespy.tools import zero_corners
 from porespy import settings
 from porespy.tools import get_tqdm
 tqdm = get_tqdm()
+
 
 def map_to_regions(regions, values):
     r"""
@@ -148,13 +148,10 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200):
     ----------
     network : OpenPNM GenericNetwork
         Network from which voxel image is to be generated
-
     pore_shape : str
         Shape of pores in the network, valid choices are "sphere", "cube"
-
     throat_shape : str
         Shape of throats in the network, valid choices are "cylinder", "cuboid"
-
     max_dim : int
         Number of voxels in the largest dimension of the network
 
