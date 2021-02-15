@@ -547,10 +547,14 @@ def lattice_spheres(shape: List[int],
             raise Exception(f'Unrecognized mode: {lattice}')
 
     # Parse offset and spacing args
-    if isinstance(offset, int):
-        offset = [offset]*im.ndim
+    if spacing is None:
+        spacing = 2*radius
     if isinstance(spacing, int):
         spacing = [spacing]*im.ndim
+    if offset is None:
+        offset = radius
+    if isinstance(offset, int):
+        offset = [offset]*im.ndim
 
     if lattice == 'sq':
         im[offset[0]::spacing[0],
