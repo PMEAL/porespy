@@ -98,7 +98,7 @@ class FilterTest():
         ps.filters.apply_chords_3D(self.im)
 
     def test_flood(self):
-        im = ~ps.generators.lattice_spheres(shape=[100, 100], offset=3,
+        im = ~ps.generators.lattice_spheres(shape=[100, 100], spacing=26,
                                             radius=10)
         sz = ps.filters.flood(im*2.0, mode='max')
         assert np.all(np.unique(sz) == [0, 2])
