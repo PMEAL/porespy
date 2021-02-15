@@ -11,7 +11,8 @@ from porespy.filters import find_dt_artifacts
 from porespy import settings
 from collections import namedtuple
 from skimage import measure
-from tqdm import tqdm
+from porespy.tools import get_tqdm
+tqdm = get_tqdm()
 
 
 def representative_elementary_volume(im, npoints=1000):

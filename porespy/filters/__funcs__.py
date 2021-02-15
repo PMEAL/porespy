@@ -1,4 +1,3 @@
-import sys
 import dask
 import dask.array as da
 from dask.diagnostics import ProgressBar
@@ -7,7 +6,6 @@ import numpy as np
 from numba import njit, prange
 from edt import edt
 import operator as op
-from tqdm import tqdm
 import scipy.ndimage as spim
 import scipy.spatial as sptl
 from collections import namedtuple
@@ -19,6 +17,8 @@ from porespy.tools import get_border, extend_slice, extract_subsection
 from porespy.tools import _create_alias_map
 from porespy.tools import ps_disk, ps_ball
 from porespy import settings
+from porespy.tools import get_tqdm
+tqdm = get_tqdm()
 
 
 def apply_padded(im, pad_width, func, pad_val=1, **kwargs):

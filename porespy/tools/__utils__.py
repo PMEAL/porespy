@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import importlib
 
 
 @dataclass
@@ -26,3 +27,23 @@ class Settings:
                 s += ''.join((item, ':\t'))
                 s += ''.join((getattr(self, item).__repr__(), '\n'))
         return s
+
+
+def get_tqdm():
+    r"""
+    Fetches a version of the ``tqdm`` function that depends on the environment
+
+    Either text-based for the IPython console or gui-based for Jupyter
+    notebooks.
+
+    Returns
+    -------
+    tqdm : function handle
+        The function to use when wrapping an iterator (i.e. tqdm(range(n)))
+    """
+    s = Settings()
+    if s.notebook is True:
+        tqdm = importlib.import_module('tqdm.notebook')
+    else:
+        tqdm = importlib.import_module('tqdm')
+    return tqdm.tqdm

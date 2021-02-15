@@ -10,7 +10,8 @@ from porespy.tools import norm_to_uniform, ps_ball, ps_disk, get_border
 from porespy import settings
 from typing import List
 from numpy import array
-from tqdm import tqdm
+from porespy.tools import get_tqdm
+tqdm = get_tqdm()
 
 
 def insert_shape(im, element, center=None, corner=None, value=1, mode="overwrite"):

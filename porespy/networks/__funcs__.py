@@ -1,16 +1,16 @@
 import sys
 import numpy as np
 import openpnm as op
-from tqdm import tqdm
 from porespy.tools import make_contiguous
 from skimage.segmentation import find_boundaries
 from skimage.morphology import ball, cube
+from skimage.segmentation import relabel_sequential
 from porespy.tools import _create_alias_map, overlay
 from porespy.tools import insert_cylinder
 from porespy.tools import zero_corners
 from porespy import settings
-from skimage.segmentation import relabel_sequential
-
+from porespy.tools import get_tqdm
+tqdm = get_tqdm()
 
 def map_to_regions(regions, values):
     r"""

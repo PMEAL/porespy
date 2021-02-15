@@ -94,4 +94,4 @@ from .__funcs__ import size_to_seq
 from .__funcs__ import subdivide
 from .__funcs__ import zero_corners
 from .__funcs__ import sanitize_filename
-from .__utils__ import Settings
+from .__utils__ import get_tqdm

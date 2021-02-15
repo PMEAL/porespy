@@ -1,11 +1,11 @@
 import numpy as np
 import openpnm as op
-from tqdm import tqdm
 import scipy.ndimage as spim
 from porespy.tools import extend_slice
 from porespy import settings
 import openpnm.models.geometry as op_gm
-
+from porespy.tools import get_tqdm
+tqdm = get_tqdm()
 
 def regions_to_network(im, dt=None, voxel_size=1):
     r"""
