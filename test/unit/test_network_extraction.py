@@ -3,7 +3,7 @@ import numpy as np
 import porespy as ps
 import openpnm as op
 from numpy.testing import assert_allclose
-
+import os
 
 class NetExtractTest():
     def setup_class(self):
@@ -180,8 +180,19 @@ class NetExtractTest():
         net = proj.network
         Ps = net.pores(["void", "solid"] + boundary_faces)
         assert Ps.size == net.Np == 74
-
-
+        
+    def test_max_ball(self):
+        im = ps.generators.blobs(shape=[200, 200, 200], porosity=.5, blobiness=2)
+        ps.networks.maximal_ball(im, 'test_maxball', '../fixtures/pnextract.exe', voxel_size=1e-6)
+        assert os.path.isfile("test_maxball_link1.dat")
+        assert os.path.isfile("test_maxball_link2.dat")
+        assert os.path.isfile("test_maxball_node1.dat")
+        assert os.path.isfile("test_maxball_node2.dat")
+        os.remove("test_maxball_link1.dat")
+        os.remove("test_maxball_link2.dat")
+        os.remove("test_maxball_node1.dat")
+        os.remove("test_maxball_node2.dat")
+                  
 if __name__ == '__main__':
     t = NetExtractTest()
     self = t

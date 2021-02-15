@@ -6,7 +6,7 @@ import psutil
 import time
 
 
-def maximal_ball(im, filename, path, voxel_size=1):
+def maximal_ball(im, filename, path, voxel_size=1e-6):
     r"""
     Implementing a maximal ball algorithm on an image
     
@@ -19,7 +19,7 @@ def maximal_ball(im, filename, path, voxel_size=1):
     path : string
         path to the maximal ball .exe file (pnextract.exe)
     voxel_size : scalar
-        The size of a voxel side in preferred units.  The default is 1, so the
+        The size of a voxel side in preferred units.  The default is 1e-6, so the
         user can apply the scaling to the returned results after the fact.
   
     Notes
