@@ -247,7 +247,7 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200):
 
 
 def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
-                         max_dim=None, verbose=1, rtol=0.1):
+                         max_dim=None, rtol=0.1):
     r"""
     Generates voxel image from an OpenPNM network object.
 
@@ -255,16 +255,12 @@ def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
     ----------
     network : OpenPNM GenericNetwork
         Network from which voxel image is to be generated
-
     pore_shape : str
         Shape of pores in the network, valid choices are "sphere", "cube"
-
     throat_shape : str
         Shape of throats in the network, valid choices are "cylinder", "cuboid"
-
     max_dim : int
         Number of voxels in the largest dimension of the network
-
     rtol : float
         Stopping criteria for finding the smallest voxel image such that
         further increasing the number of voxels in each dimension by 25% would
@@ -284,15 +280,14 @@ def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
     further increasing it doesn't change porosity by much.
 
     """
-    if verbose:
-        print("\n" + "-" * 44, flush=True)
-        print("| Generating voxel image from pore network |", flush=True)
-        print("-" * 44, flush=True)
+    print("\n" + "-" * 44, flush=True)
+    print("| Generating voxel image from pore network |", flush=True)
+    print("-" * 44, flush=True)
 
     # If max_dim is provided, generate voxel image using max_dim
     if max_dim is not None:
         return _generate_voxel_image(network, pore_shape, throat_shape,
-                                     max_dim=max_dim, verbose=verbose)
+                                     max_dim=max_dim)
     else:
         max_dim = 200
 
@@ -301,18 +296,16 @@ def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
     err = 100  # percent
 
     while err > rtol:
-        if verbose:
-            print(f"\nMaximum dimension in voxels: {max_dim}", flush=True)
+        print(f"\nMaximum dimension in voxels: {max_dim}", flush=True)
         im = _generate_voxel_image(network, pore_shape, throat_shape,
-                                   max_dim=max_dim, verbose=verbose)
+                                   max_dim=max_dim)
         eps = im.astype(bool).sum() / np.prod(im.shape)
 
         err = abs(1 - eps / eps_old)
         eps_old = eps
         max_dim = int(max_dim * 1.25)
 
-    if verbose:
-        print(f"\nConverged at max_dim = {max_dim} voxels.\n")
+    print(f"\nConverged at max_dim = {max_dim} voxels.\n")
 
     return im
 
