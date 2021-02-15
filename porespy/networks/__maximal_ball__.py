@@ -60,4 +60,3 @@ def checkIfProcessRunning(processName):
         except (psutil.NoSuchProcess, psutil.AccessDenied):
             pass
     return False
-
