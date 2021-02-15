@@ -320,15 +320,16 @@ def extract_cylinder(im, r=None, axis=0):
         ``False``.
 
     """
-    if r is None:
-        a = list(im.shape)
-        a.pop(axis)
-        r = np.floor(np.amin(a) / 2)
-    dim = [range(int(-s / 2), int(s / 2) + s % 2) for s in im.shape]
-    inds = np.meshgrid(*dim, indexing='ij')
-    inds[axis] = inds[axis] * 0
-    d = np.sqrt(np.sum(sp.square(inds), axis=0))
-    mask = d < r
+    # This needs to be imported here since the tools module is imported
+    # before the generators module, so placing it at the top of the file
+    # causes an error since the generators module does not exist yet.
+    # Strangly, if I import the ENTIRE package at the top of the file then
+    # things work ok, but this seems quite silly compared to just importing
+    # the function on demand. This is explained in the following
+    # stackoverflow answer: https://stackoverflow.com/a/129810.
+
+    from porespy.generators import cylindrical_plug
+    mask = cylindrical_plug(shape=im.shape, r=r, axis=axis)
     im_temp = im * mask
     return im_temp
 
@@ -640,7 +641,7 @@ def get_border(shape, thickness=1, mode='edges', return_indices=False):
     ``return_indices`` it finds them using ``np.where``.  Since these arrays
     are cubic it should be possible to use more elegant and efficient
     index-based logic to find the indices, then use them to fill an empty
-    image with ``True`` using these     indices.
+    image with ``True`` using these indices.
 
     Examples
     --------
@@ -840,46 +841,101 @@ def mesh_region(region: bool, strel=None):
     return result
 
 
-def ps_disk(radius):
+def ps_disk(r, smooth=True):
     r"""
     Creates circular disk structuring element for morphological operations
 
     Parameters
     ----------
-    radius : float or int
+    r : float or int
         The desired radius of the structuring element
+    smooth : boolean
+        Indicates whether the faces of the sphere should have the little
+        nibs (``True``) or not (``False``, default)
 
     Returns
     -------
-    strel : 2D-array
+    disk : 2D-array
         A 2D numpy bool array of the structring element
     """
-    rad = int(np.ceil(radius))
-    other = np.ones((2 * rad + 1, 2 * rad + 1), dtype=bool)
-    other[rad, rad] = False
-    disk = edt(other) < radius
+    disk = ps_round(r=r, ndim=2, smooth=smooth)
     return disk
 
 
-def ps_ball(radius):
+def ps_ball(r, smooth=True):
     r"""
     Creates spherical ball structuring element for morphological operations
 
     Parameters
     ----------
-    radius : float or int
+    r : scalar
         The desired radius of the structuring element
+    smooth : boolean
+        Indicates whether the faces of the sphere should have the little
+        nibs (``True``) or not (``False``, default)
+
+    Returns
+    -------
+    ball : 3D-array
+        A 3D numpy array of the structuring element
+    """
+    ball = ps_round(r=r, ndim=3, smooth=smooth)
+    return ball
+
+
+def ps_round(r, ndim, smooth=True):
+    r"""
+    Creates round structuring element with the given radius and dimensionality
+
+    Parameters
+    ----------
+    r : scalar
+        The desired radius of the structuring element
+    ndim : int
+        The dimensionality of the element, either 2 or 3.
+    smooth : boolean
+        Indicates whether the faces of the sphere should have the little
+        nibs (``True``) or not (``False``, default)
 
     Returns
     -------
     strel : 3D-array
         A 3D numpy array of the structuring element
     """
-    rad = int(np.ceil(radius))
-    other = np.ones((2 * rad + 1, 2 * rad + 1, 2 * rad + 1), dtype=bool)
-    other[rad, rad, rad] = False
-    ball = edt(other) < radius
+    rad = int(np.ceil(r))
+    other = np.ones([2*rad + 1 for i in range(ndim)], dtype=bool)
+    other[tuple(rad for i in range(ndim))] = False
+    if smooth:
+        ball = edt(other) < r
+    else:
+        ball = edt(other) <= r
     return ball
+
+
+def ps_rect(w, ndim):
+    r"""
+    Creates rectilinear structuring element with the given size and
+    dimensionality
+
+    Parameters
+    ----------
+    w : scalar
+        The desired width of the structuring element
+    ndim : int
+        The dimensionality of the element, either 2 or 3.
+
+    Returns
+    -------
+    strel : D-aNrray
+        A numpy array of the structuring element
+    """
+    if ndim == 2:
+        from skimage.morphology import square
+        strel = square(w)
+    if ndim == 3:
+        from skimage.morphology import cube
+        strel = cube(w)
+    return strel
 
 
 def overlay(im1, im2, c):

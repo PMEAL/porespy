@@ -98,7 +98,7 @@ class FilterTest():
         ps.filters.apply_chords_3D(self.im)
 
     def test_flood(self):
-        im = ~ps.generators.lattice_spheres(shape=[100, 100], offset=3,
+        im = ~ps.generators.lattice_spheres(shape=[100, 100], spacing=26,
                                             radius=10)
         sz = ps.filters.flood(im*2.0, mode='max')
         assert np.all(np.unique(sz) == [0, 2])
@@ -246,8 +246,8 @@ class FilterTest():
 
     def test_local_thickness_known_sizes(self):
         im = np.zeros(shape=[300, 300])
-        im = ps.generators.RSA(im=im, radius=20)
-        im = ps.generators.RSA(im=im, radius=10)
+        im = ps.generators.RSA(im, radius=20)
+        im = ps.generators.RSA(im, radius=10)
         im = im > 0
         lt = ps.filters.local_thickness(im, sizes=[20, 10])
         assert np.all(np.unique(lt) == [0, 10, 20])
