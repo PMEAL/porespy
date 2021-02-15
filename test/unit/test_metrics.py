@@ -12,14 +12,14 @@ class MetricsTest():
 
     def setup_class(self):
         np.random.seed(0)
-        self.im2D = ps.generators.lattice_spheres(shape=[100, 100],
-                                                  radius=5, offset=2,
+        self.im2D = ps.generators.lattice_spheres(shape=[101, 101],
+                                                  radius=5, spacing=15,
                                                   lattice='square')
         self.im2D_big = ps.generators.lattice_spheres(shape=[500, 500],
-                                                      radius=10, offset=10,
+                                                      radius=10, spacing=25,
                                                       lattice='square')
         self.im3D = ps.generators.lattice_spheres(shape=[51, 51, 51],
-                                                  radius=4, offset=2,
+                                                  radius=4, spacing=14,
                                                   lattice='cubic')
         self.blobs = ps.generators.blobs(shape=[101, 101, 101], porosity=0.5,
                                          blobiness=[1, 2, 3])
@@ -29,7 +29,7 @@ class MetricsTest():
 
     def test_porosity(self):
         phi = ps.metrics.porosity(im=self.im2D)
-        assert phi == 0.6619
+        assert np.allclose(phi, 0.66856)
 
     def test_tpcf_fft_2d(self):
         tpcf_fft_1 = ps.metrics.two_point_correlation_fft(self.im2D)
@@ -56,11 +56,11 @@ class MetricsTest():
         assert np.sum(psd.satn) == 1.0
 
     def test_two_point_correlation_bf(self):
-        tpcf_bf = ps.metrics.two_point_correlation_bf(self.im2D)
+        tpcf_bf = ps.metrics.two_point_correlation_bf(self.im2D, spacing=4)
         # autocorrelation fn should level off at around the porosity
-        t = 0.2
+        tol = 0.05
         phi1 = ps.metrics.porosity(im=self.im2D)
-        assert np.sqrt((np.mean(tpcf_bf.probability[-5:]) - phi1)**2) < t
+        assert np.sqrt((np.mean(tpcf_bf.probability[-5:]) - phi1)**2) < tol
         # Throw warning if image contains a singleton axis
         with pytest.warns(UserWarning):
             _ = ps.metrics.two_point_correlation_bf(np.atleast_3d(self.im2D))
@@ -85,7 +85,7 @@ class MetricsTest():
 
     def test_porosity_profile(self):
         im = ps.generators.lattice_spheres(shape=[999, 999],
-                                           radius=15, offset=4)
+                                           radius=15, spacing=38)
         p = ps.metrics.porosity_profile(im, axis=0)
         assert p.max() == 1.0
         assert_allclose(p.min(), 0.24524524524524523)
