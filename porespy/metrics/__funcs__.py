@@ -337,7 +337,7 @@ def chord_length_distribution(im, bins=None, log=False, voxel_size=1,
         raise Exception('Unsupported normalization:', normalization)
     h = _parse_histogram(h)
     cld = namedtuple('chord_length_distribution',
-                     (log * 'log' + 'L', 'pdf', 'cdf', 'relfreq',
+                     (log * 'Log' + 'L', 'pdf', 'cdf', 'relfreq',
                       'bin_centers', 'bin_edges', 'bin_widths'))
     return cld(h.bin_centers, h.pdf, h.cdf, h.relfreq,
                h.bin_centers, h.bin_edges, h.bin_widths)
@@ -403,7 +403,7 @@ def pore_size_distribution(im, bins=10, log=True, voxel_size=1):
         vals = np.log10(vals)
     h = _parse_histogram(np.histogram(vals, bins=bins, density=True))
     psd = namedtuple('pore_size_distribution',
-                     (log * 'log' + 'R', 'pdf', 'cdf', 'satn',
+                     (log * 'Log' + 'R', 'pdf', 'cdf', 'satn',
                       'bin_centers', 'bin_edges', 'bin_widths'))
     return psd(h.bin_centers, h.pdf, h.cdf, h.relfreq,
                h.bin_centers, h.bin_edges, h.bin_widths)
