@@ -11,7 +11,7 @@ class NetExtractTest():
         self.snow = ps.filters.snow_partitioning(self.im, return_all=True)
         self.im3d = ps.generators.blobs(shape=[50, 50, 50])
         self.snow3d = ps.filters.snow_partitioning(self.im3d, return_all=True)
-
+        
     def test_regions_to_network(self):
         im = self.snow.regions*self.im
         net = ps.networks.regions_to_network(im)
@@ -182,12 +182,11 @@ class NetExtractTest():
         assert Ps.size == net.Np == 74
         
     def test_max_ball(self):
-        im = ps.generators.blobs(shape=[200, 200, 200], porosity=.5, blobiness=2)
-        ps.networks.maximal_ball(im, 'test_maxball', '../fixtures/pnextract.exe', voxel_size=1e-6)
-        assert os.path.isfile("test_maxball_link1.dat")
-        assert os.path.isfile("test_maxball_link2.dat")
-        assert os.path.isfile("test_maxball_node1.dat")
-        assert os.path.isfile("test_maxball_node2.dat")
+        ps.networks.maximal_ball(self.im3d, 'test_maxball', '..//fixtures//pnextract', voxel_size=1e-6)
+        assert os.path.isfile("test_maxball_link1")
+        assert os.path.isfile("test_maxball_link2")
+        assert os.path.isfile("test_maxball_node1")
+        assert os.path.isfile("test_maxball_node2")
         os.remove("test_maxball_link1.dat")
         os.remove("test_maxball_link2.dat")
         os.remove("test_maxball_node1.dat")
