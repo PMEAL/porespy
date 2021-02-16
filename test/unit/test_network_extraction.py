@@ -186,7 +186,7 @@ class NetExtractTest():
         assert Ps.size == net.Np == 74
         
     def test_max_ball(self):
-        path = (Path(realpath(__file__), '../../fixtures/pnextract.exe'))
+        path = Path(realpath(__file__), '../../fixtures/pnextract.exe')
         ps.networks.maximal_ball(self.im3d, 'test_maxball', path, voxel_size=1e-6)
         assert os.path.isfile("test_maxball_link1.dat")
         assert os.path.isfile("test_maxball_link2.dat")
