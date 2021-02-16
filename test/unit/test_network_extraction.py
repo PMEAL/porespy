@@ -4,6 +4,10 @@ import porespy as ps
 import openpnm as op
 from numpy.testing import assert_allclose
 import os
+from os.path import realpath
+from pathlib import Path
+
+
 
 class NetExtractTest():
     def setup_class(self):
@@ -182,7 +186,8 @@ class NetExtractTest():
         assert Ps.size == net.Np == 74
         
     def test_max_ball(self):
-        ps.networks.maximal_ball(self.im3d, 'test_maxball', '..//fixtures//pnextract', voxel_size=1e-6)
+        path = (Path(realpath(__file__), '../../fixtures/pnextract.exe'))
+        ps.networks.maximal_ball(self.im3d, 'test_maxball', path, voxel_size=1e-6)
         assert os.path.isfile("test_maxball_link1.dat")
         assert os.path.isfile("test_maxball_link2.dat")
         assert os.path.isfile("test_maxball_node1.dat")
