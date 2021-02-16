@@ -183,10 +183,10 @@ class NetExtractTest():
         
     def test_max_ball(self):
         ps.networks.maximal_ball(self.im3d, 'test_maxball', '..//fixtures//pnextract', voxel_size=1e-6)
-        assert os.path.isfile("test_maxball_link1")
-        assert os.path.isfile("test_maxball_link2")
-        assert os.path.isfile("test_maxball_node1")
-        assert os.path.isfile("test_maxball_node2")
+        assert os.path.isfile("test_maxball_link1.dat")
+        assert os.path.isfile("test_maxball_link2.dat")
+        assert os.path.isfile("test_maxball_node1.dat")
+        assert os.path.isfile("test_maxball_node2.dat")
         os.remove("test_maxball_link1.dat")
         os.remove("test_maxball_link2.dat")
         os.remove("test_maxball_node1.dat")
