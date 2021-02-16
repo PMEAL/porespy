@@ -17,4 +17,3 @@ imagej
 """
 
 from .__funcs__ import imagej_wrapper
-

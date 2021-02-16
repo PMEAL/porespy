@@ -25,4 +25,3 @@ if __name__ == "__main__":
         if item.startswith("test"):
             print(f"Running test: {item}")
             t.__getattribute__(item)()
-
