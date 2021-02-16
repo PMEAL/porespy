@@ -8,13 +8,13 @@ imagej
 
 .. autosummary::
 
-    porespy.filters.watershed_ij
-    porespy.filters.distance_transform_ij
+    porespy.imagej.imagej_wrapper
 
-.. autofunction:: watershed_ij
-.. autofunction:: distance_transform_ij
+
+.. autofunction:: imagej_wrapper
+
 
 """
 
-from .__funcs__ import watershed_ij
-from .__funcs__ import distance_transform_ij
+from .__funcs__ import imagej_wrapper
+
