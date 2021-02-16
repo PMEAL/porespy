@@ -5,6 +5,7 @@ import warnings
 from edt import edt
 from collections import namedtuple
 from skimage.morphology import ball, disk
+from skimage.segmentation import relabel_sequential
 from array_split import shape_split, ARRAY_BOUNDS
 from scipy.signal import fftconvolve
 try:
@@ -556,9 +557,9 @@ def make_contiguous(im, keep_zeros=True):
     Take an image with arbitrary greyscale values and adjust them to ensure
     all values fall in a contiguous range starting at 0.
 
-    This function will handle negative numbers such that most negative number
-    will become 0, *unless* ``keep_zeros`` is ``True`` in which case it will
-    become 1, and all 0's in the original image remain 0.
+    This function will handle negative numbers such that the most negative
+    number will become 0, *unless* ``keep_zeros`` is ``True`` in which case
+    it will become 1, and all 0's in the original image remain 0.
 
     Parameters
     ----------
@@ -567,7 +568,7 @@ def make_contiguous(im, keep_zeros=True):
 
     keep_zeros : Boolean
         If ``True`` (default) then 0 values remain 0, regardless of how the
-        other numbers are adjusted.  This is mostly relevant when the array
+        other numbers are adjusted.  This is only relevant when the array
         contains negative numbers, and means that -1 will become +1, while
         0 values remain 0.
 
@@ -588,18 +589,14 @@ def make_contiguous(im, keep_zeros=True):
      [3 4 2]]
 
     """
-    im = np.copy(im)
     if keep_zeros:
-        mask = (im == 0)
-        im[mask] = im.min() - 1
-    im = im - im.min()
-    im_flat = im.flatten()
-    im_vals = np.unique(im_flat)
-    im_map = np.zeros(shape=np.amax(im_flat) + 1)
-    im_map[im_vals] = np.arange(0, np.size(np.unique(im_flat)))
-    im_new = im_map[im_flat]
-    im_new = np.reshape(im_new, newshape=np.shape(im))
-    im_new = np.array(im_new, dtype=im_flat.dtype)
+        mask = im == 0
+        im = im + np.abs(np.min(im)) + 1
+        im[mask] = 0
+    elif np.min(im) < 0:
+        im = im + np.abs(np.min(im))
+
+    im_new = relabel_sequential(im)[0]
     return im_new
 
 
