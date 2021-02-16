@@ -102,10 +102,13 @@ class MetricsTest():
 
     def test_chord_length_distribution_2D(self):
         chords = ps.filters.apply_chords(self.im2D)
-        cld = ps.metrics.chord_length_distribution(chords, normalization='length')
-        assert not hasattr(cld, "logL")
-        cld = ps.metrics.chord_length_distribution(chords, normalization='length', log=1)
-        assert hasattr(cld, "logL")
+        cld = ps.metrics.chord_length_distribution(chords,
+                                                   normalization='length')
+        assert not hasattr(cld, "LogL")
+        cld = ps.metrics.chord_length_distribution(chords,
+                                                   normalization='length',
+                                                   log=1)
+        assert hasattr(cld, "LogL")
         with pytest.raises(Exception):
             cld = ps.metrics.chord_length_distribution(chords,
                                                        normalization='unsupported_norm')

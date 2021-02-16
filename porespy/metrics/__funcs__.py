@@ -152,7 +152,7 @@ def radial_density_distribution(im, bins=10, log=False, voxel_size=1):
     result : named_tuple
         A named-tuple containing several 1D arrays:
 
-        *R* - radius, equivalent to ``bin_centers``
+        *R* or *LogR* - radius, equivalent to ``bin_centers``
 
         *pdf* - probability density function
 
@@ -189,10 +189,12 @@ def radial_density_distribution(im, bins=10, log=False, voxel_size=1):
     mask = find_dt_artifacts(im) == 0
     im[mask] = 0
     x = im[im > 0].flatten()
+    if log:
+        x = np.log10(x)
     h = np.histogram(x, bins=bins, density=True)
     h = _parse_histogram(h=h, voxel_size=voxel_size)
     rdf = namedtuple('radial_density_distribution',
-                     ('R', 'pdf', 'cdf', 'bin_centers', 'bin_edges',
+                     (log*'Log' + 'R', 'pdf', 'cdf', 'bin_centers', 'bin_edges',
                       'bin_widths'))
     return rdf(h.bin_centers, h.pdf, h.cdf, h.bin_centers, h.bin_edges,
                h.bin_widths)
@@ -239,10 +241,12 @@ def lineal_path_distribution(im, bins=25, voxel_size=1, log=False):
 
     """
     x = im[im > 0]
+    if log:
+        x = np.log10(x)
     h = list(np.histogram(x, bins=bins, density=True))
     h = _parse_histogram(h=h, voxel_size=voxel_size)
     cld = namedtuple('lineal_path_distribution',
-                     ('L', 'pdf', 'cdf', 'relfreq',
+                     (log*'Log'+'L', 'pdf', 'cdf', 'relfreq',
                       'bin_centers', 'bin_edges', 'bin_widths'))
     return cld(h.bin_centers, h.pdf, h.cdf, h.relfreq,
                h.bin_centers, h.bin_edges, h.bin_widths)
@@ -264,18 +268,15 @@ def chord_length_distribution(im, bins=None, log=False, voxel_size=1,
         case it is assumed that chords have already been identifed and labeled.
         In both cases, the size of each chord will be computed as the number
         of voxels belonging to each labelled region.
-
     bins : scalar or array_like
         If a scalar is given it is interpreted as the number of bins to use,
         and if an array is given they are used as the bins directly.
-
     log : boolean
         If ``True`` (default) the size data is converted to log (base-10)
         values before processing.  This can help to plot wide size
         distributions or to better visualize the in the small size region.
         Note that you should not anti-log the radii values in the retunred
         ``tuple``, since the binning is performed on the logged radii values.
-
     normalization : string
         Indicates how to normalize the bin heights.  Options are:
 
@@ -287,7 +288,6 @@ def chord_length_distribution(im, bins=None, log=False, voxel_size=1,
         chord length (i.e. bin size).  The normalization scheme accounts for
         the fact that long chords are less frequent than shorert chords,
         thus giving a more balanced distribution.
-
     voxel_size : scalar
         The size of a voxel side in preferred units.  The default is 1, so the
         user can apply the scaling to the returned results after the fact.
@@ -298,7 +298,7 @@ def chord_length_distribution(im, bins=None, log=False, voxel_size=1,
         A tuple containing the following elements, which can be retrieved by
         attribute name:
 
-        *L* or *logL* - chord length, equivalent to ``bin_centers``
+        *L* or *LogL* - chord length, equivalent to ``bin_centers``
 
         *pdf* - probability density function
 
