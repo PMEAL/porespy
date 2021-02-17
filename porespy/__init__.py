@@ -78,8 +78,12 @@ Use some filters from PoreSpy:
 
 
 '''
-
+import sys as _sys
 from .__version__ import __version__
+from .tools.__utils__ import Settings as _Settings
+
+settings = _Settings()
+settings.notebook = _sys.argv[-1].endswith('json')
 
 from . import tools
 from . import filters
@@ -93,5 +97,5 @@ from . import imagej
 
 from .visualization import imshow
 
-import numpy
-numpy.seterr(divide='ignore', invalid='ignore')
+import numpy as _np
+_np.seterr(divide='ignore', invalid='ignore')

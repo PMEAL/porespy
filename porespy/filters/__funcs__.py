@@ -1,4 +1,3 @@
-import sys
 import dask
 import dask.array as da
 from dask.diagnostics import ProgressBar
@@ -7,7 +6,6 @@ import numpy as np
 from numba import njit, prange
 from edt import edt
 import operator as op
-from tqdm import tqdm
 import scipy.ndimage as spim
 import scipy.spatial as sptl
 from collections import namedtuple
@@ -18,6 +16,9 @@ from porespy.tools import randomize_colors, fftmorphology
 from porespy.tools import get_border, extend_slice, extract_subsection
 from porespy.tools import _create_alias_map
 from porespy.tools import ps_disk, ps_ball
+from porespy import settings
+from porespy.tools import get_tqdm
+tqdm = get_tqdm()
 
 
 def apply_padded(im, pad_width, func, pad_val=1, **kwargs):
@@ -798,8 +799,9 @@ def trim_nonpercolating_paths(im, inlet_axis=0, outlet_axis=0,
             " Reduce dimensionality with np.squeeze(im) to avoid"
             " unexpected behavior."
         ))
-    im = trim_floating_solid(~im)
-    labels = spim.label(~im)[0]
+    labels = spim.label(im)[0]
+    # The following non-sense is only needed to support the inlet/outlet_axis
+    # arguments which will be removed in V2.0
     if inlets is None:
         inlets = np.zeros_like(im, dtype=bool)
         if im.ndim == 3:
@@ -830,9 +832,9 @@ def trim_nonpercolating_paths(im, inlet_axis=0, outlet_axis=0,
                 outlets[:, -1] = True
     IN = np.unique(labels * inlets)
     OUT = np.unique(labels * outlets)
-    new_im = np.isin(labels, list(set(IN) ^ set(OUT)), invert=True)
-    im[new_im == 0] = True
-    return ~im
+    hits = np.array(list(set(IN).intersection(set(OUT))))
+    new_im = np.isin(labels, hits[hits > 0])
+    return new_im
 
 
 def trim_extrema(im, h, mode="maxima"):
@@ -1298,9 +1300,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
         inlets = np.pad(inlets, mode="symmetric", pad_width=pw)
         # sizes = np.unique(np.around(sizes, decimals=0).astype(int))[-1::-1]
         imresults = np.zeros(np.shape(impad))
-        pbar = tqdm(sizes, file=sys.stdout)
-        for r in sizes:
-            pbar.update()
+        for r in tqdm(sizes, **settings.tqdm):
             if parallel:
                 imtemp = chunked_func(func=spim.binary_erosion,
                                       input=impad, structure=strel(r),
@@ -1328,9 +1328,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
         imresults = extract_subsection(imresults, shape=im.shape)
     elif mode == "dt":
         imresults = np.zeros(np.shape(im))
-        pbar = tqdm(sizes, file=sys.stdout)
-        for r in sizes:
-            pbar.update()
+        for r in tqdm(sizes, **settings.tqdm):
             imtemp = dt >= r
             if access_limited:
                 imtemp = trim_disconnected_blobs(imtemp, inlets)
@@ -1339,9 +1337,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
                 imresults[(imresults == 0) * imtemp] = r
     elif mode == "hybrid":
         imresults = np.zeros(np.shape(im))
-        pbar = tqdm(sizes, file=sys.stdout)
-        for r in sizes:
-            pbar.update()
+        for r in tqdm(sizes, **settings.tqdm):
             imtemp = dt >= r
             if access_limited:
                 imtemp = trim_disconnected_blobs(imtemp, inlets)
@@ -1716,11 +1712,8 @@ def chunked_func(func,
                 strel = kwargs[item]
                 break
         halo = np.array(strel.shape) * (divs > 1)
-    slices = np.ravel(
-        shape_split(
-            im.shape, axis=divs, halo=halo.tolist(), tile_bounds_policy=ARRAY_BOUNDS
-        )
-    )
+    slices = np.ravel(shape_split(im.shape, axis=divs, halo=halo.tolist(),
+                                  tile_bounds_policy=ARRAY_BOUNDS))
     # Apply func to each subsection of the image
     res = []
     # print('Image will be broken into the following chunks:')
@@ -1731,7 +1724,7 @@ def chunked_func(func,
         res.append(apply_func(func=func, **kwargs))
     # Have dask actually compute the function on each subsection in parallel
     # with ProgressBar():
-    #    ims = dask.compute(res, num_workers=cores)[0]
+        # ims = dask.compute(res, num_workers=cores)[0]
     ims = dask.compute(res, num_workers=cores)[0]
     # Finally, put the pieces back together into a single master image, im2
     im2 = np.zeros_like(im, dtype=im.dtype)
@@ -1756,7 +1749,11 @@ def chunked_func(func,
         a = tuple(a)
         b = tuple(b)
         # Insert image chunk into main image
-        im2[a] = ims[i][b]
+        try:
+            im2[a] = ims[i][b]
+        except ValueError:
+            raise IndexError('The applied filter seems to have returned a '
+                             + 'larger image that it was sent.')
     return im2
 
 
@@ -1908,7 +1905,7 @@ def snow_partitioning_parallel(im,
     # Stitching watershed chunks
     # print('-' * 80)
     print('Stitching watershed chunks')
-    regions = watershed_stitching(im=regions, chunk_shape=chunk_shape)
+    regions = _watershed_stitching(im=regions, chunk_shape=chunk_shape)
     print('=' * 80)
     if return_all:
         tup.regions = regions
@@ -2055,14 +2052,13 @@ def relabel_chunks(im, chunk_shape):  # pragma: no cover
     return im
 
 
-def trim_internal_slice(im, chunk_shape):  # pragma: no cover
+def _trim_internal_slice(im, chunk_shape):  # pragma: no cover
     r"""
     Delete extra slices from image that were used to stitch two or more chunks
     together.
 
     Parameters:
     -----------
-
     im :  ND-array
         image that contains extra slices in x, y, z direction.
 
@@ -2073,7 +2069,7 @@ def trim_internal_slice(im, chunk_shape):  # pragma: no cover
     -------
     output :  ND-array
         Image without extra internal slices. The shape of the image will be
-        same as input image provided for  waterhsed segmentation.
+        same as input image provided for waterhsed segmentation.
     """
     im_shape = np.array(im.shape, dtype=np.uint32)
     c1 = np.array(chunk_shape, dtype=np.uint32) + 2
@@ -2105,7 +2101,7 @@ def trim_internal_slice(im, chunk_shape):  # pragma: no cover
     return out
 
 
-def watershed_stitching(im, chunk_shape):
+def _watershed_stitching(im, chunk_shape):
     r"""
     Stitch individual sub-domains of watershed segmentation into one big
     segmentation with all boundary labels of each sub-domain relabeled to merge
@@ -2149,21 +2145,21 @@ def watershed_stitching(im, chunk_shape):
                                     'or manually input value.')
                 keys.append(sl1_labels)
                 values.append(sl2_labels)
-            im = replace_labels(array=im, keys=keys, values=values)
+            im = _replace_labels(array=im, keys=keys, values=values)
             im = im.swapaxes(axis, 0)
-    im = trim_internal_slice(im=im, chunk_shape=chunk_shape)
-    im = resequence_labels(array=im)
+    im = _trim_internal_slice(im=im, chunk_shape=chunk_shape)
+    im = _resequence_labels(array=im)
 
     return im
 
 
 @njit(parallel=True)
-def copy(im, output):  # pragma: no cover
+def _copy(im, output):  # pragma: no cover
     r"""
     The function copy the input array and make output array that is allocated
     in different memory space. This a numba version of copy function of numpy.
     Because each element is copied using parallel approach this implementation
-    is facter than numpy version of copy.
+    is faster than numpy version of copy.
 
     parameter:
     ----------
@@ -2223,7 +2219,7 @@ def _replace(array, keys, values, ind_sort):  # pragma: no cover
             array[i] = values_sorted[ind]
 
 
-def replace_labels(array, keys, values):
+def _replace_labels(array, keys, values):
     r"""
     Replace labels in array provided as keys to values.
 
@@ -2287,7 +2283,7 @@ def _sequence(array, count):  # pragma: no cover
 
 
 @njit(parallel=True)
-def amax(array):  # pragma: no cover
+def _amax(array):  # pragma: no cover
     r"""
     Find largest element in an array using fast parallel numba technique
 
@@ -2304,7 +2300,7 @@ def amax(array):  # pragma: no cover
     return np.max(array)
 
 
-def resequence_labels(array):
+def _resequence_labels(array):
     r"""
     Resequence the lablels to make them contigious.
 
@@ -2320,7 +2316,7 @@ def resequence_labels(array):
     """
     a_shape = array.shape
     array = array.ravel()
-    max_num = amax(array) + 1
+    max_num = _amax(array) + 1
     count = np.zeros(max_num, dtype=np.uint32)
     _sequence(array, count)
 
