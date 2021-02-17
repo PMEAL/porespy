@@ -101,3 +101,4 @@ from .__funcs__ import subdivide
 from .__funcs__ import zero_corners
 from .__funcs__ import sanitize_filename
 from .__utils__ import get_tqdm
+from .__utils__ import show_docstring

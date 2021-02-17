@@ -77,9 +77,9 @@ def get_tqdm():
 
 def show_docstring(func):
     r"""
-    Fetches docstring for function and returns in markdown format
+    Fetches the docstring for a function and returns it in markdown format
 
-    Useful for printing in a Jupyternote book
+    Useful for printing in a Jupyter notebook
 
     Parameters
     ----------
@@ -89,8 +89,8 @@ def show_docstring(func):
     Returns
     -------
     md : str
-        A text string with the markdown syntax included suitable for printing in
-        a Jupyter notebook with the ``IPython.display.Markdown`` function.
+        A text string with the markdown syntax included, suitable for printing in
+        a Jupyter notebook using the ``IPython.display.Markdown`` function.
     """
     from npdoc_to_md import render_md_from_obj_docstring
     title = f'---\n ## Documentation for {func.__name__}\n ---\n'
