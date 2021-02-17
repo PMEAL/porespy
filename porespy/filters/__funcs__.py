@@ -1,4 +1,3 @@
-import sys
 import dask
 import dask.array as da
 from dask.diagnostics import ProgressBar
@@ -7,7 +6,6 @@ import numpy as np
 from numba import njit, prange
 from edt import edt
 import operator as op
-from tqdm import tqdm
 import scipy.ndimage as spim
 import scipy.spatial as sptl
 from collections import namedtuple
@@ -18,6 +16,9 @@ from porespy.tools import randomize_colors, fftmorphology
 from porespy.tools import get_border, extend_slice, extract_subsection
 from porespy.tools import _create_alias_map
 from porespy.tools import ps_disk, ps_ball
+from porespy import settings
+from porespy.tools import get_tqdm
+tqdm = get_tqdm()
 
 
 def apply_padded(im, pad_width, func, pad_val=1, **kwargs):
@@ -1299,9 +1300,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
         inlets = np.pad(inlets, mode="symmetric", pad_width=pw)
         # sizes = np.unique(np.around(sizes, decimals=0).astype(int))[-1::-1]
         imresults = np.zeros(np.shape(impad))
-        pbar = tqdm(sizes, file=sys.stdout)
-        for r in sizes:
-            pbar.update()
+        for r in tqdm(sizes, **settings.tqdm):
             if parallel:
                 imtemp = chunked_func(func=spim.binary_erosion,
                                       input=impad, structure=strel(r),
@@ -1329,9 +1328,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
         imresults = extract_subsection(imresults, shape=im.shape)
     elif mode == "dt":
         imresults = np.zeros(np.shape(im))
-        pbar = tqdm(sizes, file=sys.stdout)
-        for r in sizes:
-            pbar.update()
+        for r in tqdm(sizes, **settings.tqdm):
             imtemp = dt >= r
             if access_limited:
                 imtemp = trim_disconnected_blobs(imtemp, inlets)
@@ -1340,9 +1337,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
                 imresults[(imresults == 0) * imtemp] = r
     elif mode == "hybrid":
         imresults = np.zeros(np.shape(im))
-        pbar = tqdm(sizes, file=sys.stdout)
-        for r in sizes:
-            pbar.update()
+        for r in tqdm(sizes, **settings.tqdm):
             imtemp = dt >= r
             if access_limited:
                 imtemp = trim_disconnected_blobs(imtemp, inlets)

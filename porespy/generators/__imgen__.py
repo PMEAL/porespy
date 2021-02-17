@@ -7,9 +7,11 @@ from skimage.morphology import disk, ball
 import scipy.spatial as sptl
 import scipy.ndimage as spim
 from porespy.tools import norm_to_uniform, ps_ball, ps_disk, get_border
+from porespy import settings
 from typing import List
 from numpy import array
-from tqdm import tqdm
+from porespy.tools import get_tqdm
+tqdm = get_tqdm()
 
 
 def insert_shape(im, element, center=None, corner=None, value=1, mode="overwrite"):
@@ -766,7 +768,7 @@ def perlin_noise(shape: List[int], porosity=None, octaves: int = 3,
     noise = np.zeros(shape)
     frequency = 1
     amplitude = 1
-    for _ in tqdm(range(octaves), file=sys.stdout):
+    for _ in tqdm(range(octaves), **settings.tqdm):
         if noise.ndim == 2:
             noise += amplitude * _perlin_noise_2D(shape, frequency * res)
         elif noise.ndim == 3:
@@ -997,25 +999,25 @@ def _cylinders(shape: List[int],
     im = np.zeros(shape, dtype=bool)
     n = 0
     L = min(H, R)
-    pbar = tqdm(total=ncylinders, file=sys.stdout, disable=not verbose)
-    while n < ncylinders:
-        # Choose a random starting point in domain
-        x = np.random.rand(3) * (shape + 2 * L)
-        # Chose a random phi and theta within given ranges
-        phi = (np.pi / 2 - np.pi * np.random.rand()) * phi_max / 90
-        theta = (np.pi / 2 - np.pi * np.random.rand()) * theta_max / 90
-        X0 = R * np.array([np.cos(phi) * np.cos(theta),
-                           np.cos(phi) * np.sin(theta),
-                           np.sin(phi)])
-        [X0, X1] = [x + X0, x - X0]
-        crds = line_segment(X0, X1)
-        lower = ~np.any(np.vstack(crds).T < [L, L, L], axis=1)
-        upper = ~np.any(np.vstack(crds).T >= shape + L, axis=1)
-        valid = upper * lower
-        if np.any(valid):
-            im[crds[0][valid] - L, crds[1][valid] - L, crds[2][valid] - L] = 1
-            n += 1
-            pbar.update()
+    with tqdm(ncylinders, **settings.tqdm) as pbar:
+        while n < ncylinders:
+            # Choose a random starting point in domain
+            x = np.random.rand(3) * (shape + 2 * L)
+            # Chose a random phi and theta within given ranges
+            phi = (np.pi / 2 - np.pi * np.random.rand()) * phi_max / 90
+            theta = (np.pi / 2 - np.pi * np.random.rand()) * theta_max / 90
+            X0 = R * np.array([np.cos(phi) * np.cos(theta),
+                               np.cos(phi) * np.sin(theta),
+                               np.sin(phi)])
+            [X0, X1] = [x + X0, x - X0]
+            crds = line_segment(X0, X1)
+            lower = ~np.any(np.vstack(crds).T < [L, L, L], axis=1)
+            upper = ~np.any(np.vstack(crds).T >= shape + L, axis=1)
+            valid = upper * lower
+            if np.any(valid):
+                im[crds[0][valid] - L, crds[1][valid] - L, crds[2][valid] - L] = 1
+                n += 1
+                pbar.update()
     im = np.array(im, dtype=bool)
     dt = edt(~im) < radius
     return ~dt
@@ -1143,13 +1145,13 @@ def cylinders(shape: List[int],
         fractions.append(fractions[i - 1] + (max_iter - i) ** 2 * subdif)
 
     im = np.ones(shape, dtype=bool)
-    for frac in tqdm(fractions, file=sys.stdout, desc="Adding fibers"):
+    for frac in tqdm(fractions, **settings.tqdm):
         n_fibers_total = n_pixels_to_add / vol_fiber
         n_fibers = int(np.ceil(frac * n_fibers_total) - n_fibers_added)
         if n_fibers > 0:
-            im = im & _cylinders(
-                shape, radius, n_fibers, phi_max, theta_max, length, verbose=False
-            )
+            im = im & _cylinders(shape, radius, n_fibers,
+                                 phi_max, theta_max, length,
+                                 verbose=False)
         n_fibers_added += n_fibers
         # Update parameters for next iteration
         porosity = ps.metrics.porosity(im)
@@ -1234,30 +1236,28 @@ def pseudo_gravity_packing(im, r, clearance=0, max_iter=1000):
     inlets[-(r+1), ...] = True
     sites = ps.filters.trim_disconnected_blobs(im=sites, inlets=inlets)
     x_min = np.where(sites)[0].min()
-    with tqdm(range(max_iter)) as pbar:
-        for _ in range(max_iter):
-            pbar.update()
-            if im.ndim == 2:
-                x, y = np.where(sites[x_min:x_min+2*r, ...])
-            else:
-                x, y, z = np.where(sites[x_min:x_min+2*r, ...])
-            if len(x) == 0:
-                break
-            options = np.where(x == x.min())[0]
-            if len(options) > 1:
-                choice = np.random.randint(0, len(options)-1)
-            else:
-                choice = 0
-            if im.ndim == 2:
-                cen = np.array([x[options[choice]] + x_min,
-                                y[options[choice]]])
-            else:
-                cen = np.array([x[options[choice]] + x_min,
-                                y[options[choice]],
-                                z[options[choice]]])
-            im = ps.tools.insert_sphere(im, c=cen, r=r - clearance, v=0)
-            sites = ps.tools.insert_sphere(sites, c=cen, r=2*r, v=0)
-            x_min += x.min()
+    for _ in tqdm(range(max_iter), **settings.tqdm):
+        if im.ndim == 2:
+            x, y = np.where(sites[x_min:x_min+2*r, ...])
+        else:
+            x, y, z = np.where(sites[x_min:x_min+2*r, ...])
+        if len(x) == 0:
+            break
+        options = np.where(x == x.min())[0]
+        if len(options) > 1:
+            choice = np.random.randint(0, len(options)-1)
+        else:
+            choice = 0
+        if im.ndim == 2:
+            cen = np.array([x[options[choice]] + x_min,
+                            y[options[choice]]])
+        else:
+            cen = np.array([x[options[choice]] + x_min,
+                            y[options[choice]],
+                            z[options[choice]]])
+        im = ps.tools.insert_sphere(im, c=cen, r=r - clearance, v=0)
+        sites = ps.tools.insert_sphere(sites, c=cen, r=2*r, v=0)
+        x_min += x.min()
     print('A total of', _, 'spheres were added')
     im = spim.minimum_filter(input=im, footprint=strel(1))
     return im
