@@ -47,3 +47,26 @@ def get_tqdm():
     else:
         tqdm = importlib.import_module('tqdm')
     return tqdm.tqdm
+
+
+def show_docstring(func):
+    r"""
+    Fetches docstring for function and returns in markdown format
+
+    Useful for printing in a Jupyternote book
+
+    Parameters
+    ----------
+    func : object
+        Function handle to function whose docstring is desired
+
+    Returns
+    -------
+    md : str
+        A text string with the markdown syntax included suitable for printing in
+        a Jupyter notebook with the ``IPython.display.Markdown`` function.
+    """
+    from npdoc_to_md import render_md_from_obj_docstring
+    title = f'---\n ## Documentation for {func.__name__}\n ---\n'
+    txt = render_md_from_obj_docstring(obj=func, obj_namespace=func.__name__)
+    return title + txt + '\n---'
