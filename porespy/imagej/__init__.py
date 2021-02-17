@@ -13,7 +13,6 @@ imagej
 
 .. autofunction:: imagej_wrapper
 
-
 """
 
 from .__funcs__ import imagej_wrapper

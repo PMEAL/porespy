@@ -81,7 +81,7 @@ class ExportTest():
         volume_total = np.prod(net.spacing * net.shape)
         porosity_desired = volume_void / volume_total
 
-        assert_allclose(actual=porosity_actual, desired=porosity_desired, rtol=0.05)
+        assert_allclose(actual=porosity_actual, desired=porosity_desired, rtol=0.1)
 
     def test_to_stl(self):
         im = ps.generators.blobs(shape=[50, 50, 50], spacing=0.1)

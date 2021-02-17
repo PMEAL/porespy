@@ -89,6 +89,7 @@ from . import generators
 from . import dns
 from . import visualization
 from . import io
+from . import imagej
 
 from .visualization import imshow
 
