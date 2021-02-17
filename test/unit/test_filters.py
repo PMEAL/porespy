@@ -424,6 +424,16 @@ class FilterTest():
         b = ps.filters.fftmorphology(im, strel=s, mode='erosion')
         assert np.all(a == b)
 
+    def test_chunked_func_w_ill_defined_filter(self):
+        import scipy.signal as spsg
+        im = ps.generators.blobs(shape=[100, 100, 100])
+        with pytest.raises(IndexError):
+            ps.filters.chunked_func(func=spsg.convolve,
+                                    in1=im*1.0,
+                                    in2=ps.tools.ps_ball(5),
+                                    im_arg='in1', strel_arg='in2',
+                                    overlap=5)
+
     def test_prune_branches(self):
         im = ps.generators.lattice_spheres(shape=[100, 100, 100], radius=4)
         skel1 = skeletonize_3d(im)

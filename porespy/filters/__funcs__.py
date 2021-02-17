@@ -1712,11 +1712,8 @@ def chunked_func(func,
                 strel = kwargs[item]
                 break
         halo = np.array(strel.shape) * (divs > 1)
-    slices = np.ravel(
-        shape_split(
-            im.shape, axis=divs, halo=halo.tolist(), tile_bounds_policy=ARRAY_BOUNDS
-        )
-    )
+    slices = np.ravel(shape_split(im.shape, axis=divs, halo=halo.tolist(),
+                                  tile_bounds_policy=ARRAY_BOUNDS))
     # Apply func to each subsection of the image
     res = []
     # print('Image will be broken into the following chunks:')
@@ -1727,7 +1724,7 @@ def chunked_func(func,
         res.append(apply_func(func=func, **kwargs))
     # Have dask actually compute the function on each subsection in parallel
     # with ProgressBar():
-    #    ims = dask.compute(res, num_workers=cores)[0]
+        # ims = dask.compute(res, num_workers=cores)[0]
     ims = dask.compute(res, num_workers=cores)[0]
     # Finally, put the pieces back together into a single master image, im2
     im2 = np.zeros_like(im, dtype=im.dtype)
@@ -1752,7 +1749,11 @@ def chunked_func(func,
         a = tuple(a)
         b = tuple(b)
         # Insert image chunk into main image
-        im2[a] = ims[i][b]
+        try:
+            im2[a] = ims[i][b]
+        except ValueError:
+            raise IndexError('The applied filter seems to have returned a '
+                             + 'larger image that it was sent.')
     return im2
 
 
