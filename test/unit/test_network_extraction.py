@@ -6,7 +6,7 @@ from numpy.testing import assert_allclose
 import os
 from os.path import realpath
 from pathlib import Path
-
+from platform import system
 
 
 class NetExtractTest():
@@ -187,15 +187,16 @@ class NetExtractTest():
         
     def test_max_ball(self):
         path = Path(realpath(__file__), '../../fixtures/pnextract.exe')
-        ps.networks.maximal_ball(self.im3d, 'test_maxball', path, voxel_size=1e-6)
-        assert os.path.isfile("test_maxball_link1.dat")
-        assert os.path.isfile("test_maxball_link2.dat")
-        assert os.path.isfile("test_maxball_node1.dat")
-        assert os.path.isfile("test_maxball_node2.dat")
-        os.remove("test_maxball_link1.dat")
-        os.remove("test_maxball_link2.dat")
-        os.remove("test_maxball_node1.dat")
-        os.remove("test_maxball_node2.dat")
+        if system() == 'Windows':
+            ps.networks.maximal_ball(self.im3d, 'test_maxball', path, voxel_size=1e-6)
+            assert os.path.isfile("test_maxball_link1.dat")
+            assert os.path.isfile("test_maxball_link2.dat")
+            assert os.path.isfile("test_maxball_node1.dat")
+            assert os.path.isfile("test_maxball_node2.dat")
+            os.remove("test_maxball_link1.dat")
+            os.remove("test_maxball_link2.dat")
+            os.remove("test_maxball_node1.dat")
+            os.remove("test_maxball_node2.dat")
                   
 if __name__ == '__main__':
     t = NetExtractTest()
