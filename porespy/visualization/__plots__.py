@@ -34,6 +34,9 @@ def bar(tup, h='pdf', **kwargs):
         kwargs['edgecolor'] = 'k'
     fig = plt.bar(x=tup.bin_centers, height=getattr(tup, h),
                   width=tup.bin_widths, **kwargs)
+    xlab = x = [attr for attr in tup.__dir__() if not attr.startswith('_')][0]
+    plt.xlabel(xlab)
+    plt.ylabel(h)
     return fig
 
 
