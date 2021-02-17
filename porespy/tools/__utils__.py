@@ -8,6 +8,23 @@ class Settings:
     A dataclass for use at the module level to store settings.  This class
     is defined as a Singleton so now matter how or where it gets instantiated
     the same object is returned, containing all existing settings.
+
+    Parameters
+    ----------
+    notebook : boolean
+        Is automatically determined upon initialization of PoreSpy, and is
+        ``True`` if running within a Jupyter notebook and ``False`` otherwise.
+        This is used by the ``porespy.tools.get_tqdm`` function to determine
+        whether a standard or a notebook version of the progress bar should
+        be used.
+    tqdm : dict
+        This dictionary is passed directly to the the ``tqdm`` function
+        throughout PoreSpy (i.e. ``for i in tqdm(range(N), **settings.tqdm)``).
+        To see a list of available options visit the tqdm website.  Probably
+        the most important is ``'disable'`` which when set to ``True`` will
+        silence the progress bars.  It's also possible to adjust the formatting
+        such as ``'colour'`` and ``'ncols'``, which controls width.
+
     """
     __instance__ = None
     notebook = False
@@ -21,11 +38,20 @@ class Settings:
         return Settings.__instance__
 
     def __repr__(self):
+        indent = 0
+        for item in self.__dir__():
+            if not item.startswith('_'):
+                indent = max(indent, len(item) + 1)
+        print(indent)
         s = ''
         for item in self.__dir__():
             if not item.startswith('_'):
-                s += ''.join((item, ':\t'))
-                s += ''.join((getattr(self, item).__repr__(), '\n'))
+                s += ''.join((item, ':', ' '*(indent-len(item))))
+                attr = getattr(self, item)
+                temp = ''.join((attr.__repr__(), '\n'))
+                if isinstance(attr, dict):
+                    temp = temp.replace(',', '\n' + ' '*(indent + 1))
+                s += temp
         return s
 
 
