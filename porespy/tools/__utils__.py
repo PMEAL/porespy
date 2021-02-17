@@ -92,7 +92,10 @@ def show_docstring(func):
         A text string with the markdown syntax included, suitable for printing in
         a Jupyter notebook using the ``IPython.display.Markdown`` function.
     """
-    from npdoc_to_md import render_md_from_obj_docstring
+    try:
+        from npdoc_to_md import render_md_from_obj_docstring
+    except ModuleNotFoundError:
+        raise ModuleNotFoundError('npdoc_to_md must be installed via pip')
     title = f'---\n ## Documentation for {func.__name__}\n ---\n'
     txt = render_md_from_obj_docstring(obj=func, obj_namespace=func.__name__)
     return title + txt + '\n---'
