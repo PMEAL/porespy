@@ -112,8 +112,6 @@ def gravity_mio(im, inlets, sigma=0.072, rho=1000, g=9.81, voxel_size=1):
     pc = 2*sigma/(dt*vx_res)
     fn = pc + rgh
 
-    # Perform standard mio on image for comparison
-    mio = ps.filters.porosimetry(im=im, inlets=inlets)
     # Use radii values in mio image for invasion steps
     Rs = np.unique(mio)[-1:0:-1]
     # Convert radii to capillary pressure, assuming perfectly wetting/non-wetting
