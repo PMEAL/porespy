@@ -42,7 +42,7 @@ def show_3D(im):
     return view
 
 
-def show_planes(im):
+def show_planes(im, spacing=10):
     r"""
     Create a quick montage showing a 3D image in all three directions
 
@@ -50,6 +50,8 @@ def show_planes(im):
     ----------
     im : ND-array
         A 3D image of the porous material
+    spacing : int (optional, default=10)
+        Controls the amount of space to put between each panel
 
     Returns
     -------
@@ -58,6 +60,7 @@ def show_planes(im):
         ``matplotlib.pyplot.imshow``.
 
     """
+    s = spacing
     if np.squeeze(im.ndim) < 3:
         raise Exception('This view is only necessary for 3D images')
     x, y, z = (np.array(im.shape)/2).astype(int)
@@ -65,52 +68,52 @@ def show_planes(im):
     im_xz = im[:, y, :]
     im_yz = np.rot90(im[x, :, :])
 
-    new_x = im_xy.shape[0] + im_yz.shape[0] + 10
+    new_x = im_xy.shape[0] + im_yz.shape[0] + s
 
-    new_y = im_xy.shape[1] + im_xz.shape[1] + 10
+    new_y = im_xy.shape[1] + im_xz.shape[1] + s
 
-    new_im = np.zeros([new_x + 20, new_y + 20], dtype=im.dtype)
+    new_im = np.zeros([new_x + 2*s, new_y + 2*s], dtype=im.dtype)
 
     # Add xy image to upper left corner
-    new_im[10:im_xy.shape[0]+10,
-           10:im_xy.shape[1]+10] = im_xy
+    new_im[s:im_xy.shape[0] + s,
+           s:im_xy.shape[1] + s] = im_xy
     # Add xz image to lower left coner
-    x_off = im_xy.shape[0]+20
-    y_off = im_xy.shape[1]+20
-    new_im[10:10 + im_xz.shape[0],
+    x_off = im_xy.shape[0] + 2*s
+    y_off = im_xy.shape[1] + 2*s
+    new_im[s:s + im_xz.shape[0],
            y_off:y_off + im_xz.shape[1]] = im_xz
     new_im[x_off:x_off + im_yz.shape[0],
-           10:10 + im_yz.shape[1]] = im_yz
+           s:s + im_yz.shape[1]] = im_yz
 
     return new_im
 
 
-def sem(im, direction='X'):
+def sem(im, axis=0):
     r"""
-    Simulates an SEM photograph looking into the porous material in the
-    specified direction.  Features are colored according to their depth into
-    the image, so darker features are further away.
+    Simulates an SEM photograph looking into the porous material.
+
+    Features are colored according to their depth into the image, so
+    darker features are further away.
 
     Parameters
     ----------
     im : array_like
         ND-image of the porous material with the solid phase marked as 1 or
         True
-
-    direction : string
-        Specify the axis along which the camera will point.  Options are
-        'X', 'Y', and 'Z'.
+    axis : int
+        Specifes the axis along which the camera will point.
 
     Returns
     -------
     image : 2D-array
-        A 2D greyscale image suitable for use in matplotlib\'s ```imshow```
+        A 2D greyscale image suitable for use in matplotlib's ``imshow``
         function.
+
     """
     im = np.array(~im, dtype=int)
-    if direction in ['Y', 'y']:
+    if axis == 1:
         im = np.transpose(im, axes=[1, 0, 2])
-    if direction in ['Z', 'z']:
+    if axis == 2:
         im = np.transpose(im, axes=[2, 1, 0])
     t = im.shape[0]
     depth = np.reshape(np.arange(0, t), [t, 1, 1])
@@ -119,12 +122,12 @@ def sem(im, direction='X'):
     return im
 
 
-def xray(im, direction='X'):
+def xray(im, axis=0):
     r"""
-    Simulates an X-ray radiograph looking through the porouls material in the
-    specfied direction.  The resulting image is colored according to the amount
-    of attenuation an X-ray would experience, so regions with more solid will
-    appear darker.
+    Simulates an X-ray radiograph looking through the porous material.
+
+    The resulting image is colored according to the amount of attenuation an
+    X-ray would experience, so regions with more solid will appear darker.
 
     Parameters
     ----------
@@ -132,9 +135,8 @@ def xray(im, direction='X'):
         ND-image of the porous material with the solid phase marked as 1 or
         True
 
-    direction : string
-        Specify the axis along which the camera will point.  Options are
-        'X', 'Y', and 'Z'.
+    axis : int
+        Specifes the axis along which the camera will point.
 
     Returns
     -------
@@ -143,9 +145,9 @@ def xray(im, direction='X'):
         function.
     """
     im = np.array(~im, dtype=int)
-    if direction in ['Y', 'y']:
+    if axis == 1:
         im = np.transpose(im, axes=[1, 0, 2])
-    if direction in ['Z', 'z']:
+    if axis == 2:
         im = np.transpose(im, axes=[2, 1, 0])
     im = np.sum(im, axis=0)
     return im

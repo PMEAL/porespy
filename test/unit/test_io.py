@@ -5,6 +5,7 @@ import numpy as np
 import porespy as ps
 import openpnm as op
 from numpy.testing import assert_allclose
+import psutil
 
 
 class ExportTest():
@@ -13,10 +14,8 @@ class ExportTest():
         self.path = os.path.dirname(os.path.abspath(sys.argv[0]))
 
     def test_export_to_palabos(self):
-        X = 20
-        Y = 20
-        Z = 20
-        S = X*Y*Z
+        X = Y = Z = 20
+        S = X * Y * Z
         im = ps.generators.blobs(shape=[X, Y, Z], porosity=0.7, blobiness=1)
         tmp = os.path.join(self.path, 'palabos.dat')
         ps.io.to_palabos(im, tmp, solid=0)
@@ -28,40 +27,24 @@ class ExportTest():
         assert np.sum(val == 0) + np.sum(val == 1) + np.sum(val == 2) == S
         os.remove(tmp)
 
-    def test_to_openpnm_writing(self):
-        im = ps.generators.blobs(shape=[100, 100])
-        net = ps.networks.snow(im, boundary_faces=None)
-        ps.io.to_openpnm(net, 'test.pnm')
-        # Now open it in openpnm
-        import openpnm as op
-        ws = op.Workspace()
-        len_ws = len(ws)
-        ws.load_project('test.pnm')
-        assert len(ws) == len_ws + 1
-        # Now remove file
-        os.remove('test.pnm')
-        with pytest.raises(FileNotFoundError):
-            os.remove('test.pnm')
-
     def test_to_vtk_2d(self):
         im = ps.generators.blobs(shape=[20, 20])
-        ps.io.to_vtk(im, path='vtk_func_test')
+        ps.io.to_vtk(im, filename='vtk_func_test')
         assert os.stat('vtk_func_test.vti').st_size == 831
         os.remove('vtk_func_test.vti')
 
     def test_to_vtk_3d(self):
         im = ps.generators.blobs(shape=[20, 20, 20])
-        ps.io.to_vtk(im, path='vtk_func_test')
+        ps.io.to_vtk(im, filename='vtk_func_test')
         assert os.stat('vtk_func_test.vti').st_size == 8433
         os.remove('vtk_func_test.vti')
 
     def test_dict_to_vtk(self):
         im = ps.generators.blobs(shape=[20, 20, 20])
-        ps.io.dict_to_vtk({'im': im})
+        ps.io.dict_to_vtk({'im': im}, filename="dictvtk")
         a = os.stat('dictvtk.vti').st_size
         os.remove('dictvtk.vti')
-        ps.io.dict_to_vtk({'im': im,
-                           'im_neg': ~im})
+        ps.io.dict_to_vtk({'im': im, 'im_neg': ~im}, filename="dictvtk")
         b = os.stat('dictvtk.vti').st_size
         assert a < b
         os.remove('dictvtk.vti')
@@ -84,15 +67,46 @@ class ExportTest():
         volume_total = np.prod(net.spacing * net.shape)
         porosity_desired = volume_void / volume_total
 
-        assert_allclose(actual=porosity_actual, desired=porosity_desired,
+        assert_allclose(actual=porosity_actual,
+                        desired=porosity_desired,
                         rtol=0.05)
 
+    def test_to_stl(self):
+        im = ps.generators.blobs(shape=[50, 50, 50], spacing=0.1)
+        ps.io.to_stl(im, filename="im2stl")
+        os.remove("im2stl.stl")
 
-if __name__ == '__main__':
+    def test_to_paraview(self):
+        im = ps.generators.blobs(shape=[50, 50, 50], spacing=0.1)
+        ps.io.to_paraview(im=im, filename='test_to_paraview.pvsm')
+        os.remove('test_to_paraview.pvsm')
+
+    def test_open_paraview(self):
+        ps.io.open_paraview(filename='../fixtures/image.pvsm')
+        if sys.platform != "darwin":
+            assert "paraview" in (p.name().split('.')[0] for p in psutil.process_iter())
+
+    def test_spheres_to_comsol_radii_centers(self):
+        radii = np.array([10, 20, 25, 5])
+        centers = np.array([[0, 10, 3],
+                            [20, 20, 13],
+                            [40, 25, 55],
+                            [60, 0, 89]])
+        ps.io.spheres_to_comsol(filename='sphere_pack', centers=centers, radii=radii)
+        os.remove("sphere_pack.mphtxt")
+
+    def test_spheres_to_comsol_im(self):
+        im = ps.generators.overlapping_spheres(shape=[100, 100, 100],
+                                               radius=10, porosity=0.6)
+        ps.io.spheres_to_comsol(filename='sphere_pack', im=im)
+        os.remove("sphere_pack.mphtxt")
+
+
+if __name__ == "__main__":
     t = ExportTest()
     self = t
     t.setup_class()
     for item in t.__dir__():
-        if item.startswith('test'):
-            print('running test: '+item)
+        if item.startswith("test"):
+            print(f"Running test: {item}")
             t.__getattribute__(item)()

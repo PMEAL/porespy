@@ -1,0 +1,64 @@
+name: Minimal
+
+on: [push]
+
+jobs:
+  build:
+
+    if: (  contains(github.event.head_commit.message, 'ci min')) &&
+        (! contains(github.event.head_commit.message, 'ci skip')) &&
+        (! contains(github.event.head_commit.message, 'ci examples'))
+
+    runs-on: ${{ matrix.operating-system }}
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    strategy:
+      max-parallel: 1
+      matrix:
+        python-version: [3.8]
+        operating-system: [ubuntu-latest]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Cache conda
+        uses: actions/cache@v2
+        env:
+          CACHE_NUMBER: 0  # increase value -> force reset cache
+        with:
+          path: ~/conda_pkgs_dir
+          key: ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{ hashFiles('**/conda_requirements.txt') }}
+
+      - name: Set up conda/mamba
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+          condarc-file: requirements/.condarc
+          channels: conda-forge, defaults
+          mamba-version: "*"
+          auto-activate-base: true
+
+      - name: Install dependencies (conda)
+        run: |
+          mamba install --file requirements/conda_requirements.txt
+          mamba install --file requirements/optional_requirements.txt
+          mamba install --file requirements/test_requirements.txt
+          # Install porespy from the checked-out branch
+          pip install -e .
+
+      - name: Running tests
+        run:
+          # Install pycodestyle
+          pip install pytest-pycodestyle
+          pytest --cov=./ --cov-report=xml --pycodestyle
+
+      - name: Upload coverage to Codecov
+        if: matrix.python-version == 3.8
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage.xml
+          flags: unittests
+          name: codecov-umbrella

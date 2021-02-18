@@ -3,9 +3,13 @@ import openpnm as op
 from porespy.tools import make_contiguous
 from skimage.segmentation import find_boundaries
 from skimage.morphology import ball, cube
-from tqdm import tqdm
+from skimage.segmentation import relabel_sequential
 from porespy.tools import _create_alias_map, overlay
-from porespy.tools import insert_sphere, insert_cylinder
+from porespy.tools import insert_cylinder
+from porespy.tools import zero_corners
+from porespy import settings
+from porespy.tools import get_tqdm
+tqdm = get_tqdm()
 
 
 def map_to_regions(regions, values):
@@ -77,87 +81,66 @@ def add_boundary_regions(regions=None, faces=['front', 'back', 'left',
         slightly larger in each direction where boundaries were added.
 
     """
-    # -------------------------------------------------------------------------
-    # Edge pad segmentation and distance transform
-    if faces is not None:
-        regions = np.pad(regions, 1, 'edge')
-        # ---------------------------------------------------------------------
-        if regions.ndim == 3:
-            # Remove boundary nodes interconnection
-            regions[:, :, 0] = regions[:, :, 0] + regions.max()
-            regions[:, :, -1] = regions[:, :, -1] + regions.max()
-            regions[0, :, :] = regions[0, :, :] + regions.max()
-            regions[-1, :, :] = regions[-1, :, :] + regions.max()
-            regions[:, 0, :] = regions[:, 0, :] + regions.max()
-            regions[:, -1, :] = regions[:, -1, :] + regions.max()
-            regions[:, :, 0] = (~find_boundaries(regions[:, :, 0],
-                                                 mode='outer')) * regions[:, :, 0]
-            regions[:, :, -1] = (~find_boundaries(regions[:, :, -1],
-                                                  mode='outer')) * regions[:, :, -1]
-            regions[0, :, :] = (~find_boundaries(regions[0, :, :],
-                                                 mode='outer')) * regions[0, :, :]
-            regions[-1, :, :] = (~find_boundaries(regions[-1, :, :],
-                                                  mode='outer')) * regions[-1, :, :]
-            regions[:, 0, :] = (~find_boundaries(regions[:, 0, :],
-                                                 mode='outer')) * regions[:, 0, :]
-            regions[:, -1, :] = (~find_boundaries(regions[:, -1, :],
-                                                  mode='outer')) * regions[:, -1, :]
-            # -----------------------------------------------------------------
-            regions = np.pad(regions, 2, 'edge')
+    if faces is None:
+        return regions
 
-            # Remove unselected faces
-            if 'front' not in faces:
-                regions = regions[:, 3:, :]  # y
-            if 'back' not in faces:
-                regions = regions[:, :-3, :]
-            if 'left' not in faces:
-                regions = regions[3:, :, :]  # x
-            if 'right' not in faces:
-                regions = regions[:-3, :, :]
-            if 'bottom' not in faces:
-                regions = regions[:, :, 3:]  # z
-            if 'top' not in faces:
-                regions = regions[:, :, :-3]
+    if regions.ndim not in [2, 3]:
+        raise Exception("add_boundary_regions works only on 2D and 3D images")
 
-        elif regions.ndim == 2:
-            # Remove boundary nodes interconnection
-            regions[0, :] = regions[0, :] + regions.max()
-            regions[-1, :] = regions[-1, :] + regions.max()
-            regions[:, 0] = regions[:, 0] + regions.max()
-            regions[:, -1] = regions[:, -1] + regions.max()
-            regions[0, :] = (~find_boundaries(regions[0, :],
-                                              mode='outer')) * regions[0, :]
-            regions[-1, :] = (~find_boundaries(regions[-1, :],
-                                               mode='outer')) * regions[-1, :]
-            regions[:, 0] = (~find_boundaries(regions[:, 0],
-                                              mode='outer')) * regions[:, 0]
-            regions[:, -1] = (~find_boundaries(regions[:, -1],
-                                               mode='outer')) * regions[:, -1]
-            # -----------------------------------------------------------------
-            regions = np.pad(regions, 2, 'edge')
+    if regions.ndim == 2:
+        if set(["bottom", "top"]).intersection(faces):
+            raise Exception("For 2D images, use 'left', 'right', 'front', 'back' labels")
 
-            # Remove unselected faces
-            if 'left' not in faces:
-                regions = regions[3:, :]  # x
-            if 'right' not in faces:
-                regions = regions[:-3, :]
-            if 'front' not in faces and 'bottom' not in faces:
-                regions = regions[:, 3:]  # y
-            if 'back' not in faces and 'top' not in faces:
-                regions = regions[:, :-3]
-        else:
-            print('add_boundary_regions works only on 2D and 3D images')
-        # ---------------------------------------------------------------------
-        # Make labels contiguous
-        regions = make_contiguous(regions)
-    else:
-        regions = regions
+    # Map which image slice corresponds to which face
+    face_to_slice = {
+        "left": 0, "right": -1, "front": 0, "back": -1, "bottom": 0, "top": -1
+    }
+    # Map face label to corresponding axis
+    face_to_axis = {
+        "left": 0, "right": 0, "front": 1, "back": 1, "bottom": 2, "top": 2
+    }
+
+    ndim = regions.ndim
+    indices = []
+    # Note: pad_width format: each elem is [pad_before, pad_after]
+    pad_width = [[0, 0] for i in range(ndim)]
+    # 1. Create indices for boundary faces, ex. bottom" => [:, :, -1]
+    # Note: slice(None) is equivalent to ":" in fancy indexing, ex. [0, 0, :]
+    # 2. populate pad_width based on labels
+    for face in faces:
+        temp = [slice(None) for i in range(ndim)]
+        axis = face_to_axis[face]
+        plane = face_to_slice[face]
+        temp[axis] = plane
+        indices.append(tuple(temp))
+        pad_width[axis][plane] = 1      # Pad each face by 1 pixel
+
+    regions = np.pad(regions, pad_width=pad_width, mode="edge")
+
+    # Increment boundary regions to distinguish from internal regions
+    for idx in indices:
+        # Only increment non-background regions (i.e. != 0)
+        non_background = regions[idx] != 0
+        regions[idx][non_background] += regions.max()
+
+    # Remove connections between boundary regions
+    for idx in indices:
+        regions[idx] *= ~find_boundaries(regions[idx], mode="outer")
+
+    # Pad twice to make boundary regions 3-pixel thick -> required for marching_cube
+    pw = np.array(pad_width) * 1
+    regions = np.pad(regions, pad_width=pw * 2, mode="edge")
+
+    # Convert pad-induced corners to 0
+    zero_corners(regions, pw * 3)
+
+    # Make labels contiguous
+    regions = relabel_sequential(regions, offset=1)[0]
 
     return regions
 
 
-def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200,
-                          verbose=1):
+def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200):
     r"""
     Generates a 3d numpy array from a network model.
 
@@ -165,13 +148,10 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200,
     ----------
     network : OpenPNM GenericNetwork
         Network from which voxel image is to be generated
-
     pore_shape : str
         Shape of pores in the network, valid choices are "sphere", "cube"
-
     throat_shape : str
         Shape of throats in the network, valid choices are "cylinder", "cuboid"
-
     max_dim : int
         Number of voxels in the largest dimension of the network
 
@@ -224,28 +204,30 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200,
         raise Exception("Not yet implemented, try 'cylinder'.")
 
     # Generating voxels for pores
-    for i, pore in enumerate(tqdm(network.pores(), disable=not verbose,
-                                  desc="Generating pores  ")):
-        elem = pore_elem(rp[i])
-        try:
-            im_pores = overlay(im1=im_pores, im2=elem, c=xyz[i])
-        except ValueError:
-            elem = pore_elem(rp_max)
-            im_pores = overlay(im1=im_pores, im2=elem, c=xyz[i])
+    with tqdm(network.Ps, **settings.tqdm) as pbar:
+        for i, pore in enumerate(network.Ps):
+            pbar.update()
+            elem = pore_elem(rp[i])
+            try:
+                im_pores = overlay(im1=im_pores, im2=elem, c=xyz[i])
+            except ValueError:
+                elem = pore_elem(rp_max)
+                im_pores = overlay(im1=im_pores, im2=elem, c=xyz[i])
     # Get rid of pore overlaps
     im_pores[im_pores > 0] = 1
 
     # Generating voxels for throats
-    for i, throat in enumerate(tqdm(network.throats(), disable=not verbose,
-                                    desc="Generating throats")):
-        try:
-            im_throats = insert_cylinder(im_throats, r=throat_radi[i],
-                                         xyz0=xyz[cn[i, 0]],
-                                         xyz1=xyz[cn[i, 1]])
-        except ValueError:
-            im_throats = insert_cylinder(im_throats, r=rp_max,
-                                         xyz0=xyz[cn[i, 0]],
-                                         xyz1=xyz[cn[i, 1]])
+    with tqdm(network.Ts, **settings.tqdm) as pbar:
+        for i, throat in enumerate(network.Ts):
+            pbar.update()
+            try:
+                im_throats = insert_cylinder(im_throats, r=throat_radi[i],
+                                             xyz0=xyz[cn[i, 0]],
+                                             xyz1=xyz[cn[i, 1]])
+            except ValueError:
+                im_throats = insert_cylinder(im_throats, r=rp_max,
+                                             xyz0=xyz[cn[i, 0]],
+                                             xyz1=xyz[cn[i, 1]])
     # Get rid of throat overlaps
     im_throats[im_throats > 0] = 1
 
@@ -262,7 +244,7 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200,
 
 
 def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
-                         max_dim=None, verbose=1, rtol=0.1):
+                         max_dim=None, rtol=0.1):
     r"""
     Generates voxel image from an OpenPNM network object.
 
@@ -270,16 +252,12 @@ def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
     ----------
     network : OpenPNM GenericNetwork
         Network from which voxel image is to be generated
-
     pore_shape : str
         Shape of pores in the network, valid choices are "sphere", "cube"
-
     throat_shape : str
         Shape of throats in the network, valid choices are "cylinder", "cuboid"
-
     max_dim : int
         Number of voxels in the largest dimension of the network
-
     rtol : float
         Stopping criteria for finding the smallest voxel image such that
         further increasing the number of voxels in each dimension by 25% would
@@ -306,7 +284,7 @@ def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
     # If max_dim is provided, generate voxel image using max_dim
     if max_dim is not None:
         return _generate_voxel_image(network, pore_shape, throat_shape,
-                                     max_dim=max_dim, verbose=verbose)
+                                     max_dim=max_dim)
     else:
         max_dim = 200
 
@@ -315,16 +293,16 @@ def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
     err = 100  # percent
 
     while err > rtol:
+        print(f"\nMaximum dimension in voxels: {max_dim}", flush=True)
         im = _generate_voxel_image(network, pore_shape, throat_shape,
-                                   max_dim=max_dim, verbose=verbose)
+                                   max_dim=max_dim)
         eps = im.astype(bool).sum() / np.prod(im.shape)
 
         err = abs(1 - eps / eps_old)
         eps_old = eps
         max_dim = int(max_dim * 1.25)
 
-    if verbose:
-        print("\nConverged at max_dim = {max_dim} voxels.\n")
+    print(f"\nConverged at max_dim = {max_dim} voxels.\n")
 
     return im
 
@@ -391,23 +369,23 @@ def add_phase_interconnections(net, snow_partitioning_n, voxel_size=1,
     num = [0, *num]
     phases_num = np.unique(im * 1)
     phases_num = np.trim_zeros(phases_num)
-    for i in phases_num:
-        loc1 = np.logical_and(conns1 >= num[i - 1], conns1 < num[i])
-        loc2 = np.logical_and(conns2 >= num[i - 1], conns2 < num[i])
-        loc3 = np.logical_and(label >= num[i - 1], label < num[i])
-        net['throat.{}'.format(al[i])] = loc1 * loc2
-        net['pore.{}'.format(al[i])] = loc3
-        if i == phases_num[-1]:
+    for i0, i1 in enumerate(phases_num):
+        loc1 = np.logical_and(conns1 >= num[i0], conns1 < num[i0 + 1])
+        loc2 = np.logical_and(conns2 >= num[i0], conns2 < num[i0 + 1])
+        loc3 = np.logical_and(label >= num[i0], label < num[i0 + 1])
+        net['throat.{}'.format(al[i1])] = loc1 * loc2
+        net['pore.{}'.format(al[i1])] = loc3
+        if i1 == phases_num[-1]:
             loc4 = np.logical_and(conns1 < num[-1], conns2 >= num[-1])
             loc5 = label >= num[-1]
             net['throat.boundary'] = loc4
             net['pore.boundary'] = loc5
-        for j in phases_num:
-            if j > i:
-                pi_pj_sa = np.zeros_like(label)
-                loc6 = np.logical_and(conns2 >= num[j - 1], conns2 < num[j])
+        for j0, j1 in enumerate(phases_num):
+            if j0 > i0:
+                pi_pj_sa = np.zeros_like(label, dtype=float)
+                loc6 = np.logical_and(conns2 >= num[j0], conns2 < num[j0 + 1])
                 pi_pj_conns = loc1 * loc6
-                net['throat.{}_{}'.format(al[i], al[j])] = pi_pj_conns
+                net['throat.{}_{}'.format(al[i1], al[j1])] = pi_pj_conns
                 if any(pi_pj_conns):
                     # ---------------------------------------------------------
                     # Calculates phase[i] interfacial area that connects with
@@ -434,9 +412,7 @@ def add_phase_interconnections(net, snow_partitioning_n, voxel_size=1,
                         s_pa_c = np.trim_zeros(s_pa_c)
                         pi_pj_sa[i_index] = p_sa_c
                         pi_pj_sa[j_index] = s_pa_c
-                    net['pore.{}_{}_area'.format(al[i],
-                                                 al[j])] = (pi_pj_sa *
-                                                            voxel_size ** 2)
+                    net[f'pore.{al[i1]}_{al[j1]}_area'] = pi_pj_sa * voxel_size ** 2
     return net
 
 
@@ -479,10 +455,12 @@ def label_boundary_cells(network=None, boundary_faces=None):
             dic['bottom'] = 1
         for i in f:
             if i in ['left', 'front', 'bottom']:
-                network['pore.{}'.format(i)] = (coords[:, dic[i]] <
-                                                min(condition[:, dic[i]]))
+                network['pore.{}'.format(i)] = (
+                    coords[:, dic[i]] < min(condition[:, dic[i]])
+                )
             elif i in ['right', 'back', 'top']:
-                network['pore.{}'.format(i)] = (coords[:, dic[i]] >
-                                                max(condition[:, dic[i]]))
+                network['pore.{}'.format(i)] = (
+                    coords[:, dic[i]] > max(condition[:, dic[i]])
+                )
 
     return network

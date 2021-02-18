@@ -5,32 +5,53 @@ on: [push]
 jobs:
   build:
 
+    if: (! contains(github.event.head_commit.message, 'ci min')) &&
+        (! contains(github.event.head_commit.message, 'ci skip')) &&
+        (! contains(github.event.head_commit.message, 'ci examples'))
+
     runs-on: ${{ matrix.operating-system }}
+    defaults:
+      run:
+        shell: bash -l {0}
+
     strategy:
       max-parallel: 4
       matrix:
-        python-version: [3.6, 3.7, 3.8]
+        python-version: [3.8]
         operating-system: [windows-latest]
 
     steps:
-    - uses: actions/checkout@v1
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v1
-      with:
-        python-version: ${{ matrix.python-version }}
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
 
-    - uses: actions/cache@v1
-      with:
-        path: ~\AppData\Local\pip\Cache
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/pip_requirements.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
+      - name: Cache conda
+        uses: actions/cache@v2
+        env:
+          CACHE_NUMBER: 0  # increase value -> force reset cache
+        with:
+          path: ~/conda_pkgs_dir
+          key: ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{ hashFiles('**/conda_requirements.txt') }}
 
-    - name: Install Dependencies
-      run: |
-        pip install -r requirements/pip_requirements.txt
-        pip install -r requirements/test_requirements.txt
-        python setup.py install
+      - name: Set up conda/mamba
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+          condarc-file: requirements/.condarc
+          channels: conda-forge, defaults
+          mamba-version: "*"
+          auto-activate-base: true
 
-    - name: Running tests
-      run: pytest --pep8
+      - name: Install dependencies (conda)
+        run: |
+          conda install --file requirements/conda_requirements.txt
+          mamba install --file requirements/optional_requirements.txt
+          conda install --file requirements/test_requirements.txt
+          # Install porespy from the checked-out branch
+          pip install -e .
+
+      - name: Running tests
+        run: |
+          pytest

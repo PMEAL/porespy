@@ -1,10 +1,10 @@
-import porespy as ps
-import numpy as np
-import scipy.ndimage as spim
-from skimage import io
-import pytest
-from pathlib import Path
 import os
+import pytest
+import numpy as np
+import porespy as ps
+from skimage import io
+from pathlib import Path
+import scipy.ndimage as spim
 from numpy.testing import assert_allclose
 
 
@@ -12,14 +12,14 @@ class MetricsTest():
 
     def setup_class(self):
         np.random.seed(0)
-        self.im2D = ps.generators.lattice_spheres(shape=[100, 100],
-                                                  radius=5, offset=2,
+        self.im2D = ps.generators.lattice_spheres(shape=[101, 101],
+                                                  radius=5, spacing=15,
                                                   lattice='square')
         self.im2D_big = ps.generators.lattice_spheres(shape=[500, 500],
-                                                      radius=10, offset=10,
+                                                      radius=10, spacing=25,
                                                       lattice='square')
         self.im3D = ps.generators.lattice_spheres(shape=[51, 51, 51],
-                                                  radius=4, offset=2,
+                                                  radius=4, spacing=14,
                                                   lattice='cubic')
         self.blobs = ps.generators.blobs(shape=[101, 101, 101], porosity=0.5,
                                          blobiness=[1, 2, 3])
@@ -29,7 +29,7 @@ class MetricsTest():
 
     def test_porosity(self):
         phi = ps.metrics.porosity(im=self.im2D)
-        assert phi == 0.6619
+        assert np.allclose(phi, 0.66856)
 
     def test_tpcf_fft_2d(self):
         tpcf_fft_1 = ps.metrics.two_point_correlation_fft(self.im2D)
@@ -56,11 +56,11 @@ class MetricsTest():
         assert np.sum(psd.satn) == 1.0
 
     def test_two_point_correlation_bf(self):
-        tpcf_bf = ps.metrics.two_point_correlation_bf(self.im2D)
+        tpcf_bf = ps.metrics.two_point_correlation_bf(self.im2D, spacing=4)
         # autocorrelation fn should level off at around the porosity
-        t = 0.2
+        tol = 0.05
         phi1 = ps.metrics.porosity(im=self.im2D)
-        assert np.sqrt((np.mean(tpcf_bf.probability[-5:]) - phi1)**2) < t
+        assert np.sqrt((np.mean(tpcf_bf.probability[-5:]) - phi1)**2) < tol
         # Throw warning if image contains a singleton axis
         with pytest.warns(UserWarning):
             _ = ps.metrics.two_point_correlation_bf(np.atleast_3d(self.im2D))
@@ -70,7 +70,7 @@ class MetricsTest():
         assert (np.mean(rev.porosity) - 0.5)**2 < 0.05
 
     def test_radial_density(self):
-        den = ps.metrics.radial_density(self.blobs)
+        den = ps.metrics.radial_density_distribution(self.blobs)
         assert den.cdf.max() == 1
 
     def test_props_to_DataFrame(self):
@@ -78,14 +78,14 @@ class MetricsTest():
         rp = ps.metrics.regionprops_3D(label)
         ps.metrics.props_to_DataFrame(rp)
 
-    def test_props_to_image(self):
+    def test_prop_to_image(self):
         label = spim.label(self.im2D)[0]
         rp = ps.metrics.regionprops_3D(label)
-        ps.metrics.props_to_image(rp, self.im2D.shape, 'solidity')
+        ps.metrics.prop_to_image(rp, self.im2D.shape, 'solidity')
 
     def test_porosity_profile(self):
         im = ps.generators.lattice_spheres(shape=[999, 999],
-                                           radius=15, offset=4)
+                                           radius=15, spacing=38)
         p = ps.metrics.porosity_profile(im, axis=0)
         assert p.max() == 1.0
         assert_allclose(p.min(), 0.24524524524524523)
@@ -98,14 +98,17 @@ class MetricsTest():
 
     def test_linear_density(self):
         im = ps.filters.distance_transform_lin(self.im2D, axis=0, mode='both')
-        ps.metrics.linear_density(im)
+        ps.metrics.lineal_path_distribution(im)
 
     def test_chord_length_distribution_2D(self):
         chords = ps.filters.apply_chords(self.im2D)
-        cld = ps.metrics.chord_length_distribution(chords, normalization='length')
-        assert not hasattr(cld, "logL")
-        cld = ps.metrics.chord_length_distribution(chords, normalization='length', log=1)
-        assert hasattr(cld, "logL")
+        cld = ps.metrics.chord_length_distribution(chords,
+                                                   normalization='length')
+        assert not hasattr(cld, "LogL")
+        cld = ps.metrics.chord_length_distribution(chords,
+                                                   normalization='length',
+                                                   log=1)
+        assert hasattr(cld, "LogL")
         with pytest.raises(Exception):
             cld = ps.metrics.chord_length_distribution(chords,
                                                        normalization='unsupported_norm')
@@ -155,7 +158,7 @@ class MetricsTest():
         assert np.all(labels == counts)
         fractions = ps.metrics.phase_fraction(im, normed=True)
         assert np.isclose(fractions.sum(), 1)
-        assert np.allclose(fractions, counts/counts.sum())
+        assert np.allclose(fractions, counts / counts.sum())
         with pytest.raises(Exception):
             ps.metrics.phase_fraction(np.random.rand(10, 10, 10), normed=True)
         # The method must also work on boolean images
@@ -167,12 +170,12 @@ class MetricsTest():
         im = ps.generators.lattice_spheres(shape=[999, 999],
                                            radius=15, offset=4)
         rev = ps.metrics.representative_elementary_volume(im)
-        assert_allclose(np.average(rev.porosity), im.sum()/im.size, rtol=1e-1)
+        assert_allclose(np.average(rev.porosity), im.sum() / im.size, rtol=1e-1)
 
         im = ps.generators.lattice_spheres(shape=[151, 151, 151],
                                            radius=9, offset=4)
         rev = ps.metrics.representative_elementary_volume(im)
-        assert_allclose(np.average(rev.porosity), im.sum()/im.size, rtol=1e-1)
+        assert_allclose(np.average(rev.porosity), im.sum() / im.size, rtol=1e-1)
 
 
 if __name__ == '__main__':
@@ -181,5 +184,5 @@ if __name__ == '__main__':
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: '+item)
+            print(f"Running test: {item}")
             t.__getattribute__(item)()

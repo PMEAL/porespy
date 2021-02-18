@@ -78,14 +78,23 @@ Use some filters from PoreSpy:
 
 
 '''
+import sys as _sys
+from .__version__ import __version__
+from .tools.__utils__ import Settings as _Settings
 
-__version__ = "1.3.0-dev002"
+settings = _Settings()
+settings.notebook = _sys.argv[-1].endswith('json')
 
 from . import tools
 from . import filters
 from . import metrics
 from . import networks
 from . import generators
+from . import dns
 from . import visualization
 from . import io
+
 from .visualization import imshow
+
+import numpy as _np
+_np.seterr(divide='ignore', invalid='ignore')
