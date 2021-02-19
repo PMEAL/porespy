@@ -2323,7 +2323,7 @@ def _resequence_labels(array):
     return array.reshape(a_shape)
 
 
-def nl_means_layered(im, cores=None, patch_size=15, patch_distance=25,
+def nl_means_layered(im, cores=None, patch_size=5, patch_distance=15,
                      h=4, sigma=6, axis=0):
     import dask
     from skimage.restoration import denoise_nl_means, estimate_sigma
@@ -2348,8 +2348,7 @@ def nl_means_layered(im, cores=None, patch_size=15, patch_distance=25,
     temp = temp / temp.max()
     sigma_est = np.mean(estimate_sigma(temp[:, :, 0], multichannel=False))
 
-    kw = {'im': temp,
-          'cores': None,
+    kw = {'image': temp,
           'patch_size': patch_size,
           'patch_distance': patch_distance,
           'h': h * sigma_est,
