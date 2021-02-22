@@ -15,7 +15,7 @@ class NetExtractTest():
         self.snow = ps.filters.snow_partitioning(self.im, return_all=True)
         self.im3d = ps.generators.blobs(shape=[50, 50, 50])
         self.snow3d = ps.filters.snow_partitioning(self.im3d, return_all=True)
-        
+
     def test_regions_to_network(self):
         im = self.snow.regions*self.im
         net = ps.networks.regions_to_network(im)
@@ -184,11 +184,12 @@ class NetExtractTest():
         net = proj.network
         Ps = net.pores(["void", "solid"] + boundary_faces)
         assert Ps.size == net.Np == 74
-        
+
     def test_max_ball(self):
         path = Path(realpath(__file__), '../../fixtures/pnextract.exe')
         if system() == 'Windows':
-            ps.networks.maximal_ball(self.im3d, 'test_maxball', path, voxel_size=1e-6)
+            ps.networks.maximal_ball(im=self.im3d, prefix='test_maxball',
+                                     path_to_exe=path, voxel_size=1e-6)
             assert os.path.isfile("test_maxball_link1.dat")
             assert os.path.isfile("test_maxball_link2.dat")
             assert os.path.isfile("test_maxball_node1.dat")
@@ -197,7 +198,8 @@ class NetExtractTest():
             os.remove("test_maxball_link2.dat")
             os.remove("test_maxball_node1.dat")
             os.remove("test_maxball_node2.dat")
-                  
+
+
 if __name__ == '__main__':
     t = NetExtractTest()
     self = t
