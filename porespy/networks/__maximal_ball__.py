@@ -44,7 +44,7 @@ def maximal_ball(im, prefix, path_to_exe, voxel_size=1e-6):
             Offset = 0   0  0 \n\
             ElementDataFile = " + file + ".tif")
     f.close()
-    subprocess.Popen([path, file + ".mhd"])
+    subprocess.Popen([path_to_exe, file + ".mhd"])
     i = 0
     while is_running('pnextract'):
         print('maximal ball algorithm is running: ' + str(i) + 's')
