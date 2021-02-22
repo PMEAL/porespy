@@ -1,7 +1,7 @@
 import os
 import sys
 import porespy as ps
-
+from platform import system
 
 class ImageJTest:
 
@@ -9,9 +9,10 @@ class ImageJTest:
         self.path = os.path.dirname(os.path.abspath(sys.argv[0]))
 
     def test_imagej_wrapper(self):
-        img = ps.generators.blobs(shape=[50, 50, 50], porosity=0.5, blobiness=2)
-        plgn = ps.imagej.imagej_wrapper(img, 'mean', 'sc.fiji:fiji:2.1.1')
-        assert sum(plgn.shape) == 150
+        if system() == 'Windows':
+            img = ps.generators.blobs(shape=[50, 50, 50], porosity=0.5, blobiness=2)
+            plgn = ps.imagej.imagej_wrapper(img, 'mean', 'sc.fiji:fiji:2.1.1')
+            assert sum(plgn.shape) == 150
 
 
 if __name__ == "__main__":
