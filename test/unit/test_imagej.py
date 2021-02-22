@@ -1,11 +1,8 @@
 import os
 import sys
-import pytest
 import numpy as np
 import porespy as ps
-import openpnm as op
-from numpy.testing import assert_allclose
-
+from platform import system
 
 class ExportTest():
 
