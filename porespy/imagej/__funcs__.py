@@ -93,3 +93,49 @@ def imagej_wrapper(im, plugin_name, path):
     ij.getContext().dispose()
     WindowManager.closeAllWindows()
     return results
+
+
+def imagej_plugin(im, path, plugin_name, args=None):
+    r"""
+    Apply ImageJ filters on 3D images.
+    
+    In This function the plugin_name should have a same format as the
+    plugin_name in the ImageJ. For example, to apply a Gaussian blur on a 3D
+    image, the plugin_name should be 'Gaussian Blur 3D...'
+
+    Parameters
+    ----------
+    im : ndarray
+        The 3D image of the porous material
+
+    path: str
+        Path to the Fiji application in the local directory
+
+    plugin_name : str
+        Name of the applied ImageJ plugin 
+        
+    args : dict
+         A dictionary that containes the required arguments of the
+         applied plugin. For example, it could be {'options': 'True'}
+
+    Returns
+    -------
+    ndarray
+        Outputs a ndarray after applying the desired filter on the image.
+
+    """
+    ij = imagej.init("C:\\Users\\Hamed\\Fiji.app", headless=False)
+    img = 255 * np.array(im.astype("uint8"))
+    WindowManager = jimport('ij.WindowManager')
+    #ij.ui().showUI()
+    ij.ui().show('Image', ij.py.to_java(img))
+    plugin = 'Duplicate...'
+    arg = {
+        'duplicate range': (1,im.shape[0])
+        }
+    ij.py.run_plugin(plugin, arg)
+    ij.py.run_plugin(plugin_name, args)
+    results = np.array(ij.py.from_java(WindowManager.getCurrentImage()))
+    ij.getContext().dispose()
+    WindowManager.closeAllWindows()
+    return (results)
