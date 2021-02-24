@@ -80,8 +80,8 @@ class ExportTest():
         os.remove('test_to_paraview.pvsm')
 
     def test_open_paraview(self):
-        ps.io.open_paraview(filename='../fixtures/image.pvsm')
         if sys.platform != "darwin":
+            ps.io.open_paraview(filename='../fixtures/image.pvsm')
             assert "paraview" in (p.name().split('.')[0] for p in psutil.process_iter())
 
     def test_spheres_to_comsol_radii_centers(self):
