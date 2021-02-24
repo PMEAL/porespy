@@ -14,7 +14,7 @@ functions can be applied directly to the binary image.
 
     porespy.metrics.chord_counts
     porespy.metrics.chord_length_distribution
-    porespy.metrics.lineal_path_distribution
+    porespy.metrics.linear_density
     porespy.metrics.mesh_surface_area
     porespy.metrics.phase_fraction
     porespy.metrics.pore_size_distribution
@@ -22,7 +22,7 @@ functions can be applied directly to the binary image.
     porespy.metrics.porosity_profile
     porespy.metrics.prop_to_image
     porespy.metrics.props_to_DataFrame
-    porespy.metrics.radial_density_distribution
+    porespy.metrics.radial_density
     porespy.metrics.region_interface_areas
     porespy.metrics.region_surface_areas
     porespy.metrics.regionprops_3D
@@ -32,7 +32,7 @@ functions can be applied directly to the binary image.
 
 .. autofunction:: chord_counts
 .. autofunction:: chord_length_distribution
-.. autofunction:: lineal_path_distribution
+.. autofunction:: linear_density
 .. autofunction:: mesh_surface_area
 .. autofunction:: phase_fraction
 .. autofunction:: pore_size_distribution
@@ -40,7 +40,7 @@ functions can be applied directly to the binary image.
 .. autofunction:: porosity_profile
 .. autofunction:: prop_to_image
 .. autofunction:: props_to_DataFrame
-.. autofunction:: radial_density_distribution
+.. autofunction:: radial_density
 .. autofunction:: region_interface_areas
 .. autofunction:: region_surface_areas
 .. autofunction:: regionprops_3D
@@ -55,9 +55,9 @@ from .__regionprops__ import props_to_DataFrame
 from .__regionprops__ import prop_to_image
 from .__funcs__ import chord_counts
 from .__funcs__ import chord_length_distribution
-from .__funcs__ import lineal_path_distribution
+from .__funcs__ import linear_density
 from .__funcs__ import pore_size_distribution
-from .__funcs__ import radial_density_distribution
+from .__funcs__ import radial_density
 from .__funcs__ import porosity
 from .__funcs__ import porosity_profile
 from .__funcs__ import representative_elementary_volume

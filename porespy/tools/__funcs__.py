@@ -5,7 +5,6 @@ import warnings
 from edt import edt
 from collections import namedtuple
 from skimage.morphology import ball, disk
-from skimage.segmentation import relabel_sequential
 from array_split import shape_split, ARRAY_BOUNDS
 from scipy.signal import fftconvolve
 try:
@@ -321,16 +320,15 @@ def extract_cylinder(im, r=None, axis=0):
         ``False``.
 
     """
-    # This needs to be imported here since the tools module is imported
-    # before the generators module, so placing it at the top of the file
-    # causes an error since the generators module does not exist yet.
-    # Strangly, if I import the ENTIRE package at the top of the file then
-    # things work ok, but this seems quite silly compared to just importing
-    # the function on demand. This is explained in the following
-    # stackoverflow answer: https://stackoverflow.com/a/129810.
-
-    from porespy.generators import cylindrical_plug
-    mask = cylindrical_plug(shape=im.shape, r=r, axis=axis)
+    if r is None:
+        a = list(im.shape)
+        a.pop(axis)
+        r = np.floor(np.amin(a) / 2)
+    dim = [range(int(-s / 2), int(s / 2) + s % 2) for s in im.shape]
+    inds = np.meshgrid(*dim, indexing='ij')
+    inds[axis] = inds[axis] * 0
+    d = np.sqrt(np.sum(sp.square(inds), axis=0))
+    mask = d < r
     im_temp = im * mask
     return im_temp
 
@@ -557,9 +555,9 @@ def make_contiguous(im, keep_zeros=True):
     Take an image with arbitrary greyscale values and adjust them to ensure
     all values fall in a contiguous range starting at 0.
 
-    This function will handle negative numbers such that the most negative
-    number will become 0, *unless* ``keep_zeros`` is ``True`` in which case
-    it will become 1, and all 0's in the original image remain 0.
+    This function will handle negative numbers such that most negative number
+    will become 0, *unless* ``keep_zeros`` is ``True`` in which case it will
+    become 1, and all 0's in the original image remain 0.
 
     Parameters
     ----------
@@ -568,7 +566,7 @@ def make_contiguous(im, keep_zeros=True):
 
     keep_zeros : Boolean
         If ``True`` (default) then 0 values remain 0, regardless of how the
-        other numbers are adjusted.  This is only relevant when the array
+        other numbers are adjusted.  This is mostly relevant when the array
         contains negative numbers, and means that -1 will become +1, while
         0 values remain 0.
 
@@ -589,14 +587,18 @@ def make_contiguous(im, keep_zeros=True):
      [3 4 2]]
 
     """
+    im = np.copy(im)
     if keep_zeros:
-        mask = im == 0
-        im = im + np.abs(np.min(im)) + 1
-        im[mask] = 0
-    elif np.min(im) < 0:
-        im = im + np.abs(np.min(im))
-
-    im_new = relabel_sequential(im)[0]
+        mask = (im == 0)
+        im[mask] = im.min() - 1
+    im = im - im.min()
+    im_flat = im.flatten()
+    im_vals = np.unique(im_flat)
+    im_map = np.zeros(shape=np.amax(im_flat) + 1)
+    im_map[im_vals] = np.arange(0, np.size(np.unique(im_flat)))
+    im_new = im_map[im_flat]
+    im_new = np.reshape(im_new, newshape=np.shape(im))
+    im_new = np.array(im_new, dtype=im_flat.dtype)
     return im_new
 
 
@@ -638,7 +640,7 @@ def get_border(shape, thickness=1, mode='edges', return_indices=False):
     ``return_indices`` it finds them using ``np.where``.  Since these arrays
     are cubic it should be possible to use more elegant and efficient
     index-based logic to find the indices, then use them to fill an empty
-    image with ``True`` using these indices.
+    image with ``True`` using these     indices.
 
     Examples
     --------
@@ -838,101 +840,46 @@ def mesh_region(region: bool, strel=None):
     return result
 
 
-def ps_disk(r, smooth=True):
+def ps_disk(radius):
     r"""
     Creates circular disk structuring element for morphological operations
 
     Parameters
     ----------
-    r : float or int
+    radius : float or int
         The desired radius of the structuring element
-    smooth : boolean
-        Indicates whether the faces of the sphere should have the little
-        nibs (``True``) or not (``False``, default)
 
     Returns
     -------
-    disk : 2D-array
+    strel : 2D-array
         A 2D numpy bool array of the structring element
     """
-    disk = ps_round(r=r, ndim=2, smooth=smooth)
+    rad = int(np.ceil(radius))
+    other = np.ones((2 * rad + 1, 2 * rad + 1), dtype=bool)
+    other[rad, rad] = False
+    disk = edt(other) < radius
     return disk
 
 
-def ps_ball(r, smooth=True):
+def ps_ball(radius):
     r"""
     Creates spherical ball structuring element for morphological operations
 
     Parameters
     ----------
-    r : scalar
+    radius : float or int
         The desired radius of the structuring element
-    smooth : boolean
-        Indicates whether the faces of the sphere should have the little
-        nibs (``True``) or not (``False``, default)
-
-    Returns
-    -------
-    ball : 3D-array
-        A 3D numpy array of the structuring element
-    """
-    ball = ps_round(r=r, ndim=3, smooth=smooth)
-    return ball
-
-
-def ps_round(r, ndim, smooth=True):
-    r"""
-    Creates round structuring element with the given radius and dimensionality
-
-    Parameters
-    ----------
-    r : scalar
-        The desired radius of the structuring element
-    ndim : int
-        The dimensionality of the element, either 2 or 3.
-    smooth : boolean
-        Indicates whether the faces of the sphere should have the little
-        nibs (``True``) or not (``False``, default)
 
     Returns
     -------
     strel : 3D-array
         A 3D numpy array of the structuring element
     """
-    rad = int(np.ceil(r))
-    other = np.ones([2*rad + 1 for i in range(ndim)], dtype=bool)
-    other[tuple(rad for i in range(ndim))] = False
-    if smooth:
-        ball = edt(other) < r
-    else:
-        ball = edt(other) <= r
+    rad = int(np.ceil(radius))
+    other = np.ones((2 * rad + 1, 2 * rad + 1, 2 * rad + 1), dtype=bool)
+    other[rad, rad, rad] = False
+    ball = edt(other) < radius
     return ball
-
-
-def ps_rect(w, ndim):
-    r"""
-    Creates rectilinear structuring element with the given size and
-    dimensionality
-
-    Parameters
-    ----------
-    w : scalar
-        The desired width of the structuring element
-    ndim : int
-        The dimensionality of the element, either 2 or 3.
-
-    Returns
-    -------
-    strel : D-aNrray
-        A numpy array of the structuring element
-    """
-    if ndim == 2:
-        from skimage.morphology import square
-        strel = square(w)
-    if ndim == 3:
-        from skimage.morphology import cube
-        strel = cube(w)
-    return strel
 
 
 def overlay(im1, im2, c):

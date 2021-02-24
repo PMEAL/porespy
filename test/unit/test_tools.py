@@ -273,20 +273,6 @@ class ToolsTest():
         assert ps.tools.sanitize_filename(fname, "vtk") == "test.stl.stl.vtk"
         assert ps.tools.sanitize_filename(fname, "stl", exclude_ext=True) == "test.stl"
 
-    def test_ps_strels(self):
-        c = ps.tools.ps_disk(r=3)
-        assert c.sum() == 25
-        c = ps.tools.ps_disk(r=3, smooth=False)
-        assert c.sum() == 29
-        b = ps.tools.ps_ball(r=3)
-        assert b.sum() == 93
-        b = ps.tools.ps_ball(r=3, smooth=False)
-        assert b.sum() == 123
-        s = ps.tools.ps_rect(w=3, ndim=2)
-        assert s.sum() == 9
-        c = ps.tools.ps_rect(w=3, ndim=3)
-        assert c.sum() == 27
-
 
 if __name__ == '__main__':
     t = ToolsTest()

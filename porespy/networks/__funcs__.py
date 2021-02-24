@@ -1,15 +1,14 @@
+import sys
 import numpy as np
 import openpnm as op
+from tqdm import tqdm
 from porespy.tools import make_contiguous
 from skimage.segmentation import find_boundaries
 from skimage.morphology import ball, cube
-from skimage.segmentation import relabel_sequential
 from porespy.tools import _create_alias_map, overlay
 from porespy.tools import insert_cylinder
 from porespy.tools import zero_corners
-from porespy import settings
-from porespy.tools import get_tqdm
-tqdm = get_tqdm()
+from skimage.segmentation import relabel_sequential
 
 
 def map_to_regions(regions, values):
@@ -140,7 +139,7 @@ def add_boundary_regions(regions=None, faces=['front', 'back', 'left',
     return regions
 
 
-def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200):
+def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200, verbose=1):
     r"""
     Generates a 3d numpy array from a network model.
 
@@ -148,10 +147,13 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200):
     ----------
     network : OpenPNM GenericNetwork
         Network from which voxel image is to be generated
+
     pore_shape : str
         Shape of pores in the network, valid choices are "sphere", "cube"
+
     throat_shape : str
         Shape of throats in the network, valid choices are "cylinder", "cuboid"
+
     max_dim : int
         Number of voxels in the largest dimension of the network
 
@@ -203,31 +205,31 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200):
     if throat_shape == "cuboid":
         raise Exception("Not yet implemented, try 'cylinder'.")
 
+    tqdm_settings = {"disable": not verbose, "file": sys.stdout}
+
     # Generating voxels for pores
-    with tqdm(network.Ps, **settings.tqdm) as pbar:
-        for i, pore in enumerate(network.Ps):
-            pbar.update()
-            elem = pore_elem(rp[i])
-            try:
-                im_pores = overlay(im1=im_pores, im2=elem, c=xyz[i])
-            except ValueError:
-                elem = pore_elem(rp_max)
-                im_pores = overlay(im1=im_pores, im2=elem, c=xyz[i])
+    Ps = tqdm(network.Ps, desc="  - Generating pores  ", **tqdm_settings)
+    for i, pore in enumerate(Ps):
+        elem = pore_elem(rp[i])
+        try:
+            im_pores = overlay(im1=im_pores, im2=elem, c=xyz[i])
+        except ValueError:
+            elem = pore_elem(rp_max)
+            im_pores = overlay(im1=im_pores, im2=elem, c=xyz[i])
     # Get rid of pore overlaps
     im_pores[im_pores > 0] = 1
 
     # Generating voxels for throats
-    with tqdm(network.Ts, **settings.tqdm) as pbar:
-        for i, throat in enumerate(network.Ts):
-            pbar.update()
-            try:
-                im_throats = insert_cylinder(im_throats, r=throat_radi[i],
-                                             xyz0=xyz[cn[i, 0]],
-                                             xyz1=xyz[cn[i, 1]])
-            except ValueError:
-                im_throats = insert_cylinder(im_throats, r=rp_max,
-                                             xyz0=xyz[cn[i, 0]],
-                                             xyz1=xyz[cn[i, 1]])
+    Ts = tqdm(network.Ts, desc="  - Generating throats", **tqdm_settings)
+    for i, throat in enumerate(Ts):
+        try:
+            im_throats = insert_cylinder(im_throats, r=throat_radi[i],
+                                         xyz0=xyz[cn[i, 0]],
+                                         xyz1=xyz[cn[i, 1]])
+        except ValueError:
+            im_throats = insert_cylinder(im_throats, r=rp_max,
+                                         xyz0=xyz[cn[i, 0]],
+                                         xyz1=xyz[cn[i, 1]])
     # Get rid of throat overlaps
     im_throats[im_throats > 0] = 1
 
@@ -244,7 +246,7 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200):
 
 
 def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
-                         max_dim=None, rtol=0.1):
+                         max_dim=None, verbose=1, rtol=0.1):
     r"""
     Generates voxel image from an OpenPNM network object.
 
@@ -252,12 +254,16 @@ def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
     ----------
     network : OpenPNM GenericNetwork
         Network from which voxel image is to be generated
+
     pore_shape : str
         Shape of pores in the network, valid choices are "sphere", "cube"
+
     throat_shape : str
         Shape of throats in the network, valid choices are "cylinder", "cuboid"
+
     max_dim : int
         Number of voxels in the largest dimension of the network
+
     rtol : float
         Stopping criteria for finding the smallest voxel image such that
         further increasing the number of voxels in each dimension by 25% would
@@ -277,14 +283,15 @@ def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
     further increasing it doesn't change porosity by much.
 
     """
-    print("\n" + "-" * 44, flush=True)
-    print("| Generating voxel image from pore network |", flush=True)
-    print("-" * 44, flush=True)
+    if verbose:
+        print("\n" + "-" * 44, flush=True)
+        print("| Generating voxel image from pore network |", flush=True)
+        print("-" * 44, flush=True)
 
     # If max_dim is provided, generate voxel image using max_dim
     if max_dim is not None:
         return _generate_voxel_image(network, pore_shape, throat_shape,
-                                     max_dim=max_dim)
+                                     max_dim=max_dim, verbose=verbose)
     else:
         max_dim = 200
 
@@ -293,16 +300,18 @@ def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
     err = 100  # percent
 
     while err > rtol:
-        print(f"\nMaximum dimension in voxels: {max_dim}", flush=True)
+        if verbose:
+            print(f"\nMaximum dimension in voxels: {max_dim}", flush=True)
         im = _generate_voxel_image(network, pore_shape, throat_shape,
-                                   max_dim=max_dim)
+                                   max_dim=max_dim, verbose=verbose)
         eps = im.astype(bool).sum() / np.prod(im.shape)
 
         err = abs(1 - eps / eps_old)
         eps_old = eps
         max_dim = int(max_dim * 1.25)
 
-    print(f"\nConverged at max_dim = {max_dim} voxels.\n")
+    if verbose:
+        print(f"\nConverged at max_dim = {max_dim} voxels.\n")
 
     return im
 

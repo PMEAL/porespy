@@ -1,4 +1,4 @@
-name: macOS
+name: 👰 macOS
 
 on: [push]
 
@@ -35,23 +35,23 @@ jobs:
           path: ~/conda_pkgs_dir
           key: ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{ hashFiles('**/conda_requirements.txt') }}
 
-      - name: Set up conda/mamba
+      - name: Set up conda
         uses: conda-incubator/setup-miniconda@v2
         with:
           python-version: ${{ matrix.python-version }}
           condarc-file: requirements/.condarc
-          channels: conda-forge, defaults
-          mamba-version: "*"
+          allow-softlinks: true
+          channel-priority: flexible
+          show-channel-urls: false
+          use-only-tar-bz2: true
           auto-activate-base: true
 
       - name: Install dependencies (conda)
         run: |
-          mamba install --file requirements/conda_requirements.txt
-          mamba install --file requirements/optional_requirements.txt
-          mamba install --file requirements/test_requirements.txt
+          conda install --file requirements/conda_requirements.txt
+          conda install --file requirements/test_requirements.txt
           # Install porespy from the checked-out branch
           pip install -e .
 
       - name: Running tests
-        run: |
-          pytest
+        run: pytest

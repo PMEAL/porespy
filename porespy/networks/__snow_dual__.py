@@ -90,7 +90,6 @@ def snow_dual(im,
     solid_num = np.amax(pore_regions)
     solid_region = solid_region + solid_num
     solid_region = solid_region * ~im
-    solid_region[solid_region == solid_num] = 0
     regions = pore_region + solid_region
     b_num = np.amax(regions)
     # -------------------------------------------------------------------------

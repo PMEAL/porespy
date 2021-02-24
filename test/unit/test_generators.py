@@ -167,46 +167,44 @@ class GeneratorTest():
     def test_voronoi_edges(self):
         np.random.seed(0)
         im = ps.generators.voronoi_edges(shape=[50, 50, 50],
-                                         radius=2,
-                                         ncells=25,
-                                         flat_faces=True)
+                                          radius=2,
+                                          ncells=25,
+                                          flat_faces=True)
         top_slice = im[:, :, 0]
         assert np.sum(top_slice) == 1409
 
     def test_lattice_spheres_square(self):
-        im = ps.generators.lattice_spheres(shape=[101, 101],
-                                           radius=5, spacing=10,
-                                           lattice='sc')
+        im = ps.generators.lattice_spheres(shape=[101, 101], radius=5,
+                                            offset=0, lattice='sc')
         labels, N = spim.label(input=~im)
         assert N == 100
 
     def test_lattice_spheres_triangular(self):
-        im = ps.generators.lattice_spheres(shape=[101, 101],
-                                           radius=5, spacing=15,
-                                           lattice='triangular')
+        im = ps.generators.lattice_spheres(shape=[101, 101], radius=5,
+                                            lattice='triangular')
         labels, N = spim.label(input=~im)
         assert N == 85
 
     def test_lattice_spheres_sc(self):
         im = ps.generators.lattice_spheres(shape=[101, 101, 101],
-                                           radius=4, spacing=10,
-                                           lattice='sc')
+                                            radius=4, offset=1,
+                                            lattice='sc')
         labels, N = spim.label(input=~im)
         assert N == 1000
 
     def test_lattice_spheres_fcc(self):
         im = ps.generators.lattice_spheres(shape=[101, 101, 101],
-                                           radius=4, spacing=12,
-                                           lattice='fcc')
+                                            radius=4, offset=2,
+                                            lattice='fcc')
         labels, N = spim.label(input=~im)
-        assert N == 2457
+        assert N == 392
 
     def test_lattice_spheres_bcc(self):
         im = ps.generators.lattice_spheres(shape=[101, 101, 101],
-                                           radius=4, spacing=12,
-                                           lattice='bcc')
+                                            radius=4, offset=2,
+                                            lattice='bcc')
         labels, N = spim.label(input=~im)
-        assert N == 1241
+        assert N == 1024
 
     def test_perlin_noise_2D(self):
         im = ps.generators.perlin_noise(shape=[64, 64])
@@ -273,20 +271,6 @@ class GeneratorTest():
         im = ps.generators.RSA(im, radius=8, n_max=200, mode='contained')
         phi2 = im.sum()/im.size
         assert phi2 == phi1
-
-    def test_RSA_shape(self):
-        rsa = ps.generators.RSA(im_or_shape=[200, 200], radius=10)
-        assert np.all(rsa.shape == (200, 200))
-
-    def test_RSA_clearance(self):
-        np.random.seed(0)
-        rsa0 = ps.generators.RSA(im_or_shape=[200, 200], radius=9, clearance=0)
-        np.random.seed(0)
-        rsa2p = ps.generators.RSA(im_or_shape=[200, 200], radius=9, clearance=2)
-        assert rsa0.sum() > rsa2p.sum()
-        np.random.seed(0)
-        rsa1n = ps.generators.RSA(im_or_shape=[200, 200], radius=9, clearance=-1)
-        assert rsa0.sum() < rsa1n.sum()
 
     def test_line_segment(self):
         X0 = [3, 4]
