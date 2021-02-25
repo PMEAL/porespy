@@ -112,8 +112,8 @@ def imagej_plugin(im, path, plugin_name, args=None):
         Path to the Fiji application in the local directory
 
     plugin_name : str
-        Name of the applied ImageJ plugin 
-        
+        Name of the applied ImageJ plugin
+
     args : dict
          A dictionary that containes the required arguments of the
          applied plugin. For example, it could be {'options': 'True'}

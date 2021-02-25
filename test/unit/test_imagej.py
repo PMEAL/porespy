@@ -6,7 +6,6 @@ import porespy as ps
 
 class ImageJTest:
 
-
     def setup_class(self):
         self.path = os.path.dirname(os.path.abspath(sys.argv[0]))
 
@@ -20,9 +19,10 @@ class ImageJTest:
         if system() == 'Windows':
             img = ps.generators.blobs(shape=[50, 50, 50], porosity=.5, blobiness=2)
             test = ps.imagej.imagej_plugin(img, path='sc.fiji:fiji:2.1.1',
-                                           plugin_name='Mean 3D...', 
+                                           plugin_name='Mean 3D...',
                                            args={'options' : 'True'})
             assert sum(test.shape) == 150
+
 
 if __name__ == "__main__":
     t = ImageJTest()
