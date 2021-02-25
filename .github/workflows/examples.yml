@@ -5,8 +5,7 @@ on: [push]
 jobs:
   build:
 
-    if: (! contains(github.event.head_commit.message, 'ci min')) &&
-        (! contains(github.event.head_commit.message, 'ci skip'))
+    if: (! contains(github.event.head_commit.message, 'ci min'))
 
     runs-on: ${{ matrix.operating-system }}
     defaults:
@@ -21,6 +20,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
 
       - name: Cache conda
         uses: actions/cache@v2
@@ -33,19 +36,24 @@ jobs:
       - name: Set up conda/mamba
         uses: conda-incubator/setup-miniconda@v2
         with:
-          python-version: ${{ matrix.python-version }}
-          condarc-file: requirements/.condarc
-          channels: conda-forge, defaults
           mamba-version: "*"
+          allow-softlinks: true
+          use-only-tar-bz2: true
+          show-channel-urls: false
           auto-activate-base: true
+          channel-priority: flexible
+          channels: conda-forge,defaults
+          condarc-file: requirements/.condarc
+          python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies (conda)
         run: |
-          mamba install --file requirements/conda_requirements.txt
-          mamba install --file requirements/optional_requirements.txt
-          mamba install --file requirements/test_requirements.txt
+          cat requirements/conda_requirements.txt >> requirements.txt
+          cat requirements/test_requirements.txt >> requirements.txt
+          cat requirements/optional_requirements.txt >> requirements.txt
+          mamba install --file requirements.txt
           # Install porespy from the checked-out branch
-          pip install -e .
+          pip install -e . --no-deps
 
       - name: Running tests
         run: |
