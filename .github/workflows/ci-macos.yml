@@ -53,6 +53,7 @@ jobs:
           cat requirements/test_requirements.txt >> requirements.txt
           cat requirements/optional_requirements.txt >> requirements.txt
           mamba install --file requirements.txt
+          mamba install paraview>=5.9.0
           # Install porespy from the checked-out branch
           pip install -e . --no-deps
 
