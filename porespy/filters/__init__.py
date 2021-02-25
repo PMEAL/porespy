@@ -41,6 +41,8 @@ altered values.
     porespy.filters.trim_nonpercolating_paths
     porespy.filters.trim_saddle_points
     porespy.filters.trim_small_clusters
+    porespy.filters.unpad
+    
 
 
 .. autofunction:: apply_chords
@@ -71,6 +73,7 @@ altered values.
 .. autofunction:: trim_nonpercolating_paths
 .. autofunction:: trim_saddle_points
 .. autofunction:: trim_small_clusters
+.. autofunction:: unpad
 
 """
 
@@ -102,3 +105,4 @@ from .__funcs__ import trim_nonpercolating_paths
 from .__funcs__ import trim_nearby_peaks
 from .__funcs__ import trim_saddle_points
 from .__funcs__ import trim_small_clusters
+from .__unpadfunc__ import unpad
