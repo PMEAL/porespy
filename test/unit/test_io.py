@@ -67,9 +67,7 @@ class ExportTest():
         volume_total = np.prod(net.spacing * net.shape)
         porosity_desired = volume_void / volume_total
 
-        assert_allclose(actual=porosity_actual,
-                        desired=porosity_desired,
-                        rtol=0.05)
+        assert_allclose(actual=porosity_actual, desired=porosity_desired, rtol=0.1)
 
     def test_to_stl(self):
         im = ps.generators.blobs(shape=[50, 50, 50], spacing=0.1)
@@ -82,8 +80,8 @@ class ExportTest():
         os.remove('test_to_paraview.pvsm')
 
     def test_open_paraview(self):
-        ps.io.open_paraview(filename='../fixtures/image.pvsm')
         if sys.platform != "darwin":
+            ps.io.open_paraview(filename='../fixtures/image.pvsm')
             assert "paraview" in (p.name().split('.')[0] for p in psutil.process_iter())
 
     def test_spheres_to_comsol_radii_centers(self):
