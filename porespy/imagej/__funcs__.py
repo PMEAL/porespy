@@ -98,7 +98,7 @@ def imagej_wrapper(im, plugin_name, path):
 def imagej_plugin(im, path, plugin_name, args=None):
     r"""
     Apply ImageJ filters on 3D images.
-    
+
     In This function the plugin_name should have a same format as the
     plugin_name in the ImageJ. For example, to apply a Gaussian blur on a 3D
     image, the plugin_name should be 'Gaussian Blur 3D...'
@@ -124,15 +124,12 @@ def imagej_plugin(im, path, plugin_name, args=None):
         Outputs a ndarray after applying the desired filter on the image.
 
     """
-    ij = imagej.init("C:\\Users\\Hamed\\Fiji.app", headless=False)
+    ij = imagej.init(path, headless=False)
     img = 255 * np.array(im.astype("uint8"))
     WindowManager = jimport('ij.WindowManager')
-    #ij.ui().showUI()
     ij.ui().show('Image', ij.py.to_java(img))
     plugin = 'Duplicate...'
-    arg = {
-        'duplicate range': (1,im.shape[0])
-        }
+    arg = {'duplicate range': (1, im.shape[0])}
     ij.py.run_plugin(plugin, arg)
     ij.py.run_plugin(plugin_name, args)
     results = np.array(ij.py.from_java(WindowManager.getCurrentImage()))
