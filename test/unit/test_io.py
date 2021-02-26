@@ -75,9 +75,10 @@ class ExportTest():
         os.remove("im2stl.stl")
 
     def test_to_paraview(self):
-        im = ps.generators.blobs(shape=[50, 50, 50], spacing=0.1)
-        ps.io.to_paraview(im=im, filename='test_to_paraview.pvsm')
-        os.remove('test_to_paraview.pvsm')
+        if sys.platform != "darwin":
+            im = ps.generators.blobs(shape=[50, 50, 50], spacing=0.1)
+            ps.io.to_paraview(im=im, filename='test_to_paraview.pvsm')
+            os.remove('test_to_paraview.pvsm')
 
     def test_open_paraview(self):
         if sys.platform != "darwin":
