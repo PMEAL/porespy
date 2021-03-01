@@ -75,15 +75,13 @@ class ExportTest():
         os.remove("im2stl.stl")
 
     def test_to_paraview(self):
-        if sys.platform != "darwin":
-            im = ps.generators.blobs(shape=[50, 50, 50], spacing=0.1)
-            ps.io.to_paraview(im=im, filename='test_to_paraview.pvsm')
-            os.remove('test_to_paraview.pvsm')
+        im = ps.generators.blobs(shape=[50, 50, 50], spacing=0.1)
+        ps.io.to_paraview(im=im, filename='test_to_paraview.pvsm')
+        os.remove('test_to_paraview.pvsm')
 
     def test_open_paraview(self):
-        if sys.platform != "darwin":
-            ps.io.open_paraview(filename='../fixtures/image.pvsm')
-            assert "paraview" in (p.name().split('.')[0] for p in psutil.process_iter())
+        ps.io.open_paraview(filename='../fixtures/image.pvsm')
+        assert "paraview" in (p.name().split('.')[0] for p in psutil.process_iter())
 
     def test_spheres_to_comsol_radii_centers(self):
         radii = np.array([10, 20, 25, 5])
