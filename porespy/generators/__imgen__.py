@@ -7,9 +7,11 @@ from skimage.morphology import disk, ball
 import scipy.spatial as sptl
 import scipy.ndimage as spim
 from porespy.tools import norm_to_uniform, ps_ball, ps_disk, get_border
+from porespy import settings
 from typing import List
 from numpy import array
-from tqdm import tqdm
+from porespy.tools import get_tqdm
+tqdm = get_tqdm()
 
 
 def insert_shape(im, element, center=None, corner=None, value=1, mode="overwrite"):
@@ -91,41 +93,39 @@ def insert_shape(im, element, center=None, corner=None, value=1, mode="overwrite
     return im
 
 
-def RSA(im: array,
+def RSA(im_or_shape: array,
         radius: int,
         volume_fraction: int = 1,
+        clearance: int = 0,
         n_max: int = None,
-        mode: str = "contained"):
+        mode: str = "contained",
+        return_spheres: bool = False,
+        smooth: bool = True,
+        ):
     r"""
     Generates a sphere or disk packing using Random Sequential Addition
 
-    This algorithm ensures that spheres do not overlap but does not
-    guarantee they are tightly packed.
-
-    This function adds spheres to the background of the received ``im``, which
-    allows iteratively adding spheres of different radii to the unfilled space,
-    be repeatedly passing in the result of previous calls to RSA.
-
     Parameters
     ----------
-    im : ND-array
-        The image into which the spheres should be inserted.  By accepting an
-        image rather than a shape, it allows users to insert spheres into an
-        already existing image.  To begin the process, start with an array of
-        zeros such as ``im = np.zeros([200, 200, 200], dtype=bool)``.
+    im_or_shape : ND-array or list
+        To provide flexibility, this argument accepts either an image into
+        which the spheres are inserted, or a shape which is used to create an
+        empty image.  In both cases the spheres are added as ``True`` values
+        to the background.  Since ``True`` is considered the pore space, then
+        the added spheres represent holes.
     radius : int
         The radius of the disk or sphere to insert.
     volume_fraction : scalar (default is 1.0)
         The fraction of the image that should be filled with spheres.  The
-        spheres are added as 1's, so each sphere addition increases the
-        ``volume_fraction`` until the specified limit is reach.  Note that if
+        spheres are added as ``True``'s, so each sphere addition increases the
+        ``volume_fraction`` until the specified limit is reached.  Note that if
         ``n_max`` is reached first, then ``volume_fraction`` will not be
-        acheived.
+        acheived.  Also, ``volume_fraction`` is not counted correctly if the
+        ``mode`` is ``'extended'``.
     n_max : int (default is 10,000)
-        The maximum number of spheres to add.  By default the value of
-        ``n_max`` is high so that the addition of spheres will go indefinately
-        until ``volume_fraction`` is met, but specifying a smaller value
-        will halt addition after the given number of spheres are added.
+        The maximum number of spheres to add.  Using a low value may halt
+        the addition process prior to reaching the specified
+        ``volume_fraction``.
     mode : string (default is 'contained')
         Controls how the edges of the image are handled.  Options are:
 
@@ -135,21 +135,27 @@ def RSA(im: array,
         image.  In this mode the volume fraction will be less that requested
         since some spheres extend beyond the image, but their entire volume
         is counted as added for computational efficiency.
+    return_spheres : bool
+        If ``True`` then an image containing only the spheres is returned
+        rather than the input image with the spheres added, which is the
+        default behavior.
+    smooth : bool
+        Indicates whether balls should have smooth faces (``True``) or should
+        include the bumps on the extremities (``False``).
 
     Returns
     -------
     image : ND-array
-        A handle to the input ``im`` with spheres of specified radius
-        *added* to the background.
+        An image with spheres of specified radius *added* to the background.
 
     Notes
     -----
-    This function uses Numba to speed up the search for valid sphere insertion
-    points.  It seems that Numba does not look at the state of the scipy
-    random number generator, so setting the seed to a known value has no
-    effect on the output of this function. Each call to this function will
-    produce a unique image.  If you wish to use the same realization multiple
-    times you must save the array (e.g. ``numpy.save``).
+    This algorithm ensures that spheres do not overlap but does not
+    guarantee they are tightly packed.
+
+    This function adds spheres to the background of the received ``im``, which
+    allows iteratively adding spheres of different radii to the unfilled space
+    by repeatedly passing in the result of previous calls to RSA.
 
     References
     ----------
@@ -158,18 +164,24 @@ def RSA(im: array,
     """
     print(80 * "-")
     print(f"RSA: Adding spheres of size {radius}")
+    if len(im_or_shape) <= 3:
+        im = np.zeros(shape=im_or_shape, dtype=bool)
+    else:
+        im = im_or_shape
     im = im.astype(bool)
+    if return_spheres:
+        im_temp = np.copy(im)
     if n_max is None:
         n_max = 10000
     vf_final = volume_fraction
     vf_start = im.sum() / im.size
     print("Initial volume fraction:", vf_start)
     if im.ndim == 2:
-        template_lg = ps_disk(radius * 2)
-        template_sm = ps_disk(radius)
+        template_lg = ps_disk((radius + clearance) * 2)
+        template_sm = ps_disk(radius, smooth=smooth)
     else:
-        template_lg = ps_ball(radius * 2)
-        template_sm = ps_ball(radius)
+        template_lg = ps_ball((radius + clearance) * 2)
+        template_sm = ps_ball(radius, smooth=smooth)
     vf_template = template_sm.sum() / im.size
     # Pad image by the radius of large template to enable insertion near edges
     im = np.pad(im, pad_width=2 * radius, mode="edge")
@@ -202,7 +214,8 @@ def RSA(im: array,
         if all(np.array(c) == -1):
             break
         s_sm = tuple([slice(x - radius, x + radius + 1, None) for x in c])
-        s_lg = tuple([slice(x - 2 * radius, x + 2 * radius + 1, None) for x in c])
+        s_lg = tuple([slice(x - 2 * (radius + clearance),
+                            x + 2 * (radius + clearance) + 1, None) for x in c])
         im[s_sm] += template_sm  # Add ball to image
         options_im[s_lg][template_lg] = False  # Update extended region
         vf += vf_template
@@ -214,6 +227,8 @@ def RSA(im: array,
     im = im[s]
     vf = im.sum() / im.size
     print("Final volume fraction:", vf)
+    if return_spheres:
+        im = im * (~im_temp)
     return im
 
 
@@ -476,9 +491,12 @@ def _get_Voronoi_edges(vor):
     return edges
 
 
-def lattice_spheres(
-    shape: List[int], radius: int, offset: int = 0, lattice: str = "sc"
-):
+def lattice_spheres(shape: List[int],
+                    radius: int,
+                    spacing: int = None,
+                    offset: int = None,
+                    smooth: bool = True,
+                    lattice: str = "sc"):
     r"""
     Generates a cubic packing of spheres in a specified lattice arrangement
 
@@ -487,13 +505,20 @@ def lattice_spheres(
     shape : list
         The size of the image to generate in [Nx, Ny, Nz] where N is the
         number of voxels in each direction.  For a 2D image, use [Nx, Ny].
-
-    radius : scalar
+    radius : int
         The radius of spheres (circles) in the packing
-
-    offset : scalar
-        The amount offset (+ or -) to add between sphere centers.
-
+    spacing : int or list of ints
+        The spacing between unit cells. If the spacing is too small then
+        spheres may overlap. If an ``int`` is given it will be applied in all
+        directions, while a list of ``int``s will be interpreted to apply
+        along each axis.
+    offset : int or list of ints
+        The amount offset to add between sphere centers and the edges of the
+        image.  A single ``int`` will be applied in all directions, while a
+        list of ``int``s will be interpreted to apply along each axis.
+    smooth : bool
+        If ``True`` (default) the outer extremities of the sphere will not
+        have the little bumps on each face.
     lattice : string
         Specifies the type of lattice to create.  Options are:
 
@@ -515,85 +540,79 @@ def lattice_spheres(
     print("lattice_spheres: Generating " + lattice + " lattice")
     r = radius
     shape = np.array(shape)
-    if np.size(shape) == 1:
-        shape = np.full((3,), int(shape))
     im = np.zeros(shape, dtype=bool)
-    im = im.squeeze()
 
     # Parse lattice type
     lattice = lattice.lower()
     if im.ndim == 2:
-        if lattice in ["sc"]:
-            lattice = "sq"
-        if lattice in ["bcc", "fcc"]:
-            lattice = "tri"
+        if lattice in ['sc', 'square', 'cubic', 'simple cubic']:
+            lattice = 'sq'
+        elif lattice in ['tri', 'triangular']:
+            lattice = 'tri'
+        else:
+            raise Exception(f'Unrecognized mode: {lattice}')
+    else:
+        if lattice in ['sc', 'cubic', 'simple cubic']:
+            lattice = 'sc'
+        elif lattice in ['bcc', 'body centered cubic']:
+            lattice = 'bcc'
+        elif lattice in ['fcc', 'face centered cubic']:
+            lattice = 'fcc'
+        else:
+            raise Exception(f'Unrecognized mode: {lattice}')
 
-    if lattice in ["sq", "square"]:
-        spacing = 2 * r
-        s = int(spacing / 2) + np.array(offset)
-        coords = np.mgrid[r : im.shape[0] - r : 2 * s, r : im.shape[1] - r : 2 * s]
-        im[coords[0], coords[1]] = 1
-    elif lattice in ["tri", "triangular"]:
-        spacing = 2 * np.floor(np.sqrt(2 * (r ** 2))).astype(int)
-        s = int(spacing / 2) + offset
-        coords = np.mgrid[r : im.shape[0] - r : 2 * s, r : im.shape[1] - r : 2 * s]
-        im[coords[0], coords[1]] = 1
-        coords = np.mgrid[
-            s + r : im.shape[0] - r : 2 * s, s + r : im.shape[1] - r : 2 * s
-        ]
-        im[coords[0], coords[1]] = 1
-    elif lattice in ["sc", "simple cubic", "cubic"]:
-        spacing = 2 * r
-        s = int(spacing / 2) + np.array(offset)
-        coords = np.mgrid[
-            r : im.shape[0] - r : 2 * s,
-            r : im.shape[1] - r : 2 * s,
-            r : im.shape[2] - r : 2 * s,
-        ]
-        im[coords[0], coords[1], coords[2]] = 1
-    elif lattice in ["bcc", "body cenetered cubic"]:
-        spacing = 2 * np.floor(np.sqrt(4 / 3 * (r ** 2))).astype(int)
-        s = int(spacing / 2) + offset
-        coords = np.mgrid[
-            r : im.shape[0] - r : 2 * s,
-            r : im.shape[1] - r : 2 * s,
-            r : im.shape[2] - r : 2 * s,
-        ]
-        im[coords[0], coords[1], coords[2]] = 1
-        coords = np.mgrid[
-            s + r : im.shape[0] - r : 2 * s,
-            s + r : im.shape[1] - r : 2 * s,
-            s + r : im.shape[2] - r : 2 * s,
-        ]
-        im[coords[0], coords[1], coords[2]] = 1
-    elif lattice in ["fcc", "face centered cubic"]:
-        spacing = 2 * np.floor(np.sqrt(2 * (r ** 2))).astype(int)
-        s = int(spacing / 2) + offset
-        coords = np.mgrid[
-            r : im.shape[0] - r : 2 * s,
-            r : im.shape[1] - r : 2 * s,
-            r : im.shape[2] - r : 2 * s,
-        ]
-        im[coords[0], coords[1], coords[2]] = 1
-        coords = np.mgrid[
-            r : im.shape[0] - r : 2 * s,
-            s + r : im.shape[1] - r : 2 * s,
-            s + r : im.shape[2] - r : 2 * s,
-        ]
-        im[coords[0], coords[1], coords[2]] = 1
-        coords = np.mgrid[
-            s + r : im.shape[0] - r : 2 * s,
-            s : im.shape[1] - r : 2 * s,
-            s + r : im.shape[2] - r : 2 * s,
-        ]
-        im[coords[0], coords[1], coords[2]] = 1
-        coords = np.mgrid[
-            s + r : im.shape[0] - r : 2 * s,
-            s + r : im.shape[1] - r : 2 * s,
-            s : im.shape[2] - r : 2 * s,
-        ]
-        im[coords[0], coords[1], coords[2]] = 1
-    im = ~(edt(~im) < r)
+    # Parse offset and spacing args
+    if spacing is None:
+        spacing = 2*radius
+    if isinstance(spacing, int):
+        spacing = [spacing]*im.ndim
+    if offset is None:
+        offset = radius
+    if isinstance(offset, int):
+        offset = [offset]*im.ndim
+
+    if lattice == 'sq':
+        im[offset[0]::spacing[0],
+           offset[1]::spacing[1]] = True
+    elif lattice == 'tri':
+        im[offset[0]::spacing[0],
+           offset[1]::spacing[1]] = True
+        im[offset[0]+int(spacing[0]/2)::spacing[0],
+           offset[1]+int(spacing[1]/2)::spacing[1]] = True
+    elif lattice == 'sc':
+        im[offset[0]::spacing[0],
+           offset[1]::spacing[1],
+           offset[2]::spacing[2]] = True
+    elif lattice == 'bcc':
+        im[offset[0]::spacing[0],
+           offset[1]::spacing[1],
+           offset[2]::spacing[2]] = True
+        im[offset[0]+int(spacing[0]/2)::spacing[0],
+           offset[1]+int(spacing[1]/2)::spacing[1],
+           offset[2]+int(spacing[2]/2)::spacing[2]] = True
+    elif lattice == 'fcc':
+        im[offset[0]::spacing[0],
+           offset[1]::spacing[1],
+           offset[2]::spacing[2]] = True
+        # xy-plane
+        im[offset[0]+int(spacing[0]/2)::spacing[0],
+           offset[1]+int(spacing[1]/2)::spacing[1],
+           offset[2]::spacing[2]] = True
+        # xz-plane
+        im[offset[0]+int(spacing[0]/2)::spacing[0],
+           offset[1]::spacing[1],
+           offset[2]+int(spacing[2]/2)::spacing[2]] = True
+        # yz-plane
+        im[offset[0]::spacing[0],
+           offset[1]+int(spacing[1]/2)::spacing[1],
+           offset[2]+int(spacing[2]/2)::spacing[2]] = True
+    # TODO: The following might be faster to use np.where to find points
+    # the directly insert spheres at each location using the numba jit
+    # versions of insert_spheres
+    if smooth:
+        im = ~(edt(~im) < r)
+    else:
+        im = ~(edt(~im) <= r)
     return im
 
 
@@ -749,7 +768,7 @@ def perlin_noise(shape: List[int], porosity=None, octaves: int = 3,
     noise = np.zeros(shape)
     frequency = 1
     amplitude = 1
-    for _ in tqdm(range(octaves), file=sys.stdout):
+    for _ in tqdm(range(octaves), **settings.tqdm):
         if noise.ndim == 2:
             noise += amplitude * _perlin_noise_2D(shape, frequency * res)
         elif noise.ndim == 3:
@@ -980,25 +999,25 @@ def _cylinders(shape: List[int],
     im = np.zeros(shape, dtype=bool)
     n = 0
     L = min(H, R)
-    pbar = tqdm(total=ncylinders, file=sys.stdout, disable=not verbose)
-    while n < ncylinders:
-        # Choose a random starting point in domain
-        x = np.random.rand(3) * (shape + 2 * L)
-        # Chose a random phi and theta within given ranges
-        phi = (np.pi / 2 - np.pi * np.random.rand()) * phi_max / 90
-        theta = (np.pi / 2 - np.pi * np.random.rand()) * theta_max / 90
-        X0 = R * np.array([np.cos(phi) * np.cos(theta),
-                           np.cos(phi) * np.sin(theta),
-                           np.sin(phi)])
-        [X0, X1] = [x + X0, x - X0]
-        crds = line_segment(X0, X1)
-        lower = ~np.any(np.vstack(crds).T < [L, L, L], axis=1)
-        upper = ~np.any(np.vstack(crds).T >= shape + L, axis=1)
-        valid = upper * lower
-        if np.any(valid):
-            im[crds[0][valid] - L, crds[1][valid] - L, crds[2][valid] - L] = 1
-            n += 1
-            pbar.update()
+    with tqdm(ncylinders, **settings.tqdm) as pbar:
+        while n < ncylinders:
+            # Choose a random starting point in domain
+            x = np.random.rand(3) * (shape + 2 * L)
+            # Chose a random phi and theta within given ranges
+            phi = (np.pi / 2 - np.pi * np.random.rand()) * phi_max / 90
+            theta = (np.pi / 2 - np.pi * np.random.rand()) * theta_max / 90
+            X0 = R * np.array([np.cos(phi) * np.cos(theta),
+                               np.cos(phi) * np.sin(theta),
+                               np.sin(phi)])
+            [X0, X1] = [x + X0, x - X0]
+            crds = line_segment(X0, X1)
+            lower = ~np.any(np.vstack(crds).T < [L, L, L], axis=1)
+            upper = ~np.any(np.vstack(crds).T >= shape + L, axis=1)
+            valid = upper * lower
+            if np.any(valid):
+                im[crds[0][valid] - L, crds[1][valid] - L, crds[2][valid] - L] = 1
+                n += 1
+                pbar.update()
     im = np.array(im, dtype=bool)
     dt = edt(~im) < radius
     return ~dt
@@ -1126,13 +1145,13 @@ def cylinders(shape: List[int],
         fractions.append(fractions[i - 1] + (max_iter - i) ** 2 * subdif)
 
     im = np.ones(shape, dtype=bool)
-    for frac in tqdm(fractions, file=sys.stdout, desc="Adding fibers"):
+    for frac in tqdm(fractions, **settings.tqdm):
         n_fibers_total = n_pixels_to_add / vol_fiber
         n_fibers = int(np.ceil(frac * n_fibers_total) - n_fibers_added)
         if n_fibers > 0:
-            im = im & _cylinders(
-                shape, radius, n_fibers, phi_max, theta_max, length, verbose=False
-            )
+            im = im & _cylinders(shape, radius, n_fibers,
+                                 phi_max, theta_max, length,
+                                 verbose=False)
         n_fibers_added += n_fibers
         # Update parameters for next iteration
         porosity = ps.metrics.porosity(im)
@@ -1217,30 +1236,28 @@ def pseudo_gravity_packing(im, r, clearance=0, max_iter=1000):
     inlets[-(r+1), ...] = True
     sites = ps.filters.trim_disconnected_blobs(im=sites, inlets=inlets)
     x_min = np.where(sites)[0].min()
-    with tqdm(range(max_iter)) as pbar:
-        for _ in range(max_iter):
-            pbar.update()
-            if im.ndim == 2:
-                x, y = np.where(sites[x_min:x_min+2*r, ...])
-            else:
-                x, y, z = np.where(sites[x_min:x_min+2*r, ...])
-            if len(x) == 0:
-                break
-            options = np.where(x == x.min())[0]
-            if len(options) > 1:
-                choice = np.random.randint(0, len(options)-1)
-            else:
-                choice = 0
-            if im.ndim == 2:
-                cen = np.array([x[options[choice]] + x_min,
-                                y[options[choice]]])
-            else:
-                cen = np.array([x[options[choice]] + x_min,
-                                y[options[choice]],
-                                z[options[choice]]])
-            im = ps.tools.insert_sphere(im, c=cen, r=r - clearance, v=0)
-            sites = ps.tools.insert_sphere(sites, c=cen, r=2*r, v=0)
-            x_min += x.min()
+    for _ in tqdm(range(max_iter), **settings.tqdm):
+        if im.ndim == 2:
+            x, y = np.where(sites[x_min:x_min+2*r, ...])
+        else:
+            x, y, z = np.where(sites[x_min:x_min+2*r, ...])
+        if len(x) == 0:
+            break
+        options = np.where(x == x.min())[0]
+        if len(options) > 1:
+            choice = np.random.randint(0, len(options)-1)
+        else:
+            choice = 0
+        if im.ndim == 2:
+            cen = np.array([x[options[choice]] + x_min,
+                            y[options[choice]]])
+        else:
+            cen = np.array([x[options[choice]] + x_min,
+                            y[options[choice]],
+                            z[options[choice]]])
+        im = ps.tools.insert_sphere(im, c=cen, r=r - clearance, v=0)
+        sites = ps.tools.insert_sphere(sites, c=cen, r=2*r, v=0)
+        x_min += x.min()
     print('A total of', _, 'spheres were added')
     im = spim.minimum_filter(input=im, footprint=strel(1))
     return im

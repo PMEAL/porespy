@@ -42,7 +42,7 @@ def show_3D(im):
     return view
 
 
-def show_planes(im):
+def show_planes(im, spacing=10):
     r"""
     Create a quick montage showing a 3D image in all three directions
 
@@ -50,6 +50,8 @@ def show_planes(im):
     ----------
     im : ND-array
         A 3D image of the porous material
+    spacing : int (optional, default=10)
+        Controls the amount of space to put between each panel
 
     Returns
     -------
@@ -58,6 +60,7 @@ def show_planes(im):
         ``matplotlib.pyplot.imshow``.
 
     """
+    s = spacing
     if np.squeeze(im.ndim) < 3:
         raise Exception('This view is only necessary for 3D images')
     x, y, z = (np.array(im.shape)/2).astype(int)
@@ -65,22 +68,22 @@ def show_planes(im):
     im_xz = im[:, y, :]
     im_yz = np.rot90(im[x, :, :])
 
-    new_x = im_xy.shape[0] + im_yz.shape[0] + 10
+    new_x = im_xy.shape[0] + im_yz.shape[0] + s
 
-    new_y = im_xy.shape[1] + im_xz.shape[1] + 10
+    new_y = im_xy.shape[1] + im_xz.shape[1] + s
 
-    new_im = np.zeros([new_x + 20, new_y + 20], dtype=im.dtype)
+    new_im = np.zeros([new_x + 2*s, new_y + 2*s], dtype=im.dtype)
 
     # Add xy image to upper left corner
-    new_im[10:im_xy.shape[0]+10,
-           10:im_xy.shape[1]+10] = im_xy
+    new_im[s:im_xy.shape[0] + s,
+           s:im_xy.shape[1] + s] = im_xy
     # Add xz image to lower left coner
-    x_off = im_xy.shape[0]+20
-    y_off = im_xy.shape[1]+20
-    new_im[10:10 + im_xz.shape[0],
+    x_off = im_xy.shape[0] + 2*s
+    y_off = im_xy.shape[1] + 2*s
+    new_im[s:s + im_xz.shape[0],
            y_off:y_off + im_xz.shape[1]] = im_xz
     new_im[x_off:x_off + im_yz.shape[0],
-           10:10 + im_yz.shape[1]] = im_yz
+           s:s + im_yz.shape[1]] = im_yz
 
     return new_im
 

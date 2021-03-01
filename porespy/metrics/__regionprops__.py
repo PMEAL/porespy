@@ -1,6 +1,4 @@
-import sys
 import numpy as np
-from tqdm import tqdm
 import scipy.ndimage as spim
 from porespy.tools import extract_subsection, bbox_to_slices
 from skimage.measure import mesh_surface_area

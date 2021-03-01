@@ -1,4 +1,3 @@
-import sys
 import dask
 import dask.array as da
 from dask.diagnostics import ProgressBar
@@ -7,7 +6,6 @@ import numpy as np
 from numba import njit, prange
 from edt import edt
 import operator as op
-from tqdm import tqdm
 import scipy.ndimage as spim
 import scipy.spatial as sptl
 from collections import namedtuple
@@ -18,6 +16,9 @@ from porespy.tools import randomize_colors, fftmorphology
 from porespy.tools import get_border, extend_slice, extract_subsection
 from porespy.tools import _create_alias_map
 from porespy.tools import ps_disk, ps_ball
+from porespy import settings
+from porespy.tools import get_tqdm
+tqdm = get_tqdm()
 
 
 def apply_padded(im, pad_width, func, pad_val=1, **kwargs):
@@ -1299,9 +1300,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
         inlets = np.pad(inlets, mode="symmetric", pad_width=pw)
         # sizes = np.unique(np.around(sizes, decimals=0).astype(int))[-1::-1]
         imresults = np.zeros(np.shape(impad))
-        pbar = tqdm(sizes, file=sys.stdout)
-        for r in sizes:
-            pbar.update()
+        for r in tqdm(sizes, **settings.tqdm):
             if parallel:
                 imtemp = chunked_func(func=spim.binary_erosion,
                                       input=impad, structure=strel(r),
@@ -1329,9 +1328,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
         imresults = extract_subsection(imresults, shape=im.shape)
     elif mode == "dt":
         imresults = np.zeros(np.shape(im))
-        pbar = tqdm(sizes, file=sys.stdout)
-        for r in sizes:
-            pbar.update()
+        for r in tqdm(sizes, **settings.tqdm):
             imtemp = dt >= r
             if access_limited:
                 imtemp = trim_disconnected_blobs(imtemp, inlets)
@@ -1340,9 +1337,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
                 imresults[(imresults == 0) * imtemp] = r
     elif mode == "hybrid":
         imresults = np.zeros(np.shape(im))
-        pbar = tqdm(sizes, file=sys.stdout)
-        for r in sizes:
-            pbar.update()
+        for r in tqdm(sizes, **settings.tqdm):
             imtemp = dt >= r
             if access_limited:
                 imtemp = trim_disconnected_blobs(imtemp, inlets)
@@ -1717,11 +1712,8 @@ def chunked_func(func,
                 strel = kwargs[item]
                 break
         halo = np.array(strel.shape) * (divs > 1)
-    slices = np.ravel(
-        shape_split(
-            im.shape, axis=divs, halo=halo.tolist(), tile_bounds_policy=ARRAY_BOUNDS
-        )
-    )
+    slices = np.ravel(shape_split(im.shape, axis=divs, halo=halo.tolist(),
+                                  tile_bounds_policy=ARRAY_BOUNDS))
     # Apply func to each subsection of the image
     res = []
     # print('Image will be broken into the following chunks:')
@@ -1732,7 +1724,7 @@ def chunked_func(func,
         res.append(apply_func(func=func, **kwargs))
     # Have dask actually compute the function on each subsection in parallel
     # with ProgressBar():
-    #    ims = dask.compute(res, num_workers=cores)[0]
+        # ims = dask.compute(res, num_workers=cores)[0]
     ims = dask.compute(res, num_workers=cores)[0]
     # Finally, put the pieces back together into a single master image, im2
     im2 = np.zeros_like(im, dtype=im.dtype)
@@ -1757,7 +1749,11 @@ def chunked_func(func,
         a = tuple(a)
         b = tuple(b)
         # Insert image chunk into main image
-        im2[a] = ims[i][b]
+        try:
+            im2[a] = ims[i][b]
+        except ValueError:
+            raise IndexError('The applied filter seems to have returned a '
+                             + 'larger image that it was sent.')
     return im2
 
 

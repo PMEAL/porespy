@@ -48,31 +48,6 @@ def dict_to_vtk(data, filename, voxel_size=1, origin=(0, 0, 0)):
     imageToVTK(filename, cellData=data, spacing=(vs, vs, vs), origin=origin)
 
 
-def to_openpnm(net, filename):
-    r"""
-    Save the result of the `snow` network extraction function in a format
-    suitable for opening in OpenPNM.
-
-    Parameters
-    ----------
-    net : dict
-        The dictionary object produced by the network extraction functions
-
-    filename : string or path object
-        The name and location to save the file, which will have `.net` file
-        extension.
-
-    """
-    from openpnm.network import GenericNetwork
-
-    # Convert net dict to an openpnm Network
-    pn = GenericNetwork()
-    pn.update(net)
-    pn.project.save_project(filename)
-    ws = pn.project.workspace
-    ws.close_project(pn.project)
-
-
 def to_vtk(im, filename, divide=False, downsample=False, voxel_size=1, vox=False):
     r"""
     Converts an array to a vtk file.
@@ -118,28 +93,22 @@ def to_vtk(im, filename, divide=False, downsample=False, voxel_size=1, vox=False
         split = np.round(im.shape[2] / 2).astype(np.int)
         im1 = im[:, :, 0:split]
         im2 = im[:, :, split:]
-        imageToVTK(
-            f"{filename}_1",
-            cellData={"im": np.ascontiguousarray(im1)},
-            spacing=(vs, vs, vs),
-        )
-        imageToVTK(
-            f"{filename}_2",
-            origin=(0.0, 0.0, split * vs),
-            cellData={"im": np.ascontiguousarray(im2)},
-            spacing=(vs, vs, vs),
-        )
+        imageToVTK(f"{filename}_1",
+                   cellData={"im": np.ascontiguousarray(im1)},
+                   spacing=(vs, vs, vs),)
+        imageToVTK(f"{filename}_2",
+                   origin=(0.0, 0.0, split * vs),
+                   cellData={"im": np.ascontiguousarray(im2)},
+                   spacing=(vs, vs, vs),)
     elif downsample:
         im = spim.interpolation.zoom(im, zoom=0.5, order=0, mode="reflect")
-        imageToVTK(
-            filename,
-            cellData={"im": np.ascontiguousarray(im)},
-            spacing=(2 * vs, 2 * vs, 2 * vs),
-        )
+        imageToVTK(filename,
+                   cellData={"im": np.ascontiguousarray(im)},
+                   spacing=(2 * vs, 2 * vs, 2 * vs),)
     else:
-        imageToVTK(
-            filename, cellData={"im": np.ascontiguousarray(im)}, spacing=(vs, vs, vs)
-        )
+        imageToVTK(filename,
+                   cellData={"im": np.ascontiguousarray(im)},
+                   spacing=(vs, vs, vs))
 
 
 def to_palabos(im, filename, solid=0):
@@ -189,7 +158,6 @@ def openpnm_to_im(
     pore_shape="sphere",
     throat_shape="cylinder",
     max_dim=None,
-    verbose=1,
     rtol=0.1,
 ):
     r"""
@@ -233,7 +201,6 @@ def openpnm_to_im(
         pore_shape=pore_shape,
         throat_shape=throat_shape,
         max_dim=max_dim,
-        verbose=verbose,
         rtol=rtol,
     )
 
@@ -530,7 +497,7 @@ def spheres_to_comsol(filename, im=None, centers=None, radii=None):
     beyond the edge of the image.
 
     """
-    from .COMSOL import _save_to_comsol
+    from .__comsol__ import _save_to_comsol
     if im is not None:
         if im.ndim != 3:
             raise Exception('Image must be 3D.')
