@@ -1,5 +1,6 @@
-from dataclasses import dataclass
+import sys
 import importlib
+from dataclasses import dataclass
 
 
 @dataclass
@@ -30,7 +31,9 @@ class Settings:
     notebook = False
     tqdm = {'disable': False,
             'colour': None,
-            'ncols': None}
+            'ncols': None,
+            'leave': False,
+            'file': sys.stdout}
 
     def __new__(cls):
         if Settings.__instance__ is None:
