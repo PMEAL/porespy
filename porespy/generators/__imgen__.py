@@ -1,4 +1,3 @@
-import sys
 import numpy as np
 from edt import edt
 import porespy as ps
@@ -607,8 +606,8 @@ def lattice_spheres(shape: List[int],
            offset[1]+int(spacing[1]/2)::spacing[1],
            offset[2]+int(spacing[2]/2)::spacing[2]] = True
     # TODO: The following might be faster to use np.where to find points
-    # the directly insert spheres at each location using the numba jit
-    # versions of insert_spheres
+    #  then directly insert spheres at each location using the numba jit
+    #  versions of insert_spheres
     if smooth:
         im = ~(edt(~im) < r)
     else:
@@ -1224,19 +1223,17 @@ def pseudo_gravity_packing(im, r, clearance=0, max_iter=1000):
     The direction of "gravity" along the x-axis, towards x=0.
 
     """
-    print('_'*60)
-    print('Adding monodisperse spheres of radius', r)
+    print('_' * 60)
+    print(f'Adding monodisperse spheres of radius {r}.')
     r = r - 1
-    if im.ndim == 2:
-        strel = disk
-    else:
-        strel = ball
+    strel = disk if im.ndim == 2 else ball
     sites = ps.tools.fftmorphology(im == 1, strel=strel(r), mode='erosion')
     inlets = np.zeros_like(im)
     inlets[-(r+1), ...] = True
     sites = ps.filters.trim_disconnected_blobs(im=sites, inlets=inlets)
     x_min = np.where(sites)[0].min()
-    for _ in tqdm(range(max_iter), **settings.tqdm):
+    n = None
+    for n in tqdm(range(max_iter), **settings.tqdm):
         if im.ndim == 2:
             x, y = np.where(sites[x_min:x_min+2*r, ...])
         else:
@@ -1244,10 +1241,7 @@ def pseudo_gravity_packing(im, r, clearance=0, max_iter=1000):
         if len(x) == 0:
             break
         options = np.where(x == x.min())[0]
-        if len(options) > 1:
-            choice = np.random.randint(0, len(options)-1)
-        else:
-            choice = 0
+        choice = np.random.randint(len(options))
         if im.ndim == 2:
             cen = np.array([x[options[choice]] + x_min,
                             y[options[choice]]])
@@ -1258,6 +1252,6 @@ def pseudo_gravity_packing(im, r, clearance=0, max_iter=1000):
         im = ps.tools.insert_sphere(im, c=cen, r=r - clearance, v=0)
         sites = ps.tools.insert_sphere(sites, c=cen, r=2*r, v=0)
         x_min += x.min()
-    print('A total of', _, 'spheres were added')
+    print(f'A total of {n} spheres were added.')
     im = spim.minimum_filter(input=im, footprint=strel(1))
     return im
