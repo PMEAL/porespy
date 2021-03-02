@@ -1,9 +1,9 @@
 import numpy as np
 from edt import edt
 import porespy as ps
-from skimage.morphology import disk, ball
+from porespy import settings
 import scipy.ndimage as spim
-from tqdm import tqdm
+tqdm = ps.tools.get_tqdm()
 
 
 def pseudo_electrostatic_packing(im, r, sites=None,
@@ -11,19 +11,19 @@ def pseudo_electrostatic_packing(im, r, sites=None,
                                  protrusion=0,
                                  max_iter=1000):
     r"""
-    Iterativley inserts spheres as close to the given sites as possible
+    Iterativley inserts spheres as close to the given sites as possible.
 
     Parameters
     ----------
-    im : ND-array
-        Imaging containing ``True`` values indicating the phase where spheres
-        should be inserted.
+    im : ndarray
+        Imaging containing ``True`` values indicating the phase where
+        spheres should be inserted.
     r : int
-        Radius of spheres to insert
-    sites : ND-array (optional)
-        An image with ``True`` values indicating the electrostatic attraction
-        points. If this is not given then the peaks in the distance transform
-        are used.
+        Radius of spheres to insert.
+    sites : ndarray (optional)
+        An image with ``True`` values indicating the electrostatic
+        attraction points. If this is not given then the peaks in the
+        distance transform are used.
     clearance : int (optional, default=0)
         The amount of space to put between each sphere. Negative values are
         acceptable to create overlaps, but abs(clearance) < r.
@@ -35,15 +35,18 @@ def pseudo_electrostatic_packing(im, r, sites=None,
 
     Returns
     -------
+    im : ndarray
+        Original image overlayed with the inserted spheres.
+
     """
     dt_im = edt(im)
     if sites is None:
         dt2 = spim.gaussian_filter(dt_im, sigma=0.5)
-        strel = ps.tools.ps_ball(r, ndim=im.ndim, smooth=True)
+        strel = ps.tools.ps_round(r, ndim=im.ndim, smooth=True)
         sites = (spim.maximum_filter(dt2, footprint=strel) == dt2)*im
     dt = edt(sites == 0)
     sites = (sites == 0)*(dt_im >= (r-protrusion))
-    with tqdm(range(max_iter)) as pbar:
+    with tqdm(range(max_iter), **settings.tqdm) as pbar:
         r = r + clearance
         for _ in range(max_iter):
             options = np.where(sites)
