@@ -9,8 +9,7 @@ from porespy.tools import norm_to_uniform, ps_ball, ps_disk, get_border
 from porespy import settings
 from typing import List
 from numpy import array
-from porespy.tools import get_tqdm
-tqdm = get_tqdm()
+tqdm = ps.tools.get_tqdm()
 
 
 def insert_shape(im, element, center=None, corner=None, value=1, mode="overwrite"):
@@ -998,7 +997,9 @@ def _cylinders(shape: List[int],
     im = np.zeros(shape, dtype=bool)
     n = 0
     L = min(H, R)
-    with tqdm(ncylinders, **settings.tqdm) as pbar:
+    # Disable tqdm if called from another tqdm to prevent double pbars
+    tqdm_settings = {**settings.tqdm, **{'disable': not verbose}}
+    with tqdm(ncylinders, **tqdm_settings) as pbar:
         while n < ncylinders:
             # Choose a random starting point in domain
             x = np.random.rand(3) * (shape + 2 * L)
@@ -1157,7 +1158,7 @@ def cylinders(shape: List[int],
         vol_added = get_num_pixels(porosity)
         vol_fiber = vol_added / n_fibers_added
 
-    print(f"{n_fibers_added} fibers were added to reach the target porosity.\n")
+    print(f"{n_fibers_added} fibers were added to reach the target porosity.")
 
     return im
 
@@ -1223,7 +1224,7 @@ def pseudo_gravity_packing(im, r, clearance=0, max_iter=1000):
     The direction of "gravity" along the x-axis, towards x=0.
 
     """
-    print('_' * 60)
+    print('-' * 60)
     print(f'Adding monodisperse spheres of radius {r}.')
     r = r - 1
     strel = disk if im.ndim == 2 else ball
