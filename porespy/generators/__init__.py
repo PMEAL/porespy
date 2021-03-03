@@ -21,6 +21,7 @@ illustration purposes.
     porespy.generators.overlapping_spheres
     porespy.generators.perlin_noise
     porespy.generators.polydisperse_spheres
+    porespy.generators.pseudo_gravity_packing
     porespy.generators.random_cantor_dust
     porespy.generators.RSA
     porespy.generators.sierpinski_foam
@@ -29,12 +30,14 @@ illustration purposes.
 .. autofunction:: blobs
 .. autofunction:: bundle_of_tubes
 .. autofunction:: cylinders
+.. autofunction:: cylinders_porosity
 .. autofunction:: insert_shape
 .. autofunction:: lattice_spheres
 .. autofunction:: line_segment
 .. autofunction:: overlapping_spheres
 .. autofunction:: perlin_noise
 .. autofunction:: polydisperse_spheres
+.. autofunction:: pseudo_gravity_packing
 .. autofunction:: random_cantor_dust
 .. autofunction:: RSA
 .. autofunction:: sierpinski_foam
@@ -53,5 +56,8 @@ from .__imgen__ import perlin_noise
 from .__imgen__ import polydisperse_spheres
 from .__imgen__ import RSA
 from .__imgen__ import voronoi_edges
+from .__imgen__ import pseudo_gravity_packing
+from .__electrostatic__ import pseudo_electrostatic_packing
 from .__fractals__ import random_cantor_dust
 from .__fractals__ import sierpinski_foam
+from .__cylinder__ import cylindrical_plug

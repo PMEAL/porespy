@@ -3,6 +3,10 @@ import numpy as np
 import porespy as ps
 import openpnm as op
 from numpy.testing import assert_allclose
+import os
+from os.path import realpath
+from pathlib import Path
+from platform import system
 
 
 class NetExtractTest():
@@ -49,10 +53,12 @@ class NetExtractTest():
         assert found_nans is False
 
     def test_snow_n(self):
-        net = ps.networks.snow_n(self.im3d+1, voxel_size=1,
-                                 boundary_faces=['left', 'right', 'front',
-                                                 'back', 'top', 'bottom'],
-                                 marching_cubes_area=True)
+        net = ps.networks.snow_n(
+            self.im3d + 1,
+            voxel_size=1,
+            boundary_faces=['left', 'right', 'front', 'back', 'top', 'bottom'],
+            marching_cubes_area=True
+        )
         found_nans = False
         for key in net.keys():
             if np.any(np.isnan(net[key])):
@@ -70,16 +76,18 @@ class NetExtractTest():
     def test_add_bounadary_regions_2D(self):
         im = self.im
         regions = ps.filters.snow_partitioning(im)
+        # 2D should break with "bottom"/"top" labels
+        with pytest.raises(Exception):
+            f = ['bottom', 'top']
+            bd = ps.networks.add_boundary_regions(regions, faces=f)
+        # Test valid labels
         f = ['left', 'right']
         bd = ps.networks.add_boundary_regions(regions, faces=f)
         assert bd.shape[0] > regions.shape[0]
-        f = ['bottom', 'top']
-        bd = ps.networks.add_boundary_regions(regions, faces=f)
-        assert bd.shape[1] > regions.shape[1]
         f = ['front', 'back']
         bd = ps.networks.add_boundary_regions(regions, faces=f)
         assert bd.shape[1] > regions.shape[1]
-        f = ['bottom', 'top', 'left', 'right', 'front', 'back']
+        f = ['left', 'right', 'front', 'back']
         bd = ps.networks.add_boundary_regions(regions, faces=f)
         assert bd.shape[0] > regions.shape[0]
         assert bd.shape[1] > regions.shape[1]
@@ -141,12 +149,9 @@ class NetExtractTest():
         net3 = ps.networks.regions_to_network(im=pore_map3,
                                               dt=snow_out3.dt,
                                               voxel_size=1)
-        assert np.allclose(net1['pore.coords'][:, 0],
-                           net2['pore.coords'][:, 0])
-        assert np.allclose(net1['pore.coords'][:, 1],
-                           net2['pore.coords'][:, 2])
-        assert np.allclose(net1['pore.coords'][:, 0],
-                           net3['pore.coords'][:, 1])
+        assert np.allclose(net1['pore.coords'][:, 0], net2['pore.coords'][:, 0])
+        assert np.allclose(net1['pore.coords'][:, 1], net2['pore.coords'][:, 2])
+        assert np.allclose(net1['pore.coords'][:, 0], net3['pore.coords'][:, 1])
 
     def test_generate_voxel_image(self):
         net = op.network.Cubic(shape=[5, 5, 5])
@@ -168,6 +173,31 @@ class NetExtractTest():
 
         assert_allclose(actual=porosity_actual, desired=porosity_desired,
                         rtol=0.05)
+
+    def test_verify_no_unlabeled_regions(self):
+        np.random.seed(1999)
+        alias = {1: "void", 2: "solid"}
+        boundary_faces = ["bottom", "top", "left", "right", "front", "back"]
+        im = ps.generators.blobs([50, 50, 50]) + 1
+        temp = ps.networks.snow_n(im=im, alias=alias, boundary_faces=boundary_faces)
+        proj = op.io.PoreSpy.load(temp)
+        net = proj.network
+        Ps = net.pores(["void", "solid"] + boundary_faces)
+        assert Ps.size == net.Np == 74
+
+    def test_max_ball(self):
+        path = Path(realpath(__file__), '../../fixtures/pnextract.exe')
+        if system() == 'Windows':
+            ps.networks.maximal_ball(im=self.im3d, prefix='test_maxball',
+                                     path_to_exe=path, voxel_size=1e-6)
+            assert os.path.isfile("test_maxball_link1.dat")
+            assert os.path.isfile("test_maxball_link2.dat")
+            assert os.path.isfile("test_maxball_node1.dat")
+            assert os.path.isfile("test_maxball_node2.dat")
+            os.remove("test_maxball_link1.dat")
+            os.remove("test_maxball_link2.dat")
+            os.remove("test_maxball_node1.dat")
+            os.remove("test_maxball_node2.dat")
 
 
 if __name__ == '__main__':

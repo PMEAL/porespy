@@ -61,33 +61,25 @@ def snow_n(im,
     convention (i.e. 'pore.coords', 'throat.conns') so it may be converted
     directly to an OpenPNM network object using the ``update`` command.
     """
-    # -------------------------------------------------------------------------
     # Get alias if provided by user
-    al = _create_alias_map(im, alias=alias)
-    # -------------------------------------------------------------------------
+    alias = _create_alias_map(im, alias=alias)
     # Perform snow on each phase and merge all segmentation and dt together
     snow = snow_partitioning_n(im, r_max=4, sigma=0.4, return_all=True,
-                               mask=True, randomize=False, alias=al)
-    # -------------------------------------------------------------------------
+                               mask=True, randomize=False, alias=alias)
     # Add boundary regions
-    f = boundary_faces
-    regions = add_boundary_regions(regions=snow.regions, faces=f)
-    # -------------------------------------------------------------------------
+    regions = add_boundary_regions(regions=snow.regions, faces=boundary_faces)
     # Padding distance transform to extract geometrical properties
-    dt = pad_faces(im=snow.dt, faces=f)
-    # -------------------------------------------------------------------------
+    dt = pad_faces(im=snow.dt, faces=boundary_faces)
     # For only one phase extraction with boundary regions
     phases_num = np.unique(im).astype(int)
     phases_num = np.trim_zeros(phases_num)
     if len(phases_num) == 1:
-        if f is not None:
-            snow.im = pad_faces(im=snow.im, faces=f)
+        if boundary_faces is not None:
+            snow.im = pad_faces(im=snow.im, faces=boundary_faces)
         regions = regions * (snow.im.astype(bool))
         regions = make_contiguous(regions)
-    # -------------------------------------------------------------------------
     # Extract N phases sites and bond information from image
     net = regions_to_network(im=regions, dt=dt, voxel_size=voxel_size)
-    # -------------------------------------------------------------------------
     # Extract marching cube surface area and interfacial area of regions
     if marching_cubes_area:
         areas = region_surface_areas(regions=regions)
@@ -95,18 +87,17 @@ def snow_n(im,
                                                 voxel_size=voxel_size)
         net['pore.surface_area'] = areas * voxel_size ** 2
         net['throat.area'] = interface_area.area
-    # -------------------------------------------------------------------------
     # Find interconnection and interfacial area between ith and jth phases
     net = add_phase_interconnections(net=net, snow_partitioning_n=snow,
                                      marching_cubes_area=marching_cubes_area,
-                                     alias=al)
-    # -------------------------------------------------------------------------
+                                     alias=alias)
     # label boundary cells
-    net = label_boundary_cells(network=net, boundary_faces=f)
-    # -------------------------------------------------------------------------
+    net = label_boundary_cells(network=net, boundary_faces=boundary_faces)
 
+    # Assemble output named tuple
     temp = _net_dict(net)
     temp.im = im.copy()
     temp.dt = dt
     temp.regions = regions
+
     return temp
