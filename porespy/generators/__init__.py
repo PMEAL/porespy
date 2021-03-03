@@ -51,7 +51,7 @@ from .__imgen__ import line_segment
 from .__imgen__ import overlapping_spheres
 from .__imgen__ import perlin_noise
 from .__imgen__ import polydisperse_spheres
-from .__imgen__ import random_cantor_dust
 from .__imgen__ import RSA
-from .__imgen__ import sierpinski_foam
 from .__imgen__ import voronoi_edges
+from .__fractals__ import random_cantor_dust
+from .__fractals__ import sierpinski_foam
