@@ -48,7 +48,7 @@ def random_cantor_dust(shape, n, p=2, f=0.8):
     return im
 
 
-def sierpinski_foam(dmin, n, ndims=2):
+def sierpinski_foam(dmin, n, ndim=2, max_size=1e9):
     r"""
     Generates an image of a Sierpinski carpet or foam
 
@@ -58,13 +58,9 @@ def sierpinski_foam(dmin, n, ndims=2):
         The size of the smallest square in the final image
     n : int
         The number of times to iteratively tile the image
-    ndims : int (default = 2)
+    ndim : int (default = 2)
         The number of dimensions of the desired image
 
-    Notes
-    -----
-    If ``dmin`` is even, the final image size will be :math:`2 \cdot (dmin + 1)^{n}`.
-    If ``dmin`` is odd, it will be :math:`(dmin)^{(n+1})`.
     """
     def _insert_cubes(im, n):
         if n > 0:
@@ -72,7 +68,8 @@ def sierpinski_foam(dmin, n, ndims=2):
             shape = np.asarray(np.shape(im))
             im = np.tile(im, (3, 3, 3))
             im[shape[0]:2*shape[0], shape[1]:2*shape[1], shape[2]:2*shape[2]] = 0
-            im = _insert_cubes(im, n)
+            if im.size < max_size:
+                im = _insert_cubes(im, n)
         return im
 
     def _insert_squares(im, n):
@@ -81,11 +78,13 @@ def sierpinski_foam(dmin, n, ndims=2):
             shape = np.asarray(np.shape(im))
             im = np.tile(im, (3, 3))
             im[shape[0]:2*shape[0], shape[1]:2*shape[1]] = 0
-            im = _insert_squares(im, n)
+            if im.size < max_size:
+                im = _insert_squares(im, n)
         return im
-    im = np.ones([dmin]*ndims, dtype=int)
-    if ndims == 2:
+
+    im = np.ones([dmin]*ndim, dtype=int)
+    if ndim == 2:
         im = _insert_squares(im, n)
-    elif ndims == 3:
+    elif ndim == 3:
         im = _insert_cubes(im, n)
     return im
