@@ -1,6 +1,7 @@
 import numpy as np
 import scipy.ndimage as spim
-tqdm = ps.tools.get_tqdm()
+from porespy.tools import get_tqdm
+tqdm = get_tqdm()
 
 
 def random_cantor_dust(shape, n, p=2, f=0.8):
