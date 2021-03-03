@@ -1,6 +1,6 @@
 import numpy as np
-from tqdm import tqdm
 import scipy.ndimage as spim
+tqdm = ps.tools.get_tqdm()
 
 
 def random_cantor_dust(shape, n, p=2, f=0.8):
