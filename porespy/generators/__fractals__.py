@@ -22,8 +22,7 @@ def random_cantor_dust(shape, n, p=2, f=0.8):
     Returns
     -------
     dust : ND-image
-        An image containing ``True`` and ``False`` values arranged as a random
-        Cantor dust.
+        A boolean image of a random Cantor dust
 
     """
     # Parse the given shape and adjust if necessary
@@ -58,8 +57,13 @@ def sierpinski_foam(dmin, n, ndim=2, max_size=1e9):
         The size of the smallest square in the final image
     n : int
         The number of times to iteratively tile the image
-    ndim : int (default = 2)
-        The number of dimensions of the desired image
+    ndim : int
+        The number of dimensions of the desired image, can be 2 (default) or 3
+
+    Returns
+    -------
+    foam : ND-array
+        A boolean image of a Sierpinski gasket or foam
 
     """
     def _insert_cubes(im, n):
