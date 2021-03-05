@@ -311,6 +311,7 @@ class GeneratorTest():
                                                          clearance=1,
                                                          protrusion=1)
         assert (im1.sum() > im2.sum())
+        assert im2.sum() > 0
 
 
 if __name__ == '__main__':
