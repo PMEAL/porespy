@@ -138,20 +138,26 @@ def pseudo_electrostatic_packing(im, r, sites=None,
         dt2 = spim.gaussian_filter(dt_im, sigma=0.5)
         strel = ps.tools.ps_round(r, ndim=im.ndim, smooth=True)
         sites = (spim.maximum_filter(dt2, footprint=strel) == dt2)*im
-    dt = edt(sites == 0)
+    dt = edt(sites == 0).astype(int)
     sites = (sites == 0)*(dt_im >= (r - protrusion))
-    dtmax = dt_im.max()*2
+    dtmax = int(dt_im.max()*2)
     dt[~sites] = dtmax
     r = r + clearance
+    # Get initial options
+    options = np.where(dt == 1)
     for _ in tqdm(range(max_iter), **settings.tqdm):
-        dtmin = dt.min()
-        if dtmin == dtmax:
+        hits = dt[options] < dtmax
+        if hits.sum() == 0:
+            if dt.min() == dtmax:
+                break
+            options = np.where(dt == dt.min())
+            hits = dt[options] < dtmax
+        if hits.size == 0:
             break
-        options = np.where(dt == dtmin)
-        choice = np.random.randint(0, len(options[0]))
+        choice = np.where(hits)[0][0]
         cen = np.vstack([options[i][choice] for i in range(im.ndim)])
         im_temp = insert_disks_at_points(im_temp, coords=cen,
                                          radii=np.array([r-clearance]), v=True)
         dt = insert_disks_at_points(dt, coords=cen,
-                                    radii=np.array([2*r-clearance]), v=dtmax)
+                                    radii=np.array([2*r-clearance]), v=int(dtmax))
     return im_temp
