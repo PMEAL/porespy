@@ -306,11 +306,11 @@ class GeneratorTest():
         assert e4 < e3
 
     def test_pseudo_electrostatic_packing(self):
-        np.random.seed(0)
-        im = ps.generators.blobs(shape=[100, 100])
-        im = ps.generators.pseudo_electrostatic_packing(
-            im=im, r=3, clearance=1, protrusion=1)
-        np.testing.assert_allclose(np.linalg.norm(im), 71.7356, rtol=1e-5)
+        im1 = ps.generators.blobs(shape=[100, 100])
+        im2 = ps.generators.pseudo_electrostatic_packing(im=im1, r=3,
+                                                         clearance=1,
+                                                         protrusion=1)
+        assert (im1.sum() > im2.sum())
 
 
 if __name__ == '__main__':
