@@ -45,18 +45,16 @@ def pseudo_electrostatic_packing(im, r, sites=None,
         strel = ps.tools.ps_round(r, ndim=im.ndim, smooth=True)
         sites = (spim.maximum_filter(dt2, footprint=strel) == dt2)*im
     dt = edt(sites == 0)
-    sites = (sites == 0)*(dt_im >= (r-protrusion))
-    with tqdm(range(max_iter), **settings.tqdm) as pbar:
-        r = r + clearance
-        for _ in range(max_iter):
-            options = np.where(sites)
-            try:
-                choice = np.argsort(dt[options])[0]
-            except IndexError:
-                break
-            cen = np.array([options[i][choice] for i in range(im.ndim)])
-            im = ps.tools.insert_sphere(im, c=cen, r=r - clearance, v=-1)
-            sites = ps.tools.insert_sphere(sites, c=cen, r=2*r, v=0)
-            dt = ps.tools.insert_sphere(dt, c=cen, r=r, v=1000)
-            pbar.update()
+    sites = (sites == 0)*(dt_im >= (r - protrusion))
+    dt[~sites] = 1000
+    r = r + clearance
+    for _ in tqdm(range(max_iter), **settings.tqdm):
+        hit = dt.min()
+        if hit == 1000:
+            break
+        options = np.where(dt == hit)
+        choice = np.random.randint(0, len(options[0]))
+        cen = np.array([options[i][choice] for i in range(im.ndim)])
+        im = ps.tools.insert_sphere(im, c=cen, r=r - clearance, v=-1)
+        dt = ps.tools.insert_sphere(dt, c=cen, r=2*r - clearance, v=1000)
     return im
