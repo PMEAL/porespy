@@ -103,7 +103,7 @@ def _make_ball(r, smooth=True):
     return s
 
 
-def pseudo_gravity_packing(im, r, clearance=0, max_iter=1000):
+def pseudo_gravity_packing(im, r, clearance=0, axis=0, max_iter=1000):
     r"""
     Iteratively inserts spheres at the lowest accessible point in an image,
     mimicking a gravity packing.
@@ -111,28 +111,30 @@ def pseudo_gravity_packing(im, r, clearance=0, max_iter=1000):
     Parameters
     ----------
     im : ND-array
-        The image into which the spheres should be inserted, with ``True``
-        values indicating valid locations
+        The image controlling where the spheres should be added, indicated by
+        ``True`` values. A common option would be a cylindrical plug which would
+        result in a tube filled with beads.
     r : int
-        The radius of the spheres to add
+        The radius of the spheres to be added
     clearance : int (default is 0)
-        Adds the given abount space between each sphere.  Number can be
-        negative for overlapping but should not be less than ``r``.
+        The abount space to added between neighboring spheres. The value can be
+        negative for overlapping spheres, but abs(clearance) > r.
+    axis : int (default is 0)
+        The axis along which gravity acts.
     max_iter : int (default is 1000)
         The maximum number of spheres to add
 
     Returns
     -------
-    im : ND-array
-        The input image ``im`` with the spheres added.
-
-    Notes
-    -----
-    The direction of "gravity" along the x-axis, towards x=0.
+    spheres : ND-array
+        An image the same size as ``im`` with spheres indicated by ``True``.  The
+        spheres are only inserted locations that are
 
     """
     print('-' * 60)
-    print(f'Adding monodisperse spheres of radius {r}.')
+    print(f'Adding spheres of radius {r}.')
+    im = np.swapaxes(im, 0, axis)
+    im_temp = np.zeros_like(im, dtype=bool)
     r = r - 1
     strel = disk if im.ndim == 2 else ball
     sites = fftmorphology(im == 1, strel=strel(r), mode='erosion')
@@ -157,11 +159,11 @@ def pseudo_gravity_packing(im, r, clearance=0, max_iter=1000):
             cen = np.vstack([x[options[choice]] + x_min,
                              y[options[choice]],
                              z[options[choice]]])
-        im = insert_disks_at_points(im, coords=cen,
-                                    radii=np.array([r - clearance]), v=0)
+        im_temp = insert_disks_at_points(im_temp, coords=cen,
+                                         radii=np.array([r - clearance]), v=True)
         sites = insert_disks_at_points(sites, coords=cen,
                                        radii=np.array([2*r]), v=0)
         x_min += x.min()
     print(f'A total of {n} spheres were added.')
-    im = spim.minimum_filter(input=im, footprint=strel(1))
-    return im
+    im_temp = np.swapaxes(im_temp, 0, axis)
+    return im_temp
