@@ -296,14 +296,16 @@ class GeneratorTest():
         np.random.seed(0)
         im = ps.generators.pseudo_gravity_packing(im=im, r=20, clearance=5)
         e2 = im.sum()/im.size
-        assert e2 > e1
+        assert e2 < e1
         im = np.ones([400, 400], dtype=bool)
         np.random.seed(0)
         im = ps.generators.pseudo_gravity_packing(im=im, r=20, max_iter=10)
         e3 = im.sum()/im.size
+        im = np.ones([400, 400], dtype=bool)
+        np.random.seed(0)
         im = ps.generators.pseudo_gravity_packing(im=im, r=50, max_iter=10)
         e4 = im.sum()/im.size
-        assert e4 < e3
+        assert e4 > e3
 
     def test_pseudo_electrostatic_packing(self):
         im1 = ps.generators.blobs(shape=[100, 100])
