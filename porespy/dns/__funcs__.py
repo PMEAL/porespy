@@ -1,6 +1,7 @@
 import numpy as np
 import openpnm as op
 from porespy.filters import trim_nonpercolating_paths
+from porespy.generators import faces
 import collections
 
 
@@ -38,7 +39,9 @@ def tortuosity(im, axis, return_im=False, **kwargs):
     # Obtain original porosity
     porosity_orig = im.sum()/im.size
     # removing floating pores
-    im = trim_nonpercolating_paths(im, inlet_axis=axis, outlet_axis=axis)
+    IN = faces(im.shape, inlet=axis)
+    OUT = faces(im.shape, outlet=axis)
+    im = trim_nonpercolating_paths(im, inlets=IN, outlets=OUT)
     # porosity is changed because of trimmimg floating pores
     porosity_true = im.sum()/im.size
     if porosity_true < porosity_orig:
