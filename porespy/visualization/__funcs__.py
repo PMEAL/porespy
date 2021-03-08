@@ -1,29 +1,29 @@
 import matplotlib.pyplot as plt
 
 
-def set_mpl_style():
+def set_mpl_style():  # pragma: no cover
 
-    sfont = 15
-    mfont = 15
-    lfont = 15
+    sfont = 14
+    mfont = 14
+    lfont = 14
 
-    line_props = {'linewidth': 4,
-                  'markersize': 10}
+    line_props = {'linewidth': 2,
+                  'markersize': 8}
     font_props = {'size': sfont}
     axes_props = {'titlesize': lfont,
                   'labelsize': mfont,
-                  'linewidth': 3,
-                  'labelpad': 10}
+                  'linewidth': 2,
+                  'labelpad': 8}
     xtick_props = {'labelsize': sfont,
                    'top': True,
                    'direction': 'in',
-                   'major.size': 10,
-                   'major.width': 3}
+                   'major.size': 6,
+                   'major.width': 2}
     ytick_props = {'labelsize': sfont,
                    'right': True,
                    'direction': 'in',
-                   'major.size': 10,
-                   'major.width': 3}
+                   'major.size': 6,
+                   'major.width': 2}
     legend_props = {'fontsize': mfont,
                     'frameon': False}
     figure_props = {'titlesize': sfont}

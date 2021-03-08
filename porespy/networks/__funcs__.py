@@ -290,7 +290,7 @@ def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
 
     # If max_dim is not provided, find best max_dim that predicts porosity
     eps_old = 200
-    err = 100  # percent
+    err = 100
 
     while err > rtol:
         print(f"\nMaximum dimension in voxels: {max_dim}", flush=True)
