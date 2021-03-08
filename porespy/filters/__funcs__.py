@@ -752,39 +752,32 @@ def trim_floating_solid(im, conn=None):
     return im
 
 
-def trim_nonpercolating_paths(im, inlet_axis=0, outlet_axis=0,
-                              inlets=None, outlets=None):
+def trim_nonpercolating_paths(im, inlets, outlets):
     r"""
-    Removes all nonpercolating paths between specified edges
-
-    This function is essential when performing transport simulations on an
-    image, since image regions that do not span between the desired inlet and
-    outlet do not contribute to the transport.
+    Removes all nonpercolating paths between specified edges or faces
 
     Parameters
     ----------
     im : ND-array
         The image of the porous material with ```True`` values indicating the
         phase of interest
-    inlet_axis : int
-        Inlet axis of boundary condition. For three dimensional image the
-        number ranges from 0 to 2. For two dimensional image the range is
-        between 0 to 1. If ``inlets`` is given then this argument is ignored.
-    outlet_axis : int
-        Outlet axis of boundary condition. For three dimensional image the
-        number ranges from 0 to 2. For two dimensional image the range is
-        between 0 to 1. If ``outlets`` is given then this argument is ignored.
-    inlets : ND-image (optional)
-        A boolean mask indicating locations of inlets.  If this argument is
-        supplied then ``inlet_axis`` is ignored.
-    outlets : ND-image (optional)
-        A boolean mask indicating locations of outlets. If this argument is
-        supplied then ``outlet_axis`` is ignored.
+    inlets : ND-image
+        A boolean mask indicating locations of inlets, such as produced by
+        ``porespy.generators.faces``.
+    outlets : ND-image
+        A boolean mask indicating locations of outlets, such as produced by
+        ``porespy.generators.faces``.
 
     Returns
     -------
     image : ND-array
         A copy of ``im`` with all the nonpercolating paths removed
+
+    Notes
+    -----
+    This function is essential when performing transport simulations on an
+    image since image regions that do not span between the desired inlet and
+    outlet do not contribute to the transport.
 
     See Also
     --------
@@ -793,43 +786,7 @@ def trim_nonpercolating_paths(im, inlet_axis=0, outlet_axis=0,
     trim_blind_pores
 
     """
-    if im.ndim != im.squeeze().ndim:    # pragma: no cover
-        warnings.warn((
-            f"Input image conains a singleton axis: {im.shape}."
-            " Reduce dimensionality with np.squeeze(im) to avoid"
-            " unexpected behavior."
-        ))
     labels = spim.label(im)[0]
-    # The following non-sense is only needed to support the inlet/outlet_axis
-    # arguments which will be removed in V2.0
-    if inlets is None:
-        inlets = np.zeros_like(im, dtype=bool)
-        if im.ndim == 3:
-            if inlet_axis == 0:
-                inlets[0, :, :] = True
-            elif inlet_axis == 1:
-                inlets[:, 0, :] = True
-            elif inlet_axis == 2:
-                inlets[:, :, 0] = True
-        if im.ndim == 2:
-            if inlet_axis == 0:
-                inlets[0, :] = True
-            elif inlet_axis == 1:
-                inlets[:, 0] = True
-    if outlets is None:
-        outlets = np.zeros_like(im, dtype=bool)
-        if im.ndim == 3:
-            if outlet_axis == 0:
-                outlets[-1, :, :] = True
-            elif outlet_axis == 1:
-                outlets[:, -1, :] = True
-            elif outlet_axis == 2:
-                outlets[:, :, -1] = True
-        if im.ndim == 2:
-            if outlet_axis == 0:
-                outlets[-1, :] = True
-            elif outlet_axis == 1:
-                outlets[:, -1] = True
     IN = np.unique(labels * inlets)
     OUT = np.unique(labels * outlets)
     hits = np.array(list(set(IN).intersection(set(OUT))))
