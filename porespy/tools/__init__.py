@@ -39,6 +39,8 @@ that do NOT return a modified version of the original image.
     porespy.tools.size_to_seq
     porespy.tools.subdivide
     porespy.tools.zero_corners
+    porespy.tools.unpad
+    
 
 .. autofunction:: align_image_with_openpnm
 .. autofunction:: bbox_to_slices
@@ -68,6 +70,7 @@ that do NOT return a modified version of the original image.
 .. autofunction:: subdivide
 .. autofunction:: zero_corners
 .. autofunction:: sanitize_filename
+.. autofunction:: unpad
 
 '''
 
@@ -102,3 +105,5 @@ from .__funcs__ import zero_corners
 from .__funcs__ import sanitize_filename
 from .__utils__ import get_tqdm
 from .__utils__ import show_docstring
+from .__unpadfunc__ import unpad
+
