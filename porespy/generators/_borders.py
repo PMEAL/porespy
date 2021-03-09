@@ -58,7 +58,7 @@ def borders(shape, thickness=1, mode='edges'):
         The number of pixels/voxels to place along perimeter.
     mode : string
         The type of border to create.  Options are 'faces', 'edges' (default)
-        and 'corners'.  In 2D 'faces' and 'edges' give the same result.
+        and 'corners'.  In 2D 'corners' and 'edges' give the same result.
 
     Returns
     -------
@@ -69,13 +69,12 @@ def borders(shape, thickness=1, mode='edges'):
     Examples
     --------
     >>> import porespy as ps
-    >>> import scipy as sp
     >>> mask = ps.tools.get_border(shape=[3, 3], mode='corners')
     >>> print(mask)
     [[ True False  True]
      [False False False]
      [ True False  True]]
-    >>> mask = ps.tools.get_border(shape=[3, 3], mode='edges')
+    >>> mask = ps.tools.get_border(shape=[3, 3], mode='faces')
     >>> print(mask)
     [[ True  True  True]
      [ True False  True]
@@ -92,7 +91,8 @@ def borders(shape, thickness=1, mode='edges'):
             border[t:-t, t:-t, t:-t] = False
     elif mode == 'edges':
         if ndims == 2:
-            border[t:-t, t:-t] = False
+            border[t:-t, 0::] = False
+            border[0::, t:-t] = False
         if ndims == 3:
             border[0::, t:-t, t:-t] = False
             border[t:-t, 0::, t:-t] = False
