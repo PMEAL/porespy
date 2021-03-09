@@ -1,12 +1,14 @@
 import numpy as np
 import openpnm as op
-from porespy.tools import make_contiguous
+import scipy.ndimage as spim
 from skimage.segmentation import find_boundaries
-from skimage.morphology import ball, cube
+from skimage.morphology import ball, cube, disk, square
 from skimage.segmentation import relabel_sequential
+from porespy.tools import make_contiguous
 from porespy.tools import _create_alias_map, overlay
 from porespy.tools import insert_cylinder
 from porespy.tools import zero_corners
+from porespy.generators import borders
 from porespy import settings
 from porespy.tools import get_tqdm
 tqdm = get_tqdm()
@@ -140,6 +142,46 @@ def add_boundary_regions(regions=None, faces=['front', 'back', 'left',
     return regions
 
 
+def add_boundaries(regions, faces=[3, 3, 3]):
+    r"""
+    Add boundary regions on specified faces of an image
+
+    Parameters
+    ----------
+    regions : ND-image
+        An image containing labelled regions, such as a watershed segmentation
+    faces : array_like
+        The list of which faces to apply boundaries to.  This argument behaves
+        the same as ``pad_width`` in the ``numpy.pad`` function.  The list
+        should be ND elements long, and each element can be either:
+        (1) an integer indicating how thick the border region should be in
+        that axis and this applied to both the start and end of the axis, or
+        (2) a list containing 2 integers indicating the thickness for the
+        start and end of the corresponding axis.
+    """
+    from porespy.filters import find_region_edges
+    # Parse inputs
+    t = 3
+    regions = regions.astype(int)
+    faces = np.array([[1, 1]]*regions.ndim)*t
+    # Add border between each region
+    temp = np.pad(regions, pad_width=1, mode='edge')  # Pad by 1 voxel first
+    edges = find_region_edges(temp)  # Find edges
+    s = tuple(slice(1, regions.shape[i]+1, None) for i in range(regions.ndim))
+    edges = edges[s]
+    # Now pad array by 3 voxels in all dimensions to add boundaries
+    im_new = np.pad(regions*(~edges), pad_width=faces, mode='edge')
+    # Zero corners and edges
+    mask = borders(im_new.shape, mode='edges', thickness=t)
+    im_new[mask] = 0
+    # Re-number boudnary regions on faces
+    mask = borders(im_new.shape, mode='faces', thickness=t)
+    label = spim.label(im_new*mask)[0]
+    new_regions = im_new + (label + (label > 0)*regions.max())
+    new_regions = make_contiguous(new_regions)
+    return new_regions
+
+
 def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200):
     r"""
     Generates a 3d numpy array from a network model.
@@ -162,7 +204,7 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200):
 
     Notes
     -----
-    (1) The generated voxelated image is labeled with 0s, 1s and 2s signifying
+    (1) The generated voxel image is labeled with 0s, 1s and 2s signifying
     solid phase, pores, and throats respectively.
 
     """
