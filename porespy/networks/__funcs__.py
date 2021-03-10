@@ -142,7 +142,7 @@ def add_boundary_regions(regions=None, faces=['front', 'back', 'left',
     return regions
 
 
-def add_boundaries(regions, faces=[3, 3, 3]):
+def add_boundary_regions2(regions, pad_width=3):
     r"""
     Add boundary regions on specified faces of an image
 
@@ -150,34 +150,46 @@ def add_boundaries(regions, faces=[3, 3, 3]):
     ----------
     regions : ND-image
         An image containing labelled regions, such as a watershed segmentation
-    faces : array_like
-        The list of which faces to apply boundaries to.  This argument behaves
-        the same as ``pad_width`` in the ``numpy.pad`` function.  The list
-        should be ND elements long, and each element can be either:
-        (1) an integer indicating how thick the border region should be in
-        that axis and this applied to both the start and end of the axis, or
-        (2) a list containing 2 integers indicating the thickness for the
-        start and end of the corresponding axis.
+    pad_width : array_like
+        Number of layers to add to the edges of each axis. An integer pads
+        each axis equally in both direction.  An ND-by-1 list pads each axis
+        by given amount in both directions.  An ND-by-1 list of pairs pad
+        each axis by a unique amount. This argument is handled the same as
+        ``pad_width`` in the ``np.pad`` function. The default is to add
+        3 voxels on each axis.
+
+    Returns
+    -------
+    padded_regions : ND-array
+        An image with new regions padded on each side of the specified
+        width.
+
     """
-    from porespy.filters import find_region_edges
-    # Parse inputs
-    t = 3
-    regions = regions.astype(int)
-    faces = np.array([[1, 1]]*regions.ndim)*t
-    # Add border between each region
-    temp = np.pad(regions, pad_width=1, mode='edge')  # Pad by 1 voxel first
-    edges = find_region_edges(temp)  # Find edges
-    s = tuple(slice(1, regions.shape[i]+1, None) for i in range(regions.ndim))
-    edges = edges[s]
-    # Now pad array by 3 voxels in all dimensions to add boundaries
-    im_new = np.pad(regions*(~edges), pad_width=faces, mode='edge')
-    # Zero corners and edges
-    mask = borders(im_new.shape, mode='edges', thickness=t)
-    im_new[mask] = 0
-    # Re-number boudnary regions on faces
-    mask = borders(im_new.shape, mode='faces', thickness=t)
-    label = spim.label(im_new*mask)[0]
-    new_regions = im_new + (label + (label > 0)*regions.max())
+    # Parse user specified padding
+    faces = np.array(pad_width)
+    if faces.size == 1:
+        faces = np.array([[faces, faces]]*regions.ndim)
+    elif faces.size == regions.ndim:
+        faces = np.vstack([faces]*2).T
+    else:
+        pass
+    t = faces.max()
+    mx = regions.max()
+    # Put a border around each region so padded regions are isolated
+    bd = find_boundaries(regions, connectivity=regions.ndim, mode='inner')
+    # Pad by t in all directions, this will be trimmed down later
+    face_regions = np.pad(regions*(~bd), pad_width=t, mode='edge')
+    # Set corners to 0 so regions don't connect across faces
+    edges = borders(shape=face_regions.shape, mode='edges', thickness=t)
+    face_regions[edges] = 0
+    # Extract a mask of just the faces
+    mask = borders(shape=face_regions.shape, mode='faces', thickness=t)
+    # Relabel regions on faces
+    new_regions = spim.label(face_regions*mask)[0] + mx*(face_regions > 0)
+    new_regions[~mask] = regions.flatten()
+    # Trim image down to user specified size
+    s = tuple([slice(t-ax[0], -(t-ax[1]) or None) for ax in faces])
+    new_regions = new_regions[s]
     new_regions = make_contiguous(new_regions)
     return new_regions
 
