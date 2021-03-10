@@ -1,6 +1,5 @@
 import numpy as np
 import openpnm as op
-from porespy.tools import make_contiguous
 from skimage.segmentation import find_boundaries
 from skimage.morphology import ball, cube
 from skimage.segmentation import relabel_sequential
@@ -9,6 +8,7 @@ from porespy.tools import insert_cylinder
 from porespy.tools import zero_corners
 from porespy import settings
 from porespy.tools import get_tqdm
+from loguru import logger
 tqdm = get_tqdm()
 
 
@@ -277,33 +277,24 @@ def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
     further increasing it doesn't change porosity by much.
 
     """
-    print("\n" + "-" * 44, flush=True)
-    print("| Generating voxel image from pore network |", flush=True)
-    print("-" * 44, flush=True)
-
+    logger.trace("Generating voxel image from pore network")
     # If max_dim is provided, generate voxel image using max_dim
     if max_dim is not None:
-        return _generate_voxel_image(network, pore_shape, throat_shape,
-                                     max_dim=max_dim)
-    else:
-        max_dim = 200
-
+        return _generate_voxel_image(
+            network, pore_shape, throat_shape, max_dim=max_dim)
+    max_dim = 200
     # If max_dim is not provided, find best max_dim that predicts porosity
-    eps_old = 200
     err = 100
-
+    eps_old = 200
     while err > rtol:
-        print(f"\nMaximum dimension in voxels: {max_dim}", flush=True)
-        im = _generate_voxel_image(network, pore_shape, throat_shape,
-                                   max_dim=max_dim)
+        logger.debug(f"Maximum dimension: {max_dim} voxels")
+        im = _generate_voxel_image(
+            network, pore_shape, throat_shape, max_dim=max_dim)
         eps = im.astype(bool).sum() / np.prod(im.shape)
-
         err = abs(1 - eps / eps_old)
         eps_old = eps
         max_dim = int(max_dim * 1.25)
-
-    print(f"\nConverged at max_dim = {max_dim} voxels.\n")
-
+    logger.debug(f"Converged at max_dim = {max_dim} voxels")
     return im
 
 

@@ -1,11 +1,10 @@
-import numpy as np
 import numba
-from edt import edt
-from skimage.morphology import disk, ball, square, cube
+import numpy as np
+from skimage.morphology import disk, ball
 from porespy import settings
 from porespy.tools import get_tqdm
 from porespy.filters import trim_disconnected_blobs, fftmorphology
-import scipy.ndimage as spim
+from loguru import logger
 tqdm = get_tqdm()
 
 
@@ -131,8 +130,7 @@ def pseudo_gravity_packing(im, r, clearance=0, axis=0, max_iter=1000):
         spheres are only inserted locations that are
 
     """
-    print('-' * 60)
-    print(f'Adding spheres of radius {r}.')
+    logger.debug(f'Adding spheres of radius {r}')
     im = np.swapaxes(im, 0, axis)
     im_temp = np.zeros_like(im, dtype=bool)
     r = r - 1
@@ -164,6 +162,6 @@ def pseudo_gravity_packing(im, r, clearance=0, axis=0, max_iter=1000):
         sites = insert_disks_at_points(sites, coords=cen,
                                        radii=np.array([2*r]), v=0)
         x_min += x.min()
-    print(f'A total of {n} spheres were added.')
+    logger.debug(f'A total of {n} spheres were added')
     im_temp = np.swapaxes(im_temp, 0, axis)
     return im_temp
