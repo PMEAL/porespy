@@ -137,6 +137,8 @@ class NetExtractTest():
         assert np.all(bd.shape == (120, 110, 100))
         bd = ps.networks.add_boundary_regions2(snow, [[20, 10], [30, 15], [40, 20]])
         assert np.all(bd.shape == (130, 145, 160))
+        bd = ps.networks.add_boundary_regions2(snow, [[20, 0], [30, 0], [40, 0]])
+        assert np.all(bd.shape == (120, 130, 140))
 
     def test_map_to_regions(self):
         im = self.im
