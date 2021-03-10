@@ -110,6 +110,34 @@ class NetExtractTest():
         assert bd.shape[1] > regions.shape[1]
         assert bd.shape[2] > regions.shape[2]
 
+    def test_add_boundary_regions2_2D(self):
+        im = ps.generators.blobs(shape=[100, 100])
+        snow = ps.filters.snow_partitioning(im)
+        bd = ps.networks.add_boundary_regions2(snow, 10)
+        assert np.all(bd.shape == (120, 120))
+        bd = ps.networks.add_boundary_regions2(snow, [10, 10])
+        assert np.all(bd.shape == (120, 120))
+        bd = ps.networks.add_boundary_regions2(snow, [10, 0])
+        assert np.all(bd.shape == (120, 100))
+        bd = ps.networks.add_boundary_regions2(snow, [10, 5])
+        assert np.all(bd.shape == (120, 110))
+        bd = ps.networks.add_boundary_regions2(snow, [[10, 5]])
+        assert np.all(bd.shape == (120, 110))
+
+    def test_add_boundary_regions2_3D(self):
+        im = ps.generators.blobs(shape=[100, 100, 100])
+        snow = ps.filters.snow_partitioning(im)
+        bd = ps.networks.add_boundary_regions2(snow, 10)
+        assert np.all(bd.shape == (120, 120, 120))
+        bd = ps.networks.add_boundary_regions2(snow, [10, 10, 10])
+        assert np.all(bd.shape == (120, 120, 120))
+        bd = ps.networks.add_boundary_regions2(snow, [10, 10, 0])
+        assert np.all(bd.shape == (120, 120, 100))
+        bd = ps.networks.add_boundary_regions2(snow, [10, 5, 0])
+        assert np.all(bd.shape == (120, 110, 100))
+        bd = ps.networks.add_boundary_regions2(snow, [[20, 10], [30, 15], [40, 20]])
+        assert np.all(bd.shape == (130, 145, 160))
+
     def test_map_to_regions(self):
         im = self.im
         regions = ps.filters.snow_partitioning(im)
