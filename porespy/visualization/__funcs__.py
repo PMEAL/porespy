@@ -7,6 +7,7 @@ def set_mpl_style():  # pragma: no cover
     mfont = 14
     lfont = 14
 
+    image_props = {'interpolation': 'none'}
     line_props = {'linewidth': 2,
                   'markersize': 8}
     font_props = {'size': sfont}
@@ -35,3 +36,4 @@ def set_mpl_style():  # pragma: no cover
     plt.rc('ytick', **ytick_props)
     plt.rc('legend', **legend_props)
     plt.rc('figure', **figure_props)
+    plt.rc('image', **image_props)
