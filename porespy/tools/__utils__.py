@@ -1,6 +1,8 @@
+import os
 import sys
 import importlib
 from dataclasses import dataclass
+from loguru import logger
 
 
 @dataclass
@@ -29,11 +31,24 @@ class Settings:
     """
     __instance__ = None
     notebook = False
+    # Might need to add 'file': sys.stdout to tqdm dict
     tqdm = {'disable': False,
             'colour': None,
             'ncols': None,
-            'leave': False,
-            'file': sys.stdout}
+            'leave': False}
+    _loglevel = "INFO"
+
+    @property
+    def loglevel(self):
+        return self._loglevel
+
+    @loglevel.setter
+    def loglevel(self, value):
+        self._loglevel = value
+        os.environ["LOGURU_LEVEL"] = value
+        # The following lines are necessary for new loglevel to activate
+        logger.remove()
+        logger.add(sys.stderr, level=value)
 
     def __new__(cls):
         if Settings.__instance__ is None:
