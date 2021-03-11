@@ -1767,11 +1767,10 @@ def snow_partitioning_parallel(im,
 
     Parameters
     ----------
-    im: ND_array
+    im : ndarray
         A binary image of porous media with 'True' values indicating phase of
         interest
-
-    overlap: float or int or str
+    overlap : float or int or str
         Overlapping thickness between two subdomains that is used to merge
         watershed segmented regions at intersection of two or more subdomains.
         If 'dt' the overlap will be calculated based on maximum
@@ -1781,32 +1780,26 @@ def snow_partitioning_parallel(im,
         by 'zoom_factor' provided by user.
         If any real number of overlap is provided then this value will be
         considered as overlapping thickness.
-
-    divs: list or int
+    divs : list or int
         Number of domains each axis will be divided.
         If a scalar is provided then it will be assigned to all axis.
         If list is provided then each respective axis will be divided by its
         corresponding number in the list. For example [2, 3, 4] will divide
         z, y and x axis to 2, 3, and 4 respectively.
-
-    mode: str
+    mode : str
         if 'parallel' then all subdomains will be processed in number of cores
         provided as num_workers
         if 'serial' then all subdomains will be processed one by one in one core
         of CPU.
-
-    num_workers: int or None
+    num_workers : int or None
         Number of cores that will be used to parallel process all domains.
         If None then all cores will be used but user can specify any integer
         values to control the memory usage.
-
-    crop: bool
+    crop : bool
         If True the image shape is cropped to fit specified division.
-
-    zoom_factor: float or int
+    zoom_factor : float or int
         The amount of zoom appiled to image to find overlap thickness using "ws"
         overlap mode.
-
     return_all : boolean
         If set to ``True`` a named tuple is returned containing the original
         image, the distance transform, and the final
@@ -1814,10 +1807,11 @@ def snow_partitioning_parallel(im,
 
     Returns
     ----------
-    regions: ND_array
+    regions : ndarray
         Partitioned image of segmentated regions with unique labels. Each
         region correspond to pore body while intersection with other region
         correspond throat area.
+
     """
     # Adjust image shape according to specified dimension
     tup = namedtuple("results", field_names=["im", "dt", "regions"])
@@ -1930,6 +1924,7 @@ def chunked_snow(im, r_max=5, sigma=0.4):
     ----------
     [1] Gostick, J. "A versatile and efficient network extraction algorithm
     using marker-based watershed segmenation".  Physical Review E. (2017)
+
     """
 
     dt = spim.gaussian_filter(input=im, sigma=sigma)
