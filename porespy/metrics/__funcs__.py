@@ -8,6 +8,7 @@ from skimage.measure import regionprops
 from porespy.tools import extend_slice, mesh_region
 from porespy.filters import find_dt_artifacts
 from porespy import settings
+from porespy.tools import _check_for_singleton_axes
 from collections import namedtuple
 from skimage import measure
 from porespy.tools import get_tqdm
@@ -442,12 +443,7 @@ def two_point_correlation_bf(im, spacing=10):
     This approach uses a distance matrix so can consume memory very quickly for
     large 3D images and/or close spacing.
     """
-    if im.ndim != im.squeeze().ndim:    # pragma: no cover
-        warnings.warn((
-            f"Input image conains a singleton axis: {im.shape}."
-            " Reduce dimensionality with np.squeeze(im) to avoid"
-            " unexpected behavior."
-        ))
+    _check_for_singleton_axes(im)
     if im.ndim == 2:
         pts = np.meshgrid(range(0, im.shape[0], spacing),
                           range(0, im.shape[1], spacing))
@@ -466,8 +462,7 @@ def two_point_correlation_bf(im, spacing=10):
     h1 = np.histogram(dmat, bins=range(0, int(np.amin(im.shape) / 2), spacing))
     dmat = dmat[:, hits]
     h2 = np.histogram(dmat, bins=h1[1])
-    tpcf = namedtuple('two_point_correlation_function',
-                      ('distance', 'probability'))
+    tpcf = namedtuple('two_point_correlation_function', ('distance', 'probability'))
     return tpcf(h2[1][:-1], h2[0] / h1[0])
 
 
@@ -632,10 +627,7 @@ def region_interface_areas(regions, areas, voxel_size=1, strel=None):
     logger.trace('Finding interfacial areas between each region')
     from skimage.morphology import disk, ball
     im = regions.copy()
-    if im.ndim != im.squeeze().ndim:    # pragma: no cover
-        logger.warning(f"Input image conains a singleton axis: {im.shape}."
-                       " Reduce dimensionality with `np.squeeze(im)` to avoid"
-                       " unexpected behavior.")
+    _check_for_singleton_axes(im)
     # cube_elem = square if im.ndim == 2 else cube
     ball_elem = disk if im.ndim == 2 else ball
     # Get 'slices' into im for each region
