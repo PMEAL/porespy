@@ -1,6 +1,5 @@
 import dask
 import dask.array as da
-from dask.diagnostics import ProgressBar
 import warnings
 import numpy as np
 from numba import njit, prange
@@ -12,6 +11,7 @@ from collections import namedtuple
 from skimage.morphology import reconstruction
 from skimage.segmentation import clear_border, watershed
 from skimage.morphology import ball, disk, square, cube, diamond, octahedron
+from porespy.tools import _check_for_singleton_axes
 from porespy.tools import randomize_colors, fftmorphology
 from porespy.tools import get_border, extend_slice, extract_subsection
 from porespy.tools import _create_alias_map
@@ -147,12 +147,8 @@ def distance_transform_lin(im, axis=0, mode="both"):
         A copy of ``im`` with each foreground voxel containing the distance to
         the nearest background along the specified axis.
     """
-    if im.ndim != im.squeeze().ndim:    # pragma: no cover
-        warnings.warn((
-            f"Input image conains a singleton axis: {im.shape}."
-            " Reduce dimensionality with np.squeeze(im) to avoid"
-            " unexpected behavior."
-        ))
+    _check_for_singleton_axes(im)
+
     if mode in ["backward", "reverse"]:
         im = np.flip(im, axis)
         im = distance_transform_lin(im=im, axis=axis, mode="forward")
@@ -162,24 +158,23 @@ def distance_transform_lin(im, axis=0, mode="both"):
         im_f = distance_transform_lin(im=im, axis=axis, mode="forward")
         im_b = distance_transform_lin(im=im, axis=axis, mode="backward")
         return np.minimum(im_f, im_b)
-    else:
-        b = np.cumsum(im > 0, axis=axis)
-        c = np.diff(b * (im == 0), axis=axis)
-        d = np.minimum.accumulate(c, axis=axis)
-        if im.ndim == 1:
-            e = np.pad(d, pad_width=[1, 0], mode="constant", constant_values=0)
-        elif im.ndim == 2:
-            ax = [[[1, 0], [0, 0]], [[0, 0], [1, 0]]]
-            e = np.pad(d, pad_width=ax[axis], mode="constant", constant_values=0)
-        elif im.ndim == 3:
-            ax = [
-                [[1, 0], [0, 0], [0, 0]],
-                [[0, 0], [1, 0], [0, 0]],
-                [[0, 0], [0, 0], [1, 0]],
-            ]
-            e = np.pad(d, pad_width=ax[axis], mode="constant", constant_values=0)
-        f = im * (b + e)
-        return f
+    b = np.cumsum(im > 0, axis=axis)
+    c = np.diff(b * (im == 0), axis=axis)
+    d = np.minimum.accumulate(c, axis=axis)
+    if im.ndim == 1:
+        e = np.pad(d, pad_width=[1, 0], mode="constant", constant_values=0)
+    elif im.ndim == 2:
+        ax = [[[1, 0], [0, 0]], [[0, 0], [1, 0]]]
+        e = np.pad(d, pad_width=ax[axis], mode="constant", constant_values=0)
+    elif im.ndim == 3:
+        ax = [
+            [[1, 0], [0, 0], [0, 0]],
+            [[0, 0], [1, 0], [0, 0]],
+            [[0, 0], [0, 0], [1, 0]],
+        ]
+        e = np.pad(d, pad_width=ax[axis], mode="constant", constant_values=0)
+    f = im * (b + e)
+    return f
 
 
 def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, return_all=False,
@@ -443,10 +438,8 @@ def find_peaks(dt, r_max=4, footprint=None, **kwargs):
     which is significantly faster than using a circular or spherical element.
     """
     im = dt > 0
-    if im.ndim != im.squeeze().ndim:  # pragma: no cover
-        logger.warning(f"Input image conains a singleton axis: {im.shape}."
-                       " Reduce dimensionality with `np.squeeze(im)` to avoid"
-                       " unexpected behavior.")
+    _check_for_singleton_axes(im)
+
     if footprint is None:
         if im.ndim == 2:
             footprint = disk
@@ -664,12 +657,8 @@ def find_disconnected_voxels(im, conn=None):
         ``im`` using: ``im[holes] = False``
 
     """
-    if im.ndim != im.squeeze().ndim:    # pragma: no cover
-        warnings.warn((
-            f"Input image conains a singleton axis: {im.shape}."
-            " Reduce dimensionality with np.squeeze(im) to avoid"
-            " unexpected behavior."
-        ))
+    _check_for_singleton_axes(im)
+
     if im.ndim == 2:
         if conn == 4:
             strel = disk(1)
@@ -788,12 +777,7 @@ def trim_nonpercolating_paths(im, inlet_axis=0, outlet_axis=0,
     trim_blind_pores
 
     """
-    if im.ndim != im.squeeze().ndim:    # pragma: no cover
-        warnings.warn((
-            f"Input image conains a singleton axis: {im.shape}."
-            " Reduce dimensionality with np.squeeze(im) to avoid"
-            " unexpected behavior."
-        ))
+    _check_for_singleton_axes(im)
     labels = spim.label(im)[0]
     # The following non-sense is only needed to support the inlet/outlet_axis
     # arguments which will be removed in V2.0
@@ -1030,12 +1014,7 @@ def apply_chords(im, spacing=1, axis=0, trim_edges=True, label=False):
     apply_chords_3D
 
     """
-    if im.ndim != im.squeeze().ndim:    # pragma: no cover
-        warnings.warn((
-            f"Input image conains a singleton axis: {im.shape}."
-            " Reduce dimensionality with np.squeeze(im) to avoid"
-            " unexpected behavior."
-        ))
+    _check_for_singleton_axes(im)
     if spacing < 0:
         raise Exception("Spacing cannot be less than 0")
     if spacing == 0:
@@ -1095,12 +1074,7 @@ def apply_chords_3D(im, spacing=0, trim_edges=True):
     apply_chords
 
     """
-    if im.ndim != im.squeeze().ndim:    # pragma: no cover
-        warnings.warn((
-            f"Input image conains a singleton axis: {im.shape}."
-            " Reduce dimensionality with np.squeeze(im) to avoid"
-            " unexpected behavior."
-        ))
+    _check_for_singleton_axes(im)
     if im.ndim < 3:
         raise Exception("Must be a 3D image to use this function")
     if spacing < 0:
@@ -1262,13 +1236,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
     local_thickness
 
     """
-    if im.ndim != im.squeeze().ndim:    # pragma: no cover
-        warnings.warn((
-            f"Input image conains a singleton axis: {im.shape}."
-            " Reduce dimensionality with np.squeeze(im) to avoid"
-            " unexpected behavior."
-        ))
-
+    _check_for_singleton_axes(im)
     dt = edt(im > 0)
 
     if inlets is None:
@@ -1483,12 +1451,7 @@ def nphase_border(im, include_diagonals=False):
         A copy of ``im`` with voxel values equal to the number of uniquely
         different bordering values
     """
-    if im.ndim != im.squeeze().ndim:    # pragma: no cover
-        warnings.warn((
-            f"Input image conains a singleton axis: {im.shape}."
-            " Reduce dimensionality with np.squeeze(im) to avoid"
-            " unexpected behavior."
-        ))
+    _check_for_singleton_axes(im)
     # Get dimension of image
     ndim = len(np.shape(im))
     if ndim not in [2, 3]:
@@ -1873,9 +1836,9 @@ def snow_partitioning_parallel(im,
         num_workers = num_workers
     else:
         raise Exception('`mode` can either be `parallel` or `serial`')
-    with ProgressBar():
-        logger.trace('Applying snow to image chunks')
-        regions = im.compute(num_workers=num_workers)
+    # TODO: use dask ProgressBar once compatible w/ logging.
+    logger.trace('Applying snow to image chunks')
+    regions = im.compute(num_workers=num_workers)
 
     # Relabelling watershed chunks
     logger.trace('Relabelling watershed chunks')
