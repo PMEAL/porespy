@@ -5,6 +5,7 @@ from porespy.tools import extend_slice
 from porespy import settings
 import openpnm.models.geometry as op_gm
 from porespy.tools import get_tqdm
+from loguru import logger
 tqdm = get_tqdm()
 
 
@@ -37,8 +38,7 @@ def regions_to_network(im, dt=None, voxel_size=1):
     directly to an OpenPNM network object using the ``update`` command.
 
     """
-    print('-' * 60, flush=True)
-    print('Extracting pore and throat information from image', flush=True)
+    logger.trace('Extracting pore/throat information')
     from skimage.morphology import disk, ball
     struc_elem = disk if im.ndim == 2 else ball
 

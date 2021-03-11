@@ -18,6 +18,7 @@ from porespy.tools import _create_alias_map
 from porespy.tools import ps_disk, ps_ball
 from porespy import settings
 from porespy.tools import get_tqdm
+from loguru import logger
 tqdm = get_tqdm()
 
 
@@ -222,10 +223,10 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, return_all=False,
 
     Returns
     -------
-    image : ND-array
-        An image the same shape as ``im`` with the void space partitioned into
-        pores using a marker based watershed with the peaks found by the
-        SNOW algorithm [1].
+    image : ndarray
+        An image the same shape as ``im`` with the void space partitioned
+        into pores using a marker based watershed with the peaks found by
+        the SNOW algorithm [1].
 
     Notes
     -----
@@ -233,12 +234,12 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, return_all=False,
     all of the images used during the process.  They can be access as
     attriutes with the following names:
 
-        * ``im``: The binary image of the void space
-        * ``dt``: The distance transform of the image
-        * ``peaks``: The peaks of the distance transform after applying the
-        steps of the SNOW algorithm
-        * ``regions``: The void space partitioned into pores using a marker
-        based watershed with the peaks found by the SNOW algorithm
+    - ``im``: The binary image of the void space
+    - ``dt``: The distance transform of the image
+    - ``peaks``: The peaks of the distance transform after applying the
+      steps of the SNOW algorithm
+    - ``regions``: The void space partitioned into pores using a marker
+      based watershed with the peaks found by the SNOW algorithm
 
     References
     ----------
@@ -247,14 +248,13 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, return_all=False,
 
     """
     tup = namedtuple("results", field_names=["im", "dt", "peaks", "regions"])
-    print("-" * 60)
-    print("Beginning SNOW Algorithm")
+    logger.trace("Beginning SNOW algorithm")
     im_shape = np.array(im.shape)
     if im.dtype is not bool:
-        print("Converting supplied image (im) to boolean")
+        logger.trace("Converting supplied image to boolean")
         im = im > 0
     if dt is None:
-        print("Peforming Distance Transform")
+        logger.trace("Peforming distance transform")
         if np.any(im_shape == 1):
             ax = np.where(im_shape == 1)[0][0]
             dt = edt(im.squeeze())
@@ -266,16 +266,16 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, return_all=False,
     tup.dt = dt
 
     if sigma > 0:
-        print("Applying Gaussian blur with sigma =", str(sigma))
+        logger.trace(f"Applying Gaussian blur with sigma = {sigma}")
         dt = spim.gaussian_filter(input=dt, sigma=sigma)
 
     peaks = find_peaks(dt=dt, r_max=r_max)
-    print("Initial number of peaks: ", spim.label(peaks)[1])
+    logger.debug(f"Initial number of peaks: {spim.label(peaks)[1]}")
     peaks = trim_saddle_points(peaks=peaks, dt=dt, max_iters=500)
-    print("Peaks after trimming saddle points: ", spim.label(peaks)[1])
+    logger.debug(f"Peaks after trimming saddle points: {spim.label(peaks)[1]}")
     peaks = trim_nearby_peaks(peaks=peaks, dt=dt)
     peaks, N = spim.label(peaks)
-    print("Peaks after trimming nearby peaks: ", N)
+    logger.debug(f"Peaks after trimming nearby peaks: {N}")
     tup.peaks = peaks
     if mask:
         mask_solid = im > 0
@@ -375,11 +375,10 @@ def snow_partitioning_n(im, r_max=4, sigma=0.4, return_all=True,
     combined_region = 0
     num = [0]
     for i, j in enumerate(phases_num):
-        print("_" * 60)
         if alias is None:
-            print("Processing Phase {}".format(j))
+            logger.trace(f"Processing Phase {j}")
         else:
-            print("Processing Phase {}".format(al[j]))
+            logger.trace(f"Processing Phase {al[j]}")
         phase_snow = snow_partitioning(
             im == j,
             dt=None,
@@ -444,19 +443,17 @@ def find_peaks(dt, r_max=4, footprint=None, **kwargs):
     which is significantly faster than using a circular or spherical element.
     """
     im = dt > 0
-    if im.ndim != im.squeeze().ndim:    # pragma: no cover
-        warnings.warn((
-            f"Input image conains a singleton axis: {im.shape}."
-            " Reduce dimensionality with np.squeeze(im) to avoid"
-            " unexpected behavior."
-        ))
+    if im.ndim != im.squeeze().ndim:  # pragma: no cover
+        logger.warning(f"Input image conains a singleton axis: {im.shape}."
+                       " Reduce dimensionality with `np.squeeze(im)` to avoid"
+                       " unexpected behavior.")
     if footprint is None:
         if im.ndim == 2:
             footprint = disk
         elif im.ndim == 3:
             footprint = ball
-        else:
-            raise Exception("only 2-d and 3-d images are supported")
+        else:  # pragma: no cover
+            raise Exception("Only 2d and 3d images are supported")
     parallel = kwargs.pop('parallel', False)
     cores = kwargs.pop('cores', None)
     divs = kwargs.pop('cores', 2)
@@ -509,7 +506,7 @@ def reduce_peaks(peaks):
     return peaks_new
 
 
-def trim_saddle_points(peaks, dt, max_iters=10, verbose=1):
+def trim_saddle_points(peaks, dt, max_iters=10):
     r"""
     Removes peaks that were mistakenly identified because they lied on a
     saddle or ridge in the distance transform that was not actually a true
@@ -567,11 +564,9 @@ def trim_saddle_points(peaks, dt, max_iters=10, verbose=1):
                 peaks_i = False
                 break  # Found a saddle point
         peaks[s] = peaks_i
-        if iters >= max_iters and verbose:
-            print(
-                "Maximum number of iterations reached, consider "
-                + "running again with a larger value of max_iters"
-            )
+        if iters >= max_iters:  # pragma: no cover
+            logger.warning("Maximum number of iterations reached, consider"
+                           " running again with a larger value of max_iters")
     return peaks
 
 
@@ -1716,11 +1711,9 @@ def chunked_func(func,
                                   tile_bounds_policy=ARRAY_BOUNDS))
     # Apply func to each subsection of the image
     res = []
-    # print('Image will be broken into the following chunks:')
     for s in slices:
         # Extract subsection from image and input into kwargs
         kwargs[im_arg] = im[tuple(s)]
-        # print(kwargs[im_arg].shape)
         res.append(apply_func(func=func, **kwargs))
     # Have dask actually compute the function on each subsection in parallel
     # with ProgressBar():
@@ -1758,14 +1751,14 @@ def chunked_func(func,
 
 
 def snow_partitioning_parallel(im,
-                               overlap='dt',
-                               divs=2,
-                               mode='parallel',
-                               num_workers=None,
-                               crop=True,
-                               zoom_factor=0.5,
                                r_max=5,
                                sigma=0.4,
+                               mode='parallel',
+                               divs=2,
+                               overlap='dt',
+                               zoom_factor=0.5,
+                               num_workers=None,
+                               crop=True,
                                return_all=False):
     r"""
     Perform SNOW algorithm in parallel and serial mode to reduce time and
@@ -1774,11 +1767,10 @@ def snow_partitioning_parallel(im,
 
     Parameters
     ----------
-    im: ND_array
+    im : ndarray
         A binary image of porous media with 'True' values indicating phase of
         interest
-
-    overlap: float or int or str
+    overlap : float or int or str
         Overlapping thickness between two subdomains that is used to merge
         watershed segmented regions at intersection of two or more subdomains.
         If 'dt' the overlap will be calculated based on maximum
@@ -1788,32 +1780,26 @@ def snow_partitioning_parallel(im,
         by 'zoom_factor' provided by user.
         If any real number of overlap is provided then this value will be
         considered as overlapping thickness.
-
-    divs: list or int
+    divs : list or int
         Number of domains each axis will be divided.
         If a scalar is provided then it will be assigned to all axis.
         If list is provided then each respective axis will be divided by its
         corresponding number in the list. For example [2, 3, 4] will divide
         z, y and x axis to 2, 3, and 4 respectively.
-
-    mode: str
+    mode : str
         if 'parallel' then all subdomains will be processed in number of cores
         provided as num_workers
         if 'serial' then all subdomains will be processed one by one in one core
         of CPU.
-
-    num_workers: int or None
+    num_workers : int or None
         Number of cores that will be used to parallel process all domains.
         If None then all cores will be used but user can specify any integer
         values to control the memory usage.
-
-    crop: bool
+    crop : bool
         If True the image shape is cropped to fit specified division.
-
-    zoom_factor: float or int
+    zoom_factor : float or int
         The amount of zoom appiled to image to find overlap thickness using "ws"
         overlap mode.
-
     return_all : boolean
         If set to ``True`` a named tuple is returned containing the original
         image, the distance transform, and the final
@@ -1821,12 +1807,12 @@ def snow_partitioning_parallel(im,
 
     Returns
     ----------
-    regions: ND_array
+    regions : ndarray
         Partitioned image of segmentated regions with unique labels. Each
         region correspond to pore body while intersection with other region
         correspond throat area.
+
     """
-    # --------------------------------------------------------------------------
     # Adjust image shape according to specified dimension
     tup = namedtuple("results", field_names=["im", "dt", "regions"])
     if isinstance(divs, int):
@@ -1841,18 +1827,14 @@ def snow_partitioning_parallel(im,
                 im = im.swapaxes(0, i)
                 im = im[:shape[i], ...]
                 im = im.swapaxes(i, 0)
-            print(f'Image is cropped to shape {shape}.')
-        else:
-            print('-' * 80)
-            print(f"Possible image shape for specified divisions is {shape}.")
-            print("To crop the image please set crop argument to 'True'.")
-            return
-    # --------------------------------------------------------------------------
+            logger.debug(f'Image was cropped to shape {shape}')
+        else:  # pragma: no cover
+            raise Exception("Image shape incompatible with `divs`.")
+
     # Get overlap thickness from distance transform
     chunk_shape = (np.array(shape) / np.array(divs)).astype(int)
-    print('# Beginning parallel SNOW algorithm...')
-    print('=' * 80)
-    print('Calculating overlap thickness')
+    logger.trace('Beginning parallel SNOW algorithm...')
+    logger.trace('Calculating overlap thickness')
     if overlap == 'dt':
         dt = edt((im > 0), parallel=0)
         overlap = dt.max()
@@ -1869,19 +1851,18 @@ def snow_partitioning_parallel(im,
     else:
         overlap = overlap / 2.0
         dt = edt((im > 0), parallel=0)
-    print('Overlap Thickness: ' + str(int(2.0 * overlap)) + ' voxels')
-    # --------------------------------------------------------------------------
+    logger.debug(f'Overlap thickness: {int(2 * overlap)} voxels')
+
     # Get overlap and trim depth of all image dimension
     depth = {}
     trim_depth = {}
     for i in range(im.ndim):
         depth[i] = int(2.0 * overlap)
         trim_depth[i] = int(2.0 * overlap) - 1
-
     tup.im = im
     tup.dt = dt
-    # --------------------------------------------------------------------------
-    # Applying snow to image chunks
+
+    # Applying SNOW to image chunks
     im = da.from_array(dt, chunks=chunk_shape)
     im = da.overlap.overlap(im, depth=depth, boundary='none')
     im = im.map_blocks(chunked_snow, r_max=r_max, sigma=sigma)
@@ -1891,28 +1872,22 @@ def snow_partitioning_parallel(im,
     elif mode == 'parallel':
         num_workers = num_workers
     else:
-        raise Exception('Mode of operation can either be parallel or serial')
+        raise Exception('`mode` can either be `parallel` or `serial`')
     with ProgressBar():
-        # print('-' * 80)
-        print('Applying snow to image chunks')
+        logger.trace('Applying snow to image chunks')
         regions = im.compute(num_workers=num_workers)
-    # --------------------------------------------------------------------------
-    # Relabelling watershed chunks
-    # print('-' * 80)
-    print('Relabelling watershed chunks')
-    regions = relabel_chunks(im=regions, chunk_shape=chunk_shape)
-    # --------------------------------------------------------------------------
-    # Stitching watershed chunks
-    # print('-' * 80)
-    print('Stitching watershed chunks')
-    regions = _watershed_stitching(im=regions, chunk_shape=chunk_shape)
-    print('=' * 80)
-    if return_all:
-        tup.regions = regions
-        return tup
-    else:
-        return regions
 
+    # Relabelling watershed chunks
+    logger.trace('Relabelling watershed chunks')
+    regions = relabel_chunks(im=regions, chunk_shape=chunk_shape)
+
+    # Stitching watershed chunks
+    logger.trace('Stitching watershed chunks')
+    regions = _watershed_stitching(im=regions, chunk_shape=chunk_shape)
+    tup.regions = regions
+
+    if return_all:
+        return tup
     return regions
 
 
@@ -1949,11 +1924,12 @@ def chunked_snow(im, r_max=5, sigma=0.4):
     ----------
     [1] Gostick, J. "A versatile and efficient network extraction algorithm
     using marker-based watershed segmenation".  Physical Review E. (2017)
+
     """
 
     dt = spim.gaussian_filter(input=im, sigma=sigma)
     peaks = find_peaks(dt=dt, r_max=r_max)
-    peaks = trim_saddle_points(peaks=peaks, dt=dt, max_iters=99, verbose=0)
+    peaks = trim_saddle_points(peaks=peaks, dt=dt, max_iters=99)
     peaks = trim_nearby_peaks(peaks=peaks, dt=dt)
     peaks, N = spim.label(peaks)
     regions = watershed(image=-dt, markers=peaks, mask=im > 0)
