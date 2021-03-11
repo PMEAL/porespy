@@ -443,7 +443,7 @@ def find_peaks(dt, r_max=4, footprint=None, **kwargs):
     which is significantly faster than using a circular or spherical element.
     """
     im = dt > 0
-    if im.ndim != im.squeeze().ndim:    # pragma: no cover
+    if im.ndim != im.squeeze().ndim:  # pragma: no cover
         logger.warning(f"Input image conains a singleton axis: {im.shape}."
                        " Reduce dimensionality with `np.squeeze(im)` to avoid"
                        " unexpected behavior.")
@@ -452,7 +452,7 @@ def find_peaks(dt, r_max=4, footprint=None, **kwargs):
             footprint = disk
         elif im.ndim == 3:
             footprint = ball
-        else:
+        else:  # pragma: no cover
             raise Exception("Only 2d and 3d images are supported")
     parallel = kwargs.pop('parallel', False)
     cores = kwargs.pop('cores', None)
@@ -506,7 +506,7 @@ def reduce_peaks(peaks):
     return peaks_new
 
 
-def trim_saddle_points(peaks, dt, max_iters=10, verbose=1):
+def trim_saddle_points(peaks, dt, max_iters=10):
     r"""
     Removes peaks that were mistakenly identified because they lied on a
     saddle or ridge in the distance transform that was not actually a true
@@ -564,7 +564,7 @@ def trim_saddle_points(peaks, dt, max_iters=10, verbose=1):
                 peaks_i = False
                 break  # Found a saddle point
         peaks[s] = peaks_i
-        if iters >= max_iters and verbose:
+        if iters >= max_iters:  # pragma: no cover
             logger.warning("Maximum number of iterations reached, consider"
                            " running again with a larger value of max_iters")
     return peaks
@@ -1833,11 +1833,9 @@ def snow_partitioning_parallel(im,
                 im = im.swapaxes(0, i)
                 im = im[:shape[i], ...]
                 im = im.swapaxes(i, 0)
-            logger.trace(f'Image is cropped to shape {shape}')
-        else:
-            logger.warn(f"Possible shape for specified divisions is {shape}")
-            logger.warn("To crop the image, set `crop` argument to `True`")
-            return
+            logger.debug(f'Image was cropped to shape {shape}')
+        else:  # pragma: no cover
+            raise Exception("Image shape incompatible with `divs`.")
 
     # Get overlap thickness from distance transform
     chunk_shape = (np.array(shape) / np.array(divs)).astype(int)

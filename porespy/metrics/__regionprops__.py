@@ -58,7 +58,7 @@ def props_to_DataFrame(regionprops):
         logger.trace("Processing {k}")
         try:
             d[k] = np.array([r[k] for r in regionprops])
-        except ValueError:
+        except ValueError:  # pragma: no cover
             logger.error(f'Error encountered evaluating {k} so skipping it')
     # Create pandas data frame an return
     df = DataFrame(d)

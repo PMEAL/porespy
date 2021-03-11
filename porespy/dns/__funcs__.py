@@ -44,7 +44,7 @@ def tortuosity(im, axis, return_im=False, **kwargs):
     im = trim_nonpercolating_paths(im, inlet_axis=axis, outlet_axis=axis)
     # Porosity is changed because of trimmimg floating pores
     eps = im.sum() / im.size
-    if eps < eps0:
+    if eps < eps0:  # pragma: no cover
         logger.warning(f'True porosity is {eps:.2f}, filled {eps0 - eps:.2f}'
                        ' volume fraction of the image for it to percolate.')
     # Cubic network generation
