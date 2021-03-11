@@ -1934,7 +1934,7 @@ def chunked_snow(im, r_max=5, sigma=0.4):
 
     dt = spim.gaussian_filter(input=im, sigma=sigma)
     peaks = find_peaks(dt=dt, r_max=r_max)
-    peaks = trim_saddle_points(peaks=peaks, dt=dt, max_iters=99, verbose=0)
+    peaks = trim_saddle_points(peaks=peaks, dt=dt, max_iters=99)
     peaks = trim_nearby_peaks(peaks=peaks, dt=dt)
     peaks, N = spim.label(peaks)
     regions = watershed(image=-dt, markers=peaks, mask=im > 0)
