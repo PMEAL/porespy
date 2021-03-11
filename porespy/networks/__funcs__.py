@@ -255,7 +255,7 @@ def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
 
     Returns
     -------
-    im : ND-array
+    im : ndarray
         Voxelated image corresponding to the given pore network model
 
     Notes

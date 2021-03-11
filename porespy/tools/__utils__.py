@@ -6,6 +6,27 @@ from loguru import logger
 from tqdm import tqdm
 
 
+def config_logger(fmt, loglevel):  # pragma: no cover
+    r"""
+    Configures loguru logger with the given format and log level.
+
+    Parameters
+    ----------
+    fmt : str
+        loguru-compatible format used to format logger messages.
+    loglevel : str
+        Determines what messages to get printed in console. Options are:
+        "TRACE", "DEBUG", "INFO", "SUCCESS", "WARNING", "ERROR", "CRITICAL"
+
+    Returns
+    -------
+    None.
+
+    """
+    logger.remove()
+    logger.add(lambda msg: tqdm.write(msg, end=""), level=loglevel, format=fmt)
+
+
 @dataclass
 class Settings:  # pragma: no cover
     r"""
@@ -50,6 +71,7 @@ class Settings:  # pragma: no cover
           '<cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan>' \
           '\n--> <level>{message}</level>'
     _loglevel = "INFO"
+    config_logger(_logger_fmt, _loglevel)
 
     @property
     def logger_fmt(self):
@@ -138,24 +160,3 @@ def show_docstring(func):  # pragma: no cover
     except ModuleNotFoundError:
         txt = func.__doc__
     return title + txt + '\n---'
-
-
-def config_logger(fmt, loglevel):  # pragma: no cover
-    r"""
-    Configures loguru logger with the given format and log level.
-
-    Parameters
-    ----------
-    fmt : str
-        loguru-compatible format used to format logger messages.
-    loglevel : str
-        Determines what messages to get printed in console. Options are:
-        "TRACE", "DEBUG", "INFO", "SUCCESS", "WARNING", "ERROR", "CRITICAL"
-
-    Returns
-    -------
-    None.
-
-    """
-    logger.remove()
-    logger.add(lambda msg: tqdm.write(msg, end=""), level=loglevel, format=fmt)
