@@ -24,7 +24,10 @@ def config_logger(fmt, loglevel):  # pragma: no cover
 
     """
     logger.remove()
-    logger.add(lambda msg: tqdm.write(msg, end=""), level=loglevel, format=fmt)
+    logger.add(lambda msg: tqdm.write(msg, end=""),
+               level=loglevel,
+               format=fmt,
+               colorize=True)
 
 
 @dataclass
