@@ -181,8 +181,7 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200):
     xyz0 = xyz.min(axis=0) - delta
     xyz += -xyz0
     res = (xyz.ptp(axis=0).max() + 2 * delta) / max_dim
-    shape = np.rint((xyz.max(axis=0) + delta) / res).astype(
-        int) + 2 * extra_clearance
+    shape = np.rint((xyz.max(axis=0) + delta) / res).astype(int) + 2 * extra_clearance
 
     # Transforming from real coords to matrix coords
     xyz = np.rint(xyz / res).astype(int) + extra_clearance
@@ -204,43 +203,34 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200):
         raise Exception("Not yet implemented, try 'cylinder'.")
 
     # Generating voxels for pores
-    with tqdm(network.Ps, **settings.tqdm) as pbar:
-        for i, pore in enumerate(network.Ps):
-            pbar.update()
-            elem = pore_elem(rp[i])
-            try:
-                im_pores = overlay(im1=im_pores, im2=elem, c=xyz[i])
-            except ValueError:
-                elem = pore_elem(rp_max)
-                im_pores = overlay(im1=im_pores, im2=elem, c=xyz[i])
+    for i, pore in enumerate(tqdm(network.Ps, **settings.tqdm)):
+        elem = pore_elem(rp[i])
+        try:
+            im_pores = overlay(im1=im_pores, im2=elem, c=xyz[i])
+        except ValueError:
+            elem = pore_elem(rp_max)
+            im_pores = overlay(im1=im_pores, im2=elem, c=xyz[i])
     # Get rid of pore overlaps
     im_pores[im_pores > 0] = 1
 
     # Generating voxels for throats
-    with tqdm(network.Ts, **settings.tqdm) as pbar:
-        for i, throat in enumerate(network.Ts):
-            pbar.update()
-            try:
-                im_throats = insert_cylinder(im_throats, r=throat_radi[i],
-                                             xyz0=xyz[cn[i, 0]],
-                                             xyz1=xyz[cn[i, 1]])
-            except ValueError:
-                im_throats = insert_cylinder(im_throats, r=rp_max,
-                                             xyz0=xyz[cn[i, 0]],
-                                             xyz1=xyz[cn[i, 1]])
+    for i, throat in enumerate(tqdm(network.Ts, **settings.tqdm)):
+        try:
+            im_throats = insert_cylinder(
+                im_throats, r=throat_radi[i], xyz0=xyz[cn[i, 0]], xyz1=xyz[cn[i, 1]])
+        except ValueError:
+            im_throats = insert_cylinder(
+                im_throats, r=rp_max, xyz0=xyz[cn[i, 0]], xyz1=xyz[cn[i, 1]])
     # Get rid of throat overlaps
     im_throats[im_throats > 0] = 1
 
     # Subtract pore-throat overlap from throats
-    im_throats = (im_throats.astype(bool) * ~im_pores.astype(bool)).astype(
-        np.uint8)
+    im_throats = (im_throats.astype(bool) * ~im_pores.astype(bool)).astype(np.uint8)
     im = im_pores * 1 + im_throats * 2
 
     return im[extra_clearance:-extra_clearance,
               extra_clearance:-extra_clearance,
               extra_clearance:-extra_clearance]
-
-    return im
 
 
 def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
@@ -346,11 +336,9 @@ def add_phase_interconnections(net, snow_partitioning_n, voxel_size=1,
     command.
 
     """
-    # -------------------------------------------------------------------------
     # Get alias if provided by user
     im = snow_partitioning_n.im
     al = _create_alias_map(im, alias=alias)
-    # -------------------------------------------------------------------------
     # Find interconnection and interfacial area between ith and jth phases
     conns1 = net['throat.conns'][:, 0]
     conns2 = net['throat.conns'][:, 1]
@@ -378,7 +366,6 @@ def add_phase_interconnections(net, snow_partitioning_n, voxel_size=1,
                 pi_pj_conns = loc1 * loc6
                 net['throat.{}_{}'.format(al[i1], al[j1])] = pi_pj_conns
                 if any(pi_pj_conns):
-                    # ---------------------------------------------------------
                     # Calculates phase[i] interfacial area that connects with
                     # phase[j] and vice versa
                     p_conns = net['throat.conns'][:, 0][pi_pj_conns]
@@ -393,7 +380,6 @@ def add_phase_interconnections(net, snow_partitioning_n, voxel_size=1,
                     s_pa = np.trim_zeros(s_pa)
                     pi_pj_sa[i_index] = p_sa
                     pi_pj_sa[j_index] = s_pa
-                    # ---------------------------------------------------------
                     # Calculates interfacial area using marching cube method
                     if marching_cubes_area:
                         ps_c = net['throat.area'][pi_pj_conns]
