@@ -306,28 +306,36 @@ class GeneratorTest():
         e4 = im.sum()/im.size
         assert e4 > e3
 
+    def test_pseudo_gravity_packing_values(self):
+        np.random.seed(0)
+        # 2d
+        im = np.ones([50, 50], dtype=bool)
+        im = ps.generators.pseudo_gravity_packing(im=im, r=5, clearance=0)
+        assert_allclose(np.linalg.norm(im), 37.3497, rtol=1e-5)
+        # 3d
+        im = np.ones([50, 50, 50], dtype=bool)
+        im = ps.generators.pseudo_gravity_packing(im=im, r=5, clearance=0)
+        assert_allclose(np.linalg.norm(im), 218.3804, rtol=1e-5)
+
     def test_pseudo_electrostatic_packing(self):
         im1 = ps.generators.blobs(shape=[100, 100])
-        im2 = ps.generators.pseudo_electrostatic_packing(im=im1, r=3,
-                                                          clearance=1,
-                                                          protrusion=1)
+        im2 = ps.generators.pseudo_electrostatic_packing(
+            im=im1, r=3, clearance=1, protrusion=1)
         assert (im1.sum() > im2.sum())
         assert im2.sum() > 0
 
-    def test_pseudo_electrostatic_packing_vals(self):
+    def test_pseudo_electrostatic_packing_values(self):
         np.random.seed(0)
+        # 2d
         im = ps.generators.blobs(shape=[100, 100])
         im = ps.generators.pseudo_electrostatic_packing(
             im=im, r=3, clearance=1, protrusion=1)
-        np.testing.assert_allclose(np.linalg.norm(im), 46.2276, rtol=1e-5)
-
-    def test_insert_disk_at_points(self):
-        from porespy.generators.__gravity__ import insert_disks_at_points
-        im = np.ones((50, 50))
-        coords = np.array([[15, 25], [35, 25]]).T
-        radii = np.array([5, 6])
-        im = insert_disks_at_points(im, coords, radii=radii, v=10)
-        assert_allclose(np.linalg.norm(im), 141.852036)
+        assert_allclose(np.linalg.norm(im), 46.2276, rtol=1e-5)
+        # 3d
+        im = ps.generators.blobs(shape=[50, 50, 50])
+        im = ps.generators.pseudo_electrostatic_packing(
+            im=im, r=3, clearance=1, protrusion=1)
+        assert_allclose(np.linalg.norm(im), 135.3403, rtol=1e-5)
 
 
 if __name__ == '__main__':
