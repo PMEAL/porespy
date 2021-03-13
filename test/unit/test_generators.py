@@ -1,10 +1,9 @@
-import porespy as ps
-import numpy as np
 import pytest
+import numpy as np
+from numpy.testing import assert_allclose
 import scipy.ndimage as spim
 import scipy.stats as spst
-import matplotlib.pyplot as plt
-plt.close('all')
+import porespy as ps
 
 
 class GeneratorTest():
@@ -310,8 +309,8 @@ class GeneratorTest():
     def test_pseudo_electrostatic_packing(self):
         im1 = ps.generators.blobs(shape=[100, 100])
         im2 = ps.generators.pseudo_electrostatic_packing(im=im1, r=3,
-                                                         clearance=1,
-                                                         protrusion=1)
+                                                          clearance=1,
+                                                          protrusion=1)
         assert (im1.sum() > im2.sum())
         assert im2.sum() > 0
 
@@ -321,6 +320,14 @@ class GeneratorTest():
         im = ps.generators.pseudo_electrostatic_packing(
             im=im, r=3, clearance=1, protrusion=1)
         np.testing.assert_allclose(np.linalg.norm(im), 46.2276, rtol=1e-5)
+
+    def test_insert_disk_at_points(self):
+        from porespy.generators.__gravity__ import insert_disks_at_points
+        im = np.ones((50, 50))
+        coords = np.array([[15, 25], [35, 25]]).T
+        radii = np.array([5, 6])
+        im = insert_disks_at_points(im, coords, radii=radii, v=10)
+        assert_allclose(np.linalg.norm(im), 141.852036)
 
 
 if __name__ == '__main__':
