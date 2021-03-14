@@ -1,10 +1,11 @@
-import numpy as np
-from edt import edt
-import porespy as ps
-from porespy import settings
-import scipy.ndimage as spim
 import numba
-tqdm = ps.tools.get_tqdm()
+import numpy as np
+from skimage.morphology import disk, ball
+from porespy import settings
+from porespy.tools import get_tqdm
+from porespy.filters import trim_disconnected_blobs, fftmorphology
+from loguru import logger
+tqdm = get_tqdm()
 
 
 @numba.jit(nopython=True, parallel=False)
@@ -101,63 +102,66 @@ def _make_ball(r, smooth=True):
     return s
 
 
-def pseudo_electrostatic_packing(im, r, sites=None,
-                                 clearance=0,
-                                 protrusion=0,
-                                 max_iter=1000):
+def pseudo_gravity_packing(im, r, clearance=0, axis=0, max_iter=1000):
     r"""
-    Iterativley inserts spheres as close to the given sites as possible.
+    Iteratively inserts spheres at the lowest accessible point in an image,
+    mimicking a gravity packing.
 
     Parameters
     ----------
-    im : ndarray
-        Image with ``True`` values indicating the phase where spheres should be
-        inserted.
+    im : ND-array
+        The image controlling where the spheres should be added, indicated by
+        ``True`` values. A common option would be a cylindrical plug which would
+        result in a tube filled with beads.
     r : int
-        Radius of spheres to insert.
-    sites : ndarray (optional)
-        An image with ``True`` values indicating the electrostatic attraction points.
-        If this is not given then the peaks in the distance transform are used.
-    clearance : int (optional, default=0)
-        The amount of space to put between each sphere. Negative values are
-        acceptable to create overlaps, but abs(clearance) < r.
-    protrusion : int (optional, default=0)
-        The amount that spheres are allowed to protrude beyond the active phase.
-    max_iter : int (optional, default=1000)
-        The maximum number of spheres to insert.
+        The radius of the spheres to be added
+    clearance : int (default is 0)
+        The abount space to added between neighboring spheres. The value can be
+        negative for overlapping spheres, but abs(clearance) > r.
+    axis : int (default is 0)
+        The axis along which gravity acts.
+    max_iter : int (default is 1000)
+        The maximum number of spheres to add
 
     Returns
     -------
-    im : ndarray
-        An image with inserted spheres indicated by ``True``
+    spheres : ND-array
+        An image the same size as ``im`` with spheres indicated by ``True``.  The
+        spheres are only inserted locations that are
 
     """
+    logger.debug(f'Adding spheres of radius {r}')
+    im = np.swapaxes(im, 0, axis)
     im_temp = np.zeros_like(im, dtype=bool)
-    dt_im = edt(im)
-    if sites is None:
-        dt2 = spim.gaussian_filter(dt_im, sigma=0.5)
-        strel = ps.tools.ps_round(r, ndim=im.ndim, smooth=True)
-        sites = (spim.maximum_filter(dt2, footprint=strel) == dt2)*im
-    dt = edt(sites == 0).astype(int)
-    sites = (sites == 0)*(dt_im >= (r - protrusion))
-    dtmax = int(dt_im.max()*2)
-    dt[~sites] = dtmax
-    r = r + clearance
-    # Get initial options
-    options = np.where(dt == 1)
-    for _ in tqdm(range(max_iter), **settings.tqdm):
-        hits = dt[options] < dtmax
-        if hits.sum() == 0:
-            if dt.min() == dtmax:
-                break
-            options = np.where(dt == dt.min())
-            hits = dt[options] < dtmax
-        if hits.size == 0:
+    r = r - 1
+    strel = disk if im.ndim == 2 else ball
+    sites = fftmorphology(im == 1, strel=strel(r), mode='erosion')
+    inlets = np.zeros_like(im)
+    inlets[-(r+1), ...] = True
+    sites = trim_disconnected_blobs(im=sites, inlets=inlets)
+    x_min = np.where(sites)[0].min()
+    n = None
+    for n in tqdm(range(max_iter), **settings.tqdm):
+        if im.ndim == 2:
+            x, y = np.where(sites[x_min:x_min+2*r, ...])
+        else:
+            x, y, z = np.where(sites[x_min:x_min+2*r, ...])
+        if len(x) == 0:
             break
-        choice = np.where(hits)[0][0]
-        cen = np.vstack([options[i][choice] for i in range(im.ndim)])
+        options = np.where(x == x.min())[0]
+        choice = np.random.randint(len(options))
+        if im.ndim == 2:
+            cen = np.vstack([x[options[choice]] + x_min,
+                             y[options[choice]]])
+        else:
+            cen = np.vstack([x[options[choice]] + x_min,
+                             y[options[choice]],
+                             z[options[choice]]])
         im_temp = insert_disks_at_points(im_temp, coords=cen,
-                                         radii=np.array([r-clearance]), v=True)
-        dt = insert_disks_at_points(dt, coords=cen,
-                                    radii=np.array([2*r-clearance]), v=int(dtmax))
+                                         radii=np.array([r - clearance]), v=True)
+        sites = insert_disks_at_points(sites, coords=cen,
+                                       radii=np.array([2*r]), v=0)
+        x_min += x.min()
+    logger.debug(f'A total of {n} spheres were added')
+    im_temp = np.swapaxes(im_temp, 0, axis)
     return im_temp

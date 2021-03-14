@@ -1,9 +1,10 @@
-import numpy as np
 import os
-import imageio
-import subprocess
-import psutil
 import time
+import psutil
+import subprocess
+import numpy as np
+from loguru import logger
+import imageio
 
 
 def maximal_ball(im, prefix, path_to_exe, voxel_size=1e-6):
@@ -45,11 +46,11 @@ def maximal_ball(im, prefix, path_to_exe, voxel_size=1e-6):
             ElementDataFile = " + file + ".tif")
     f.close()
     subprocess.Popen([path_to_exe, file + ".mhd"])
-    i = 0
+    time_elapsed = 0
     while is_running('pnextract'):
-        print('maximal ball algorithm is running: ' + str(i) + 's')
+        logger.trace('Maximal ball algorithm running for {time_elapsed} s')
         time.sleep(10)
-        i = i+10
+        time_elapsed += 10
 
 
 def is_running(process_name):

@@ -2,13 +2,12 @@ import numpy as np
 from edt import edt
 import porespy as ps
 from numba import njit
-from skimage.morphology import disk, ball
 import scipy.spatial as sptl
 import scipy.ndimage as spim
 from porespy.tools import norm_to_uniform, ps_ball, ps_disk, get_border
 from porespy import settings
 from typing import List
-from numpy import array
+from loguru import logger
 tqdm = ps.tools.get_tqdm()
 
 
@@ -91,7 +90,7 @@ def insert_shape(im, element, center=None, corner=None, value=1, mode="overwrite
     return im
 
 
-def RSA(im_or_shape: array,
+def RSA(im_or_shape: np.array,
         radius: int,
         volume_fraction: int = 1,
         clearance: int = 0,
@@ -160,8 +159,7 @@ def RSA(im_or_shape: array,
     [1] Random Heterogeneous Materials, S. Torquato (2001)
 
     """
-    print(80 * "-")
-    print(f"RSA: Adding spheres of size {radius}")
+    logger.debug(f"RSA: Adding spheres of size {radius}")
     if len(im_or_shape) <= 3:
         im = np.zeros(shape=im_or_shape, dtype=bool)
     else:
@@ -173,7 +171,7 @@ def RSA(im_or_shape: array,
         n_max = 10000
     vf_final = volume_fraction
     vf_start = im.sum() / im.size
-    print("Initial volume fraction:", vf_start)
+    logger.debug(f"Initial volume fraction: {vf_start}")
     if im.ndim == 2:
         template_lg = ps_disk((radius + clearance) * 2)
         template_sm = ps_disk(radius, smooth=smooth)
@@ -194,7 +192,7 @@ def RSA(im_or_shape: array,
     im[border] = True
     # Dilate existing objects by strel to remove pixels near them
     # from consideration for sphere placement
-    print("Dilating foreground features by sphere radius")
+    logger.trace("Dilating foreground features by sphere radius")
     dt = edt(im == 0)
     options_im = dt >= radius
     # ------------------------------------------------------------------------
@@ -207,7 +205,7 @@ def RSA(im_or_shape: array,
         # The 100 below is arbitrary and may change performance
         if count > 100:
             # Regenerate list of free_sites
-            print("Regenerating free_sites after", i, "iterations")
+            logger.debug(f"Regenerating `free_sites` after {i} iterations")
             free_sites = np.flatnonzero(options_im)
         if all(np.array(c) == -1):
             break
@@ -218,13 +216,13 @@ def RSA(im_or_shape: array,
         options_im[s_lg][template_lg] = False  # Update extended region
         vf += vf_template
         i += 1
-    print("Number of spheres inserted:", i)
+    logger.trace(f"Number of spheres inserted: {i}")
     # ------------------------------------------------------------------------
     # Get slice into returned image to retain original size
     s = tuple([slice(2 * radius, d - 2 * radius, None) for d in im.shape])
     im = im[s]
     vf = im.sum() / im.size
-    print("Final volume fraction:", vf)
+    logger.debug("Final volume fraction:", vf)
     if return_spheres:
         im = im * (~im_temp)
     return im
@@ -425,8 +423,7 @@ def voronoi_edges(shape: List[int], radius: int, ncells: int, flat_faces: bool =
         A boolean array with ``True`` values denoting the pore space
 
     """
-    print(60 * "-")
-    print("voronoi_edges: Generating", ncells, "cells")
+    logger.trace(f"Generating {ncells} cells")
     shape = np.array(shape)
     if np.size(shape) == 1:
         shape = np.full((3,), int(shape))
@@ -534,8 +531,7 @@ def lattice_spheres(shape: List[int],
     image : ND-array
         A boolean array with ``True`` values denoting the pore space
     """
-    print(60 * "-")
-    print("lattice_spheres: Generating " + lattice + " lattice")
+    logger.debug(f"Generating {lattice} lattice")
     r = radius
     shape = np.array(shape)
     im = np.zeros(shape, dtype=bool)
@@ -1158,7 +1154,7 @@ def cylinders(shape: List[int],
         vol_added = get_num_pixels(porosity)
         vol_fiber = vol_added / n_fibers_added
 
-    print(f"{n_fibers_added} fibers were added to reach the target porosity.")
+    logger.debug(f"{n_fibers_added} fibers added to reach target porosity.")
 
     return im
 
@@ -1194,65 +1190,3 @@ def line_segment(X0, X1):
         x = np.rint(np.linspace(X0[0], X1[0], L)).astype(int)
         y = np.rint(np.linspace(X0[1], X1[1], L)).astype(int)
         return [x, y]
-
-
-def pseudo_gravity_packing(im, r, clearance=0, max_iter=1000):
-    r"""
-    Iteratively inserts spheres at the lowest accessible point in an image,
-    mimicking a gravity packing.
-
-    Parameters
-    ----------
-    im : ND-array
-        The image into which the spheres should be inserted, with ``True``
-        values indicating valid locations
-    r : int
-        The radius of the spheres to add
-    clearance : int (default is 0)
-        Adds the given abount space between each sphere.  Number can be
-        negative for overlapping but should not be less than ``r``.
-    max_iter : int (default is 1000)
-        The maximum number of spheres to add
-
-    Returns
-    -------
-    im : ND-array
-        The input image ``im`` with the spheres added.
-
-    Notes
-    -----
-    The direction of "gravity" along the x-axis, towards x=0.
-
-    """
-    print('-' * 60)
-    print(f'Adding monodisperse spheres of radius {r}.')
-    r = r - 1
-    strel = disk if im.ndim == 2 else ball
-    sites = ps.tools.fftmorphology(im == 1, strel=strel(r), mode='erosion')
-    inlets = np.zeros_like(im)
-    inlets[-(r+1), ...] = True
-    sites = ps.filters.trim_disconnected_blobs(im=sites, inlets=inlets)
-    x_min = np.where(sites)[0].min()
-    n = None
-    for n in tqdm(range(max_iter), **settings.tqdm):
-        if im.ndim == 2:
-            x, y = np.where(sites[x_min:x_min+2*r, ...])
-        else:
-            x, y, z = np.where(sites[x_min:x_min+2*r, ...])
-        if len(x) == 0:
-            break
-        options = np.where(x == x.min())[0]
-        choice = np.random.randint(len(options))
-        if im.ndim == 2:
-            cen = np.array([x[options[choice]] + x_min,
-                            y[options[choice]]])
-        else:
-            cen = np.array([x[options[choice]] + x_min,
-                            y[options[choice]],
-                            z[options[choice]]])
-        im = ps.tools.insert_sphere(im, c=cen, r=r - clearance, v=0)
-        sites = ps.tools.insert_sphere(sites, c=cen, r=2*r, v=0)
-        x_min += x.min()
-    print(f'A total of {n} spheres were added.')
-    im = spim.minimum_filter(input=im, footprint=strel(1))
-    return im

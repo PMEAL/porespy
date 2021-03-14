@@ -68,14 +68,6 @@ Use some filters from PoreSpy:
 .. code-block:: python
 
     >>> peaks = ps.filters.snow_partitioning(im=im, dt=dt)
-    ------------------------------------------------------------
-    Beginning SNOW Algorithm
-    Converting supplied image (im) to boolean
-    Applying Gaussian blur with sigma = 0.4
-    Initial number of peaks:  77
-    Peaks after trimming saddle points:  71
-    Peaks after trimming nearby peaks:  70
-
 
 '''
 import sys as _sys
