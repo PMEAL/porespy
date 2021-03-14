@@ -40,27 +40,21 @@ def tortuosity(im, axis, return_im=False, **kwargs):
     """
     if axis > (im.ndim - 1):
         raise Exception("Axis argument is too high")
-    # Obtain original porosity
-    eps0 = im.sum() / im.size
-    # Removing floating pores
-    im = trim_nonpercolating_paths(im, inlet_axis=axis, outlet_axis=axis)
-    # Porosity is changed because of trimmimg floating pores
-    eps = im.sum() / im.size
+
     if eps < eps0:  # pragma: no cover
         logger.warning(f'True porosity is {eps:.2f}, filled {eps0 - eps:.2f}'
                        ' volume fraction of the image for it to percolate.')
-    # Cubic network generation
-    porosity_orig = im.sum()/im.size
+    # Obtain original porosity
+    eps0 = im.sum() / im.size
     # removing floating pores
     IN = faces(im.shape, inlet=axis)
     OUT = faces(im.shape, outlet=axis)
     im = trim_nonpercolating_paths(im, inlets=IN, outlets=OUT)
     # porosity is changed because of trimmimg floating pores
-    porosity_true = im.sum()/im.size
-    if porosity_true < porosity_orig:
-        print('Caution, True porosity is:', porosity_true,
-              'and volume fraction filled:',
-              abs(porosity_orig-porosity_true)*100, '%')
+    eps = im.sum() / im.size
+    if eps < eps0:  # pragma: no cover
+        logger.warning(f'True porosity is {eps:.2f}, filled {eps0 - eps:.2f}'
+                       ' volume fraction of the image for it to percolate.')
     # cubic network generation
     net = op.network.CubicTemplate(template=im, spacing=1)
     # Adding phase
