@@ -95,27 +95,25 @@ def hold_peaks(im, axis=-1):
 
     Parameters
     ----------
-<<<<<<< HEAD
-    im : ND-array
-        A greyscale image whose peaks are to be kept and extended throughout a
-        given axis.
-
-    Note: im must be a greyscale image. In case a Boolean image is fed into this
-    method, it will be first converted to float values [0.0,1.0] before proceeding.
-
-    Returns
-    -------
-    result : ND-array
-        A copy of ``im`` with each voxel is replaced with the highest value along
-        the given axis
-=======
     im : ndarray
         A greyscale image whose peaks are to be found.
     axis : int
         The axis along which the operation is to be applied.
 
->>>>>>> dev
+    Returns
+    -------
+    result : ND-array
+        A copy of ``im`` with each voxel is replaced with the highest value along
+        the given axis.
+
+    Notes
+    -----
+
+    "im" must be a greyscale image. In case a Boolean image is fed into this
+    method, it will be first converted to float values [0.0,1.0] before proceeding.
+
     """
+
     A = im.astype(float)
     B = np.swapaxes(A, axis, -1)
     updown = np.empty((*B.shape[:-1], B.shape[-1] + 1), B.dtype)
