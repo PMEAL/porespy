@@ -466,6 +466,12 @@ class FilterTest():
         result_float = ps.filters.hold_peaks(im.astype(float), axis=0)
         assert np.all(result_bool == result_float)
 
+    def test_hold_peaks_algorithm(self):
+        im = self.im[:, :, 5]
+        dt = spim.distance_transform_edt(input=im)
+        dt_hold_peaks = ps.filters.hold_peaks(dt, axis=0)
+        assert np.all(np.max(dt_hold_peaks, axis=0) == np.max(dt, axis=0))
+
 
 if __name__ == '__main__':
     t = FilterTest()
