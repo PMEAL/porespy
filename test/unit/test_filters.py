@@ -460,6 +460,13 @@ class FilterTest():
         for i in range(1, N):
             assert np.sum(label == i) <= 10
 
+    def test_hold_peaks_input(self):
+        im = self.im[:50, :50, :50]
+        result_bool = ps.filters.hold_peaks(im, axis=0)
+        result_float = ps.filters.hold_peaks(im.astype(float), axis=0)
+        comparison = result_bool == result_float
+        assert comparison.all() == True
+
 
 if __name__ == '__main__':
     t = FilterTest()
