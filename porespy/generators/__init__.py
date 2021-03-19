@@ -55,3 +55,4 @@ from .__imgen__ import voronoi_edges
 from .__gravity__ import pseudo_gravity_packing
 from .__electrostatic__ import pseudo_electrostatic_packing
 from .__cylinder__ import cylindrical_plug
+from ._noise import fractal_noise
