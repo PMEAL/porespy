@@ -196,14 +196,6 @@ class GeneratorTest():
         labels, N = spim.label(input=~im)
         assert N == 1241
 
-    def test_perlin_noise_2D(self):
-        im = ps.generators.perlin_noise(shape=[64, 64])
-        assert im.ndim == 2
-
-    def test_perline_noise_3D(self):
-        im = ps.generators.perlin_noise(shape=[64, 64, 64])
-        assert im.ndim == 3
-
     def test_blobs_1d_shape(self):
         im = ps.generators.blobs(shape=[101])
         assert len(list(im.shape)) == 3
