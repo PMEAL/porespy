@@ -337,6 +337,25 @@ class GeneratorTest():
             im=im, r=3, clearance=1, protrusion=1)
         assert_allclose(np.linalg.norm(im), 135.3403, rtol=1e-5)
 
+    def test_fractal_noise_2D(self):
+        s = [100, 100]
+        # Ensure identical images are returned if seed is same
+        im1 = ps.generators.fractal_noise(shape=s, seed=0)
+        im2 = ps.generators.fractal_noise(shape=s, seed=0)
+        assert np.linalg.norm(im1) == np.linalg.norm(im2)
+        # Ensure different images are returned even if seed is same
+        im1 = ps.generators.fractal_noise(shape=s, mode='perlin',
+                                          seed=0, octaves=2)
+        im2 = ps.generators.fractal_noise(shape=s, mode='perlin',
+                                          seed=0, octaves=4)
+        assert np.linalg.norm(im1) != np.linalg.norm(im2)
+        # Check uniformization
+        im1 = ps.generators.fractal_noise(shape=s, mode='cubic', uniform=True)
+        assert im1.min() >= 0
+        assert im1.max() <= 1
+        im2 = ps.generators.fractal_noise(shape=s, mode='cubic', uniform=False)
+        assert im2.min() < 0
+
 
 if __name__ == '__main__':
     t = GeneratorTest()
