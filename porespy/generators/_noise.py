@@ -48,7 +48,7 @@ def fractal_noise(shape, frequency=0.05, octaves=4, gain=0.5, mode='simplex',
 
     Notes
     -----
-    This function provides a simplified wrapper for the the functins in
+    This function provides a simplified wrapper for the the functions in the
     `pyfastnoisesimd <https://github.com/robbmcleod/pyfastnoisesimd>`_
     package. ``pyfastnoisesimd`` is itself a wrapper for a C-library called
     `FastNoiseSIMD <https://github.com/Auburn/FastNoiseSIMD>`_. To access the
@@ -68,13 +68,15 @@ def fractal_noise(shape, frequency=0.05, octaves=4, gain=0.5, mode='simplex',
     For more information on ``cubic noise`` see
     `here <https://github.com/jobtalle/CubicNoise>`_.
 
+    ``pyfastnoisesimd`` is not installed by default with PoreSpy so you will
+    receive an expection/warning when using this function.  Install may require
+    a c-compiler is installed.
     """
     try:
         import pyfastnoisesimd as fns
     except ModuleNotFoundError:
-        raise Exception('fractal_noise requires pyfastnoisesimd, which can be pip' +
-                        'installed if a c-compiler is available on the target ' +
-                        'machine')
+        raise Exception('fractal_noise requires pyfastnoisesimd, which can be ' +
+                        'install using pip')
     if cores is None:
         cores = multiprocessing.cpu_count()
     if seed is None:
