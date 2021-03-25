@@ -12,7 +12,6 @@ Contains functions for analysing images as pore networks
 
     porespy.networks.add_boundary_regions
     porespy.networks.snow
-    porespy.networks.snow_dual
     porespy.networks.regions_to_network
     porespy.networks.map_to_regions
     porespy.networks.generate_voxel_image
@@ -26,7 +25,6 @@ Contains functions for analysing images as pore networks
 .. autofunction:: add_phase_interconnections
 .. autofunction:: regions_to_network
 .. autofunction:: snow
-.. autofunction:: snow_dual
 .. autofunction:: snow_n
 .. autofunction:: maximal_ball
 
@@ -41,6 +39,5 @@ from .__funcs__ import add_phase_interconnections
 from .__getnet__ import regions_to_network
 from .__utils__ import _net_dict
 from .__snow__ import snow
-from .__snow_dual__ import snow_dual
 from .__snow_n__ import snow_n
 from .__maximal_ball__ import maximal_ball

@@ -143,7 +143,7 @@ def regions_to_network(regions, dt=None, voxel_size=1, accuracy='standard'):
         temp = np.vstack(np.where(sub_dt == sub_dt.max()))[:, 0]
         p_coords_dt_global[pore, :] = temp + s_offset
         p_volume[pore] = np.sum(pore_im)
-        p_dia_local[pore] = (2*np.amax(pore_dt))
+        p_dia_local[pore] = 2*np.amax(pore_dt)
         p_dia_global[pore] = 2*np.amax(sub_dt)
         # The following is overwritten if use_marching_cubes is True
         p_area_surf[pore] = np.sum(pore_dt == 1)

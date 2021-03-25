@@ -47,13 +47,13 @@ def maximal_ball(im, prefix, path_to_exe, voxel_size=1e-6):
     f.close()
     subprocess.Popen([path_to_exe, file + ".mhd"])
     time_elapsed = 0
-    while is_running('pnextract'):
+    while _is_running('pnextract'):
         logger.trace('Maximal ball algorithm running for {time_elapsed} s')
         time.sleep(10)
         time_elapsed += 10
 
 
-def is_running(process_name):
+def _is_running(process_name):
     r"""
     Check if there is any running process that contains the given name.
     """
