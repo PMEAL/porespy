@@ -5,7 +5,7 @@ import scipy.ndimage as spim
 import scipy.spatial as sptl
 from scipy import fftpack as sp_ft
 from skimage.measure import regionprops
-from porespy.tools import extend_slice, mesh_region
+from porespy.tools import extend_slice, mesh_region, ps_round
 from porespy.filters import find_dt_artifacts
 from porespy import settings
 from porespy.tools import _check_for_singleton_axes
@@ -625,11 +625,11 @@ def region_interface_areas(regions, areas, voxel_size=1, strel=None):
 
     """
     logger.trace('Finding interfacial areas between each region')
-    from skimage.morphology import disk, ball
-    im = regions.copy()
+    im = regions
     _check_for_singleton_axes(im)
-    # cube_elem = square if im.ndim == 2 else cube
-    ball_elem = disk if im.ndim == 2 else ball
+    ball = ps_round(1, im.ndim, smooth=False)
+    if strel is None:
+        strel = np.copy(ball)
     # Get 'slices' into im for each region
     slices = spim.find_objects(im)
     # Initialize arrays
@@ -646,7 +646,7 @@ def region_interface_areas(regions, areas, voxel_size=1, strel=None):
             mask_im = sub_im == i
             sa[reg] = areas[reg]
             im_w_throats = spim.binary_dilation(input=mask_im,
-                                                structure=ball_elem(1))
+                                                structure=ball)
             im_w_throats = im_w_throats * sub_im
             Pn = np.unique(im_w_throats)[1:] - 1
             for j in Pn:
@@ -705,7 +705,9 @@ def region_surface_areas(regions, voxel_size=1, strel=None):
 
     """
     logger.trace('Finding surface area of each region')
-    im = regions.copy()
+    im = regions
+    if strel is None:
+        strel = ps_round(1, im.ndim, smooth=False)
     # Get 'slices' into im for each pore region
     slices = spim.find_objects(im)
     # Initialize arrays
