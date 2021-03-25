@@ -33,12 +33,6 @@ def snow(im, voxel_size=1,
         ‘front’ and ‘back’ face labels to assign boundary nodes. If no label is
         assigned then all six faces will be selected as boundary nodes
         automatically which can be trimmed later on based on user requirements.
-    marching_cubes_area : bool
-        If ``True`` then the surface area and interfacial area between regions
-        will be using the marching cube algorithm. This is a more accurate
-        representation of area in extracted network, but is quite slow, so
-        it is ``False`` by default.  The default method simply counts voxels
-        so does not correctly account for the voxelated nature of the images.
 
     Returns
     -------
@@ -76,15 +70,8 @@ def snow(im, voxel_size=1,
     regions = make_contiguous(regions)
     # -------------------------------------------------------------------------
     # Extract void and throat information from image
-    net = regions_to_network(im=regions, dt=dt, voxel_size=voxel_size)
-    # -------------------------------------------------------------------------
-    # Extract marching cube surface area and interfacial area of regions
-    if marching_cubes_area:
-        areas = region_surface_areas(regions=regions)
-        interface_area = region_interface_areas(regions=regions, areas=areas,
-                                                voxel_size=voxel_size)
-        net['pore.surface_area'] = areas * voxel_size**2
-        net['throat.area'] = interface_area.area
+    net = regions_to_network(im=regions, dt=dt, voxel_size=voxel_size,
+                             marching_cubes_area=marching_cubes_area)
     # -------------------------------------------------------------------------
     # Find void to void connections of boundary and internal voids
     boundary_labels = net['pore.label'] > b_num
