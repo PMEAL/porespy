@@ -329,6 +329,22 @@ class GeneratorTest():
             im=im, r=3, clearance=1, protrusion=1)
         assert_allclose(np.linalg.norm(im), 135.3403, rtol=1e-5)
 
+    def test_faces(self):
+        im = ps.generators.faces(shape=[10, 10], inlet=0)
+        assert im.sum() == 10
+        im = ps.generators.faces(shape=[10, 10], outlet=0)
+        assert im.sum() == 10
+        im = ps.generators.faces(shape=[10, 10], inlet=0, outlet=0)
+        assert im.sum() == 20
+        im = ps.generators.faces(shape=[10, 10, 10], inlet=0)
+        assert im.sum() == 100
+        im = ps.generators.faces(shape=[10, 10, 10], outlet=0)
+        assert im.sum() == 100
+        im = ps.generators.faces(shape=[10, 10, 10], inlet=0, outlet=0)
+        assert im.sum() == 200
+        with pytest.raises(Exception):
+            ps.generators.faces(shape=[10, 10, 10])
+
     def test_fractal_noise_2D(self):
         s = [100, 100]
         # Ensure identical images are returned if seed is same

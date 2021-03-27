@@ -4,6 +4,8 @@ import numpy as np
 import openpnm as op
 from porespy.filters import trim_nonpercolating_paths
 from loguru import logger
+from porespy.generators import faces
+import collections
 
 
 def tortuosity(im, axis, return_im=False, **kwargs):
@@ -38,16 +40,19 @@ def tortuosity(im, axis, return_im=False, **kwargs):
     """
     if axis > (im.ndim - 1):
         raise Exception("Axis argument is too high")
+
     # Obtain original porosity
     eps0 = im.sum() / im.size
-    # Removing floating pores
-    im = trim_nonpercolating_paths(im, inlet_axis=axis, outlet_axis=axis)
-    # Porosity is changed because of trimmimg floating pores
+    # removing floating pores
+    IN = faces(im.shape, inlet=axis)
+    OUT = faces(im.shape, outlet=axis)
+    im = trim_nonpercolating_paths(im, inlets=IN, outlets=OUT)
+    # porosity is changed because of trimmimg floating pores
     eps = im.sum() / im.size
     if eps < eps0:  # pragma: no cover
         logger.warning(f'True porosity is {eps:.2f}, filled {eps0 - eps:.2f}'
                        ' volume fraction of the image for it to percolate.')
-    # Cubic network generation
+    # cubic network generation
     net = op.network.CubicTemplate(template=im, spacing=1)
     # Adding phase
     water = op.phases.Water(network=net)
@@ -65,12 +70,15 @@ def tortuosity(im, axis, return_im=False, **kwargs):
     # Use specified solver if given
     if 'solver_family' in kwargs.keys():
         fd.settings.update(kwargs)
+        fd.run()
     else:
-        fd.settings['solver_family'] = 'scipy'
-        fd.settings['solver_type'] = 'cg'
-        if importlib.util.find_spec("pyamg") is None:
-            fd.settings['solver_family'] = 'pyamg'
-    fd.run()
+        try:
+            fd.settings['solver_family'] = 'pypardiso'
+            fd.run()
+        except ModuleNotFoundError or Exception:
+            fd.settings['solver_family'] = 'scipy'
+            fd.settings['solver_type'] = 'cg'
+            fd.run()
     # Calculating molar flow rate, effective diffusivity and tortuosity
     rate_out = fd.rate(pores=outlets)[0]
     rate_in = fd.rate(pores=inlets)[0]
