@@ -196,14 +196,6 @@ class GeneratorTest():
         labels, N = spim.label(input=~im)
         assert N == 1241
 
-    def test_perlin_noise_2D(self):
-        im = ps.generators.perlin_noise(shape=[64, 64])
-        assert im.ndim == 2
-
-    def test_perline_noise_3D(self):
-        im = ps.generators.perlin_noise(shape=[64, 64, 64])
-        assert im.ndim == 3
-
     def test_blobs_1d_shape(self):
         im = ps.generators.blobs(shape=[101])
         assert len(list(im.shape)) == 3
@@ -352,6 +344,27 @@ class GeneratorTest():
         assert im.sum() == 200
         with pytest.raises(Exception):
             ps.generators.faces(shape=[10, 10, 10])
+
+    def test_fractal_noise_2D(self):
+        s = [100, 100]
+        # Ensure identical images are returned if seed is same
+        im1 = ps.generators.fractal_noise(shape=s, seed=0, cores=1)
+        im2 = ps.generators.fractal_noise(shape=s, seed=0, cores=1)
+        assert np.linalg.norm(im1) == np.linalg.norm(im2)
+        # Ensure different images are returned even if seed is same
+        im1 = ps.generators.fractal_noise(shape=s, mode='perlin',
+                                          seed=0, octaves=2, cores=1)
+        im2 = ps.generators.fractal_noise(shape=s, mode='perlin',
+                                          seed=0, octaves=4, cores=1)
+        assert np.linalg.norm(im1) != np.linalg.norm(im2)
+        # Check uniformization
+        im1 = ps.generators.fractal_noise(shape=s, mode='cubic',
+                                          uniform=True, cores=1)
+        assert im1.min() >= 0
+        assert im1.max() <= 1
+        im2 = ps.generators.fractal_noise(shape=s, mode='cubic',
+                                          uniform=False, cores=1)
+        assert im2.min() < 0
 
 
 if __name__ == '__main__':

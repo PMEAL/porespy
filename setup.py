@@ -49,7 +49,6 @@ setup(
                       'imageio',
                       'tqdm',
                       'array_split',
-                      'pytrax',
                       'pyevtk',
                       'numba',
                       'numpy-stl',
