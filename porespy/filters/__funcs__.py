@@ -138,23 +138,21 @@ def distance_transform_lin(im, axis=0, mode="both"):
 
     Parameters
     ----------
-    im : ND-array
+    im : ndarray
         The image of the porous material with ``True`` values indicating
         the void phase (or phase of interest).
-
     axis : int
         The direction along which the distance should be measured, the
         default is 0 (i.e. along the x-direction).
-
     mode : str
         Controls how the distance is measured. Options are:
-        - 'forward': Distances are measured in the increasing direction
-          along the specified axis
-        - 'reverse': Distances are measured in the reverse direction.
-          'backward' is also accepted.
-        - 'both': Distances are calculated in both directions (by
-          recursively calling itself), then reporting the minimum value of
-          the two results.
+          - 'forward': Distances are measured in the increasing direction
+            along the specified axis
+          - 'reverse': Distances are measured in the reverse direction.
+            'backward' is also accepted.
+          - 'both': Distances are calculated in both directions (by
+            recursively calling itself), then reporting the minimum value
+            of the two results.
 
     Returns
     -------
@@ -1207,21 +1205,21 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
         comparison to gauge the extent of shielding effects in the sample.
     mode : str
         Controls with method is used to compute the result. Options are:
-        - 'hybrid': (default) Performs a distance tranform of the void
-          space, thresholds to find voxels larger than ``sizes[i]``, trims
-          the resulting mask if ``access_limitations`` is ``True``, then
-          dilates it using the efficient fft-method to obtain the
-          non-wetting fluid configuration.
-        - 'dt': Same as 'hybrid', except uses a second distance transform,
-          relative to the thresholded mask, to find the invading fluid
-          configuration. The choice of 'dt' or 'hybrid' depends on speed,
-          which is system and installation specific.
-        - 'mio': Using a single morphological image opening step to obtain
-          the invading fluid confirguration directly, *then* trims if
-          ``access_limitations`` is ``True``.  This method is not ideal
-          and is included mostly for comparison purposes. The
-          morphological operations are done using fft-based method
-          implementations.
+          - 'hybrid': (default) Performs a distance tranform of the void
+            space, thresholds to find voxels larger than ``sizes[i]``,
+            trims the resulting mask if ``access_limitations`` is ``True``,
+            then dilates it using the efficient fft-method to obtain the
+            non-wetting fluid configuration.
+          - 'dt': Same as 'hybrid', except uses a second distance
+            transform, relative to the thresholded mask, to find the
+            invading fluid configuration. The choice of 'dt' or 'hybrid'
+            depends on speed, which is system and installation specific.
+          - 'mio': Using a single morphological image opening step to
+            obtain the invading fluid confirguration directly, *then* trims
+            if ``access_limitations`` is ``True``.  This method is not
+            ideal and is included mostly for comparison purposes. The
+            morphological operations are done using fft-based method
+            implementations.
     fft : boolean (default is ``True``)
         Indicates whether to use the ``fftmorphology`` function in
         ``porespy.filters`` or to use the standard morphology functions in
@@ -1748,37 +1746,36 @@ def snow_partitioning_parallel(im,
                                crop=True,
                                return_all=False):
     r"""
-    Performs SNOW algorithm in parallel and serial mode to reduce time and
-    memory usage repectively by geomertirc domain decomposition of large
-    size image.
+    Performs SNOW algorithm in parallel and serial mode to reduce time
+    and memory usage repectively by geomertirc domain decomposition of
+    large size image.
 
     Parameters
     ----------
     im : ndarray
-        A binary image of porous media with 'True' values indicating phase
-        of interest
+        A binary image of porous media with 'True' values indicating
+        phase of interest.
     overlap : float or int or str
-        Overlapping thickness between two subdomains that is used to merge
-        watershed segmented regions at intersection of two or more
-        subdomains.
-        - If 'dt' the overlap will be calculated based on maximum distance
-          transform in the whole image.
-        - If 'ws' the overlap will be calculated by finding the maximum
-          dimension of the bounding box of largest segmented region. The
-          image is scale down by 'zoom_factor' provided by user.
-        - If any real number of overlap is provided then this value will
-          be considered as overlapping thickness.
+        Overlapping thickness between two subdomains that is used to
+        merge watershed segmented regions at intersection of two or more
+        subdomains. Options are:
+
+          - 'dt': the overlap will be calculated based on maximum distance
+            transform in the whole image.
+          - 'ws': the overlap will be calculated by finding the maximum
+            dimension of the bounding box of largest segmented region. The
+            image is scale down by 'zoom_factor' provided by user.
+          - float: this value will be considered as overlapping thickness.
     divs : list or int
-        Number of domains each axis will be divided.
-        - If a scalar is provided then it will be assigned to all axis.
-        - If list is provided then each respective axis will be divided by
-          its corresponding number in the list. For example [2, 3, 4] will
-          divide z, y and x axis to 2, 3, and 4 respectively.
+        Number of domains each axis will be divided. Options are:
+          - scalar: it will be assigned to all axis.
+          - list: each respective axis will be divided by its corresponding
+            number in the list. For example [2, 3, 4] will divide z, y and
+            x axis to 2, 3, and 4 respectively.
     mode : str
-        - If 'parallel' then all subdomains will be processed in number of
-          cores provided as num_workers.
-        - If 'serial' then all subdomains will be processed one by one in
-          one core of CPU.
+        Options are:
+          - 'parallel': all subdomains processed using ``num_workers`` cores.
+          - 'serial': all subdomains will be processed using 1 core.
     num_workers : int or None
         Number of cores that will be used to parallel process all domains.
         If None then all cores will be used but user can specify any
@@ -1787,7 +1784,7 @@ def snow_partitioning_parallel(im,
         If True the image shape is cropped to fit specified division.
     zoom_factor : float or int
         The amount of zoom appiled to image to find overlap thickness
-        using "ws" overlap mode.
+        using 'ws' overlap mode.
     return_all : boolean
         If set to ``True`` a named tuple is returned containing the
         original image, the distance transform, and the final pore

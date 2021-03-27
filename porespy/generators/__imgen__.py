@@ -493,43 +493,43 @@ def lattice_spheres(shape: List[int],
                     smooth: bool = True,
                     lattice: str = "sc"):
     r"""
-    Generates a cubic packing of spheres in a specified lattice arrangement
+    Generates a cubic packing of spheres in a specified lattice
+    arrangement.
 
     Parameters
     ----------
     shape : list
-        The size of the image to generate in [Nx, Ny, Nz] where N is the
-        number of voxels in each direction.  For a 2D image, use [Nx, Ny].
+        The size of the image to generate in [Nx, Ny, Nz] where N is
+        the number of voxels in each direction. For a 2D image, use
+        [Nx, Ny].
     radius : int
-        The radius of spheres (circles) in the packing
-    spacing : int or list of ints
+        The radius of spheres (circles) in the packing.
+    spacing : int or List[int]
         The spacing between unit cells. If the spacing is too small then
-        spheres may overlap. If an ``int`` is given it will be applied in all
-        directions, while a list of ``int``s will be interpreted to apply
-        along each axis.
-    offset : int or list of ints
-        The amount offset to add between sphere centers and the edges of the
-        image.  A single ``int`` will be applied in all directions, while a
-        list of ``int``s will be interpreted to apply along each axis.
-    smooth : bool
-        If ``True`` (default) the outer extremities of the sphere will not
-        have the little bumps on each face.
-    lattice : string
-        Specifies the type of lattice to create.  Options are:
-
-        'sc' - Simple Cubic (default)
-
-        'fcc' - Face Centered Cubic
-
-        'bcc' - Body Centered Cubic
-
-        For 2D images, 'sc' gives a square lattice and both 'fcc' and 'bcc'
-        give a triangular lattice.
+        spheres may overlap. If an ``int`` is given it will be applied
+        in all directions, while a list of ``int`` will be interpreted
+        to apply along each axis.
+    offset : int or List[int]
+        The amount offset to add between sphere centers and the edges of
+        the image. A single ``int`` will be applied in all directions,
+        while a list of ``int`` will be interpreted to apply along each
+        axis.
+    smooth : bool, default=True
+        If ``True`` (default) the outer extremities of the sphere will
+        not have the little bumps on each face.
+    lattice : str
+        Specifies the type of lattice to create. Options are:
+        - 'sc': Simple Cubic (default)
+        - 'fcc': Face Centered Cubic
+        - 'bcc': Body Centered Cubic
+        For 2D images, 'sc' gives a square lattice and both 'fcc' and
+        'bcc' give a triangular lattice.
 
     Returns
     -------
-    image : ND-array
-        A boolean array with ``True`` values denoting the pore space
+    image : ndarray
+        A boolean array with ``True`` values denoting the pore space.
+
     """
     logger.debug(f"Generating {lattice} lattice")
     r = radius

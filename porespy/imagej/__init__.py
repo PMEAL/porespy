@@ -1,19 +1,15 @@
 r"""
-===============================================================================
-imagej
-===============================================================================
+
+ImageJ
+######
 
 **Access ImageJ Filters**
 
-
 .. autosummary::
+   :toctree: generated/
 
-    porespy.imagej.imagej_wrapper
-    porespy.imagej.imagej_plugin
-
-
-.. autofunction:: imagej_wrapper
-.. autofunction:: imagej_plugin
+    imagej_wrapper
+    imagej_plugin
 
 """
 

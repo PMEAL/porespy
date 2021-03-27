@@ -1,31 +1,36 @@
-r'''
+r"""
 
-===============================================================================
-visualization
-===============================================================================
+Visualization
+#############
 
 **Create Basic Views**
 
-This module contains functions for quickly visualizing 3D images in 2D views.
+This module contains functions for quickly visualizing 3D images in 2D
+views.
 
 .. autosummary::
+   :toctree: generated/
 
-    porespy.visualization.imshow
-    porespy.visualization.sem
-    porespy.visualization.xray
-    porespy.visualization.show_3D
-    porespy.visualization.set_mpl_style
-    porespy.visualization.show_mesh
+   sem
+   show_planes
+   xray
+   show_3D
+   imshow
+   bar
+   show_mesh
+   set_mpl_style
 
-.. autofunction:: imshow
-.. autofunction:: sem
-.. autofunction:: xray
-.. autofunction:: show_3D
-.. autofunction:: set_mpl_style
-.. autofunction:: show_mesh
+"""
 
-'''
-
+__all__ = [
+    "sem",
+    "show_planes",
+    "xray",
+    "show_3D",
+    "imshow",
+    "bar",
+    "show_mesh",
+    "set_mpl_style"]
 
 from .__views__ import sem, show_planes, xray, show_3D
 from .__plots__ import imshow, bar, show_mesh

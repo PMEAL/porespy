@@ -1,76 +1,46 @@
 r"""
 
-===============================================================================
-filters
-===============================================================================
+Filters
+#######
 
 **Highlight Features of Interest**
 
-This module contains a variety of functions for altering images based on the
-structural characteristics, such as pore sizes.  A definition of a *filter* is
-a function that returns an image the shape as the original image, but with
-altered values.
+This module contains a variety of functions for altering images based on
+the structural characteristics, such as pore sizes.  A definition of a
+*filter* is a function that returns an image the shape as the original
+image, but with altered values.
 
 .. autosummary::
+   :toctree: generated/
 
-    porespy.filters.apply_chords
-    porespy.filters.apply_chords_3D
-    porespy.filters.apply_padded
-    porespy.filters.chunked_func
-    porespy.filters.distance_transform_lin
-    porespy.filters.fftmorphology
-    porespy.filters.fill_blind_pores
-    porespy.filters.find_disconnected_voxels
-    porespy.filters.find_dt_artifacts
-    porespy.filters.find_peaks
-    porespy.filters.flood
-    porespy.filters.hold_peaks
-    porespy.filters.local_thickness
-    porespy.filters.nphase_border
-    porespy.filters.porosimetry
-    porespy.filters.prune_branches
-    porespy.filters.reduce_peaks
-    porespy.filters.region_size
-    porespy.filters.snow_partitioning
-    porespy.filters.snow_partitioning_n
-    porespy.filters.snow_partitioning_parallel
-    porespy.filters.trim_disconnected_blobs
-    porespy.filters.trim_extrema
-    porespy.filters.trim_floating_solid
-    porespy.filters.trim_nearby_peaks
-    porespy.filters.trim_nonpercolating_paths
-    porespy.filters.trim_saddle_points
-    porespy.filters.trim_small_clusters
-
-
-.. autofunction:: apply_chords
-.. autofunction:: apply_chords_3D
-.. autofunction:: apply_padded
-.. autofunction:: chunked_func
-.. autofunction:: distance_transform_lin
-.. autofunction:: fftmorphology
-.. autofunction:: fill_blind_pores
-.. autofunction:: find_disconnected_voxels
-.. autofunction:: find_dt_artifacts
-.. autofunction:: find_peaks
-.. autofunction:: flood
-.. autofunction:: hold_peaks
-.. autofunction:: local_thickness
-.. autofunction:: nphase_border
-.. autofunction:: porosimetry
-.. autofunction:: prune_branches
-.. autofunction:: reduce_peaks
-.. autofunction:: region_size
-.. autofunction:: snow_partitioning
-.. autofunction:: snow_partitioning_n
-.. autofunction:: snow_partitioning_parallel
-.. autofunction:: trim_disconnected_blobs
-.. autofunction:: trim_extrema
-.. autofunction:: trim_floating_solid
-.. autofunction:: trim_nearby_peaks
-.. autofunction:: trim_nonpercolating_paths
-.. autofunction:: trim_saddle_points
-.. autofunction:: trim_small_clusters
+    apply_chords
+    apply_chords_3D
+    apply_padded
+    chunked_func
+    distance_transform_lin
+    fftmorphology
+    fill_blind_pores
+    find_disconnected_voxels
+    find_dt_artifacts
+    find_peaks
+    flood
+    hold_peaks
+    local_thickness
+    nphase_border
+    porosimetry
+    prune_branches
+    reduce_peaks
+    region_size
+    snow_partitioning
+    snow_partitioning_n
+    snow_partitioning_parallel
+    trim_disconnected_blobs
+    trim_extrema
+    trim_floating_solid
+    trim_nearby_peaks
+    trim_nonpercolating_paths
+    trim_saddle_points
+    trim_small_clusters
 
 """
 

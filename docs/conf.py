@@ -40,10 +40,13 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.autosummary',
               'sphinx.ext.ifconfig',
               'sphinx.ext.viewcode',
-              'sphinx.ext.mathjax',
-              ]
+              'sphinx.ext.mathjax']
 
 exclude_patterns = ['_build', '_templates']
+
+add_module_names = False      # porespy.generators --> generators
+
+autosummary_generate = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -113,7 +116,10 @@ html_show_sphinx = False
 
 # html_theme = 'sphinx_rtd_theme'
 
-html_theme = 'alabaster'
+# html_theme = 'alabaster'
+html_theme = 'pydata_sphinx_theme'
+
+html_logo = './images/porespy_logo.png'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the

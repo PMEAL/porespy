@@ -418,20 +418,22 @@ def two_point_correlation_bf(im, spacing=10):
 
     Parameters
     ----------
-    im : ND-array
-        The image of the void space on which the 2-point correlation is desired
+    im : ndarray
+        The image of the void space on which the 2-point correlation is
+        desired.
     spacing : int
-        The space between points on the regular grid that is used to generate
-        the correlation (see Notes)
+        The space between points on the regular grid that is used to
+        generate the correlation (see Notes).
 
     Returns
     -------
     result : named_tuple
         A tuple containing the x and y data for plotting the two-point
-        correlation function, using the *args feature of matplotlib's plot
-        function.  The x array is the distances between points and the y array
-        is corresponding probabilities that points of a given distance both
-        lie in the void space. The distance values are binned as follows:
+        correlation function, using the \*args feature of matplotlib's
+        plot function. The x array is the distances between points and
+        the y array is corresponding probabilities that points of a
+        given distance both lie in the void space. The distance values
+        are binned as follows:
         ``bins = range(start=0, stop=np.amin(im.shape)/2, stride=spacing)``
 
     Notes
@@ -442,6 +444,7 @@ def two_point_correlation_bf(im, spacing=10):
 
     This approach uses a distance matrix so can consume memory very quickly for
     large 3D images and/or close spacing.
+
     """
     _check_for_singleton_axes(im)
     if im.ndim == 2:
@@ -511,28 +514,32 @@ def _radial_profile(autocorr, r_max, nbins=100):
 
 def two_point_correlation_fft(im):
     r"""
-    Calculates the two-point correlation function using fourier transforms
+    Calculates the two-point correlation function using fourier
+    transforms.
 
     Parameters
     ----------
-    im : ND-array
-        The image of the void space on which the 2-point correlation is desired
+    im : ndarray
+        The image of the void space on which the 2-point correlation is
+        desired.
 
     Returns
     -------
     result : named_tuple
         A tuple containing the x and y data for plotting the two-point
-        correlation function, using the *args feature of matplotlib's plot
-        function.  The x array is the distances between points and the y array
-        is corresponding probabilities that points of a given distance both
-        lie in the void space.
+        correlation function, using the \*args feature of matplotlib's
+        plot function. The x array is the distances between points and
+        the y array is corresponding probabilities that points of a
+        given distance both lie in the void space.
 
     Notes
     -----
-    The fourier transform approach utilizes the fact that the autocorrelation
-    function is the inverse FT of the power spectrum density.
-    For background read the Scipy fftpack docs and for a good explanation see:
+    The fourier transform approach utilizes the fact that the
+    autocorrelation function is the inverse FT of the power spectrum
+    density. For background read the Scipy fftpack docs and for a good
+    explanation see:
     http://www.ucl.ac.uk/~ucapikr/projects/KamilaSuankulova_BSc_Project.pdf
+
     """
     # Calculate half lengths of the image
     hls = (np.ceil(np.shape(im)) / 2).astype(int)

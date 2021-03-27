@@ -1,75 +1,78 @@
-r'''
+r"""
 
-===============================================================================
-tools
-===============================================================================
+Tools
+#####
 
 **Helper Functions**
 
-This module contains a variety of functions for manipulating images in ways
-that do NOT return a modified version of the original image.
+This module contains a variety of functions for manipulating images in
+ways do NOT return a modified version of the original image.
 
 .. autosummary::
+   :toctree: generated/
 
-    porespy.tools.align_image_with_openpnm
-    porespy.tools.bbox_to_slices
-    porespy.tools.extend_slice
-    porespy.tools.extract_subsection
-    porespy.tools.extract_regions
-    porespy.tools.extract_cylinder
-    porespy.tools.extract_subsection
-    porespy.tools.fftmorphology
-    porespy.tools.find_outer_region
-    porespy.tools.get_border
-    porespy.tools.get_planes
-    porespy.tools.insert_cylinder
-    porespy.tools.insert_sphere
-    porespy.tools.in_hull
-    porespy.tools.make_contiguous
-    porespy.tools.mesh_region
-    porespy.tools.norm_to_uniform
-    porespy.tools.overlay
-    porespy.tools.ps_ball
-    porespy.tools.ps_disk
-    porespy.tools.ps_rect
-    porespy.tools.ps_round
-    porespy.tools.pad_faces
-    porespy.tools.randomize_colors
-    porespy.tools.seq_to_satn
-    porespy.tools.size_to_seq
-    porespy.tools.subdivide
-    porespy.tools.zero_corners
+   align_image_with_openpnm
+   bbox_to_slices
+   extend_slice
+   extract_subsection
+   extract_regions
+   extract_cylinder
+   extract_subsection
+   fftmorphology
+   find_outer_region
+   get_border
+   get_planes
+   insert_cylinder
+   insert_sphere
+   in_hull
+   make_contiguous
+   mesh_region
+   norm_to_uniform
+   overlay
+   ps_ball
+   ps_disk
+   ps_rect
+   ps_round
+   pad_faces
+   randomize_colors
+   seq_to_satn
+   size_to_seq
+   subdivide
+   zero_corners
 
-.. autofunction:: align_image_with_openpnm
-.. autofunction:: bbox_to_slices
-.. autofunction:: extend_slice
-.. autofunction:: extract_cylinder
-.. autofunction:: extract_regions
-.. autofunction:: extract_subsection
-.. autofunction:: fftmorphology
-.. autofunction:: find_outer_region
-.. autofunction:: get_border
-.. autofunction:: get_planes
-.. autofunction:: insert_cylinder
-.. autofunction:: insert_sphere
-.. autofunction:: in_hull
-.. autofunction:: make_contiguous
-.. autofunction:: mesh_region
-.. autofunction:: norm_to_uniform
-.. autofunction:: overlay
-.. autofunction:: ps_ball
-.. autofunction:: ps_disk
-.. autofunction:: ps_rect
-.. autofunction:: ps_round
-.. autofunction:: pad_faces
-.. autofunction:: randomize_colors
-.. autofunction:: seq_to_satn
-.. autofunction:: size_to_seq
-.. autofunction:: subdivide
-.. autofunction:: zero_corners
-.. autofunction:: sanitize_filename
+"""
 
-'''
+__all__ = [
+    "align_image_with_openpnm",
+    "bbox_to_slices",
+    "extend_slice",
+    "extract_cylinder",
+    "extract_subsection",
+    "extract_regions",
+    "fftmorphology",
+    "find_outer_region",
+    "get_border",
+    "get_planes",
+    "insert_cylinder",
+    "insert_sphere",
+    "in_hull",
+    "make_contiguous",
+    "mesh_region",
+    "norm_to_uniform",
+    "overlay",
+    "randomize_colors",
+    "ps_ball",
+    "ps_disk",
+    "ps_rect",
+    "ps_round",
+    "pad_faces",
+    "seq_to_satn",
+    "size_to_seq",
+    "subdivide",
+    "zero_corners",
+    "sanitize_filename",
+    "get_tqdm",
+    "show_docstring"]
 
 from .__funcs__ import align_image_with_openpnm
 from .__funcs__ import bbox_to_slices

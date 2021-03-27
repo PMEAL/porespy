@@ -1,52 +1,34 @@
 r"""
 
-===============================================================================
-metrics
-===============================================================================
+Metrics
+#######
 
 **Extract Quantitative Information**
 
-This submodule contains functions for determining key metrics about an image.
-Typically these are applied to an image after applying a filter, but a few
-functions can be applied directly to the binary image.
+This submodule contains functions for determining key metrics about an
+image. Typically these are applied to an image after applying a filter,
+but a few functions can be applied directly to the binary image.
 
 .. autosummary::
+   :toctree: generated/
 
-    porespy.metrics.chord_counts
-    porespy.metrics.chord_length_distribution
-    porespy.metrics.lineal_path_distribution
-    porespy.metrics.mesh_surface_area
-    porespy.metrics.phase_fraction
-    porespy.metrics.pore_size_distribution
-    porespy.metrics.porosity
-    porespy.metrics.porosity_profile
-    porespy.metrics.prop_to_image
-    porespy.metrics.props_to_DataFrame
-    porespy.metrics.radial_density_distribution
-    porespy.metrics.region_interface_areas
-    porespy.metrics.region_surface_areas
-    porespy.metrics.regionprops_3D
-    porespy.metrics.representative_elementary_volume
-    porespy.metrics.two_point_correlation_bf
-    porespy.metrics.two_point_correlation_fft
-
-.. autofunction:: chord_counts
-.. autofunction:: chord_length_distribution
-.. autofunction:: lineal_path_distribution
-.. autofunction:: mesh_surface_area
-.. autofunction:: phase_fraction
-.. autofunction:: pore_size_distribution
-.. autofunction:: porosity
-.. autofunction:: porosity_profile
-.. autofunction:: prop_to_image
-.. autofunction:: props_to_DataFrame
-.. autofunction:: radial_density_distribution
-.. autofunction:: region_interface_areas
-.. autofunction:: region_surface_areas
-.. autofunction:: regionprops_3D
-.. autofunction:: representative_elementary_volume
-.. autofunction:: two_point_correlation_bf
-.. autofunction:: two_point_correlation_fft
+    chord_counts
+    chord_length_distribution
+    lineal_path_distribution
+    mesh_surface_area
+    phase_fraction
+    pore_size_distribution
+    porosity
+    porosity_profile
+    prop_to_image
+    props_to_DataFrame
+    radial_density_distribution
+    region_interface_areas
+    region_surface_areas
+    regionprops_3D
+    representative_elementary_volume
+    two_point_correlation_bf
+    two_point_correlation_fft
 
 """
 

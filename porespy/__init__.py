@@ -1,7 +1,7 @@
-r'''
-===============================================================================
+r"""
+#######
 PoreSpy
-===============================================================================
+#######
 
 **Porous Media Image Analysis in Python**
 
@@ -39,10 +39,8 @@ software
 
 ----
 
-
--------------------------------------------------------------------------------
 Example Usage
--------------------------------------------------------------------------------
+#############
 
 Working with PoreSpy was designed to be a series of function calls, similar to
 building a macro in ImageJ or using Matlab.  A sample workflow is as follows:
@@ -69,7 +67,8 @@ Use some filters from PoreSpy:
 
     >>> peaks = ps.filters.snow_partitioning(im=im, dt=dt)
 
-'''
+"""
+
 import sys as _sys
 from .__version__ import __version__
 from .tools.__utils__ import Settings as _Settings
