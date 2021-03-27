@@ -1,0 +1,258 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>porespy.dns.__funcs__ &#8212; PoreSpy  documentation</title>
+    
+  <link href="../../../_static/css/theme.css" rel="stylesheet" />
+  <link href="../../../_static/css/index.f6b7ca918bee2f46fd9abac01cfb07d5.css" rel="stylesheet" />
+
+    
+  <link rel="stylesheet"
+    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/basic.css" type="text/css" />
+    
+  <link rel="preload" as="script" href="../../../_static/js/index.1e043a052b0af929e4d8.js">
+
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+
+    
+      
+      <a class="navbar-brand" href="../../../index.html">
+        <img src="../../../_static/porespy_logo.png" class="logo" alt="logo">
+      </a>
+      
+    
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    
+    <div id="navbar-menu" class="col-lg-9 collapse navbar-collapse">
+      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
+        <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../getting_started.html">
+  Getting Started
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../modules/index.html">
+  Module and Function Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../user_guide.html">
+  PoreSpy
+ </a>
+</li>
+
+        
+      </ul>
+
+      <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+    </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+              
+
+<nav id="bd-toc-nav">
+    
+</nav>
+
+
+              
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <h1>Source code for porespy.dns.__funcs__</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">importlib</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="kn">from</span> <span class="nn">porespy.filters</span> <span class="kn">import</span> <span class="n">trim_nonpercolating_paths</span>
+<span class="kn">from</span> <span class="nn">loguru</span> <span class="kn">import</span> <span class="n">logger</span>
+
+
+<div class="viewcode-block" id="tortuosity"><a class="viewcode-back" href="../../../modules/generated/porespy.dns.tortuosity.html#porespy.dns.tortuosity">[docs]</a><span class="k">def</span> <span class="nf">tortuosity</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">return_im</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates tortuosity of given image in specified direction</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    im : ndarray</span>
+<span class="sd">        The binary image to analyze with ``True`` indicating phase of interest</span>
+<span class="sd">    axis : int</span>
+<span class="sd">        The axis along which to apply boundary conditions</span>
+<span class="sd">    return_im : boolean</span>
+<span class="sd">        If ``True`` then the resulting tuple contains a copy of the input</span>
+<span class="sd">        image with the concentration profile.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    results :  tuple</span>
+<span class="sd">        A named-tuple containing:</span>
+
+<span class="sd">        - ``tortuosity``: calculated using the ``effective_porosity`` as</span>
+<span class="sd">          :math:`\tau = \frac{D_{AB}}{D_{eff}} \cdot \varepsilon`.</span>
+<span class="sd">        - ``effective_porosity``: of the image after applying</span>
+<span class="sd">          ``trim_nonpercolating_paths``. This removes disconnected</span>
+<span class="sd">          voxels which cause singular matrices.</span>
+<span class="sd">        - ``original_porosity``: of the image as given</span>
+<span class="sd">        - ``formation_factor``: found as :math:`D_{AB}/D_{eff}`.</span>
+<span class="sd">        - ``image``: containing the concentration values from the simulation.</span>
+<span class="sd">          This is only returned if ``return_im`` is ``True``.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">axis</span> <span class="o">&gt;</span> <span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">ndim</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Axis argument is too high&quot;</span><span class="p">)</span>
+    <span class="c1"># Obtain original porosity</span>
+    <span class="n">eps0</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">im</span><span class="o">.</span><span class="n">size</span>
+    <span class="c1"># Removing floating pores</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">trim_nonpercolating_paths</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">inlet_axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">outlet_axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
+    <span class="c1"># Porosity is changed because of trimmimg floating pores</span>
+    <span class="n">eps</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">im</span><span class="o">.</span><span class="n">size</span>
+    <span class="k">if</span> <span class="n">eps</span> <span class="o">&lt;</span> <span class="n">eps0</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;True porosity is </span><span class="si">{</span><span class="n">eps</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">, filled </span><span class="si">{</span><span class="n">eps0</span> <span class="o">-</span> <span class="n">eps</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">&#39;</span>
+                       <span class="s1">&#39; volume fraction of the image for it to percolate.&#39;</span><span class="p">)</span>
+    <span class="c1"># Cubic network generation</span>
+    <span class="n">net</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">CubicTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">spacing</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="c1"># Adding phase</span>
+    <span class="n">water</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">phases</span><span class="o">.</span><span class="n">Water</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">)</span>
+    <span class="n">water</span><span class="p">[</span><span class="s1">&#39;throat.diffusive_conductance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># dummy value</span>
+    <span class="c1"># Running Fickian Diffusion</span>
+    <span class="n">fd</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">FickianDiffusion</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">water</span><span class="p">)</span>
+    <span class="c1"># Choosing axis of concentration gradient</span>
+    <span class="n">inlets</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">][:,</span> <span class="n">axis</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">1</span>
+    <span class="n">outlets</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">][:,</span> <span class="n">axis</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span>
+    <span class="c1"># Boundary conditions on concentration</span>
+    <span class="n">C_in</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="n">C_out</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">fd</span><span class="o">.</span><span class="n">set_value_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">inlets</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">C_in</span><span class="p">)</span>
+    <span class="n">fd</span><span class="o">.</span><span class="n">set_value_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">outlets</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">C_out</span><span class="p">)</span>
+    <span class="c1"># Use specified solver if given</span>
+    <span class="k">if</span> <span class="s1">&#39;solver_family&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">fd</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">fd</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;solver_family&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;scipy&#39;</span>
+        <span class="n">fd</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;solver_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;cg&#39;</span>
+        <span class="k">if</span> <span class="n">importlib</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">find_spec</span><span class="p">(</span><span class="s2">&quot;pyamg&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">fd</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;solver_family&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;pyamg&#39;</span>
+    <span class="n">fd</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+    <span class="c1"># Calculating molar flow rate, effective diffusivity and tortuosity</span>
+    <span class="n">rate_out</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">rate</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">outlets</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">rate_in</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">rate</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">inlets</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="o">-</span><span class="n">rate_out</span><span class="p">,</span> <span class="n">rate_in</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Something went wrong, inlet and outlet rate do not match&#39;</span><span class="p">)</span>
+    <span class="n">delta_C</span> <span class="o">=</span> <span class="n">C_in</span> <span class="o">-</span> <span class="n">C_out</span>
+    <span class="n">L</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">/</span> <span class="n">L</span>
+    <span class="n">N_A</span> <span class="o">=</span> <span class="n">A</span> <span class="o">/</span> <span class="n">L</span> <span class="o">*</span> <span class="n">delta_C</span>
+    <span class="n">Deff</span> <span class="o">=</span> <span class="n">rate_in</span> <span class="o">/</span> <span class="n">N_A</span>
+    <span class="n">tau</span> <span class="o">=</span> <span class="n">eps</span> <span class="o">/</span> <span class="n">Deff</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span>
+        <span class="s1">&#39;tortuosity_result&#39;</span><span class="p">,</span>
+        <span class="p">[</span><span class="s1">&#39;tortuosity&#39;</span><span class="p">,</span>
+         <span class="s1">&#39;effective_porosity&#39;</span><span class="p">,</span>
+         <span class="s1">&#39;original_porosity&#39;</span><span class="p">,</span>
+         <span class="s1">&#39;formation_factor&#39;</span><span class="p">,</span>
+         <span class="s1">&#39;image&#39;</span><span class="p">])</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">tortuosity</span> <span class="o">=</span> <span class="n">tau</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">formation_factor</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">Deff</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">original_porosity</span> <span class="o">=</span> <span class="n">eps0</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">effective_porosity</span> <span class="o">=</span> <span class="n">eps</span>
+    <span class="k">if</span> <span class="n">return_im</span><span class="p">:</span>
+        <span class="n">conc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">im</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">conc</span><span class="p">[</span><span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.template_indices&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">fd</span><span class="p">[</span><span class="s1">&#39;pore.concentration&#39;</span><span class="p">]</span>
+        <span class="n">conc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">conc</span><span class="p">,</span> <span class="n">newshape</span><span class="o">=</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">conc</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">result</span></div>
+</pre></div>
+
+              </div>
+              
+              
+              <div class='prev-next-bottom'>
+                
+
+              </div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+
+    
+  <script src="../../../_static/js/index.1e043a052b0af929e4d8.js"></script>
+
+
+    <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    <p>
+          &copy; Copyright 2021 PoreSpy Team.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

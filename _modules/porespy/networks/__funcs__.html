@@ -1,0 +1,598 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>porespy.networks.__funcs__ &#8212; PoreSpy  documentation</title>
+    
+  <link href="../../../_static/css/theme.css" rel="stylesheet" />
+  <link href="../../../_static/css/index.f6b7ca918bee2f46fd9abac01cfb07d5.css" rel="stylesheet" />
+
+    
+  <link rel="stylesheet"
+    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/basic.css" type="text/css" />
+    
+  <link rel="preload" as="script" href="../../../_static/js/index.1e043a052b0af929e4d8.js">
+
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+
+    
+      
+      <a class="navbar-brand" href="../../../index.html">
+        <img src="../../../_static/porespy_logo.png" class="logo" alt="logo">
+      </a>
+      
+    
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    
+    <div id="navbar-menu" class="col-lg-9 collapse navbar-collapse">
+      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
+        <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../getting_started.html">
+  Getting Started
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../modules/index.html">
+  Module and Function Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../user_guide.html">
+  PoreSpy
+ </a>
+</li>
+
+        
+      </ul>
+
+      <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+    </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+              
+
+<nav id="bd-toc-nav">
+    
+</nav>
+
+
+              
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <h1>Source code for porespy.networks.__funcs__</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="kn">from</span> <span class="nn">skimage.segmentation</span> <span class="kn">import</span> <span class="n">find_boundaries</span>
+<span class="kn">from</span> <span class="nn">skimage.morphology</span> <span class="kn">import</span> <span class="n">ball</span><span class="p">,</span> <span class="n">cube</span>
+<span class="kn">from</span> <span class="nn">skimage.segmentation</span> <span class="kn">import</span> <span class="n">relabel_sequential</span>
+<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">_create_alias_map</span><span class="p">,</span> <span class="n">overlay</span>
+<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">insert_cylinder</span>
+<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">zero_corners</span>
+<span class="kn">from</span> <span class="nn">porespy</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">get_tqdm</span>
+<span class="kn">from</span> <span class="nn">loguru</span> <span class="kn">import</span> <span class="n">logger</span>
+<span class="n">tqdm</span> <span class="o">=</span> <span class="n">get_tqdm</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="map_to_regions"><a class="viewcode-back" href="../../../modules/generated/porespy.networks.map_to_regions.html#porespy.networks.map_to_regions">[docs]</a><span class="k">def</span> <span class="nf">map_to_regions</span><span class="p">(</span><span class="n">regions</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Maps pore values from a network onto the image from which it was extracted</span>
+
+<span class="sd">    This function assumes that the pore numbering in the network has remained</span>
+<span class="sd">    unchanged from the region labels in the partitioned image.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    regions : ND-array</span>
+<span class="sd">        An image of the pore space partitioned into regions and labeled</span>
+
+<span class="sd">    values : array_like</span>
+<span class="sd">        An array containing the numerical values to insert into each region.</span>
+<span class="sd">        The value at location *n* will be inserted into the image where</span>
+<span class="sd">        ``regions`` is *n+1*.  This mis-match is caused by the fact that 0&#39;s</span>
+<span class="sd">        in the ``regions`` image is assumed to be the backgroung phase, while</span>
+<span class="sd">        pore index 0 is valid.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function assumes that the array of pore values are indexed starting</span>
+<span class="sd">    at location 0, while in the region image 0&#39;s indicate background phase and</span>
+<span class="sd">    the region indexing starts at 1.  That is, region 1 corresponds to pore 0.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">!=</span> <span class="n">regions</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Number of values does not match number of regions&#39;</span><span class="p">)</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">regions</span><span class="p">)</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="n">regions</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">im</span></div>
+
+
+<div class="viewcode-block" id="add_boundary_regions"><a class="viewcode-back" href="../../../modules/generated/porespy.networks.add_boundary_regions.html#porespy.networks.add_boundary_regions">[docs]</a><span class="k">def</span> <span class="nf">add_boundary_regions</span><span class="p">(</span><span class="n">regions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">faces</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;front&#39;</span><span class="p">,</span> <span class="s1">&#39;back&#39;</span><span class="p">,</span> <span class="s1">&#39;left&#39;</span><span class="p">,</span>
+                                              <span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="s1">&#39;top&#39;</span><span class="p">,</span> <span class="s1">&#39;bottom&#39;</span><span class="p">]):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given an image partitioned into regions, pads specified faces with new</span>
+<span class="sd">    regions</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    regions : ND-array</span>
+<span class="sd">        An image of the pore space partitioned into regions and labeled</span>
+<span class="sd">    faces : list of strings</span>
+<span class="sd">        The faces of ``regions`` which should have boundaries added.  Options</span>
+<span class="sd">        are:</span>
+
+<span class="sd">        *&#39;right&#39;* - Adds boundaries to the x=0 face (``im[0, :, :]``)</span>
+
+<span class="sd">        *&#39;left&#39;* - Adds boundaries to the x=X face (``im[-1, :, :]``)</span>
+
+<span class="sd">        *&#39;front&#39;* - Adds boundaries to the y=0 face (``im[:, ), :]``)</span>
+
+<span class="sd">        *&#39;back&#39;* - Adds boundaries to the x=0 face (``im[:, -1, :]``)</span>
+
+<span class="sd">        *&#39;bottom&#39;* - Adds boundaries to the x=0 face (``im[:, :, 0]``)</span>
+
+<span class="sd">        *&#39;top&#39;* - Adds boundaries to the x=0 face (``im[:, :, -1]``)</span>
+
+<span class="sd">        The default is all faces.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    image : ND-array</span>
+<span class="sd">        A copy of ``regions`` with the specified boundaries added, so will be</span>
+<span class="sd">        slightly larger in each direction where boundaries were added.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">faces</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">regions</span>
+
+    <span class="k">if</span> <span class="n">regions</span><span class="o">.</span><span class="n">ndim</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;add_boundary_regions works only on 2D and 3D images&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">regions</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">set</span><span class="p">([</span><span class="s2">&quot;bottom&quot;</span><span class="p">,</span> <span class="s2">&quot;top&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">faces</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;For 2D images, use &#39;left&#39;, &#39;right&#39;, &#39;front&#39;, &#39;back&#39; labels&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Map which image slice corresponds to which face</span>
+    <span class="n">face_to_slice</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;left&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;right&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;front&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;back&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;bottom&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;top&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="p">}</span>
+    <span class="c1"># Map face label to corresponding axis</span>
+    <span class="n">face_to_axis</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;left&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;right&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;front&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;back&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;bottom&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;top&quot;</span><span class="p">:</span> <span class="mi">2</span>
+    <span class="p">}</span>
+
+    <span class="n">ndim</span> <span class="o">=</span> <span class="n">regions</span><span class="o">.</span><span class="n">ndim</span>
+    <span class="n">indices</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1"># Note: pad_width format: each elem is [pad_before, pad_after]</span>
+    <span class="n">pad_width</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ndim</span><span class="p">)]</span>
+    <span class="c1"># 1. Create indices for boundary faces, ex. bottom&quot; =&gt; [:, :, -1]</span>
+    <span class="c1"># Note: slice(None) is equivalent to &quot;:&quot; in fancy indexing, ex. [0, 0, :]</span>
+    <span class="c1"># 2. populate pad_width based on labels</span>
+    <span class="k">for</span> <span class="n">face</span> <span class="ow">in</span> <span class="n">faces</span><span class="p">:</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ndim</span><span class="p">)]</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="n">face_to_axis</span><span class="p">[</span><span class="n">face</span><span class="p">]</span>
+        <span class="n">plane</span> <span class="o">=</span> <span class="n">face_to_slice</span><span class="p">[</span><span class="n">face</span><span class="p">]</span>
+        <span class="n">temp</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="n">plane</span>
+        <span class="n">indices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">temp</span><span class="p">))</span>
+        <span class="n">pad_width</span><span class="p">[</span><span class="n">axis</span><span class="p">][</span><span class="n">plane</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>      <span class="c1"># Pad each face by 1 pixel</span>
+
+    <span class="n">regions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">regions</span><span class="p">,</span> <span class="n">pad_width</span><span class="o">=</span><span class="n">pad_width</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;edge&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Increment boundary regions to distinguish from internal regions</span>
+    <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">:</span>
+        <span class="c1"># Only increment non-background regions (i.e. != 0)</span>
+        <span class="n">non_background</span> <span class="o">=</span> <span class="n">regions</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span>
+        <span class="n">regions</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="n">non_background</span><span class="p">]</span> <span class="o">+=</span> <span class="n">regions</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+
+    <span class="c1"># Remove connections between boundary regions</span>
+    <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">:</span>
+        <span class="n">regions</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">*=</span> <span class="o">~</span><span class="n">find_boundaries</span><span class="p">(</span><span class="n">regions</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;outer&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Pad twice to make boundary regions 3-pixel thick -&gt; required for marching_cube</span>
+    <span class="n">pw</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pad_width</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span>
+    <span class="n">regions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">regions</span><span class="p">,</span> <span class="n">pad_width</span><span class="o">=</span><span class="n">pw</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;edge&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Convert pad-induced corners to 0</span>
+    <span class="n">zero_corners</span><span class="p">(</span><span class="n">regions</span><span class="p">,</span> <span class="n">pw</span> <span class="o">*</span> <span class="mi">3</span><span class="p">)</span>
+
+    <span class="c1"># Make labels contiguous</span>
+    <span class="n">regions</span> <span class="o">=</span> <span class="n">relabel_sequential</span><span class="p">(</span><span class="n">regions</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">regions</span></div>
+
+
+<span class="k">def</span> <span class="nf">_generate_voxel_image</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">pore_shape</span><span class="p">,</span> <span class="n">throat_shape</span><span class="p">,</span> <span class="n">max_dim</span><span class="o">=</span><span class="mi">200</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generates a 3d numpy array from a network model.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    network : OpenPNM GenericNetwork</span>
+<span class="sd">        Network from which voxel image is to be generated</span>
+<span class="sd">    pore_shape : str</span>
+<span class="sd">        Shape of pores in the network, valid choices are &quot;sphere&quot;, &quot;cube&quot;</span>
+<span class="sd">    throat_shape : str</span>
+<span class="sd">        Shape of throats in the network, valid choices are &quot;cylinder&quot;, &quot;cuboid&quot;</span>
+<span class="sd">    max_dim : int</span>
+<span class="sd">        Number of voxels in the largest dimension of the network</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    im : ND-array</span>
+<span class="sd">        Voxelated image corresponding to the given pore network model</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    (1) The generated voxelated image is labeled with 0s, 1s and 2s signifying</span>
+<span class="sd">    solid phase, pores, and throats respectively.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">xyz</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s2">&quot;pore.coords&quot;</span><span class="p">]</span>
+    <span class="n">cn</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s2">&quot;throat.conns&quot;</span><span class="p">]</span>
+
+    <span class="c1"># Distance bounding box from the network by a fixed amount</span>
+    <span class="n">delta</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s2">&quot;pore.diameter&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">):</span>
+        <span class="n">delta</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">_spacing</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="o">/</span> <span class="mi">2</span>
+
+    <span class="c1"># Shift everything to avoid out-of-bounds</span>
+    <span class="n">extra_clearance</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">max_dim</span> <span class="o">*</span> <span class="mf">0.05</span><span class="p">)</span>
+
+    <span class="c1"># Transform points to satisfy origin at (0, 0, 0)</span>
+    <span class="n">xyz0</span> <span class="o">=</span> <span class="n">xyz</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="n">delta</span>
+    <span class="n">xyz</span> <span class="o">+=</span> <span class="o">-</span><span class="n">xyz0</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="p">(</span><span class="n">xyz</span><span class="o">.</span><span class="n">ptp</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">delta</span><span class="p">)</span> <span class="o">/</span> <span class="n">max_dim</span>
+    <span class="n">shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rint</span><span class="p">((</span><span class="n">xyz</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">delta</span><span class="p">)</span> <span class="o">/</span> <span class="n">res</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">extra_clearance</span>
+
+    <span class="c1"># Transforming from real coords to matrix coords</span>
+    <span class="n">xyz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rint</span><span class="p">(</span><span class="n">xyz</span> <span class="o">/</span> <span class="n">res</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="o">+</span> <span class="n">extra_clearance</span>
+    <span class="n">pore_radi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rint</span><span class="p">(</span><span class="n">network</span><span class="p">[</span><span class="s2">&quot;pore.diameter&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="mf">0.5</span> <span class="o">/</span> <span class="n">res</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">throat_radi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rint</span><span class="p">(</span><span class="n">network</span><span class="p">[</span><span class="s2">&quot;throat.diameter&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="mf">0.5</span> <span class="o">/</span> <span class="n">res</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+    <span class="n">im_pores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+    <span class="n">im_throats</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">im_pores</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">pore_shape</span> <span class="o">==</span> <span class="s2">&quot;cube&quot;</span><span class="p">:</span>
+        <span class="n">pore_elem</span> <span class="o">=</span> <span class="n">cube</span>
+        <span class="n">rp</span> <span class="o">=</span> <span class="n">pore_radi</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span>  <span class="c1"># +1 since num_voxel must be odd</span>
+        <span class="n">rp_max</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="nb">round</span><span class="p">(</span><span class="n">delta</span> <span class="o">/</span> <span class="n">res</span><span class="p">))</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">pore_shape</span> <span class="o">==</span> <span class="s2">&quot;sphere&quot;</span><span class="p">:</span>
+        <span class="n">pore_elem</span> <span class="o">=</span> <span class="n">ball</span>
+        <span class="n">rp</span> <span class="o">=</span> <span class="n">pore_radi</span>
+        <span class="n">rp_max</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">delta</span> <span class="o">/</span> <span class="n">res</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">throat_shape</span> <span class="o">==</span> <span class="s2">&quot;cuboid&quot;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Not yet implemented, try &#39;cylinder&#39;.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Generating voxels for pores</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">pore</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tqdm</span><span class="p">(</span><span class="n">network</span><span class="o">.</span><span class="n">Ps</span><span class="p">,</span> <span class="o">**</span><span class="n">settings</span><span class="o">.</span><span class="n">tqdm</span><span class="p">)):</span>
+        <span class="n">elem</span> <span class="o">=</span> <span class="n">pore_elem</span><span class="p">(</span><span class="n">rp</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">im_pores</span> <span class="o">=</span> <span class="n">overlay</span><span class="p">(</span><span class="n">im1</span><span class="o">=</span><span class="n">im_pores</span><span class="p">,</span> <span class="n">im2</span><span class="o">=</span><span class="n">elem</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">xyz</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">elem</span> <span class="o">=</span> <span class="n">pore_elem</span><span class="p">(</span><span class="n">rp_max</span><span class="p">)</span>
+            <span class="n">im_pores</span> <span class="o">=</span> <span class="n">overlay</span><span class="p">(</span><span class="n">im1</span><span class="o">=</span><span class="n">im_pores</span><span class="p">,</span> <span class="n">im2</span><span class="o">=</span><span class="n">elem</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">xyz</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="c1"># Get rid of pore overlaps</span>
+    <span class="n">im_pores</span><span class="p">[</span><span class="n">im_pores</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="c1"># Generating voxels for throats</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">throat</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tqdm</span><span class="p">(</span><span class="n">network</span><span class="o">.</span><span class="n">Ts</span><span class="p">,</span> <span class="o">**</span><span class="n">settings</span><span class="o">.</span><span class="n">tqdm</span><span class="p">)):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">im_throats</span> <span class="o">=</span> <span class="n">insert_cylinder</span><span class="p">(</span>
+                <span class="n">im_throats</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="n">throat_radi</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">xyz0</span><span class="o">=</span><span class="n">xyz</span><span class="p">[</span><span class="n">cn</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]],</span> <span class="n">xyz1</span><span class="o">=</span><span class="n">xyz</span><span class="p">[</span><span class="n">cn</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">im_throats</span> <span class="o">=</span> <span class="n">insert_cylinder</span><span class="p">(</span>
+                <span class="n">im_throats</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="n">rp_max</span><span class="p">,</span> <span class="n">xyz0</span><span class="o">=</span><span class="n">xyz</span><span class="p">[</span><span class="n">cn</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]],</span> <span class="n">xyz1</span><span class="o">=</span><span class="n">xyz</span><span class="p">[</span><span class="n">cn</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
+    <span class="c1"># Get rid of throat overlaps</span>
+    <span class="n">im_throats</span><span class="p">[</span><span class="n">im_throats</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="c1"># Subtract pore-throat overlap from throats</span>
+    <span class="n">im_throats</span> <span class="o">=</span> <span class="p">(</span><span class="n">im_throats</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span> <span class="o">*</span> <span class="o">~</span><span class="n">im_pores</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bool</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">im_pores</span> <span class="o">*</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">im_throats</span> <span class="o">*</span> <span class="mi">2</span>
+
+    <span class="k">return</span> <span class="n">im</span><span class="p">[</span><span class="n">extra_clearance</span><span class="p">:</span><span class="o">-</span><span class="n">extra_clearance</span><span class="p">,</span>
+              <span class="n">extra_clearance</span><span class="p">:</span><span class="o">-</span><span class="n">extra_clearance</span><span class="p">,</span>
+              <span class="n">extra_clearance</span><span class="p">:</span><span class="o">-</span><span class="n">extra_clearance</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="generate_voxel_image"><a class="viewcode-back" href="../../../modules/generated/porespy.networks.generate_voxel_image.html#porespy.networks.generate_voxel_image">[docs]</a><span class="k">def</span> <span class="nf">generate_voxel_image</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">pore_shape</span><span class="o">=</span><span class="s2">&quot;sphere&quot;</span><span class="p">,</span> <span class="n">throat_shape</span><span class="o">=</span><span class="s2">&quot;cylinder&quot;</span><span class="p">,</span>
+                         <span class="n">max_dim</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generates voxel image from an OpenPNM network object.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    network : OpenPNM GenericNetwork</span>
+<span class="sd">        Network from which voxel image is to be generated</span>
+<span class="sd">    pore_shape : str</span>
+<span class="sd">        Shape of pores in the network, valid choices are &quot;sphere&quot;, &quot;cube&quot;</span>
+<span class="sd">    throat_shape : str</span>
+<span class="sd">        Shape of throats in the network, valid choices are &quot;cylinder&quot;, &quot;cuboid&quot;</span>
+<span class="sd">    max_dim : int</span>
+<span class="sd">        Number of voxels in the largest dimension of the network</span>
+<span class="sd">    rtol : float</span>
+<span class="sd">        Stopping criteria for finding the smallest voxel image such that</span>
+<span class="sd">        further increasing the number of voxels in each dimension by 25% would</span>
+<span class="sd">        improve the predicted porosity of the image by less that ``rtol``</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    im : ndarray</span>
+<span class="sd">        Voxelated image corresponding to the given pore network model</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    (1) The generated voxelated image is labeled with 0s, 1s and 2s signifying</span>
+<span class="sd">    solid phase, pores, and throats respectively.</span>
+
+<span class="sd">    (2) If max_dim is not provided, the method calculates it such that the</span>
+<span class="sd">    further increasing it doesn&#39;t change porosity by much.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="s2">&quot;Generating voxel image from pore network&quot;</span><span class="p">)</span>
+    <span class="c1"># If max_dim is provided, generate voxel image using max_dim</span>
+    <span class="k">if</span> <span class="n">max_dim</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_generate_voxel_image</span><span class="p">(</span>
+            <span class="n">network</span><span class="p">,</span> <span class="n">pore_shape</span><span class="p">,</span> <span class="n">throat_shape</span><span class="p">,</span> <span class="n">max_dim</span><span class="o">=</span><span class="n">max_dim</span><span class="p">)</span>
+    <span class="n">max_dim</span> <span class="o">=</span> <span class="mi">200</span>
+    <span class="c1"># If max_dim is not provided, find best max_dim that predicts porosity</span>
+    <span class="n">err</span> <span class="o">=</span> <span class="mi">100</span>
+    <span class="n">eps_old</span> <span class="o">=</span> <span class="mi">200</span>
+    <span class="k">while</span> <span class="n">err</span> <span class="o">&gt;</span> <span class="n">rtol</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Maximum dimension: </span><span class="si">{</span><span class="n">max_dim</span><span class="si">}</span><span class="s2"> voxels&quot;</span><span class="p">)</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">_generate_voxel_image</span><span class="p">(</span>
+            <span class="n">network</span><span class="p">,</span> <span class="n">pore_shape</span><span class="p">,</span> <span class="n">throat_shape</span><span class="p">,</span> <span class="n">max_dim</span><span class="o">=</span><span class="n">max_dim</span><span class="p">)</span>
+        <span class="n">eps</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">err</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">eps</span> <span class="o">/</span> <span class="n">eps_old</span><span class="p">)</span>
+        <span class="n">eps_old</span> <span class="o">=</span> <span class="n">eps</span>
+        <span class="n">max_dim</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">max_dim</span> <span class="o">*</span> <span class="mf">1.25</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Converged at max_dim = </span><span class="si">{</span><span class="n">max_dim</span><span class="si">}</span><span class="s2"> voxels&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">im</span></div>
+
+
+<span class="k">def</span> <span class="nf">add_phase_interconnections</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">snow_partitioning_n</span><span class="p">,</span> <span class="n">voxel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                               <span class="n">marching_cubes_area</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                               <span class="n">alias</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function connects networks of two or more phases together by</span>
+<span class="sd">    interconnecting neighbouring nodes inside different phases.</span>
+
+<span class="sd">    The resulting network can be used for the study of transport and kinetics</span>
+<span class="sd">    at interphase of two phases.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    network : 2D or 3D network</span>
+<span class="sd">        A dictoionary containing structural information of two or more</span>
+<span class="sd">        phases networks. The dictonary format must be same as porespy</span>
+<span class="sd">        region_to_network function.</span>
+
+<span class="sd">    snow_partitioning_n : tuple</span>
+<span class="sd">        The output generated by snow_partitioning_n function. The tuple should</span>
+<span class="sd">        have phases_max_labels and original image of material.</span>
+
+<span class="sd">    voxel_size : scalar</span>
+<span class="sd">        The resolution of the image, expressed as the length of one side of a</span>
+<span class="sd">        voxel, so the volume of a voxel would be **voxel_size**-cubed.  The</span>
+<span class="sd">        default is 1, which is useful when overlaying the PNM on the original</span>
+<span class="sd">        image since the scale of the image is alway 1 unit lenth per voxel.</span>
+
+<span class="sd">    marching_cubes_area : bool</span>
+<span class="sd">        If ``True`` then the surface area and interfacial area between regions</span>
+<span class="sd">        will be causing the marching cube algorithm. This is a more accurate</span>
+<span class="sd">        representation of area in extracted network, but is quite slow, so</span>
+<span class="sd">        it is ``False`` by default.  The default method simply counts voxels</span>
+<span class="sd">        so does not correctly account for the voxelated nature of the images.</span>
+
+<span class="sd">    alias : dict (Optional)</span>
+<span class="sd">        A dictionary that assigns unique image label to specific phase.</span>
+<span class="sd">        For example {1: &#39;Solid&#39;} will show all structural properties associated</span>
+<span class="sd">        with label 1 as Solid phase properties.</span>
+<span class="sd">        If ``None`` then default labelling will be used i.e {1: &#39;Phase1&#39;,..}.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    A dictionary containing network information of individual and connected</span>
+<span class="sd">    networks. The dictionary names use the OpenPNM convention so it may be</span>
+<span class="sd">    converted directly to an OpenPNM network object using the ``update``</span>
+<span class="sd">    command.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Get alias if provided by user</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">snow_partitioning_n</span><span class="o">.</span><span class="n">im</span>
+    <span class="n">al</span> <span class="o">=</span> <span class="n">_create_alias_map</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span>
+    <span class="c1"># Find interconnection and interfacial area between ith and jth phases</span>
+    <span class="n">conns1</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">conns2</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.label&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+
+    <span class="n">num</span> <span class="o">=</span> <span class="n">snow_partitioning_n</span><span class="o">.</span><span class="n">phase_max_label</span>
+    <span class="n">num</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">*</span><span class="n">num</span><span class="p">]</span>
+    <span class="n">phases_num</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">im</span> <span class="o">*</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">phases_num</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trim_zeros</span><span class="p">(</span><span class="n">phases_num</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i0</span><span class="p">,</span> <span class="n">i1</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">phases_num</span><span class="p">):</span>
+        <span class="n">loc1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">conns1</span> <span class="o">&gt;=</span> <span class="n">num</span><span class="p">[</span><span class="n">i0</span><span class="p">],</span> <span class="n">conns1</span> <span class="o">&lt;</span> <span class="n">num</span><span class="p">[</span><span class="n">i0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="n">loc2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">conns2</span> <span class="o">&gt;=</span> <span class="n">num</span><span class="p">[</span><span class="n">i0</span><span class="p">],</span> <span class="n">conns2</span> <span class="o">&lt;</span> <span class="n">num</span><span class="p">[</span><span class="n">i0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="n">loc3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">label</span> <span class="o">&gt;=</span> <span class="n">num</span><span class="p">[</span><span class="n">i0</span><span class="p">],</span> <span class="n">label</span> <span class="o">&lt;</span> <span class="n">num</span><span class="p">[</span><span class="n">i0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">al</span><span class="p">[</span><span class="n">i1</span><span class="p">])]</span> <span class="o">=</span> <span class="n">loc1</span> <span class="o">*</span> <span class="n">loc2</span>
+        <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">al</span><span class="p">[</span><span class="n">i1</span><span class="p">])]</span> <span class="o">=</span> <span class="n">loc3</span>
+        <span class="k">if</span> <span class="n">i1</span> <span class="o">==</span> <span class="n">phases_num</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">loc4</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">conns1</span> <span class="o">&lt;</span> <span class="n">num</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">conns2</span> <span class="o">&gt;=</span> <span class="n">num</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">loc5</span> <span class="o">=</span> <span class="n">label</span> <span class="o">&gt;=</span> <span class="n">num</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.boundary&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">loc4</span>
+            <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.boundary&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">loc5</span>
+        <span class="k">for</span> <span class="n">j0</span><span class="p">,</span> <span class="n">j1</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">phases_num</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">j0</span> <span class="o">&gt;</span> <span class="n">i0</span><span class="p">:</span>
+                <span class="n">pi_pj_sa</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+                <span class="n">loc6</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">conns2</span> <span class="o">&gt;=</span> <span class="n">num</span><span class="p">[</span><span class="n">j0</span><span class="p">],</span> <span class="n">conns2</span> <span class="o">&lt;</span> <span class="n">num</span><span class="p">[</span><span class="n">j0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+                <span class="n">pi_pj_conns</span> <span class="o">=</span> <span class="n">loc1</span> <span class="o">*</span> <span class="n">loc6</span>
+                <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.</span><span class="si">{}</span><span class="s1">_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">al</span><span class="p">[</span><span class="n">i1</span><span class="p">],</span> <span class="n">al</span><span class="p">[</span><span class="n">j1</span><span class="p">])]</span> <span class="o">=</span> <span class="n">pi_pj_conns</span>
+                <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">pi_pj_conns</span><span class="p">):</span>
+                    <span class="c1"># Calculates phase[i] interfacial area that connects with</span>
+                    <span class="c1"># phase[j] and vice versa</span>
+                    <span class="n">p_conns</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">][</span><span class="n">pi_pj_conns</span><span class="p">]</span>
+                    <span class="n">s_conns</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">][</span><span class="n">pi_pj_conns</span><span class="p">]</span>
+                    <span class="n">ps</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.area&#39;</span><span class="p">][</span><span class="n">pi_pj_conns</span><span class="p">]</span>
+                    <span class="n">p_sa</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span><span class="n">p_conns</span><span class="p">,</span> <span class="n">ps</span><span class="p">)</span>
+                    <span class="c1"># trim zeros at head/tail position to avoid extra bins</span>
+                    <span class="n">p_sa</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trim_zeros</span><span class="p">(</span><span class="n">p_sa</span><span class="p">)</span>
+                    <span class="n">i_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">p_conns</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">p_conns</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="n">j_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">s_conns</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">s_conns</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="n">s_pa</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span><span class="n">s_conns</span><span class="p">,</span> <span class="n">ps</span><span class="p">)</span>
+                    <span class="n">s_pa</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trim_zeros</span><span class="p">(</span><span class="n">s_pa</span><span class="p">)</span>
+                    <span class="n">pi_pj_sa</span><span class="p">[</span><span class="n">i_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">p_sa</span>
+                    <span class="n">pi_pj_sa</span><span class="p">[</span><span class="n">j_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">s_pa</span>
+                    <span class="c1"># Calculates interfacial area using marching cube method</span>
+                    <span class="k">if</span> <span class="n">marching_cubes_area</span><span class="p">:</span>
+                        <span class="n">ps_c</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.area&#39;</span><span class="p">][</span><span class="n">pi_pj_conns</span><span class="p">]</span>
+                        <span class="n">p_sa_c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span><span class="n">p_conns</span><span class="p">,</span> <span class="n">ps_c</span><span class="p">)</span>
+                        <span class="n">p_sa_c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trim_zeros</span><span class="p">(</span><span class="n">p_sa_c</span><span class="p">)</span>
+                        <span class="n">s_pa_c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span><span class="n">s_conns</span><span class="p">,</span> <span class="n">ps_c</span><span class="p">)</span>
+                        <span class="n">s_pa_c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trim_zeros</span><span class="p">(</span><span class="n">s_pa_c</span><span class="p">)</span>
+                        <span class="n">pi_pj_sa</span><span class="p">[</span><span class="n">i_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">p_sa_c</span>
+                        <span class="n">pi_pj_sa</span><span class="p">[</span><span class="n">j_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">s_pa_c</span>
+                    <span class="n">net</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;pore.</span><span class="si">{</span><span class="n">al</span><span class="p">[</span><span class="n">i1</span><span class="p">]</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">al</span><span class="p">[</span><span class="n">j1</span><span class="p">]</span><span class="si">}</span><span class="s1">_area&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pi_pj_sa</span> <span class="o">*</span> <span class="n">voxel_size</span> <span class="o">**</span> <span class="mi">2</span>
+    <span class="k">return</span> <span class="n">net</span>
+
+
+<span class="k">def</span> <span class="nf">label_boundary_cells</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">boundary_faces</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Takes 2D or 3D network and assign labels to boundary pores</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    network : dictionary</span>
+<span class="sd">        A dictionary as produced by the SNOW network extraction algorithms</span>
+<span class="sd">        containing edge/vertex, site/bond, node/link information.</span>
+
+<span class="sd">    boundary_faces : list of strings</span>
+<span class="sd">        The user can choose ‘left’, ‘right’, ‘top’, ‘bottom’, ‘front’ and</span>
+<span class="sd">        ‘back’ face labels to assign boundary nodes. If no label is</span>
+<span class="sd">        assigned then all six faces will be selected as boundary nodes</span>
+<span class="sd">        automatically which can be trimmed later on based on user requirements.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    The same dictionar s pass ing, but containing boundary nodes labels.  For</span>
+<span class="sd">    example network[&#39;pore.left&#39;], network[&#39;pore.right&#39;], network[&#39;pore.top&#39;],</span>
+<span class="sd">    network[&#39;pore.bottom&#39;] etc.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The dictionary names use the OpenPNM convention so it may be converted</span>
+<span class="sd">    directly to an OpenPNM network object using the ``update`` command.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">boundary_faces</span>
+    <span class="k">if</span> <span class="n">f</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">coords</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">]</span>
+        <span class="n">condition</span> <span class="o">=</span> <span class="n">coords</span><span class="p">[</span><span class="o">~</span><span class="n">network</span><span class="p">[</span><span class="s1">&#39;pore.boundary&#39;</span><span class="p">]]</span>
+        <span class="n">dic</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;left&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;right&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;front&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;back&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+               <span class="s1">&#39;top&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;bottom&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span>
+        <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">coords</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="n">dic</span><span class="p">[</span><span class="s1">&#39;top&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">dic</span><span class="p">[</span><span class="s1">&#39;bottom&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;front&#39;</span><span class="p">,</span> <span class="s1">&#39;bottom&#39;</span><span class="p">]:</span>
+                <span class="n">network</span><span class="p">[</span><span class="s1">&#39;pore.</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">coords</span><span class="p">[:,</span> <span class="n">dic</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">&lt;</span> <span class="nb">min</span><span class="p">(</span><span class="n">condition</span><span class="p">[:,</span> <span class="n">dic</span><span class="p">[</span><span class="n">i</span><span class="p">]])</span>
+                <span class="p">)</span>
+            <span class="k">elif</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="s1">&#39;back&#39;</span><span class="p">,</span> <span class="s1">&#39;top&#39;</span><span class="p">]:</span>
+                <span class="n">network</span><span class="p">[</span><span class="s1">&#39;pore.</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">coords</span><span class="p">[:,</span> <span class="n">dic</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">&gt;</span> <span class="nb">max</span><span class="p">(</span><span class="n">condition</span><span class="p">[:,</span> <span class="n">dic</span><span class="p">[</span><span class="n">i</span><span class="p">]])</span>
+                <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">network</span>
+</pre></div>
+
+              </div>
+              
+              
+              <div class='prev-next-bottom'>
+                
+
+              </div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+
+    
+  <script src="../../../_static/js/index.1e043a052b0af929e4d8.js"></script>
+
+
+    <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    <p>
+          &copy; Copyright 2021 PoreSpy Team.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

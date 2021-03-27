@@ -1,0 +1,228 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quantitative image analysis of porous materials &#8212; PoreSpy  documentation</title>
+    
+  <link href="_static/css/theme.css" rel="stylesheet" />
+  <link href="_static/css/index.f6b7ca918bee2f46fd9abac01cfb07d5.css" rel="stylesheet" />
+
+    
+  <link rel="stylesheet"
+    href="_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/basic.css" type="text/css" />
+    
+  <link rel="preload" as="script" href="_static/js/index.1e043a052b0af929e4d8.js">
+
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Getting Started" href="getting_started.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+
+    
+      
+      <a class="navbar-brand" href="#">
+        <img src="_static/porespy_logo.png" class="logo" alt="logo">
+      </a>
+      
+    
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    
+    <div id="navbar-menu" class="col-lg-9 collapse navbar-collapse">
+      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
+        <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="getting_started.html">
+  Getting Started
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="modules/index.html">
+  Module and Function Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="user_guide.html">
+  PoreSpy
+ </a>
+</li>
+
+        
+      </ul>
+
+      <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+    </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+              
+<div class="tocsection onthispage pt-5 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#capabilities">
+   Capabilities
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#porespy-documentation">
+     PoreSpy Documentation
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+</nav>
+
+
+              
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <div class="section" id="quantitative-image-analysis-of-porous-materials">
+<span id="front-page"></span><h1>Quantitative image analysis of porous materials<a class="headerlink" href="#quantitative-image-analysis-of-porous-materials" title="Permalink to this headline">¶</a></h1>
+<div class="sidebar">
+<p class="sidebar-title">Highlight</p>
+<p>The animation below shows the end result of an image-based invasion
+percolation algorithm developed in PMEAL and implemented in PoreSpy.
+Unlike physics-based approaches like the Lattice-Boltzmann method, our
+approach is very quick and almost runs instantly on average-size
+images.</p>
+<a class="reference internal image-reference" href="_images/image_based_ip.gif"><img alt="_images/image_based_ip.gif" class="align-center" src="_images/image_based_ip.gif" style="width: 600px;" /></a>
+</div>
+<p>PoreSpy is a collection of image analysis tools used to extract information
+from 3D images of porous materials (typically obtained from X-ray
+tomography). There are many packages that offer generalized image analysis
+tools (i.e Skimage and Scipy.NDimage in the Python environment, ImageJ,
+MatLab’s Image Processing Toolbox), but they all require building up
+complex scripts or macros to accomplish tasks of specific use to porous
+media.</p>
+<p>The aim of PoreSpy is to provide a set of pre-written tools for all the
+common porous media measurements. For instance, it’s possible to perform a
+mercury intrusion simulation with a single function call (e.g.
+porespy.filters.porosimetry).</p>
+<div class="section" id="capabilities">
+<h2>Capabilities<a class="headerlink" href="#capabilities" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">porespy</span></code> consists of the following modules:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">generators</span></code>: Routines for generating artificial images of porous
+materials useful for testing and illustration</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">filters</span></code>: Functions that accept an image and return an altered
+image</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">metrics</span></code>: Tools for quantifying properties of images</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">networks</span></code>: Algorithms and tools for analyzing images as pore
+networks</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">visualization</span></code>: Helper functions for creating useful views of the
+image</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">io</span></code>: Functions for outputting image data in various formats for
+use in common software</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tools</span></code>: Various useful tools for working with images</p></li>
+</ul>
+<div class="section" id="porespy-documentation">
+<h3>PoreSpy Documentation<a class="headerlink" href="#porespy-documentation" title="Permalink to this headline">¶</a></h3>
+<div class="toctree-wrapper compound">
+</div>
+<a class="reference external image-reference" href="https://github.com/PMEAL/porespy/actions"><img alt="https://github.com/PMEAL/porespy/workflows/Ubuntu/badge.svg" src="https://github.com/PMEAL/porespy/workflows/Ubuntu/badge.svg" /></a>
+<a class="reference external image-reference" href="https://github.com/PMEAL/porespy/actions"><img alt="https://github.com/PMEAL/porespy/workflows/macOS/badge.svg" src="https://github.com/PMEAL/porespy/workflows/macOS/badge.svg" /></a>
+<a class="reference external image-reference" href="https://github.com/PMEAL/porespy/actions"><img alt="https://github.com/PMEAL/porespy/workflows/Windows/badge.svg" src="https://github.com/PMEAL/porespy/workflows/Windows/badge.svg" /></a>
+<a class="reference external image-reference" href="https://github.com/PMEAL/porespy/actions"><img alt="https://github.com/PMEAL/porespy/workflows/Examples/badge.svg" src="https://github.com/PMEAL/porespy/workflows/Examples/badge.svg" /></a>
+<a class="reference external image-reference" href="https://codecov.io/gh/PMEAL/PoreSpy"><img alt="https://codecov.io/gh/PMEAL/PoreSpy/branch/dev/graph/badge.svg" src="https://codecov.io/gh/PMEAL/PoreSpy/branch/dev/graph/badge.svg" /></a>
+<a class="reference external image-reference" href="http://porespy.readthedocs.io/en/dev/"><img alt="https://img.shields.io/badge/ReadTheDocs-GO-blue.svg" src="https://img.shields.io/badge/ReadTheDocs-GO-blue.svg" /></a>
+<a class="reference external image-reference" href="https://pypi.python.org/pypi/porespy/"><img alt="https://img.shields.io/pypi/v/porespy.svg" src="https://img.shields.io/pypi/v/porespy.svg" /></a>
+<a class="reference external image-reference" href="https://doi.org/10.21105/joss.01296"><img alt="https://img.shields.io/badge/DOI-10.21105/joss.01296-blue.svg" src="https://img.shields.io/badge/DOI-10.21105/joss.01296-blue.svg" /></a>
+<a class="reference external image-reference" href="https://GitHub.com/PMEAL/porespy/stargazers/"><img alt="https://img.shields.io/github/stars/PMEAL/porespy.svg?style=social&amp;label=Star&amp;maxAge=2592000" src="https://img.shields.io/github/stars/PMEAL/porespy.svg?style=social&amp;label=Star&amp;maxAge=2592000" /></a>
+</div>
+</div>
+</div>
+
+
+              </div>
+              
+              
+              <div class='prev-next-bottom'>
+                
+    <a class='right-next' id="next-link" href="getting_started.html" title="next page">Getting Started</a>
+
+              </div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+
+    
+  <script src="_static/js/index.1e043a052b0af929e4d8.js"></script>
+
+
+    <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    <p>
+          &copy; Copyright 2021 PoreSpy Team.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

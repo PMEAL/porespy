@@ -1,0 +1,253 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>porespy.generators._noise &#8212; PoreSpy  documentation</title>
+    
+  <link href="../../../_static/css/theme.css" rel="stylesheet" />
+  <link href="../../../_static/css/index.f6b7ca918bee2f46fd9abac01cfb07d5.css" rel="stylesheet" />
+
+    
+  <link rel="stylesheet"
+    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/basic.css" type="text/css" />
+    
+  <link rel="preload" as="script" href="../../../_static/js/index.1e043a052b0af929e4d8.js">
+
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+
+    
+      
+      <a class="navbar-brand" href="../../../index.html">
+        <img src="../../../_static/porespy_logo.png" class="logo" alt="logo">
+      </a>
+      
+    
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    
+    <div id="navbar-menu" class="col-lg-9 collapse navbar-collapse">
+      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
+        <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../getting_started.html">
+  Getting Started
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../modules/index.html">
+  Module and Function Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../user_guide.html">
+  PoreSpy
+ </a>
+</li>
+
+        
+      </ul>
+
+      <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+    </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+              
+
+<nav id="bd-toc-nav">
+    
+</nav>
+
+
+              
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <h1>Source code for porespy.generators._noise</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">norm_to_uniform</span>
+<span class="kn">import</span> <span class="nn">multiprocessing</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<div class="viewcode-block" id="fractal_noise"><a class="viewcode-back" href="../../../modules/generated/porespy.generators.fractal_noise.html#porespy.generators.fractal_noise">[docs]</a><span class="k">def</span> <span class="nf">fractal_noise</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">frequency</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">octaves</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">gain</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;simplex&#39;</span><span class="p">,</span>
+                  <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">uniform</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate fractal noise which can be thresholded to create binary</span>
+<span class="sd">    images with realistic structures across scales.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    shape : array_like</span>
+<span class="sd">        The size of the image to generate, can be 2D or 3D.</span>
+<span class="sd">    frequency : scalar, default=0.05</span>
+<span class="sd">        Controls the overall scale of the generated noise, with larger</span>
+<span class="sd">        values giving larger structures.</span>
+<span class="sd">    octaves : int, default=4</span>
+<span class="sd">        Controls the number of scales across which structures are</span>
+<span class="sd">        generated, with larger values giving more scale.</span>
+<span class="sd">    gain : scalar, default=0.5</span>
+<span class="sd">        Controls the intensity of successively higher octaves. Values</span>
+<span class="sd">        below 1.0 mean the higher octaves are less prominent.</span>
+<span class="sd">    mode : string</span>
+<span class="sd">        The type of noise to generate. Options are:</span>
+<span class="sd">        - &#39;perlin&#39; : classic Perlin noise</span>
+<span class="sd">        - &#39;simplex&#39; : updated Perlin noise for more realistic textures</span>
+<span class="sd">        - &#39;value&#39; : blnear interpolation of white noise</span>
+<span class="sd">        - &#39;cubic&#39; : cubic interpolation of white noise</span>
+<span class="sd">    seed : int, optional</span>
+<span class="sd">        The seed of the random number generator.  Using the same</span>
+<span class="sd">        ``seed`` between runs will produce the same image.</span>
+<span class="sd">    cores : int, optional</span>
+<span class="sd">        The number of cores to use.  This package used by this function</span>
+<span class="sd">        has implemented SIMD processing which can be spread across</span>
+<span class="sd">        cores. The default is to use all cores.</span>
+<span class="sd">    uniform : boolean, default=True</span>
+<span class="sd">        If ``True`` (default) the random values are converted to a</span>
+<span class="sd">        uniform distribution between 0 and 1, otherwise the result image</span>
+<span class="sd">        contains the unprocesssed values, which have a &#39;normal-esque&#39;</span>
+<span class="sd">        distribution centered on 0.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function provides a simplified wrapper for the the functions in</span>
+<span class="sd">    the `pyfastnoisesimd &lt;https://github.com/robbmcleod/pyfastnoisesimd&gt;`_</span>
+<span class="sd">    package. ``pyfastnoisesimd`` is itself a wrapper for a C-library</span>
+<span class="sd">    called `FastNoiseSIMD &lt;https://github.com/Auburn/FastNoiseSIMD&gt;`_.</span>
+<span class="sd">    To access the more elaborate functionality and options of these</span>
+<span class="sd">    packages, explore the `pyfastnoisesimd documentation</span>
+<span class="sd">    &lt;https://pyfastnoisesimd.readthedocs.io/en/latest/overview.html&gt;`_.</span>
+
+<span class="sd">    For more information on ``simplex noise`` see</span>
+<span class="sd">    `here &lt;https://en.wikipedia.org/wiki/Simplex_noise&gt;`__.</span>
+
+<span class="sd">    For more information on ``perlin noise`` see</span>
+<span class="sd">    `here &lt;https://en.wikipedia.org/wiki/Perlin_noise&gt;`__.</span>
+
+<span class="sd">    For more information on ``value noise`` see</span>
+<span class="sd">    `here &lt;https://en.wikipedia.org/wiki/Value_noise&gt;`__.</span>
+
+<span class="sd">    For more information on ``cubic noise`` see</span>
+<span class="sd">    `here &lt;https://github.com/jobtalle/CubicNoise&gt;`__.</span>
+
+<span class="sd">    ``pyfastnoisesimd`` is not installed by default with PoreSpy so you will</span>
+<span class="sd">    receive an expection/warning when using this function.  Install may require</span>
+<span class="sd">    a c-compiler is installed.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">pyfastnoisesimd</span> <span class="k">as</span> <span class="nn">fns</span>
+    <span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;fractal_noise requires pyfastnoisesimd, which can be &#39;</span> <span class="o">+</span>
+                        <span class="s1">&#39;install using pip&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">cores</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">cores</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">seed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="mi">31</span><span class="p">)</span>
+    <span class="n">perlin</span> <span class="o">=</span> <span class="n">fns</span><span class="o">.</span><span class="n">Noise</span><span class="p">(</span><span class="n">numWorkers</span><span class="o">=</span><span class="n">cores</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;simplex&#39;</span><span class="p">:</span>
+        <span class="n">perlin</span><span class="o">.</span><span class="n">noiseType</span> <span class="o">=</span> <span class="n">fns</span><span class="o">.</span><span class="n">NoiseType</span><span class="o">.</span><span class="n">SimplexFractal</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;perlin&#39;</span><span class="p">:</span>
+        <span class="n">perlin</span><span class="o">.</span><span class="n">noiseType</span> <span class="o">=</span> <span class="n">fns</span><span class="o">.</span><span class="n">NoiseType</span><span class="o">.</span><span class="n">PerlinFractal</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;cubic&#39;</span><span class="p">:</span>
+        <span class="n">perlin</span><span class="o">.</span><span class="n">noiseType</span> <span class="o">=</span> <span class="n">fns</span><span class="o">.</span><span class="n">NoiseType</span><span class="o">.</span><span class="n">CubicFractal</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;value&#39;</span><span class="p">:</span>
+        <span class="n">perlin</span><span class="o">.</span><span class="n">noiseType</span> <span class="o">=</span> <span class="n">fns</span><span class="o">.</span><span class="n">NoiseType</span><span class="o">.</span><span class="n">ValueFractal</span>
+    <span class="n">perlin</span><span class="o">.</span><span class="n">frequency</span> <span class="o">=</span> <span class="n">frequency</span>
+    <span class="n">perlin</span><span class="o">.</span><span class="n">fractal</span><span class="o">.</span><span class="n">octaves</span> <span class="o">=</span> <span class="n">octaves</span>
+    <span class="n">perlin</span><span class="o">.</span><span class="n">fractal</span><span class="o">.</span><span class="n">gain</span> <span class="o">=</span> <span class="n">gain</span>
+    <span class="n">perlin</span><span class="o">.</span><span class="n">fractal</span><span class="o">.</span><span class="n">lacunarity</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">perlin</span><span class="o">.</span><span class="n">perturb</span><span class="o">.</span><span class="n">perturbType</span> <span class="o">=</span> <span class="n">fns</span><span class="o">.</span><span class="n">PerturbType</span><span class="o">.</span><span class="n">NoPerturb</span>
+    <span class="n">perlin</span><span class="o">.</span><span class="n">seed</span> <span class="o">=</span> <span class="n">seed</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">perlin</span><span class="o">.</span><span class="n">genAsGrid</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">uniform</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">norm_to_uniform</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">result</span></div>
+</pre></div>
+
+              </div>
+              
+              
+              <div class='prev-next-bottom'>
+                
+
+              </div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+
+    
+  <script src="../../../_static/js/index.1e043a052b0af929e4d8.js"></script>
+
+
+    <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    <p>
+          &copy; Copyright 2021 PoreSpy Team.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

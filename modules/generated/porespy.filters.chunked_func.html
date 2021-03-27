@@ -1,0 +1,421 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>porespy.filters.chunked_func &#8212; PoreSpy  documentation</title>
+    
+  <link href="../../_static/css/theme.css" rel="stylesheet" />
+  <link href="../../_static/css/index.f6b7ca918bee2f46fd9abac01cfb07d5.css" rel="stylesheet" />
+
+    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
+    
+  <link rel="preload" as="script" href="../../_static/js/index.1e043a052b0af929e4d8.js">
+
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="porespy.filters.distance_transform_lin" href="porespy.filters.distance_transform_lin.html" />
+    <link rel="prev" title="porespy.filters.apply_padded" href="porespy.filters.apply_padded.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+
+    
+      
+      <a class="navbar-brand" href="../../index.html">
+        <img src="../../_static/porespy_logo.png" class="logo" alt="logo">
+      </a>
+      
+    
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    
+    <div id="navbar-menu" class="col-lg-9 collapse navbar-collapse">
+      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
+        <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../getting_started.html">
+  Getting Started
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../index.html">
+  Module and Function Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../user_guide.html">
+  PoreSpy
+ </a>
+</li>
+
+        
+      </ul>
+
+      <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+    </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l2">
+  <a class="reference internal" href="../generators.html">
+   Generators
+  </a>
+ </li>
+ <li class="toctree-l2 current active">
+  <a class="reference internal" href="../filters.html">
+   Filters
+  </a>
+  <ul class="current">
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.apply_chords.html">
+     porespy.filters.apply_chords
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.apply_chords_3D.html">
+     porespy.filters.apply_chords_3D
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.apply_padded.html">
+     porespy.filters.apply_padded
+    </a>
+   </li>
+   <li class="toctree-l3 current active">
+    <a class="current reference internal" href="#">
+     porespy.filters.chunked_func
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.distance_transform_lin.html">
+     porespy.filters.distance_transform_lin
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.fftmorphology.html">
+     porespy.filters.fftmorphology
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.fill_blind_pores.html">
+     porespy.filters.fill_blind_pores
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.find_disconnected_voxels.html">
+     porespy.filters.find_disconnected_voxels
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.find_dt_artifacts.html">
+     porespy.filters.find_dt_artifacts
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.find_peaks.html">
+     porespy.filters.find_peaks
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.flood.html">
+     porespy.filters.flood
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.hold_peaks.html">
+     porespy.filters.hold_peaks
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.local_thickness.html">
+     porespy.filters.local_thickness
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.nphase_border.html">
+     porespy.filters.nphase_border
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.porosimetry.html">
+     porespy.filters.porosimetry
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.prune_branches.html">
+     porespy.filters.prune_branches
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.reduce_peaks.html">
+     porespy.filters.reduce_peaks
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.region_size.html">
+     porespy.filters.region_size
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.snow_partitioning.html">
+     porespy.filters.snow_partitioning
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.snow_partitioning_n.html">
+     porespy.filters.snow_partitioning_n
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.snow_partitioning_parallel.html">
+     porespy.filters.snow_partitioning_parallel
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.trim_disconnected_blobs.html">
+     porespy.filters.trim_disconnected_blobs
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.trim_extrema.html">
+     porespy.filters.trim_extrema
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.trim_floating_solid.html">
+     porespy.filters.trim_floating_solid
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.trim_nearby_peaks.html">
+     porespy.filters.trim_nearby_peaks
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.trim_nonpercolating_paths.html">
+     porespy.filters.trim_nonpercolating_paths
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.trim_saddle_points.html">
+     porespy.filters.trim_saddle_points
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.trim_small_clusters.html">
+     porespy.filters.trim_small_clusters
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../metrics.html">
+   Metrics
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../networks.html">
+   Networks
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../dns.html">
+   DNS
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../tools.html">
+   Tools
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../visualization.html">
+   Visualization
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../io.html">
+   IO
+  </a>
+ </li>
+</ul>
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+              
+
+<nav id="bd-toc-nav">
+    
+</nav>
+
+
+              
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <div class="section" id="porespy-filters-chunked-func">
+<h1>porespy.filters.chunked_func<a class="headerlink" href="#porespy-filters-chunked-func" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="porespy.filters.chunked_func">
+<code class="sig-name descname"><span class="pre">chunked_func</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overlap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">divs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">im_arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['input',</span> <span class="pre">'image',</span> <span class="pre">'im']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strel_arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['strel',</span> <span class="pre">'structure',</span> <span class="pre">'footprint']</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/filters/__funcs__.html#chunked_func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.chunked_func" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs the specfied operation “chunk-wise” in parallel using dask.</p>
+<p>This can be used to save memory by doing one chunk at a time
+(<code class="docutils literal notranslate"><span class="pre">cores=1</span></code>) or to increase computation speed by spreading the work
+across multiple cores (e.g. <code class="docutils literal notranslate"><span class="pre">cores=8</span></code>)</p>
+<p>This function can be used with any operation that applies a
+structuring element of some sort, since this implies that the
+operation is local and can be chunked.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>func</strong> (<em>function handle</em>) – The function which should be applied to each chunk, such as
+<code class="docutils literal notranslate"><span class="pre">spipy.ndimage.binary_dilation</span></code>.</p></li>
+<li><p><strong>overlap</strong> (<em>scalar</em><em> or </em><em>list of scalars</em><em>, </em><em>optional</em>) – The amount of overlap to include when dividing up the image. This
+value will almost always be the size (i.e. diameter) of the
+structuring element. If not specified then the amount of overlap
+is inferred from the size of the structuring element, in which
+case the <code class="docutils literal notranslate"><span class="pre">strel_arg</span></code> must be specified.</p></li>
+<li><p><strong>divs</strong> (<em>scalar</em><em> or </em><em>list of scalars</em><em> (</em><em>default =</em><em> [</em><em>2</em><em>, </em><em>2</em><em>, </em><em>2</em><em>]</em><em>)</em>) – The number of chunks to divide the image into in each direction.
+The default is 2 chunks in each direction, resulting in a
+quartering of the image and 8 total chunks (in 3D).  A scalar is
+interpreted as applying to all directions, while a list of scalars
+is interpreted as applying to each individual direction.</p></li>
+<li><p><strong>cores</strong> (<em>scalar</em>) – The number of cores which should be used.  By default, all cores
+will be used, or as many are needed for the given number of
+chunks, which ever is smaller.</p></li>
+<li><p><strong>im_arg</strong> (<em>str</em>) – The keyword used by <code class="docutils literal notranslate"><span class="pre">func</span></code> for the image to be operated on. By
+default this function will look for <code class="docutils literal notranslate"><span class="pre">image</span></code>, <code class="docutils literal notranslate"><span class="pre">input</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">im</span></code> which are commonly used by <em>scipy.ndimage</em> and <em>skimage</em>.</p></li>
+<li><p><strong>strel_arg</strong> (<em>str</em>) – The keyword used by <code class="docutils literal notranslate"><span class="pre">func</span></code> for the structuring element to apply.
+This is only needed if <code class="docutils literal notranslate"><span class="pre">overlap</span></code> is not specified. By default
+this function will look for <code class="docutils literal notranslate"><span class="pre">strel</span></code>, <code class="docutils literal notranslate"><span class="pre">structure</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">footprint</span></code> which are commonly used by <em>scipy.ndimage</em> and
+<em>skimage</em>.</p></li>
+<li><p><strong>kwargs</strong> – All other arguments are passed to <code class="docutils literal notranslate"><span class="pre">func</span></code> as keyword arguments.
+Note that PoreSpy will fetch the image from this list of keywords
+using the value provided to <code class="docutils literal notranslate"><span class="pre">im_arg</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>result</strong> – An image the same size as the input image, with the specified
+filter applied as though done on a single large image. There
+should be <em>no</em> difference.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function divides the image into the specified number of chunks,
+but also applies a padding to each chunk to create an overlap with
+neighboring chunks. This way the operation does not have any edge
+artifacts. The amount of padding is usually equal to the radius of the
+structuring element but some functions do not use one, such as the
+distance transform and Gaussian blur.  In these cases the user can
+specify <code class="docutils literal notranslate"><span class="pre">overlap</span></code>.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">skikit-image.util.apply_parallel</span></code></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">scipy.ndimage</span> <span class="k">as</span> <span class="nn">spim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">porespy</span> <span class="k">as</span> <span class="nn">ps</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">skimage.morphology</span> <span class="kn">import</span> <span class="n">ball</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">blobs</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">binary_dilation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">im2</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">chunked_func</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">im_arg</span><span class="o">=</span><span class="s1">&#39;input&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                              <span class="nb">input</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">structure</span><span class="o">=</span><span class="n">ball</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">cores</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">im3</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">binary_dilation</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">structure</span><span class="o">=</span><span class="n">ball</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">im2</span> <span class="o">==</span> <span class="n">im3</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+
+
+              </div>
+              
+              
+              <div class='prev-next-bottom'>
+                
+    <a class='left-prev' id="prev-link" href="porespy.filters.apply_padded.html" title="previous page">porespy.filters.apply_padded</a>
+    <a class='right-next' id="next-link" href="porespy.filters.distance_transform_lin.html" title="next page">porespy.filters.distance_transform_lin</a>
+
+              </div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+
+    
+  <script src="../../_static/js/index.1e043a052b0af929e4d8.js"></script>
+
+
+    <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    <p>
+          &copy; Copyright 2021 PoreSpy Team.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

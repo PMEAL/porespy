@@ -1,0 +1,360 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>porespy.metrics.radial_density_distribution &#8212; PoreSpy  documentation</title>
+    
+  <link href="../../_static/css/theme.css" rel="stylesheet" />
+  <link href="../../_static/css/index.f6b7ca918bee2f46fd9abac01cfb07d5.css" rel="stylesheet" />
+
+    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
+    
+  <link rel="preload" as="script" href="../../_static/js/index.1e043a052b0af929e4d8.js">
+
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="porespy.metrics.region_interface_areas" href="porespy.metrics.region_interface_areas.html" />
+    <link rel="prev" title="porespy.metrics.props_to_DataFrame" href="porespy.metrics.props_to_DataFrame.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+
+    
+      
+      <a class="navbar-brand" href="../../index.html">
+        <img src="../../_static/porespy_logo.png" class="logo" alt="logo">
+      </a>
+      
+    
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    
+    <div id="navbar-menu" class="col-lg-9 collapse navbar-collapse">
+      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
+        <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../getting_started.html">
+  Getting Started
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../index.html">
+  Module and Function Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../user_guide.html">
+  PoreSpy
+ </a>
+</li>
+
+        
+      </ul>
+
+      <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+    </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l2">
+  <a class="reference internal" href="../generators.html">
+   Generators
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../filters.html">
+   Filters
+  </a>
+ </li>
+ <li class="toctree-l2 current active">
+  <a class="reference internal" href="../metrics.html">
+   Metrics
+  </a>
+  <ul class="current">
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.metrics.chord_counts.html">
+     porespy.metrics.chord_counts
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.metrics.chord_length_distribution.html">
+     porespy.metrics.chord_length_distribution
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.metrics.lineal_path_distribution.html">
+     porespy.metrics.lineal_path_distribution
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.metrics.mesh_surface_area.html">
+     porespy.metrics.mesh_surface_area
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.metrics.phase_fraction.html">
+     porespy.metrics.phase_fraction
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.metrics.pore_size_distribution.html">
+     porespy.metrics.pore_size_distribution
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.metrics.porosity.html">
+     porespy.metrics.porosity
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.metrics.porosity_profile.html">
+     porespy.metrics.porosity_profile
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.metrics.prop_to_image.html">
+     porespy.metrics.prop_to_image
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.metrics.props_to_DataFrame.html">
+     porespy.metrics.props_to_DataFrame
+    </a>
+   </li>
+   <li class="toctree-l3 current active">
+    <a class="current reference internal" href="#">
+     porespy.metrics.radial_density_distribution
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.metrics.region_interface_areas.html">
+     porespy.metrics.region_interface_areas
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.metrics.region_surface_areas.html">
+     porespy.metrics.region_surface_areas
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.metrics.regionprops_3D.html">
+     porespy.metrics.regionprops_3D
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.metrics.representative_elementary_volume.html">
+     porespy.metrics.representative_elementary_volume
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.metrics.two_point_correlation_bf.html">
+     porespy.metrics.two_point_correlation_bf
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.metrics.two_point_correlation_fft.html">
+     porespy.metrics.two_point_correlation_fft
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../networks.html">
+   Networks
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../dns.html">
+   DNS
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../tools.html">
+   Tools
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../visualization.html">
+   Visualization
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../io.html">
+   IO
+  </a>
+ </li>
+</ul>
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+              
+
+<nav id="bd-toc-nav">
+    
+</nav>
+
+
+              
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <div class="section" id="porespy-metrics-radial-density-distribution">
+<h1>porespy.metrics.radial_density_distribution<a class="headerlink" href="#porespy-metrics-radial-density-distribution" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="porespy.metrics.radial_density_distribution">
+<code class="sig-name descname"><span class="pre">radial_density_distribution</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voxel_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/metrics/__funcs__.html#radial_density_distribution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.metrics.radial_density_distribution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes radial density function by analyzing the histogram of voxel
+values in the distance transform.  This function is defined by
+Torquato [1] as:</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\int_0^\infty P(r)dr = 1.0\]</div>
+</div></blockquote>
+<p>where <em>P(r)dr</em> is the probability of finding a voxel at a lying at a radial
+distance between <em>r</em> and <em>dr</em> from the solid interface.  This is equivalent
+to a probability density function (<em>pdf</em>)</p>
+<p>The cumulative distribution is defined as:</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[F(r) = \int_r^\infty P(r)dr\]</div>
+</div></blockquote>
+<p>which gives the fraction of pore-space with a radius larger than <em>r</em>. This
+is equivalent to the cumulative distribution function (<em>cdf</em>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>im</strong> (<em>ND-array</em>) – Either a binary image of the pore space with <code class="docutils literal notranslate"><span class="pre">True</span></code> indicating the
+pore phase (or phase of interest), or a pre-calculated distance
+transform which can save time.</p></li>
+<li><p><strong>bins</strong> (<em>int</em><em> or </em><em>array_like</em>) – This number of bins (if int) or the location of the bins (if array).
+This argument is passed directly to Scipy’s <code class="docutils literal notranslate"><span class="pre">histogram</span></code> function so
+see that docstring for more information.  The default is 10 bins, which
+reduces produces a relatively smooth distribution.</p></li>
+<li><p><strong>log</strong> (<em>boolean</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> the size data is converted to log (base-10)
+values before processing.  This can help to plot wide size
+distributions or to better visualize the in the small size region.
+Note that you should not anti-log the radii values in the retunred
+<code class="docutils literal notranslate"><span class="pre">tuple</span></code>, since the binning is performed on the logged radii values.</p></li>
+<li><p><strong>voxel_size</strong> (<em>scalar</em>) – The size of a voxel side in preferred units.  The default is 1, so the
+user can apply the scaling to the returned results after the fact.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><strong>result</strong> – A named-tuple containing several 1D arrays:</p>
+<p><em>R</em> or <em>LogR</em> - radius, equivalent to <code class="docutils literal notranslate"><span class="pre">bin_centers</span></code></p>
+<p><em>pdf</em> - probability density function</p>
+<p><em>cdf</em> - cumulative density function</p>
+<p><em>bin_centers</em> - the center point of each bin</p>
+<p><em>bin_edges</em> - locations of bin divisions, including 1 more value than
+the number of bins</p>
+<p><em>bin_widths</em> - useful for passing to the <code class="docutils literal notranslate"><span class="pre">width</span></code> argument of
+<code class="docutils literal notranslate"><span class="pre">matplotlib.pyplot.bar</span></code></p>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>named_tuple</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function should not be taken as a pore size distribution in the
+explict sense, but rather an indicator of the sizes in the image.  The
+distance transform contains a very skewed number of voxels with small
+values near the solid walls.  Nonetheless, it does provide a useful
+indicator and it’s mathematical formalism is handy.</p>
+<p>Torquato refers to this as the <em>pore-size density function</em>, and mentions
+that it is also known as the <em>pore-size distribution function</em>.  These
+terms are avoided here since they have specific connotations in porous
+media analysis.</p>
+<p class="rubric">References</p>
+<p>[1] Torquato, S. Random Heterogeneous Materials: Mircostructure and
+Macroscopic Properties. Springer, New York (2002) - See page 48 &amp; 292</p>
+</dd></dl>
+
+</div>
+
+
+              </div>
+              
+              
+              <div class='prev-next-bottom'>
+                
+    <a class='left-prev' id="prev-link" href="porespy.metrics.props_to_DataFrame.html" title="previous page">porespy.metrics.props_to_DataFrame</a>
+    <a class='right-next' id="next-link" href="porespy.metrics.region_interface_areas.html" title="next page">porespy.metrics.region_interface_areas</a>
+
+              </div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+
+    
+  <script src="../../_static/js/index.1e043a052b0af929e4d8.js"></script>
+
+
+    <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    <p>
+          &copy; Copyright 2021 PoreSpy Team.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

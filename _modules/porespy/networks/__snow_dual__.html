@@ -1,0 +1,326 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>porespy.networks.__snow_dual__ &#8212; PoreSpy  documentation</title>
+    
+  <link href="../../../_static/css/theme.css" rel="stylesheet" />
+  <link href="../../../_static/css/index.f6b7ca918bee2f46fd9abac01cfb07d5.css" rel="stylesheet" />
+
+    
+  <link rel="stylesheet"
+    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/basic.css" type="text/css" />
+    
+  <link rel="preload" as="script" href="../../../_static/js/index.1e043a052b0af929e4d8.js">
+
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+
+    
+      
+      <a class="navbar-brand" href="../../../index.html">
+        <img src="../../../_static/porespy_logo.png" class="logo" alt="logo">
+      </a>
+      
+    
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    
+    <div id="navbar-menu" class="col-lg-9 collapse navbar-collapse">
+      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
+        <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../getting_started.html">
+  Getting Started
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../modules/index.html">
+  Module and Function Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../user_guide.html">
+  PoreSpy
+ </a>
+</li>
+
+        
+      </ul>
+
+      <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+    </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+              
+
+<nav id="bd-toc-nav">
+    
+</nav>
+
+
+              
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <h1>Source code for porespy.networks.__snow_dual__</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">porespy.networks</span> <span class="kn">import</span> <span class="n">regions_to_network</span>
+<span class="kn">from</span> <span class="nn">porespy.networks</span> <span class="kn">import</span> <span class="n">add_boundary_regions</span>
+<span class="kn">from</span> <span class="nn">porespy.networks</span> <span class="kn">import</span> <span class="n">label_boundary_cells</span>
+<span class="kn">from</span> <span class="nn">porespy.networks</span> <span class="kn">import</span> <span class="n">_net_dict</span>
+<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">pad_faces</span>
+<span class="kn">from</span> <span class="nn">porespy.filters</span> <span class="kn">import</span> <span class="n">snow_partitioning</span>
+<span class="kn">from</span> <span class="nn">porespy.metrics</span> <span class="kn">import</span> <span class="n">region_surface_areas</span><span class="p">,</span> <span class="n">region_interface_areas</span>
+
+
+<div class="viewcode-block" id="snow_dual"><a class="viewcode-back" href="../../../modules/generated/porespy.networks.snow_dual.html#porespy.networks.snow_dual">[docs]</a><span class="k">def</span> <span class="nf">snow_dual</span><span class="p">(</span><span class="n">im</span><span class="p">,</span>
+              <span class="n">voxel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+              <span class="n">boundary_faces</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;top&#39;</span><span class="p">,</span> <span class="s1">&#39;bottom&#39;</span><span class="p">,</span> <span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="s1">&#39;front&#39;</span><span class="p">,</span> <span class="s1">&#39;back&#39;</span><span class="p">],</span>
+              <span class="n">marching_cubes_area</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Analyzes an image that has been partitioned into void and solid regions</span>
+<span class="sd">    and extracts the void and solid phase geometry as well as network</span>
+<span class="sd">    connectivity.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    im : ND-array</span>
+<span class="sd">        Binary image in the Boolean form with True’s as void phase and False’s</span>
+<span class="sd">        as solid phase. It can process the inverted configuration of the</span>
+<span class="sd">        boolean image as well, but output labelling of phases will be inverted</span>
+<span class="sd">        and solid phase properties will be assigned to void phase properties</span>
+<span class="sd">        labels which will cause confusion while performing the simulation.</span>
+<span class="sd">    voxel_size : scalar</span>
+<span class="sd">        The resolution of the image, expressed as the length of one side of a</span>
+<span class="sd">        voxel, so the volume of a voxel would be **voxel_size**-cubed.  The</span>
+<span class="sd">        default is 1, which is useful when overlaying the PNM on the original</span>
+<span class="sd">        image since the scale of the image is alway 1 unit lenth per voxel.</span>
+<span class="sd">    boundary_faces : list of strings</span>
+<span class="sd">        Boundary faces labels are provided to assign hypothetical boundary</span>
+<span class="sd">        nodes having zero resistance to transport process. For cubical</span>
+<span class="sd">        geometry, the user can choose ‘left’, ‘right’, ‘top’, ‘bottom’,</span>
+<span class="sd">        ‘front’ and ‘back’ face labels to assign boundary nodes. If no label is</span>
+<span class="sd">        assigned then all six faces will be selected as boundary nodes</span>
+<span class="sd">        automatically which can be trimmed later on based on user requirements.</span>
+<span class="sd">    marching_cubes_area : bool</span>
+<span class="sd">        If ``True`` then the surface area and interfacial area between regions</span>
+<span class="sd">        will be using the marching cube algorithm. This is a more accurate</span>
+<span class="sd">        representation of area in extracted network, but is quite slow, so</span>
+<span class="sd">        it is ``False`` by default.  The default method simply counts voxels</span>
+<span class="sd">        so does not correctly account for the voxelated nature of the images.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    A dictionary containing all the void and solid phase size data, as well as</span>
+<span class="sd">    the network topological information.  The dictionary names use the OpenPNM</span>
+<span class="sd">    convention (i.e. &#39;pore.coords&#39;, &#39;throat.conns&#39;) so it may be converted</span>
+<span class="sd">    directly to an OpenPNM network object using the ``update`` command.</span>
+<span class="sd">    * ``net``: A dictionary containing all the void and solid phase size data,</span>
+<span class="sd">        as well as the network topological information.  The dictionary names</span>
+<span class="sd">        use the OpenPNM convention (i.e. &#39;pore.coords&#39;, &#39;throat.conns&#39;) so it</span>
+<span class="sd">        may be converted directly to an OpenPNM network object using the</span>
+<span class="sd">        ``update`` command.</span>
+<span class="sd">    * ``im``: The binary image of the void space</span>
+<span class="sd">    * ``dt``: The combined distance transform of the image</span>
+<span class="sd">    * ``regions``: The void and solid space partitioned into pores and solids</span>
+<span class="sd">        phases using a marker based watershed with the peaks found by the</span>
+<span class="sd">        SNOW Algorithm.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Gostick, J. &quot;A versatile and efficient network extraction algorithm</span>
+<span class="sd">    using marker-based watershed segmenation&quot;.  Phys. Rev. E 96, 023307 (2017)</span>
+
+<span class="sd">    [2] Khan, ZA et al.  &quot;Dual network extraction algorithm to investigate</span>
+<span class="sd">    multiple transport processes in porous materials: Image-based modeling</span>
+<span class="sd">    of pore and grain-scale processes. Computers and Chemical Engineering.</span>
+<span class="sd">    123(6), 64-77 (2019)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="c1"># SNOW void phase</span>
+    <span class="n">pore_regions</span> <span class="o">=</span> <span class="n">snow_partitioning</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">return_all</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># SNOW solid phase</span>
+    <span class="n">solid_regions</span> <span class="o">=</span> <span class="n">snow_partitioning</span><span class="p">(</span><span class="o">~</span><span class="n">im</span><span class="p">,</span> <span class="n">return_all</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="c1"># Combined Distance transform of two phases.</span>
+    <span class="n">pore_dt</span> <span class="o">=</span> <span class="n">pore_regions</span><span class="o">.</span><span class="n">dt</span>
+    <span class="n">solid_dt</span> <span class="o">=</span> <span class="n">solid_regions</span><span class="o">.</span><span class="n">dt</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">pore_dt</span> <span class="o">+</span> <span class="n">solid_dt</span>
+    <span class="c1"># Calculates combined void and solid regions for dual network extraction</span>
+    <span class="n">pore_regions</span> <span class="o">=</span> <span class="n">pore_regions</span><span class="o">.</span><span class="n">regions</span>
+    <span class="n">solid_regions</span> <span class="o">=</span> <span class="n">solid_regions</span><span class="o">.</span><span class="n">regions</span>
+    <span class="n">pore_region</span> <span class="o">=</span> <span class="n">pore_regions</span><span class="o">*</span><span class="n">im</span>
+    <span class="n">solid_region</span> <span class="o">=</span> <span class="n">solid_regions</span><span class="o">*~</span><span class="n">im</span>
+    <span class="n">solid_num</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">pore_regions</span><span class="p">)</span>
+    <span class="n">solid_region</span> <span class="o">=</span> <span class="n">solid_region</span> <span class="o">+</span> <span class="n">solid_num</span>
+    <span class="n">solid_region</span> <span class="o">=</span> <span class="n">solid_region</span> <span class="o">*</span> <span class="o">~</span><span class="n">im</span>
+    <span class="n">solid_region</span><span class="p">[</span><span class="n">solid_region</span> <span class="o">==</span> <span class="n">solid_num</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">regions</span> <span class="o">=</span> <span class="n">pore_region</span> <span class="o">+</span> <span class="n">solid_region</span>
+    <span class="n">b_num</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">regions</span><span class="p">)</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="c1"># Boundary Conditions</span>
+    <span class="n">regions</span> <span class="o">=</span> <span class="n">add_boundary_regions</span><span class="p">(</span><span class="n">regions</span><span class="o">=</span><span class="n">regions</span><span class="p">,</span> <span class="n">faces</span><span class="o">=</span><span class="n">boundary_faces</span><span class="p">)</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="c1"># Padding distance transform to extract geometrical properties</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">pad_faces</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">faces</span><span class="o">=</span><span class="n">boundary_faces</span><span class="p">)</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="c1"># Extract void,solid and throat information from image</span>
+    <span class="n">net</span> <span class="o">=</span> <span class="n">regions_to_network</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">regions</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">voxel_size</span><span class="o">=</span><span class="n">voxel_size</span><span class="p">)</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="c1"># Extract marching cube surface area and interfacial area of regions</span>
+    <span class="k">if</span> <span class="n">marching_cubes_area</span><span class="p">:</span>
+        <span class="n">areas</span> <span class="o">=</span> <span class="n">region_surface_areas</span><span class="p">(</span><span class="n">regions</span><span class="o">=</span><span class="n">regions</span><span class="p">)</span>
+        <span class="n">interface_area</span> <span class="o">=</span> <span class="n">region_interface_areas</span><span class="p">(</span><span class="n">regions</span><span class="o">=</span><span class="n">regions</span><span class="p">,</span> <span class="n">areas</span><span class="o">=</span><span class="n">areas</span><span class="p">,</span>
+                                                <span class="n">voxel_size</span><span class="o">=</span><span class="n">voxel_size</span><span class="p">)</span>
+        <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.surface_area&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">areas</span> <span class="o">*</span> <span class="n">voxel_size</span><span class="o">**</span><span class="mi">2</span>
+        <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.area&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">interface_area</span><span class="o">.</span><span class="n">area</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="c1"># Find void to void, void to solid and solid to solid throat conns</span>
+    <span class="n">loc1</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">solid_num</span>
+    <span class="n">loc2</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">solid_num</span>
+    <span class="n">loc3</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">b_num</span>
+    <span class="n">pore_solid_labels</span> <span class="o">=</span> <span class="n">loc1</span> <span class="o">*</span> <span class="n">loc2</span> <span class="o">*</span> <span class="n">loc3</span>
+
+    <span class="n">loc4</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">solid_num</span>
+    <span class="n">loc5</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">b_num</span>
+    <span class="n">solid_solid_labels</span> <span class="o">=</span> <span class="n">loc4</span> <span class="o">*</span> <span class="n">loc2</span> <span class="o">*</span> <span class="n">loc5</span> <span class="o">*</span> <span class="n">loc3</span>
+
+    <span class="n">loc6</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">solid_num</span>
+    <span class="n">pore_pore_labels</span> <span class="o">=</span> <span class="n">loc1</span> <span class="o">*</span> <span class="n">loc6</span>
+
+    <span class="n">loc7</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">b_num</span>
+    <span class="n">boundary_throat_labels</span> <span class="o">=</span> <span class="n">loc5</span> <span class="o">*</span> <span class="n">loc7</span>
+
+    <span class="n">solid_labels</span> <span class="o">=</span> <span class="p">((</span><span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.label&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">solid_num</span><span class="p">)</span> <span class="o">*</span> <span class="o">~</span>
+                    <span class="p">(</span><span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.label&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">b_num</span><span class="p">))</span>
+    <span class="n">boundary_labels</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.label&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">b_num</span>
+    <span class="n">b_sa</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">boundary_labels</span><span class="p">[</span><span class="n">boundary_labels</span> <span class="o">==</span> <span class="mf">1.0</span><span class="p">]))</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="c1"># Calculates void interfacial area that connects with solid and vice versa</span>
+    <span class="n">p_conns</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">][</span><span class="n">pore_solid_labels</span><span class="p">]</span>
+    <span class="n">ps</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.area&#39;</span><span class="p">][</span><span class="n">pore_solid_labels</span><span class="p">]</span>
+    <span class="n">p_sa</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span><span class="n">p_conns</span><span class="p">,</span> <span class="n">ps</span><span class="p">)</span>
+    <span class="n">s_conns</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">][</span><span class="n">pore_solid_labels</span><span class="p">]</span>
+    <span class="n">s_pa</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span><span class="n">s_conns</span><span class="p">,</span> <span class="n">ps</span><span class="p">)</span>
+    <span class="n">s_pa</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trim_zeros</span><span class="p">(</span><span class="n">s_pa</span><span class="p">)</span>  <span class="c1"># remove pore surface area labels</span>
+    <span class="n">p_solid_surf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">p_sa</span><span class="p">,</span> <span class="n">s_pa</span><span class="p">,</span> <span class="n">b_sa</span><span class="p">))</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="c1"># Calculates interfacial area using marching cube method</span>
+    <span class="k">if</span> <span class="n">marching_cubes_area</span><span class="p">:</span>
+        <span class="n">ps_c</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.area&#39;</span><span class="p">][</span><span class="n">pore_solid_labels</span><span class="p">]</span>
+        <span class="n">p_sa_c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span><span class="n">p_conns</span><span class="p">,</span> <span class="n">ps_c</span><span class="p">)</span>
+        <span class="n">s_pa_c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span><span class="n">s_conns</span><span class="p">,</span> <span class="n">ps_c</span><span class="p">)</span>
+        <span class="n">s_pa_c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trim_zeros</span><span class="p">(</span><span class="n">s_pa_c</span><span class="p">)</span>  <span class="c1"># remove pore surface area labels</span>
+        <span class="n">p_solid_surf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">p_sa_c</span><span class="p">,</span> <span class="n">s_pa_c</span><span class="p">,</span> <span class="n">b_sa</span><span class="p">))</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="c1"># Adding additional information of dual network</span>
+    <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.solid_void_area&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">p_solid_surf</span> <span class="o">*</span> <span class="n">voxel_size</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.void&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pore_pore_labels</span>
+    <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.interconnect&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pore_solid_labels</span>
+    <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.solid&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">solid_solid_labels</span>
+    <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.boundary&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">boundary_throat_labels</span>
+    <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.void&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.label&#39;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">solid_num</span>
+    <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.solid&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">solid_labels</span>
+    <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.boundary&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">boundary_labels</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="c1"># label boundary cells</span>
+    <span class="n">net</span> <span class="o">=</span> <span class="n">label_boundary_cells</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">,</span> <span class="n">boundary_faces</span><span class="o">=</span><span class="n">boundary_faces</span><span class="p">)</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="c1"># assign out values to dummy dict</span>
+
+    <span class="n">temp</span> <span class="o">=</span> <span class="n">_net_dict</span><span class="p">(</span><span class="n">net</span><span class="p">)</span>
+    <span class="n">temp</span><span class="o">.</span><span class="n">im</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">temp</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="n">dt</span>
+    <span class="n">temp</span><span class="o">.</span><span class="n">regions</span> <span class="o">=</span> <span class="n">regions</span>
+    <span class="k">return</span> <span class="n">temp</span></div>
+</pre></div>
+
+              </div>
+              
+              
+              <div class='prev-next-bottom'>
+                
+
+              </div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+
+    
+  <script src="../../../_static/js/index.1e043a052b0af929e4d8.js"></script>
+
+
+    <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    <p>
+          &copy; Copyright 2021 PoreSpy Team.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

@@ -1,0 +1,244 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>porespy.dns.tortuosity &#8212; PoreSpy  documentation</title>
+    
+  <link href="../../_static/css/theme.css" rel="stylesheet" />
+  <link href="../../_static/css/index.f6b7ca918bee2f46fd9abac01cfb07d5.css" rel="stylesheet" />
+
+    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
+    
+  <link rel="preload" as="script" href="../../_static/js/index.1e043a052b0af929e4d8.js">
+
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Tools" href="../tools.html" />
+    <link rel="prev" title="DNS" href="../dns.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+
+    
+      
+      <a class="navbar-brand" href="../../index.html">
+        <img src="../../_static/porespy_logo.png" class="logo" alt="logo">
+      </a>
+      
+    
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    
+    <div id="navbar-menu" class="col-lg-9 collapse navbar-collapse">
+      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
+        <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../getting_started.html">
+  Getting Started
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../index.html">
+  Module and Function Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../user_guide.html">
+  PoreSpy
+ </a>
+</li>
+
+        
+      </ul>
+
+      <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+    </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l2">
+  <a class="reference internal" href="../generators.html">
+   Generators
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../filters.html">
+   Filters
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../metrics.html">
+   Metrics
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../networks.html">
+   Networks
+  </a>
+ </li>
+ <li class="toctree-l2 current active">
+  <a class="reference internal" href="../dns.html">
+   DNS
+  </a>
+  <ul class="current">
+   <li class="toctree-l3 current active">
+    <a class="current reference internal" href="#">
+     porespy.dns.tortuosity
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../tools.html">
+   Tools
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../visualization.html">
+   Visualization
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../io.html">
+   IO
+  </a>
+ </li>
+</ul>
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+              
+
+<nav id="bd-toc-nav">
+    
+</nav>
+
+
+              
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <div class="section" id="porespy-dns-tortuosity">
+<h1>porespy.dns.tortuosity<a class="headerlink" href="#porespy-dns-tortuosity" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="porespy.dns.tortuosity">
+<code class="sig-name descname"><span class="pre">tortuosity</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_im</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/dns/__funcs__.html#tortuosity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.dns.tortuosity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates tortuosity of given image in specified direction</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>im</strong> (<em>ndarray</em>) – The binary image to analyze with <code class="docutils literal notranslate"><span class="pre">True</span></code> indicating phase of interest</p></li>
+<li><p><strong>axis</strong> (<em>int</em>) – The axis along which to apply boundary conditions</p></li>
+<li><p><strong>return_im</strong> (<em>boolean</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then the resulting tuple contains a copy of the input
+image with the concentration profile.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><strong>results</strong> – A named-tuple containing:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">tortuosity</span></code>: calculated using the <code class="docutils literal notranslate"><span class="pre">effective_porosity</span></code> as
+<span class="math notranslate nohighlight">\(\tau = \frac{D_{AB}}{D_{eff}} \cdot \varepsilon\)</span>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">effective_porosity</span></code>: of the image after applying
+<code class="docutils literal notranslate"><span class="pre">trim_nonpercolating_paths</span></code>. This removes disconnected
+voxels which cause singular matrices.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">original_porosity</span></code>: of the image as given</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">formation_factor</span></code>: found as <span class="math notranslate nohighlight">\(D_{AB}/D_{eff}\)</span>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">image</span></code>: containing the concentration values from the simulation.
+This is only returned if <code class="docutils literal notranslate"><span class="pre">return_im</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+              </div>
+              
+              
+              <div class='prev-next-bottom'>
+                
+    <a class='left-prev' id="prev-link" href="../dns.html" title="previous page">DNS</a>
+    <a class='right-next' id="next-link" href="../tools.html" title="next page">Tools</a>
+
+              </div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+
+    
+  <script src="../../_static/js/index.1e043a052b0af929e4d8.js"></script>
+
+
+    <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    <p>
+          &copy; Copyright 2021 PoreSpy Team.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

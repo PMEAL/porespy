@@ -1,0 +1,320 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>porespy.metrics.prop_to_image &#8212; PoreSpy  documentation</title>
+    
+  <link href="../../_static/css/theme.css" rel="stylesheet" />
+  <link href="../../_static/css/index.f6b7ca918bee2f46fd9abac01cfb07d5.css" rel="stylesheet" />
+
+    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
+    
+  <link rel="preload" as="script" href="../../_static/js/index.1e043a052b0af929e4d8.js">
+
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="porespy.metrics.props_to_DataFrame" href="porespy.metrics.props_to_DataFrame.html" />
+    <link rel="prev" title="porespy.metrics.porosity_profile" href="porespy.metrics.porosity_profile.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+
+    
+      
+      <a class="navbar-brand" href="../../index.html">
+        <img src="../../_static/porespy_logo.png" class="logo" alt="logo">
+      </a>
+      
+    
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    
+    <div id="navbar-menu" class="col-lg-9 collapse navbar-collapse">
+      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
+        <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../getting_started.html">
+  Getting Started
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../index.html">
+  Module and Function Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../user_guide.html">
+  PoreSpy
+ </a>
+</li>
+
+        
+      </ul>
+
+      <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+    </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l2">
+  <a class="reference internal" href="../generators.html">
+   Generators
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../filters.html">
+   Filters
+  </a>
+ </li>
+ <li class="toctree-l2 current active">
+  <a class="reference internal" href="../metrics.html">
+   Metrics
+  </a>
+  <ul class="current">
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.metrics.chord_counts.html">
+     porespy.metrics.chord_counts
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.metrics.chord_length_distribution.html">
+     porespy.metrics.chord_length_distribution
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.metrics.lineal_path_distribution.html">
+     porespy.metrics.lineal_path_distribution
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.metrics.mesh_surface_area.html">
+     porespy.metrics.mesh_surface_area
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.metrics.phase_fraction.html">
+     porespy.metrics.phase_fraction
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.metrics.pore_size_distribution.html">
+     porespy.metrics.pore_size_distribution
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.metrics.porosity.html">
+     porespy.metrics.porosity
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.metrics.porosity_profile.html">
+     porespy.metrics.porosity_profile
+    </a>
+   </li>
+   <li class="toctree-l3 current active">
+    <a class="current reference internal" href="#">
+     porespy.metrics.prop_to_image
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.metrics.props_to_DataFrame.html">
+     porespy.metrics.props_to_DataFrame
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.metrics.radial_density_distribution.html">
+     porespy.metrics.radial_density_distribution
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.metrics.region_interface_areas.html">
+     porespy.metrics.region_interface_areas
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.metrics.region_surface_areas.html">
+     porespy.metrics.region_surface_areas
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.metrics.regionprops_3D.html">
+     porespy.metrics.regionprops_3D
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.metrics.representative_elementary_volume.html">
+     porespy.metrics.representative_elementary_volume
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.metrics.two_point_correlation_bf.html">
+     porespy.metrics.two_point_correlation_bf
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.metrics.two_point_correlation_fft.html">
+     porespy.metrics.two_point_correlation_fft
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../networks.html">
+   Networks
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../dns.html">
+   DNS
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../tools.html">
+   Tools
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../visualization.html">
+   Visualization
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../io.html">
+   IO
+  </a>
+ </li>
+</ul>
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+              
+
+<nav id="bd-toc-nav">
+    
+</nav>
+
+
+              
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <div class="section" id="porespy-metrics-prop-to-image">
+<h1>porespy.metrics.prop_to_image<a class="headerlink" href="#porespy-metrics-prop-to-image" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="porespy.metrics.prop_to_image">
+<code class="sig-name descname"><span class="pre">prop_to_image</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">regionprops</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prop</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/metrics/__regionprops__.html#prop_to_image"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.metrics.prop_to_image" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates an image with each region colored according the specified <code class="docutils literal notranslate"><span class="pre">prop</span></code>,
+as obtained by <code class="docutils literal notranslate"><span class="pre">regionprops_3d</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>regionprops</strong> (<em>list</em>) – This is a list of properties for each region that is computed
+by PoreSpy’s <code class="docutils literal notranslate"><span class="pre">regionprops_3D</span></code> or Skimage’s <code class="docutils literal notranslate"><span class="pre">regionsprops</span></code>.</p></li>
+<li><p><strong>shape</strong> (<em>array_like</em>) – The shape of the original image for which <code class="docutils literal notranslate"><span class="pre">regionprops</span></code> was obtained.</p></li>
+<li><p><strong>prop</strong> (<em>string</em>) – The region property of interest.  Can be a scalar item such as ‘volume’
+in which case the the regions will be colored by their respective
+volumes, or can be an image-type property such as ‘border’ or
+‘convex_image’, which will return an image composed of the sub-images.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>image</strong> – An ND-image the same size as the original image, with each region
+represented by the values specified in <code class="docutils literal notranslate"><span class="pre">prop</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ND-array</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="porespy.metrics.props_to_DataFrame.html#porespy.metrics.props_to_DataFrame" title="porespy.metrics.props_to_DataFrame"><code class="xref py py-obj docutils literal notranslate"><span class="pre">props_to_DataFrame</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">regionprops_3d</span></code></p>
+</div>
+</dd></dl>
+
+</div>
+
+
+              </div>
+              
+              
+              <div class='prev-next-bottom'>
+                
+    <a class='left-prev' id="prev-link" href="porespy.metrics.porosity_profile.html" title="previous page">porespy.metrics.porosity_profile</a>
+    <a class='right-next' id="next-link" href="porespy.metrics.props_to_DataFrame.html" title="next page">porespy.metrics.props_to_DataFrame</a>
+
+              </div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+
+    
+  <script src="../../_static/js/index.1e043a052b0af929e4d8.js"></script>
+
+
+    <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    <p>
+          &copy; Copyright 2021 PoreSpy Team.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

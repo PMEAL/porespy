@@ -1,0 +1,396 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>porespy.tools.subdivide &#8212; PoreSpy  documentation</title>
+    
+  <link href="../../_static/css/theme.css" rel="stylesheet" />
+  <link href="../../_static/css/index.f6b7ca918bee2f46fd9abac01cfb07d5.css" rel="stylesheet" />
+
+    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
+    
+  <link rel="preload" as="script" href="../../_static/js/index.1e043a052b0af929e4d8.js">
+
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="porespy.tools.zero_corners" href="porespy.tools.zero_corners.html" />
+    <link rel="prev" title="porespy.tools.size_to_seq" href="porespy.tools.size_to_seq.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+
+    
+      
+      <a class="navbar-brand" href="../../index.html">
+        <img src="../../_static/porespy_logo.png" class="logo" alt="logo">
+      </a>
+      
+    
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    
+    <div id="navbar-menu" class="col-lg-9 collapse navbar-collapse">
+      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
+        <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../getting_started.html">
+  Getting Started
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../index.html">
+  Module and Function Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../user_guide.html">
+  PoreSpy
+ </a>
+</li>
+
+        
+      </ul>
+
+      <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+    </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l2">
+  <a class="reference internal" href="../generators.html">
+   Generators
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../filters.html">
+   Filters
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../metrics.html">
+   Metrics
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../networks.html">
+   Networks
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../dns.html">
+   DNS
+  </a>
+ </li>
+ <li class="toctree-l2 current active">
+  <a class="reference internal" href="../tools.html">
+   Tools
+  </a>
+  <ul class="current">
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.align_image_with_openpnm.html">
+     porespy.tools.align_image_with_openpnm
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.bbox_to_slices.html">
+     porespy.tools.bbox_to_slices
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.extend_slice.html">
+     porespy.tools.extend_slice
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.extract_subsection.html">
+     porespy.tools.extract_subsection
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.extract_regions.html">
+     porespy.tools.extract_regions
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.extract_cylinder.html">
+     porespy.tools.extract_cylinder
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.extract_subsection.html">
+     porespy.tools.extract_subsection
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.fftmorphology.html">
+     porespy.tools.fftmorphology
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.find_outer_region.html">
+     porespy.tools.find_outer_region
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.get_border.html">
+     porespy.tools.get_border
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.get_planes.html">
+     porespy.tools.get_planes
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.insert_cylinder.html">
+     porespy.tools.insert_cylinder
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.insert_sphere.html">
+     porespy.tools.insert_sphere
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.in_hull.html">
+     porespy.tools.in_hull
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.make_contiguous.html">
+     porespy.tools.make_contiguous
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.mesh_region.html">
+     porespy.tools.mesh_region
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.norm_to_uniform.html">
+     porespy.tools.norm_to_uniform
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.overlay.html">
+     porespy.tools.overlay
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.ps_ball.html">
+     porespy.tools.ps_ball
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.ps_disk.html">
+     porespy.tools.ps_disk
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.ps_rect.html">
+     porespy.tools.ps_rect
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.ps_round.html">
+     porespy.tools.ps_round
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.pad_faces.html">
+     porespy.tools.pad_faces
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.randomize_colors.html">
+     porespy.tools.randomize_colors
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.seq_to_satn.html">
+     porespy.tools.seq_to_satn
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.size_to_seq.html">
+     porespy.tools.size_to_seq
+    </a>
+   </li>
+   <li class="toctree-l3 current active">
+    <a class="current reference internal" href="#">
+     porespy.tools.subdivide
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.zero_corners.html">
+     porespy.tools.zero_corners
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../visualization.html">
+   Visualization
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../io.html">
+   IO
+  </a>
+ </li>
+</ul>
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+              
+
+<nav id="bd-toc-nav">
+    
+</nav>
+
+
+              
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <div class="section" id="porespy-tools-subdivide">
+<h1>porespy.tools.subdivide<a class="headerlink" href="#porespy-tools-subdivide" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="porespy.tools.subdivide">
+<code class="sig-name descname"><span class="pre">subdivide</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">divs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overlap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flatten</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/tools/__funcs__.html#subdivide"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.tools.subdivide" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns slices into an image describing the specified number of sub-arrays.</p>
+<p>This function is useful for performing operations on smaller images for
+memory or speed.  Note that for most typical operations this will NOT work,
+since the image borders would cause artifacts (e.g. <code class="docutils literal notranslate"><span class="pre">distance_transform</span></code>)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>im</strong> (<em>ND-array</em>) – The image of the porous media</p></li>
+<li><p><strong>divs</strong> (<em>scalar</em><em> or </em><em>array_like</em>) – The number of sub-divisions to create in each axis of the image.  If a
+scalar is given it is assumed this value applies in all dimensions.</p></li>
+<li><p><strong>overlap</strong> (<em>scalar</em><em> or </em><em>array_like</em>) – The amount of overlap to use when dividing along each axis.  If a
+scalar is given it is assumed this value applies in all dimensions.</p></li>
+<li><p><strong>flatten</strong> (<em>boolean</em>) – If set to <code class="docutils literal notranslate"><span class="pre">True</span></code> then the slice objects are returned as a flat
+list, while if <code class="docutils literal notranslate"><span class="pre">False</span></code> they are returned in a ND-array where each
+subdivision is accessed using row-col or row-col-layer indexing.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>slices</strong> – An ND-array containing sets of slice objects for indexing into <code class="docutils literal notranslate"><span class="pre">im</span></code>
+that extract subdivisions of an image.  If <code class="docutils literal notranslate"><span class="pre">flatten</span></code> was <code class="docutils literal notranslate"><span class="pre">True</span></code>,
+then this array is flat, suitable  for iterating.  If <code class="docutils literal notranslate"><span class="pre">flatten</span></code> was
+<code class="docutils literal notranslate"><span class="pre">False</span></code> then the slice objects must be accessed by row, col, layer
+indices.  An ND-array is the preferred container since it’s shape can
+be easily queried.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ND-array</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This method uses the
+<a class="reference external" href="https://github.com/array-split/array_split">array_split package</a> which
+offers the same functionality as the <code class="docutils literal notranslate"><span class="pre">split</span></code> method of Numpy’s ND-array,
+but supports the splitting of multidimensional arrays in all dimensions.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">chunked_func</span></code></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">porespy</span> <span class="k">as</span> <span class="nn">ps</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">blobs</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">200</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">subdivide</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">divs</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">flatten</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">))</span>
+<span class="go">4</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+
+
+              </div>
+              
+              
+              <div class='prev-next-bottom'>
+                
+    <a class='left-prev' id="prev-link" href="porespy.tools.size_to_seq.html" title="previous page">porespy.tools.size_to_seq</a>
+    <a class='right-next' id="next-link" href="porespy.tools.zero_corners.html" title="next page">porespy.tools.zero_corners</a>
+
+              </div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+
+    
+  <script src="../../_static/js/index.1e043a052b0af929e4d8.js"></script>
+
+
+    <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    <p>
+          &copy; Copyright 2021 PoreSpy Team.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

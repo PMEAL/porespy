@@ -1,0 +1,377 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>porespy.filters.find_disconnected_voxels &#8212; PoreSpy  documentation</title>
+    
+  <link href="../../_static/css/theme.css" rel="stylesheet" />
+  <link href="../../_static/css/index.f6b7ca918bee2f46fd9abac01cfb07d5.css" rel="stylesheet" />
+
+    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
+    
+  <link rel="preload" as="script" href="../../_static/js/index.1e043a052b0af929e4d8.js">
+
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="porespy.filters.find_dt_artifacts" href="porespy.filters.find_dt_artifacts.html" />
+    <link rel="prev" title="porespy.filters.fill_blind_pores" href="porespy.filters.fill_blind_pores.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+
+    
+      
+      <a class="navbar-brand" href="../../index.html">
+        <img src="../../_static/porespy_logo.png" class="logo" alt="logo">
+      </a>
+      
+    
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    
+    <div id="navbar-menu" class="col-lg-9 collapse navbar-collapse">
+      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
+        <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../getting_started.html">
+  Getting Started
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../index.html">
+  Module and Function Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../user_guide.html">
+  PoreSpy
+ </a>
+</li>
+
+        
+      </ul>
+
+      <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+    </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l2">
+  <a class="reference internal" href="../generators.html">
+   Generators
+  </a>
+ </li>
+ <li class="toctree-l2 current active">
+  <a class="reference internal" href="../filters.html">
+   Filters
+  </a>
+  <ul class="current">
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.apply_chords.html">
+     porespy.filters.apply_chords
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.apply_chords_3D.html">
+     porespy.filters.apply_chords_3D
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.apply_padded.html">
+     porespy.filters.apply_padded
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.chunked_func.html">
+     porespy.filters.chunked_func
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.distance_transform_lin.html">
+     porespy.filters.distance_transform_lin
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.fftmorphology.html">
+     porespy.filters.fftmorphology
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.fill_blind_pores.html">
+     porespy.filters.fill_blind_pores
+    </a>
+   </li>
+   <li class="toctree-l3 current active">
+    <a class="current reference internal" href="#">
+     porespy.filters.find_disconnected_voxels
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.find_dt_artifacts.html">
+     porespy.filters.find_dt_artifacts
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.find_peaks.html">
+     porespy.filters.find_peaks
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.flood.html">
+     porespy.filters.flood
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.hold_peaks.html">
+     porespy.filters.hold_peaks
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.local_thickness.html">
+     porespy.filters.local_thickness
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.nphase_border.html">
+     porespy.filters.nphase_border
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.porosimetry.html">
+     porespy.filters.porosimetry
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.prune_branches.html">
+     porespy.filters.prune_branches
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.reduce_peaks.html">
+     porespy.filters.reduce_peaks
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.region_size.html">
+     porespy.filters.region_size
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.snow_partitioning.html">
+     porespy.filters.snow_partitioning
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.snow_partitioning_n.html">
+     porespy.filters.snow_partitioning_n
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.snow_partitioning_parallel.html">
+     porespy.filters.snow_partitioning_parallel
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.trim_disconnected_blobs.html">
+     porespy.filters.trim_disconnected_blobs
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.trim_extrema.html">
+     porespy.filters.trim_extrema
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.trim_floating_solid.html">
+     porespy.filters.trim_floating_solid
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.trim_nearby_peaks.html">
+     porespy.filters.trim_nearby_peaks
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.trim_nonpercolating_paths.html">
+     porespy.filters.trim_nonpercolating_paths
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.trim_saddle_points.html">
+     porespy.filters.trim_saddle_points
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.filters.trim_small_clusters.html">
+     porespy.filters.trim_small_clusters
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../metrics.html">
+   Metrics
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../networks.html">
+   Networks
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../dns.html">
+   DNS
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../tools.html">
+   Tools
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../visualization.html">
+   Visualization
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../io.html">
+   IO
+  </a>
+ </li>
+</ul>
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+              
+
+<nav id="bd-toc-nav">
+    
+</nav>
+
+
+              
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <div class="section" id="porespy-filters-find-disconnected-voxels">
+<h1>porespy.filters.find_disconnected_voxels<a class="headerlink" href="#porespy-filters-find-disconnected-voxels" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="porespy.filters.find_disconnected_voxels">
+<code class="sig-name descname"><span class="pre">find_disconnected_voxels</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/filters/__funcs__.html#find_disconnected_voxels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.find_disconnected_voxels" title="Permalink to this definition">¶</a></dt>
+<dd><p>This identifies all pore (or solid) voxels that are not connected to
+the edge of the image.  This can be used to find blind pores, or
+remove artifacts such as solid phase voxels that are floating in space.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>im</strong> (<em>ndarray</em>) – A Boolean image, with True values indicating the phase for which
+disconnected voxels are sought.</p></li>
+<li><p><strong>conn</strong> (<em>int</em>) – For 2D the options are 4 and 8 for square and diagonal neighbors,
+while for the 3D the options are 6 and 26, similarily for square
+and diagonal neighbors. The default is the maximum option.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>image</strong> – An ND-image the same size as <code class="docutils literal notranslate"><span class="pre">im</span></code>, with True values indicating
+voxels of the phase of interest (i.e. True values in the original
+image) that are not connected to the outer edges.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<dl class="simple">
+<dt>image<span class="classifier">ndarray</span></dt><dd><p>The returned array (e.g. <code class="docutils literal notranslate"><span class="pre">holes</span></code>) be used to trim blind pores
+from <code class="docutils literal notranslate"><span class="pre">im</span></code> using: <code class="docutils literal notranslate"><span class="pre">im[holes]</span> <span class="pre">=</span> <span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+              </div>
+              
+              
+              <div class='prev-next-bottom'>
+                
+    <a class='left-prev' id="prev-link" href="porespy.filters.fill_blind_pores.html" title="previous page">porespy.filters.fill_blind_pores</a>
+    <a class='right-next' id="next-link" href="porespy.filters.find_dt_artifacts.html" title="next page">porespy.filters.find_dt_artifacts</a>
+
+              </div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+
+    
+  <script src="../../_static/js/index.1e043a052b0af929e4d8.js"></script>
+
+
+    <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    <p>
+          &copy; Copyright 2021 PoreSpy Team.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

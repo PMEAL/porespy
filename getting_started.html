@@ -1,0 +1,413 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Getting Started &#8212; PoreSpy  documentation</title>
+    
+  <link href="_static/css/theme.css" rel="stylesheet" />
+  <link href="_static/css/index.f6b7ca918bee2f46fd9abac01cfb07d5.css" rel="stylesheet" />
+
+    
+  <link rel="stylesheet"
+    href="_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/basic.css" type="text/css" />
+    
+  <link rel="preload" as="script" href="_static/js/index.1e043a052b0af929e4d8.js">
+
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Module and Function Reference" href="modules/index.html" />
+    <link rel="prev" title="Quantitative image analysis of porous materials" href="index.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+
+    
+      
+      <a class="navbar-brand" href="index.html">
+        <img src="_static/porespy_logo.png" class="logo" alt="logo">
+      </a>
+      
+    
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    
+    <div id="navbar-menu" class="col-lg-9 collapse navbar-collapse">
+      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
+        <li class="toctree-l1 current active nav-item">
+ <a class="current reference internal nav-link" href="#">
+  Getting Started
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="modules/index.html">
+  Module and Function Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="user_guide.html">
+  PoreSpy
+ </a>
+</li>
+
+        
+      </ul>
+
+      <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+    </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+              
+<div class="tocsection onthispage pt-5 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#what-is-porespy">
+   What is PoreSpy?
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#capabilities">
+   Capabilities
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#installation">
+   Installation
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#windows">
+     Windows
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#mac-and-linux">
+     Mac and Linux
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#contributing">
+   Contributing
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#stay-informed">
+   Stay Informed
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#examples">
+   Examples
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#generating-an-image">
+     Generating an image
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#applying-filters">
+     Applying filters
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#calculating-metrics">
+     Calculating metrics
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+</nav>
+
+
+              
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <div class="section" id="getting-started">
+<span id="id1"></span><h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="https://github.com/PMEAL/porespy/actions"><img alt="image" src="https://github.com/PMEAL/porespy/workflows/Ubuntu/badge.svg" /></a> <a class="reference external" href="https://github.com/PMEAL/porespy/actions"><img alt="image1" src="https://github.com/PMEAL/porespy/workflows/macOS/badge.svg" /></a> <a class="reference external" href="https://github.com/PMEAL/porespy/actions"><img alt="image2" src="https://github.com/PMEAL/porespy/workflows/Windows/badge.svg" /></a> <a class="reference external" href="https://github.com/PMEAL/porespy/actions"><img alt="image3" src="https://github.com/PMEAL/porespy/workflows/Examples/badge.svg" /></a> <a class="reference external" href="https://codecov.io/gh/PMEAL/PoreSpy"><img alt="image4" src="https://codecov.io/gh/PMEAL/PoreSpy/branch/dev/graph/badge.svg" /></a> <a class="reference external" href="http://porespy.readthedocs.io/en/dev/"><img alt="image5" src="https://img.shields.io/badge/ReadTheDocs-GO-blue.svg" /></a> <a class="reference external" href="https://pypi.python.org/pypi/porespy/"><img alt="image6" src="https://img.shields.io/pypi/v/porespy.svg" /></a> <a class="reference external" href="https://doi.org/10.21105/joss.01296"><img alt="image7" src="https://img.shields.io/badge/DOI-10.21105/joss.01296-blue.svg" /></a></p>
+<hr class="docutils" />
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>As of February 12th, 2021, we are actively working on version 2.0.
+The <code class="docutils literal notranslate"><span class="pre">dev</span></code> branch will no longer be backwards compatible with
+previous versions of PoreSpy. We expect this conversion to be
+complete by winter’s end.</p>
+</div>
+<div class="section" id="what-is-porespy">
+<h2>What is PoreSpy?<a class="headerlink" href="#what-is-porespy" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><em>Gostick J, Khan ZA, Tranter TG, Kok MDR, Agnaou M, Sadeghi MA,
+Jervis R.</em> <strong>PoreSpy: A Python Toolkit for Quantitative Analysis of
+Porous Media Images.</strong> Journal of Open Source Software, 2019.
+<a class="reference external" href="https://doi.org/10.21105/joss.01296">doi:10.21105/joss.01296</a></p>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">porespy</span></code> is a collection of image analysis tools used to extract
+information from 3D images of porous materials (typically obtained from
+X-ray tomography). There are many packages that offer generalized image
+analysis tools (i.e <code class="docutils literal notranslate"><span class="pre">skimage</span></code> and <code class="docutils literal notranslate"><span class="pre">scipy.ndimage</span></code> in the Python
+environment, ImageJ, MATLAB’s Image Processing Toolbox), but
+they all require building up complex scripts or macros to accomplish
+tasks of specific use to porous media. The aim of <code class="docutils literal notranslate"><span class="pre">porespy</span></code> is to
+provide a set of pre-written tools for all the common porous media
+measurements. For instance, it’s possible to perform a mercury intrusion
+simulation with a single function call (e.g.
+<code class="docutils literal notranslate"><span class="pre">porespy.filters.porosimetry</span></code>).</p>
+<p><code class="docutils literal notranslate"><span class="pre">porespy</span></code> relies heavily on
+<a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>
+and <a class="reference external" href="https://scikit-image.org/">scikit-image</a> also known as
+<code class="docutils literal notranslate"><span class="pre">skimage</span></code>. The former contains an assortment of general image analysis
+tools such as image morphology filters, while the latter offers more
+complex but still general functions such as watershed segmentation.
+<code class="docutils literal notranslate"><span class="pre">porespy</span></code> does not duplicate any of these general functions so you
+will also have to install and learn how to use them to get the most from
+<code class="docutils literal notranslate"><span class="pre">porespy</span></code>. The functions in PoreSpy are generally built up using
+several of the general functions offered by <code class="docutils literal notranslate"><span class="pre">skimage</span></code> and <code class="docutils literal notranslate"><span class="pre">scipy</span></code>.
+There are a few functions in <code class="docutils literal notranslate"><span class="pre">porespy</span></code> that are implemented natively,
+but only when necessary.</p>
+</div>
+<div class="section" id="capabilities">
+<h2>Capabilities<a class="headerlink" href="#capabilities" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">porespy</span></code> consists of the following modules:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">generators</span></code>: Routines for generating artificial images of porous
+materials useful for testing and illustration</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">filters</span></code>: Functions that accept an image and return an altered
+image</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">metrics</span></code>: Tools for quantifying properties of images</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">networks</span></code>: Algorithms and tools for analyzing images as pore
+networks</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">visualization</span></code>: Helper functions for creating useful views of the
+image</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">io</span></code>: Functions for outputting image data in various formats for
+use in common software</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tools</span></code>: Various useful tools for working with images</p></li>
+</ul>
+</div>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>PoreSpy depends heavily on the Scipy Stack. The best way to get a fully
+functional environment is the <a class="reference external" href="https://www.anaconda.com/download/">Anaconda
+distribution</a>. Be sure to get the
+<strong>Python 3.7+ version</strong>.</p>
+<p>Once you’ve installed <em>Anaconda</em> you can then install <code class="docutils literal notranslate"><span class="pre">porespy</span></code>. It is
+available on <a class="reference external" href="https://anaconda.org/conda-forge/porespy">Conda Forge</a>
+and can be installed by typing the following at the <em>conda</em> prompt:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">install</span> <span class="o">-</span><span class="n">c</span> <span class="n">conda</span><span class="o">-</span><span class="n">forge</span> <span class="n">porespy</span>
+</pre></div>
+</div>
+<p>It’s possible to use <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">porespy</span></code>, but this will not result
+in a full installation and some features won’t work (i.e. outputing to
+paraview and calling imagej functions).</p>
+<div class="section" id="windows">
+<h3>Windows<a class="headerlink" href="#windows" title="Permalink to this headline">¶</a></h3>
+<p>On Windows you should have a shortcut to the “Anaconda prompt” in the
+Anaconda program group in the start menu. This will open a Windows
+command console with access to the Python features added by <em>Conda</em>,
+such as installing things via <code class="docutils literal notranslate"><span class="pre">conda</span></code>.</p>
+</div>
+<div class="section" id="mac-and-linux">
+<h3>Mac and Linux<a class="headerlink" href="#mac-and-linux" title="Permalink to this headline">¶</a></h3>
+<p>On Mac or Linux, you need to open a normal terminal window, then type
+<code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">activate</span> <span class="pre">{env}</span></code> where you replace <code class="docutils literal notranslate"><span class="pre">{env}</span></code> with the name of
+the environment you want to install PoreSpy. If you don’t know what this
+means, then use <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">activate</span> <span class="pre">root</span></code>, which will install PoreSpy in
+the root environment which is the default.</p>
+</div>
+</div>
+<div class="section" id="contributing">
+<h2>Contributing<a class="headerlink" href="#contributing" title="Permalink to this headline">¶</a></h2>
+<p>If you think you may be interested in contributing to PoreSpy and wish
+to both <em>use</em> and <em>edit</em> the source code, then you should clone the
+<a class="reference external" href="https://github.com/PMEAL/porespy">repository</a> to your local machine,
+and install it using the following PIP command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">e</span> <span class="s2">&quot;C:\path</span><span class="se">\t</span><span class="s2">o</span><span class="se">\t</span><span class="s2">he\local</span><span class="se">\f</span><span class="s2">iles</span><span class="se">\&quot;</span>
+</pre></div>
+</div>
+<p>For information about contributing, refer to the <a class="reference external" href="https://github.com/PMEAL/porespy/blob/dev/CONTRIBUTING.md">contributors
+guide</a></p>
+</div>
+<div class="section" id="stay-informed">
+<h2>Stay Informed<a class="headerlink" href="#stay-informed" title="Permalink to this headline">¶</a></h2>
+<p>It’s surprizingly hard to communicate with our users, since Github
+doesn’t allow sending out email newsletters or announcements. To address
+this gap, we have created a <a class="reference external" href="https://porespy.substack.com/p/coming-soon?r=e02s8&amp;utm_campaign=post&amp;utm_medium=web&amp;utm_source=copy">Substack
+channel</a>,
+where you can subscribe to our feed to receive periodic news about
+important events and updates.</p>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>The following code snippets illustrate generating a 2D image, applying
+several filters, and calculating some common metrics. A set of examples
+is included in this repo, and can be <a class="reference external" href="https://github.com/PMEAL/porespy/tree/dev/examples">browsed
+here</a>.</p>
+<div class="section" id="generating-an-image">
+<h3>Generating an image<a class="headerlink" href="#generating-an-image" title="Permalink to this headline">¶</a></h3>
+<p>PoreSpy offers several ways to generate artificial images, for quick
+testing and developmnet of work flows, instead of dealing with
+reading/writing/storing of large tomograms.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">porespy</span> <span class="k">as</span> <span class="nn">ps</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="n">im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">blobs</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">500</span><span class="p">,</span> <span class="mi">500</span><span class="p">],</span> <span class="n">porosity</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">blobiness</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+</pre></div>
+</div>
+<p align="center">
+  <img src="https://github.com/PMEAL/porespy/raw/dev/docs/_static/fig1.png" width="50%"></img>
+</p></div>
+<div class="section" id="applying-filters">
+<h3>Applying filters<a class="headerlink" href="#applying-filters" title="Permalink to this headline">¶</a></h3>
+<p>A common filter to apply is the local thickness, which replaces every
+voxel with the radius of a sphere that overlaps it. Analysis of the
+histogram of the voxel values provides information about the pore size
+distribution.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">lt</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">local_thickness</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">lt</span><span class="p">)</span>
+</pre></div>
+</div>
+<!--
+![image](https://github.com/PMEAL/porespy/raw/dev/docs/_static/fig2.png)
+--><p align="center">
+  <img src="https://github.com/PMEAL/porespy/raw/dev/docs/_static/fig2.png" width="50%"></img>
+</p><p>A less common filter is the application of chords that span the pore
+space in a given direction. It is possible to gain information about
+anisotropy of the material by looking at the distributions of chords
+lengths in each principle direction.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cr</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">apply_chords</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+<span class="n">cr</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">flood</span><span class="p">(</span><span class="n">cr</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;size&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">cr</span><span class="p">)</span>
+</pre></div>
+</div>
+<p align="center">
+  <img src="https://github.com/PMEAL/porespy/raw/dev/docs/_static/fig3.png" width="50%"></img>
+</p></div>
+<div class="section" id="calculating-metrics">
+<h3>Calculating metrics<a class="headerlink" href="#calculating-metrics" title="Permalink to this headline">¶</a></h3>
+<p>The metrics sub-module contains several common functions that analyze
+binary tomogram directly. Examples are simple porosity, as well as
+two-point correlation function.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">two_point_correlation_fft</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="o">*</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;bo-&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;probability&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;correlation length [voxels]&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p align="center">
+  <img src="https://github.com/PMEAL/porespy/raw/dev/docs/_static/fig4.png" width="50%"></img>
+</p><p>The metrics sub-module also contains a suite of functions that produce
+plots based on values in images that have passed through a filter, such
+as local thickness.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mip</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">porosimetry</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">pore_size_distribution</span><span class="p">(</span><span class="n">mip</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">mip</span><span class="p">)</span>
+<span class="c1"># Now show intrusion curve</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">R</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">cdf</span><span class="p">,</span> <span class="s1">&#39;bo-&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;invasion size [voxels]&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;volume fraction invaded [voxels]&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p align="center">
+  <img src="https://github.com/PMEAL/porespy/raw/dev/docs/_static/fig5.png" width="50%"></img>
+  <img src="https://github.com/PMEAL/porespy/raw/dev/docs/_static/fig6.png" width="50%"></img>
+</p></div>
+</div>
+</div>
+
+
+              </div>
+              
+              
+              <div class='prev-next-bottom'>
+                
+    <a class='left-prev' id="prev-link" href="index.html" title="previous page">Quantitative image analysis of porous materials</a>
+    <a class='right-next' id="next-link" href="modules/index.html" title="next page">Module and Function Reference</a>
+
+              </div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+
+    
+  <script src="_static/js/index.1e043a052b0af929e4d8.js"></script>
+
+
+    <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    <p>
+          &copy; Copyright 2021 PoreSpy Team.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

@@ -1,0 +1,352 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Metrics &#8212; PoreSpy  documentation</title>
+    
+  <link href="../_static/css/theme.css" rel="stylesheet" />
+  <link href="../_static/css/index.f6b7ca918bee2f46fd9abac01cfb07d5.css" rel="stylesheet" />
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    
+  <link rel="preload" as="script" href="../_static/js/index.1e043a052b0af929e4d8.js">
+
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="porespy.metrics.chord_counts" href="generated/porespy.metrics.chord_counts.html" />
+    <link rel="prev" title="porespy.filters.trim_small_clusters" href="generated/porespy.filters.trim_small_clusters.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+
+    
+      
+      <a class="navbar-brand" href="../index.html">
+        <img src="../_static/porespy_logo.png" class="logo" alt="logo">
+      </a>
+      
+    
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    
+    <div id="navbar-menu" class="col-lg-9 collapse navbar-collapse">
+      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
+        <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../getting_started.html">
+  Getting Started
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="index.html">
+  Module and Function Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../user_guide.html">
+  PoreSpy
+ </a>
+</li>
+
+        
+      </ul>
+
+      <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+    </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l2">
+  <a class="reference internal" href="generators.html">
+   Generators
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="filters.html">
+   Filters
+  </a>
+ </li>
+ <li class="toctree-l2 current active">
+  <a class="current reference internal" href="#">
+   Metrics
+  </a>
+  <ul>
+   <li class="toctree-l3">
+    <a class="reference internal" href="generated/porespy.metrics.chord_counts.html">
+     porespy.metrics.chord_counts
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="generated/porespy.metrics.chord_length_distribution.html">
+     porespy.metrics.chord_length_distribution
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="generated/porespy.metrics.lineal_path_distribution.html">
+     porespy.metrics.lineal_path_distribution
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="generated/porespy.metrics.mesh_surface_area.html">
+     porespy.metrics.mesh_surface_area
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="generated/porespy.metrics.phase_fraction.html">
+     porespy.metrics.phase_fraction
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="generated/porespy.metrics.pore_size_distribution.html">
+     porespy.metrics.pore_size_distribution
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="generated/porespy.metrics.porosity.html">
+     porespy.metrics.porosity
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="generated/porespy.metrics.porosity_profile.html">
+     porespy.metrics.porosity_profile
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="generated/porespy.metrics.prop_to_image.html">
+     porespy.metrics.prop_to_image
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="generated/porespy.metrics.props_to_DataFrame.html">
+     porespy.metrics.props_to_DataFrame
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="generated/porespy.metrics.radial_density_distribution.html">
+     porespy.metrics.radial_density_distribution
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="generated/porespy.metrics.region_interface_areas.html">
+     porespy.metrics.region_interface_areas
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="generated/porespy.metrics.region_surface_areas.html">
+     porespy.metrics.region_surface_areas
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="generated/porespy.metrics.regionprops_3D.html">
+     porespy.metrics.regionprops_3D
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="generated/porespy.metrics.representative_elementary_volume.html">
+     porespy.metrics.representative_elementary_volume
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="generated/porespy.metrics.two_point_correlation_bf.html">
+     porespy.metrics.two_point_correlation_bf
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="generated/porespy.metrics.two_point_correlation_fft.html">
+     porespy.metrics.two_point_correlation_fft
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="networks.html">
+   Networks
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="dns.html">
+   DNS
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="tools.html">
+   Tools
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="visualization.html">
+   Visualization
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="io.html">
+   IO
+  </a>
+ </li>
+</ul>
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+              
+
+<nav id="bd-toc-nav">
+    
+</nav>
+
+
+              
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <span class="target" id="module-porespy.metrics"><span id="metrics"></span></span><div class="section" id="id1">
+<h1>Metrics<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<p><strong>Extract Quantitative Information</strong></p>
+<p>This submodule contains functions for determining key metrics about an
+image. Typically these are applied to an image after applying a filter,
+but a few functions can be applied directly to the binary image.</p>
+<table class="longtable table autosummary">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.metrics.chord_counts.html#porespy.metrics.chord_counts" title="porespy.metrics.chord_counts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">chord_counts</span></code></a>(im)</p></td>
+<td><p>Finds the length of each chord in the supplied image and returns a list of their individual sizes</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.metrics.chord_length_distribution.html#porespy.metrics.chord_length_distribution" title="porespy.metrics.chord_length_distribution"><code class="xref py py-obj docutils literal notranslate"><span class="pre">chord_length_distribution</span></code></a>(im[, bins, log, …])</p></td>
+<td><p>Determines the distribution of chord lengths in an image containing chords.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.metrics.lineal_path_distribution.html#porespy.metrics.lineal_path_distribution" title="porespy.metrics.lineal_path_distribution"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lineal_path_distribution</span></code></a>(im[, bins, …])</p></td>
+<td><p>Determines the probability that a point lies within a certain distance of the opposite phase <em>along a specified direction</em></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.metrics.mesh_surface_area.html#porespy.metrics.mesh_surface_area" title="porespy.metrics.mesh_surface_area"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mesh_surface_area</span></code></a>([mesh, verts, faces])</p></td>
+<td><p>Calculates the surface area of a meshed region</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.metrics.phase_fraction.html#porespy.metrics.phase_fraction" title="porespy.metrics.phase_fraction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">phase_fraction</span></code></a>(im[, normed])</p></td>
+<td><p>Calculates the number (or fraction) of each phase in an image</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.metrics.pore_size_distribution.html#porespy.metrics.pore_size_distribution" title="porespy.metrics.pore_size_distribution"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pore_size_distribution</span></code></a>(im[, bins, log, …])</p></td>
+<td><p>Calculate a pore-size distribution based on the image produced by the <code class="docutils literal notranslate"><span class="pre">porosimetry</span></code> or <code class="docutils literal notranslate"><span class="pre">local_thickness</span></code> functions.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.metrics.porosity.html#porespy.metrics.porosity" title="porespy.metrics.porosity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">porosity</span></code></a>(im)</p></td>
+<td><p>Calculates the porosity of an image assuming 1’s are void space and 0’s are solid phase.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.metrics.porosity_profile.html#porespy.metrics.porosity_profile" title="porespy.metrics.porosity_profile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">porosity_profile</span></code></a>(im[, axis])</p></td>
+<td><p>Returns a porosity profile along the specified axis</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.metrics.prop_to_image.html#porespy.metrics.prop_to_image" title="porespy.metrics.prop_to_image"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prop_to_image</span></code></a>(regionprops, shape, prop)</p></td>
+<td><p>Creates an image with each region colored according the specified <code class="docutils literal notranslate"><span class="pre">prop</span></code>, as obtained by <code class="docutils literal notranslate"><span class="pre">regionprops_3d</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.metrics.props_to_DataFrame.html#porespy.metrics.props_to_DataFrame" title="porespy.metrics.props_to_DataFrame"><code class="xref py py-obj docutils literal notranslate"><span class="pre">props_to_DataFrame</span></code></a>(regionprops)</p></td>
+<td><p>Returns a Pandas DataFrame containing all the scalar metrics for each region, such as volume, sphericity, and so on, calculated by <code class="docutils literal notranslate"><span class="pre">regionprops_3D</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.metrics.radial_density_distribution.html#porespy.metrics.radial_density_distribution" title="porespy.metrics.radial_density_distribution"><code class="xref py py-obj docutils literal notranslate"><span class="pre">radial_density_distribution</span></code></a>(im[, bins, log, …])</p></td>
+<td><p>Computes radial density function by analyzing the histogram of voxel values in the distance transform.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.metrics.region_interface_areas.html#porespy.metrics.region_interface_areas" title="porespy.metrics.region_interface_areas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">region_interface_areas</span></code></a>(regions, areas[, …])</p></td>
+<td><p>Calculates the interfacial area between all pairs of adjecent regions</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.metrics.region_surface_areas.html#porespy.metrics.region_surface_areas" title="porespy.metrics.region_surface_areas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">region_surface_areas</span></code></a>(regions[, voxel_size, …])</p></td>
+<td><p>Extracts the surface area of each region in a labeled image.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.metrics.regionprops_3D.html#porespy.metrics.regionprops_3D" title="porespy.metrics.regionprops_3D"><code class="xref py py-obj docutils literal notranslate"><span class="pre">regionprops_3D</span></code></a>(im)</p></td>
+<td><p>Calculates various metrics for each labeled region in a 3D image.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.metrics.representative_elementary_volume.html#porespy.metrics.representative_elementary_volume" title="porespy.metrics.representative_elementary_volume"><code class="xref py py-obj docutils literal notranslate"><span class="pre">representative_elementary_volume</span></code></a>(im[, npoints])</p></td>
+<td><p>Calculates the porosity of the image as a function subdomain size.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.metrics.two_point_correlation_bf.html#porespy.metrics.two_point_correlation_bf" title="porespy.metrics.two_point_correlation_bf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">two_point_correlation_bf</span></code></a>(im[, spacing])</p></td>
+<td><p>Calculates the two-point correlation function using brute-force (see Notes)</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.metrics.two_point_correlation_fft.html#porespy.metrics.two_point_correlation_fft" title="porespy.metrics.two_point_correlation_fft"><code class="xref py py-obj docutils literal notranslate"><span class="pre">two_point_correlation_fft</span></code></a>(im)</p></td>
+<td><p>Calculates the two-point correlation function using fourier transforms.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+              </div>
+              
+              
+              <div class='prev-next-bottom'>
+                
+    <a class='left-prev' id="prev-link" href="generated/porespy.filters.trim_small_clusters.html" title="previous page">porespy.filters.trim_small_clusters</a>
+    <a class='right-next' id="next-link" href="generated/porespy.metrics.chord_counts.html" title="next page">porespy.metrics.chord_counts</a>
+
+              </div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+
+    
+  <script src="../_static/js/index.1e043a052b0af929e4d8.js"></script>
+
+
+    <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    <p>
+          &copy; Copyright 2021 PoreSpy Team.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

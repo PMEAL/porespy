@@ -1,0 +1,397 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>porespy.tools.get_border &#8212; PoreSpy  documentation</title>
+    
+  <link href="../../_static/css/theme.css" rel="stylesheet" />
+  <link href="../../_static/css/index.f6b7ca918bee2f46fd9abac01cfb07d5.css" rel="stylesheet" />
+
+    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
+    
+  <link rel="preload" as="script" href="../../_static/js/index.1e043a052b0af929e4d8.js">
+
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="porespy.tools.get_planes" href="porespy.tools.get_planes.html" />
+    <link rel="prev" title="porespy.tools.find_outer_region" href="porespy.tools.find_outer_region.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+
+    
+      
+      <a class="navbar-brand" href="../../index.html">
+        <img src="../../_static/porespy_logo.png" class="logo" alt="logo">
+      </a>
+      
+    
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    
+    <div id="navbar-menu" class="col-lg-9 collapse navbar-collapse">
+      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
+        <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../getting_started.html">
+  Getting Started
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../index.html">
+  Module and Function Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../user_guide.html">
+  PoreSpy
+ </a>
+</li>
+
+        
+      </ul>
+
+      <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+    </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l2">
+  <a class="reference internal" href="../generators.html">
+   Generators
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../filters.html">
+   Filters
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../metrics.html">
+   Metrics
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../networks.html">
+   Networks
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../dns.html">
+   DNS
+  </a>
+ </li>
+ <li class="toctree-l2 current active">
+  <a class="reference internal" href="../tools.html">
+   Tools
+  </a>
+  <ul class="current">
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.align_image_with_openpnm.html">
+     porespy.tools.align_image_with_openpnm
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.bbox_to_slices.html">
+     porespy.tools.bbox_to_slices
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.extend_slice.html">
+     porespy.tools.extend_slice
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.extract_subsection.html">
+     porespy.tools.extract_subsection
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.extract_regions.html">
+     porespy.tools.extract_regions
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.extract_cylinder.html">
+     porespy.tools.extract_cylinder
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.extract_subsection.html">
+     porespy.tools.extract_subsection
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.fftmorphology.html">
+     porespy.tools.fftmorphology
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.find_outer_region.html">
+     porespy.tools.find_outer_region
+    </a>
+   </li>
+   <li class="toctree-l3 current active">
+    <a class="current reference internal" href="#">
+     porespy.tools.get_border
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.get_planes.html">
+     porespy.tools.get_planes
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.insert_cylinder.html">
+     porespy.tools.insert_cylinder
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.insert_sphere.html">
+     porespy.tools.insert_sphere
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.in_hull.html">
+     porespy.tools.in_hull
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.make_contiguous.html">
+     porespy.tools.make_contiguous
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.mesh_region.html">
+     porespy.tools.mesh_region
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.norm_to_uniform.html">
+     porespy.tools.norm_to_uniform
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.overlay.html">
+     porespy.tools.overlay
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.ps_ball.html">
+     porespy.tools.ps_ball
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.ps_disk.html">
+     porespy.tools.ps_disk
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.ps_rect.html">
+     porespy.tools.ps_rect
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.ps_round.html">
+     porespy.tools.ps_round
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.pad_faces.html">
+     porespy.tools.pad_faces
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.randomize_colors.html">
+     porespy.tools.randomize_colors
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.seq_to_satn.html">
+     porespy.tools.seq_to_satn
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.size_to_seq.html">
+     porespy.tools.size_to_seq
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.subdivide.html">
+     porespy.tools.subdivide
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.tools.zero_corners.html">
+     porespy.tools.zero_corners
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../visualization.html">
+   Visualization
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../io.html">
+   IO
+  </a>
+ </li>
+</ul>
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+              
+
+<nav id="bd-toc-nav">
+    
+</nav>
+
+
+              
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <div class="section" id="porespy-tools-get-border">
+<h1>porespy.tools.get_border<a class="headerlink" href="#porespy-tools-get-border" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="porespy.tools.get_border">
+<code class="sig-name descname"><span class="pre">get_border</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thickness</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'edges'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_indices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/tools/__funcs__.html#get_border"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.tools.get_border" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates an array of specified size with corners, edges or faces labelled as
+True.  This can be used as mask to manipulate values laying on the
+perimeter of an image.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>shape</strong> (<em>array_like</em>) – The shape of the array to return.  Can be either 2D or 3D.</p></li>
+<li><p><strong>thickness</strong> (<em>scalar</em><em> (</em><em>default is 1</em><em>)</em>) – The number of pixels/voxels to place along perimeter.</p></li>
+<li><p><strong>mode</strong> (<em>string</em>) – The type of border to create.  Options are ‘faces’, ‘edges’ (default)
+and ‘corners’.  In 2D ‘faces’ and ‘edges’ give the same result.</p></li>
+<li><p><strong>return_indices</strong> (<em>boolean</em>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code> (default) an image is returned with the border voxels set
+to <code class="docutils literal notranslate"><span class="pre">True</span></code>.  If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then a tuple with the x, y, z (if <code class="docutils literal notranslate"><span class="pre">im</span></code> is
+3D) indices is returned.  This tuple can be used directly to index into
+the image, such as <code class="docutils literal notranslate"><span class="pre">im[tup]</span> <span class="pre">=</span> <span class="pre">2</span></code>.</p></li>
+<li><p><strong>asmask</strong> (<em>Boolean</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> (default) then an image of the specified <code class="docutils literal notranslate"><span class="pre">shape</span></code> is
+returned, otherwise indices of the border voxels are returned.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>image</strong> – An ND-array of specified shape with <code class="docutils literal notranslate"><span class="pre">True</span></code> values at the perimeter
+and <code class="docutils literal notranslate"><span class="pre">False</span></code> elsewhere</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ND-array</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>TODO: This function uses brute force to create an image then fill the
+edges using location-based logic, and if the user requests
+<code class="docutils literal notranslate"><span class="pre">return_indices</span></code> it finds them using <code class="docutils literal notranslate"><span class="pre">np.where</span></code>.  Since these arrays
+are cubic it should be possible to use more elegant and efficient
+index-based logic to find the indices, then use them to fill an empty
+image with <code class="docutils literal notranslate"><span class="pre">True</span></code> using these indices.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">porespy</span> <span class="k">as</span> <span class="nn">ps</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">scipy</span> <span class="k">as</span> <span class="nn">sp</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mask</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">get_border</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;corners&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+<span class="go">[[ True False  True]</span>
+<span class="go"> [False False False]</span>
+<span class="go"> [ True False  True]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mask</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">get_border</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;edges&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+<span class="go">[[ True  True  True]</span>
+<span class="go"> [ True False  True]</span>
+<span class="go"> [ True  True  True]]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+
+
+              </div>
+              
+              
+              <div class='prev-next-bottom'>
+                
+    <a class='left-prev' id="prev-link" href="porespy.tools.find_outer_region.html" title="previous page">porespy.tools.find_outer_region</a>
+    <a class='right-next' id="next-link" href="porespy.tools.get_planes.html" title="next page">porespy.tools.get_planes</a>
+
+              </div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+
+    
+  <script src="../../_static/js/index.1e043a052b0af929e4d8.js"></script>
+
+
+    <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    <p>
+          &copy; Copyright 2021 PoreSpy Team.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

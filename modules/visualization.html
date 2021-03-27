@@ -1,0 +1,279 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Visualization &#8212; PoreSpy  documentation</title>
+    
+  <link href="../_static/css/theme.css" rel="stylesheet" />
+  <link href="../_static/css/index.f6b7ca918bee2f46fd9abac01cfb07d5.css" rel="stylesheet" />
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    
+  <link rel="preload" as="script" href="../_static/js/index.1e043a052b0af929e4d8.js">
+
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="porespy.visualization.sem" href="generated/porespy.visualization.sem.html" />
+    <link rel="prev" title="porespy.tools.zero_corners" href="generated/porespy.tools.zero_corners.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+
+    
+      
+      <a class="navbar-brand" href="../index.html">
+        <img src="../_static/porespy_logo.png" class="logo" alt="logo">
+      </a>
+      
+    
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    
+    <div id="navbar-menu" class="col-lg-9 collapse navbar-collapse">
+      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
+        <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../getting_started.html">
+  Getting Started
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="index.html">
+  Module and Function Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../user_guide.html">
+  PoreSpy
+ </a>
+</li>
+
+        
+      </ul>
+
+      <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+    </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l2">
+  <a class="reference internal" href="generators.html">
+   Generators
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="filters.html">
+   Filters
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="metrics.html">
+   Metrics
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="networks.html">
+   Networks
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="dns.html">
+   DNS
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="tools.html">
+   Tools
+  </a>
+ </li>
+ <li class="toctree-l2 current active">
+  <a class="current reference internal" href="#">
+   Visualization
+  </a>
+  <ul>
+   <li class="toctree-l3">
+    <a class="reference internal" href="generated/porespy.visualization.sem.html">
+     porespy.visualization.sem
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="generated/porespy.visualization.show_planes.html">
+     porespy.visualization.show_planes
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="generated/porespy.visualization.xray.html">
+     porespy.visualization.xray
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="generated/porespy.visualization.show_3D.html">
+     porespy.visualization.show_3D
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="generated/porespy.visualization.imshow.html">
+     porespy.visualization.imshow
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="generated/porespy.visualization.bar.html">
+     porespy.visualization.bar
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="generated/porespy.visualization.show_mesh.html">
+     porespy.visualization.show_mesh
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="generated/porespy.visualization.set_mpl_style.html">
+     porespy.visualization.set_mpl_style
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="io.html">
+   IO
+  </a>
+ </li>
+</ul>
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+              
+
+<nav id="bd-toc-nav">
+    
+</nav>
+
+
+              
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <span class="target" id="module-porespy.visualization"><span id="visualization"></span></span><div class="section" id="id1">
+<h1>Visualization<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<p><strong>Create Basic Views</strong></p>
+<p>This module contains functions for quickly visualizing 3D images in 2D
+views.</p>
+<table class="longtable table autosummary">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.visualization.sem.html#porespy.visualization.sem" title="porespy.visualization.sem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sem</span></code></a>(im[, axis])</p></td>
+<td><p>Simulates an SEM photograph looking into the porous material.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.visualization.show_planes.html#porespy.visualization.show_planes" title="porespy.visualization.show_planes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_planes</span></code></a>(im[, spacing])</p></td>
+<td><p>Create a quick montage showing a 3D image in all three directions</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.visualization.xray.html#porespy.visualization.xray" title="porespy.visualization.xray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xray</span></code></a>(im[, axis])</p></td>
+<td><p>Simulates an X-ray radiograph looking through the porous material.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.visualization.show_3D.html#porespy.visualization.show_3D" title="porespy.visualization.show_3D"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_3D</span></code></a>(im)</p></td>
+<td><p>Rotates a 3D image and creates an angled view for rough 2D visualization.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.visualization.imshow.html#porespy.visualization.imshow" title="porespy.visualization.imshow"><code class="xref py py-obj docutils literal notranslate"><span class="pre">imshow</span></code></a>(*im[, ind, axis])</p></td>
+<td><p>Convenience wrapper for matplotlib’s <code class="docutils literal notranslate"><span class="pre">imshow</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.visualization.bar.html#porespy.visualization.bar" title="porespy.visualization.bar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bar</span></code></a>(tup[, h])</p></td>
+<td><p>Convenience wrapper for matplotlib’s <code class="docutils literal notranslate"><span class="pre">bar</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.visualization.show_mesh.html#porespy.visualization.show_mesh" title="porespy.visualization.show_mesh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_mesh</span></code></a>(mesh)</p></td>
+<td><p>Visualizes the mesh of a region as obtained by <code class="docutils literal notranslate"><span class="pre">get_mesh</span></code> function in the <code class="docutils literal notranslate"><span class="pre">metrics</span></code> submodule.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.visualization.set_mpl_style.html#porespy.visualization.set_mpl_style" title="porespy.visualization.set_mpl_style"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_mpl_style</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+              </div>
+              
+              
+              <div class='prev-next-bottom'>
+                
+    <a class='left-prev' id="prev-link" href="generated/porespy.tools.zero_corners.html" title="previous page">porespy.tools.zero_corners</a>
+    <a class='right-next' id="next-link" href="generated/porespy.visualization.sem.html" title="next page">porespy.visualization.sem</a>
+
+              </div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+
+    
+  <script src="../_static/js/index.1e043a052b0af929e4d8.js"></script>
+
+
+    <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    <p>
+          &copy; Copyright 2021 PoreSpy Team.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

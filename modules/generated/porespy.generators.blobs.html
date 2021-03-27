@@ -1,0 +1,305 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>porespy.generators.blobs &#8212; PoreSpy  documentation</title>
+    
+  <link href="../../_static/css/theme.css" rel="stylesheet" />
+  <link href="../../_static/css/index.f6b7ca918bee2f46fd9abac01cfb07d5.css" rel="stylesheet" />
+
+    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
+    
+  <link rel="preload" as="script" href="../../_static/js/index.1e043a052b0af929e4d8.js">
+
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="porespy.generators.bundle_of_tubes" href="porespy.generators.bundle_of_tubes.html" />
+    <link rel="prev" title="Generators" href="../generators.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+
+    
+      
+      <a class="navbar-brand" href="../../index.html">
+        <img src="../../_static/porespy_logo.png" class="logo" alt="logo">
+      </a>
+      
+    
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    
+    <div id="navbar-menu" class="col-lg-9 collapse navbar-collapse">
+      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
+        <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../getting_started.html">
+  Getting Started
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../index.html">
+  Module and Function Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../user_guide.html">
+  PoreSpy
+ </a>
+</li>
+
+        
+      </ul>
+
+      <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+    </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l2 current active">
+  <a class="reference internal" href="../generators.html">
+   Generators
+  </a>
+  <ul class="current">
+   <li class="toctree-l3 current active">
+    <a class="current reference internal" href="#">
+     porespy.generators.blobs
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.generators.bundle_of_tubes.html">
+     porespy.generators.bundle_of_tubes
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.generators.cylindrical_plug.html">
+     porespy.generators.cylindrical_plug
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.generators.cylinders.html">
+     porespy.generators.cylinders
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.generators.fractal_noise.html">
+     porespy.generators.fractal_noise
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.generators.insert_shape.html">
+     porespy.generators.insert_shape
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.generators.lattice_spheres.html">
+     porespy.generators.lattice_spheres
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.generators.line_segment.html">
+     porespy.generators.line_segment
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.generators.overlapping_spheres.html">
+     porespy.generators.overlapping_spheres
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.generators.polydisperse_spheres.html">
+     porespy.generators.polydisperse_spheres
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.generators.pseudo_electrostatic_packing.html">
+     porespy.generators.pseudo_electrostatic_packing
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.generators.pseudo_gravity_packing.html">
+     porespy.generators.pseudo_gravity_packing
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.generators.RSA.html">
+     porespy.generators.RSA
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.generators.voronoi_edges.html">
+     porespy.generators.voronoi_edges
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../filters.html">
+   Filters
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../metrics.html">
+   Metrics
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../networks.html">
+   Networks
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../dns.html">
+   DNS
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../tools.html">
+   Tools
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../visualization.html">
+   Visualization
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../io.html">
+   IO
+  </a>
+ </li>
+</ul>
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+              
+
+<nav id="bd-toc-nav">
+    
+</nav>
+
+
+              
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <div class="section" id="porespy-generators-blobs">
+<h1>porespy.generators.blobs<a class="headerlink" href="#porespy-generators-blobs" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="porespy.generators.blobs">
+<code class="sig-name descname"><span class="pre">blobs</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">porosity</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blobiness</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/generators/__imgen__.html#blobs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.generators.blobs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates an image containing amorphous blobs</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>shape</strong> (<em>list</em>) – The size of the image to generate in [Nx, Ny, Nz] where N is the
+number of voxels</p></li>
+<li><p><strong>porosity</strong> (<em>float</em>) – If specified, this will threshold the image to the specified value
+prior to returning.  If <code class="docutils literal notranslate"><span class="pre">None</span></code> is specified, then the scalar noise
+field is converted to a uniform distribution and returned without
+thresholding.</p></li>
+<li><p><strong>blobiness</strong> (<em>int</em><em> or </em><em>list of ints</em><em>(</em><em>default = 1</em><em>)</em>) – Controls the morphology of the blobs.  A higher number results in
+a larger number of small blobs.  If a list is supplied then the blobs
+are anisotropic.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>image</strong> – A boolean array with <code class="docutils literal notranslate"><span class="pre">True</span></code> values denoting the pore space</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ND-array</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">norm_to_uniform</span></code></p>
+</div>
+</dd></dl>
+
+</div>
+
+
+              </div>
+              
+              
+              <div class='prev-next-bottom'>
+                
+    <a class='left-prev' id="prev-link" href="../generators.html" title="previous page">Generators</a>
+    <a class='right-next' id="next-link" href="porespy.generators.bundle_of_tubes.html" title="next page">porespy.generators.bundle_of_tubes</a>
+
+              </div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+
+    
+  <script src="../../_static/js/index.1e043a052b0af929e4d8.js"></script>
+
+
+    <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    <p>
+          &copy; Copyright 2021 PoreSpy Team.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>
