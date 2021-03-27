@@ -9,7 +9,7 @@ from loguru import logger
 tqdm = get_tqdm()
 
 
-def regions_to_network(regions, dt=None, voxel_size=1, accuracy='standard'):
+def regions_to_network(regions, phases=None, voxel_size=1, accuracy='standard'):
     r"""
     Analyzes an image that has been partitioned into pore regions and extracts
     the pore and throat geometry as well as network connectivity.
@@ -17,12 +17,13 @@ def regions_to_network(regions, dt=None, voxel_size=1, accuracy='standard'):
     Parameters
     ----------
     regions : ND-array
-        An image of the pore space partitioned into individual pore regions.
-        Note that zeros in this image indicate the solid phase.
-    dt : ND-array
-        The distance transform of the pore space. If not given it will be
-        calculated, but providing one can save time if available.
-    voxel_size : scalar
+        An image of the material partitioned into individual regions.
+        Zeros in this image are ignored.
+    phases : ND-array, optional
+        An image indicating to which phase each voxel belongs. The returned
+        network contains a 'pore.phase' array with the corresponding value.
+        If not given a value of 1 is assigned to every pore.
+    voxel_size : scalar (default = 1)
         The resolution of the image, expressed as the length of one side of a
         voxel, so the volume of a voxel would be **voxel_size**-cubed.
     accuracy : string
@@ -97,8 +98,13 @@ def regions_to_network(regions, dt=None, voxel_size=1, accuracy='standard'):
     from skimage.morphology import disk, ball
     struc_elem = disk if im.ndim == 2 else ball
 
-    if dt is None:
-        dt = edt(im > 0)
+    if phases is None:
+        phases = (regions > 0).astype(int)
+
+    # dt = np.zeros_like(regions, dtype=float)
+    # for i in range(phases.max()):
+    #     dt += edt(phases == (i+1))
+    dt = edt(regions > 0)
 
     # Get 'slices' into im for each pore region
     slices = spim.find_objects(im)
@@ -114,6 +120,7 @@ def regions_to_network(regions, dt=None, voxel_size=1, accuracy='standard'):
     p_dia_global = np.zeros((Np, ), dtype=float)
     p_label = np.zeros((Np, ), dtype=int)
     p_area_surf = np.zeros((Np, ), dtype=int)
+    p_phase = np.zeros((Np, ), dtype=int)
     # The number of throats is not known at the start, so lists are used
     # which can be dynamically resized more easily.
     t_conns = []
@@ -138,6 +145,7 @@ def regions_to_network(regions, dt=None, voxel_size=1, accuracy='standard'):
         p_coords_cm[pore, :] = spim.center_of_mass(pore_im) + s_offset
         temp = np.vstack(np.where(pore_dt == pore_dt.max()))[:, 0]
         p_coords_dt[pore, :] = temp + s_offset
+        p_phase[pore] = phases[tuple(temp + s_offset)]  # Get phase value
         temp = np.vstack(np.where(sub_dt == sub_dt.max()))[:, 0]
         p_coords_dt_global[pore, :] = temp + s_offset
         p_volume[pore] = np.sum(pore_im)
@@ -173,6 +181,8 @@ def regions_to_network(regions, dt=None, voxel_size=1, accuracy='standard'):
     net['throat.conns'] = np.array(t_conns)
     net['pore.region_label'] = np.array(p_label)
     net['pore.region_volume'] = np.copy(p_volume)*(voxel_size**3)
+    net['pore.phase'] = np.array(p_phase, dtype=int)
+    net['throat.phase'] = net['pore.phase'][net['throat.conns']]
     # Extract the geometric stuff
     net['pore.local_peak'] = np.copy(p_coords_dt)*voxel_size
     net['pore.global_peak'] = np.copy(p_coords_dt_global)*voxel_size
