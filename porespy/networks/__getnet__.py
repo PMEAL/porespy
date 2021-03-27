@@ -1,10 +1,8 @@
 import numpy as np
-import openpnm as op
 import scipy.ndimage as spim
 from edt import edt
 from porespy.tools import extend_slice
 from porespy import settings
-import openpnm.models.geometry as op_gm
 from porespy.tools import get_tqdm
 from porespy.metrics import region_surface_areas, region_interface_areas
 from loguru import logger
@@ -175,18 +173,18 @@ def regions_to_network(regions, dt=None, voxel_size=1, accuracy='standard'):
     net['throat.conns'] = np.array(t_conns)
     net['pore.region_label'] = np.array(p_label)
     net['pore.region_volume'] = np.copy(p_volume)*(voxel_size**3)
+    # Extract the geometric stuff
     net['pore.local_peak'] = np.copy(p_coords_dt)*voxel_size
     net['pore.global_peak'] = np.copy(p_coords_dt_global)*voxel_size
     net['pore.geometric_centroid'] = np.copy(p_coords_cm)*voxel_size
     net['throat.global_peak'] = np.array(t_coords)*voxel_size
-    # Extract the geometric stuff
     net['pore.inscribed_diameter'] = np.copy(p_dia_local)*voxel_size
     net['pore.extended_diameter'] = np.copy(p_dia_global)*voxel_size
     net['throat.inscribed_diameter'] = np.array(t_dia_inscribed)*voxel_size
     P12 = net['throat.conns']
-    PT1 = np.sqrt(np.sum(((p_coords[P12[:, 0]]-t_coords) * voxel_size)**2,
+    PT1 = np.sqrt(np.sum(((p_coords[P12[:, 0]]-t_coords)*voxel_size)**2,
                          axis=1))
-    PT2 = np.sqrt(np.sum(((p_coords[P12[:, 1]]-t_coords) * voxel_size)**2,
+    PT2 = np.sqrt(np.sum(((p_coords[P12[:, 1]]-t_coords)*voxel_size)**2,
                          axis=1))
     net['throat.total_length'] = PT1 + PT2
     PT1 = PT1-p_dia_local[P12[:, 0]]/2*voxel_size
