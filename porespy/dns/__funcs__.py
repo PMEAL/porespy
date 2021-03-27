@@ -41,9 +41,6 @@ def tortuosity(im, axis, return_im=False, **kwargs):
     if axis > (im.ndim - 1):
         raise Exception("Axis argument is too high")
 
-    if eps < eps0:  # pragma: no cover
-        logger.warning(f'True porosity is {eps:.2f}, filled {eps0 - eps:.2f}'
-                       ' volume fraction of the image for it to percolate.')
     # Obtain original porosity
     eps0 = im.sum() / im.size
     # removing floating pores
@@ -73,12 +70,15 @@ def tortuosity(im, axis, return_im=False, **kwargs):
     # Use specified solver if given
     if 'solver_family' in kwargs.keys():
         fd.settings.update(kwargs)
+        fd.run()
     else:
-        fd.settings['solver_family'] = 'scipy'
-        fd.settings['solver_type'] = 'cg'
-        if importlib.util.find_spec("pyamg") is None:
-            fd.settings['solver_family'] = 'pyamg'
-    fd.run()
+        try:
+            fd.settings['solver_family'] = 'pypardiso'
+            fd.run()
+        except ModuleNotFoundError or Exception:
+            fd.settings['solver_family'] = 'scipy'
+            fd.settings['solver_type'] = 'cg'
+            fd.run()
     # Calculating molar flow rate, effective diffusivity and tortuosity
     rate_out = fd.rate(pores=outlets)[0]
     rate_in = fd.rate(pores=inlets)[0]
