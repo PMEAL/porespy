@@ -19,10 +19,9 @@ def snow_n_V2(phases, voxel_size=1, accuracy='standard', boundary_faces=3):
         phase = phases == (i + 1)
         snow = snow_partitioning(im=phase, randomize=False, return_all=True,
                                  sigma=0.4, r_max=4)
-        regions += snow.regions + regions.max()*phase
+        regions += snow.regions + regions.max()*(snow.regions > 0)
     regions = add_boundary_regions2(regions, pad_width=boundary_faces)
-    phases = np.pad(phases, pad_width=boundary_faces,
-                    mode='constant', constant_values=phases.max() + 1)
+    phases = np.pad(phases, pad_width=boundary_faces, mode='edge')
     net = regions_to_network(regions, phases=phases)
     tup = namedtuple('snow_n', ('network', 'regions', 'phases'))
     tup.network = net
