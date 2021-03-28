@@ -295,6 +295,9 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, return_all=False,
     else:
         mask_solid = None
     regions = watershed(image=-dt, markers=peaks, mask=mask_solid)
+    # Catch any isolated regions that were missed
+    labels = spim.label((regions == 0)*(im > 0))[0]
+    regions += (labels + regions.max())*(labels > 0)
     if randomize:
         regions = randomize_colors(regions)
     if return_all:
