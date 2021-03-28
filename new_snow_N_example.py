@@ -15,8 +15,7 @@ snow_n.netwrok = ps.networks.label_phases(snow_n.network,
                                                  2: 'solid'})
 snow_n.network = ps.networks.label_boundaries(snow_n.network,
                                               labels=[['left', 'right'],
-                                                      ['top', 'bottom'],
-                                                      []])
+                                                      ['top', 'bottom']])
 
 fig, ax = plt.subplots(1, 1)
 ax.imshow(snow_n.regions.T)
