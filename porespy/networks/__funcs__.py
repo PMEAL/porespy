@@ -149,12 +149,13 @@ def add_boundary_regions2(regions, pad_width=3):
     regions : ND-image
         An image containing labelled regions, such as a watershed segmentation
     pad_width : array_like
-        Number of layers to add to the beginnign and end of each axis. This argument
-        is handled the same as ``pad_width`` in the ``np.pad`` function. An scalar
-        adds the same amount to the beginning and end of each axis. [A, B] adds A to
-        the beginning of each axis and B to the ends.  [[A, B], ..., [C, D]] adds
-        A to the beginning and B to the end of the first axis, and so on.
-        The default is to add 3 voxels on each axis.
+        Number of layers to add to the beginnign and end of each axis. This
+        argument is handled the same as ``pad_width`` in the ``np.pad``
+        function. A scalar adds the same amount to the beginning and end of
+        each axis. [A, B] adds A to the beginning of each axis and B to the
+        ends.  [[A, B], ..., [C, D]] adds A to the beginning and B to the
+        end of the first axis, and so on. The default is to add 3 voxels on
+        both ends of each axis.
 
     Returns
     -------
@@ -497,6 +498,25 @@ def label_phases(
         network,
         alias={1: 'void', 2: 'solid'}):
     r"""
+    Creates pore and throat labels based on 'pore.phase' values
+
+    Parameters
+    ----------
+    network : dict
+        The network stored as a dictionary as returned from the
+        ``regions_to_network`` function
+    alias : dict
+        A mapping between integer values in 'pore.phase' and string labels.
+        The default is ``{1: 'void', 2: 'solid'}`` which will result in the
+        labels ``'pore.void'`` and ``'pore.solid'``, as well as
+        ``'throat.solid_void'``, ``'throat.solid_solid'``, and
+        ``'throat.void_void'``.
+
+    Returns
+    -------
+    network : dict
+        The same ``network`` as passed in but with new boolean arrays added
+        for the phase labels.
     """
     conns = network['throat.conns']
     for i in alias.keys():
@@ -519,9 +539,30 @@ def label_boundaries(
         labels=[['left', 'right'], ['front', 'back'], ['top', 'bottom']],
         tol=1e-9):
     r"""
+    Creates boundary pore labels based on proximity to axis extrema
+
+    Parameters
+    ----------
+    network : dict
+        The network stored as a dictionary as returned from the
+        ``regions_to_network`` function
+    labels : list of lists
+        A 3-element list, with each element containing a pair of strings
+        indicating the label to apply to the beginning and end of each axis.
+        The default is ``[['left', 'right'], ['front', 'back'],
+        ['top', 'bottom']]`` will will apply the label ``'left'`` to all pores
+        with the minimum x-coordinate, and ``'right'`` to the pores with the
+        maximum x-coordinate, and so on.
+
+    Returns
+    -------
+    network : dict
+        The same ``network`` as passed in but with new boolean arrays added
+        for the boundary labels.
     """
     crds = network['pore.coords']
-    extents = [[crds[:, i].min(), crds[:, i].max()] for i in range(len(crds[0, :]))]
+    extents = [[crds[:, i].min(), crds[:, i].max()]
+               for i in range(len(crds[0, :]))]
     network['pore.boundary'] = np.zeros_like(crds[:, 0], dtype=bool)
     for i, axis in enumerate(labels):
         for j, face in enumerate(axis):

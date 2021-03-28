@@ -44,5 +44,6 @@ from .__funcs__ import label_boundaries
 from .__getnet__ import regions_to_network
 from .__utils__ import _net_dict
 from .__snow__ import snow
-from .__snow_n__ import snow_n, snow_n_V2
+from .__snow_n__ import snow_n
+from ._snow2 import snow2
 from .__maximal_ball__ import maximal_ball

@@ -4,30 +4,10 @@ from porespy.networks import label_boundary_cells
 from porespy.networks import add_boundary_regions
 from porespy.networks import add_phase_interconnections
 from porespy.tools import _create_alias_map
-from porespy.networks import _net_dict, add_boundary_regions2
-from porespy.filters import snow_partitioning_n, snow_partitioning
+from porespy.networks import _net_dict
+from porespy.filters import snow_partitioning_n
 from porespy.tools import make_contiguous, pad_faces
 from porespy.metrics import region_surface_areas, region_interface_areas
-from collections import namedtuple
-
-
-def snow_n_V2(phases, voxel_size=1, accuracy='standard', boundary_faces=3):
-    r"""
-    """
-    regions = np.zeros_like(phases)
-    for i in range(phases.max()):
-        phase = phases == (i + 1)
-        snow = snow_partitioning(im=phase, randomize=False, return_all=True,
-                                 sigma=0.4, r_max=4)
-        regions += snow.regions + regions.max()*(snow.regions > 0)
-    regions = add_boundary_regions2(regions, pad_width=boundary_faces)
-    phases = np.pad(phases, pad_width=boundary_faces, mode='edge')
-    net = regions_to_network(regions, phases=phases)
-    tup = namedtuple('snow_n', ('network', 'regions', 'phases'))
-    tup.network = net
-    tup.regions = regions
-    tup.phases = phases
-    return tup
 
 
 def snow_n(im,
