@@ -171,6 +171,7 @@ def regions_to_network(regions, phases=None, voxel_size=1, accuracy='standard'):
                 t_coords.append(tuple([t_inds[k][temp] for k in range(im.ndim)]))
 
     # Clean up values
+    p_coords = p_coords_cm
     Nt = len(t_dia_inscribed)  # Get number of throats
     if im.ndim == 2:  # If 2D, add 0's in 3rd dimension
         p_coords = np.vstack((p_coords_cm.T, np.zeros((Np, )))).T

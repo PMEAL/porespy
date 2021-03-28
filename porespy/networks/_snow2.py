@@ -1,6 +1,6 @@
 import numpy as np
 from porespy.networks import regions_to_network
-from porespy.networks import add_boundary_regions2
+from porespy.networks import add_boundary_regions, _parse_pad_width
 from porespy.networks import label_phases, label_boundaries
 from porespy.filters import snow_partitioning
 from collections import namedtuple
@@ -47,7 +47,7 @@ def snow2(
         A 3-element list, with each element containing a pair of strings
         indicating the label to apply to the beginning and end of each axis.
         For instance, ``[['left', 'right'], ['front', 'back'],
-        ['top', 'bottom']]`` will will apply the label ``'left'`` to all pores
+        ['top', 'bottom']]`` will apply the label ``'left'`` to all pores
         with the minimum x-coordinate, and ``'right'`` to the pores with the
         maximum x-coordinate, and so on.
     accuracy : string
@@ -84,7 +84,7 @@ def snow2(
     References
     ----------
     .. [1] Gostick JT. Versatile and efficient pore network extraction
-       method using marker-based watershed segmentation. Phys. Rev. E 96,
+       method using marker-based watershed segmentation. Phys. Rev. E. 96,
        023307 (2017)
     .. [2] Khan ZA, Tranter TG, Agnaou M, Elkamel A, and Gostick JT, Dual
        network extraction algorithm to investigate multiple transport
@@ -97,13 +97,14 @@ def snow2(
        extracted from three-phase tomograms. Journal of the Electrochemical
        Society. 167(4), 040528 (2020)
     """
-    regions = np.zeros_like(phases)
+    regions = np.zeros_like(phases, dtype=int)
     for i in range(phases.max()):
         phase = phases == (i + 1)
         snow = snow_partitioning(im=phase, randomize=False, return_all=True,
                                  sigma=0.4, r_max=4)
         regions += snow.regions + regions.max()*(snow.regions > 0)
-    regions = add_boundary_regions2(regions, pad_width=boundary_width)
+    boundary_width = _parse_pad_width(boundary_width, phases.shape)
+    regions = add_boundary_regions(regions, pad_width=boundary_width)
     phases = np.pad(phases, pad_width=boundary_width, mode='edge')
     net = regions_to_network(regions, phases=phases)
     if phase_alias is None:
