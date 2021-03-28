@@ -149,12 +149,12 @@ def add_boundary_regions2(regions, pad_width=3):
     regions : ND-image
         An image containing labelled regions, such as a watershed segmentation
     pad_width : array_like
-        Number of layers to add to the edges of each axis. An integer pads
-        each axis equally in both direction.  An ND-by-1 list pads each axis
-        by the given amount in both directions.  An ND-by-1 list of pairs pad
-        each axis by a unique amount. This argument is handled the same as
-        ``pad_width`` in the ``np.pad`` function. The default is to add
-        3 voxels on each axis.
+        Number of layers to add to the beginnign and end of each axis. This argument
+        is handled the same as ``pad_width`` in the ``np.pad`` function. An scalar
+        adds the same amount to the beginning and end of each axis. [A, B] adds A to
+        the beginning of each axis and B to the ends.  [[A, B], ..., [C, D]] adds
+        A to the beginning and B to the end of the first axis, and so on.
+        The default is to add 3 voxels on each axis.
 
     Returns
     -------
@@ -163,12 +163,14 @@ def add_boundary_regions2(regions, pad_width=3):
         width.
 
     """
+    if pad_width == 0:
+        return regions
     # Parse user specified padding
     faces = np.array(pad_width)
     if faces.size == 1:
         faces = np.array([[faces, faces]]*regions.ndim)
     elif faces.size == regions.ndim:
-        faces = np.vstack([faces]*2).T
+        faces = np.vstack([faces]*2)
     else:
         pass
     t = faces.max()
