@@ -12,6 +12,8 @@ Contains functions for analysing images as pore networks
 
     porespy.networks.add_boundary_regions
     porespy.networks.generate_voxel_image
+    porespy.networks.label_boundaries
+    porespy.networks.label_phases
     porespy.networks.map_to_regions
     porespy.networks.maximal_ball
     porespy.networks.regions_to_network
@@ -19,10 +21,12 @@ Contains functions for analysing images as pore networks
 
 .. autofunction:: add_boundary_regions
 .. autofunction:: generate_voxel_image
+.. autofunction:: label_boundaries
+.. autofunction:: label_phases
 .. autofunction:: map_to_regions
+.. autofunction:: maximal_ball
 .. autofunction:: regions_to_network
 .. autofunction:: snow2
-.. autofunction:: maximal_ball
 
 
 """

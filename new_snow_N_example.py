@@ -11,11 +11,10 @@ phases = im1 + (im2 * ~im1)*2
 
 snow_n = ps.networks.snow2(phases, return_all=True)
 
-
-fig, ax = plt.subplots(1, 1)
-ax.imshow(snow_n.regions.T)
+fig = plt.figure()
+plt.imshow(snow_n.regions.T)
 
 pn, geo = op.io.PoreSpy.import_data(snow_n.network)
-op.topotools.plot_connections(network=pn, fig=ax)
-op.topotools.plot_coordinates(network=pn, fig=ax)
-ax.axis('off')
+op.topotools.plot_connections(network=pn, fig=fig)
+op.topotools.plot_coordinates(network=pn, fig=fig)
+plt.axis('off')
