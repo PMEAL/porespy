@@ -18,21 +18,23 @@ def snow2(
     r"""
     Applies the SNOW algorithm to each phase indicated in ``phases``.
 
-    This function is a combined version of ``snow`` [1]_, ``snow_dual`` [2]_
+    This function is a combination of ``snow`` [1]_, ``snow_dual`` [2]_
     and ``snow_n`` [3]_ from previous versions.
 
     Parameters
     ----------
     phases : ND-image
         An image indicating the phase(s) of interest. A watershed is produced
-        for each integer value in ``phases``, and these are combined into
-        a single image. One network is extracted using ``regions_to_network``.
+        for each integer value in ``phases`` (except 0's).  Tthese are
+        combined into a single image and one network is extracted using
+        ``regions_to_network``.
     phase_alias : dict
-        A mapping between integer values in ``phases`` and string labels.
-        The default is ``{1: 'void', 2: 'solid'}`` which will result in the
-        labels ``'pore.void'`` and ``'pore.solid'``, as well as
-        ``'throat.solid_void'``, ``'throat.solid_solid'``, and
-        ``'throat.void_void'``.
+        A mapping between integer values in ``phases`` and phase name.
+        For instance, asssuming a two-phase image, ``{1: 'void', 2: 'solid'}``
+        will result in the labels ``'pore.void'`` and ``'pore.solid'``,
+        as well as ``'throat.solid_void'``, ``'throat.solid_solid'``, and
+        ``'throat.void_void'``. If not provided, labels are assumed to as
+        ``{1: 'phase1', 2: 'phase2, etc}``
     boundary_width : int, list of ints, or list of lists
         Number of voxels to add to the beginning and end of each axis. This
         argument is handled the same as ``pad_width`` in the ``np.pad``
@@ -44,21 +46,24 @@ def snow2(
     boundary_labels : list of lists
         A 3-element list, with each element containing a pair of strings
         indicating the label to apply to the beginning and end of each axis.
-        The default is ``[['left', 'right'], ['front', 'back'],
+        For instance, ``[['left', 'right'], ['front', 'back'],
         ['top', 'bottom']]`` will will apply the label ``'left'`` to all pores
         with the minimum x-coordinate, and ``'right'`` to the pores with the
         maximum x-coordinate, and so on.
     accuracy : string
-        Controls how accurately certain properties are calculated. Options are:
+        Controls how accurately certain properties are calculated during the
+        analysis of regions in the ``regions_to_network`` function.
+        Options are:
 
         'standard' (default)
             Computes the surface areas and perimeters by simply counting
-            voxels.  This is *much* faster but does not properly account
+            voxels. This is *much* faster but does not properly account
             for the rough, voxelated nature of the surfaces.
         'high'
             Computes surface areas using the marching cube method, and
-            perimeters using the fast marching method.  These are substantially
+            perimeters using the fast marching method. These are substantially
             slower but better account for the voxelated nature of the images.
+
     voxel_size : scalar (default = 1)
         The resolution of the image, expressed as the length of one side of a
         voxel, so the volume of a voxel would be **voxel_size**-cubed.
@@ -78,16 +83,16 @@ def snow2(
 
     References
     ----------
-    .. [1] Gostick, J. T. Versatile and efficient pore network extraction
+    .. [1] Gostick JT. Versatile and efficient pore network extraction
        method using marker-based watershed segmentation. Phys. Rev. E 96,
        023307 (2017)
-    .. [2] Khan ZA, Tranter TG, Agnaou M, Elkamel A, and Gostick JT*, Dual
+    .. [2] Khan ZA, Tranter TG, Agnaou M, Elkamel A, and Gostick JT, Dual
        network extraction algorithm to investigate multiple transport
        processes in porous materials: Image-based modeling of pore and grain-
        scale processes. Computers and Chemical Engineering. 123(6), 64-77
        (2019)
     .. [3] Khan ZA, García-Salaberri PA, Heenan T, Jervis R, Shearing P,
-       Brett D, Elkamel A, Gostick JT*, Probing the structure-performance
+       Brett D, Elkamel A, Gostick JT, Probing the structure-performance
        relationship of lithium-ion battery cathodes using pore-networks
        extracted from three-phase tomograms. Journal of the Electrochemical
        Society. 167(4), 040528 (2020)
@@ -104,6 +109,10 @@ def snow2(
     if phase_alias is None:
         phase_alias = {i+1: 'phase' + str(i+1) for i in range(phases.max())}
     net = label_phases(net, alias=phase_alias)
+    if boundary_labels is None:
+        boundary_labels = [['left', 'right'],
+                           ['front', 'back'],
+                           ['top', 'bottom'] * (phases.ndim > 2)]
     net = label_boundaries(net, labels=boundary_labels)
     if return_all:  # Collect result in a tuple for return
         result = namedtuple('snow2', ('network', 'regions', 'phases'))

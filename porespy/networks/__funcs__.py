@@ -550,9 +550,9 @@ def label_boundaries(
         A 3-element list, with each element containing a pair of strings
         indicating the label to apply to the beginning and end of each axis.
         The default is ``[['left', 'right'], ['front', 'back'],
-        ['top', 'bottom']]`` will will apply the label ``'left'`` to all pores
-        with the minimum x-coordinate, and ``'right'`` to the pores with the
-        maximum x-coordinate, and so on.
+        ['top', 'bottom']]`` will will apply the label ``'left'`` to all
+        pores with the minimum x-coordinate, and ``'right'`` to the pores
+        with the maximum x-coordinate, and so on.
 
     Returns
     -------
@@ -565,11 +565,11 @@ def label_boundaries(
                for i in range(len(crds[0, :]))]
     network['pore.boundary'] = np.zeros_like(crds[:, 0], dtype=bool)
     for i, axis in enumerate(labels):
-        for j, face in enumerate(axis):
-            try:
+        try:
+            for j, face in enumerate(axis):
                 hits = crds[:, i] == extents[i][j]
                 network['pore.boundary'] += hits
                 network['pore.' + labels[i][j]] = hits
-            except TypeError:
-                continue
+        except TypeError:
+            continue
     return network

@@ -9,7 +9,7 @@ im2 = ps.generators.blobs(shape=[400, 200], porosity=None, blobiness=2) < 0.7
 phases = im1 + (im2 * ~im1)*2
 # phases = phases > 0
 
-snow_n = ps.networks.snow2(phases, boundary_faces=5)
+snow_n = ps.networks.snow2(phases, return_all=True)
 
 
 fig, ax = plt.subplots(1, 1)
