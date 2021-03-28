@@ -495,7 +495,7 @@ def label_boundary_cells(network=None, boundary_faces=None):
 
 def label_phases(
         network,
-        alias={1: 'void', 2: 'solid', 3: 'boundary'}):
+        alias={1: 'void', 2: 'solid'}):
     r"""
     """
     conns = network['throat.conns']
@@ -522,10 +522,12 @@ def label_boundaries(
     """
     crds = network['pore.coords']
     extents = [[crds[:, i].min(), crds[:, i].max()] for i in range(len(crds[0, :]))]
+    network['pore.boundary'] = np.zeros_like(crds[:, 0], dtype=bool)
     for i, axis in enumerate(labels):
         for j, face in enumerate(axis):
             try:
                 hits = crds[:, i] == extents[i][j]
+                network['pore.boundary'] += hits
                 network['pore.' + labels[i][j]] = hits
             except TypeError:
                 continue
