@@ -491,3 +491,42 @@ def label_boundary_cells(network=None, boundary_faces=None):
                 )
 
     return network
+
+
+def label_phases(
+        network,
+        alias={1: 'void', 2: 'solid', 3: 'boundary'}):
+    r"""
+    """
+    conns = network['throat.conns']
+    for i in alias.keys():
+        pore_i_hits = network['pore.phase'] == i
+        network['pore.' + alias[i]] = pore_i_hits
+        for j in alias.keys():
+            name = 'throat.' + '_'.join(sorted([alias[i], alias[j]]))
+            pore_j_hits = network['pore.phase'] == j
+            throat_hits = pore_i_hits[conns[:, 0]] * pore_j_hits[conns[:, 1]]
+            throat_hits += pore_i_hits[conns[:, 1]] * pore_j_hits[conns[:, 0]]
+            if np.any(throat_hits):
+                if name not in network.keys():
+                    network[name] = np.zeros_like(conns[:, 0], dtype=bool)
+                network[name] += throat_hits
+    return network
+
+
+def label_boundaries(
+        network,
+        labels=[['left', 'right'], ['front', 'back'], ['top', 'bottom']],
+        tol=1e-9):
+    r"""
+    """
+    crds = network['pore.coords']
+    extents = [[crds[:, i].min(), crds[:, i].max()] for i in range(len(crds[0, :]))]
+    for i, axis in enumerate(labels):
+        for j, face in enumerate(axis):
+            try:
+                hits = crds[:, i] == extents[i][j]
+                network['pore.' + labels[i][j]] = hits
+            except TypeError:
+                continue
+    return network
