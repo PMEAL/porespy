@@ -6,15 +6,13 @@ from porespy.filters import snow_partitioning
 from collections import namedtuple
 
 
-def snow2(
-        phases,
-        phase_alias=None,
-        boundary_width=3,
-        boundary_labels=None,
-        accuracy='standard',
-        voxel_size=1,
-        return_all=False,
-        ):
+def snow2(phases,
+          phase_alias=None,
+          boundary_width=3,
+          boundary_labels=None,
+          accuracy='standard',
+          voxel_size=1,
+          return_all=False):
     r"""
     Applies the SNOW algorithm to each phase indicated in ``phases``.
 
