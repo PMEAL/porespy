@@ -1,9 +1,10 @@
 import numpy as np
 import scipy.ndimage as spim
+from skimage.morphology import disk, ball
 from edt import edt
 from porespy.tools import extend_slice
 from porespy import settings
-from porespy.tools import get_tqdm
+from porespy.tools import get_tqdm, make_contiguous
 from porespy.metrics import region_surface_areas, region_interface_areas
 from loguru import logger
 tqdm = get_tqdm()
@@ -93,18 +94,17 @@ def regions_to_network(regions, phases=None, voxel_size=1, accuracy='standard'):
         blah
 
     """
-    im = regions
     logger.trace('Extracting pore/throat information')
-    from skimage.morphology import disk, ball
+
+    im = make_contiguous(regions)
     struc_elem = disk if im.ndim == 2 else ball
 
     if phases is None:
-        phases = (regions > 0).astype(int)
-
-    # dt = np.zeros_like(regions, dtype=float)
-    # for i in range(phases.max()):
-    #     dt += edt(phases == (i+1))
-    dt = edt(regions > 0)
+        phases = (im > 0).astype(int)
+    if im.size != phases.size:
+        raise Exception('regions and phase are different sizes, probably ' +
+                        'because boundary regions were not added to phases')
+    dt = edt(im > 0)
 
     # Get 'slices' into im for each pore region
     slices = spim.find_objects(im)
@@ -145,7 +145,7 @@ def regions_to_network(regions, phases=None, voxel_size=1, accuracy='standard'):
         p_coords_cm[pore, :] = spim.center_of_mass(pore_im) + s_offset
         temp = np.vstack(np.where(pore_dt == pore_dt.max()))[:, 0]
         p_coords_dt[pore, :] = temp + s_offset
-        p_phase[pore] = phases[tuple(temp + s_offset)]  # Get phase value
+        p_phase[pore] = (phases[s]*pore_im).max()
         temp = np.vstack(np.where(sub_dt == sub_dt.max()))[:, 0]
         p_coords_dt_global[pore, :] = temp + s_offset
         p_volume[pore] = np.sum(pore_im)
@@ -168,21 +168,22 @@ def regions_to_network(regions, phases=None, voxel_size=1, accuracy='standard'):
                 p_area_surf[pore] -= np.size(vx[0])
                 t_inds = tuple([i+j for i, j in zip(vx, s_offset)])
                 temp = np.where(dt[t_inds] == np.amax(dt[t_inds]))[0][0]
-                t_coords.append(tuple([t_inds[i][temp] for i in range(im.ndim)]))
+                t_coords.append(tuple([t_inds[k][temp] for k in range(im.ndim)]))
 
     # Clean up values
     Nt = len(t_dia_inscribed)  # Get number of throats
     if im.ndim == 2:  # If 2D, add 0's in 3rd dimension
-        p_coords = np.vstack((p_coords_dt.T, np.zeros((Np, )))).T
+        p_coords = np.vstack((p_coords_cm.T, np.zeros((Np, )))).T
         t_coords = np.vstack((np.array(t_coords).T, np.zeros((Nt, )))).T
 
     net = {}
     # Define all the fundamental stuff
     net['throat.conns'] = np.array(t_conns)
+    net['pore.coords'] = np.array(p_coords)
     net['pore.region_label'] = np.array(p_label)
     net['pore.region_volume'] = np.copy(p_volume)*(voxel_size**3)
     net['pore.phase'] = np.array(p_phase, dtype=int)
-    net['throat.phase'] = net['pore.phase'][net['throat.conns']]
+    net['throat.phases'] = net['pore.phase'][net['throat.conns']]
     # Extract the geometric stuff
     net['pore.local_peak'] = np.copy(p_coords_dt)*voxel_size
     net['pore.global_peak'] = np.copy(p_coords_dt_global)*voxel_size
