@@ -5,7 +5,6 @@ import openpnm as op
 from porespy.filters import trim_nonpercolating_paths
 from loguru import logger
 from porespy.generators import faces
-import collections
 
 
 def tortuosity(im, axis, return_im=False, **kwargs):
@@ -75,7 +74,7 @@ def tortuosity(im, axis, return_im=False, **kwargs):
         try:
             fd.settings['solver_family'] = 'pypardiso'
             fd.run()
-        except ModuleNotFoundError or Exception:
+        except ModuleNotFoundError:
             fd.settings['solver_family'] = 'scipy'
             fd.settings['solver_type'] = 'cg'
             fd.run()
