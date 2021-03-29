@@ -1,129 +1,271 @@
+<!doctype html>
+<html class="no-js">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
-<!DOCTYPE html>
-
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>porespy.networks.__snow_dual__ &#8212; PoreSpy  documentation</title>
-    
-  <link href="../../../_static/css/theme.css" rel="stylesheet" />
-  <link href="../../../_static/css/index.f6b7ca918bee2f46fd9abac01cfb07d5.css" rel="stylesheet" />
-
-    
-  <link rel="stylesheet"
-    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
-
-    
-      
-
-    
-    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../../_static/basic.css" type="text/css" />
-    
-  <link rel="preload" as="script" href="../../../_static/js/index.1e043a052b0af929e4d8.js">
-
-    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/jquery.js"></script>
-    <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/doctools.js"></script>
-    <link rel="index" title="Index" href="../../../genindex.html" />
-    <link rel="search" title="Search" href="../../../search.html" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="en" />
-  </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
-    
-    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
-
-
-    
-      
-      <a class="navbar-brand" href="../../../index.html">
-        <img src="../../../_static/porespy_logo.png" class="logo" alt="logo">
-      </a>
-      
+    <meta name="generator" content="sphinx-3.5.3, furo 2021.03.20.beta30"/>
+        <title>porespy.networks.__snow_dual__ - PoreSpy documentation</title>
+      <link rel="stylesheet" href="../../../_static/styles/furo.css?digest=978e1795dfe158b585dda6a8417f6411828bf3ed">
+    <link rel="stylesheet" href="../../../_static/pygments.css">
+    <link media="(prefers-color-scheme: dark)" rel="stylesheet" href="../../../_static/pygments_dark.css">
     
 
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
 
+<style>
+  :root {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+  }
+
+  /* For allowing end-user-specific overrides */
+  .override-light {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  .override-dark {
+    --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+  }
+</style><link rel="stylesheet" href="../../../_static/styles/furo-extensions.css?digest=d391b54134226e4196576da3bdb6dddb7e05ba2b"></head>
+  <body dir="">
     
-    <div id="navbar-menu" class="col-lg-9 collapse navbar-collapse">
-      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
-        <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../../../getting_started.html">
-  Getting Started
- </a>
-</li>
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+      stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <path stroke="none" d="M0 0h24v24H0z"/>
+      <line x1="4" y1="6" x2="20" y2="6" />
+      <line x1="10" y1="12" x2="20" y2="12" />
+      <line x1="6" y1="18" x2="20" y2="18" />
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      class="feather feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      class="feather feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+</svg>
 
-<li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../../../modules/index.html">
-  Module and Function Reference
- </a>
-</li>
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
 
-<li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../../../user_guide.html">
-  PoreSpy
- </a>
-</li>
 
-        
-      </ul>
 
-      <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
-      </ul>
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
     </div>
-</div>
-    </nav>
-    
-
-    <div class="container-xl">
-      <div class="row">
-          
-            
-            <!-- Only show if we have sidebars configured, else just a small margin  -->
-            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
-  <i class="icon fas fa-search"></i>
-  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
-</form>
-<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
-  <div class="bd-toc-item active">
-    
+    <div class="header-center">
+      <a href="../../../index.html"><div class="brand">PoreSpy  documentation</div></a>
+    </div>
+    <div class="header-right">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand centered" href="../../../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../../../_static/porespy_logo.png" alt="Logo"/>
   </div>
-</nav>
-            </div>
-            
-          
+  
+  <span class="sidebar-brand-text">PoreSpy  documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../../search.html">
+  <input class="sidebar-search" placeholder=Search name="q">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../modules/index.html">Module and Function Reference</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../modules/generators.html">Generators</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.generators.blobs.html">porespy.generators.blobs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.generators.bundle_of_tubes.html">porespy.generators.bundle_of_tubes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.generators.cylindrical_plug.html">porespy.generators.cylindrical_plug</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.generators.cylinders.html">porespy.generators.cylinders</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.generators.fractal_noise.html">porespy.generators.fractal_noise</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.generators.insert_shape.html">porespy.generators.insert_shape</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.generators.lattice_spheres.html">porespy.generators.lattice_spheres</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.generators.line_segment.html">porespy.generators.line_segment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.generators.overlapping_spheres.html">porespy.generators.overlapping_spheres</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.generators.polydisperse_spheres.html">porespy.generators.polydisperse_spheres</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.generators.pseudo_electrostatic_packing.html">porespy.generators.pseudo_electrostatic_packing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.generators.pseudo_gravity_packing.html">porespy.generators.pseudo_gravity_packing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.generators.RSA.html">porespy.generators.RSA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.generators.voronoi_edges.html">porespy.generators.voronoi_edges</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../modules/filters.html">Filters</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label for="toctree-checkbox-3"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.filters.apply_chords.html">porespy.filters.apply_chords</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.filters.apply_chords_3D.html">porespy.filters.apply_chords_3D</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.filters.apply_padded.html">porespy.filters.apply_padded</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.filters.chunked_func.html">porespy.filters.chunked_func</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.filters.distance_transform_lin.html">porespy.filters.distance_transform_lin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.filters.fftmorphology.html">porespy.filters.fftmorphology</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.filters.fill_blind_pores.html">porespy.filters.fill_blind_pores</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.filters.find_disconnected_voxels.html">porespy.filters.find_disconnected_voxels</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.filters.find_dt_artifacts.html">porespy.filters.find_dt_artifacts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.filters.find_peaks.html">porespy.filters.find_peaks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.filters.flood.html">porespy.filters.flood</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.filters.hold_peaks.html">porespy.filters.hold_peaks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.filters.local_thickness.html">porespy.filters.local_thickness</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.filters.nphase_border.html">porespy.filters.nphase_border</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.filters.porosimetry.html">porespy.filters.porosimetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.filters.prune_branches.html">porespy.filters.prune_branches</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.filters.reduce_peaks.html">porespy.filters.reduce_peaks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.filters.region_size.html">porespy.filters.region_size</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.filters.snow_partitioning.html">porespy.filters.snow_partitioning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.filters.snow_partitioning_n.html">porespy.filters.snow_partitioning_n</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.filters.snow_partitioning_parallel.html">porespy.filters.snow_partitioning_parallel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.filters.trim_disconnected_blobs.html">porespy.filters.trim_disconnected_blobs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.filters.trim_extrema.html">porespy.filters.trim_extrema</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.filters.trim_floating_solid.html">porespy.filters.trim_floating_solid</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.filters.trim_nearby_peaks.html">porespy.filters.trim_nearby_peaks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.filters.trim_nonpercolating_paths.html">porespy.filters.trim_nonpercolating_paths</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.filters.trim_saddle_points.html">porespy.filters.trim_saddle_points</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.filters.trim_small_clusters.html">porespy.filters.trim_small_clusters</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../modules/metrics.html">Metrics</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label for="toctree-checkbox-4"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.metrics.chord_counts.html">porespy.metrics.chord_counts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.metrics.chord_length_distribution.html">porespy.metrics.chord_length_distribution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.metrics.lineal_path_distribution.html">porespy.metrics.lineal_path_distribution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.metrics.mesh_surface_area.html">porespy.metrics.mesh_surface_area</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.metrics.phase_fraction.html">porespy.metrics.phase_fraction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.metrics.pore_size_distribution.html">porespy.metrics.pore_size_distribution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.metrics.porosity.html">porespy.metrics.porosity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.metrics.porosity_profile.html">porespy.metrics.porosity_profile</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.metrics.prop_to_image.html">porespy.metrics.prop_to_image</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.metrics.props_to_DataFrame.html">porespy.metrics.props_to_DataFrame</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.metrics.radial_density_distribution.html">porespy.metrics.radial_density_distribution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.metrics.region_interface_areas.html">porespy.metrics.region_interface_areas</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.metrics.region_surface_areas.html">porespy.metrics.region_surface_areas</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.metrics.regionprops_3D.html">porespy.metrics.regionprops_3D</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.metrics.representative_elementary_volume.html">porespy.metrics.representative_elementary_volume</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.metrics.two_point_correlation_bf.html">porespy.metrics.two_point_correlation_bf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.metrics.two_point_correlation_fft.html">porespy.metrics.two_point_correlation_fft</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../modules/networks.html">Networks</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label for="toctree-checkbox-5"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.networks.snow.html">porespy.networks.snow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.networks.snow_dual.html">porespy.networks.snow_dual</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.networks.map_to_regions.html">porespy.networks.map_to_regions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.networks.regions_to_network.html">porespy.networks.regions_to_network</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.networks.add_boundary_regions.html">porespy.networks.add_boundary_regions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.networks.generate_voxel_image.html">porespy.networks.generate_voxel_image</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.networks.maximal_ball.html">porespy.networks.maximal_ball</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../modules/dns.html">DNS</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label for="toctree-checkbox-6"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.dns.tortuosity.html">porespy.dns.tortuosity</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../modules/tools.html">Tools</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label for="toctree-checkbox-7"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.tools.align_image_with_openpnm.html">porespy.tools.align_image_with_openpnm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.tools.bbox_to_slices.html">porespy.tools.bbox_to_slices</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.tools.extend_slice.html">porespy.tools.extend_slice</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.tools.extract_subsection.html">porespy.tools.extract_subsection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.tools.extract_regions.html">porespy.tools.extract_regions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.tools.extract_cylinder.html">porespy.tools.extract_cylinder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.tools.extract_subsection.html">porespy.tools.extract_subsection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.tools.fftmorphology.html">porespy.tools.fftmorphology</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.tools.find_outer_region.html">porespy.tools.find_outer_region</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.tools.get_border.html">porespy.tools.get_border</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.tools.get_planes.html">porespy.tools.get_planes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.tools.insert_cylinder.html">porespy.tools.insert_cylinder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.tools.insert_sphere.html">porespy.tools.insert_sphere</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.tools.in_hull.html">porespy.tools.in_hull</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.tools.make_contiguous.html">porespy.tools.make_contiguous</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.tools.mesh_region.html">porespy.tools.mesh_region</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.tools.norm_to_uniform.html">porespy.tools.norm_to_uniform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.tools.overlay.html">porespy.tools.overlay</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.tools.ps_ball.html">porespy.tools.ps_ball</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.tools.ps_disk.html">porespy.tools.ps_disk</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.tools.ps_rect.html">porespy.tools.ps_rect</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.tools.ps_round.html">porespy.tools.ps_round</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.tools.pad_faces.html">porespy.tools.pad_faces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.tools.randomize_colors.html">porespy.tools.randomize_colors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.tools.seq_to_satn.html">porespy.tools.seq_to_satn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.tools.size_to_seq.html">porespy.tools.size_to_seq</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.tools.subdivide.html">porespy.tools.subdivide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.tools.zero_corners.html">porespy.tools.zero_corners</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../modules/visualization.html">Visualization</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label for="toctree-checkbox-8"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.visualization.sem.html">porespy.visualization.sem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.visualization.show_planes.html">porespy.visualization.show_planes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.visualization.xray.html">porespy.visualization.xray</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.visualization.show_3D.html">porespy.visualization.show_3D</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.visualization.imshow.html">porespy.visualization.imshow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.visualization.bar.html">porespy.visualization.bar</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.visualization.show_mesh.html">porespy.visualization.show_mesh</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.visualization.set_mpl_style.html">porespy.visualization.set_mpl_style</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../modules/io.html">IO</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label for="toctree-checkbox-9"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.io.to_vtk.html">porespy.io.to_vtk</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.io.dict_to_vtk.html">porespy.io.dict_to_vtk</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.io.to_palabos.html">porespy.io.to_palabos</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.io.openpnm_to_im.html">porespy.io.openpnm_to_im</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.io.to_stl.html">porespy.io.to_stl</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.io.to_paraview.html">porespy.io.to_paraview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.io.open_paraview.html">porespy.io.open_paraview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modules/generated/porespy.io.spheres_to_comsol.html">porespy.io.spheres_to_comsol</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide.html">PoreSpy</a></li>
+</ul>
 
-          
-          <div class="d-none d-xl-block col-xl-2 bd-toc">
-              
-
-<nav id="bd-toc-nav">
-    
-</nav>
-
-
-              
-          </div>
-          
-
-          
-          
-            
-          
-          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
-              
-              <div>
-                
-  <h1>Source code for porespy.networks.__snow_dual__</h1><div class="highlight"><pre>
+</div>
+</div>
+      </div>
+      
+    </div>
+  </aside>
+  <main class="main">
+    <div class="content">
+      <article role="main">
+        <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+        </label>
+        <h1>Source code for porespy.networks.__snow_dual__</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">porespy.networks</span> <span class="kn">import</span> <span class="n">regions_to_network</span>
 <span class="kn">from</span> <span class="nn">porespy.networks</span> <span class="kn">import</span> <span class="n">add_boundary_regions</span>
@@ -136,9 +278,9 @@
 
 <div class="viewcode-block" id="snow_dual"><a class="viewcode-back" href="../../../modules/generated/porespy.networks.snow_dual.html#porespy.networks.snow_dual">[docs]</a><span class="k">def</span> <span class="nf">snow_dual</span><span class="p">(</span><span class="n">im</span><span class="p">,</span>
               <span class="n">voxel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-              <span class="n">boundary_faces</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;top&#39;</span><span class="p">,</span> <span class="s1">&#39;bottom&#39;</span><span class="p">,</span> <span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="s1">&#39;front&#39;</span><span class="p">,</span> <span class="s1">&#39;back&#39;</span><span class="p">],</span>
+              <span class="n">boundary_faces</span><span class="o">=</span><span class="p">[</span><span class="s1">'top'</span><span class="p">,</span> <span class="s1">'bottom'</span><span class="p">,</span> <span class="s1">'left'</span><span class="p">,</span> <span class="s1">'right'</span><span class="p">,</span> <span class="s1">'front'</span><span class="p">,</span> <span class="s1">'back'</span><span class="p">],</span>
               <span class="n">marching_cubes_area</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="sa">r</span><span class="sd">"""</span>
 <span class="sd">    Analyzes an image that has been partitioned into void and solid regions</span>
 <span class="sd">    and extracts the void and solid phase geometry as well as network</span>
 <span class="sd">    connectivity.</span>
@@ -174,11 +316,11 @@
 <span class="sd">    -------</span>
 <span class="sd">    A dictionary containing all the void and solid phase size data, as well as</span>
 <span class="sd">    the network topological information.  The dictionary names use the OpenPNM</span>
-<span class="sd">    convention (i.e. &#39;pore.coords&#39;, &#39;throat.conns&#39;) so it may be converted</span>
+<span class="sd">    convention (i.e. 'pore.coords', 'throat.conns') so it may be converted</span>
 <span class="sd">    directly to an OpenPNM network object using the ``update`` command.</span>
 <span class="sd">    * ``net``: A dictionary containing all the void and solid phase size data,</span>
 <span class="sd">        as well as the network topological information.  The dictionary names</span>
-<span class="sd">        use the OpenPNM convention (i.e. &#39;pore.coords&#39;, &#39;throat.conns&#39;) so it</span>
+<span class="sd">        use the OpenPNM convention (i.e. 'pore.coords', 'throat.conns') so it</span>
 <span class="sd">        may be converted directly to an OpenPNM network object using the</span>
 <span class="sd">        ``update`` command.</span>
 <span class="sd">    * ``im``: The binary image of the void space</span>
@@ -189,15 +331,15 @@
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
-<span class="sd">    [1] Gostick, J. &quot;A versatile and efficient network extraction algorithm</span>
-<span class="sd">    using marker-based watershed segmenation&quot;.  Phys. Rev. E 96, 023307 (2017)</span>
+<span class="sd">    [1] Gostick, J. "A versatile and efficient network extraction algorithm</span>
+<span class="sd">    using marker-based watershed segmenation".  Phys. Rev. E 96, 023307 (2017)</span>
 
-<span class="sd">    [2] Khan, ZA et al.  &quot;Dual network extraction algorithm to investigate</span>
+<span class="sd">    [2] Khan, ZA et al.  "Dual network extraction algorithm to investigate</span>
 <span class="sd">    multiple transport processes in porous materials: Image-based modeling</span>
 <span class="sd">    of pore and grain-scale processes. Computers and Chemical Engineering.</span>
 <span class="sd">    123(6), 64-77 (2019)</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># -------------------------------------------------------------------------</span>
     <span class="c1"># SNOW void phase</span>
     <span class="n">pore_regions</span> <span class="o">=</span> <span class="n">snow_partitioning</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">return_all</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -234,56 +376,56 @@
         <span class="n">areas</span> <span class="o">=</span> <span class="n">region_surface_areas</span><span class="p">(</span><span class="n">regions</span><span class="o">=</span><span class="n">regions</span><span class="p">)</span>
         <span class="n">interface_area</span> <span class="o">=</span> <span class="n">region_interface_areas</span><span class="p">(</span><span class="n">regions</span><span class="o">=</span><span class="n">regions</span><span class="p">,</span> <span class="n">areas</span><span class="o">=</span><span class="n">areas</span><span class="p">,</span>
                                                 <span class="n">voxel_size</span><span class="o">=</span><span class="n">voxel_size</span><span class="p">)</span>
-        <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.surface_area&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">areas</span> <span class="o">*</span> <span class="n">voxel_size</span><span class="o">**</span><span class="mi">2</span>
-        <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.area&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">interface_area</span><span class="o">.</span><span class="n">area</span>
+        <span class="n">net</span><span class="p">[</span><span class="s1">'pore.surface_area'</span><span class="p">]</span> <span class="o">=</span> <span class="n">areas</span> <span class="o">*</span> <span class="n">voxel_size</span><span class="o">**</span><span class="mi">2</span>
+        <span class="n">net</span><span class="p">[</span><span class="s1">'throat.area'</span><span class="p">]</span> <span class="o">=</span> <span class="n">interface_area</span><span class="o">.</span><span class="n">area</span>
     <span class="c1"># -------------------------------------------------------------------------</span>
     <span class="c1"># Find void to void, void to solid and solid to solid throat conns</span>
-    <span class="n">loc1</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">solid_num</span>
-    <span class="n">loc2</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">solid_num</span>
-    <span class="n">loc3</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">b_num</span>
+    <span class="n">loc1</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">'throat.conns'</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">solid_num</span>
+    <span class="n">loc2</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">'throat.conns'</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">solid_num</span>
+    <span class="n">loc3</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">'throat.conns'</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">b_num</span>
     <span class="n">pore_solid_labels</span> <span class="o">=</span> <span class="n">loc1</span> <span class="o">*</span> <span class="n">loc2</span> <span class="o">*</span> <span class="n">loc3</span>
 
-    <span class="n">loc4</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">solid_num</span>
-    <span class="n">loc5</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">b_num</span>
+    <span class="n">loc4</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">'throat.conns'</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">solid_num</span>
+    <span class="n">loc5</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">'throat.conns'</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">b_num</span>
     <span class="n">solid_solid_labels</span> <span class="o">=</span> <span class="n">loc4</span> <span class="o">*</span> <span class="n">loc2</span> <span class="o">*</span> <span class="n">loc5</span> <span class="o">*</span> <span class="n">loc3</span>
 
-    <span class="n">loc6</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">solid_num</span>
+    <span class="n">loc6</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">'throat.conns'</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">solid_num</span>
     <span class="n">pore_pore_labels</span> <span class="o">=</span> <span class="n">loc1</span> <span class="o">*</span> <span class="n">loc6</span>
 
-    <span class="n">loc7</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">b_num</span>
+    <span class="n">loc7</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">'throat.conns'</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">b_num</span>
     <span class="n">boundary_throat_labels</span> <span class="o">=</span> <span class="n">loc5</span> <span class="o">*</span> <span class="n">loc7</span>
 
-    <span class="n">solid_labels</span> <span class="o">=</span> <span class="p">((</span><span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.label&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">solid_num</span><span class="p">)</span> <span class="o">*</span> <span class="o">~</span>
-                    <span class="p">(</span><span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.label&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">b_num</span><span class="p">))</span>
-    <span class="n">boundary_labels</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.label&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">b_num</span>
+    <span class="n">solid_labels</span> <span class="o">=</span> <span class="p">((</span><span class="n">net</span><span class="p">[</span><span class="s1">'pore.label'</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">solid_num</span><span class="p">)</span> <span class="o">*</span> <span class="o">~</span>
+                    <span class="p">(</span><span class="n">net</span><span class="p">[</span><span class="s1">'pore.label'</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">b_num</span><span class="p">))</span>
+    <span class="n">boundary_labels</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">'pore.label'</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">b_num</span>
     <span class="n">b_sa</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">boundary_labels</span><span class="p">[</span><span class="n">boundary_labels</span> <span class="o">==</span> <span class="mf">1.0</span><span class="p">]))</span>
     <span class="c1"># -------------------------------------------------------------------------</span>
     <span class="c1"># Calculates void interfacial area that connects with solid and vice versa</span>
-    <span class="n">p_conns</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">][</span><span class="n">pore_solid_labels</span><span class="p">]</span>
-    <span class="n">ps</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.area&#39;</span><span class="p">][</span><span class="n">pore_solid_labels</span><span class="p">]</span>
+    <span class="n">p_conns</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">'throat.conns'</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">][</span><span class="n">pore_solid_labels</span><span class="p">]</span>
+    <span class="n">ps</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">'throat.area'</span><span class="p">][</span><span class="n">pore_solid_labels</span><span class="p">]</span>
     <span class="n">p_sa</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span><span class="n">p_conns</span><span class="p">,</span> <span class="n">ps</span><span class="p">)</span>
-    <span class="n">s_conns</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">][</span><span class="n">pore_solid_labels</span><span class="p">]</span>
+    <span class="n">s_conns</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">'throat.conns'</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">][</span><span class="n">pore_solid_labels</span><span class="p">]</span>
     <span class="n">s_pa</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span><span class="n">s_conns</span><span class="p">,</span> <span class="n">ps</span><span class="p">)</span>
     <span class="n">s_pa</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trim_zeros</span><span class="p">(</span><span class="n">s_pa</span><span class="p">)</span>  <span class="c1"># remove pore surface area labels</span>
     <span class="n">p_solid_surf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">p_sa</span><span class="p">,</span> <span class="n">s_pa</span><span class="p">,</span> <span class="n">b_sa</span><span class="p">))</span>
     <span class="c1"># -------------------------------------------------------------------------</span>
     <span class="c1"># Calculates interfacial area using marching cube method</span>
     <span class="k">if</span> <span class="n">marching_cubes_area</span><span class="p">:</span>
-        <span class="n">ps_c</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.area&#39;</span><span class="p">][</span><span class="n">pore_solid_labels</span><span class="p">]</span>
+        <span class="n">ps_c</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">'throat.area'</span><span class="p">][</span><span class="n">pore_solid_labels</span><span class="p">]</span>
         <span class="n">p_sa_c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span><span class="n">p_conns</span><span class="p">,</span> <span class="n">ps_c</span><span class="p">)</span>
         <span class="n">s_pa_c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span><span class="n">s_conns</span><span class="p">,</span> <span class="n">ps_c</span><span class="p">)</span>
         <span class="n">s_pa_c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trim_zeros</span><span class="p">(</span><span class="n">s_pa_c</span><span class="p">)</span>  <span class="c1"># remove pore surface area labels</span>
         <span class="n">p_solid_surf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">p_sa_c</span><span class="p">,</span> <span class="n">s_pa_c</span><span class="p">,</span> <span class="n">b_sa</span><span class="p">))</span>
     <span class="c1"># -------------------------------------------------------------------------</span>
     <span class="c1"># Adding additional information of dual network</span>
-    <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.solid_void_area&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">p_solid_surf</span> <span class="o">*</span> <span class="n">voxel_size</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
-    <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.void&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pore_pore_labels</span>
-    <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.interconnect&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pore_solid_labels</span>
-    <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.solid&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">solid_solid_labels</span>
-    <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.boundary&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">boundary_throat_labels</span>
-    <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.void&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.label&#39;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">solid_num</span>
-    <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.solid&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">solid_labels</span>
-    <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.boundary&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">boundary_labels</span>
+    <span class="n">net</span><span class="p">[</span><span class="s1">'pore.solid_void_area'</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">p_solid_surf</span> <span class="o">*</span> <span class="n">voxel_size</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">net</span><span class="p">[</span><span class="s1">'throat.void'</span><span class="p">]</span> <span class="o">=</span> <span class="n">pore_pore_labels</span>
+    <span class="n">net</span><span class="p">[</span><span class="s1">'throat.interconnect'</span><span class="p">]</span> <span class="o">=</span> <span class="n">pore_solid_labels</span>
+    <span class="n">net</span><span class="p">[</span><span class="s1">'throat.solid'</span><span class="p">]</span> <span class="o">=</span> <span class="n">solid_solid_labels</span>
+    <span class="n">net</span><span class="p">[</span><span class="s1">'throat.boundary'</span><span class="p">]</span> <span class="o">=</span> <span class="n">boundary_throat_labels</span>
+    <span class="n">net</span><span class="p">[</span><span class="s1">'pore.void'</span><span class="p">]</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">'pore.label'</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">solid_num</span>
+    <span class="n">net</span><span class="p">[</span><span class="s1">'pore.solid'</span><span class="p">]</span> <span class="o">=</span> <span class="n">solid_labels</span>
+    <span class="n">net</span><span class="p">[</span><span class="s1">'pore.boundary'</span><span class="p">]</span> <span class="o">=</span> <span class="n">boundary_labels</span>
     <span class="c1"># -------------------------------------------------------------------------</span>
     <span class="c1"># label boundary cells</span>
     <span class="n">net</span> <span class="o">=</span> <span class="n">label_boundary_cells</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">,</span> <span class="n">boundary_faces</span><span class="o">=</span><span class="n">boundary_faces</span><span class="p">)</span>
@@ -296,31 +438,30 @@
     <span class="n">temp</span><span class="o">.</span><span class="n">regions</span> <span class="o">=</span> <span class="n">regions</span>
     <span class="k">return</span> <span class="n">temp</span></div>
 </pre></div>
-
-              </div>
-              
-              
-              <div class='prev-next-bottom'>
-                
-
-              </div>
-              
-          </main>
+      </article>
+      <footer>
+        
+        <div class="related-pages">
           
+          
+        </div>
 
-      </div>
+        <div class="related-information">
+              Copyright &#169; 2021 PoreSpy Team
+        </div>
+        
+      </footer>
     </div>
-
-    
-  <script src="../../../_static/js/index.1e043a052b0af929e4d8.js"></script>
-
-
-    <footer class="footer mt-5 mt-md-0">
-  <div class="container">
-    <p>
-          &copy; Copyright 2021 PoreSpy Team.<br/>
-    </p>
-  </div>
-</footer>
-  </body>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </main>
+</div>
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/scripts/main.js?digest=e931d09b2a40c1bb82b542effe772014573baf67"></script></body>
 </html>
