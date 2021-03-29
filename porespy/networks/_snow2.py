@@ -12,19 +12,19 @@ def snow2(phases,
           boundary_labels=None,
           accuracy='standard',
           voxel_size=1,
-          parallel={},
+          parallelization={},
           return_all=False):
     r"""
     Applies the SNOW algorithm to each phase indicated in ``phases``.
 
-    This function is a combination of ``snow`` [1]_, ``snow_dual`` [2]_
-    and ``snow_n`` [3]_ and ``snow_parallel`` [4]_ from previous versions.
+    This function is a combination of ``snow`` [1]_, ``snow_dual`` [2]_,
+    ``snow_n`` [3]_, and ``snow_parallel`` [4]_ from previous versions.
 
     Parameters
     ----------
     phases : ND-image
         An image indicating the phase(s) of interest. A watershed is produced
-        for each integer value in ``phases`` (except 0's).  These are
+        for each integer value in ``phases`` (except 0's). These are then
         combined into a single image and one network is extracted using
         ``regions_to_network``.
     phase_alias : dict
@@ -34,22 +34,24 @@ def snow2(phases,
         ``'pore.void'`` and ``'pore.solid'``, as well as
         ``'throat.solid_void'``, ``'throat.solid_solid'``, and
         ``'throat.void_void'``. If not provided, alias is assumed as
-        ``{1: 'phase1', 2: 'phase2, etc}``
+        ``{1: 'phase1', 2: 'phase2, ...}``.  Phase labels can also be applied
+           afterward using ``label_phases``.
     boundary_width : int, list of ints, or list of lists
         Number of voxels to add to the beginning and end of each axis. This
         argument is handled the same as ``pad_width`` in the ``np.pad``
-        function. A scalar adds the same amount to the begining and end of
-        each axis. [A, B] adds A to the begining of each axis and B to the
-        ends.  [[A, B], ..., [C, D]] adds A to the begining and B to the
+        function. A scalar adds the same amount to the beginning and end of
+        each axis. [A, B] adds A to the beginning of each axis and B to the
+        ends.  [[A, B], ..., [C, D]] adds A to the beginning and B to the
         end of the first axis, and so on. The default is to add 3 voxels on
         both ends of all axes.
     boundary_labels : list of lists
-        A 3-element list, with each element containing a pair of strings
-        indicating the label to apply to the begining and end of each axis.
+        A 3-element list with each element containing a pair of strings
+        indicating the label to apply to the beginning and end of each axis.
         For instance, ``[['left', 'right'], ['front', 'back'],
         ['top', 'bottom']]`` will apply the label ``'left'`` to all pores
         with the minimum x-coordinate, and ``'right'`` to the pores with the
-        maximum x-coordinate, and so on.
+        maximum x-coordinate, and so on.  Boundary labels can also be applied
+        afterward using ``label_boundaries``.
     accuracy : string
         Controls how accurately certain properties are calculated during the
         analysis of regions in the ``regions_to_network`` function.
@@ -69,37 +71,17 @@ def snow2(phases,
         voxel, so the volume of a voxel would be **voxel_size**-cubed.
     return_all : boolean
         If set to ``True`` a named tuple is returned containing the
-        padded image, the pore regions, and the dictionary containing the
-        extracted network. The default is ``False``, so only the network
-        dictionary is returned.
-    parallel : dict
+        padded ``phases`` image, the pore ``regions``, and a dictionary
+        containing the extracted ``network``. The default is ``False``,
+        so only the network dictionary is returned.
+    parallelization : dict
         The arguments for controlling the parallization of the watershed
         function are rolled into this dictionary, otherwise the function
         signature would become too complex. Refer to the docstring of
-        ``snow_partitioning_parallel`` function for complete details. The key
-        arguments and their defaults are as follows:
-
-        'mode'
-            Options are 'parallel' and 'serial'. In parallel (default) mode
-            the chunks are processed together for speed. In serial mode the
-            are processed separately to save memory.
-        'num_workers'
-            The number of cores to employ if operating in parallel mode. The
-            default is all available cores.
-        'divs'
-            The number of chunks to partition the image in each direction. A
-            scalar is interpreted to apply to all directions. The default
-            is 2.
-        'overlap'
-            The method used to determine the amount of overlap to applt.
-            Options are 'dt' for distance transform (default), 'ws' for
-            watershed, or a scalar to manually declare the amount.
-        'zoom_factor'
-            The amount to scale dow the image if using the watershed method to
-            determine overlap.  Default is 0.5.
-        'crop'
-            Whether or not to crop the image so that it can be divided into
-            equally sized chunks. Default is ``True``.
+        ``snow_partitioning_parallel`` for complete details. If no values
+        are provided then the defaults for that function are used.
+        To disable parallelization pass ``parallel=None``, which will invoke
+        the standard ``snow_partitioning``.
 
     Returns
     -------
@@ -131,11 +113,17 @@ def snow2(phases,
     regions = np.zeros_like(phases, dtype=int)
     for i in range(phases.max()):
         phase = phases == (i + 1)
-        snow = snow_partitioning_parallel(im=phase,
-                                          return_all=True,
-                                          sigma=0.4,
-                                          r_max=4,
-                                          **parallel)
+        if parallelization is not None:
+            snow = snow_partitioning_parallel(im=phase,
+                                              return_all=True,
+                                              sigma=0.4,
+                                              r_max=4,
+                                              **parallelization)
+        else:
+            snow = snow_partitioning(im=phase,
+                                     return_all=True,
+                                     sigma=0.4,
+                                     r_max=4)
         # Note: Using snow.regions > 0 here instead of phase is needed to
         # handle a bug in snow_partitioning, see issue #169 and #430
         regions += snow.regions + regions.max()*(snow.regions > 0)
