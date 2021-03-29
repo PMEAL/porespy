@@ -33,6 +33,7 @@ __all__ = [
     "maximal_ball"]
 
 from .__funcs__ import add_boundary_regions
+from .__funcs__ import add_boundary_regions2
 from .__funcs__ import map_to_regions
 from .__funcs__ import generate_voxel_image
 from .__funcs__ import label_boundary_cells
