@@ -116,3 +116,37 @@ def show_mesh(mesh):  # pragma: no cover
     ax.set_zlim(lim_min[2], lim_max[2])
 
     return fig
+
+
+def volume_slice(im, ind=0, axis='z_axes'):
+    r"""
+    Convenience wrapper for mayavi.mlab.volume_slice
+
+    Parameters
+    ----------
+    im : ND-array
+        The 2D or 3D image (or images) to show.  If 2D then all other
+        arguments are ignored.
+
+    ind : int
+        The slice to show if ``im`` is 3D.  If not given then the first slice
+        of the image is used.
+
+    axis : str
+        The axis to show if ``im`` is 3D.  If not given, then the 'Z_axes'
+        is the default value.
+    """
+    try:
+        from mayavi import mlab
+    except ModuleNotFoundError:
+        msg = (
+            "The mayavi python bindings must be installed using conda"
+            " install -c conda-forge mayavi, however this may require"
+            " using a virtualenv since conflicts with other packages may"
+            " happen. This is why it is not explicitly included as a"
+            " dependency in porespy."
+        )
+        raise ModuleNotFoundError(msg)
+    mlab.volume_slice(np.array(im.astype("uint8")),
+                      slice_index=ind,
+                      plane_orientation=axis)

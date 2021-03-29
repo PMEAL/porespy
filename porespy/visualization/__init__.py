@@ -16,6 +16,7 @@ This module contains functions for quickly visualizing 3D images in 2D views.
     porespy.visualization.show_3D
     porespy.visualization.set_mpl_style
     porespy.visualization.show_mesh
+    porespy.visualization.volume_slice
 
 .. autofunction:: imshow
 .. autofunction:: sem
@@ -23,6 +24,7 @@ This module contains functions for quickly visualizing 3D images in 2D views.
 .. autofunction:: show_3D
 .. autofunction:: set_mpl_style
 .. autofunction:: show_mesh
+.. autofunction:: volume_slice
 
 '''
 
