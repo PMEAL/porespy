@@ -273,7 +273,6 @@
 <span class="kn">from</span> <span class="nn">porespy.filters</span> <span class="kn">import</span> <span class="n">trim_nonpercolating_paths</span>
 <span class="kn">from</span> <span class="nn">loguru</span> <span class="kn">import</span> <span class="n">logger</span>
 <span class="kn">from</span> <span class="nn">porespy.generators</span> <span class="kn">import</span> <span class="n">faces</span>
-<span class="kn">import</span> <span class="nn">collections</span>
 
 
 <div class="viewcode-block" id="tortuosity"><a class="viewcode-back" href="../../../modules/generated/porespy.dns.tortuosity.html#porespy.dns.tortuosity">[docs]</a><span class="k">def</span> <span class="nf">tortuosity</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">return_im</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -343,7 +342,7 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">fd</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">'solver_family'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'pypardiso'</span>
             <span class="n">fd</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
-        <span class="k">except</span> <span class="ne">ModuleNotFoundError</span> <span class="ow">or</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
             <span class="n">fd</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">'solver_family'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'scipy'</span>
             <span class="n">fd</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">'solver_type'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'cg'</span>
             <span class="n">fd</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
