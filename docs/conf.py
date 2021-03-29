@@ -114,10 +114,10 @@ html_show_sphinx = False
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 
-# html_theme = 'sphinx_rtd_theme'
-
 # html_theme = 'alabaster'
-html_theme = 'pydata_sphinx_theme'
+# html_theme = 'sphinx_rtd_theme'
+# html_theme = 'pydata_sphinx_theme'
+html_theme = 'furo'
 
 html_logo = './images/porespy_logo.png'
 

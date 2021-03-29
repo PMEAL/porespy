@@ -22,18 +22,18 @@ def tortuosity(im, axis, return_im=False, **kwargs):
 
     Returns
     -------
-    results :  tuple
+    results : tuple
         A named-tuple containing:
-
-        - ``tortuosity``: calculated using the ``effective_porosity`` as
-          :math:`\tau = \frac{D_{AB}}{D_{eff}} \cdot \varepsilon`.
-        - ``effective_porosity``: of the image after applying
-          ``trim_nonpercolating_paths``. This removes disconnected
-          voxels which cause singular matrices.
-        - ``original_porosity``: of the image as given
-        - ``formation_factor``: found as :math:`D_{AB}/D_{eff}`.
-        - ``image``: containing the concentration values from the simulation.
-          This is only returned if ``return_im`` is ``True``.
+          - ``tortuosity``: calculated using the ``effective_porosity``
+            as :math:`\tau = \frac{D_{AB}}{D_{eff}} \cdot \varepsilon`.
+          - ``effective_porosity``: of the image after applying
+            ``trim_nonpercolating_paths``. This removes disconnected
+            voxels which cause singular matrices.
+          - ``original_porosity``: of the image as given
+          - ``formation_factor``: found as :math:`D_{AB}/D_{eff}`.
+          - ``image``: containing the concentration values from the
+            simulation. This is only returned if ``return_im`` is
+            ``True``.
 
     """
     if axis > (im.ndim - 1):

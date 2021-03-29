@@ -16,8 +16,11 @@ Quantitative image analysis of porous materials
     images.
 
     .. image:: ./images/image_based_ip.gif
-        :width: 600px
-        :align: center
+       :width: 100%
+       :align: center
+
+What is PoreSpy? |stars|
+########################
 
 PoreSpy is a collection of image analysis tools used to extract information
 from 3D images of porous materials (typically obtained from X-ray
@@ -35,7 +38,7 @@ porespy.filters.porosimetry).
 Capabilities
 ############
 
-``porespy`` consists of the following modules:
+PoreSpy consists of the following modules:
 
 -  ``generators``: Routines for generating artificial images of porous
    materials useful for testing and illustration
@@ -50,10 +53,6 @@ Capabilities
    use in common software
 -  ``tools``: Various useful tools for working with images
 
-=====================
-PoreSpy Documentation
-=====================
-
 .. toctree::
     :maxdepth: 1
     :hidden:
@@ -63,29 +62,5 @@ PoreSpy Documentation
     modules/index
     user_guide
 
-.. image:: https://github.com/PMEAL/porespy/workflows/Ubuntu/badge.svg
-   :target: https://github.com/PMEAL/porespy/actions
-
-.. image:: https://github.com/PMEAL/porespy/workflows/macOS/badge.svg
-   :target: https://github.com/PMEAL/porespy/actions
-
-.. image:: https://github.com/PMEAL/porespy/workflows/Windows/badge.svg
-   :target: https://github.com/PMEAL/porespy/actions
-
-.. image:: https://github.com/PMEAL/porespy/workflows/Examples/badge.svg
-   :target: https://github.com/PMEAL/porespy/actions
-
-.. image:: https://codecov.io/gh/PMEAL/PoreSpy/branch/dev/graph/badge.svg
-   :target: https://codecov.io/gh/PMEAL/PoreSpy
-
-.. image:: https://img.shields.io/badge/ReadTheDocs-GO-blue.svg
-   :target: http://porespy.readthedocs.io/en/dev/
-
-.. image:: https://img.shields.io/pypi/v/porespy.svg
-   :target: https://pypi.python.org/pypi/porespy/
-
-.. image:: https://img.shields.io/badge/DOI-10.21105/joss.01296-blue.svg
-   :target: https://doi.org/10.21105/joss.01296
-
-.. image:: https://img.shields.io/github/stars/PMEAL/porespy.svg?style=social&label=Star&maxAge=2592000
+.. |stars| image:: https://img.shields.io/github/stars/PMEAL/porespy.svg?style=social&label=Star&maxAge=2592000
    :target: https://GitHub.com/PMEAL/porespy/stargazers/
