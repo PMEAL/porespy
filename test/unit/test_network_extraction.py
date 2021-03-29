@@ -6,8 +6,6 @@ import pytest
 import numpy as np
 from numpy.testing import assert_allclose
 import porespy as ps
-import openpnm as op
-import openpnm.models.geometry as gmods
 
 
 class NetworkExtractionTest():
@@ -16,11 +14,6 @@ class NetworkExtractionTest():
         self.snow = ps.filters.snow_partitioning(self.im, return_all=True)
         self.im3d = ps.generators.blobs(shape=[50, 50, 50])
         self.snow3d = ps.filters.snow_partitioning(self.im3d, return_all=True)
-        self.net = op.network.Cubic(shape=[5, 5, 5])
-        self.geom = op.geometry.StickAndBall(
-            network=self.net, pores=self.net.Ps, throats=self.net.Ts)
-        self.geom.add_model(propname="pore.volume", model=gmods.pore_volume.cube)
-        self.geom.add_model(propname="throat.volume", model=gmods.throat_volume.cylinder)
 
     def test_regions_to_network(self):
         im = self.snow.regions*self.im

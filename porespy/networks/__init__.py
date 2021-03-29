@@ -36,7 +36,6 @@ from .__funcs__ import map_to_regions
 from .__funcs__ import generate_voxel_image
 from .__funcs__ import label_phases
 from .__funcs__ import label_boundaries
-from .__funcs__ import _parse_pad_width
 from .__getnet__ import regions_to_network
 from .__utils__ import _net_dict
 from ._snow2 import snow2

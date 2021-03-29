@@ -1,6 +1,6 @@
 import numpy as np
 from porespy.networks import regions_to_network
-from porespy.networks import add_boundary_regions, _parse_pad_width
+from porespy.networks import add_boundary_regions
 from porespy.networks import label_phases, label_boundaries
 from porespy.filters import snow_partitioning
 from collections import namedtuple
@@ -101,18 +101,23 @@ def snow2(phases,
         snow = snow_partitioning(im=phase, randomize=False, return_all=True,
                                  sigma=0.4, r_max=4)
         regions += snow.regions + regions.max()*(snow.regions > 0)
+    # Inspect and clean-up boundary_width argument
     boundary_width = _parse_pad_width(boundary_width, phases.shape)
-    regions = add_boundary_regions(regions, pad_width=boundary_width)
-    phases = np.pad(phases, pad_width=boundary_width, mode='edge')
+    # If boundaries were specified, pad the images accordingly
+    if np.any(boundary_width):
+        regions = add_boundary_regions(regions, pad_width=boundary_width)
+        phases = np.pad(phases, pad_width=boundary_width, mode='edge')
+    # Perform actual extractcion on all regions
     net = regions_to_network(regions, phases=phases)
-    if phase_alias is None:
-        phase_alias = {i+1: 'phase' + str(i+1) for i in range(phases.max())}
-    net = label_phases(net, alias=phase_alias)
-    if boundary_labels is None:
-        boundary_labels = [['left', 'right'],
-                           ['front', 'back'],
-                           ['top', 'bottom'] * (phases.ndim > 2)]
-    net = label_boundaries(net, labels=boundary_labels)
+    # If image is multiphase, label pores/throats accordingly
+    if phases.max() > 1:
+        phase_alias = _parse_phase_alias(phase_alias, phases)
+        net = label_phases(net, alias=phase_alias)
+    # If boundaries were added, label them accordingly
+    if np.any(boundary_width):
+        boundary_labels = _parse_boundary_labels(boundary_labels,
+                                                 pad_width=boundary_width)
+        net = label_boundaries(net, labels=boundary_labels)
     if return_all:  # Collect result in a tuple for return
         result = namedtuple('snow2', ('network', 'regions', 'phases'))
         result.network = net
@@ -121,3 +126,52 @@ def snow2(phases,
     else:
         result = net
     return result
+
+
+def _parse_phase_alias(alias, phases):
+    r"""
+    """
+    if alias is None:
+        alias = {i+1: 'phase' + str(i+1) for i in range(phases.max())}
+    for i in range(phases.max()):
+        if i+1 not in alias.keys():
+            alias[i+1] = 'phase'+str(i+1)
+    return alias
+
+
+def _parse_pad_width(pad_width, shape):
+    r"""
+    """
+    shape = np.array(shape)
+    pw = np.array(pad_width)
+    # Deal with integer value
+    if pw.size == 1:
+        pad_width = [[pad_width, pad_width]]*len(shape)
+        pw = np.array(pad_width)
+    elif pw.size == 2:
+        pad_width = [pad_width]*len(shape)
+        pw = np.array(pad_width)
+    elif (pw.size == 3) and (shape.size == 3):
+        pad_width = [pad_width]*2
+        pw = np.array(pad_width).T
+    elif (pw.size == 3) and (shape.size == 2):
+        raise Exception(f'Not sure how to interpret {pad_width} on a 2D image')
+    return pw.squeeze()
+
+
+def _parse_boundary_labels(boundary_labels, pad_width):
+    r"""
+    """
+    boundary_labels = None
+    if boundary_labels is None:
+        boundary_labels = [['left', 'right'],
+                           ['front', 'back'],
+                           ['bottom', 'top']]
+    bl = []
+    for r in range(pad_width.shape[1]):
+        temp = []
+        for c in [0, 1]:
+            if pad_width[r, c] > 0:
+                temp.append(boundary_labels[r][c])
+        bl.append(temp)
+    return bl

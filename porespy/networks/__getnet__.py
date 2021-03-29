@@ -161,9 +161,9 @@ def regions_to_network(regions, phases=None, voxel_size=1, accuracy='standard'):
                 t_conns.append([pore, j])
                 vx = np.where(im_w_throats == (j + 1))
                 t_dia_inscribed.append(2*np.amax(sub_dt[vx]))
-                # The following is overwritten if use_marching_cubes is True
+                # The following is overwritten if accuracy is set to 'high'
                 t_perimeter.append(np.sum(sub_dt[vx] < 2))
-                # The following is overwritten if use_marching_cubes is True
+                # The following is overwritten if accuracy is set to 'high'
                 t_area.append(np.size(vx[0]))
                 p_area_surf[pore] -= np.size(vx[0])
                 t_inds = tuple([i+j for i, j in zip(vx, s_offset)])
@@ -205,7 +205,7 @@ def regions_to_network(regions, phases=None, voxel_size=1, accuracy='standard'):
     PT2 = PT2-p_dia_local[P12[:, 1]]/2*voxel_size
     dist = (p_coords[P12[:, 0]]-p_coords[P12[:, 1]])*voxel_size
     net['throat.direct_length'] = np.sqrt(np.sum(dist**2, axis=1))
-    if accuracy == 'high':
+    if (accuracy == 'high') and (im.ndim == 3):
         areas = region_surface_areas(regions=im)
         net['pore.surface_area'] = areas * voxel_size**2
         interface_area = region_interface_areas(regions=im, areas=areas,

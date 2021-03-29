@@ -324,23 +324,3 @@ def label_boundaries(
         except TypeError:
             continue
     return network
-
-
-def _parse_pad_width(pad_width, shape):
-    r"""
-    """
-    shape = np.array(shape)
-    pw = np.array(pad_width)
-    # Deal with integer value
-    if pw.size == 1:
-        pad_width = [[pad_width, pad_width]]*len(shape)
-        pw = np.array(pad_width)
-    elif pw.size == 2:
-        pad_width = [pad_width]*len(shape)
-        pw = np.array(pad_width)
-    elif (pw.size == 3) and (shape.size == 3):
-        pad_width = [pad_width]*2
-        pw = np.array(pad_width).T
-    elif (pw.size == 3) and (shape.size == 2):
-        raise Exception('Not sure how to interpret 3 pad_width on a 2D image')
-    return pw.squeeze()
