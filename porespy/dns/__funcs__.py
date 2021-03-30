@@ -74,14 +74,14 @@ def tortuosity(im, axis, return_im=False, **kwargs):
         try:
             fd.settings['solver_family'] = 'pypardiso'
             fd.run()
-        except ModuleNotFoundError:
+        except ModuleNotFoundError:  # pragma: no cover
             fd.settings['solver_family'] = 'scipy'
             fd.settings['solver_type'] = 'cg'
             fd.run()
     # Calculating molar flow rate, effective diffusivity and tortuosity
     rate_out = fd.rate(pores=outlets)[0]
     rate_in = fd.rate(pores=inlets)[0]
-    if not np.allclose(-rate_out, rate_in):
+    if not np.allclose(-rate_out, rate_in):  # pragma: no cover
         raise Exception('Something went wrong, inlet and outlet rate do not match')
     delta_C = C_in - C_out
     L = im.shape[axis]
@@ -100,7 +100,7 @@ def tortuosity(im, axis, return_im=False, **kwargs):
     result.formation_factor = 1 / Deff
     result.original_porosity = eps0
     result.effective_porosity = eps
-    if return_im:
+    if return_im:  # pragma: no cover
         conc = np.zeros([im.size, ], dtype=float)
         conc[net['pore.template_indices']] = fd['pore.concentration']
         conc = np.reshape(conc, newshape=im.shape)
