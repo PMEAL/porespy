@@ -7,16 +7,19 @@ Networks
 
 Contains functions for analysing images as pore networks.
 
+.. currentmodule:: porespy
+
 .. autosummary::
+   :template: mybase.rst
    :toctree: generated/
 
-   snow
-   snow_dual
-   map_to_regions
-   regions_to_network
-   add_boundary_regions
-   generate_voxel_image
-   maximal_ball
+   networks.snow
+   networks.snow_dual
+   networks.map_to_regions
+   networks.regions_to_network
+   networks.add_boundary_regions
+   networks.generate_voxel_image
+   networks.maximal_ball
 
 """
 

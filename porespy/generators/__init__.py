@@ -9,23 +9,26 @@ This module contains a variety of functions for generating artificial
 images of porous materials, generally for testing, validation,
 debugging, and illustration purposes.
 
+.. currentmodule:: porespy
+
 .. autosummary::
+   :template: mybase.rst
    :toctree: generated/
 
-    blobs
-    bundle_of_tubes
-    cylindrical_plug
-    cylinders
-    fractal_noise
-    insert_shape
-    lattice_spheres
-    line_segment
-    overlapping_spheres
-    polydisperse_spheres
-    pseudo_electrostatic_packing
-    pseudo_gravity_packing
-    RSA
-    voronoi_edges
+    generators.blobs
+    generators.bundle_of_tubes
+    generators.cylindrical_plug
+    generators.cylinders
+    generators.fractal_noise
+    generators.insert_shape
+    generators.lattice_spheres
+    generators.line_segment
+    generators.overlapping_spheres
+    generators.polydisperse_spheres
+    generators.pseudo_electrostatic_packing
+    generators.pseudo_gravity_packing
+    generators.RSA
+    generators.voronoi_edges
 
 """
 

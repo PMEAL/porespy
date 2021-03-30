@@ -8,10 +8,13 @@ DNS
 This module contains routines for performing direct numerical
 simulations.
 
+.. currentmodule:: porespy
+
 .. autosummary::
+   :template: mybase.rst
    :toctree: generated/
 
-   tortuosity
+   dns.tortuosity
 
 """
 

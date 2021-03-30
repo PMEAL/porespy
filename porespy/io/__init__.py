@@ -5,17 +5,20 @@ IO
 
 **Export to and from various formats**
 
+.. currentmodule:: porespy
+
 .. autosummary::
+   :template: mybase.rst
    :toctree: generated/
 
-    to_vtk
-    dict_to_vtk
-    to_palabos
-    openpnm_to_im
-    to_stl
-    to_paraview
-    open_paraview
-    spheres_to_comsol
+    io.to_vtk
+    io.dict_to_vtk
+    io.to_palabos
+    io.openpnm_to_im
+    io.to_stl
+    io.to_paraview
+    io.open_paraview
+    io.spheres_to_comsol
 
 """
 

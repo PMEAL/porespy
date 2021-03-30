@@ -5,11 +5,14 @@ ImageJ
 
 **Access ImageJ Filters**
 
+.. currentmodule:: porespy
+
 .. autosummary::
+   :template: mybase.rst
    :toctree: generated/
 
-    imagej_wrapper
-    imagej_plugin
+    imagej.imagej_wrapper
+    imagej.imagej_plugin
 
 """
 
