@@ -5,35 +5,23 @@ PoreSpy
 
 **Porous Media Image Analysis in Python**
 
-PoreSpy consists of the following modules:
-
 ----
+
+PoreSpy consists of the following modules:
 
 **generators**: Routines for generating artificial images of porous materials
 useful for testing and illustration
 
-----
-
 **filters**: Functions that accept an image and return an altered image
-
-----
 
 **metrics**: Tools for quantifying properties of images
 
-----
-
 **networks**: Tools for obtaining pore network representations of images
-
-----
 
 **visualization**: Helper functions for creating useful views of the image
 
-----
-
 **io**: Functions for output image data in various formats for use in common
 software
-
-----
 
 **tools**: Various useful tools for working with images
 
@@ -69,12 +57,12 @@ Use some filters from PoreSpy:
 
 """
 
-import sys as _sys
 from .__version__ import __version__
 from .tools.__utils__ import Settings as _Settings
+from .tools.__utils__ import _is_ipython_notebook
 
 settings = _Settings()
-settings.notebook = _sys.argv[-1].endswith('json')
+settings.notebook = _is_ipython_notebook()
 
 from . import tools
 from . import filters
