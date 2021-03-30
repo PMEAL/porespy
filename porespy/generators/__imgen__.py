@@ -815,7 +815,9 @@ def _cylinders(shape: List[int],
     n = 0
     L = min(H, R)
     # Disable tqdm if called from another tqdm to prevent double pbars
-    tqdm_settings = {**settings.tqdm, **{'disable': not verbose}}
+    tqdm_settings = settings.tqdm.copy()
+    if not settings.tqdm["disable"]:
+        tqdm_settings = {**settings.tqdm, **{'disable': not verbose}}
     with tqdm(ncylinders, **tqdm_settings) as pbar:
         while n < ncylinders:
             # Choose a random starting point in domain
