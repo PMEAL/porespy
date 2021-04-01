@@ -25,6 +25,7 @@ jobs:
     - name: Build the documentation
       run: |
         cd docs
+        python examples_linker.py
         make html
     # Push the documentation's HTML to github-pages
     - name: GitHub Pages action
