@@ -5,7 +5,6 @@ import openpnm as op
 from porespy.filters import trim_nonpercolating_paths
 from loguru import logger
 from porespy.generators import faces
-import collections
 
 
 def tortuosity(im, axis, return_im=False, **kwargs):
@@ -24,18 +23,18 @@ def tortuosity(im, axis, return_im=False, **kwargs):
 
     Returns
     -------
-    results :  tuple
+    results : tuple
         A named-tuple containing:
-
-        - ``tortuosity``: calculated using the ``effective_porosity`` as
-          :math:`\tau = \frac{D_{AB}}{D_{eff}} \cdot \varepsilon`.
-        - ``effective_porosity``: of the image after applying
-          ``trim_nonpercolating_paths``. This removes disconnected
-          voxels which cause singular matrices.
-        - ``original_porosity``: of the image as given
-        - ``formation_factor``: found as :math:`D_{AB}/D_{eff}`.
-        - ``image``: containing the concentration values from the simulation.
-          This is only returned if ``return_im`` is ``True``.
+          - ``tortuosity``: calculated using the ``effective_porosity``
+            as :math:`\tau = \frac{D_{AB}}{D_{eff}} \cdot \varepsilon`.
+          - ``effective_porosity``: of the image after applying
+            ``trim_nonpercolating_paths``. This removes disconnected
+            voxels which cause singular matrices.
+          - ``original_porosity``: of the image as given
+          - ``formation_factor``: found as :math:`D_{AB}/D_{eff}`.
+          - ``image``: containing the concentration values from the
+            simulation. This is only returned if ``return_im`` is
+            ``True``.
 
     """
     if axis > (im.ndim - 1):
@@ -75,14 +74,14 @@ def tortuosity(im, axis, return_im=False, **kwargs):
         try:
             fd.settings['solver_family'] = 'pypardiso'
             fd.run()
-        except ModuleNotFoundError or Exception:
+        except ModuleNotFoundError:  # pragma: no cover
             fd.settings['solver_family'] = 'scipy'
             fd.settings['solver_type'] = 'cg'
             fd.run()
     # Calculating molar flow rate, effective diffusivity and tortuosity
     rate_out = fd.rate(pores=outlets)[0]
     rate_in = fd.rate(pores=inlets)[0]
-    if not np.allclose(-rate_out, rate_in):
+    if not np.allclose(-rate_out, rate_in):  # pragma: no cover
         raise Exception('Something went wrong, inlet and outlet rate do not match')
     delta_C = C_in - C_out
     L = im.shape[axis]
@@ -101,7 +100,7 @@ def tortuosity(im, axis, return_im=False, **kwargs):
     result.formation_factor = 1 / Deff
     result.original_porosity = eps0
     result.effective_porosity = eps
-    if return_im:
+    if return_im:  # pragma: no cover
         conc = np.zeros([im.size, ], dtype=float)
         conc[net['pore.template_indices']] = fd['pore.concentration']
         conc = np.reshape(conc, newshape=im.shape)

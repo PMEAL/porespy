@@ -41,9 +41,21 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.ifconfig',
               'sphinx.ext.viewcode',
               'sphinx.ext.mathjax',
-              ]
+              'sphinx_copybutton',
+              'nbsphinx',
+              'nbsphinx_link']
+
+html_js_files = ['js/custom.js']
+
+nbsphinx_prompt_width = "0"
 
 exclude_patterns = ['_build', '_templates']
+
+add_module_names = False      # porespy.generators --> generators
+
+autosummary_generate = True
+
+globaltoc_maxdepth = 1
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -111,9 +123,12 @@ html_show_sphinx = False
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 
-html_theme = 'sphinx_rtd_theme'
-
 # html_theme = 'alabaster'
+# html_theme = 'sphinx_rtd_theme'
+# html_theme = 'pydata_sphinx_theme'
+html_theme = 'furo'
+
+html_logo = '_static/images/porespy_logo.png'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
