@@ -21,9 +21,10 @@ Quantitative image analysis of porous materials
     approach is very quick and almost runs instantly on average-size
     images.
 
-    .. image:: _static/images/image_based_ip.gif
-       :width: 100%
+    .. figure:: _static/images/image_based_ip.gif
        :align: center
+       :figwidth: 90%
+       :figclass: align-center
 
 What is PoreSpy? |stars|
 ########################

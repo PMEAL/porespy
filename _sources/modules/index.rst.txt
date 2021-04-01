@@ -21,8 +21,3 @@ sub-module are provided below.
     Tools <tools>
     Visualization <visualization>
     IO <io>
-
-Functions
-*********
-
-* :ref:`genindex`

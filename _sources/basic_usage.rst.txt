@@ -5,9 +5,13 @@ Basic Usage
 ###########
 
 The following code snippets illustrate generating a 2D image, applying
-several filters, and calculating some common metrics. A set of examples
-is included in this repo, and can be `browsed
-here <https://github.com/PMEAL/porespy/tree/dev/examples>`__.
+several filters, and calculating some common metrics. We have many more
+examples that you can navigate from the sidebar. You can copy the code
+snippets in these examples by clicking the little icon in the top right
+of each code snippet. If you don't feel like copying and pasting
+multiple code snippets for each example, you can also download the
+entire example from our GitHub repo, which can be browsed
+`here <https://github.com/PMEAL/porespy/tree/dev/examples>`__.
 
 Generating an image
 -------------------
