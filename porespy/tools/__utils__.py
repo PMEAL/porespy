@@ -6,7 +6,7 @@ from loguru import logger
 from tqdm import tqdm
 
 
-def _is_ipython_notebook():
+def _is_ipython_notebook():  # pragma: no cover
     try:
         shell = get_ipython().__class__.__name__
         if shell == 'ZMQInteractiveShell':
