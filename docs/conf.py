@@ -82,6 +82,7 @@ html_theme_options = {
 html_sidebars = {
     "contributing": ["sidebar-search-bs.html"],
     "changelog": [],
+    "examples/*": []
 }
 
 html_js_files = ['js/custom.js']

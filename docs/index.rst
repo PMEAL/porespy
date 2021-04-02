@@ -8,23 +8,16 @@ Quantitative image analysis of porous materials
 ###############################################
 
 .. warning::
+
     As of February 12th, 2021, we are actively working on version 2.0.
     The ``dev`` branch will no longer be backwards compatible with
     previous versions of PoreSpy. We expect this conversion to be
     complete by winter's end.
 
-.. sidebar:: Highlight
+.. sidebar:: How to Cite
 
-    The animation below shows the end result of an image-based invasion
-    percolation algorithm developed in PMEAL and implemented in PoreSpy.
-    Unlike physics-based approaches like the Lattice-Boltzmann method, our
-    approach is very quick and almost runs instantly on average-size
-    images.
+    Gostick J, Khan ZA, Tranter TG, Kok MDR, Agnaou M, Sadeghi MA, Jervis R. PoreSpy: A Python Toolkit for Quantitative Analysis of Porous Media Images. Journal of Open Source Software, 2019. `doi:10.21105/joss.01296 <https://doi:10.21105/joss.01296>`_
 
-    .. figure:: _static/images/image_based_ip.gif
-       :align: center
-       :figwidth: 90%
-       :figclass: align-center
 
 What is PoreSpy? |stars|
 ########################
