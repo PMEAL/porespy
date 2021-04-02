@@ -45,6 +45,45 @@ extensions = ['sphinx.ext.autodoc',
               'nbsphinx',
               'nbsphinx_link']
 
+html_theme_options = {
+    "logo_link": "https://www.porespy.org",
+    "icon_links": [
+        {
+            "name": "GitHub",
+            "url": "https://github.com/PMEAL/porespy",
+            "icon": "fab fa-github-square",
+        },
+        {
+            "name": "Substack",
+            "url": "https://porespy.substack.com/",
+            "icon": "fas fa-envelope-square",
+        },
+        {
+            "name": "Twitter",
+            "url": "https://twitter.com/porespy",
+            "icon": "fab fa-twitter-square",
+        },
+    ],
+    "external_links": [
+        {
+            "name": "Issue Tracker", "url": "https://github.com/PMEAL/porespy/issues"
+        },
+        {
+            "name": "Get Help", "url": "https://github.com/PMEAL/porespy/discussions"
+        },
+    ],
+    "show_prev_next": False,
+    "icon_links_label": "Quick Links",
+    "use_edit_page_button": False,
+    "search_bar_position": "navbar",
+    "navbar_align": "left",
+}
+
+html_sidebars = {
+    "contributing": ["sidebar-search-bs.html"],
+    "changelog": [],
+}
+
 html_js_files = ['js/custom.js']
 
 nbsphinx_prompt_width = "0"
@@ -55,7 +94,7 @@ add_module_names = False    # porespy.generators --> generators
 
 autosummary_generate = True
 
-globaltoc_maxdepth = 1
+globaltoc_maxdepth = 2
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -125,8 +164,7 @@ html_show_sphinx = False
 
 # html_theme = 'alabaster'
 # html_theme = 'sphinx_rtd_theme'
-# html_theme = 'pydata_sphinx_theme'
-html_theme = 'furo'
+html_theme = 'pydata_sphinx_theme'
 
 html_logo = '_static/images/porespy_logo.png'
 
