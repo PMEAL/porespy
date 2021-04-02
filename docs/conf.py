@@ -51,7 +51,7 @@ nbsphinx_prompt_width = "0"
 
 exclude_patterns = ['_build', '_templates']
 
-add_module_names = False      # porespy.generators --> generators
+add_module_names = False    # porespy.generators --> generators
 
 autosummary_generate = True
 
