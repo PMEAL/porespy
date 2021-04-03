@@ -11,6 +11,10 @@
 
 // The next lines work with pydata theme
 
+if (location.protocol !== 'https:') {
+    location.replace(`https:${location.href.substring(location.protocol.length)}`);
+}
+
 window.onload = function () {
     var examples_clicked = $( "a[href*='#']:contains(Examples)" )
     if (examples_clicked.length == 1) {
