@@ -3,6 +3,12 @@
 .. module:: porespy
    :noindex:
 
+.. raw:: html
+
+   <p align="center">
+     <img src=".\_static\images\porespy_logo.png" width="75%"></img>
+   </p>
+
 ###############################################
 Quantitative image analysis of porous materials
 ###############################################
@@ -14,9 +20,6 @@ Quantitative image analysis of porous materials
     previous versions of PoreSpy. We expect this conversion to be
     complete by winter's end.
 
-.. sidebar:: How to Cite
-
-    Gostick J, Khan ZA, Tranter TG, Kok MDR, Agnaou M, Sadeghi MA, Jervis R. PoreSpy: A Python Toolkit for Quantitative Analysis of Porous Media Images. Journal of Open Source Software, 2019. `doi:10.21105/joss.01296 <https://doi:10.21105/joss.01296>`_
 
 
 What is PoreSpy? |stars|
@@ -29,6 +32,11 @@ tools (i.e ``skimage`` and ``scipy.ndimage`` in the Python environment, ImageJ,
 MatLab's Image Processing Toolbox), but they all require building up
 complex scripts or macros to accomplish tasks of specific use to porous
 media.
+
+.. sidebar:: How to Cite
+
+    Gostick J, Khan ZA, Tranter TG, Kok MDR, Agnaou M, Sadeghi MA, Jervis R. PoreSpy: A Python Toolkit for Quantitative Analysis of Porous Media Images. Journal of Open Source Software, 2019. `doi:10.21105/joss.01296 <https://doi:10.21105/joss.01296>`_
+
 
 Capabilities
 ############
