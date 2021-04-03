@@ -72,6 +72,7 @@ html_theme_options = {
             "name": "Get Help", "url": "https://github.com/PMEAL/porespy/discussions"
         },
     ],
+    "navigation_with_keys": False,
     "show_prev_next": False,
     "icon_links_label": "Quick Links",
     "use_edit_page_button": False,
