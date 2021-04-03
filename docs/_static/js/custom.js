@@ -11,7 +11,7 @@
 
 // The next lines work with pydata theme
 
-if (location.protocol !== 'https:') {
+if (location.protocol.startsWith("http") & location.protocol !== 'https:') {
     location.replace(`https:${location.href.substring(location.protocol.length)}`);
 }
 
