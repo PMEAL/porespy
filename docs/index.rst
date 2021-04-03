@@ -6,11 +6,11 @@
 .. raw:: html
 
    <p align="center">
-     <img src=".\_static\images\porespy_logo.png" width="75%"></img>
+     <img src=".\_static\images\porespy_logo.png" width="60%"></img>
    </p>
 
 ###############################################
-Quantitative image analysis of porous materials
+Quantitative Image Analysis of Porous Materials
 ###############################################
 
 .. warning::
@@ -20,23 +20,21 @@ Quantitative image analysis of porous materials
     previous versions of PoreSpy. We expect this conversion to be
     complete by winter's end.
 
-
+----
 
 What is PoreSpy? |stars|
 ########################
 
-PoreSpy is a collection of image analysis tools used to extract information
+PoreSpy is a collection of image analysis functions used to extract information
 from 3D images of porous materials (typically obtained from X-ray
-tomography). There are many packages that offer generalized image analysis
+tomography). There are other packages that offer generalized image analysis
 tools (i.e ``skimage`` and ``scipy.ndimage`` in the Python environment, ImageJ,
 MatLab's Image Processing Toolbox), but they all require building up
 complex scripts or macros to accomplish tasks of specific use to porous
-media.
+media. Porespy includes predefined functions to accomplish many of these
+routine analysis rapidly and conveniently.
 
-.. sidebar:: How to Cite
-
-    Gostick J, Khan ZA, Tranter TG, Kok MDR, Agnaou M, Sadeghi MA, Jervis R. PoreSpy: A Python Toolkit for Quantitative Analysis of Porous Media Images. Journal of Open Source Software, 2019. `doi:10.21105/joss.01296 <https://doi:10.21105/joss.01296>`_
-
+----
 
 Capabilities
 ############
@@ -66,6 +64,18 @@ PoreSpy consists of the following modules:
 
 .. WARNING: examples.rst MUST BE THE LAST ENTRY, OTHERWISE OUR JS
 .. SCRIPT MIGHT BREAK! SEE _static/js/custom.js
+
+----
+
+How To Cite
+###########
+
+If you use PoreSpy in a publication, please add the following citation:
+
+.. topic:: Citation
+
+    Gostick J, Khan ZA, Tranter TG, Kok MDR, Agnaou M, Sadeghi MA, Jervis R. PoreSpy: A Python Toolkit for Quantitative Analysis of Porous Media Images. Journal of Open Source Software, 2019. `doi:10.21105/joss.01296 <https://doi.org/10.21105/joss.01296>`_
+
 
 .. |stars| image:: https://img.shields.io/github/stars/PMEAL/porespy.svg?style=social&label=Star&maxAge=2592000
    :target: https://GitHub.com/PMEAL/porespy/stargazers/
