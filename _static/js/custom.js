@@ -16,7 +16,7 @@ if (location.protocol.startsWith("http") & location.protocol !== 'https:') {
 }
 
 window.onload = function () {
-    var examples_clicked = $( "a[href*='#']:contains(Examples)" )
+    var examples_clicked = $( ".active a:contains(Examples)" )
     if (examples_clicked.length == 1) {
         $(" nav.bd-links ").children().hide()
     }
