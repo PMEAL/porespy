@@ -32,7 +32,7 @@ tools (i.e ``skimage`` and ``scipy.ndimage`` in the Python environment, ImageJ,
 MatLab's Image Processing Toolbox), but they all require building up
 complex scripts or macros to accomplish tasks of specific use to porous
 media. Porespy includes predefined functions to accomplish many of these
-routine analysis rapidly and conveniently.
+routine analyses rapidly and conveniently.
 
 ----
 
