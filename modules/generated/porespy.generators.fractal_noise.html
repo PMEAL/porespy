@@ -1,0 +1,352 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+    <title>fractal_noise &#8212; PoreSpy  documentation</title>
+    
+  <link href="../../_static/css/theme.css" rel="stylesheet" />
+  <link href="../../_static/css/index.f6b7ca918bee2f46fd9abac01cfb07d5.css" rel="stylesheet" />
+
+    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+    
+  <link rel="preload" as="script" href="../../_static/js/index.1e043a052b0af929e4d8.js">
+
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/custom.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="insert_shape" href="porespy.generators.insert_shape.html" />
+    <link rel="prev" title="cylinders" href="porespy.generators.cylinders.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+
+    
+      
+      <a class="navbar-brand" href="https://www.porespy.org">
+        <img src="../../_static/porespy_logo.png" class="logo" alt="logo">
+      </a>
+      
+    
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    
+    <div id="navbar-menu" class=" collapse navbar-collapse">
+      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
+        <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../user_guide/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../index.html">
+  Module and Function Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../examples.html">
+  Examples
+ </a>
+</li>
+
+        
+        <li class="nav-item">
+            <a class="nav-link nav-external" href="https://github.com/PMEAL/porespy/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+        </li>
+        
+        <li class="nav-item">
+            <a class="nav-link nav-external" href="https://github.com/PMEAL/porespy/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+        </li>
+        
+      </ul>
+
+      <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/PMEAL/porespy" rel="noopener" target="_blank" title="GitHub">
+            <span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://porespy.substack.com/" rel="noopener" target="_blank" title="Substack">
+            <span><i class="fas fa-envelope-square"></i></span>
+            <label class="sr-only">Substack</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/porespy" rel="noopener" target="_blank" title="Twitter">
+            <span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label>
+          </a>
+        </li>
+      </ul>
+    </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l2 current active">
+  <a class="reference internal" href="../generators.html">
+   Generators
+  </a>
+  <ul class="current">
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.generators.blobs.html">
+     blobs
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.generators.bundle_of_tubes.html">
+     bundle_of_tubes
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.generators.cylindrical_plug.html">
+     cylindrical_plug
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.generators.cylinders.html">
+     cylinders
+    </a>
+   </li>
+   <li class="toctree-l3 current active">
+    <a class="current reference internal" href="#">
+     fractal_noise
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.generators.insert_shape.html">
+     insert_shape
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.generators.lattice_spheres.html">
+     lattice_spheres
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.generators.line_segment.html">
+     line_segment
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.generators.overlapping_spheres.html">
+     overlapping_spheres
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.generators.polydisperse_spheres.html">
+     polydisperse_spheres
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.generators.pseudo_electrostatic_packing.html">
+     pseudo_electrostatic_packing
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.generators.pseudo_gravity_packing.html">
+     pseudo_gravity_packing
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.generators.RSA.html">
+     RSA
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.generators.voronoi_edges.html">
+     voronoi_edges
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../filters.html">
+   Filters
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../metrics.html">
+   Metrics
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../networks.html">
+   Networks
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../dns.html">
+   DNS
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../tools.html">
+   Tools
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../visualization.html">
+   Visualization
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../io.html">
+   IO
+  </a>
+ </li>
+</ul>
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+              
+
+<nav id="bd-toc-nav">
+    
+</nav>
+
+
+              
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <section id="fractal-noise">
+<h1>fractal_noise<a class="headerlink" href="#fractal-noise" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="porespy.generators.fractal_noise">
+<code class="sig-name descname"><span class="pre">fractal_noise</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">octaves</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gain</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'simplex'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uniform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/generators/_noise.html#fractal_noise"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.generators.fractal_noise" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate fractal noise which can be thresholded to create binary
+images with realistic structures across scales.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>shape</strong> (<em>array_like</em>) – The size of the image to generate, can be 2D or 3D.</p></li>
+<li><p><strong>frequency</strong> (<em>scalar</em><em>, </em><em>default=0.05</em>) – Controls the overall scale of the generated noise, with larger
+values giving larger structures.</p></li>
+<li><p><strong>octaves</strong> (<em>int</em><em>, </em><em>default=4</em>) – Controls the number of scales across which structures are
+generated, with larger values giving more scale.</p></li>
+<li><p><strong>gain</strong> (<em>scalar</em><em>, </em><em>default=0.5</em>) – Controls the intensity of successively higher octaves. Values
+below 1.0 mean the higher octaves are less prominent.</p></li>
+<li><p><strong>mode</strong> (<em>string</em>) – The type of noise to generate. Options are:
+- ‘perlin’ : classic Perlin noise
+- ‘simplex’ : updated Perlin noise for more realistic textures
+- ‘value’ : blnear interpolation of white noise
+- ‘cubic’ : cubic interpolation of white noise</p></li>
+<li><p><strong>seed</strong> (<em>int</em><em>, </em><em>optional</em>) – The seed of the random number generator.  Using the same
+<code class="docutils literal notranslate"><span class="pre">seed</span></code> between runs will produce the same image.</p></li>
+<li><p><strong>cores</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of cores to use.  This package used by this function
+has implemented SIMD processing which can be spread across
+cores. The default is to use all cores.</p></li>
+<li><p><strong>uniform</strong> (<em>boolean</em><em>, </em><em>default=True</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> (default) the random values are converted to a
+uniform distribution between 0 and 1, otherwise the result image
+contains the unprocesssed values, which have a ‘normal-esque’
+distribution centered on 0.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function provides a simplified wrapper for the the functions in
+the <a class="reference external" href="https://github.com/robbmcleod/pyfastnoisesimd">pyfastnoisesimd</a>
+package. <code class="docutils literal notranslate"><span class="pre">pyfastnoisesimd</span></code> is itself a wrapper for a C-library
+called <a class="reference external" href="https://github.com/Auburn/FastNoiseSIMD">FastNoiseSIMD</a>.
+To access the more elaborate functionality and options of these
+packages, explore the <a class="reference external" href="https://pyfastnoisesimd.readthedocs.io/en/latest/overview.html">pyfastnoisesimd documentation</a>.</p>
+<p>For more information on <code class="docutils literal notranslate"><span class="pre">simplex</span> <span class="pre">noise</span></code> see
+<a class="reference external" href="https://en.wikipedia.org/wiki/Simplex_noise">here</a>.</p>
+<p>For more information on <code class="docutils literal notranslate"><span class="pre">perlin</span> <span class="pre">noise</span></code> see
+<a class="reference external" href="https://en.wikipedia.org/wiki/Perlin_noise">here</a>.</p>
+<p>For more information on <code class="docutils literal notranslate"><span class="pre">value</span> <span class="pre">noise</span></code> see
+<a class="reference external" href="https://en.wikipedia.org/wiki/Value_noise">here</a>.</p>
+<p>For more information on <code class="docutils literal notranslate"><span class="pre">cubic</span> <span class="pre">noise</span></code> see
+<a class="reference external" href="https://github.com/jobtalle/CubicNoise">here</a>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">pyfastnoisesimd</span></code> is not installed by default with PoreSpy so you will
+receive an expection/warning when using this function.  Install may require
+a c-compiler is installed.</p>
+</dd></dl>
+
+</section>
+
+
+              </div>
+              
+              
+          </main>
+          
+
+      </div>
+    </div>
+
+    
+  <script src="../../_static/js/index.1e043a052b0af929e4d8.js"></script>
+
+
+    <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    <p>
+          &copy; Copyright 2021 PoreSpy Team.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

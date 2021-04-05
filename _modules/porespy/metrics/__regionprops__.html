@@ -1,0 +1,448 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>porespy.metrics.__regionprops__ &#8212; PoreSpy  documentation</title>
+    
+  <link href="../../../_static/css/theme.css" rel="stylesheet" />
+  <link href="../../../_static/css/index.f6b7ca918bee2f46fd9abac01cfb07d5.css" rel="stylesheet" />
+
+    
+  <link rel="stylesheet"
+    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
+    
+  <link rel="preload" as="script" href="../../../_static/js/index.1e043a052b0af929e4d8.js">
+
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/custom.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+
+    
+      
+      <a class="navbar-brand" href="https://www.porespy.org">
+        <img src="../../../_static/porespy_logo.png" class="logo" alt="logo">
+      </a>
+      
+    
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    
+    <div id="navbar-menu" class=" collapse navbar-collapse">
+      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
+        <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../user_guide/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../modules/index.html">
+  Module and Function Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../examples.html">
+  Examples
+ </a>
+</li>
+
+        
+        <li class="nav-item">
+            <a class="nav-link nav-external" href="https://github.com/PMEAL/porespy/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+        </li>
+        
+        <li class="nav-item">
+            <a class="nav-link nav-external" href="https://github.com/PMEAL/porespy/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+        </li>
+        
+      </ul>
+
+      <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/PMEAL/porespy" rel="noopener" target="_blank" title="GitHub">
+            <span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://porespy.substack.com/" rel="noopener" target="_blank" title="Substack">
+            <span><i class="fas fa-envelope-square"></i></span>
+            <label class="sr-only">Substack</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/porespy" rel="noopener" target="_blank" title="Twitter">
+            <span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label>
+          </a>
+        </li>
+      </ul>
+    </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+              
+
+<nav id="bd-toc-nav">
+    
+</nav>
+
+
+              
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <h1>Source code for porespy.metrics.__regionprops__</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy.ndimage</span> <span class="k">as</span> <span class="nn">spim</span>
+<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">extract_subsection</span><span class="p">,</span> <span class="n">bbox_to_slices</span>
+<span class="kn">from</span> <span class="nn">skimage.measure</span> <span class="kn">import</span> <span class="n">mesh_surface_area</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">skimage.measure</span> <span class="kn">import</span> <span class="n">marching_cubes</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">skimage.measure</span> <span class="kn">import</span> <span class="n">marching_cubes_lewiner</span> <span class="k">as</span> <span class="n">marching_cubes</span>
+<span class="kn">from</span> <span class="nn">skimage.morphology</span> <span class="kn">import</span> <span class="n">skeletonize_3d</span><span class="p">,</span> <span class="n">ball</span>
+<span class="kn">from</span> <span class="nn">skimage.measure</span> <span class="kn">import</span> <span class="n">regionprops</span>
+<span class="kn">from</span> <span class="nn">skimage.measure._regionprops</span> <span class="kn">import</span> <span class="n">RegionProperties</span>
+<span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">DataFrame</span>
+<span class="kn">from</span> <span class="nn">edt</span> <span class="kn">import</span> <span class="n">edt</span>
+<span class="kn">from</span> <span class="nn">loguru</span> <span class="kn">import</span> <span class="n">logger</span>
+
+
+<div class="viewcode-block" id="props_to_DataFrame"><a class="viewcode-back" href="../../../modules/generated/porespy.metrics.props_to_DataFrame.html#porespy.metrics.props_to_DataFrame">[docs]</a><span class="k">def</span> <span class="nf">props_to_DataFrame</span><span class="p">(</span><span class="n">regionprops</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a Pandas DataFrame containing all the scalar metrics for each</span>
+<span class="sd">    region, such as volume, sphericity, and so on, calculated by</span>
+<span class="sd">    ``regionprops_3D``.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    regionprops : list</span>
+<span class="sd">        This is a list of properties for each region that is computed</span>
+<span class="sd">        by ``regionprops_3D``.  Because ``regionprops_3D`` returns data in</span>
+<span class="sd">        the same ``list`` format as the ``regionprops`` function in **Skimage**</span>
+<span class="sd">        you can pass in either.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    DataFrame : Pandas DataFrame</span>
+<span class="sd">        A Pandas DataFrame with each region corresponding to a row and each</span>
+<span class="sd">        column corresponding to a key metric.  All the values for a given</span>
+<span class="sd">        property (e.g. &#39;sphericity&#39;) can be obtained as</span>
+<span class="sd">        ``val = df[&#39;sphericity&#39;]``.  Conversely, all the key metrics for a</span>
+<span class="sd">        given region can be found with ``df.iloc[1]``.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    prop_to_image</span>
+<span class="sd">    regionprops_3d</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Parse the regionprops list and pull out all props with scalar values</span>
+    <span class="n">metrics</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">reg</span> <span class="o">=</span> <span class="n">regionprops</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">reg</span><span class="o">.</span><span class="fm">__dir__</span><span class="p">():</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">item</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">reg</span><span class="p">,</span> <span class="n">item</span><span class="p">))</span> <span class="o">==</span> <span class="p">():</span>
+                    <span class="n">metrics</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">NotImplementedError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
+                <span class="k">pass</span>
+    <span class="c1"># Create a dictionary of all metrics that are simple scalar properties</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">metrics</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="s2">&quot;Processing </span><span class="si">{k}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">r</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">regionprops</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Error encountered evaluating </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1"> so skipping it&#39;</span><span class="p">)</span>
+    <span class="c1"># Create pandas data frame an return</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">df</span></div>
+
+
+<div class="viewcode-block" id="prop_to_image"><a class="viewcode-back" href="../../../modules/generated/porespy.metrics.prop_to_image.html#porespy.metrics.prop_to_image">[docs]</a><span class="k">def</span> <span class="nf">prop_to_image</span><span class="p">(</span><span class="n">regionprops</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">prop</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates an image with each region colored according the specified ``prop``,</span>
+<span class="sd">    as obtained by ``regionprops_3d``.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    regionprops : list</span>
+<span class="sd">        This is a list of properties for each region that is computed</span>
+<span class="sd">        by PoreSpy&#39;s ``regionprops_3D`` or Skimage&#39;s ``regionsprops``.</span>
+<span class="sd">    shape : array_like</span>
+<span class="sd">        The shape of the original image for which ``regionprops`` was obtained.</span>
+<span class="sd">    prop : string</span>
+<span class="sd">        The region property of interest.  Can be a scalar item such as &#39;volume&#39;</span>
+<span class="sd">        in which case the the regions will be colored by their respective</span>
+<span class="sd">        volumes, or can be an image-type property such as &#39;border&#39; or</span>
+<span class="sd">        &#39;convex_image&#39;, which will return an image composed of the sub-images.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    image : ND-array</span>
+<span class="sd">        An ND-image the same size as the original image, with each region</span>
+<span class="sd">        represented by the values specified in ``prop``.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    props_to_DataFrame</span>
+<span class="sd">    regionprops_3d</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">regionprops</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">prop</span> <span class="o">==</span> <span class="s1">&#39;convex&#39;</span><span class="p">:</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">convex_image</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">image</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">mask</span> <span class="o">*</span> <span class="n">r</span><span class="p">[</span><span class="n">prop</span><span class="p">]</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">bbox_to_slices</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">bbox</span><span class="p">)</span>
+        <span class="n">im</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">+=</span> <span class="n">temp</span>
+    <span class="k">return</span> <span class="n">im</span></div>
+
+
+<div class="viewcode-block" id="regionprops_3D"><a class="viewcode-back" href="../../../modules/generated/porespy.metrics.regionprops_3D.html#porespy.metrics.regionprops_3D">[docs]</a><span class="k">def</span> <span class="nf">regionprops_3D</span><span class="p">(</span><span class="n">im</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates various metrics for each labeled region in a 3D image.</span>
+
+<span class="sd">    The ``regionsprops`` method in **skimage** is very thorough for 2D images,</span>
+<span class="sd">    but is a bit limited when it comes to 3D images, so this function aims</span>
+<span class="sd">    to fill this gap.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    im : array_like</span>
+<span class="sd">        An imaging containing at least one labeled region.  If a boolean image</span>
+<span class="sd">        is received than the ``True`` voxels are treated as a single region</span>
+<span class="sd">        labeled ``1``.  Regions labeled 0 are ignored in all cases.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    props : list</span>
+<span class="sd">        An augmented version of the list returned by skimage&#39;s ``regionprops``.</span>
+<span class="sd">        Information, such as ``volume``, can be found for region A using the</span>
+<span class="sd">        following syntax: ``result[A-1].volume``.</span>
+
+<span class="sd">        The returned list contains all the metrics normally returned by</span>
+<span class="sd">        **skimage.measure.regionprops** plus the following:</span>
+
+<span class="sd">        &#39;slices&#39;: Slice indices into the image that can be used to extract the</span>
+<span class="sd">        region</span>
+
+<span class="sd">        &#39;volume&#39;: Volume of the region in number of voxels.</span>
+
+<span class="sd">        &#39;bbox_volume&#39;: Volume of the bounding box that contains the region.</span>
+
+<span class="sd">        &#39;border&#39;: The edges of the region, found as the locations where</span>
+<span class="sd">        the distance transform is 1.</span>
+
+<span class="sd">        &#39;inscribed_sphere&#39;: An image containing the largest sphere can can</span>
+<span class="sd">        fit entirely inside the region.</span>
+
+<span class="sd">        &#39;surface_mesh_vertices&#39;: Obtained by applying the marching cubes</span>
+<span class="sd">        algorithm on the region, AFTER first blurring the voxel image.  This</span>
+<span class="sd">        allows marching cubes more freedom to fit the surface contours. See</span>
+<span class="sd">        also ``surface_mesh_simplices``</span>
+
+<span class="sd">        &#39;surface_mesh_simplices&#39;: This accompanies ``surface_mesh_vertices``</span>
+<span class="sd">        and together they can be used to define the region as a mesh.</span>
+
+<span class="sd">        &#39;surface_area&#39;: Calculated using the mesh obtained as described above,</span>
+<span class="sd">        using the ``porespy.metrics.mesh_surface_area`` method.</span>
+
+<span class="sd">        &#39;sphericity&#39;: Defined as the ratio of the area of a sphere with the</span>
+<span class="sd">        same volume as the region to the actual surface area of the region.</span>
+
+<span class="sd">        &#39;skeleton&#39;: The medial axis of the region obtained using the</span>
+<span class="sd">        ``skeletonize_3D`` method from **skimage**.</span>
+
+<span class="sd">        &#39;convex_volume&#39;: Same as convex_area, but translated to a more</span>
+<span class="sd">        meaningful name.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    snow_partitioning</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Regions can be identified using a watershed algorithm, which can be a bit</span>
+<span class="sd">    tricky to obtain desired results.  *PoreSpy* includes the SNOW algorithm,</span>
+<span class="sd">    which may be helpful.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">regionprops</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">results</span><span class="p">):</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">RegionPropertiesPS</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">slice</span><span class="p">,</span>
+                               <span class="n">a</span><span class="o">.</span><span class="n">label</span><span class="p">,</span>
+                               <span class="n">a</span><span class="o">.</span><span class="n">_label_image</span><span class="p">,</span>
+                               <span class="n">a</span><span class="o">.</span><span class="n">_intensity_image</span><span class="p">,</span>
+                               <span class="n">a</span><span class="o">.</span><span class="n">_cache_active</span><span class="p">)</span>
+        <span class="n">results</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">b</span>
+
+    <span class="k">return</span> <span class="n">results</span></div>
+
+
+<span class="k">class</span> <span class="nc">RegionPropertiesPS</span><span class="p">(</span><span class="n">RegionProperties</span><span class="p">):</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">mask</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">image</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">slices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_slice</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">volume</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">area</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">bbox_volume</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mask</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">mask</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">border</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="o">==</span> <span class="mi">1</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">dt</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mask</span>
+        <span class="n">mask_padded</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">pad_width</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;constant&#39;</span><span class="p">)</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="n">mask_padded</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">extract_subsection</span><span class="p">(</span><span class="n">temp</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">mask</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">inscribed_sphere</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        <span class="n">inv_dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="n">dt</span> <span class="o">&lt;</span> <span class="n">r</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">inv_dt</span> <span class="o">&lt;</span> <span class="n">r</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">sphericity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">volume</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span> <span class="o">/</span> <span class="mi">4</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">vol</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="n">a_equiv</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">r</span><span class="o">**</span><span class="mi">2</span>
+        <span class="n">a_region</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">surface_area</span>
+        <span class="k">return</span> <span class="n">a_equiv</span> <span class="o">/</span> <span class="n">a_region</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">skeleton</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">skeletonize_3d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">surface_area</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mask</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">atleast_3d</span><span class="p">(</span><span class="n">mask</span><span class="p">),</span> <span class="n">pad_width</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;constant&#39;</span><span class="p">)</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">ball</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span> <span class="o">/</span> <span class="mi">5</span>
+        <span class="n">verts</span><span class="p">,</span> <span class="n">faces</span><span class="p">,</span> <span class="n">norms</span><span class="p">,</span> <span class="n">vals</span> <span class="o">=</span> <span class="n">marching_cubes</span><span class="p">(</span><span class="n">volume</span><span class="o">=</span><span class="n">tmp</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_surface_mesh_vertices</span> <span class="o">=</span> <span class="n">verts</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_surface_mesh_simplices</span> <span class="o">=</span> <span class="n">faces</span>
+        <span class="n">area</span> <span class="o">=</span> <span class="n">mesh_surface_area</span><span class="p">(</span><span class="n">verts</span><span class="p">,</span> <span class="n">faces</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">area</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">surface_mesh_vertices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_surface_mesh_vertices&#39;</span><span class="p">):</span>
+            <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">surface_area</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surface_mesh_vertices</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">surface_mesh_simplices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_surface_mesh_simplices&#39;</span><span class="p">):</span>
+            <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">surface_area</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surface_mesh_simplices</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">convex_volume</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">convex_area</span>
+</pre></div>
+
+              </div>
+              
+              
+          </main>
+          
+
+      </div>
+    </div>
+
+    
+  <script src="../../../_static/js/index.1e043a052b0af929e4d8.js"></script>
+
+
+    <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    <p>
+          &copy; Copyright 2021 PoreSpy Team.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>
