@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
     <title>Applying chords to 2D and 3D images &#8212; PoreSpy  documentation</title>
     
   <link href="../../_static/css/theme.css" rel="stylesheet" />
@@ -25,6 +26,7 @@
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
     
   <link rel="preload" as="script" href="../../_static/js/index.1e043a052b0af929e4d8.js">
 
@@ -92,10 +94,6 @@
         
       </ul>
 
-      <form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
-  <i class="icon fas fa-search"></i>
-  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
-</form>
       <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
         <li class="nav-item">
           <a class="nav-link" href="https://github.com/PMEAL/porespy" rel="noopener" target="_blank" title="GitHub">
@@ -126,7 +124,11 @@
           
             
             <!-- Only show if we have sidebars configured, else just a small margin  -->
-            <div class="col-12 col-md-3 bd-sidebar"><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
   <div class="bd-toc-item active">
     <ul class="current nav bd-sidenav">
  <li class="toctree-l2">
@@ -495,9 +497,9 @@ div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
 </style>
-<div class="section" id="Applying-chords-to-2D-and-3D-images">
+<section id="Applying-chords-to-2D-and-3D-images">
 <h1>Applying chords to 2D and 3D images<a class="headerlink" href="#Applying-chords-to-2D-and-3D-images" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="Importing-packages">
+<section id="Importing-packages">
 <h2>Importing packages<a class="headerlink" href="#Importing-packages" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
@@ -522,8 +524,8 @@ import matplotlib.pyplot as plt
 </pre></div>
 </div>
 </div>
-</div>
-<div class="section" id="Demonstration-on-2D-Image">
+</section>
+<section id="Demonstration-on-2D-Image">
 <h2>Demonstration on 2D Image<a class="headerlink" href="#Demonstration-on-2D-Image" title="Permalink to this headline">¶</a></h2>
 <p>Start by creating an image using the <code class="docutils literal notranslate"><span class="pre">blobs</span></code> function in <code class="docutils literal notranslate"><span class="pre">generators</span></code>. The useful thing about this function is that images can be created with anisotropy. These are exactly the sort of images where chord length distributions are useful, since chords can be drawn in different directions, to probe the anisotropic pore sizes.</p>
 <div class="nbinput nblast docutils container">
@@ -643,8 +645,8 @@ ax.set_ylabel(&quot;Frequency&quot;);
 <img alt="../../_images/examples_filters_adding_chords_19_0.svg" src="../../_images/examples_filters_adding_chords_19_0.svg" /></div>
 </div>
 <p>The key point to see here is that the blue bars are for the y-direction, which was the elongated direction, and as expected they show a tendency toward longer chords.</p>
-</div>
-<div class="section" id="Application-to-3D-images">
+</section>
+<section id="Application-to-3D-images">
 <h2>Application to 3D images<a class="headerlink" href="#Application-to-3D-images" title="Permalink to this headline">¶</a></h2>
 <p>Chords can just as easily be applied to 3D images. Let’s create an artificial image of fibers, aligned in the YZ plane, but oriented randomly in the X direction</p>
 <div class="nbinput docutils container">
@@ -688,8 +690,8 @@ ax.imshow(crds[:, :, 100]);
 <div class="output_area docutils container">
 <img alt="../../_images/examples_filters_adding_chords_25_0.svg" src="../../_images/examples_filters_adding_chords_25_0.svg" /></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
               </div>

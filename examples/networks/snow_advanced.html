@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
     <title>SNOW network extraction (advanced) &#8212; PoreSpy  documentation</title>
     
   <link href="../../_static/css/theme.css" rel="stylesheet" />
@@ -25,6 +26,7 @@
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
     
   <link rel="preload" as="script" href="../../_static/js/index.1e043a052b0af929e4d8.js">
 
@@ -92,10 +94,6 @@
         
       </ul>
 
-      <form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
-  <i class="icon fas fa-search"></i>
-  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
-</form>
       <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
         <li class="nav-item">
           <a class="nav-link" href="https://github.com/PMEAL/porespy" rel="noopener" target="_blank" title="GitHub">
@@ -126,7 +124,11 @@
           
             
             <!-- Only show if we have sidebars configured, else just a small margin  -->
-            <div class="col-12 col-md-3 bd-sidebar"><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
   <div class="bd-toc-item active">
     <ul class="current nav bd-sidenav">
  <li class="toctree-l2">
@@ -490,7 +492,7 @@ div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
 </style>
-<div class="section" id="SNOW-network-extraction-(advanced)">
+<section id="SNOW-network-extraction-(advanced)">
 <h1>SNOW network extraction (advanced)<a class="headerlink" href="#SNOW-network-extraction-(advanced)" title="Permalink to this headline">¶</a></h1>
 <p>The SNOW algorithm, <a class="reference external" href="https://doi.org/10.1103/PhysRevE.96.023307">published in Physical Review E</a>, uses a marker-based watershed segmentation algorithm to partition an image into regions belonging to each pore. The main contribution of the SNOW algorithm is to find a suitable set of initial markers in the image so that the watershed is not over-segmented. SNOW is an acronym for Sub-Network of an Over-segmented Watershed. PoreSpy includes a predefined function called <code class="docutils literal notranslate"><span class="pre">snow</span></code> that applies all
 the steps automatically, but this example will illustrate the individual steps explicitly on a 3D image.</p>
@@ -514,7 +516,7 @@ np.random.seed(10)
 </pre></div>
 </div>
 </div>
-<div class="section" id="Generate-artificial-image">
+<section id="Generate-artificial-image">
 <h2>Generate artificial image<a class="headerlink" href="#Generate-artificial-image" title="Permalink to this headline">¶</a></h2>
 <p>One of the main aims when developing the SNOW algorithm was to extract networks from images other than sandstone, which is the main material studied by geoscientists. For this demonstration we’ll use a high porosity (&gt;85%) image of fibrous media.</p>
 <div class="nbinput docutils container">
@@ -540,8 +542,8 @@ ax.imshow(ps.visualization.show_planes(im), cmap=plt.cm.bone);
 <div class="output_area docutils container">
 <img alt="../../_images/examples_networks_snow_advanced_6_1.svg" src="../../_images/examples_networks_snow_advanced_6_1.svg" /></div>
 </div>
-</div>
-<div class="section" id="Step-by-step-application-of-the-SNOW-algorithm">
+</section>
+<section id="Step-by-step-application-of-the-SNOW-algorithm">
 <h2>Step-by-step application of the SNOW algorithm<a class="headerlink" href="#Step-by-step-application-of-the-SNOW-algorithm" title="Permalink to this headline">¶</a></h2>
 <p>Fist let’s find all the peaks of the distance transform which are theoretically suppose to lie at the center of each pore region. In reality this process finds too many peaks, but we’ll deal with this later.</p>
 <div class="nbinput nblast docutils container">
@@ -650,9 +652,9 @@ ps.io.to_vtk(im, filename=&#39;extracted_network&#39;)
 </pre></div>
 </div>
 </div>
-<p><img alt="b06dba11f9fc4c79921e59e4e0cdfbf4" class="no-scaled-link" src="https://user-images.githubusercontent.com/14086031/113048590-b68d2480-9170-11eb-9c10-06e6d53ee95d.png" style="width: 350px;" /></p>
-</div>
-</div>
+<p><img alt="86a6411b55db45799d49dda71e61ea09" class="no-scaled-link" src="https://user-images.githubusercontent.com/14086031/113048590-b68d2480-9170-11eb-9c10-06e6d53ee95d.png" style="width: 350px;" /></p>
+</section>
+</section>
 
 
               </div>

@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
     <title>Installation &#8212; PoreSpy  documentation</title>
     
   <link href="../_static/css/theme.css" rel="stylesheet" />
@@ -25,6 +26,7 @@
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css" />
     
   <link rel="preload" as="script" href="../_static/js/index.1e043a052b0af929e4d8.js">
 
@@ -92,10 +94,6 @@
         
       </ul>
 
-      <form class="bd-search d-flex align-items-center" action="../search.html" method="get">
-  <i class="icon fas fa-search"></i>
-  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
-</form>
       <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
         <li class="nav-item">
           <a class="nav-link" href="https://github.com/PMEAL/porespy" rel="noopener" target="_blank" title="GitHub">
@@ -126,7 +124,11 @@
           
             
             <!-- Only show if we have sidebars configured, else just a small margin  -->
-            <div class="col-12 col-md-3 bd-sidebar"><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
   <div class="bd-toc-item active">
     <ul class="current nav bd-sidenav">
  <li class="toctree-l2 current active">
@@ -182,7 +184,7 @@
               
               <div>
                 
-  <div class="section" id="installation">
+  <section id="installation">
 <span id="id1"></span><h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
 <p>PoreSpy depends heavily on the SciPy Stack. The best way to get a fully
 functional environment is the <a class="reference external" href="https://www.anaconda.com/products/individual#Downloads">Anaconda
@@ -197,22 +199,22 @@ and can be installed by typing the following at the <em>conda</em> prompt:</p>
 <p>It’s possible to use <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">porespy</span></code>, but this will not result
 in a full installation and some features won’t work (i.e. outputing to
 paraview and calling imagej functions).</p>
-<div class="section" id="windows">
+<section id="windows">
 <h2>Windows<a class="headerlink" href="#windows" title="Permalink to this headline">¶</a></h2>
 <p>On Windows you should have a shortcut to the “Anaconda prompt” in the
 Anaconda program group in the start menu. This will open a Windows
 command console with access to the Python features added by <em>conda</em>,
 such as installing things via <code class="docutils literal notranslate"><span class="pre">conda</span></code>.</p>
-</div>
-<div class="section" id="mac-and-linux">
+</section>
+<section id="mac-and-linux">
 <h2>Mac and Linux<a class="headerlink" href="#mac-and-linux" title="Permalink to this headline">¶</a></h2>
 <p>On Mac or Linux, you need to open a normal terminal window, then type
 <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">activate</span> <span class="pre">env</span></code> where you replace <code class="docutils literal notranslate"><span class="pre">env</span></code> with the name of
 the environment you want to install PoreSpy. If you don’t know what this
 means, then use <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">activate</span> <span class="pre">base</span></code>, which will install PoreSpy in
 the base environment which is the default.</p>
-</div>
-</div>
+</section>
+</section>
 
 
               </div>
