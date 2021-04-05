@@ -323,14 +323,12 @@ def to_paraview(im, filename, phase=2):
     path = file + ".tiff"
     if len(im.shape) == 2:
         imageio.imwrite(path, np.array(data))
-        mode = "2D"
         view = "Slice"
         zshape = 0
         xshape = im.shape[1]
         yshape = im.shape[0]
     elif len(im.shape) == 3:
         imageio.volsave(path, np.array(data))
-        mode = "2D"
         view = "Volume"
         zshape = im.shape[0]
         xshape = im.shape[2]
@@ -344,7 +342,7 @@ def to_paraview(im, filename, phase=2):
     # Uncomment following to set a specific view size
     # renderView1.ViewSize = [1612, 552]
     # Get layout
-    layout1 = paraview.simple.GetLayout()
+    _ = paraview.simple.GetLayout()
 
     # Show data in view
     dtiffDisplay = paraview.simple.Show(dtiff, renderView1, "UniformGridRepresentation")
@@ -396,7 +394,7 @@ def to_paraview(im, filename, phase=2):
     renderView1.CameraFocalPoint = [xi / 2 - 0.5 for xi in shape]
 
     # Get the material library
-    materialLibrary1 = paraview.simple.GetMaterialLibrary()
+    _ = paraview.simple.GetMaterialLibrary()
 
     # Show color bar/color legend
     dtiffDisplay.SetScalarBarVisibility(renderView1, True)
@@ -429,7 +427,7 @@ def to_paraview(im, filename, phase=2):
     threshold1.ThresholdRange = threshold_range
 
     # Show data in view
-    threshold1Display = paraview.simple.Show(
+    _ = paraview.simple.Show(
         threshold1, renderView1, "UnstructuredGridRepresentation"
     )
 

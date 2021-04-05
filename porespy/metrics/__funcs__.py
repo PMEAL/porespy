@@ -1,4 +1,3 @@
-import sys
 import warnings
 import numpy as np
 from edt import edt
@@ -9,9 +8,11 @@ from skimage.measure import regionprops
 from porespy.tools import extend_slice, mesh_region
 from porespy.filters import find_dt_artifacts
 from porespy import settings
+from porespy.tools import _check_for_singleton_axes
 from collections import namedtuple
 from skimage import measure
 from porespy.tools import get_tqdm
+from loguru import logger
 tqdm = get_tqdm()
 
 
@@ -417,20 +418,22 @@ def two_point_correlation_bf(im, spacing=10):
 
     Parameters
     ----------
-    im : ND-array
-        The image of the void space on which the 2-point correlation is desired
+    im : ndarray
+        The image of the void space on which the 2-point correlation is
+        desired.
     spacing : int
-        The space between points on the regular grid that is used to generate
-        the correlation (see Notes)
+        The space between points on the regular grid that is used to
+        generate the correlation (see Notes).
 
     Returns
     -------
     result : named_tuple
         A tuple containing the x and y data for plotting the two-point
-        correlation function, using the *args feature of matplotlib's plot
-        function.  The x array is the distances between points and the y array
-        is corresponding probabilities that points of a given distance both
-        lie in the void space. The distance values are binned as follows:
+        correlation function, using the \*args feature of matplotlib's
+        plot function. The x array is the distances between points and
+        the y array is corresponding probabilities that points of a
+        given distance both lie in the void space. The distance values
+        are binned as follows:
         ``bins = range(start=0, stop=np.amin(im.shape)/2, stride=spacing)``
 
     Notes
@@ -441,13 +444,9 @@ def two_point_correlation_bf(im, spacing=10):
 
     This approach uses a distance matrix so can consume memory very quickly for
     large 3D images and/or close spacing.
+
     """
-    if im.ndim != im.squeeze().ndim:    # pragma: no cover
-        warnings.warn((
-            f"Input image conains a singleton axis: {im.shape}."
-            " Reduce dimensionality with np.squeeze(im) to avoid"
-            " unexpected behavior."
-        ))
+    _check_for_singleton_axes(im)
     if im.ndim == 2:
         pts = np.meshgrid(range(0, im.shape[0], spacing),
                           range(0, im.shape[1], spacing))
@@ -466,8 +465,7 @@ def two_point_correlation_bf(im, spacing=10):
     h1 = np.histogram(dmat, bins=range(0, int(np.amin(im.shape) / 2), spacing))
     dmat = dmat[:, hits]
     h2 = np.histogram(dmat, bins=h1[1])
-    tpcf = namedtuple('two_point_correlation_function',
-                      ('distance', 'probability'))
+    tpcf = namedtuple('two_point_correlation_function', ('distance', 'probability'))
     return tpcf(h2[1][:-1], h2[0] / h1[0])
 
 
@@ -516,28 +514,32 @@ def _radial_profile(autocorr, r_max, nbins=100):
 
 def two_point_correlation_fft(im):
     r"""
-    Calculates the two-point correlation function using fourier transforms
+    Calculates the two-point correlation function using fourier
+    transforms.
 
     Parameters
     ----------
-    im : ND-array
-        The image of the void space on which the 2-point correlation is desired
+    im : ndarray
+        The image of the void space on which the 2-point correlation is
+        desired.
 
     Returns
     -------
     result : named_tuple
         A tuple containing the x and y data for plotting the two-point
-        correlation function, using the *args feature of matplotlib's plot
-        function.  The x array is the distances between points and the y array
-        is corresponding probabilities that points of a given distance both
-        lie in the void space.
+        correlation function, using the \*args feature of matplotlib's
+        plot function. The x array is the distances between points and
+        the y array is corresponding probabilities that points of a
+        given distance both lie in the void space.
 
     Notes
     -----
-    The fourier transform approach utilizes the fact that the autocorrelation
-    function is the inverse FT of the power spectrum density.
-    For background read the Scipy fftpack docs and for a good explanation see:
+    The fourier transform approach utilizes the fact that the
+    autocorrelation function is the inverse FT of the power spectrum
+    density. For background read the Scipy fftpack docs and for a good
+    explanation see:
     http://www.ucl.ac.uk/~ucapikr/projects/KamilaSuankulova_BSc_Project.pdf
+
     """
     # Calculate half lengths of the image
     hls = (np.ceil(np.shape(im)) / 2).astype(int)
@@ -629,16 +631,10 @@ def region_interface_areas(regions, areas, voxel_size=1, strel=None):
         area shared by regions 0 and 5.
 
     """
-    print('-' * 60, flush=True)
-    print('Finding interfacial areas between each region', flush=True)
+    logger.trace('Finding interfacial areas between each region')
     from skimage.morphology import disk, ball
     im = regions.copy()
-    if im.ndim != im.squeeze().ndim:    # pragma: no cover
-        warnings.warn((
-            f"Input image conains a singleton axis: {im.shape}."
-            " Reduce dimensionality with np.squeeze(im) to avoid"
-            " unexpected behavior."
-        ))
+    _check_for_singleton_axes(im)
     # cube_elem = square if im.ndim == 2 else cube
     ball_elem = disk if im.ndim == 2 else ball
     # Get 'slices' into im for each region
@@ -715,8 +711,7 @@ def region_surface_areas(regions, voxel_size=1, strel=None):
         that the surface area of region 1 is stored in element 0 of the list.
 
     """
-    print('-' * 60, flush=True)
-    print('Finding surface area of each region', flush=True)
+    logger.trace('Finding surface area of each region')
     im = regions.copy()
     # Get 'slices' into im for each pore region
     slices = spim.find_objects(im)
