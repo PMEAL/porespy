@@ -31,7 +31,7 @@ up complex scripts or macros to accomplish tasks of specific use to
 porous media. The aim of **PoreSpy** is to provide a set of pre-written
 tools for all the common porous media measurements.  For instance, it's possible to perform a mercury intrusion simulation with a single function call (e.g. ``porespy.filters.porosimetry``).
 
-**PoreSpy** relies heavily on 
+**PoreSpy** relies heavily on
 [scipy.ndimage](https://docs.scipy.org/doc/scipy/reference/ndimage.html)
 and [scikit-image](https://scikit-image.org/) also known as **skimage**.
 The former contains an assortment of general image analysis tools such
@@ -70,7 +70,7 @@ Once you've installed *Anaconda* you can then install **PoreSpy**. It is
 available on [Conda Forge](https://anaconda.org/conda-forge/porespy) and can be installed by typing the following at the *conda* prompt:
 
     conda install -c conda-forge porespy
-    
+
 It's possible to use ``pip install porespy``, but this will not result in a full installation and some features won't work (i.e. outputing to paraview and calling imagej functions).
 
 ## Windows
@@ -124,7 +124,7 @@ im = ps.generators.blobs(shape=[500, 500], porosity=0.6, blobiness=2)
 plt.imshow(im)
 ```
 <p align="center">
-  <img src="https://github.com/PMEAL/porespy/raw/dev/docs/_static/fig1.png" width="50%"></img>
+  <img src="https://github.com/PMEAL/porespy/raw/dev/docs/_static/images/fig1.png" width="50%"></img>
 </p>
 
 ## Applying filters
@@ -138,11 +138,8 @@ distribution.
 lt = ps.filters.local_thickness(im)
 plt.imshow(lt)
 ```
-<!--
-![image](https://github.com/PMEAL/porespy/raw/dev/docs/_static/fig2.png)
--->
 <p align="center">
-  <img src="https://github.com/PMEAL/porespy/raw/dev/docs/_static/fig2.png" width="50%"></img>
+  <img src="https://github.com/PMEAL/porespy/raw/dev/docs/_static/images/fig2.png" width="50%"></img>
 </p>
 
 A less common filter is the application of chords that span the pore
@@ -156,7 +153,7 @@ cr = ps.filters.flood(cr, mode='size')
 plt.imshow(cr)
 ```
 <p align="center">
-  <img src="https://github.com/PMEAL/porespy/raw/dev/docs/_static/fig3.png" width="50%"></img>
+  <img src="https://github.com/PMEAL/porespy/raw/dev/docs/_static/images/fig3.png" width="50%"></img>
 </p>
 
 ## Calculating metrics
@@ -172,7 +169,7 @@ plt.ylabel('probability')
 plt.xlabel('correlation length [voxels]')
 ```
 <p align="center">
-  <img src="https://github.com/PMEAL/porespy/raw/dev/docs/_static/fig4.png" width="50%"></img>
+  <img src="https://github.com/PMEAL/porespy/raw/dev/docs/_static/images/fig4.png" width="50%"></img>
 </p>
 
 The metrics sub-module also contains a suite of functions that produce
@@ -189,6 +186,6 @@ plt.xlabel('invasion size [voxels]')
 plt.ylabel('volume fraction invaded [voxels]')
 ```
 <p align="center">
-  <img src="https://github.com/PMEAL/porespy/raw/dev/docs/_static/fig5.png" width="50%"></img>
-  <img src="https://github.com/PMEAL/porespy/raw/dev/docs/_static/fig6.png" width="50%"></img>
+  <img src="https://github.com/PMEAL/porespy/raw/dev/docs/_static/images/fig5.png" width="50%"></img>
+  <img src="https://github.com/PMEAL/porespy/raw/dev/docs/_static/images/fig6.png" width="50%"></img>
 </p>

@@ -1,30 +1,24 @@
 r"""
 
-===============================================================================
-io
-===============================================================================
+IO
+##
 
 **Export to and from various formats**
 
+.. currentmodule:: porespy
+
 .. autosummary::
+   :template: mybase.rst
+   :toctree: generated/
 
-    porespy.io.to_vtk
-    porespy.io.dict_to_vtk
-    porespy.io.to_palabos
-    porespy.io.openpnm_to_im
-    porespy.io.to_stl
-    porespy.io.to_paraview
-    porespy.io.open_paraview
-    porespy.io.spheres_to_comsol
-
-.. autofunction:: to_vtk
-.. autofunction:: dict_to_vtk
-.. autofunction:: to_palabos
-.. autofunction:: openpnm_to_im
-.. autofunction:: to_stl
-.. autofunction:: to_paraview
-.. autofunction:: open_paraview
-.. autofunction:: spheres_to_comsol
+    io.to_vtk
+    io.dict_to_vtk
+    io.to_palabos
+    io.openpnm_to_im
+    io.to_stl
+    io.to_paraview
+    io.open_paraview
+    io.spheres_to_comsol
 
 """
 

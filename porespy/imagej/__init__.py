@@ -1,19 +1,18 @@
 r"""
-===============================================================================
-imagej
-===============================================================================
+
+ImageJ
+######
 
 **Access ImageJ Filters**
 
+.. currentmodule:: porespy
 
 .. autosummary::
+   :template: mybase.rst
+   :toctree: generated/
 
-    porespy.imagej.imagej_wrapper
-    porespy.imagej.imagej_plugin
-
-
-.. autofunction:: imagej_wrapper
-.. autofunction:: imagej_plugin
+    imagej.imagej_wrapper
+    imagej.imagej_plugin
 
 """
 

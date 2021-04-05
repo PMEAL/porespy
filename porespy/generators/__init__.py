@@ -1,46 +1,34 @@
 r"""
 
-===============================================================================
-generators
-===============================================================================
+Generators
+##########
 
 **Generate Artificial Images**
 
-This module contains a variety of functions for generating artificial images
-of porous materials, generally for testing, validation, debugging, and
-illustration purposes.
+This module contains a variety of functions for generating artificial
+images of porous materials, generally for testing, validation,
+debugging, and illustration purposes.
+
+.. currentmodule:: porespy
 
 .. autosummary::
+   :template: mybase.rst
+   :toctree: generated/
 
-    porespy.generators.blobs
-    porespy.generators.bundle_of_tubes
-    porespy.generators.cylindrical_plug
-    porespy.generators.cylinders
-    porespy.generators.fractal_noise
-    porespy.generators.insert_shape
-    porespy.generators.lattice_spheres
-    porespy.generators.line_segment
-    porespy.generators.overlapping_spheres
-    porespy.generators.polydisperse_spheres
-    porespy.generators.pseudo_electrostatic_packing
-    porespy.generators.pseudo_gravity_packing
-    porespy.generators.RSA
-    porespy.generators.voronoi_edges
-
-.. autofunction:: blobs
-.. autofunction:: bundle_of_tubes
-.. autofunction:: cylindrical_plug
-.. autofunction:: cylinders
-.. autofunction:: fractal_noise
-.. autofunction:: insert_shape
-.. autofunction:: lattice_spheres
-.. autofunction:: line_segment
-.. autofunction:: overlapping_spheres
-.. autofunction:: polydisperse_spheres
-.. autofunction:: pseudo_electrostatic_packing
-.. autofunction:: pseudo_gravity_packing
-.. autofunction:: RSA
-.. autofunction:: voronoi_edges
+    generators.blobs
+    generators.bundle_of_tubes
+    generators.cylindrical_plug
+    generators.cylinders
+    generators.fractal_noise
+    generators.insert_shape
+    generators.lattice_spheres
+    generators.line_segment
+    generators.overlapping_spheres
+    generators.polydisperse_spheres
+    generators.pseudo_electrostatic_packing
+    generators.pseudo_gravity_packing
+    generators.RSA
+    generators.voronoi_edges
 
 """
 
