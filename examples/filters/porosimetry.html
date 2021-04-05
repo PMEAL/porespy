@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
 
-    <title>Porosimetry &#8212; PoreSpy  documentation</title>
+    <title>&lt;no title&gt; &#8212; PoreSpy  documentation</title>
     
   <link href="../../_static/css/theme.css" rel="stylesheet" />
   <link href="../../_static/css/index.f6b7ca918bee2f46fd9abac01cfb07d5.css" rel="stylesheet" />
@@ -40,8 +40,8 @@
     <script src="../../_static/js/custom.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="SNOW partitioning" href="snow_partitioning.html" />
-    <link rel="prev" title="Local thickness" href="local_thickness.html" />
+    <link rel="next" title="prune_branches" href="prune_branches.html" />
+    <link rel="prev" title="Local Thickness" href="local_thickness.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
   </head>
@@ -77,7 +77,7 @@
  </a>
 </li>
 
-<li class="toctree-l1 current active nav-item">
+<li class="toctree-l1 nav-item">
  <a class="reference internal nav-link" href="../../examples.html">
   Examples
  </a>
@@ -130,78 +130,7 @@
 </form>
 <nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
   <div class="bd-toc-item active">
-    <ul class="current nav bd-sidenav">
- <li class="toctree-l2">
-  <a class="reference internal" href="../generators/RSA.html">
-   Generating polydisperse spheres using RSA
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../generators/cylinders.html">
-   Generating fibrous mats
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../generators/making_blobs.html">
-   Making blobs
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="adding_chords.html">
-   Applying chords to 2D and 3D images
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="local_thickness.html">
-   Local thickness
-  </a>
- </li>
- <li class="toctree-l2 current active">
-  <a class="current reference internal" href="#">
-   Porosimetry
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="snow_partitioning.html">
-   SNOW partitioning
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="snow_partitioning_parallel.html">
-   SNOW partitioning parallel
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../networks/snow_advanced.html">
-   SNOW network extraction (advanced)
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../networks/snow_basic.html">
-   SNOW network extraction
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../metrics/chord_length_distribution.html">
-   Chord length distributions
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../metrics/porosity_profiles.html">
-   Obtaining the porosity profile along each principle axis
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../metrics/regionprops_3d.html">
-   Using regionprops_3d to analyze properties of each pore
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../metrics/two_point_correlation.html">
-   Two point correlation function
-  </a>
- </li>
-</ul>
+    
   </div>
 </nav>
             </div>
@@ -211,9 +140,14 @@
           
           <div class="d-none d-xl-block col-xl-2 bd-toc">
               
+<div class="tocsection onthispage pt-5 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
 
 <nav id="bd-toc-nav">
-    
+    <ul class="simple visible nav section-nav flex-column">
+</ul>
+
 </nav>
 
 
@@ -477,8 +411,6 @@ div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
 </style>
-<section id="Porosimetry">
-<h1>Porosimetry<a class="headerlink" href="#Porosimetry" title="Permalink to this headline">¶</a></h1>
 <p>The following recipe illustrates how to simulate mercury intrusion porosimetry on an image using the <code class="docutils literal notranslate"><span class="pre">porosimetry</span></code> filter. The PoreSpy implementation is equivalent to ‘morphological image opening’ of <a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S0309170800000567?via%3Dihub">Hilpert et al</a>. PoreSpy’s implementation uses distance transforms instead of morphological operations so it is generally faster, especially for larger sphere sizes since binary opening slows down with larger
 structuring elements.</p>
 <p>Start by importing the necessary packages</p>
@@ -499,9 +431,11 @@ ps.visualization.set_mpl_style()
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>im = ps.generators.blobs(shape=[400, 400], porosity=0.6, blobiness=2)
-fig, ax = plt.subplots()
-ax.imshow(im);
+<span></span># NBVAL_IGNORE_OUTPUT
+im = ps.generators.blobs(shape=[400, 400], porosity=0.6, blobiness=2)
+plt.figure(figsize=[6, 6])
+plt.imshow(im)
+plt.show()
 </pre></div>
 </div>
 </div>
@@ -509,7 +443,8 @@ ax.imshow(im);
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/examples_filters_porosimetry_5_0.svg" src="../../_images/examples_filters_porosimetry_5_0.svg" /></div>
+<img alt="../../_images/examples_filters_porosimetry_4_0.png" src="../../_images/examples_filters_porosimetry_4_0.png" />
+</div>
 </div>
 <p>Apply the <code class="docutils literal notranslate"><span class="pre">porosimetry</span></code> filter to the image both with and without <code class="docutils literal notranslate"><span class="pre">access_limited</span></code> applied:</p>
 <div class="nbinput docutils container">
@@ -517,11 +452,15 @@ ax.imshow(im);
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>mip = ps.filters.porosimetry(im, access_limited=True)
+<span></span># NBVAL_IGNORE_OUTPUT
+mip = ps.filters.porosimetry(im, access_limited=True)
 local_t = ps.filters.porosimetry(im, access_limited=False)
-fig, ax = plt.subplots(1, 2, figsize=[8, 4])
-ax[0].imshow(mip)
-ax[1].imshow(local_t);
+plt.figure(figsize=[10, 5])
+plt.subplot(1, 2, 1)
+plt.imshow(mip)
+plt.subplot(1, 2, 2)
+plt.imshow(local_t)
+plt.show()
 </pre></div>
 </div>
 </div>
@@ -529,19 +468,17 @@ ax[1].imshow(local_t);
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "", "version_major": 2, "version_minor": 0}</script></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "", "version_major": 2, "version_minor": 0}</script></div>
+<div class="highlight"><pre>
+100%|██████████| 25/25 [00:00&lt;00:00, 112.44it/s]
+100%|██████████| 25/25 [00:00&lt;00:00, 130.57it/s]
+</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/examples_filters_porosimetry_7_2.svg" src="../../_images/examples_filters_porosimetry_7_2.svg" /></div>
+<img alt="../../_images/examples_filters_porosimetry_6_1.png" src="../../_images/examples_filters_porosimetry_6_1.png" />
+</div>
 </div>
 <p>Finally, the images produced by the filter can be passed to the <code class="docutils literal notranslate"><span class="pre">pore_size_distribution</span></code> function in the <code class="docutils literal notranslate"><span class="pre">metrics</span></code> module to produce numerical data of the pore volume vs. sphere radius:</p>
 <div class="nbinput docutils container">
@@ -549,14 +486,14 @@ ax[1].imshow(local_t);
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>mip_data = ps.metrics.pore_size_distribution(mip)
+<span></span># NBVAL_IGNORE_OUTPUT
+mip_data = ps.metrics.pore_size_distribution(mip)
 local_t_data = ps.metrics.pore_size_distribution(local_t)
-fig, ax = plt.subplots(figsize=(5, 4))
-ax.plot(mip_data.LogR, mip_data.cdf, &#39;bo-&#39;, label=&#39;mip&#39;)
-ax.plot(local_t_data.LogR, local_t_data.cdf, &#39;ro-&#39;, label=&#39;local_thickness&#39;)
-ax.set_ylabel(&#39;Invading phase saturation&#39;)
-ax.set_xlabel(&#39;Log(R) of pore size&#39;)
-ax.legend();
+plt.figure(figsize=[6, 4])
+plt.plot(mip_data.logR, mip_data.cdf, &#39;b.-&#39;, label=&#39;mip&#39;)
+plt.plot(local_t_data.logR, local_t_data.cdf, &#39;r.-&#39;, label=&#39;local_thickness&#39;)
+plt.legend()
+plt.show()
 </pre></div>
 </div>
 </div>
@@ -564,9 +501,9 @@ ax.legend();
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/examples_filters_porosimetry_9_0.svg" src="../../_images/examples_filters_porosimetry_9_0.svg" /></div>
+<img alt="../../_images/examples_filters_porosimetry_8_0.png" src="../../_images/examples_filters_porosimetry_8_0.png" />
 </div>
-</section>
+</div>
 
 
               </div>

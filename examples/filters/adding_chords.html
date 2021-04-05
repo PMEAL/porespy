@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
 
-    <title>Applying chords to 2D and 3D images &#8212; PoreSpy  documentation</title>
+    <title>Applying Chords to 2D and 3D Images &#8212; PoreSpy  documentation</title>
     
   <link href="../../_static/css/theme.css" rel="stylesheet" />
   <link href="../../_static/css/index.f6b7ca918bee2f46fd9abac01cfb07d5.css" rel="stylesheet" />
@@ -40,8 +40,8 @@
     <script src="../../_static/js/custom.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Local thickness" href="local_thickness.html" />
-    <link rel="prev" title="Making blobs" href="../generators/making_blobs.html" />
+    <link rel="next" title="apply_chords" href="apply_chords.html" />
+    <link rel="prev" title="voronoi_edges" href="../generators/voronoi_edges.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
   </head>
@@ -133,7 +133,12 @@
     <ul class="current nav bd-sidenav">
  <li class="toctree-l2">
   <a class="reference internal" href="../generators/RSA.html">
-   Generating polydisperse spheres using RSA
+   Generating Polydisperse Spheres using RSA
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../generators/bundle_of_tubes.html">
+   bundle_of_tubes
   </a>
  </li>
  <li class="toctree-l2">
@@ -142,48 +147,223 @@
   </a>
  </li>
  <li class="toctree-l2">
-  <a class="reference internal" href="../generators/making_blobs.html">
-   Making blobs
+  <a class="reference internal" href="../generators/insert_shape.html">
+   insert_shape
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../generators/lattice_spheres.html">
+   lattice_spheres
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../generators/line_segment.html">
+   line_segment
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../generators/overlapping_spheres.html">
+   overlapping_spheres
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../generators/perlin_noise.html">
+   perlin_noise
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../generators/polydisperse_spheres.html">
+   polydisperse _spheres
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../generators/voronoi_edges.html">
+   voronoi_edges
   </a>
  </li>
  <li class="toctree-l2 current active">
   <a class="current reference internal" href="#">
-   Applying chords to 2D and 3D images
+   Applying Chords to 2D and 3D Images
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="apply_chords.html">
+   apply_chords
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="apply_chords_3D.html">
+   apply_chords_3D
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="apply_padded.html">
+   apply_padded
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="chunked_func.html">
+   chunked_func
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="distance_transform_lin.html">
+   distance_transform_lin
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="fill_blind_pores.html">
+   fill_blind_pores
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="find_disconnected_voxels.html">
+   find_disconnected_voxels
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="find_dt_artifacts.html">
+   find_dt_artifacts
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="find_peaks.html">
+   find_peaks
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="flood.html">
+   flood
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="hold_peaks.html">
+   hold_peaks
   </a>
  </li>
  <li class="toctree-l2">
   <a class="reference internal" href="local_thickness.html">
-   Local thickness
+   Local Thickness
   </a>
  </li>
  <li class="toctree-l2">
-  <a class="reference internal" href="porosimetry.html">
-   Porosimetry
+  <a class="reference internal" href="prune_branches.html">
+   prune_branches
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="reduce_peaks.html">
+   reduce_peaks
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="region_size.html">
+   region_size
   </a>
  </li>
  <li class="toctree-l2">
   <a class="reference internal" href="snow_partitioning.html">
-   SNOW partitioning
+   SNOW Partitioning
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="snow_partitioning_n.html">
+   snow_partitioning_n
   </a>
  </li>
  <li class="toctree-l2">
   <a class="reference internal" href="snow_partitioning_parallel.html">
-   SNOW partitioning parallel
+   SNOW Partitioning Parallel
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="trim_disconnected_blobs.html">
+   trim_disconnected_blobs
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="trim_extrema.html">
+   trim_extrema
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="trim_floating_solid.html">
+   trim_floating_solid
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="trim_nearby_peaks.html">
+   trim_nearby_peaks
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="trim_nonpercolating_paths.html">
+   trim_nonpercolating_paths
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="trim_saddle_points.html">
+   trim_saddle_points
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="trim_small_clusters.html">
+   trim_small_clusters
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../networks/adding_boundary_pores.html">
+   Adding Boundary Pores
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../networks/map_to_regions.html">
+   Set up regions and values:
   </a>
  </li>
  <li class="toctree-l2">
   <a class="reference internal" href="../networks/snow_advanced.html">
-   SNOW network extraction (advanced)
+   SNOW Network Extraction
   </a>
  </li>
  <li class="toctree-l2">
   <a class="reference internal" href="../networks/snow_basic.html">
-   SNOW network extraction
+   SNOW Network Extraction
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../metrics/chord_counts.html">
+   chord_counts
   </a>
  </li>
  <li class="toctree-l2">
   <a class="reference internal" href="../metrics/chord_length_distribution.html">
-   Chord length distributions
+   chord_length_distribution
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../metrics/linear_density.html">
+   linear_density
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../metrics/mesh_surface_area.html">
+   mesh_surface_area
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../metrics/phase_fraction.html">
+   phase_fraction
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../metrics/pore_size_distribution.html">
+   pore_size_distribution
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../metrics/porosity.html">
+   porosity
   </a>
  </li>
  <li class="toctree-l2">
@@ -192,13 +372,43 @@
   </a>
  </li>
  <li class="toctree-l2">
+  <a class="reference internal" href="../metrics/radial_density.html">
+   radial_density_distribution
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../metrics/region_interface_areas.html">
+   region_interface_areas
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../metrics/region_surface_areas.html">
+   region_surface_areas
+  </a>
+ </li>
+ <li class="toctree-l2">
   <a class="reference internal" href="../metrics/regionprops_3d.html">
    Using regionprops_3d to analyze properties of each pore
   </a>
  </li>
  <li class="toctree-l2">
+  <a class="reference internal" href="../metrics/representative_elementary_volume.html">
+   representative_elementary_volume
+  </a>
+ </li>
+ <li class="toctree-l2">
   <a class="reference internal" href="../metrics/two_point_correlation.html">
-   Two point correlation function
+   Two Point Correlation Function
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../metrics/two_point_correlation_bf.html">
+   two_point_correlation_bf
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../metrics/two_point_correlation_fft.html">
+   two_point_correlation_fft
   </a>
  </li>
 </ul>
@@ -497,12 +707,12 @@ div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
 </style>
-<section id="Applying-chords-to-2D-and-3D-images">
-<h1>Applying chords to 2D and 3D images<a class="headerlink" href="#Applying-chords-to-2D-and-3D-images" title="Permalink to this headline">¶</a></h1>
+<section id="Applying-Chords-to-2D-and-3D-Images">
+<h1>Applying Chords to 2D and 3D Images<a class="headerlink" href="#Applying-Chords-to-2D-and-3D-Images" title="Permalink to this headline">¶</a></h1>
 <section id="Importing-packages">
 <h2>Importing packages<a class="headerlink" href="#Importing-packages" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -514,7 +724,7 @@ ps.visualization.set_mpl_style()
 </div>
 <p>Import the usual packages from the Scipy ecosystem:</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -529,7 +739,7 @@ import matplotlib.pyplot as plt
 <h2>Demonstration on 2D Image<a class="headerlink" href="#Demonstration-on-2D-Image" title="Permalink to this headline">¶</a></h2>
 <p>Start by creating an image using the <code class="docutils literal notranslate"><span class="pre">blobs</span></code> function in <code class="docutils literal notranslate"><span class="pre">generators</span></code>. The useful thing about this function is that images can be created with anisotropy. These are exactly the sort of images where chord length distributions are useful, since chords can be drawn in different directions, to probe the anisotropic pore sizes.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -539,32 +749,13 @@ import matplotlib.pyplot as plt
 </div>
 <p>The image can be visualized easily using matplotlib’s <code class="docutils literal notranslate"><span class="pre">imshow</span></code> function:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>fig, ax = plt.subplots()
-ax.imshow(im);
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../_images/examples_filters_adding_chords_8_0.svg" src="../../_images/examples_filters_adding_chords_8_0.svg" /></div>
-</div>
-<p>Determining chord-length distributions requires first adding chords to the image, which is done using the <code class="docutils literal notranslate"><span class="pre">apply_chords</span></code> function. The following code applies chords to the image in the x-direction (along <code class="docutils literal notranslate"><span class="pre">axis=0</span></code>), then applies them in the y-direction (<code class="docutils literal notranslate"><span class="pre">axis=1</span></code>). The two images are then plotted using <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code>.</p>
-<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>crds_x = ps.filters.apply_chords(im=im, spacing=4, axis=0)
-crds_y = ps.filters.apply_chords(im=im, spacing=4, axis=1)
-fig, ax = plt.subplots(1, 2, figsize=[8, 4])
-ax[0].imshow(crds_x);
-ax[1].imshow(crds_y);
+<span></span># NBVAL_IGNORE_OUTPUT
+plt.figure(figsize=[6, 6])
+fig = plt.imshow(im)
 </pre></div>
 </div>
 </div>
@@ -572,32 +763,75 @@ ax[1].imshow(crds_y);
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/examples_filters_adding_chords_10_0.svg" src="../../_images/examples_filters_adding_chords_10_0.svg" /></div>
+<img alt="../../_images/examples_filters_adding_chords_8_0.png" src="../../_images/examples_filters_adding_chords_8_0.png" />
 </div>
-<p>Note that none of the chords touch the edge of the image. These chords are trimmed by default since they are artificially shorter than they should be and would skew the results. This behavior is optional and these chords can be kept by setting <code class="docutils literal notranslate"><span class="pre">trim_edges=False</span></code>.</p>
-<p>It is sometimes useful to colorize the chords by their length. PoreSpy includes a function called <code class="docutils literal notranslate"><span class="pre">region_size</span></code> which counts the number of voxels in each connected region of an image, and replaces those voxels with the numerical value of the region size. This is illustrated below:</p>
+</div>
+<p>Determining chord-length distributions requires first adding chords to the image, which is done using the <code class="docutils literal notranslate"><span class="pre">apply_chords</span></code> function. The following code applies chords to the image in the x-direction (along <code class="docutils literal notranslate"><span class="pre">axis=0</span></code>), then applies them in the y-direction (<code class="docutils literal notranslate"><span class="pre">axis=1</span></code>). The two images are then plotted using <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code>.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>sz_x = ps.filters.region_size(crds_x)
-sz_y = ps.filters.region_size(crds_y)
-fig, ax = plt.subplots(1, 2, figsize=[8, 4])
-ax[0].imshow(sz_x);
-ax[1].imshow(sz_y);
+<span></span># NBVAL_IGNORE_OUTPUT
+crds_x = ps.filters.apply_chords(im=im, spacing=4, axis=0)
+crds_y = ps.filters.apply_chords(im=im, spacing=4, axis=1)
+fig, ax = plt.subplots(1, 2, figsize=[10, 5])
+ax[0].imshow(crds_x)
+ax[1].imshow(crds_y)
 </pre></div>
 </div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;matplotlib.image.AxesImage at 0x7feb78399ac0&gt;
+</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/examples_filters_adding_chords_13_0.svg" src="../../_images/examples_filters_adding_chords_13_0.svg" /></div>
+<img alt="../../_images/examples_filters_adding_chords_10_1.png" src="../../_images/examples_filters_adding_chords_10_1.png" />
+</div>
+</div>
+<p>Note that none of the chords touch the edge of the image. These chords are trimmed by default since they are artificially shorter than they should be and would skew the results. This behavior is optional and these chords can be kept by setting <code class="docutils literal notranslate"><span class="pre">trim_edges=False</span></code>.</p>
+<p>It is sometimes useful to colorize the chords by their length. PoreSpy includes a function called <code class="docutils literal notranslate"><span class="pre">region_size</span></code> which counts the number of voxels in each connected region of an image, and replaces those voxels with the numerical value of the region size. This is illustrated below:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span># NBVAL_IGNORE_OUTPUT
+sz_x = ps.filters.region_size(crds_x)
+sz_y = ps.filters.region_size(crds_y)
+fig, ax = plt.subplots(1, 2, figsize=[10, 6])
+ax[0].imshow(sz_x)
+ax[1].imshow(sz_y)
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;matplotlib.image.AxesImage at 0x7feb782da9d0&gt;
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/examples_filters_adding_chords_13_1.png" src="../../_images/examples_filters_adding_chords_13_1.png" />
+</div>
 </div>
 <p>Although the above images are useful for quick visualization, they are not quantitative. To get quantitative chord length distributions, pass the chord image(s) to the <code class="docutils literal notranslate"><span class="pre">chord_length_distribution</span></code> functions in the <code class="docutils literal notranslate"><span class="pre">metrics</span></code> submodule:</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -608,7 +842,7 @@ data_y = ps.metrics.chord_length_distribution(crds_y, bins=25)
 </div>
 <p>This function, like many of the functions in the <code class="docutils literal notranslate"><span class="pre">metrics</span></code> module, returns a named tuple containing various arrays. The advantage of the named tuple is that each array can be accessed by name as attributes, such as <code class="docutils literal notranslate"><span class="pre">data_x.pdf</span></code>. To see all the available attributes (i.e. arrays) use the autocomplete function if your IDE, the following:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -626,15 +860,14 @@ data_y = ps.metrics.chord_length_distribution(crds_y, bins=25)
 </div>
 <p>Now we can print the results of the chord-length distribution as bar graphs:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>fig, ax = plt.subplots(figsize=(5, 4))
-ax.bar(x=data_y.L, height=data_y.cdf, width=data_y.bin_widths, color=&#39;b&#39;, edgecolor=&#39;k&#39;, alpha=0.5);
-ax.bar(x=data_x.L, height=data_x.cdf, width=data_x.bin_widths, color=&#39;r&#39;, edgecolor=&#39;k&#39;, alpha=0.5);
-ax.set_xlabel(&quot;Chord length&quot;)
-ax.set_ylabel(&quot;Frequency&quot;);
+<span></span># NBVAL_IGNORE_OUTPUT
+plt.figure(figsize=[6, 6])
+bar = plt.bar(x=data_y.L, height=data_y.cdf, width=data_y.bin_widths, color=&#39;b&#39;, edgecolor=&#39;k&#39;, alpha=0.5)
+bar = plt.bar(x=data_x.L, height=data_x.cdf, width=data_x.bin_widths, color=&#39;r&#39;, edgecolor=&#39;k&#39;, alpha=0.5)
 </pre></div>
 </div>
 </div>
@@ -642,7 +875,8 @@ ax.set_ylabel(&quot;Frequency&quot;);
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/examples_filters_adding_chords_19_0.svg" src="../../_images/examples_filters_adding_chords_19_0.svg" /></div>
+<img alt="../../_images/examples_filters_adding_chords_19_0.png" src="../../_images/examples_filters_adding_chords_19_0.png" />
+</div>
 </div>
 <p>The key point to see here is that the blue bars are for the y-direction, which was the elongated direction, and as expected they show a tendency toward longer chords.</p>
 </section>
@@ -650,13 +884,13 @@ ax.set_ylabel(&quot;Frequency&quot;);
 <h2>Application to 3D images<a class="headerlink" href="#Application-to-3D-images" title="Permalink to this headline">¶</a></h2>
 <p>Chords can just as easily be applied to 3D images. Let’s create an artificial image of fibers, aligned in the YZ plane, but oriented randomly in the X direction</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>im = ps.generators.cylinders(shape=[200, 400, 400], radius=8, ncylinders=200)
-fig, ax = plt.subplots()
-ax.imshow(im[:, :, 100]);
+<span></span># NBVAL_IGNORE_OUTPUT
+im = ps.generators.cylinders(shape=[200, 400, 400], radius=8, ncylinders=200, )
+plt.imshow(im[:, :, 100])
 </pre></div>
 </div>
 </div>
@@ -666,29 +900,49 @@ ax.imshow(im[:, :, 100]);
 <div class="output_area docutils container">
 <script type="application/vnd.jupyter.widget-view+json">{"model_id": "", "version_major": 2, "version_minor": 0}</script></div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../_images/examples_filters_adding_chords_23_1.svg" src="../../_images/examples_filters_adding_chords_23_1.svg" /></div>
-</div>
-<p>As above, we must apply chords to the image then pass the chord image to the <code class="docutils literal notranslate"><span class="pre">chord_length_distribution</span></code> function:</p>
-<div class="nbinput docutils container">
+<div class="nboutput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>crds = ps.filters.apply_chords(im=im, axis=0)
-fig, ax = plt.subplots()
-ax.imshow(crds[:, :, 100]);
-</pre></div>
-</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;matplotlib.image.AxesImage at 0x7feb778f7a60&gt;
+</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/examples_filters_adding_chords_25_0.svg" src="../../_images/examples_filters_adding_chords_25_0.svg" /></div>
+<img alt="../../_images/examples_filters_adding_chords_23_2.png" src="../../_images/examples_filters_adding_chords_23_2.png" />
+</div>
+</div>
+<p>As above, we must apply chords to the image then pass the chord image to the <code class="docutils literal notranslate"><span class="pre">chord_length_distribution</span></code> function:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span># NBVAL_IGNORE_OUTPUT
+crds = ps.filters.apply_chords(im=im, axis=0)
+plt.imshow(crds[:, :, 100])
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;matplotlib.image.AxesImage at 0x7feb778cc820&gt;
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/examples_filters_adding_chords_25_1.png" src="../../_images/examples_filters_adding_chords_25_1.png" />
+</div>
 </div>
 </section>
 </section>
