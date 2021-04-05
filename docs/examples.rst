@@ -12,7 +12,7 @@ Generators
 ----------
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :glob:
 
    examples/generators/*
@@ -21,25 +21,34 @@ Filters
 -------
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :glob:
 
    examples/filters/*
-
-Networks
---------
-
-.. toctree::
-   :maxdepth: 1
-   :glob:
-
-   examples/networks/*
 
 Metrics
 -------
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :glob:
 
    examples/metrics/*
+
+Networks
+--------
+
+.. toctree::
+   :maxdepth: 2
+   :glob:
+
+   examples/networks/*
+
+Tools
+-----
+
+.. toctree::
+   :maxdepth: 2
+   :glob:
+
+   examples/generators/*
