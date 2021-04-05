@@ -1,10 +1,9 @@
-import porespy as ps
-import numpy as np
 import pytest
+import numpy as np
+from numpy.testing import assert_allclose
 import scipy.ndimage as spim
 import scipy.stats as spst
-import matplotlib.pyplot as plt
-plt.close('all')
+import porespy as ps
 
 
 class GeneratorTest():
@@ -197,14 +196,6 @@ class GeneratorTest():
         labels, N = spim.label(input=~im)
         assert N == 1241
 
-    def test_perlin_noise_2D(self):
-        im = ps.generators.perlin_noise(shape=[64, 64])
-        assert im.ndim == 2
-
-    def test_perline_noise_3D(self):
-        im = ps.generators.perlin_noise(shape=[64, 64, 64])
-        assert im.ndim == 3
-
     def test_blobs_1d_shape(self):
         im = ps.generators.blobs(shape=[101])
         assert len(list(im.shape)) == 3
@@ -296,21 +287,84 @@ class GeneratorTest():
         np.random.seed(0)
         im = ps.generators.pseudo_gravity_packing(im=im, r=20, clearance=5)
         e2 = im.sum()/im.size
-        assert e2 > e1
+        assert e2 < e1
         im = np.ones([400, 400], dtype=bool)
         np.random.seed(0)
         im = ps.generators.pseudo_gravity_packing(im=im, r=20, max_iter=10)
         e3 = im.sum()/im.size
+        im = np.ones([400, 400], dtype=bool)
+        np.random.seed(0)
         im = ps.generators.pseudo_gravity_packing(im=im, r=50, max_iter=10)
         e4 = im.sum()/im.size
-        assert e4 < e3
+        assert e4 > e3
+
+    def test_pseudo_gravity_packing_values(self):
+        np.random.seed(0)
+        # 2d
+        im = np.ones([50, 50], dtype=bool)
+        im = ps.generators.pseudo_gravity_packing(im=im, r=5, clearance=0)
+        assert_allclose(np.linalg.norm(im), 37.3497, rtol=1e-5)
+        # 3d
+        im = np.ones([50, 50, 50], dtype=bool)
+        im = ps.generators.pseudo_gravity_packing(im=im, r=5, clearance=0)
+        assert_allclose(np.linalg.norm(im), 218.3804, rtol=1e-5)
 
     def test_pseudo_electrostatic_packing(self):
+        im1 = ps.generators.blobs(shape=[100, 100])
+        im2 = ps.generators.pseudo_electrostatic_packing(
+            im=im1, r=3, clearance=1, protrusion=1)
+        assert (im1.sum() > im2.sum())
+        assert im2.sum() > 0
+
+    def test_pseudo_electrostatic_packing_values(self):
         np.random.seed(0)
+        # 2d
         im = ps.generators.blobs(shape=[100, 100])
         im = ps.generators.pseudo_electrostatic_packing(
             im=im, r=3, clearance=1, protrusion=1)
-        np.testing.assert_allclose(np.linalg.norm(im), 71.7356, rtol=1e-5)
+        assert_allclose(np.linalg.norm(im), 46.2276, rtol=1e-5)
+        # 3d
+        im = ps.generators.blobs(shape=[50, 50, 50])
+        im = ps.generators.pseudo_electrostatic_packing(
+            im=im, r=3, clearance=1, protrusion=1)
+        assert_allclose(np.linalg.norm(im), 135.3403, rtol=1e-5)
+
+    def test_faces(self):
+        im = ps.generators.faces(shape=[10, 10], inlet=0)
+        assert im.sum() == 10
+        im = ps.generators.faces(shape=[10, 10], outlet=0)
+        assert im.sum() == 10
+        im = ps.generators.faces(shape=[10, 10], inlet=0, outlet=0)
+        assert im.sum() == 20
+        im = ps.generators.faces(shape=[10, 10, 10], inlet=0)
+        assert im.sum() == 100
+        im = ps.generators.faces(shape=[10, 10, 10], outlet=0)
+        assert im.sum() == 100
+        im = ps.generators.faces(shape=[10, 10, 10], inlet=0, outlet=0)
+        assert im.sum() == 200
+        with pytest.raises(Exception):
+            ps.generators.faces(shape=[10, 10, 10])
+
+    def test_fractal_noise_2D(self):
+        s = [100, 100]
+        # Ensure identical images are returned if seed is same
+        im1 = ps.generators.fractal_noise(shape=s, seed=0, cores=1)
+        im2 = ps.generators.fractal_noise(shape=s, seed=0, cores=1)
+        assert np.linalg.norm(im1) == np.linalg.norm(im2)
+        # Ensure different images are returned even if seed is same
+        im1 = ps.generators.fractal_noise(shape=s, mode='perlin',
+                                          seed=0, octaves=2, cores=1)
+        im2 = ps.generators.fractal_noise(shape=s, mode='perlin',
+                                          seed=0, octaves=4, cores=1)
+        assert np.linalg.norm(im1) != np.linalg.norm(im2)
+        # Check uniformization
+        im1 = ps.generators.fractal_noise(shape=s, mode='cubic',
+                                          uniform=True, cores=1)
+        assert im1.min() >= 0
+        assert im1.max() <= 1
+        im2 = ps.generators.fractal_noise(shape=s, mode='cubic',
+                                          uniform=False, cores=1)
+        assert im2.min() < 0
 
 
 if __name__ == '__main__':

@@ -1,8 +1,8 @@
 import scipy as sp
 import numpy as np
-import scipy.ndimage as spim
-import warnings
 from edt import edt
+import scipy.ndimage as spim
+from loguru import logger
 from collections import namedtuple
 from skimage.morphology import ball, disk
 from skimage.segmentation import relabel_sequential
@@ -31,12 +31,7 @@ def align_image_with_openpnm(im):
     image : ND-array
         Returns a copy of ``im`` rotated accordingly.
     """
-    if im.ndim != im.squeeze().ndim:    # pragma: no cover
-        warnings.warn((
-            f"Input image conains a singleton axis: {im.shape}."
-            " Reduce dimensionality with np.squeeze(im) to avoid"
-            " unexpected behavior."
-        ))
+    _check_for_singleton_axes(im)
     im = np.copy(im)
     if im.ndim == 2:
         im = (np.swapaxes(im, 1, 0))
@@ -118,12 +113,7 @@ def fftmorphology(im, strel, mode='opening'):
         t = fftconvolve(im, strel, mode='same') > 0.1
         return t
 
-    if im.ndim != im.squeeze().ndim:    # pragma: no cover
-        warnings.warn((
-            f"Input image conains a singleton axis: {im.shape}."
-            " Reduce dimensionality with np.squeeze(im) to avoid"
-            " unexpected behavior."
-        ))
+    _check_for_singleton_axes(im)
 
     # Perform erosion and dilation
     # The array must be padded with 0's so it works correctly at edges
@@ -810,12 +800,7 @@ def mesh_region(region: bool, strel=None):
 
     """
     im = region
-    if im.ndim != im.squeeze().ndim:    # pragma: no cover
-        warnings.warn((
-            f"Input image conains a singleton axis: {im.shape}."
-            " Reduce dimensionality with np.squeeze(im) to avoid"
-            " unexpected behavior."
-        ))
+    _check_for_singleton_axes(im)
     if strel is None:
         if region.ndim == 3:
             strel = ball(1)
@@ -1112,12 +1097,7 @@ def pad_faces(im, faces):
     --------
     add_boundary_regions
     """
-    if im.ndim != im.squeeze().ndim:    # pragma: no cover
-        warnings.warn((
-            f"Input image conains a singleton axis: {im.shape}."
-            " Reduce dimensionality with np.squeeze(im) to avoid"
-            " unexpected behavior."
-        ))
+    _check_for_singleton_axes(im)
     f = faces
     if f is not None:
         if im.ndim == 2:
@@ -1160,7 +1140,6 @@ def _create_alias_map(im, alias=None):
     as valuies. If no alias is provided then default labelling is used
     i.e {1: 'Phase1',..}
     """
-    # -------------------------------------------------------------------------
     # Get alias if provided by user
     phases_num = np.unique(im).astype(int)
     phases_num = np.trim_zeros(phases_num)
@@ -1187,12 +1166,11 @@ def _create_alias_map(im, alias=None):
         if phase_labels.size < phases_num.size:
             missed_labels = np.setdiff1d(phases_num, phase_labels)
             for i in missed_labels:
-                warnings.warn(
-                    "label_{} alias is not provided although it "
-                    "exists in the input image.".format(i)
-                    + "The default label alias phase{} is assigned to "
-                      "label_{}".format(i, i))
-                al[i] = 'phase{}'.format(i)
+                logger.warning(
+                    f"label_{i} alias is not provided although it exists in the"
+                    f" input image. The default label alias phase{i} is assigned"
+                    f" to label_{i}")
+                al[i] = f'phase{i}'
     return al
 
 
@@ -1274,11 +1252,9 @@ def size_to_seq(size, bins=None):
     vals = -(vals - vals.max() - 1) * ~solid
     # In case too many bins are given, remove empty ones
     vals = make_contiguous(vals)
-
     # Possibly simpler way?
     #    vals = (-(size - size.max())).astype(int) + 1
     #    vals[vals > size.max()] = 0
-
     return vals
 
 
@@ -1290,16 +1266,16 @@ def seq_to_satn(seq):
     ----------
     seq : ND-image
         The image containing invasion sequence values in each voxel.
-        Note that the invasion steps must be positive integers, solid voxels
-        indicated by 0, and uninvaded voxels indicated by -1.
+        Note that the invasion steps must be positive integers, solid
+        voxels indicated by 0, and uninvaded voxels indicated by -1.
 
     Returns
     -------
     satn : ND-image
-        An ND-iamge the same size as ``seq`` but with sequnece values replaced
-        by the fraction of pores invaded at or below the sequence number.
-        Solid voxels and uninvaded voxels are represented by 0 and -1
-        respectively.
+        An ND-iamge the same size as ``seq`` but with sequnece values
+        replaced by the fraction of pores invaded at or below the sequence
+        number. Solid voxels and uninvaded voxels are represented by 0 and
+        -1, respectively.
 
     """
     seq = np.copy(seq).astype(int)
@@ -1327,10 +1303,10 @@ def zero_corners(im, pad_width):
         Padded image whose corners are to be filled with 0.
 
     pad_width : int or list
-        Pad width of the padded image. If a scalar value is passed, a uniform
-        pad width for all dimensions is assumed. Otherwise, a list of lists
-        should be passed with each inner list being two-element long,
-        pertaining to pad_before and pad_after for each axis.
+        Pad width of the padded image. If a scalar value is passed, a
+        uniform pad width for all dimensions is assumed. Otherwise, a list
+        of lists should be passed with each inner list being two-element
+        long, pertaining to pad_before and pad_after for each axis.
 
     Example
     -------
@@ -1428,3 +1404,20 @@ def sanitize_filename(filename, ext, exclude_ext=False):
         name = filename
     filename_formatted = f"{name}" if exclude_ext else f"{name}.{ext}"
     return filename_formatted
+
+
+def _check_for_singleton_axes(im):  # pragma: no cover
+    r"""
+    Checks for whether the input image contains singleton axes and logs
+    a proper warning in case found.
+
+    Parameters
+    ----------
+    im : ndarray
+        Input image.
+
+    """
+    if im.ndim != im.squeeze().ndim:
+        logger.warning("Input image conains a singleton axis. Reduce"
+                       " dimensionality with np.squeeze(im) to avoid"
+                       " unexpected behavior.")
