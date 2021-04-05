@@ -1,11 +1,17 @@
+import os
+import imageio
+import subprocess
 import numpy as np
 from stl import mesh
 import scipy.ndimage as nd
-import skimage.measure as ms
 from scipy import ndimage as spim
+import skimage.measure as ms
 from porespy.tools import sanitize_filename
 from porespy.networks import generate_voxel_image
+from porespy.filters import reduce_peaks
 from pyevtk.hl import imageToVTK
+from skimage.morphology import ball
+from edt import edt
 
 
 def dict_to_vtk(data, filename, voxel_size=1, origin=(0, 0, 0)):
@@ -37,33 +43,9 @@ def dict_to_vtk(data, filename, voxel_size=1, origin=(0, 0, 0)):
     for entry in data:
         if data[entry].dtype == bool:
             data[entry] = data[entry].astype(np.int8)
-        if data[entry].flags['C_CONTIGUOUS']:
+        if data[entry].flags["C_CONTIGUOUS"]:
             data[entry] = np.ascontiguousarray(data[entry])
     imageToVTK(filename, cellData=data, spacing=(vs, vs, vs), origin=origin)
-
-
-def to_openpnm(net, filename):
-    r"""
-    Save the result of the `snow` network extraction function in a format
-    suitable for opening in OpenPNM.
-
-    Parameters
-    ----------
-    net : dict
-        The dictionary object produced by the network extraction functions
-
-    filename : string or path object
-        The name and location to save the file, which will have `.net` file
-        extension.
-
-    """
-    from openpnm.network import GenericNetwork
-    # Convert net dict to an openpnm Network
-    pn = GenericNetwork()
-    pn.update(net)
-    pn.project.save_project(filename)
-    ws = pn.project.workspace
-    ws.close_project(pn.project)
 
 
 def to_vtk(im, filename, divide=False, downsample=False, voxel_size=1, vox=False):
@@ -111,17 +93,21 @@ def to_vtk(im, filename, divide=False, downsample=False, voxel_size=1, vox=False
         split = np.round(im.shape[2] / 2).astype(np.int)
         im1 = im[:, :, 0:split]
         im2 = im[:, :, split:]
-        imageToVTK(f"{filename}_1", cellData={'im': np.ascontiguousarray(im1)},
-                   spacing=(vs, vs, vs))
-        imageToVTK(f"{filename}_2", origin=(0.0, 0.0, split * vs),
-                   cellData={'im': np.ascontiguousarray(im2)},
-                   spacing=(vs, vs, vs))
+        imageToVTK(f"{filename}_1",
+                   cellData={"im": np.ascontiguousarray(im1)},
+                   spacing=(vs, vs, vs),)
+        imageToVTK(f"{filename}_2",
+                   origin=(0.0, 0.0, split * vs),
+                   cellData={"im": np.ascontiguousarray(im2)},
+                   spacing=(vs, vs, vs),)
     elif downsample:
-        im = spim.interpolation.zoom(im, zoom=0.5, order=0, mode='reflect')
-        imageToVTK(filename, cellData={'im': np.ascontiguousarray(im)},
-                   spacing=(2 * vs, 2 * vs, 2 * vs))
+        im = spim.interpolation.zoom(im, zoom=0.5, order=0, mode="reflect")
+        imageToVTK(filename,
+                   cellData={"im": np.ascontiguousarray(im)},
+                   spacing=(2 * vs, 2 * vs, 2 * vs),)
     else:
-        imageToVTK(filename, cellData={'im': np.ascontiguousarray(im)},
+        imageToVTK(filename,
+                   cellData={"im": np.ascontiguousarray(im)},
                    spacing=(vs, vs, vs))
 
 
@@ -162,13 +148,18 @@ def to_palabos(im, filename, solid=0):
     dt[(dt > 0) * (dt <= np.sqrt(2))] = 1
     dt = dt.astype(int)
     # Write out data
-    with open(filename, 'w') as f:
+    with open(filename, "w") as f:
         out_data = dt.flatten().tolist()
-        f.write('\n'.join(map(repr, out_data)))
+        f.write("\n".join(map(repr, out_data)))
 
 
-def openpnm_to_im(network, pore_shape="sphere", throat_shape="cylinder",
-                  max_dim=None, verbose=1, rtol=0.1):
+def openpnm_to_im(
+    network,
+    pore_shape="sphere",
+    throat_shape="cylinder",
+    max_dim=None,
+    rtol=0.1,
+):
     r"""
     Generates voxel image from an OpenPNM network object.
 
@@ -205,9 +196,13 @@ def openpnm_to_im(network, pore_shape="sphere", throat_shape="cylinder",
     further increasing it doesn't change porosity by much.
 
     """
-    return generate_voxel_image(network, pore_shape=pore_shape,
-                                throat_shape=throat_shape, max_dim=max_dim,
-                                verbose=verbose, rtol=rtol)
+    return generate_voxel_image(
+        network,
+        pore_shape=pore_shape,
+        throat_shape=throat_shape,
+        max_dim=max_dim,
+        rtol=rtol,
+    )
 
 
 def to_stl(im, filename, divide=False, downsample=False, voxel_size=1, vox=False):
@@ -259,7 +254,7 @@ def to_stl(im, filename, divide=False, downsample=False, voxel_size=1, vox=False
         _save_stl(im1, vs, f"{filename}_1")
         _save_stl(im2, vs, f"{filename}_2")
     elif downsample:
-        im = spim.interpolation.zoom(im, zoom=0.5, order=0, mode='reflect')
+        im = spim.interpolation.zoom(im, zoom=0.5, order=0, mode="reflect")
         _save_stl(im, vs * 2, filename)
     else:
         _save_stl(im, vs, filename)
@@ -290,3 +285,224 @@ def _save_stl(im, vs, filename):
         for j in range(3):
             export.vectors[i][j] = vertices[f[j], :]
     export.save(f"{filename}.stl")
+
+
+def to_paraview(im, filename, phase=2):
+    r"""
+    Converts an array to a paraview state file.
+
+    Parameters
+    ----------
+    im : ndarray
+        The image of the porous material.
+    filename : str
+        Path to output file.
+    phase : str
+        The desired phase of output image where phase = 0 represent the
+        pore phase, phase = 1 represents the solid phase, and phase= 2 is
+        the whole domain. The default value is 2.
+
+    Notes
+    -----
+    Outputs an pvsm file that can opened in Paraview.
+
+    """
+    try:
+        import paraview.simple
+    except ModuleNotFoundError:
+        msg = (
+            "The paraview python bindings must be installed using conda"
+            " install -c conda-forge paraview, however this may require"
+            " using a virtualenv since conflicts with other packages are"
+            " common. This is why it is not explicitly included as a"
+            " dependency in porespy."
+        )
+        raise ModuleNotFoundError(msg)
+    data = im.astype("uint8")
+    file = os.path.splitext(filename)[0]
+    path = file + ".tiff"
+    if len(im.shape) == 2:
+        imageio.imwrite(path, np.array(data))
+        view = "Slice"
+        zshape = 0
+        xshape = im.shape[1]
+        yshape = im.shape[0]
+    elif len(im.shape) == 3:
+        imageio.volsave(path, np.array(data))
+        view = "Volume"
+        zshape = im.shape[0]
+        xshape = im.shape[2]
+        yshape = im.shape[1]
+    maxshape = max(xshape, yshape)
+    paraview.simple._DisableFirstRenderCameraReset()
+    # Create a new 'TIFF Series Reader'
+    dtiff = paraview.simple.TIFFSeriesReader(FileNames=[path])
+    # Get active view
+    renderView1 = paraview.simple.GetActiveViewOrCreate("RenderView")
+    # Uncomment following to set a specific view size
+    # renderView1.ViewSize = [1612, 552]
+    # Get layout
+    _ = paraview.simple.GetLayout()
+
+    # Show data in view
+    dtiffDisplay = paraview.simple.Show(dtiff, renderView1, "UniformGridRepresentation")
+
+    # Get color transfer function/color map for 'TiffScalars'
+    tiffScalarsLUT = paraview.simple.GetColorTransferFunction("TiffScalars")
+
+    # Get opacity transfer function/opacity map for 'TiffScalars'
+    tiffScalarsPWF = paraview.simple.GetOpacityTransferFunction("TiffScalars")
+
+    # Trace defaults for the display properties.
+    dtiffDisplay.Representation = view
+    dtiffDisplay.ColorArrayName = ["POINTS", "Tiff Scalars"]
+    dtiffDisplay.LookupTable = tiffScalarsLUT
+    dtiffDisplay.OSPRayScaleArray = "Tiff Scalars"
+    dtiffDisplay.OSPRayScaleFunction = "PiecewiseFunction"
+    dtiffDisplay.SelectOrientationVectors = "None"
+    dtiffDisplay.ScaleFactor = maxshape / 10 - 0.1
+    dtiffDisplay.SelectScaleArray = "Tiff Scalars"
+    dtiffDisplay.GlyphType = "Arrow"
+    dtiffDisplay.GlyphTableIndexArray = "Tiff Scalars"
+    dtiffDisplay.GaussianRadius = maxshape / 200 - 0.005
+    dtiffDisplay.SetScaleArray = ["POINTS", "Tiff Scalars"]
+    dtiffDisplay.ScaleTransferFunction = "PiecewiseFunction"
+    dtiffDisplay.OpacityArray = ["POINTS", "Tiff Scalars"]
+    dtiffDisplay.OpacityTransferFunction = "PiecewiseFunction"
+    dtiffDisplay.DataAxesGrid = "GridAxesRepresentation"
+    dtiffDisplay.PolarAxes = "PolarAxesRepresentation"
+    dtiffDisplay.ScalarOpacityUnitDistance = 8.256564094912507
+    dtiffDisplay.ScalarOpacityFunction = tiffScalarsPWF
+    dtiffDisplay.IsosurfaceValues = [0.5]
+    dtiffDisplay.SliceFunction = "Plane"
+
+    shape = np.array([xshape, yshape, zshape])
+
+    # Init the 'Plane' selected for 'SliceFunction'
+    dtiffDisplay.SliceFunction.Origin = [xi / 2 - 0.5 for xi in shape]
+
+    # Reset view to fit data
+    renderView1.ResetCamera()
+
+    # Changing interaction mode based on data extents
+    # renderView1.InteractionMode = mode
+    renderView1.CameraPosition = [
+        xshape / 2 - 0.5,
+        yshape / 2 - 0.5,
+        4.6 * np.sqrt(np.sum(shape / 2 - 0.5)**2)
+    ]
+    renderView1.CameraFocalPoint = [xi / 2 - 0.5 for xi in shape]
+
+    # Get the material library
+    _ = paraview.simple.GetMaterialLibrary()
+
+    # Show color bar/color legend
+    dtiffDisplay.SetScalarBarVisibility(renderView1, True)
+
+    # Update the view to ensure updated data information
+    renderView1.Update()
+
+    # Saving camera placements for all active views
+    # Current camera placement for renderView1
+    # renderView1.InteractionMode = mode
+    renderView1.CameraPosition = [
+        xshape / 2 - 0.5,
+        yshape / 2 - 0.5,
+        4.6 * np.sqrt(np.sum(shape / 2 - 0.5)**2)
+    ]
+    renderView1.CameraFocalPoint = [xi / 2 - 0.5 for xi in shape]
+    renderView1.CameraParallelScale = np.sqrt(np.sum(shape / 2 - 0.5)**2)
+
+    # Uncomment the following to render all views
+    # RenderAllViews()
+    # Alternatively, if you want to write images, you can use SaveScreenshot(...).
+    threshold1 = paraview.simple.Threshold(Input=dtiff)
+    threshold1.Scalars = ["POINTS", "Tiff Scalars"]
+    if phase == 0:
+        threshold_range = [0.5, 1]
+    elif phase == 1:
+        threshold_range = [0, 0.5]
+    else:
+        threshold_range = [0, 1]
+    threshold1.ThresholdRange = threshold_range
+
+    # Show data in view
+    _ = paraview.simple.Show(
+        threshold1, renderView1, "UnstructuredGridRepresentation"
+    )
+
+    # Hide data in view
+    paraview.simple.Hide(dtiff, renderView1)
+
+    paraview.simple.SaveState(file + ".pvsm")
+
+
+def open_paraview(filename=None, im=None, **kwargs):
+    r"""
+    Open a paraview state file or image directly in paraview.
+
+    Parameters
+    ----------
+    filename : str
+        Path to input state file.
+    im : ND-array
+        An image to open directly.  If no filename given, then this image is
+        sent to ``to_paraview`` and a state file is created with a random name.
+        Any additional keyword arguments are sent to ``to_paraview``.
+
+    """
+    if filename is None:
+        from datetime import datetime
+        now = datetime.now()
+        filename = now.strftime("%d-%m-%Y_%H-%M-%S")
+        to_paraview(im=im, filename=filename, **kwargs)
+    file = os.path.splitext(filename)[0]
+    statefile = file + ".pvsm"
+    # paraview_path = "paraview.exe"
+    paraview_path = "paraview"
+    subprocess.Popen([paraview_path, statefile])
+
+
+def spheres_to_comsol(filename, im=None, centers=None, radii=None):
+    r"""
+    Exports a sphere pack into a Comsol geometry file.
+
+    An image containing spheres can be specified.  Alternatively as list of
+    ``centers`` and ``radii`` can be given if known.
+
+    Parameters
+    ----------
+    filename : string or path object
+        Location and namge to output file
+    im : ND-array (optional)
+        A voxel image containing spheres indicated by non-zeros values.
+        Spheres can be generated using a variety of methods and can overlap.
+        The sphere centers and radii are found as the peaks in the
+        distance transform.  If ``im`` is not supplied, then ``centers`` and
+        ``radii`` must be given.
+    centers : array_like (optional)
+        An array (Ns, 3) of the spheres centers where Ns is the number of
+        spheres.  This must be specified if ``im`` is not suppplied.
+    radii : array_like (optional)
+        An Ns length array of the spheres's. This must be specified if ``im``
+        is not suppplied.
+
+    Notes
+    -----
+    If ``im`` is given then some image analysis is performed to find sphere
+    centers so it may not perfectly represent the spheres in the original
+    image. This is especially true for overlapping sphere and sphere extending
+    beyond the edge of the image.
+
+    """
+    from .__comsol__ import _save_to_comsol
+    if im is not None:
+        if im.ndim != 3:
+            raise Exception('Image must be 3D.')
+        dt = edt(im > 0)
+        dt2 = nd.gaussian_filter(dt, sigma=0.1)
+        peaks = (im > 0)*(nd.maximum_filter(dt2, footprint=ball(3)) == dt)
+        peaks = reduce_peaks(peaks)
+        centers = np.vstack(np.where(peaks)).T
+        radii = dt[tuple(centers.T)].astype(int)
+    _save_to_comsol(filename, centers, radii)

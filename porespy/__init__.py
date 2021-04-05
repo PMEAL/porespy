@@ -1,48 +1,34 @@
-r'''
-===============================================================================
+r"""
+#######
 PoreSpy
-===============================================================================
+#######
 
 **Porous Media Image Analysis in Python**
 
-PoreSpy consists of the following modules:
-
 ----
+
+PoreSpy consists of the following modules:
 
 **generators**: Routines for generating artificial images of porous materials
 useful for testing and illustration
 
-----
-
 **filters**: Functions that accept an image and return an altered image
-
-----
 
 **metrics**: Tools for quantifying properties of images
 
-----
-
 **networks**: Tools for obtaining pore network representations of images
-
-----
 
 **visualization**: Helper functions for creating useful views of the image
 
-----
-
 **io**: Functions for output image data in various formats for use in common
 software
-
-----
 
 **tools**: Various useful tools for working with images
 
 ----
 
-
--------------------------------------------------------------------------------
 Example Usage
--------------------------------------------------------------------------------
+#############
 
 Working with PoreSpy was designed to be a series of function calls, similar to
 building a macro in ImageJ or using Matlab.  A sample workflow is as follows:
@@ -68,18 +54,15 @@ Use some filters from PoreSpy:
 .. code-block:: python
 
     >>> peaks = ps.filters.snow_partitioning(im=im, dt=dt)
-    ------------------------------------------------------------
-    Beginning SNOW Algorithm
-    Converting supplied image (im) to boolean
-    Applying Gaussian blur with sigma = 0.4
-    Initial number of peaks:  77
-    Peaks after trimming saddle points:  71
-    Peaks after trimming nearby peaks:  70
 
-
-'''
+"""
 
 from .__version__ import __version__
+from .tools.__utils__ import Settings as _Settings
+from .tools.__utils__ import _is_ipython_notebook
+
+settings = _Settings()
+settings.notebook = _is_ipython_notebook()
 
 from . import tools
 from . import filters
@@ -89,8 +72,9 @@ from . import generators
 from . import dns
 from . import visualization
 from . import io
+from . import imagej
 
 from .visualization import imshow
 
-import numpy
-numpy.seterr(divide='ignore', invalid='ignore')
+import numpy as _np
+_np.seterr(divide='ignore', invalid='ignore')

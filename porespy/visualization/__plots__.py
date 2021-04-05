@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
 
-def bar(tup, h='pdf', **kwargs):
+def bar(tup, h='pdf', **kwargs):  # pragma: no cover
     r"""
     Convenience wrapper for matplotlib's ``bar``.
 
@@ -34,10 +34,13 @@ def bar(tup, h='pdf', **kwargs):
         kwargs['edgecolor'] = 'k'
     fig = plt.bar(x=tup.bin_centers, height=getattr(tup, h),
                   width=tup.bin_widths, **kwargs)
+    xlab = [attr for attr in tup.__dir__() if not attr.startswith('_')][0]
+    plt.xlabel(xlab)
+    plt.ylabel(h)
     return fig
 
 
-def imshow(*im, ind=None, axis=None):
+def imshow(*im, ind=None, axis=None):  # pragma: no cover
     r"""
     Convenience wrapper for matplotlib's ``imshow``.
 
@@ -78,7 +81,7 @@ def imshow(*im, ind=None, axis=None):
     return fig
 
 
-def show_mesh(mesh):
+def show_mesh(mesh):  # pragma: no cover
     r"""
     Visualizes the mesh of a region as obtained by ``get_mesh`` function in
     the ``metrics`` submodule.

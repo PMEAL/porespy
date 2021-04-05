@@ -1,26 +1,23 @@
-===============================================================================
+#############################
 Module and Function Reference
-===============================================================================
+#############################
 
--------------------------------------------------------------------------------
-Sub-Modules
--------------------------------------------------------------------------------
+Submodules
+**********
 
-The functions contained in PoreSpy are organized into categories, with fairly self-descriptive names.  Links to the detailed documentation for each sub-module are provided below.
+The functions contained in PoreSpy are organized into categories, with
+fairly self-descriptive names. Links to the detailed documentation for each
+sub-module are provided below.
 
 .. toctree::
-    :maxdepth: 3
+    :maxdepth: 1
+    :titlesonly:
 
-    generators.rst
-    filters.rst
-    metrics.rst
-    networks.rst
-    tools.rst
-    io.rst
-    visualization.rst
-
--------------------------------------------------------------------------------
-Functions
--------------------------------------------------------------------------------
-
-* :ref:`genindex`
+    Generators <generators>
+    Filters <filters>
+    Metrics <metrics>
+    Networks <networks>
+    DNS <dns>
+    Tools <tools>
+    Visualization <visualization>
+    IO <io>

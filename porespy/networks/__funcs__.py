@@ -1,13 +1,18 @@
-import sys
 import numpy as np
 import openpnm as op
-from tqdm import tqdm
-from porespy.tools import make_contiguous
+import scipy.ndimage as spim
 from skimage.segmentation import find_boundaries
-from skimage.morphology import ball, cube
+from skimage.morphology import ball, cube, disk, square
+from skimage.segmentation import relabel_sequential
+from porespy.tools import make_contiguous
 from porespy.tools import _create_alias_map, overlay
 from porespy.tools import insert_cylinder
 from porespy.tools import zero_corners
+from porespy.generators import borders
+from porespy import settings
+from porespy.tools import get_tqdm
+from loguru import logger
+tqdm = get_tqdm()
 
 
 def map_to_regions(regions, values):
@@ -126,19 +131,71 @@ def add_boundary_regions(regions=None, faces=['front', 'back', 'left',
         regions[idx] *= ~find_boundaries(regions[idx], mode="outer")
 
     # Pad twice to make boundary regions 3-pixel thick -> required for marching_cube
-    regions = np.pad(regions, pad_width=pad_width, mode="edge")
-    regions = np.pad(regions, pad_width=pad_width, mode="edge")
+    pw = np.array(pad_width) * 1
+    regions = np.pad(regions, pad_width=pw * 2, mode="edge")
 
     # Convert pad-induced corners to 0
-    zero_corners(regions, pad_width)
+    zero_corners(regions, pw * 3)
 
     # Make labels contiguous
-    regions = make_contiguous(regions)
+    regions = relabel_sequential(regions, offset=1)[0]
 
     return regions
 
 
-def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200, verbose=1):
+def add_boundary_regions2(regions, pad_width=3):
+    r"""
+    Add boundary regions on specified faces of an image
+
+    Parameters
+    ----------
+    regions : ND-image
+        An image containing labelled regions, such as a watershed segmentation
+    pad_width : array_like
+        Number of layers to add to the edges of each axis. An integer pads
+        each axis equally in both direction.  An ND-by-1 list pads each axis
+        by given amount in both directions.  An ND-by-1 list of pairs pad
+        each axis by a unique amount. This argument is handled the same as
+        ``pad_width`` in the ``np.pad`` function. The default is to add
+        3 voxels on each axis.
+
+    Returns
+    -------
+    padded_regions : ND-array
+        An image with new regions padded on each side of the specified
+        width.
+
+    """
+    # Parse user specified padding
+    faces = np.array(pad_width)
+    if faces.size == 1:
+        faces = np.array([[faces, faces]]*regions.ndim)
+    elif faces.size == regions.ndim:
+        faces = np.vstack([faces]*2).T
+    else:
+        pass
+    t = faces.max()
+    mx = regions.max()
+    # Put a border around each region so padded regions are isolated
+    bd = find_boundaries(regions, connectivity=regions.ndim, mode='inner')
+    # Pad by t in all directions, this will be trimmed down later
+    face_regions = np.pad(regions*(~bd), pad_width=t, mode='edge')
+    # Set corners to 0 so regions don't connect across faces
+    edges = borders(shape=face_regions.shape, mode='edges', thickness=t)
+    face_regions[edges] = 0
+    # Extract a mask of just the faces
+    mask = borders(shape=face_regions.shape, mode='faces', thickness=t)
+    # Relabel regions on faces
+    new_regions = spim.label(face_regions*mask)[0] + mx*(face_regions > 0)
+    new_regions[~mask] = regions.flatten()
+    # Trim image down to user specified size
+    s = tuple([slice(t-ax[0], -(t-ax[1]) or None) for ax in faces])
+    new_regions = new_regions[s]
+    new_regions = make_contiguous(new_regions)
+    return new_regions
+
+
+def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200):
     r"""
     Generates a 3d numpy array from a network model.
 
@@ -146,13 +203,10 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200, verbos
     ----------
     network : OpenPNM GenericNetwork
         Network from which voxel image is to be generated
-
     pore_shape : str
         Shape of pores in the network, valid choices are "sphere", "cube"
-
     throat_shape : str
         Shape of throats in the network, valid choices are "cylinder", "cuboid"
-
     max_dim : int
         Number of voxels in the largest dimension of the network
 
@@ -163,7 +217,7 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200, verbos
 
     Notes
     -----
-    (1) The generated voxelated image is labeled with 0s, 1s and 2s signifying
+    (1) The generated voxel image is labeled with 0s, 1s and 2s signifying
     solid phase, pores, and throats respectively.
 
     """
@@ -182,8 +236,7 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200, verbos
     xyz0 = xyz.min(axis=0) - delta
     xyz += -xyz0
     res = (xyz.ptp(axis=0).max() + 2 * delta) / max_dim
-    shape = np.rint((xyz.max(axis=0) + delta) / res).astype(
-        int) + 2 * extra_clearance
+    shape = np.rint((xyz.max(axis=0) + delta) / res).astype(int) + 2 * extra_clearance
 
     # Transforming from real coords to matrix coords
     xyz = np.rint(xyz / res).astype(int) + extra_clearance
@@ -204,11 +257,8 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200, verbos
     if throat_shape == "cuboid":
         raise Exception("Not yet implemented, try 'cylinder'.")
 
-    tqdm_settings = {"disable": not verbose, "file": sys.stdout}
-
     # Generating voxels for pores
-    Ps = tqdm(network.Ps, desc="  - Generating pores  ", **tqdm_settings)
-    for i, pore in enumerate(Ps):
+    for i, pore in enumerate(tqdm(network.Ps, **settings.tqdm)):
         elem = pore_elem(rp[i])
         try:
             im_pores = overlay(im1=im_pores, im2=elem, c=xyz[i])
@@ -219,33 +269,27 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200, verbos
     im_pores[im_pores > 0] = 1
 
     # Generating voxels for throats
-    Ts = tqdm(network.Ts, desc="  - Generating throats", **tqdm_settings)
-    for i, throat in enumerate(Ts):
+    for i, throat in enumerate(tqdm(network.Ts, **settings.tqdm)):
         try:
-            im_throats = insert_cylinder(im_throats, r=throat_radi[i],
-                                         xyz0=xyz[cn[i, 0]],
-                                         xyz1=xyz[cn[i, 1]])
+            im_throats = insert_cylinder(
+                im_throats, r=throat_radi[i], xyz0=xyz[cn[i, 0]], xyz1=xyz[cn[i, 1]])
         except ValueError:
-            im_throats = insert_cylinder(im_throats, r=rp_max,
-                                         xyz0=xyz[cn[i, 0]],
-                                         xyz1=xyz[cn[i, 1]])
+            im_throats = insert_cylinder(
+                im_throats, r=rp_max, xyz0=xyz[cn[i, 0]], xyz1=xyz[cn[i, 1]])
     # Get rid of throat overlaps
     im_throats[im_throats > 0] = 1
 
     # Subtract pore-throat overlap from throats
-    im_throats = (im_throats.astype(bool) * ~im_pores.astype(bool)).astype(
-        np.uint8)
+    im_throats = (im_throats.astype(bool) * ~im_pores.astype(bool)).astype(np.uint8)
     im = im_pores * 1 + im_throats * 2
 
     return im[extra_clearance:-extra_clearance,
               extra_clearance:-extra_clearance,
               extra_clearance:-extra_clearance]
 
-    return im
-
 
 def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
-                         max_dim=None, verbose=1, rtol=0.1):
+                         max_dim=None, rtol=0.1):
     r"""
     Generates voxel image from an OpenPNM network object.
 
@@ -253,16 +297,12 @@ def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
     ----------
     network : OpenPNM GenericNetwork
         Network from which voxel image is to be generated
-
     pore_shape : str
         Shape of pores in the network, valid choices are "sphere", "cube"
-
     throat_shape : str
         Shape of throats in the network, valid choices are "cylinder", "cuboid"
-
     max_dim : int
         Number of voxels in the largest dimension of the network
-
     rtol : float
         Stopping criteria for finding the smallest voxel image such that
         further increasing the number of voxels in each dimension by 25% would
@@ -270,7 +310,7 @@ def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
 
     Returns
     -------
-    im : ND-array
+    im : ndarray
         Voxelated image corresponding to the given pore network model
 
     Notes
@@ -282,36 +322,24 @@ def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
     further increasing it doesn't change porosity by much.
 
     """
-    if verbose:
-        print("\n" + "-" * 44, flush=True)
-        print("| Generating voxel image from pore network |", flush=True)
-        print("-" * 44, flush=True)
-
+    logger.trace("Generating voxel image from pore network")
     # If max_dim is provided, generate voxel image using max_dim
     if max_dim is not None:
-        return _generate_voxel_image(network, pore_shape, throat_shape,
-                                     max_dim=max_dim, verbose=verbose)
-    else:
-        max_dim = 200
-
+        return _generate_voxel_image(
+            network, pore_shape, throat_shape, max_dim=max_dim)
+    max_dim = 200
     # If max_dim is not provided, find best max_dim that predicts porosity
+    err = 100
     eps_old = 200
-    err = 100  # percent
-
     while err > rtol:
-        if verbose:
-            print(f"\nMaximum dimension in voxels: {max_dim}", flush=True)
-        im = _generate_voxel_image(network, pore_shape, throat_shape,
-                                   max_dim=max_dim, verbose=verbose)
+        logger.debug(f"Maximum dimension: {max_dim} voxels")
+        im = _generate_voxel_image(
+            network, pore_shape, throat_shape, max_dim=max_dim)
         eps = im.astype(bool).sum() / np.prod(im.shape)
-
         err = abs(1 - eps / eps_old)
         eps_old = eps
         max_dim = int(max_dim * 1.25)
-
-    if verbose:
-        print(f"\nConverged at max_dim = {max_dim} voxels.\n")
-
+    logger.debug(f"Converged at max_dim = {max_dim} voxels")
     return im
 
 
@@ -363,11 +391,9 @@ def add_phase_interconnections(net, snow_partitioning_n, voxel_size=1,
     command.
 
     """
-    # -------------------------------------------------------------------------
     # Get alias if provided by user
     im = snow_partitioning_n.im
     al = _create_alias_map(im, alias=alias)
-    # -------------------------------------------------------------------------
     # Find interconnection and interfacial area between ith and jth phases
     conns1 = net['throat.conns'][:, 0]
     conns2 = net['throat.conns'][:, 1]
@@ -395,7 +421,6 @@ def add_phase_interconnections(net, snow_partitioning_n, voxel_size=1,
                 pi_pj_conns = loc1 * loc6
                 net['throat.{}_{}'.format(al[i1], al[j1])] = pi_pj_conns
                 if any(pi_pj_conns):
-                    # ---------------------------------------------------------
                     # Calculates phase[i] interfacial area that connects with
                     # phase[j] and vice versa
                     p_conns = net['throat.conns'][:, 0][pi_pj_conns]
@@ -410,7 +435,6 @@ def add_phase_interconnections(net, snow_partitioning_n, voxel_size=1,
                     s_pa = np.trim_zeros(s_pa)
                     pi_pj_sa[i_index] = p_sa
                     pi_pj_sa[j_index] = s_pa
-                    # ---------------------------------------------------------
                     # Calculates interfacial area using marching cube method
                     if marching_cubes_area:
                         ps_c = net['throat.area'][pi_pj_conns]

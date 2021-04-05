@@ -1,16 +1,26 @@
+import os
+from pathlib import Path
+from platform import system
+from os.path import realpath
 import pytest
 import numpy as np
+from numpy.testing import assert_allclose
 import porespy as ps
 import openpnm as op
-from numpy.testing import assert_allclose
+import openpnm.models.geometry as gmods
 
 
-class NetExtractTest():
+class NetworkExtractionTest():
     def setup_class(self):
         self.im = ps.generators.blobs(shape=[300, 300])
         self.snow = ps.filters.snow_partitioning(self.im, return_all=True)
         self.im3d = ps.generators.blobs(shape=[50, 50, 50])
         self.snow3d = ps.filters.snow_partitioning(self.im3d, return_all=True)
+        self.net = op.network.Cubic(shape=[5, 5, 5])
+        self.geom = op.geometry.StickAndBall(
+            network=self.net, pores=self.net.Ps, throats=self.net.Ts)
+        self.geom.add_model(propname="pore.volume", model=gmods.pore_volume.cube)
+        self.geom.add_model(propname="throat.volume", model=gmods.throat_volume.cylinder)
 
     def test_regions_to_network(self):
         im = self.snow.regions*self.im
@@ -21,7 +31,7 @@ class NetExtractTest():
                 found_nans = True
         assert found_nans is False
 
-    def test_snow_2D(self):
+    def test_snow_2d(self):
         a = np.unique(self.snow.peaks*self.im)
         b = np.unique(self.snow.regions*self.im)
         assert len(a) == len(b)
@@ -69,7 +79,7 @@ class NetExtractTest():
                 found_nans = True
         assert found_nans is False
 
-    def test_add_bounadary_regions_2D(self):
+    def test_add_bounadary_regions_2d(self):
         im = self.im
         regions = ps.filters.snow_partitioning(im)
         # 2D should break with "bottom"/"top" labels
@@ -88,7 +98,7 @@ class NetExtractTest():
         assert bd.shape[0] > regions.shape[0]
         assert bd.shape[1] > regions.shape[1]
 
-    def test_add_bounadary_regions_3D(self):
+    def test_add_bounadary_regions_3d(self):
         im = self.im3d
         regions = ps.filters.snow_partitioning(im)
         f = ['left', 'right']
@@ -105,6 +115,36 @@ class NetExtractTest():
         assert bd.shape[0] > regions.shape[0]
         assert bd.shape[1] > regions.shape[1]
         assert bd.shape[2] > regions.shape[2]
+
+    def test_add_boundary_regions2_2D(self):
+        im = ps.generators.blobs(shape=[100, 100])
+        snow = ps.filters.snow_partitioning(im)
+        bd = ps.networks.add_boundary_regions2(snow, 10)
+        assert np.all(bd.shape == (120, 120))
+        bd = ps.networks.add_boundary_regions2(snow, [10, 10])
+        assert np.all(bd.shape == (120, 120))
+        bd = ps.networks.add_boundary_regions2(snow, [10, 0])
+        assert np.all(bd.shape == (120, 100))
+        bd = ps.networks.add_boundary_regions2(snow, [10, 5])
+        assert np.all(bd.shape == (120, 110))
+        bd = ps.networks.add_boundary_regions2(snow, [[10, 5]])
+        assert np.all(bd.shape == (120, 110))
+
+    def test_add_boundary_regions2_3D(self):
+        im = ps.generators.blobs(shape=[100, 100, 100])
+        snow = ps.filters.snow_partitioning(im)
+        bd = ps.networks.add_boundary_regions2(snow, 10)
+        assert np.all(bd.shape == (120, 120, 120))
+        bd = ps.networks.add_boundary_regions2(snow, [10, 10, 10])
+        assert np.all(bd.shape == (120, 120, 120))
+        bd = ps.networks.add_boundary_regions2(snow, [10, 10, 0])
+        assert np.all(bd.shape == (120, 120, 100))
+        bd = ps.networks.add_boundary_regions2(snow, [10, 5, 0])
+        assert np.all(bd.shape == (120, 110, 100))
+        bd = ps.networks.add_boundary_regions2(snow, [[20, 10], [30, 15], [40, 20]])
+        assert np.all(bd.shape == (130, 145, 160))
+        bd = ps.networks.add_boundary_regions2(snow, [[20, 0], [30, 0], [40, 0]])
+        assert np.all(bd.shape == (120, 130, 140))
 
     def test_map_to_regions(self):
         im = self.im
@@ -150,25 +190,18 @@ class NetExtractTest():
         assert np.allclose(net1['pore.coords'][:, 0], net3['pore.coords'][:, 1])
 
     def test_generate_voxel_image(self):
-        net = op.network.Cubic(shape=[5, 5, 5])
-        geom = op.geometry.StickAndBall(network=net,
-                                        pores=net.Ps, throats=net.Ts)
-        geom.add_model(propname="pore.volume",
-                       model=op.models.geometry.pore_volume.cube)
-        geom.add_model(propname="throat.volume",
-                       model=op.models.geometry.throat_volume.cylinder)
-        im = ps.networks.generate_voxel_image(network=net,
-                                              pore_shape="cube",
-                                              throat_shape="cylinder",
-                                              rtol=0.01)
+        im = ps.networks.generate_voxel_image(
+            network=self.net,
+            pore_shape="cube",
+            throat_shape="cylinder",
+            max_dim=400,
+            rtol=0.01
+        )
         porosity_actual = im.astype(bool).sum() / np.prod(im.shape)
-
-        volume_void = net["pore.volume"].sum() + net["throat.volume"].sum()
-        volume_total = np.prod(net.spacing * net.shape)
+        volume_void = self.net["pore.volume"].sum() + self.net["throat.volume"].sum()
+        volume_total = np.prod(self.net.spacing * self.net.shape)
         porosity_desired = volume_void / volume_total
-
-        assert_allclose(actual=porosity_actual, desired=porosity_desired,
-                        rtol=0.05)
+        assert_allclose(actual=porosity_actual, desired=porosity_desired, rtol=0.1)
 
     def test_verify_no_unlabeled_regions(self):
         np.random.seed(1999)
@@ -181,12 +214,26 @@ class NetExtractTest():
         Ps = net.pores(["void", "solid"] + boundary_faces)
         assert Ps.size == net.Np == 74
 
+    def test_max_ball(self):
+        path = Path(realpath(__file__), '../../fixtures/pnextract.exe')
+        if system() == 'Windows':
+            ps.networks.maximal_ball(im=self.im3d, prefix='test_maxball',
+                                      path_to_exe=path, voxel_size=1e-6)
+            assert os.path.isfile("test_maxball_link1.dat")
+            assert os.path.isfile("test_maxball_link2.dat")
+            assert os.path.isfile("test_maxball_node1.dat")
+            assert os.path.isfile("test_maxball_node2.dat")
+            os.remove("test_maxball_link1.dat")
+            os.remove("test_maxball_link2.dat")
+            os.remove("test_maxball_node1.dat")
+            os.remove("test_maxball_node2.dat")
+
 
 if __name__ == '__main__':
-    t = NetExtractTest()
+    t = NetworkExtractionTest()
     self = t
     t.setup_class()
     for item in t.__dir__():
         if item.startswith('test'):
-            print('running test: '+item)
+            print(f'Running test: {item}')
             t.__getattribute__(item)()

@@ -9,6 +9,12 @@
 
 -----
 
+# NOTE
+
+> As of February 12th, 2021, we are actively working on Version 2.0. The ``dev`` branch will no longer be backwards compatible with previous versions of PoreSpy. We expect this conversion to be complete by winter's end.
+
+# What is PoreSpy?
+
 **Cite as:**
 
 > *Gostick J, Khan ZA, Tranter TG, Kok MDR, Agnaou M, Sadeghi MA, Jervis
@@ -16,44 +22,40 @@
 > Images.** Journal of Open Source Software, 2019.
 > [doi:10.21105/joss.01296](https://doi.org/10.21105/joss.01296)
 
-# What is PoreSpy?
-
-PoreSpy is a collection of image analysis tools used to extract
+**PoreSpy** is a collection of image analysis tools used to extract
 information from 3D images of porous materials (typically obtained from
 X-ray tomography). There are many packages that offer generalized image
-analysis tools (i.e Skimage and Scipy.NDimage in the Python environment,
-ImageJ, MatLab's Image Processing Toolbox), but the all require building
+analysis tools (i.e **Skimage** and **Scipy.NDimage** in the Python environment,
+**ImageJ**, **MatLab**'s Image Processing Toolbox), but they all require building
 up complex scripts or macros to accomplish tasks of specific use to
-porous media. The aim of PoreSpy is to provide a set of pre-written
-tools for all the common porous media measurements.
+porous media. The aim of **PoreSpy** is to provide a set of pre-written
+tools for all the common porous media measurements.  For instance, it's possible to perform a mercury intrusion simulation with a single function call (e.g. ``porespy.filters.porosimetry``).
 
-PoreSpy relies heavily on two general image analysis packages:
+**PoreSpy** relies heavily on
 [scipy.ndimage](https://docs.scipy.org/doc/scipy/reference/ndimage.html)
 and [scikit-image](https://scikit-image.org/) also known as **skimage**.
 The former contains an assortment of general image analysis tools such
 as image morphology filters, while the latter offers more complex but
-still general functions such as watershed segmentation. PoreSpy does not
+still general functions such as watershed segmentation. **PoreSpy** does not
 duplicate any of these general functions so you will also have to
-install and learn how to use them to get the most from PoreSpy. The
-functions in PoreSpy are generally built up using several of the more
-general functions offered by **skimage** and **scipy**. There are a few
-functions in PoreSpy that are implemented natively, but only when
+install and learn how to use them to get the most from **PoreSpy**. The
+functions in PoreSpy are generally built up using several of the general functions offered by **skimage** and **scipy**. There are a few
+functions in **PoreSpy** that are implemented natively, but only when
 necessary.
 
 # Capabilities
 
-PoreSpy consists of the following modules:
+**PoreSpy** consists of the following modules:
 
   - `generators`: Routines for generating artificial images of porous
     materials useful for testing and illustration
   - `filters`: Functions that accept an image and return an altered
     image
   - `metrics`: Tools for quantifying properties of images
-  - `simulations`: More complex calculations based on physical processes
-  - `networks`: Tools for analyzing images as pore networks
+  - `networks`: Algorithms and tools for analyzing images as pore networks
   - `visualization`: Helper functions for creating useful views of the
     image
-  - `io`: Functions for output image data in various formats for use in
+  - `io`: Functions for outputting image data in various formats for use in
     common software
   - `tools`: Various useful tools for working with images
 
@@ -62,25 +64,31 @@ PoreSpy consists of the following modules:
 PoreSpy depends heavily on the Scipy Stack. The best way to get a fully
 functional environment is the [Anaconda
 distribution](https://www.anaconda.com/download/). Be sure to get the
-**Python 3.6+ version**.
+**Python 3.7+ version**.
 
-Once you've installed *Conda*, you can then install PoreSpy. It is
-available on the [Python Package
-Index](https://pypi.org/project/porespy/) and can be installed by typing
-the following at the *conda* prompt:
+Once you've installed *Anaconda* you can then install **PoreSpy**. It is
+available on [Conda Forge](https://anaconda.org/conda-forge/porespy) and can be installed by typing the following at the *conda* prompt:
 
-    pip install porespy
+    conda install -c conda-forge porespy
 
-On Windows, you should have a shortcut to the "anaconda prompt" in the
+It's possible to use ``pip install porespy``, but this will not result in a full installation and some features won't work (i.e. outputing to paraview and calling imagej functions).
+
+## Windows
+
+On Windows you should have a shortcut to the "Anaconda prompt" in the
 Anaconda program group in the start menu. This will open a Windows
 command console with access to the Python features added by *Conda*,
-such as installing things via `pip`.
+such as installing things via `conda`.
+
+## Mac and Linux
 
 On Mac or Linux, you need to open a normal terminal window, then type
 `source activate {env}` where you replace `{env}` with the name of the
 environment you want to install PoreSpy. If you don't know what this
 means, then use `source activate root`, which will install PoreSpy in
 the root environment which is the default.
+
+# Contributing
 
 If you think you may be interested in contributing to PoreSpy and wish
 to both *use* and *edit* the source code, then you should clone the
@@ -91,6 +99,10 @@ and install it using the following PIP command:
 
 For information about contributing, refer to the [contributors
 guide](https://github.com/PMEAL/porespy/blob/dev/CONTRIBUTING.md)
+
+# Stay Informed
+
+It's surprizingly hard to communicate with our users, since Github doesn't allow sending out email newsletters or announcements.  To address this gap, we have created a [Substack channel](https://porespy.substack.com/p/coming-soon?r=e02s8&utm_campaign=post&utm_medium=web&utm_source=copy), where you can subscribe to our feed to receive periodic news about important events and updates.
 
 # Examples
 
@@ -112,7 +124,7 @@ im = ps.generators.blobs(shape=[500, 500], porosity=0.6, blobiness=2)
 plt.imshow(im)
 ```
 <p align="center">
-  <img src="https://github.com/PMEAL/porespy/raw/dev/docs/_static/fig1.png" width="50%"></img>
+  <img src="https://github.com/PMEAL/porespy/raw/dev/docs/_static/images/fig1.png" width="50%"></img>
 </p>
 
 ## Applying filters
@@ -126,11 +138,8 @@ distribution.
 lt = ps.filters.local_thickness(im)
 plt.imshow(lt)
 ```
-<!--
-![image](https://github.com/PMEAL/porespy/raw/dev/docs/_static/fig2.png)
--->
 <p align="center">
-  <img src="https://github.com/PMEAL/porespy/raw/dev/docs/_static/fig2.png" width="50%"></img>
+  <img src="https://github.com/PMEAL/porespy/raw/dev/docs/_static/images/fig2.png" width="50%"></img>
 </p>
 
 A less common filter is the application of chords that span the pore
@@ -144,7 +153,7 @@ cr = ps.filters.flood(cr, mode='size')
 plt.imshow(cr)
 ```
 <p align="center">
-  <img src="https://github.com/PMEAL/porespy/raw/dev/docs/_static/fig3.png" width="50%"></img>
+  <img src="https://github.com/PMEAL/porespy/raw/dev/docs/_static/images/fig3.png" width="50%"></img>
 </p>
 
 ## Calculating metrics
@@ -160,7 +169,7 @@ plt.ylabel('probability')
 plt.xlabel('correlation length [voxels]')
 ```
 <p align="center">
-  <img src="https://github.com/PMEAL/porespy/raw/dev/docs/_static/fig4.png" width="50%"></img>
+  <img src="https://github.com/PMEAL/porespy/raw/dev/docs/_static/images/fig4.png" width="50%"></img>
 </p>
 
 The metrics sub-module also contains a suite of functions that produce
@@ -177,6 +186,6 @@ plt.xlabel('invasion size [voxels]')
 plt.ylabel('volume fraction invaded [voxels]')
 ```
 <p align="center">
-  <img src="https://github.com/PMEAL/porespy/raw/dev/docs/_static/fig5.png" width="50%"></img>
-  <img src="https://github.com/PMEAL/porespy/raw/dev/docs/_static/fig6.png" width="50%"></img>
+  <img src="https://github.com/PMEAL/porespy/raw/dev/docs/_static/images/fig5.png" width="50%"></img>
+  <img src="https://github.com/PMEAL/porespy/raw/dev/docs/_static/images/fig6.png" width="50%"></img>
 </p>
