@@ -3,12 +3,8 @@
 .. module:: porespy
    :noindex:
 
-..
-  .. raw:: html
-
-     <p align="center">
-       <img src=".\_static\images\porespy_logo.png" height=50px></img>
-     </p>
+.. image:: ./_static/images/porespy_logo.png
+   :name: banner
 
 ###############################################
 Quantitative Image Analysis of Porous Materials
@@ -25,9 +21,6 @@ Quantitative Image Analysis of Porous Materials
 
 What is PoreSpy? |stars|
 ########################
-
-.. .. image:: ./_static/images/porespy_logo.png
-..    :name: banner
 
 PoreSpy is a collection of image analysis functions used to extract information
 from 3D images of porous materials (typically obtained from X-ray
