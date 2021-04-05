@@ -3,11 +3,12 @@
 .. module:: porespy
    :noindex:
 
-.. raw:: html
+..
+  .. raw:: html
 
-   <p align="center">
-     <img src=".\_static\images\porespy_logo.png" width="60%"></img>
-   </p>
+     <p align="center">
+       <img src=".\_static\images\porespy_logo.png" height=50px></img>
+     </p>
 
 ###############################################
 Quantitative Image Analysis of Porous Materials
@@ -24,6 +25,9 @@ Quantitative Image Analysis of Porous Materials
 
 What is PoreSpy? |stars|
 ########################
+
+.. .. image:: ./_static/images/porespy_logo.png
+..    :name: banner
 
 PoreSpy is a collection of image analysis functions used to extract information
 from 3D images of porous materials (typically obtained from X-ray
@@ -72,10 +76,12 @@ How To Cite
 
 If you use PoreSpy in a publication, please add the following citation:
 
-.. topic:: Citation
+.. admonition:: Citation
 
-    Gostick J, Khan ZA, Tranter TG, Kok MDR, Agnaou M, Sadeghi MA, Jervis R. PoreSpy: A Python Toolkit for Quantitative Analysis of Porous Media Images. Journal of Open Source Software, 2019. `doi:10.21105/joss.01296 <https://doi.org/10.21105/joss.01296>`_
-
+    Gostick J, Khan ZA, Tranter TG, Kok MDR, Agnaou M, Sadeghi MA,
+    Jervis R. PoreSpy: A Python Toolkit for Quantitative Analysis of
+    Porous Media Images. *Journal of Open Source Software*, 2019.
+    `doi:10.21105/joss.01296 <https://doi.org/10.21105/joss.01296>`_
 
 .. |stars| image:: https://img.shields.io/github/stars/PMEAL/porespy.svg?style=social&label=Star&maxAge=2592000
    :target: https://GitHub.com/PMEAL/porespy/stargazers/

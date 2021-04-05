@@ -76,7 +76,7 @@ html_theme_options = {
     "show_prev_next": False,
     "icon_links_label": "Quick Links",
     "use_edit_page_button": False,
-    "search_bar_position": "navbar",
+    "search_bar_position": "sidebar",
     "navbar_align": "left",
 }
 
@@ -87,6 +87,8 @@ html_sidebars = {
 }
 
 html_js_files = ['js/custom.js']
+
+html_css_files = ['css/custom.css']
 
 nbsphinx_prompt_width = "0"
 
