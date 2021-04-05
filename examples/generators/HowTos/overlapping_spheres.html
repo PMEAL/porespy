@@ -6,42 +6,40 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
 
-    <title>lattice_spheres &#8212; PoreSpy  documentation</title>
+    <title>overlapping_spheres &#8212; PoreSpy  documentation</title>
     
-  <link href="../../_static/css/theme.css" rel="stylesheet" />
-  <link href="../../_static/css/index.f6b7ca918bee2f46fd9abac01cfb07d5.css" rel="stylesheet" />
+  <link href="../../../_static/css/theme.css" rel="stylesheet" />
+  <link href="../../../_static/css/index.f6b7ca918bee2f46fd9abac01cfb07d5.css" rel="stylesheet" />
 
     
   <link rel="stylesheet"
-    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
   <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
   <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
     
       
 
     
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
     
-  <link rel="preload" as="script" href="../../_static/js/index.1e043a052b0af929e4d8.js">
+  <link rel="preload" as="script" href="../../../_static/js/index.1e043a052b0af929e4d8.js">
 
-    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/clipboard.min.js"></script>
-    <script src="../../_static/copybutton.js"></script>
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script src="../../_static/js/custom.js"></script>
-    <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="line_segment" href="line_segment.html" />
-    <link rel="prev" title="insert_shape" href="insert_shape.html" />
+    <script src="../../../_static/js/custom.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
   </head>
@@ -53,7 +51,7 @@
     
       
       <a class="navbar-brand" href="https://www.porespy.org">
-        <img src="../../_static/porespy_logo.png" class="logo" alt="logo">
+        <img src="../../../_static/porespy_logo.png" class="logo" alt="logo">
       </a>
       
     
@@ -66,19 +64,19 @@
     <div id="navbar-menu" class=" collapse navbar-collapse">
       <ul id="navbar-main-elements" class="navbar-nav mr-auto">
         <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../../user_guide/index.html">
+ <a class="reference internal nav-link" href="../../../user_guide/index.html">
   User Guide
  </a>
 </li>
 
 <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../../modules/index.html">
+ <a class="reference internal nav-link" href="../../../modules/index.html">
   Module and Function Reference
  </a>
 </li>
 
-<li class="toctree-l1 current active nav-item">
- <a class="reference internal nav-link" href="../../examples.html">
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../examples.html">
   Examples
  </a>
 </li>
@@ -124,294 +122,13 @@
           
             
             <!-- Only show if we have sidebars configured, else just a small margin  -->
-            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
   <i class="icon fas fa-search"></i>
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
 </form>
 <nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
   <div class="bd-toc-item active">
-    <ul class="current nav bd-sidenav">
- <li class="toctree-l2">
-  <a class="reference internal" href="RSA.html">
-   Generating Polydisperse Spheres using RSA
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="bundle_of_tubes.html">
-   bundle_of_tubes
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="cylinders.html">
-   Generating fibrous mats
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="insert_shape.html">
-   insert_shape
-  </a>
- </li>
- <li class="toctree-l2 current active">
-  <a class="current reference internal" href="#">
-   lattice_spheres
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="line_segment.html">
-   line_segment
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="overlapping_spheres.html">
-   overlapping_spheres
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="perlin_noise.html">
-   perlin_noise
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="polydisperse_spheres.html">
-   polydisperse _spheres
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="voronoi_edges.html">
-   voronoi_edges
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../filters/adding_chords.html">
-   Applying Chords to 2D and 3D Images
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../filters/apply_chords.html">
-   apply_chords
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../filters/apply_chords_3D.html">
-   apply_chords_3D
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../filters/apply_padded.html">
-   apply_padded
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../filters/chunked_func.html">
-   chunked_func
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../filters/distance_transform_lin.html">
-   distance_transform_lin
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../filters/fill_blind_pores.html">
-   fill_blind_pores
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../filters/find_disconnected_voxels.html">
-   find_disconnected_voxels
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../filters/find_dt_artifacts.html">
-   find_dt_artifacts
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../filters/find_peaks.html">
-   find_peaks
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../filters/flood.html">
-   flood
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../filters/hold_peaks.html">
-   hold_peaks
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../filters/local_thickness.html">
-   Local Thickness
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../filters/prune_branches.html">
-   prune_branches
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../filters/reduce_peaks.html">
-   reduce_peaks
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../filters/region_size.html">
-   region_size
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../filters/snow_partitioning.html">
-   SNOW Partitioning
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../filters/snow_partitioning_n.html">
-   snow_partitioning_n
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../filters/snow_partitioning_parallel.html">
-   SNOW Partitioning Parallel
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../filters/trim_disconnected_blobs.html">
-   trim_disconnected_blobs
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../filters/trim_extrema.html">
-   trim_extrema
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../filters/trim_floating_solid.html">
-   trim_floating_solid
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../filters/trim_nearby_peaks.html">
-   trim_nearby_peaks
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../filters/trim_nonpercolating_paths.html">
-   trim_nonpercolating_paths
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../filters/trim_saddle_points.html">
-   trim_saddle_points
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../filters/trim_small_clusters.html">
-   trim_small_clusters
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../networks/adding_boundary_pores.html">
-   Adding Boundary Pores
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../networks/map_to_regions.html">
-   Set up regions and values:
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../networks/snow_advanced.html">
-   SNOW Network Extraction
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../networks/snow_basic.html">
-   SNOW Network Extraction
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../metrics/chord_counts.html">
-   chord_counts
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../metrics/chord_length_distribution.html">
-   chord_length_distribution
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../metrics/linear_density.html">
-   linear_density
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../metrics/mesh_surface_area.html">
-   mesh_surface_area
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../metrics/phase_fraction.html">
-   phase_fraction
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../metrics/pore_size_distribution.html">
-   pore_size_distribution
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../metrics/porosity.html">
-   porosity
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../metrics/porosity_profiles.html">
-   Obtaining the porosity profile along each principle axis
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../metrics/radial_density.html">
-   radial_density_distribution
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../metrics/region_interface_areas.html">
-   region_interface_areas
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../metrics/region_surface_areas.html">
-   region_surface_areas
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../metrics/regionprops_3d.html">
-   Using regionprops_3d to analyze properties of each pore
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../metrics/representative_elementary_volume.html">
-   representative_elementary_volume
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../metrics/two_point_correlation.html">
-   Two Point Correlation Function
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../metrics/two_point_correlation_bf.html">
-   two_point_correlation_bf
-  </a>
- </li>
- <li class="toctree-l2">
-  <a class="reference internal" href="../metrics/two_point_correlation_fft.html">
-   two_point_correlation_fft
-  </a>
- </li>
-</ul>
+    
   </div>
 </nav>
             </div>
@@ -448,13 +165,18 @@
     </a>
    </li>
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#offset">
-     offset
+    <a class="reference internal nav-link" href="#porosity">
+     porosity
     </a>
    </li>
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#lattice">
-     lattice
+    <a class="reference internal nav-link" href="#iter_max">
+     iter_max
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#tol">
+     tol
     </a>
    </li>
   </ul>
@@ -724,117 +446,13 @@ div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
 </style>
-<section id="lattice_spheres">
-<h1>lattice_spheres<a class="headerlink" href="#lattice_spheres" title="Permalink to this headline">¶</a></h1>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>import porespy as ps
-from IPython.display import Markdown as show
-show(ps.tools.show_docstring(ps.generators.lattice_spheres))
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<table class="table">
-<colgroup>
-<col style="width: 100%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>## Documentation for
-<code class="docutils literal notranslate"><span class="pre">lattice_spheres</span></code></p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>*l
-attice_spheres<em>(shape:
-List[int], radius: int,
-spacing: int = None,
-offset: int = None,
-smooth: bool = True,
-lattice: str =
-‘sc’)</em>**</p></td>
-</tr>
-<tr class="row-odd"><td><p>enerates a cubic packing
-of spheres in a
-specified lattice
-arrangement</p></td>
-</tr>
-<tr class="row-even"><td><p>### Parameters shape :
-list The size of the
-image to generate in
-[Nx, Ny, Nz] where N is
-the number of voxels in
-each direction. For a 2D
-image, use [Nx, Ny].
-radius : int The radius
-of spheres (circles) in
-the packing spacing :
-int or list of ints The
-spacing between unit
-cells. If the spacing is
-too small then spheres
-may overlap. If an
-<code class="docutils literal notranslate"><span class="pre">int</span></code> is given it will
-be applied in all
-directions, while a list
-of <code class="docutils literal notranslate"><span class="pre">int</span></code>s will be
-interpreted to apply
-along each axis. offset
-: int or list of ints
-The amount offset to add
-between sphere centers
-and the edges of the
-image. A single <code class="docutils literal notranslate"><span class="pre">int</span></code>
-will be applied in all
-directions, while a list
-of <code class="docutils literal notranslate"><span class="pre">int</span></code>s will be
-interpreted to apply
-along each axis. smooth
-: bool If <code class="docutils literal notranslate"><span class="pre">True</span></code>
-(default) the outer
-extremities of the
-sphere will not have the
-little bumps on each
-face. lattice : string
-Specifies the type of
-lattice to create.
-Options are:</p></td>
-</tr>
-<tr class="row-odd"><td><p>‘sc’ - Simple Cubic
-(default)</p></td>
-</tr>
-<tr class="row-even"><td><p>‘fcc’ - Face Centered
-Cubic</p></td>
-</tr>
-<tr class="row-odd"><td><p>‘bcc’ - Body Centered
-Cubic</p></td>
-</tr>
-<tr class="row-even"><td><p>For 2D images, ‘sc’
-gives a square lattice
-and both ‘fcc’ and ‘bcc’
-give a triangular
-lattice.</p></td>
-</tr>
-<tr class="row-odd"><td><p>### Returns image :
-ND-array A boolean array
-with <code class="docutils literal notranslate"><span class="pre">True</span></code> values
-denoting the pore space</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<section id="overlapping_spheres">
+<h1>overlapping_spheres<a class="headerlink" href="#overlapping_spheres" title="Permalink to this headline">¶</a></h1>
+<p>overlapping_spheres generates overlapping spheres within a space. The size of the space and the radius of the spheres are determined in the function input. The porosity is also an input to the function, and iter_max and tol are used to determines how many iterations can occur and how much the result can vary from the input value for porosity.</p>
 <section id="Import-packages">
 <h2>Import packages<a class="headerlink" href="#Import-packages" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -851,16 +469,17 @@ np.random.seed(10)
 <section id="Create-variables:">
 <h2>Create variables:<a class="headerlink" href="#Create-variables:" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>shape = [100,100,100]
-radius = 10
+<span></span>shape = [250,250,250]
+radius = 15
+porosity = 0.5
 
 #Default Values:
-offset = 0
-lattice = &quot;sc&quot;
+iter_max = 10
+tol = 0.01
 </pre></div>
 </div>
 </div>
@@ -871,12 +490,12 @@ lattice = &quot;sc&quot;
 <section id="radius">
 <h3>radius<a class="headerlink" href="#radius" title="Permalink to this headline">¶</a></h3>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>x = ps.generators.lattice_spheres(shape=shape, radius=radius, offset=offset, lattice=lattice)
-xx = ps.generators.lattice_spheres(shape=shape, radius=15, offset=offset, lattice=lattice)
+<span></span>x = ps.generators.overlapping_spheres(shape, radius, porosity, iter_max, tol)
+xx = ps.generators.overlapping_spheres(shape, 20, porosity, iter_max, tol)
 
 graphx = ps.visualization.show_3D(x)
 graphxx = ps.visualization.show_3D(xx)
@@ -885,8 +504,45 @@ ax[0].imshow(graphx);
 ax[1].imshow(graphxx);
 ax[0].axis(False)
 ax[1].axis(False)
-ax[0].set_title(&#39;radius = 10&#39;)
-ax[1].set_title(&#39;radius = 15&#39;)
+ax[0].set_title(&#39;radius = 15&#39;)
+ax[1].set_title(&#39;radius = 20&#39;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Text(0.5, 1.0, &#39;radius = 20&#39;)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/examples_generators_HowTos_overlapping_spheres_8_1.png" src="../../../_images/examples_generators_HowTos_overlapping_spheres_8_1.png" />
+</div>
+</div>
+</section>
+<section id="porosity">
+<h3>porosity<a class="headerlink" href="#porosity" title="Permalink to this headline">¶</a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>xx = ps.generators.overlapping_spheres(shape, radius, 0.25, iter_max, tol)
+
+graphxx = ps.visualization.show_3D(xx)
+fig, ax = plt.subplots(1, 2, figsize=[15, 15]);
+ax[0].imshow(graphx);
+ax[1].imshow(graphxx);
+ax[0].axis(False)
+ax[1].axis(False)
+ax[0].set_title(&#39;porosity = 0.5&#39;)
+ax[1].set_title(&#39;porosity = .25&#39;)
 </pre></div>
 </div>
 </div>
@@ -896,25 +552,26 @@ ax[1].set_title(&#39;radius = 15&#39;)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Text(0.5, 1.0, &#39;radius = 15&#39;)
+Text(0.5, 1.0, &#39;porosity = .25&#39;)
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/examples_generators_lattice_spheres_8_1.png" src="../../_images/examples_generators_lattice_spheres_8_1.png" />
+<img alt="../../../_images/examples_generators_HowTos_overlapping_spheres_10_1.png" src="../../../_images/examples_generators_HowTos_overlapping_spheres_10_1.png" />
 </div>
 </div>
 </section>
-<section id="offset">
-<h3>offset<a class="headerlink" href="#offset" title="Permalink to this headline">¶</a></h3>
+<section id="iter_max">
+<h3>iter_max<a class="headerlink" href="#iter_max" title="Permalink to this headline">¶</a></h3>
+<p>maximum iterations to match porosity to input value</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>xx = ps.generators.lattice_spheres(shape=shape, radius=radius, offset=5, lattice=lattice)
+<span></span>xx = ps.generators.overlapping_spheres(shape, radius, porosity, 2, tol)
 
 graphxx = ps.visualization.show_3D(xx)
 fig, ax = plt.subplots(1, 2, figsize=[15, 15]);
@@ -922,8 +579,8 @@ ax[0].imshow(graphx);
 ax[1].imshow(graphxx);
 ax[0].axis(False)
 ax[1].axis(False)
-ax[0].set_title(&#39;offset = 0&#39;)
-ax[1].set_title(&#39;offset = 5&#39;)
+ax[0].set_title(&#39;iter_max = 10&#39;)
+ax[1].set_title(&#39;iter_max = 2&#39;)
 </pre></div>
 </div>
 </div>
@@ -933,26 +590,26 @@ ax[1].set_title(&#39;offset = 5&#39;)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Text(0.5, 1.0, &#39;offset = 5&#39;)
+Text(0.5, 1.0, &#39;iter_max = 2&#39;)
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/examples_generators_lattice_spheres_10_1.png" src="../../_images/examples_generators_lattice_spheres_10_1.png" />
+<img alt="../../../_images/examples_generators_HowTos_overlapping_spheres_12_1.png" src="../../../_images/examples_generators_HowTos_overlapping_spheres_12_1.png" />
 </div>
 </div>
 </section>
-<section id="lattice">
-<h3>lattice<a class="headerlink" href="#lattice" title="Permalink to this headline">¶</a></h3>
-<p>lattice options are sc, fcc, and bcc</p>
+<section id="tol">
+<h3>tol<a class="headerlink" href="#tol" title="Permalink to this headline">¶</a></h3>
+<p>tolerance for porosity relative to input value</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>xx = ps.generators.lattice_spheres(shape=shape, radius=radius, offset=offset, lattice= &quot;fcc&quot;)
+<span></span>xx = ps.generators.overlapping_spheres(shape, radius, porosity, iter_max, 0.25)
 
 graphxx = ps.visualization.show_3D(xx)
 fig, ax = plt.subplots(1, 2, figsize=[15, 15]);
@@ -960,8 +617,8 @@ ax[0].imshow(graphx);
 ax[1].imshow(graphxx);
 ax[0].axis(False)
 ax[1].axis(False)
-ax[0].set_title(&#39;lattice = sc&#39;)
-ax[1].set_title(&#39;lattice = fcc&#39;)
+ax[0].set_title(&#39;tol = 0.01&#39;)
+ax[1].set_title(&#39;tol = .25&#39;)
 </pre></div>
 </div>
 </div>
@@ -971,14 +628,23 @@ ax[1].set_title(&#39;lattice = fcc&#39;)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Text(0.5, 1.0, &#39;lattice = fcc&#39;)
+Text(0.5, 1.0, &#39;tol = .25&#39;)
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/examples_generators_lattice_spheres_12_1.png" src="../../_images/examples_generators_lattice_spheres_12_1.png" />
+<img alt="../../../_images/examples_generators_HowTos_overlapping_spheres_14_1.png" src="../../../_images/examples_generators_HowTos_overlapping_spheres_14_1.png" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>
+</pre></div>
 </div>
 </div>
 </section>
@@ -996,7 +662,7 @@ Text(0.5, 1.0, &#39;lattice = fcc&#39;)
     </div>
 
     
-  <script src="../../_static/js/index.1e043a052b0af929e4d8.js"></script>
+  <script src="../../../_static/js/index.1e043a052b0af929e4d8.js"></script>
 
 
     <footer class="footer mt-5 mt-md-0">
