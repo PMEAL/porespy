@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
 
-    <title>Chord length distributions &#8212; PoreSpy  documentation</title>
+    <title>chord_length_distribution &#8212; PoreSpy  documentation</title>
     
   <link href="../../_static/css/theme.css" rel="stylesheet" />
   <link href="../../_static/css/index.f6b7ca918bee2f46fd9abac01cfb07d5.css" rel="stylesheet" />
@@ -40,8 +40,8 @@
     <script src="../../_static/js/custom.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Obtaining the porosity profile along each principle axis" href="porosity_profiles.html" />
-    <link rel="prev" title="SNOW network extraction" href="../networks/snow_basic.html" />
+    <link rel="next" title="linear_density" href="linear_density.html" />
+    <link rel="prev" title="chord_counts" href="chord_counts.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
   </head>
@@ -133,7 +133,12 @@
     <ul class="current nav bd-sidenav">
  <li class="toctree-l2">
   <a class="reference internal" href="../generators/RSA.html">
-   Generating polydisperse spheres using RSA
+   Generating Polydisperse Spheres using RSA
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../generators/bundle_of_tubes.html">
+   bundle_of_tubes
   </a>
  </li>
  <li class="toctree-l2">
@@ -142,13 +147,98 @@
   </a>
  </li>
  <li class="toctree-l2">
-  <a class="reference internal" href="../generators/making_blobs.html">
-   Making blobs
+  <a class="reference internal" href="../generators/insert_shape.html">
+   insert_shape
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../generators/lattice_spheres.html">
+   lattice_spheres
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../generators/line_segment.html">
+   line_segment
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../generators/overlapping_spheres.html">
+   overlapping_spheres
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../generators/perlin_noise.html">
+   perlin_noise
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../generators/polydisperse_spheres.html">
+   polydisperse _spheres
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../generators/voronoi_edges.html">
+   voronoi_edges
   </a>
  </li>
  <li class="toctree-l2">
   <a class="reference internal" href="../filters/adding_chords.html">
    Applying chords to 2D and 3D images
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../filters/apply_chords.html">
+   apply_chords
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../filters/apply_chords_3D.html">
+   apply_chords_3D
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../filters/apply_padded.html">
+   apply_padded
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../filters/chunked_func.html">
+   chunked_func
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../filters/distance_transform_lin.html">
+   distance_transform_lin
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../filters/fill_blind_pores.html">
+   fill_blind_pores
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../filters/find_disconnected_voxels.html">
+   find_disconnected_voxels
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../filters/find_dt_artifacts.html">
+   find_dt_artifacts
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../filters/find_peaks.html">
+   find_peaks
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../filters/flood.html">
+   flood
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../filters/hold_peaks.html">
+   hold_peaks
   </a>
  </li>
  <li class="toctree-l2">
@@ -162,13 +252,73 @@
   </a>
  </li>
  <li class="toctree-l2">
+  <a class="reference internal" href="../filters/prune_branches.html">
+   prune_branches
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../filters/reduce_peaks.html">
+   reduce_peaks
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../filters/region_size.html">
+   region_size
+  </a>
+ </li>
+ <li class="toctree-l2">
   <a class="reference internal" href="../filters/snow_partitioning.html">
    SNOW partitioning
   </a>
  </li>
  <li class="toctree-l2">
+  <a class="reference internal" href="../filters/snow_partitioning_n.html">
+   snow_partitioning_n
+  </a>
+ </li>
+ <li class="toctree-l2">
   <a class="reference internal" href="../filters/snow_partitioning_parallel.html">
    SNOW partitioning parallel
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../filters/trim_disconnected_blobs.html">
+   trim_disconnected_blobs
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../filters/trim_extrema.html">
+   trim_extrema
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../filters/trim_floating_solid.html">
+   trim_nearby_peaks
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../filters/trim_nearby_peaks.html">
+   trim_floating_solid
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../filters/trim_nonpercolating_paths.html">
+   trim_nonpercolating_paths
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../filters/trim_saddle_points.html">
+   trim_saddle_points
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../filters/trim_small_clusters.html">
+   trim_small_clusters
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="../networks/adding_boundary_pores.html">
+   Adding Boundary Pores
   </a>
  </li>
  <li class="toctree-l2">
@@ -181,9 +331,39 @@
    SNOW network extraction
   </a>
  </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="chord_counts.html">
+   chord_counts
+  </a>
+ </li>
  <li class="toctree-l2 current active">
   <a class="current reference internal" href="#">
-   Chord length distributions
+   chord_length_distribution
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="linear_density.html">
+   linear_density
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="mesh_surface_area.html">
+   mesh_surface_area
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="phase_fraction.html">
+   phase_fraction
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="pore_size_distribution.html">
+   pore_size_distribution
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="porosity.html">
+   porosity
   </a>
  </li>
  <li class="toctree-l2">
@@ -192,13 +372,43 @@
   </a>
  </li>
  <li class="toctree-l2">
+  <a class="reference internal" href="radial_density.html">
+   radial_density
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="region_interface_areas.html">
+   region_interface_areas
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="region_surface_areas.html">
+   region_surface_areas
+  </a>
+ </li>
+ <li class="toctree-l2">
   <a class="reference internal" href="regionprops_3d.html">
    Using regionprops_3d to analyze properties of each pore
   </a>
  </li>
  <li class="toctree-l2">
+  <a class="reference internal" href="representative_elementary_volume.html">
+   representative_elementary_volume
+  </a>
+ </li>
+ <li class="toctree-l2">
   <a class="reference internal" href="two_point_correlation.html">
-   Two point correlation function
+   Two Point Correlation Function
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="two_point_correlation_bf.html">
+   two_point_correlation_bf
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="two_point_correlation_fft.html">
+   two_point_correlation_fft
   </a>
  </li>
 </ul>
@@ -223,13 +433,38 @@
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Generate-artificial-image">
-   Generate artificial image
+  <a class="reference internal nav-link" href="#Create-image-and-variables:">
+   Create image and variables:
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Apply-chords-using-filter-and-analyze">
-   Apply chords using filter and analyze
+  <a class="reference internal nav-link" href="#Apply-metric-function:">
+   Apply metric function:
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#default">
+   default
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#bins">
+   bins
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#log">
+   log
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#voxel_size">
+   voxel_size
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#normalization">
+   normalization
   </a>
  </li>
 </ul>
@@ -497,8 +732,10 @@ div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
 </style>
-<section id="Chord-length-distributions">
-<h1>Chord length distributions<a class="headerlink" href="#Chord-length-distributions" title="Permalink to this headline">¶</a></h1>
+<section id="chord_length_distribution">
+<h1>chord_length_distribution<a class="headerlink" href="#chord_length_distribution" title="Permalink to this headline">¶</a></h1>
+<p>An example for the use of porespy.metrics.chord_length_distribution</p>
+<p>Determines the distribution of chord lengths in an image containing chords.</p>
 <section id="Import-packages">
 <h2>Import packages<a class="headerlink" href="#Import-packages" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
@@ -508,22 +745,32 @@ div.rendered_html tbody tr:hover {
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span>import porespy as ps
 import matplotlib.pyplot as plt
+
 ps.visualization.set_mpl_style()
 </pre></div>
 </div>
 </div>
 </section>
-<section id="Generate-artificial-image">
-<h2>Generate artificial image<a class="headerlink" href="#Generate-artificial-image" title="Permalink to this headline">¶</a></h2>
+<section id="Create-image-and-variables:">
+<h2>Create image and variables:<a class="headerlink" href="#Create-image-and-variables:" title="Permalink to this headline">¶</a></h2>
+<p>Variables created are bins, log, voxel_size, and normalization. The image is created using the blobs generator function, then the prune_branches filter is applied. The image plotted is below:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>im = ps.generators.blobs(shape=[800, 800],blobiness=(1.5, 1), porosity=0.50)
-fig, ax0 = plt.subplots()
-im0 = ax0.imshow(im)
-plt.show()
+<span></span>im = ps.generators.blobs(shape=[300, 300])
+im = ps.filters.apply_chords(im, spacing=1, axis=0, trim_edges=True, label=False)
+
+plt.figure(figsize=[10, 10])
+plt.axis(False)
+plt.imshow(im)
+
+#default values:
+bins = None
+log = False
+voxel_size = 1
+normalization = &quot;count&quot;
 </pre></div>
 </div>
 </div>
@@ -531,101 +778,248 @@ plt.show()
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/examples_metrics_chord_length_distribution_4_0.svg" src="../../_images/examples_metrics_chord_length_distribution_4_0.svg" /></div>
+<img alt="../../_images/examples_metrics_chord_length_distribution_6_0.png" src="../../_images/examples_metrics_chord_length_distribution_6_0.png" />
+</div>
 </div>
 </section>
-<section id="Apply-chords-using-filter-and-analyze">
-<h2>Apply chords using filter and analyze<a class="headerlink" href="#Apply-chords-using-filter-and-analyze" title="Permalink to this headline">¶</a></h2>
+<section id="Apply-metric-function:">
+<h2>Apply metric function:<a class="headerlink" href="#Apply-metric-function:" title="Permalink to this headline">¶</a></h2>
+<p>Output is a tuple with elements L, pdf, cdf, relfreq, bin_centers, bin_edges, and bin_widths.</p>
+</section>
+<section id="default">
+<h2>default<a class="headerlink" href="#default" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>chords_x = ps.filters.apply_chords(im, axis=0, spacing=1, trim_edges=True)
-chords_y = ps.filters.apply_chords(im, axis=1, spacing=1, trim_edges=True)
+<span></span>x = ps.metrics.chord_length_distribution(im, bins, log, voxel_size, normalization)
 </pre></div>
 </div>
 </div>
+<p>Plot results:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>fig, ax0 = plt.subplots()
-im0 = ax0.imshow(chords_y)
-plt.show()
+
+<span></span>fig, ax = plt.subplots(1, 3, figsize=[20, 15]);
+ax[0].plot(x.pdf)
+ax[1].plot(x.cdf)
+ax[2].bar(x.cdf, x.L, x.bin_widths)
+ax[0].set_title(&quot;Probability Density Function&quot;)
+ax[1].set_title(&quot;Cumulative Density Function&quot;)
+ax[2].set_title(&#39;Bar Plot&#39;)
+
+
 </pre></div>
 </div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Text(0.5, 1.0, &#39;Bar Plot&#39;)
+</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/examples_metrics_chord_length_distribution_7_0.svg" src="../../_images/examples_metrics_chord_length_distribution_7_0.svg" /></div>
+<img alt="../../_images/examples_metrics_chord_length_distribution_12_1.png" src="../../_images/examples_metrics_chord_length_distribution_12_1.png" />
 </div>
-<p>Note in this image that chords connected to the edge have been removed. These chords are unnaturally shortened so could skew the distribution. These chords can be preserved by setting the <code class="docutils literal notranslate"><span class="pre">trim_edges</span></code> argument to <code class="docutils literal notranslate"><span class="pre">False</span></code> in the call to <code class="docutils literal notranslate"><span class="pre">apply_chords</span></code>. Also, the spacing between the yellow chords is adjustable. These chords must have a least 1 blank (purple) voxel between them, but this value can be increased using the <code class="docutils literal notranslate"><span class="pre">spacing</span></code> argument.</p>
+</div>
+</section>
+<section id="bins">
+<h2>bins<a class="headerlink" href="#bins" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>cld_x = ps.metrics.chord_length_distribution(chords_x,bins=50,log=True)
-cld_y = ps.metrics.chord_length_distribution(chords_y,bins=50,log=True)
+<span></span>x = ps.metrics.chord_length_distribution(im, 5, log, voxel_size, normalization)
 </pre></div>
 </div>
 </div>
+<p>Plot results:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>fig, ax = plt.subplots(ncols=2, nrows=1, figsize=(8, 4))
-ax[0].bar(cld_x.bin_centers, cld_x.relfreq, width=cld_x.bin_widths, edgecolor=&#39;k&#39;)
-ax[1].bar(cld_y.bin_centers, cld_y.relfreq, width=cld_y.bin_widths, edgecolor=&#39;k&#39;);
-ax[0].set_xlabel(&quot;Chord length&quot;)
-ax[0].set_ylabel(&quot;Frequency&quot;)
-ax[1].set_xlabel(&quot;Chord length&quot;)
-ax[0].set_title(&quot;Chord length dist. (x-axis)&quot;)
-ax[1].set_title(&quot;Chord length dist. (y-axis)&quot;);
+
+<span></span>fig, ax = plt.subplots(1, 3, figsize=[20, 15]);
+ax[0].plot(x.pdf)
+ax[1].plot(x.cdf)
+ax[2].bar(x.cdf, x.L, x.bin_widths)
+ax[0].set_title(&quot;Probability Density Function&quot;)
+ax[1].set_title(&quot;Cumulative Density Function&quot;)
+ax[2].set_title(&#39;Bar Plot&#39;)
+
+
 </pre></div>
 </div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Text(0.5, 1.0, &#39;Bar Plot&#39;)
+</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/examples_metrics_chord_length_distribution_10_0.svg" src="../../_images/examples_metrics_chord_length_distribution_10_0.svg" /></div>
+<img alt="../../_images/examples_metrics_chord_length_distribution_16_1.png" src="../../_images/examples_metrics_chord_length_distribution_16_1.png" />
 </div>
-<p>The results are noisy since the number of chords in a 2D image is not large enough to provide a good statistical distribution. A more traditional cumaltive density function on a normal scale is also available:</p>
+</div>
+</section>
+<section id="log">
+<h2>log<a class="headerlink" href="#log" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>cld_x = ps.metrics.chord_length_distribution(chords_x,bins=50)
-cld_y = ps.metrics.chord_length_distribution(chords_y,bins=50)
+<span></span>x = ps.metrics.chord_length_distribution(im, bins, True, voxel_size, normalization)
 </pre></div>
 </div>
 </div>
+<p>Plot results:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>fig, ax0 = plt.subplots(figsize=(5, 4))
-ax0.plot(cld_x.bin_centers, cld_x.cdf, label=&quot;CLD (x-axis)&quot;)
-ax0.plot(cld_y.bin_centers, cld_y.cdf, label=&quot;CLD (y-axis)&quot;)
-ax0.legend();
-ax0.set_xlabel(&quot;Chord length&quot;)
-ax0.set_ylabel(&quot;Frequency&quot;);
+
+<span></span>fig, ax = plt.subplots(1, 3, figsize=[20, 15]);
+ax[0].plot(x.pdf)
+ax[1].plot(x.cdf)
+#ax[2].bar(x.cdf, x.L, x.bin_widths)
+ax[0].set_title(&quot;Probability Density Function&quot;)
+ax[1].set_title(&quot;Cumulative Density Function&quot;)
+ax[2].set_title(&#39;Bar Plot&#39;)
+
+
 </pre></div>
 </div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Text(0.5, 1.0, &#39;Bar Plot&#39;)
+</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/examples_metrics_chord_length_distribution_13_0.svg" src="../../_images/examples_metrics_chord_length_distribution_13_0.svg" /></div>
+<img alt="../../_images/examples_metrics_chord_length_distribution_20_1.png" src="../../_images/examples_metrics_chord_length_distribution_20_1.png" />
+</div>
+</div>
+</section>
+<section id="voxel_size">
+<h2>voxel_size<a class="headerlink" href="#voxel_size" title="Permalink to this headline">¶</a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>x = ps.metrics.chord_length_distribution(im, bins, log, 5, normalization)
+</pre></div>
+</div>
+</div>
+<p>Plot results:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+
+<span></span>fig, ax = plt.subplots(1, 3, figsize=[20, 15]);
+ax[0].plot(x.pdf)
+ax[1].plot(x.cdf)
+ax[2].bar(x.cdf, x.L, x.bin_widths)
+ax[0].set_title(&quot;Probability Density Function&quot;)
+ax[1].set_title(&quot;Cumulative Density Function&quot;)
+ax[2].set_title(&#39;Bar Plot&#39;)
+
+
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Text(0.5, 1.0, &#39;Bar Plot&#39;)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/examples_metrics_chord_length_distribution_24_1.png" src="../../_images/examples_metrics_chord_length_distribution_24_1.png" />
+</div>
+</div>
+</section>
+<section id="normalization">
+<h2>normalization<a class="headerlink" href="#normalization" title="Permalink to this headline">¶</a></h2>
+<p>options are count or length</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>x = ps.metrics.chord_length_distribution(im, bins, log, voxel_size, &#39;length&#39;)
+</pre></div>
+</div>
+</div>
+<p>Plot results:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+
+<span></span>fig, ax = plt.subplots(1, 3, figsize=[20, 15]);
+ax[0].plot(x.pdf)
+ax[1].plot(x.cdf)
+ax[2].bar(x.cdf, x.L, x.bin_widths)
+ax[0].set_title(&quot;Probability Density Function&quot;)
+ax[1].set_title(&quot;Cumulative Density Function&quot;)
+ax[2].set_title(&#39;Bar Plot&#39;)
+
+
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Text(0.5, 1.0, &#39;Bar Plot&#39;)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/examples_metrics_chord_length_distribution_28_1.png" src="../../_images/examples_metrics_chord_length_distribution_28_1.png" />
+</div>
 </div>
 </section>
 </section>
