@@ -17,6 +17,8 @@ jobs:
       matrix:
         python-version: [3.8]
         operating-system: [ubuntu-latest]
+        # Next line should be range(1, max-parallel + 1)
+        test_group: [1, 2, 3, 4]
 
     steps:
       - uses: actions/checkout@v2
@@ -57,5 +59,6 @@ jobs:
           pip install -e . --no-deps
 
       - name: Running tests
+        # Make sure to pass max-parallel to --splits
         run: |
-          pytest --nbval-lax examples/
+          pytest --nbval-lax examples/ --splits 4 --group ${{ matrix.test_group }}
