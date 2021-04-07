@@ -585,7 +585,7 @@ def trim_saddle_points(peaks, dt, max_iters=10):
     return peaks
 
 
-def trim_nearby_peaks(peaks, dt, dist_threshold = 1):
+def trim_nearby_peaks(peaks, dt, dist_threshold=1):
     r"""
     Finds pairs of peaks that are nearer to each other than to the solid
     phase, and removes the peak that is closer to the solid.
