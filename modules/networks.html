@@ -40,7 +40,7 @@
     <script src="../_static/js/custom.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="snow" href="generated/porespy.networks.snow.html" />
+    <link rel="next" title="map_to_regions" href="generated/porespy.networks.map_to_regions.html" />
     <link rel="prev" title="two_point_correlation_fft" href="generated/porespy.metrics.two_point_correlation_fft.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
@@ -152,16 +152,6 @@
   </a>
   <ul>
    <li class="toctree-l3">
-    <a class="reference internal" href="generated/porespy.networks.snow.html">
-     snow
-    </a>
-   </li>
-   <li class="toctree-l3">
-    <a class="reference internal" href="generated/porespy.networks.snow_dual.html">
-     snow_dual
-    </a>
-   </li>
-   <li class="toctree-l3">
     <a class="reference internal" href="generated/porespy.networks.map_to_regions.html">
      map_to_regions
     </a>
@@ -246,20 +236,14 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.networks.snow.html#porespy.networks.snow" title="porespy.networks.snow"><code class="xref py py-obj docutils literal notranslate"><span class="pre">networks.snow</span></code></a>(im[, voxel_size, …])</p></td>
-<td><p>Analyzes an image that has been partitioned into void and solid regions and extracts the void and solid phase geometry as well as network connectivity.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.networks.snow_dual.html#porespy.networks.snow_dual" title="porespy.networks.snow_dual"><code class="xref py py-obj docutils literal notranslate"><span class="pre">networks.snow_dual</span></code></a>(im[, voxel_size, …])</p></td>
-<td><p>Analyzes an image that has been partitioned into void and solid regions and extracts the void and solid phase geometry as well as network connectivity.</p></td>
-</tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.networks.map_to_regions.html#porespy.networks.map_to_regions" title="porespy.networks.map_to_regions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">networks.map_to_regions</span></code></a>(regions, values)</p></td>
 <td><p>Maps pore values from a network onto the image from which it was extracted</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.networks.regions_to_network.html#porespy.networks.regions_to_network" title="porespy.networks.regions_to_network"><code class="xref py py-obj docutils literal notranslate"><span class="pre">networks.regions_to_network</span></code></a>(im[, dt, voxel_size])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.networks.regions_to_network.html#porespy.networks.regions_to_network" title="porespy.networks.regions_to_network"><code class="xref py py-obj docutils literal notranslate"><span class="pre">networks.regions_to_network</span></code></a>(regions[, …])</p></td>
 <td><p>Analyzes an image that has been partitioned into pore regions and extracts the pore and throat geometry as well as network connectivity.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.networks.add_boundary_regions.html#porespy.networks.add_boundary_regions" title="porespy.networks.add_boundary_regions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">networks.add_boundary_regions</span></code></a>([regions, faces])</p></td>
-<td><p>Given an image partitioned into regions, pads specified faces with new regions</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.networks.add_boundary_regions.html#porespy.networks.add_boundary_regions" title="porespy.networks.add_boundary_regions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">networks.add_boundary_regions</span></code></a>(regions[, …])</p></td>
+<td><p>Add boundary regions on specified faces of an image</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.networks.generate_voxel_image.html#porespy.networks.generate_voxel_image" title="porespy.networks.generate_voxel_image"><code class="xref py py-obj docutils literal notranslate"><span class="pre">networks.generate_voxel_image</span></code></a>(network[, …])</p></td>
 <td><p>Generates voxel image from an OpenPNM network object.</p></td>
