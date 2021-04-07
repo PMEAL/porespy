@@ -269,11 +269,11 @@ def find_outer_region(im, r=0):
 
     """
     if r == 0:
-        dt = edt(input=im)
+        dt = edt(im)
         r = int(np.amax(dt)) * 2
     im_padded = np.pad(array=im, pad_width=r, mode='constant',
                        constant_values=True)
-    dt = edt(input=im_padded)
+    dt = edt(im_padded)
     seeds = (dt >= r) + get_border(shape=im_padded.shape)
     # Remove seeds not connected to edges
     labels = spim.label(seeds)[0]

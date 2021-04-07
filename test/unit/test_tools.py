@@ -287,6 +287,12 @@ class ToolsTest():
         c = ps.tools.ps_rect(w=3, ndim=3)
         assert c.sum() == 27
 
+    def test_find_outer_region(self):
+        outer = ps.tools.find_outer_region(self.im3D)
+        assert outer.sum() == 1989
+        outer = ps.tools.find_outer_region(self.im2D)
+        assert outer.sum() == 64
+
 
 if __name__ == '__main__':
     t = ToolsTest()
