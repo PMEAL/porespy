@@ -62,4 +62,7 @@ jobs:
       - name: Running tests
         # Make sure to pass max-parallel to --splits
         run: |
-          pytest --nbval-lax examples/ --splits 4 --group ${{ matrix.test_group }}
+          pytest \
+            --nbval-lax examples/ \
+            --splits 4 --group ${{ matrix.test_group }} \
+            --durations-path test/fixtures/.test_durations_examples
