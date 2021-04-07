@@ -310,13 +310,11 @@ def to_paraview(im, filename, phase=2):
     try:
         import paraview.simple
     except ModuleNotFoundError:
-        msg = (
-            "The paraview python bindings must be installed using conda"
-            " install -c conda-forge paraview, however this may require"
-            " using a virtualenv since conflicts with other packages are"
-            " common. This is why it is not explicitly included as a"
-            " dependency in porespy."
-        )
+        msg = ("The paraview python bindings must be installed using conda"
+               " install -c conda-forge paraview, however this may require"
+               " using a virtualenv since conflicts with other packages are"
+               " common. This is why it is not explicitly included as a"
+               " dependency in porespy.")
         raise ModuleNotFoundError(msg)
     data = im.astype("uint8")
     file = os.path.splitext(filename)[0]
