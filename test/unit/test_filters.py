@@ -2,6 +2,7 @@ import pytest
 import numpy as np
 from edt import edt
 import porespy as ps
+import scipy as sp
 import scipy.ndimage as spim
 from skimage.morphology import disk, ball, skeletonize_3d
 
@@ -472,6 +473,22 @@ class FilterTest():
         dt_hold_peaks = ps.filters.hold_peaks(dt, axis=0)
         diff = abs(np.max(dt_hold_peaks, axis=0) - np.max(dt, axis=0))
         assert np.all(diff <= 1e-15)
+
+    def test_trim_nearby_peaks_threshold(self):
+        np.random.seed(10)
+        dist = sp.stats.norm(loc=7, scale=5)
+        im = ps.generators.polydisperse_spheres([100, 100, 100],
+                                                porosity=0.8, dist=dist)
+        im_dt = edt(im)
+        im_dt = im_dt
+        dt = spim.gaussian_filter(input=im_dt, sigma=0.4)
+        peaks = ps.filters.find_peaks(dt=dt)
+        peaks_far = ps.filters.trim_nearby_peaks(peaks=peaks, dt=dt)
+        peaks_close = ps.filters.trim_nearby_peaks(peaks=peaks, dt=dt,
+                                                   dist_threshold=0.3)
+        num_peaks_after_far_trim = spim.label(peaks_far)[1]
+        num_peaks_after_close_trim = spim.label(peaks_close)[1]
+        assert num_peaks_after_far_trim <= num_peaks_after_close_trim
 
 
 if __name__ == '__main__':
