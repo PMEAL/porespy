@@ -152,6 +152,16 @@
   </a>
   <ul class="current">
    <li class="toctree-l3">
+    <a class="reference internal" href="porespy.networks.snow.html">
+     snow
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.networks.snow_dual.html">
+     snow_dual
+    </a>
+   </li>
+   <li class="toctree-l3">
     <a class="reference internal" href="porespy.networks.map_to_regions.html">
      map_to_regions
     </a>
@@ -230,24 +240,28 @@
 <h1>add_boundary_regions<a class="headerlink" href="#add-boundary-regions" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="porespy.networks.add_boundary_regions">
-<code class="sig-name descname"><span class="pre">add_boundary_regions</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">regions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/networks/__funcs__.html#add_boundary_regions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.networks.add_boundary_regions" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add boundary regions on specified faces of an image</p>
+<code class="sig-name descname"><span class="pre">add_boundary_regions</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">regions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">faces</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['front',</span> <span class="pre">'back',</span> <span class="pre">'left',</span> <span class="pre">'right',</span> <span class="pre">'top',</span> <span class="pre">'bottom']</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/networks/__funcs__.html#add_boundary_regions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.networks.add_boundary_regions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given an image partitioned into regions, pads specified faces with new
+regions</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>regions</strong> (<em>ND-image</em>) – An image containing labelled regions, such as a watershed segmentation</p></li>
-<li><p><strong>pad_width</strong> (<em>array_like</em>) – Number of layers to add to the beginnign and end of each axis. This
-argument is handled the same as <code class="docutils literal notranslate"><span class="pre">pad_width</span></code> in the <code class="docutils literal notranslate"><span class="pre">np.pad</span></code>
-function. A scalar adds the same amount to the beginning and end of
-each axis. [A, B] adds A to the beginning of each axis and B to the
-ends.  [[A, B], …, [C, D]] adds A to the beginning and B to the
-end of the first axis, and so on. The default is to add 3 voxels on
-both ends of each axis.</p></li>
+<li><p><strong>regions</strong> (<em>ND-array</em>) – An image of the pore space partitioned into regions and labeled</p></li>
+<li><p><strong>faces</strong> (<em>list of strings</em>) – <p>The faces of <code class="docutils literal notranslate"><span class="pre">regions</span></code> which should have boundaries added.  Options
+are:</p>
+<p><em>’right’</em> - Adds boundaries to the x=0 face (<code class="docutils literal notranslate"><span class="pre">im[0,</span> <span class="pre">:,</span> <span class="pre">:]</span></code>)</p>
+<p><em>’left’</em> - Adds boundaries to the x=X face (<code class="docutils literal notranslate"><span class="pre">im[-1,</span> <span class="pre">:,</span> <span class="pre">:]</span></code>)</p>
+<p><em>’front’</em> - Adds boundaries to the y=0 face (<code class="docutils literal notranslate"><span class="pre">im[:,</span> <span class="pre">),</span> <span class="pre">:]</span></code>)</p>
+<p><em>’back’</em> - Adds boundaries to the x=0 face (<code class="docutils literal notranslate"><span class="pre">im[:,</span> <span class="pre">-1,</span> <span class="pre">:]</span></code>)</p>
+<p><em>’bottom’</em> - Adds boundaries to the x=0 face (<code class="docutils literal notranslate"><span class="pre">im[:,</span> <span class="pre">:,</span> <span class="pre">0]</span></code>)</p>
+<p><em>’top’</em> - Adds boundaries to the x=0 face (<code class="docutils literal notranslate"><span class="pre">im[:,</span> <span class="pre">:,</span> <span class="pre">-1]</span></code>)</p>
+<p>The default is all faces.</p>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>padded_regions</strong> – An image with new regions padded on each side of the specified
-width.</p>
+<dd class="field-even"><p><strong>image</strong> – A copy of <code class="docutils literal notranslate"><span class="pre">regions</span></code> with the specified boundaries added, so will be
+slightly larger in each direction where boundaries were added.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>ND-array</p>

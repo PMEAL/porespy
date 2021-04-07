@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
 
-    <title>trim_nearby_peaks &#8212; PoreSpy  documentation</title>
+    <title>snow &#8212; PoreSpy  documentation</title>
     
   <link href="../../_static/css/theme.css" rel="stylesheet" />
   <link href="../../_static/css/index.f6b7ca918bee2f46fd9abac01cfb07d5.css" rel="stylesheet" />
@@ -40,8 +40,8 @@
     <script src="../../_static/js/custom.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="trim_nonpercolating_paths" href="porespy.filters.trim_nonpercolating_paths.html" />
-    <link rel="prev" title="trim_floating_solid" href="porespy.filters.trim_floating_solid.html" />
+    <link rel="next" title="snow_dual" href="porespy.networks.snow_dual.html" />
+    <link rel="prev" title="Networks" href="../networks.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
   </head>
@@ -136,162 +136,57 @@
    Generators
   </a>
  </li>
- <li class="toctree-l2 current active">
+ <li class="toctree-l2">
   <a class="reference internal" href="../filters.html">
    Filters
   </a>
-  <ul class="current">
-   <li class="toctree-l3">
-    <a class="reference internal" href="porespy.filters.apply_chords.html">
-     apply_chords
-    </a>
-   </li>
-   <li class="toctree-l3">
-    <a class="reference internal" href="porespy.filters.apply_chords_3D.html">
-     apply_chords_3D
-    </a>
-   </li>
-   <li class="toctree-l3">
-    <a class="reference internal" href="porespy.filters.apply_padded.html">
-     apply_padded
-    </a>
-   </li>
-   <li class="toctree-l3">
-    <a class="reference internal" href="porespy.filters.chunked_func.html">
-     chunked_func
-    </a>
-   </li>
-   <li class="toctree-l3">
-    <a class="reference internal" href="porespy.filters.distance_transform_lin.html">
-     distance_transform_lin
-    </a>
-   </li>
-   <li class="toctree-l3">
-    <a class="reference internal" href="porespy.filters.fftmorphology.html">
-     fftmorphology
-    </a>
-   </li>
-   <li class="toctree-l3">
-    <a class="reference internal" href="porespy.filters.fill_blind_pores.html">
-     fill_blind_pores
-    </a>
-   </li>
-   <li class="toctree-l3">
-    <a class="reference internal" href="porespy.filters.find_disconnected_voxels.html">
-     find_disconnected_voxels
-    </a>
-   </li>
-   <li class="toctree-l3">
-    <a class="reference internal" href="porespy.filters.find_dt_artifacts.html">
-     find_dt_artifacts
-    </a>
-   </li>
-   <li class="toctree-l3">
-    <a class="reference internal" href="porespy.filters.find_peaks.html">
-     find_peaks
-    </a>
-   </li>
-   <li class="toctree-l3">
-    <a class="reference internal" href="porespy.filters.flood.html">
-     flood
-    </a>
-   </li>
-   <li class="toctree-l3">
-    <a class="reference internal" href="porespy.filters.hold_peaks.html">
-     hold_peaks
-    </a>
-   </li>
-   <li class="toctree-l3">
-    <a class="reference internal" href="porespy.filters.local_thickness.html">
-     local_thickness
-    </a>
-   </li>
-   <li class="toctree-l3">
-    <a class="reference internal" href="porespy.filters.nphase_border.html">
-     nphase_border
-    </a>
-   </li>
-   <li class="toctree-l3">
-    <a class="reference internal" href="porespy.filters.porosimetry.html">
-     porosimetry
-    </a>
-   </li>
-   <li class="toctree-l3">
-    <a class="reference internal" href="porespy.filters.prune_branches.html">
-     prune_branches
-    </a>
-   </li>
-   <li class="toctree-l3">
-    <a class="reference internal" href="porespy.filters.reduce_peaks.html">
-     reduce_peaks
-    </a>
-   </li>
-   <li class="toctree-l3">
-    <a class="reference internal" href="porespy.filters.region_size.html">
-     region_size
-    </a>
-   </li>
-   <li class="toctree-l3">
-    <a class="reference internal" href="porespy.filters.snow_partitioning.html">
-     snow_partitioning
-    </a>
-   </li>
-   <li class="toctree-l3">
-    <a class="reference internal" href="porespy.filters.snow_partitioning_n.html">
-     snow_partitioning_n
-    </a>
-   </li>
-   <li class="toctree-l3">
-    <a class="reference internal" href="porespy.filters.snow_partitioning_parallel.html">
-     snow_partitioning_parallel
-    </a>
-   </li>
-   <li class="toctree-l3">
-    <a class="reference internal" href="porespy.filters.trim_disconnected_blobs.html">
-     trim_disconnected_blobs
-    </a>
-   </li>
-   <li class="toctree-l3">
-    <a class="reference internal" href="porespy.filters.trim_extrema.html">
-     trim_extrema
-    </a>
-   </li>
-   <li class="toctree-l3">
-    <a class="reference internal" href="porespy.filters.trim_floating_solid.html">
-     trim_floating_solid
-    </a>
-   </li>
-   <li class="toctree-l3 current active">
-    <a class="current reference internal" href="#">
-     trim_nearby_peaks
-    </a>
-   </li>
-   <li class="toctree-l3">
-    <a class="reference internal" href="porespy.filters.trim_nonpercolating_paths.html">
-     trim_nonpercolating_paths
-    </a>
-   </li>
-   <li class="toctree-l3">
-    <a class="reference internal" href="porespy.filters.trim_saddle_points.html">
-     trim_saddle_points
-    </a>
-   </li>
-   <li class="toctree-l3">
-    <a class="reference internal" href="porespy.filters.trim_small_clusters.html">
-     trim_small_clusters
-    </a>
-   </li>
-  </ul>
  </li>
  <li class="toctree-l2">
   <a class="reference internal" href="../metrics.html">
    Metrics
   </a>
  </li>
- <li class="toctree-l2">
+ <li class="toctree-l2 current active">
   <a class="reference internal" href="../networks.html">
    Networks
   </a>
+  <ul class="current">
+   <li class="toctree-l3 current active">
+    <a class="current reference internal" href="#">
+     snow
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.networks.snow_dual.html">
+     snow_dual
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.networks.map_to_regions.html">
+     map_to_regions
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.networks.regions_to_network.html">
+     regions_to_network
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.networks.add_boundary_regions.html">
+     add_boundary_regions
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.networks.generate_voxel_image.html">
+     generate_voxel_image
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.networks.maximal_ball.html">
+     maximal_ball
+    </a>
+   </li>
+  </ul>
  </li>
  <li class="toctree-l2">
   <a class="reference internal" href="../dns.html">
@@ -341,44 +236,54 @@
               
               <div>
                 
-  <section id="trim-nearby-peaks">
-<h1>trim_nearby_peaks<a class="headerlink" href="#trim-nearby-peaks" title="Permalink to this headline">¶</a></h1>
+  <section id="snow">
+<h1>snow<a class="headerlink" href="#snow" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="porespy.filters.trim_nearby_peaks">
-<code class="sig-name descname"><span class="pre">trim_nearby_peaks</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">peaks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dist_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/filters/__funcs__.html#trim_nearby_peaks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.trim_nearby_peaks" title="Permalink to this definition">¶</a></dt>
-<dd><p>Finds pairs of peaks that are nearer to each other than to the solid
-phase, and removes the peak that is closer to the solid.</p>
+<dt id="porespy.networks.snow">
+<code class="sig-name descname"><span class="pre">snow</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voxel_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary_faces</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['top',</span> <span class="pre">'bottom',</span> <span class="pre">'left',</span> <span class="pre">'right',</span> <span class="pre">'front',</span> <span class="pre">'back']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marching_cubes_area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/networks/__snow__.html#snow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.networks.snow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Analyzes an image that has been partitioned into void and solid regions
+and extracts the void and solid phase geometry as well as network
+connectivity.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>peaks</strong> (<em>ndarray</em>) – A boolean image containing True values to mark peaks in the
-distance transform (<code class="docutils literal notranslate"><span class="pre">dt</span></code>)</p></li>
-<li><p><strong>dt</strong> (<em>ndarray</em>) – The distance transform of the pore space for which the true peaks
-are sought.</p></li>
-<li><p><strong>dist_threshold</strong> (<em>scalar</em>) – A threshold to apply on distance of each peak from the solid. Neighbouring
-peaks within this distance will be candidate peaks to be removed.
-The default is 1. A threshold&lt;1 trims peaks if they are too close to a nearby
-peak within some acceptable amount, whereas a threshold&gt;1 provide a wider
-range of distance for candidate peaks.A threshold of smaller or equal to
-1 is recommended.</p></li>
+<li><p><strong>im</strong> (<em>ND-array</em>) – Binary image in the Boolean form with True’s as void phase and False’s
+as solid phase.</p></li>
+<li><p><strong>voxel_size</strong> (<em>scalar</em>) – The resolution of the image, expressed as the length of one side of a
+voxel, so the volume of a voxel would be <strong>voxel_size</strong>-cubed.  The
+default is 1, which is useful when overlaying the PNM on the original
+image since the scale of the image is alway 1 unit lenth per voxel.</p></li>
+<li><p><strong>boundary_faces</strong> (<em>list of strings</em>) – Boundary faces labels are provided to assign hypothetical boundary
+nodes having zero resistance to transport process. For cubical
+geometry, the user can choose ‘left’, ‘right’, ‘top’, ‘bottom’,
+‘front’ and ‘back’ face labels to assign boundary nodes. If no label is
+assigned then all six faces will be selected as boundary nodes
+automatically which can be trimmed later on based on user requirements.</p></li>
+<li><p><strong>marching_cubes_area</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then the surface area and interfacial area between regions
+will be using the marching cube algorithm. This is a more accurate
+representation of area in extracted network, but is quite slow, so
+it is <code class="docutils literal notranslate"><span class="pre">False</span></code> by default.  The default method simply counts voxels
+so does not correctly account for the voxelated nature of the images.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>image</strong> – An array the same size as <code class="docutils literal notranslate"><span class="pre">peaks</span></code> containing a subset of the
-peaks in the original image.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ndarray</p>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>A dictionary containing the void phase size data, as well as the network</em></p></li>
+<li><p><em>topological information.  The dictionary names use the OpenPNM</em></p></li>
+<li><p><em>convention (i.e. ‘pore.coords’, ‘throat.conns’) so it may be converted</em></p></li>
+<li><p>directly to an OpenPNM network object using the <code class="docutils literal notranslate"><span class="pre">update</span></code> command.</p></li>
+<li><p><strong>* ``net``</strong> (<em>A dictionary containing all the void and solid phase size data,</em>) – as well as the network topological information.  The dictionary names
+use the OpenPNM convention (i.e. ‘pore.coords’, ‘throat.conns’) so it
+may be converted directly to an OpenPNM network object using the
+<code class="docutils literal notranslate"><span class="pre">update</span></code> command.</p></li>
+<li><p><strong>* ``im``</strong> (<em>The binary image of the void space</em>)</p></li>
+<li><p><strong>* ``dt``</strong> (<em>The combined distance transform of the image</em>)</p></li>
+<li><p><strong>* ``regions``</strong> (<em>The void and solid space partitioned into pores and solids</em>) – phases using a marker based watershed with the peaks found by the
+SNOW Algorithm.</p></li>
+</ul>
+</p>
 </dd>
 </dl>
-<p class="rubric">Notes</p>
-<p>Each pair of peaks is considered simultaneously, so for a triplet of
-peaks each pair is considered.  This ensures that only the single peak
-that is furthest from the solid is kept.  No iteration is required.</p>
-<p class="rubric">References</p>
-<p>[1] Gostick, J. “A versatile and efficient network extraction
-algorithm using marker-based watershed segmenation”.  Physical Review
-E. (2017)</p>
 </dd></dl>
 
 </section>

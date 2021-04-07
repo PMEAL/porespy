@@ -451,11 +451,6 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">mask_solid</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">regions</span> <span class="o">=</span> <span class="n">watershed</span><span class="p">(</span><span class="n">image</span><span class="o">=-</span><span class="n">dt</span><span class="p">,</span> <span class="n">markers</span><span class="o">=</span><span class="n">peaks</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">mask_solid</span><span class="p">)</span>
-    <span class="c1"># Catch any isolated regions that were missed</span>
-    <span class="c1"># TODO: I&#39;m not sure if this approach is universal so I&#39;m going to comment it</span>
-    <span class="c1"># out for now, and mark it as a todo</span>
-    <span class="c1"># labels = spim.label((regions == 0)*(im &gt; 0))[0]</span>
-    <span class="c1"># regions += (labels + regions.max())*(labels &gt; 0)</span>
     <span class="k">if</span> <span class="n">randomize</span><span class="p">:</span>
         <span class="n">regions</span> <span class="o">=</span> <span class="n">randomize_colors</span><span class="p">(</span><span class="n">regions</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">return_all</span><span class="p">:</span>
@@ -748,7 +743,7 @@
     <span class="k">return</span> <span class="n">peaks</span></div>
 
 
-<div class="viewcode-block" id="trim_nearby_peaks"><a class="viewcode-back" href="../../../modules/generated/porespy.filters.trim_nearby_peaks.html#porespy.filters.trim_nearby_peaks">[docs]</a><span class="k">def</span> <span class="nf">trim_nearby_peaks</span><span class="p">(</span><span class="n">peaks</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
+<div class="viewcode-block" id="trim_nearby_peaks"><a class="viewcode-back" href="../../../modules/generated/porespy.filters.trim_nearby_peaks.html#porespy.filters.trim_nearby_peaks">[docs]</a><span class="k">def</span> <span class="nf">trim_nearby_peaks</span><span class="p">(</span><span class="n">peaks</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">dist_threshold</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Finds pairs of peaks that are nearer to each other than to the solid</span>
 <span class="sd">    phase, and removes the peak that is closer to the solid.</span>
@@ -762,6 +757,14 @@
 <span class="sd">    dt : ndarray</span>
 <span class="sd">        The distance transform of the pore space for which the true peaks</span>
 <span class="sd">        are sought.</span>
+
+<span class="sd">    dist_threshold : scalar</span>
+<span class="sd">        A threshold to apply on distance of each peak from the solid. Neighbouring</span>
+<span class="sd">        peaks within this distance will be candidate peaks to be removed.</span>
+<span class="sd">        The default is 1. A threshold&lt;1 trims peaks if they are too close to a nearby</span>
+<span class="sd">        peak within some acceptable amount, whereas a threshold&gt;1 provide a wider</span>
+<span class="sd">        range of distance for candidate peaks.A threshold of smaller or equal to</span>
+<span class="sd">        1 is recommended.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -798,7 +801,7 @@
     <span class="n">dist_to_neighbor</span> <span class="o">=</span> <span class="n">temp</span><span class="p">[</span><span class="mi">0</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">]</span>
     <span class="k">del</span> <span class="n">temp</span><span class="p">,</span> <span class="n">tree</span>  <span class="c1"># Free-up memory</span>
     <span class="n">dist_to_solid</span> <span class="o">=</span> <span class="n">dt</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">crds</span><span class="o">.</span><span class="n">T</span><span class="p">)]</span>  <span class="c1"># Get distance to solid for each peak</span>
-    <span class="n">hits</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">dist_to_neighbor</span> <span class="o">&lt;</span> <span class="n">dist_to_solid</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">hits</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">dist_to_neighbor</span> <span class="o">&lt;</span> <span class="n">dist_threshold</span> <span class="o">*</span> <span class="n">dist_to_solid</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
     <span class="c1"># Drop peak that is closer to the solid than it&#39;s neighbor</span>
     <span class="n">drop_peaks</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">peak</span> <span class="ow">in</span> <span class="n">hits</span><span class="p">:</span>
