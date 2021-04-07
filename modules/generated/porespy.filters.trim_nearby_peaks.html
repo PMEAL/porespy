@@ -345,7 +345,7 @@
 <h1>trim_nearby_peaks<a class="headerlink" href="#trim-nearby-peaks" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="porespy.filters.trim_nearby_peaks">
-<code class="sig-name descname"><span class="pre">trim_nearby_peaks</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">peaks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dist_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/filters/__funcs__.html#trim_nearby_peaks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.trim_nearby_peaks" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">trim_nearby_peaks</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">peaks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/filters/__funcs__.html#trim_nearby_peaks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.trim_nearby_peaks" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds pairs of peaks that are nearer to each other than to the solid
 phase, and removes the peak that is closer to the solid.</p>
 <dl class="field-list simple">
@@ -355,12 +355,6 @@ phase, and removes the peak that is closer to the solid.</p>
 distance transform (<code class="docutils literal notranslate"><span class="pre">dt</span></code>)</p></li>
 <li><p><strong>dt</strong> (<em>ndarray</em>) – The distance transform of the pore space for which the true peaks
 are sought.</p></li>
-<li><p><strong>dist_threshold</strong> (<em>scalar</em>) – A threshold to apply on distance of each peak from the solid. Neighbouring
-peaks within this distance will be candidate peaks to be removed.
-The default is 1. A threshold&lt;1 trims peaks if they are too close to a nearby
-peak within some acceptable amount, whereas a threshold&gt;1 provide a wider
-range of distance for candidate peaks.A threshold of smaller or equal to
-1 is recommended.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
