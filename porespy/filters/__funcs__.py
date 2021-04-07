@@ -585,7 +585,7 @@ def trim_saddle_points(peaks, dt, max_iters=10):
     return peaks
 
 
-def trim_nearby_peaks(peaks, dt):
+def trim_nearby_peaks(peaks, dt, dist_threshold = 1):
     r"""
     Finds pairs of peaks that are nearer to each other than to the solid
     phase, and removes the peak that is closer to the solid.
@@ -599,6 +599,14 @@ def trim_nearby_peaks(peaks, dt):
     dt : ndarray
         The distance transform of the pore space for which the true peaks
         are sought.
+
+    dist_threshold : scalar
+        A threshold to apply on distance of each peak from the solid. Neighbouring
+        peaks within this distance will be candidate peaks to be removed.
+        The default is 1. A threshold<1 trims peaks if they are too close to a nearby
+        peak within some acceptable amount, whereas a threshold>1 provide a wider
+        range of distance for candidate peaks.A threshold of smaller or equal to
+        1 is recommended.
 
     Returns
     -------
@@ -635,7 +643,7 @@ def trim_nearby_peaks(peaks, dt):
     dist_to_neighbor = temp[0][:, 1]
     del temp, tree  # Free-up memory
     dist_to_solid = dt[tuple(crds.T)]  # Get distance to solid for each peak
-    hits = np.where(dist_to_neighbor < dist_to_solid)[0]
+    hits = np.where(dist_to_neighbor < dist_threshold * dist_to_solid)[0]
     # Drop peak that is closer to the solid than it's neighbor
     drop_peaks = []
     for peak in hits:
