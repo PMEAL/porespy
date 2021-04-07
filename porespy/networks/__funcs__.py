@@ -39,7 +39,10 @@ def map_to_regions(regions, values):
     This function assumes that the array of pore values are indexed starting
     at location 0, while in the region image 0's indicate background phase and
     the region indexing starts at 1.  That is, region 1 corresponds to pore 0.
-
+        
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/networks/map_to_regions.html>_` to view online example.
     """
     values = np.array(values).flatten()
     if np.size(values) != regions.max() + 1:
@@ -82,7 +85,10 @@ def add_boundary_regions(regions=None, faces=['front', 'back', 'left',
     image : ND-array
         A copy of ``regions`` with the specified boundaries added, so will be
         slightly larger in each direction where boundaries were added.
-
+        
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/networks/add_boundary_regions.html>_` to view online example.
     """
     if faces is None:
         return regions

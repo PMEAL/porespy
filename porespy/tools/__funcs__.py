@@ -30,6 +30,10 @@ def align_image_with_openpnm(im):
     -------
     image : ND-array
         Returns a copy of ``im`` rotated accordingly.
+    
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/tools/align_image_with_openpnm.html>_` to view online example.
     """
     _check_for_singleton_axes(im)
     im = np.copy(im)
@@ -102,7 +106,10 @@ def fftmorphology(im, strel, mode='opening'):
     >>> temp = spim.binary_closing(im, structure=disk(5))
     >>> array_equal(result, temp)
     True
-
+                
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/tools/fftmorphology.html>_` to view online example.
     """
 
     def erode(im, strel):
@@ -195,7 +202,10 @@ def subdivide(im, divs=2, overlap=0, flatten=False):
     >>> s = ps.tools.subdivide(im, divs=[2, 2], flatten=True)
     >>> print(len(s))
     4
-
+                
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/tools/subdivide.html>_` to view online example.
     """
     divs = np.ones((im.ndim,), dtype=int) * np.array(divs)
     halo = overlap * (divs > 1)
@@ -227,7 +237,11 @@ def bbox_to_slices(bbox):
     -------
     slices : tuple
         A tuple of slice objects that can be used to directly index into a
-        larger image.
+        larger image. 
+        
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/tools/bbox_to_slices.html>_` to view online example.
     """
     if len(bbox) == 4:
         ret = (slice(bbox[0], bbox[2]),
@@ -309,6 +323,10 @@ def extract_cylinder(im, r=None, axis=0):
     image : ND-array
         A copy of ``im`` with values outside the cylindrical area set to 0 or
         ``False``.
+                
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/tools/extract_cylinder.html>_` to view online example.
 
     """
     # This needs to be imported here since the tools module is imported
@@ -358,7 +376,10 @@ def extract_subsection(im, shape):
     >>> print(im)
     [[2 2]
      [2 3]]
-
+     
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/tools/extract_subsection.html>_` to view online example.
     """
     # Check if shape was given as a fraction
     shape = np.array(shape)
@@ -393,6 +414,10 @@ def get_planes(im, squeeze=True):
     -------
     planes : list
         A list of 2D-images
+                                
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/tools/get_planes.html>_` to view online example.
     """
     x, y, z = (np.array(im.shape) / 2).astype(int)
     planes = [im[x, :, :], im[:, y, :], im[:, :, z]]
@@ -577,7 +602,10 @@ def make_contiguous(im, keep_zeros=True):
     >>> print(im)
     [[0 1 5]
      [3 4 2]]
-
+                
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/tools/make_contiguous.html>_` to view online example.
     """
     if keep_zeros:
         mask = im == 0
@@ -644,7 +672,10 @@ def get_border(shape, thickness=1, mode='edges', return_indices=False):
     [[ True  True  True]
      [ True False  True]
      [ True  True  True]]
-
+                
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/tools/get_border.html>_` to view online example.
     """
     ndims = len(shape)
     t = thickness
@@ -723,6 +754,10 @@ def norm_to_uniform(im, scale=None):
     image : ND-array
         A copy of ``im`` with uniformly distributed greyscale values spanning
         the specified range, if given.
+                        
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/tools/norm_to_uniform.html>_` to view online example.
     """
     if scale is None:
         scale = [im.min(), im.max()]
@@ -839,6 +874,10 @@ def ps_disk(r, smooth=True):
     -------
     disk : 2D-array
         A 2D numpy bool array of the structring element
+                        
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/tools/ps_disk.html>_` to view online example.
     """
     disk = ps_round(r=r, ndim=2, smooth=smooth)
     return disk
@@ -860,6 +899,10 @@ def ps_ball(r, smooth=True):
     -------
     ball : 3D-array
         A 3D numpy array of the structuring element
+                        
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/tools/ps_ball.html>_` to view online example.
     """
     ball = ps_round(r=r, ndim=3, smooth=smooth)
     return ball
@@ -883,6 +926,10 @@ def ps_round(r, ndim, smooth=True):
     -------
     strel : 3D-array
         A 3D numpy array of the structuring element
+                        
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/tools/ps_round.html>_` to view online example.
     """
     rad = int(np.ceil(r))
     other = np.ones([2*rad + 1 for i in range(ndim)], dtype=bool)
@@ -910,6 +957,10 @@ def ps_rect(w, ndim):
     -------
     strel : D-aNrray
         A numpy array of the structuring element
+                        
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/tools/ps_rect.html>_` to view online example.
     """
     if ndim == 2:
         from skimage.morphology import square
@@ -939,6 +990,10 @@ def overlay(im1, im2, c):
     image : ND-array
         A modified version of ``im1``, with ``im2`` overlaid at the specified
         location
+                        
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/tools/overlay.html>_` to view online example.
 
     """
     shape = im2.shape
@@ -979,7 +1034,11 @@ def insert_sphere(im, c, r, v=True, overwrite=True):
     Returns
     -------
     image : ND-array
-        The original image with a sphere inerted at the specified location
+        The original image with a sphere inerted at the specified location    
+        
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/tools/insert_sphere.html>_` to view online example.
     """
     # Convert image to same type os v for eventual insertion
     if im.dtype != type(v):
@@ -1033,6 +1092,9 @@ def insert_cylinder(im, xyz0, xyz1, r):
     -----
     This function is only implemented for 3D images
 
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/tools/insert_cylinder.html>_` to view online example.
     """
     if im.ndim != 3:
         raise Exception('This function is only implemented for 3D images')
@@ -1096,6 +1158,10 @@ def pad_faces(im, faces):
     See also
     --------
     add_boundary_regions
+                    
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/tools/pad_faces.html>_` to view online example.
     """
     _check_for_singleton_axes(im)
     f = faces
@@ -1194,6 +1260,9 @@ def extract_regions(regions, labels: list, trim=True):
         A boolean mask with ``True`` values indicating where the given labels
         exist
 
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/tools/extract_regions.html>_` to view online example.
     """
     if type(labels) is int:
         labels = [labels]
@@ -1240,7 +1309,10 @@ def size_to_seq(size, bins=None):
         replaced by the invasion sequence.  This assumes that the invasion
         process occurs via increasing pressure steps, such as produced by
         the ``porosimetry`` function.
-
+                
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/tools/size_to_seq.html>_` to view online example.
     """
     solid = size == 0
     if bins is None:
@@ -1276,7 +1348,10 @@ def seq_to_satn(seq):
         replaced by the fraction of pores invaded at or below the sequence
         number. Solid voxels and uninvaded voxels are represented by 0 and
         -1, respectively.
-
+                
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/tools/seq_to_satn.html>_` to view online example.
     """
     seq = np.copy(seq).astype(int)
     solid = seq == 0
@@ -1331,7 +1406,10 @@ def zero_corners(im, pad_width):
     Notes
     -----
     This modifies the given image in-place.
-
+                
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/tools/zero_corners.html>_` to view online example.
     """
     pad_width = _parse_pad_width(pad_width, im.ndim)
     idx_corners = []
@@ -1395,7 +1473,10 @@ def sanitize_filename(filename, ext, exclude_ext=False):
     -------
     sanitized : str
         Sanitized filename in form of name.extension
-
+                
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/tools/sanitize_filename.html>_` to view online example.
     """
     ext.strip(".")
     if filename.endswith(f".{ext}"):
