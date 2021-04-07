@@ -49,12 +49,14 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies (conda)
+        # TODO: once https://github.com/jerry-git/pytest-split/pull/10
+        #   is merged, fix the custom pip install for pytest-split.
         run: |
           cat requirements/conda_requirements.txt >> requirements.txt
           cat requirements/test_requirements.txt >> requirements.txt
           cat requirements/optional_requirements.txt >> requirements.txt
           mamba install --file requirements.txt
-          pip install pytest-split
+          pip install git+https://github.com/ma-sadeghi/pytest-split.git@fix_ipynb_bug
           pip install -r requirements/pip_requirements.txt
           # Install porespy from the checked-out branch
           pip install -e . --no-deps
