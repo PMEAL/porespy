@@ -4,7 +4,6 @@ import subprocess
 import numpy as np
 from stl import mesh
 import scipy.ndimage as nd
-from scipy import ndimage as spim
 import skimage.measure as ms
 from porespy.tools import sanitize_filename
 from porespy.networks import generate_voxel_image
@@ -101,7 +100,7 @@ def to_vtk(im, filename, divide=False, downsample=False, voxel_size=1, vox=False
                    cellData={"im": np.ascontiguousarray(im2)},
                    spacing=(vs, vs, vs),)
     elif downsample:
-        im = spim.interpolation.zoom(im, zoom=0.5, order=0, mode="reflect")
+        im = nd.interpolation.zoom(im, zoom=0.5, order=0, mode="reflect")
         imageToVTK(filename,
                    cellData={"im": np.ascontiguousarray(im)},
                    spacing=(2 * vs, 2 * vs, 2 * vs),)
@@ -254,7 +253,7 @@ def to_stl(im, filename, divide=False, downsample=False, voxel_size=1, vox=False
         _save_stl(im1, vs, f"{filename}_1")
         _save_stl(im2, vs, f"{filename}_2")
     elif downsample:
-        im = spim.interpolation.zoom(im, zoom=0.5, order=0, mode="reflect")
+        im = nd.interpolation.zoom(im, zoom=0.5, order=0, mode="reflect")
         _save_stl(im, vs * 2, filename)
     else:
         _save_stl(im, vs, filename)
