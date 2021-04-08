@@ -74,7 +74,8 @@ def tortuosity(im, axis, return_im=False, **kwargs):
         try:
             fd.settings['solver_family'] = 'pypardiso'
             fd.run()
-        except ModuleNotFoundError:  # pragma: no cover
+        # TODO: change Exception to ModuleNotFoundError (fix OpenPNM first)
+        except Exception:  # pragma: no cover
             fd.settings['solver_family'] = 'scipy'
             fd.settings['solver_type'] = 'cg'
             fd.run()
