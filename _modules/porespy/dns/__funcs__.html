@@ -232,7 +232,8 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">fd</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;solver_family&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;pypardiso&#39;</span>
             <span class="n">fd</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
-        <span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+        <span class="c1"># TODO: change Exception to ModuleNotFoundError (fix OpenPNM first)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
             <span class="n">fd</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;solver_family&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;scipy&#39;</span>
             <span class="n">fd</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;solver_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;cg&#39;</span>
             <span class="n">fd</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
