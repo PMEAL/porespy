@@ -468,13 +468,11 @@
     <span class="k">try</span><span class="p">:</span>
         <span class="kn">import</span> <span class="nn">paraview.simple</span>
     <span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="s2">&quot;The paraview python bindings must be installed using conda&quot;</span>
-            <span class="s2">&quot; install -c conda-forge paraview, however this may require&quot;</span>
-            <span class="s2">&quot; using a virtualenv since conflicts with other packages are&quot;</span>
-            <span class="s2">&quot; common. This is why it is not explicitly included as a&quot;</span>
-            <span class="s2">&quot; dependency in porespy.&quot;</span>
-        <span class="p">)</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;The paraview python bindings must be installed using conda&quot;</span>
+               <span class="s2">&quot; install -c conda-forge paraview, however this may require&quot;</span>
+               <span class="s2">&quot; using a virtualenv since conflicts with other packages are&quot;</span>
+               <span class="s2">&quot; common. This is why it is not explicitly included as a&quot;</span>
+               <span class="s2">&quot; dependency in porespy.&quot;</span><span class="p">)</span>
         <span class="k">raise</span> <span class="ne">ModuleNotFoundError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;uint8&quot;</span><span class="p">)</span>
     <span class="n">file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">filename</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
