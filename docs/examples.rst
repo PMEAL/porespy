@@ -13,97 +13,94 @@ repo, which can be browsed
 Generators
 ----------
 
-Tutorials
-.........
+.. tabbed:: Tutorials
 
-.. toctree::
-   :maxdepth: 1
-   :glob:
+   .. toctree::
+      :maxdepth: 1
+      :glob:
 
-   examples/generators/tutorials/*
+      examples/generators/tutorials/*
 
-How-Tos
-.......
+.. tabbed:: How-to guides
 
-.. toctree::
-   :maxdepth: 1
-   :glob:
+   .. toctree::
+      :maxdepth: 1
+      :glob:
 
-   examples/generators/howtos/*
-
-----
+      examples/generators/howtos/*
 
 Filters
 -------
 
-Tutorials
-.........
+.. tabbed:: Tutorials
 
-.. toctree::
-   :maxdepth: 1
-   :glob:
+   .. toctree::
+      :maxdepth: 1
+      :glob:
 
-   examples/filters/tutorials/*
+      examples/filters/tutorials/*
 
-How-Tos
-.......
+.. tabbed:: How-to guides
 
-.. toctree::
-   :maxdepth: 1
-   :glob:
+   .. toctree::
+      :maxdepth: 1
+      :glob:
 
-   examples/filters/howtos/*
-
-----
+      examples/filters/howtos/*
 
 Metrics
 -------
 
-Tutorials
-.........
+.. tabbed:: Tutorials
 
-.. toctree::
-   :maxdepth: 1
-   :glob:
+   .. toctree::
+      :maxdepth: 1
+      :glob:
 
-   examples/metrics/tutorials/*
+      examples/metrics/tutorials/*
 
-How-Tos
-.......
+.. tabbed:: How-to guides
 
-.. toctree::
-   :maxdepth: 1
-   :glob:
+   .. toctree::
+      :maxdepth: 1
+      :glob:
 
-   examples/metrics/howtos/*
-
-----
+      examples/metrics/howtos/*
 
 Networks
 --------
 
-Tutorials
-.........
+.. tabbed:: Tutorials
 
-.. toctree::
-   :maxdepth: 1
-   :glob:
+   .. toctree::
+      :maxdepth: 1
+      :glob:
 
-   examples/networks/tutorials/*
+      examples/networks/tutorials/*
 
+.. tabbed:: How-to guides
 
-----
+   .. toctree::
+      :maxdepth: 1
+      :glob:
+
+      examples/networks/howtos/*
 
 Tools
 -----
 
-How-Tos
-.......
+.. tabbed:: Tutorials
 
-.. toctree::
-   :maxdepth: 1
-   :glob:
+   .. toctree::
+      :maxdepth: 1
+      :glob:
 
-   examples/tools/howtos/*
+      examples/tools/tutorials/*
 
-----
+.. tabbed:: How-to guides
+
+   .. toctree::
+      :maxdepth: 1
+      :glob:
+
+      examples/tools/howtos/*
