@@ -1,6 +1,15 @@
-import imagej
 import numpy as np
-from scyjava import jimport
+from loguru import logger
+try:
+    import imagej
+    from scyjava import jimport
+except ModuleNotFoundError:
+    msg = ("The pyimagej python bindings must be installed using conda"
+           " install -c conda-forge paraview, however this may require"
+           " using a virtualenv since conflicts with other packages are"
+           " common. This is why it is not explicitly included as a"
+           " dependency in porespy.")
+    logger.critical(msg)
 
 
 def imagej_wrapper(im, plugin_name, path):

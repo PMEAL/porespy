@@ -1,10 +1,11 @@
 import os
 import sys
 import pytest
+import importlib
 import numpy as np
+from numpy.testing import assert_allclose
 import porespy as ps
 import openpnm as op
-from numpy.testing import assert_allclose
 import psutil
 
 
@@ -74,14 +75,14 @@ class ExportTest():
         ps.io.to_stl(im, filename="im2stl")
         os.remove("im2stl.stl")
 
-    def test_to_paraview(self):
-        im = ps.generators.blobs(shape=[50, 50, 50], spacing=0.1)
-        ps.io.to_paraview(im=im, filename='test_to_paraview.pvsm')
-        os.remove('test_to_paraview.pvsm')
+    # def test_to_paraview(self):
+    #     im = ps.generators.blobs(shape=[50, 50, 50], spacing=0.1)
+    #     ps.io.to_paraview(im=im, filename='test_to_paraview.pvsm')
+    #     os.remove('test_to_paraview.pvsm')
 
-    def test_open_paraview(self):
-        ps.io.open_paraview(filename='../fixtures/image.pvsm')
-        assert "paraview" in (p.name().split('.')[0] for p in psutil.process_iter())
+    # def test_open_paraview(self):
+    #     ps.io.open_paraview(filename='../fixtures/image.pvsm')
+    #     assert "paraview" in (p.name().split('.')[0] for p in psutil.process_iter())
 
     def test_spheres_to_comsol_radii_centers(self):
         radii = np.array([10, 20, 25, 5])
