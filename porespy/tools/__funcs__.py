@@ -6,7 +6,6 @@ from loguru import logger
 from collections import namedtuple
 from skimage.morphology import ball, disk
 from skimage.segmentation import relabel_sequential
-from array_split import shape_split, ARRAY_BOUNDS
 from scipy.signal import fftconvolve
 try:
     from skimage.measure import marching_cubes
@@ -199,10 +198,34 @@ def subdivide(im, divs=2, overlap=0, flatten=False):
     """
     divs = np.ones((im.ndim,), dtype=int) * np.array(divs)
     halo = overlap * (divs > 1)
-    slices = shape_split(im.shape, axis=divs, halo=halo.tolist(),
-                         tile_bounds_policy=ARRAY_BOUNDS).astype(object)
+    lims = []
+    for ax in range(im.ndim):
+        lims.append([])
+        strt = np.linspace(0, im.shape[ax], divs[ax] + 1)[:-1]
+        lims[ax].append(np.array([strt[i] - halo[ax]*i
+                                 for i in range(len(strt))], dtype=int))
+        end = np.linspace(0, im.shape[ax], divs[ax] + 1)[1:]
+        lims[ax].append(np.array([min(end[i] + halo[ax]*(i+1), im.shape[ax])
+                                  for i in range(len(end))], dtype=int))
+
+    s = []
+    for i in range(len(lims[0][0])):
+        s.append([])
+        for j in range(len(lims[1][0])):
+            if im.ndim == 2:
+                s[i].append(tuple([slice(lims[0][0][i], lims[0][1][i]),
+                                   slice(lims[1][0][j], lims[1][1][j])]))
+            else:
+                s[i].append([])
+                for k in range(len(lims[2][0])):
+                    s[i][j].append(tuple([slice(lims[0][0][i], lims[0][1][i]),
+                                          slice(lims[1][0][j], lims[1][1][j]),
+                                          slice(lims[2][0][k], lims[2][1][k])]))
+    slices = s
     if flatten is True:
-        slices = np.ravel(slices)
+        slices = [item for sublist in slices for item in sublist]
+        if im.ndim == 3:
+            slices = [item for sublist in slices for item in sublist]
     return slices
 
 
