@@ -8,10 +8,10 @@ class DNSTest():
     def setup_class(self):
         np.random.seed(10)
 
-    def test_tortuosity_2D_lattice_spheres_axis_1(self):
+    def test_tortuosity_2D_lattice_spheres(self):
         im = ps.generators.lattice_spheres(shape=[200, 200],
                                            radius=8, spacing=26)
-        t = ps.dns.tortuosity(im=im, axis=1, solver_family='pypardiso')
+        t = ps.dns.tortuosity(im=im, axis=1, solver_family='scipy')
         assert np.around(t.tortuosity, decimals=6) == 1.353148
 
     def test_tortuosity_different_solvers(self):
