@@ -35,10 +35,23 @@ jobs:
           path: ~/conda_pkgs_dir
           key: ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{ hashFiles('**/conda_requirements.txt') }}
 
-      - name: Set up conda/mamba
+      # - name: Set up conda/mamba
+      #   uses: conda-incubator/setup-miniconda@v2
+      #   with:
+      #     mamba-version: "*"
+      #     allow-softlinks: true
+      #     use-only-tar-bz2: true
+      #     show-channel-urls: false
+      #     auto-activate-base: true
+      #     channel-priority: flexible
+      #     channels: conda-forge,defaults
+      #     condarc-file: requirements/.condarc
+      #     python-version: ${{ matrix.python-version }}
+
+      - name: Set up Mambaforge
         uses: conda-incubator/setup-miniconda@v2
         with:
-          mamba-version: "*"
+          # mamba-version: "*"
           allow-softlinks: true
           use-only-tar-bz2: true
           show-channel-urls: false
@@ -47,6 +60,10 @@ jobs:
           channels: conda-forge,defaults
           condarc-file: requirements/.condarc
           python-version: ${{ matrix.python-version }}
+          miniforge-variant: Mambaforge
+          miniforge-version: 4.9.2-4
+          # environment-file: ${{ matrix.environment-file }}
+          use-mamba: true
 
       - name: Install dependencies (conda)
         # TODO: once https://github.com/jerry-git/pytest-split/pull/10
