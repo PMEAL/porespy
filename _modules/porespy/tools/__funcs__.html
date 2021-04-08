@@ -427,11 +427,11 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">r</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">im</span><span class="p">)</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
         <span class="n">r</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">dt</span><span class="p">))</span> <span class="o">*</span> <span class="mi">2</span>
     <span class="n">im_padded</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">array</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">pad_width</span><span class="o">=</span><span class="n">r</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;constant&#39;</span><span class="p">,</span>
                        <span class="n">constant_values</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">im_padded</span><span class="p">)</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="n">im_padded</span><span class="p">)</span>
     <span class="n">seeds</span> <span class="o">=</span> <span class="p">(</span><span class="n">dt</span> <span class="o">&gt;=</span> <span class="n">r</span><span class="p">)</span> <span class="o">+</span> <span class="n">get_border</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">im_padded</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
     <span class="c1"># Remove seeds not connected to edges</span>
     <span class="n">labels</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">seeds</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
