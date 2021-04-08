@@ -13,7 +13,7 @@ jobs:
         shell: bash -l {0}
 
     strategy:
-      max-parallel: 4
+      max-parallel: 5
       matrix:
         python-version: [3.8]
         operating-system: [ubuntu-latest]
@@ -26,11 +26,6 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-
-      - name: Test env var
-        run: |
-          echo ${{ strategy.max-parallel}}
-          echo max-parallel: ${{ strategy.max-parallel}}
 
       - name: Cache pip
         uses: actions/cache@v2
@@ -96,7 +91,8 @@ jobs:
       - name: Running tests
         # Make sure to pass max-parallel to --splits
         run: |
-          pytest \
-            --nbval-lax examples/ \
-            --splits 4 --group ${{ matrix.test_group }} \
+          pytest examples/ \
+            --nbval-lax \
+            --splits ${{ strategy.max-parallel}} \
+            --group ${{ matrix.test_group }} \
             --durations-path test/fixtures/.test_durations_examples
