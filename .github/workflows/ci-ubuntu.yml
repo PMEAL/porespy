@@ -67,7 +67,7 @@ jobs:
       - name: Running tests
         run: |
           # Install pycodestyle
-          # pip install pytest-pycodestyle
+          pip install pytest-pycodestyle
           pytest --cov=./ --cov-report=xml --pycodestyle
 
       - name: Upload coverage to Codecov
