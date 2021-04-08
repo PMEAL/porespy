@@ -65,7 +65,7 @@ jobs:
         # TODO: once https://github.com/jerry-git/pytest-split/pull/10
         #   is merged, fix the custom pip install for pytest-split.
         run: |
-          pip install --r requirements/min_requirements_pip.txt
+          pip install -r requirements/min_requirements_pip.txt
           pip install git+https://github.com/ma-sadeghi/pytest-split.git@fix_ipynb_bug
           # Install porespy from the checked-out branch
           pip install -e . --no-deps
