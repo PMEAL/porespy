@@ -37,7 +37,8 @@ jobs:
       - name: Set up conda/mamba
         uses: conda-incubator/setup-miniconda@v2
         with:
-          mamba-version: "*"
+          use-mamba: true
+          miniforge-variable: Mambaforge
           allow-softlinks: true
           use-only-tar-bz2: true
           show-channel-urls: false
