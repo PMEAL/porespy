@@ -55,8 +55,9 @@ jobs:
             --durations-path test/fixtures/.test_durations_unittests
 
       - name: Committing test duration files
-      - uses: EndBug/add-and-commit@v7
+        uses: EndBug/add-and-commit@v7
         with:
+          add: 'test/fixtures'
           author_name: github-actions
           author_email: 41898282+github-actions[bot]@users.noreply.github.com
           message: 'Updated test duration files'
