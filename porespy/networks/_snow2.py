@@ -12,8 +12,8 @@ def snow2(phases,
           boundary_labels=None,
           accuracy='standard',
           voxel_size=1,
-          parallelization={},
-          return_all=False):
+          return_all=False,
+          parallelization={},):
     r"""
     Applies the SNOW algorithm to each phase indicated in ``phases``.
 
@@ -36,12 +36,12 @@ def snow2(phases,
         ``'throat.void_void'``. If not provided, alias is assumed as
         ``{1: 'phase1', 2: 'phase2, ...}``.  Phase labels can also be applied
            afterward using ``label_phases``.
-    boundary_width : int, list of ints, or list of lists
+    boundary_width : depends
         Number of voxels to add to the beginning and end of each axis. This
         argument is handled the same as ``pad_width`` in the ``np.pad``
         function. A scalar adds the same amount to the beginning and end of
-        each axis. [A, B] adds A to the beginning of each axis and B to the
-        ends.  [[A, B], ..., [C, D]] adds A to the beginning and B to the
+        each axis. ``[A, B]`` adds A to the beginning of each axis and B to the
+        ends.  ``[[A, B], ..., [C, D]]`` adds A to the beginning and B to the
         end of the first axis, and so on. The default is to add 3 voxels on
         both ends of all axes.
     boundary_labels : list of lists
