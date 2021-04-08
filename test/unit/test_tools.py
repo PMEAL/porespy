@@ -199,12 +199,14 @@ class ToolsTest():
     def test_subdivided_shape_flattened(self):
         im = np.ones([150, 150, 150])
         s = ps.tools.subdivide(im, divs=3, overlap=[10, 20, 30], flatten=True)
-        assert np.all(s.shape == (27, ))
+        assert np.all(len(s) == 27)
 
     def test_subdivided_shape_not_flattened(self):
-        im = np.ones([150, 150, 150])
-        s = ps.tools.subdivide(im, divs=3, overlap=[10, 20, 30], flatten=False)
-        assert np.all(s.shape == (3, 3, 3))
+        im = np.ones([160, 160, 160])
+        s = ps.tools.subdivide(im, divs=4, overlap=[10, 20, 30], flatten=False)
+        assert len(s[0]) == 4
+        assert len(s[0][0]) == 4
+        assert len(s[0][0][0]) == 3
 
     def test_size_to_seq(self):
         im = self.im2D
