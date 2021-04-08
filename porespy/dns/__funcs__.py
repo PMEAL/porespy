@@ -69,16 +69,13 @@ def tortuosity(im, axis, return_im=False, **kwargs):
     # Use specified solver if given
     if 'solver_family' in kwargs.keys():
         fd.settings.update(kwargs)
+    try:
         fd.run()
-    else:
-        try:
-            fd.settings['solver_family'] = 'pypardiso'
-            fd.run()
-        # TODO: change Exception to ModuleNotFoundError (fix OpenPNM first)
-        except Exception:  # pragma: no cover
-            fd.settings['solver_family'] = 'scipy'
-            fd.settings['solver_type'] = 'cg'
-            fd.run()
+    # TODO: change Exception to ModuleNotFoundError (fix OpenPNM first)
+    except Exception:  # pragma: no cover
+        fd.settings['solver_family'] = 'scipy'
+        fd.settings['solver_type'] = 'cg'
+        fd.run()
     # Calculating molar flow rate, effective diffusivity and tortuosity
     rate_out = fd.rate(pores=outlets)[0]
     rate_in = fd.rate(pores=inlets)[0]
