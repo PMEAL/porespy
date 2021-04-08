@@ -562,7 +562,7 @@ def trim_saddle_points(peaks, dt, max_iters=10):
     labels, N = spim.label(peaks)
     slices = spim.find_objects(labels)
     for i in range(N):
-        s = extend_slice(s=slices[i], shape=peaks.shape, pad=10)
+        s = extend_slice(slices[i], shape=peaks.shape, pad=10)
         peaks_i = labels[s] == i + 1
         dt_i = dt[s]
         im_i = dt_i > 0
