@@ -46,6 +46,10 @@ def apply_padded(im, pad_width, func, pad_val=1, **kwargs):
     -----
     A use case for this is when using ``skimage.morphology.skeletonize_3d``
     to ensure that the skeleton extends beyond the edges of the image.
+    
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/filters/apply_padded.html>_` to view online example.
 
     """
     padded = np.pad(im, pad_width=pad_width,
@@ -73,6 +77,10 @@ def trim_small_clusters(im, size=1):
     im : ndarray
         A copy of ``im`` with clusters of voxels smaller than the given
         ``size`` removed.
+    
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/filters/trim_small_clusters.html>_` to view online example.
 
     """
     if im.ndim == 2:
@@ -111,7 +119,10 @@ def hold_peaks(im, axis=-1):
 
     "im" must be a greyscale image. In case a Boolean image is fed into this
     method, it will be first converted to float values [0.0,1.0] before proceeding.
-
+    
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/filters/hold_peaks.html>_` to view online example.
     """
 
     A = im.astype(float)
@@ -158,8 +169,11 @@ def distance_transform_lin(im, axis=0, mode="both"):
     -------
     image : ndarray
         A copy of ``im`` with each foreground voxel containing the
-        distance to the nearest background along the specified axis.
-
+        distance to the nearest background along the specified axis.        
+        
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/filters/distance_transform_lin.html>_` to view online example.
     """
     _check_for_singleton_axes(im)
 
@@ -256,7 +270,10 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, return_all=False,
     ----------
     [1] Gostick, J. "A versatile and efficient network extraction algorithm
     using marker-based watershed segmenation".  Physical Review E. (2017)
-
+            
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/filters/snow_partitioning.html>_` to view online example.
     """
     tup = namedtuple("results", field_names=["im", "dt", "peaks", "regions"])
     logger.trace("Beginning SNOW algorithm")
@@ -378,7 +395,10 @@ def snow_partitioning_n(im, r_max=4, sigma=0.4, return_all=True,
     plateaus in the distance transform. To overcome this, this function
     applies the watershed to each of the distance transforms separately,
     then merges the segmented regions back into a single image.
-
+            
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/filters/snow_partitioning_n.html>_` to view online example.
     """
     # Get alias if provided by user
     al = _create_alias_map(im=im, alias=alias)
@@ -456,7 +476,10 @@ def find_peaks(dt, r_max=4, footprint=None, **kwargs):
     The *skimage* function automatically uses a square structuring element
     which is significantly faster than using a circular or spherical
     element.
-
+            
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/filters/find_peaks.html>_` to view online example.
     """
     im = dt > 0
     _check_for_singleton_axes(im)
@@ -504,7 +527,10 @@ def reduce_peaks(peaks):
     The center of mass of a group of voxels is used as the new single
     voxel, so if the group has an odd shape (like a horse shoe), the new
     voxel may *not* lie on top of the original set.
-
+            
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/filters/reduce_peaks.html>_` to view online example.
     """
     if peaks.ndim == 2:
         strel = square
@@ -552,7 +578,10 @@ def trim_saddle_points(peaks, dt, max_iters=10):
     ----------
     [1] Gostick, J. "A versatile and efficient network extraction algorithm
     using marker-based watershed segmenation".  Physical Review E. (2017)
-
+            
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/filters/trim_saddle_points.html>_` to view online example.
     """
     peaks = np.copy(peaks)
     if dt.ndim == 2:
@@ -617,7 +646,10 @@ def trim_nearby_peaks(peaks, dt):
     [1] Gostick, J. "A versatile and efficient network extraction
     algorithm using marker-based watershed segmenation".  Physical Review
     E. (2017)
-
+            
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/filters/trim_nearby_peaks.html>_` to view online example.
     """
     peaks = np.copy(peaks)
     if dt.ndim == 2:
@@ -679,6 +711,10 @@ def find_disconnected_voxels(im, conn=None):
     image : ndarray
         The returned array (e.g. ``holes``) be used to trim blind pores
         from ``im`` using: ``im[holes] = False``
+                
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/filters/find_disconnected_voxels.html>_` to view online example.
 
     """
     _check_for_singleton_axes(im)
@@ -723,6 +759,10 @@ def fill_blind_pores(im, conn=None):
     See Also
     --------
     find_disconnected_voxels
+            
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/filters/fill_blind_pores.html>_` to view online example.
 
     """
     im = np.copy(im)
@@ -752,6 +792,10 @@ def trim_floating_solid(im, conn=None):
     See Also
     --------
     find_disconnected_voxels
+            
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/filters/trim_floating_solid.html>_` to view online example.
 
     """
     im = np.copy(im)
@@ -792,6 +836,11 @@ def trim_nonpercolating_paths(im, inlets, outlets):
     find_disconnected_voxels
     trim_floating_solid
     trim_blind_pores
+            
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/filters/trim_nonpercolating_paths.html>_` to view online example.
+
 
     """
     labels = spim.label(im)[0]
@@ -828,6 +877,11 @@ def trim_extrema(im, h, mode="maxima"):
     Notes
     -----
     This function is referred to as **imhmax** or **imhmin** in Matlab.
+            
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/filters/trim_extrema.html>_` to view online example.
+
 
     """
     result = im
@@ -873,6 +927,10 @@ def flood(im, regions=None, mode="max"):
     See Also
     --------
     prop_to_image
+            
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/filters/flood.html>_` to view online example.
 
     """
     mask = im > 0
@@ -918,6 +976,10 @@ def find_dt_artifacts(dt):
         that would be found if there were a solid voxel lurking just
         beyond the nearest edge of the image.  Obviously, voxels with a
         value of zero have no error.
+                
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/filters/find_dt_artifacts.html>_` to view online example.
 
     """
     temp = np.ones(shape=dt.shape) * np.inf
@@ -951,7 +1013,10 @@ def region_size(im):
     See Also
     --------
     flood
-
+            
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/filters/region_size.html>_` to view online example.
     """
     if im.dtype == bool:
         im = spim.label(im)[0]
@@ -994,6 +1059,10 @@ def apply_chords(im, spacing=1, axis=0, trim_edges=True, label=False):
     See Also
     --------
     apply_chords_3D
+            
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/filters/apply_chords.html>_` to view online example.
 
     """
     _check_for_singleton_axes(im)
@@ -1053,6 +1122,11 @@ def apply_chords_3D(im, spacing=0, trim_edges=True):
     See Also
     --------
     apply_chords
+            
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/filters/apply_chords_3D.html>_` to view online example.
+
 
     """
     _check_for_singleton_axes(im)
@@ -1129,6 +1203,10 @@ def local_thickness(im, sizes=25, mode="hybrid", **kwargs):
     ``local_thickness`` and ``porosimetry``, since we can 'trim' invaded
     regions that are not connected to the inlets in the ``porosimetry``
     function. This is not needed in ``local_thickness`` however.
+            
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/filters/local_thickness.html>_` to view online example.
 
     """
     im_new = porosimetry(im=im, sizes=sizes, access_limited=False, mode=mode, **kwargs)
@@ -1208,6 +1286,10 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
     See Also
     --------
     local_thickness
+            
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/filters/porosimetry.html>_` to view online example.
 
     """
     _check_for_singleton_axes(im)
@@ -1321,7 +1403,10 @@ def trim_disconnected_blobs(im, inlets, strel=None):
     image : ndarray
         An array of the same shape as ``im``, but with all foreground
         voxels not connected to the ``inlets`` removed.
-
+                
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/filters/trim_disconnected_blobs.html>_` to view online example.
     """
     if type(inlets) == tuple:
         temp = np.copy(inlets)
@@ -1476,6 +1561,10 @@ def prune_branches(skel, branch_points=None, iterations=1, **kwargs):
     -------
     ndarray
         An ndarray containing the skeleton with tails removed.
+            
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/filters/prune_branches.html>_` to view online example.
 
     """
     skel = skel > 0
@@ -1618,6 +1707,11 @@ def chunked_func(func,
     >>> im3 = spim.binary_dilation(input=im, structure=ball(3))
     >>> np.all(im2 == im3)
     True
+            
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/filters/chunked_func.html>_` to view online example.
+
 
     """
 
@@ -1756,7 +1850,10 @@ def snow_partitioning_parallel(im,
         Partitioned image of segmentated regions with unique labels. Each
         region correspond to pore body while intersection with other
         region correspond throat area.
-
+                
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/filters/snow_partitioning_parallel.html>_` to view online example.
     """
     # Adjust image shape according to specified dimension
     tup = namedtuple("results", field_names=["im", "dt", "regions"])

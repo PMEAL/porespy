@@ -53,8 +53,11 @@ def representative_elementary_volume(im, npoints=1000):
     ----------
     [1] Bachmat and Bear. On the Concept and Size of a Representative
     Elementary Volume (Rev), Advances in Transport Phenomena in Porous Media
-    (1987)
-
+    (1987)       
+    
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/metrics/representative_elementary_volume.html>_` to view online example.
     """
     im_temp = np.zeros_like(im)
     crds = np.array(np.random.rand(npoints, im.ndim) * im.shape, dtype=int)
@@ -95,7 +98,11 @@ def porosity_profile(im, axis=0):
     Returns
     -------
     result : 1D-array
-        A 1D-array of porosity along the specified axis
+        A 1D-array of porosity along the specified axis  
+        
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/metrics/porosity_profile.html>_` to view online example.
     """
     if axis >= im.ndim:
         raise Exception('axis out of range')
@@ -186,6 +193,10 @@ def radial_density_distribution(im, bins=10, log=False, voxel_size=1):
     ----------
     [1] Torquato, S. Random Heterogeneous Materials: Mircostructure and
     Macroscopic Properties. Springer, New York (2002) - See page 48 & 292
+            
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/metrics/radial_density.html>_` to view online example.
     """
     if im.dtype == bool:
         im = edt(im)
@@ -241,6 +252,10 @@ def lineal_path_distribution(im, bins=25, voxel_size=1, log=False):
     ----------
     [1] Torquato, S. Random Heterogeneous Materials: Mircostructure and
     Macroscopic Properties. Springer, New York (2002)
+            
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/metrics/linear_density.html>_` to view online example.
 
     """
     x = im[im > 0]
@@ -323,6 +338,10 @@ def chord_length_distribution(im, bins=None, log=False, voxel_size=1,
     ----------
     [1] Torquato, S. Random Heterogeneous Materials: Mircostructure and
     Macroscopic Properties. Springer, New York (2002) - See page 45 & 292
+            
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/metrics/chord_length_distribution.html>_` to view online example.
     """
     x = chord_counts(im)
     if bins is None:
@@ -398,7 +417,10 @@ def pore_size_distribution(im, bins=10, log=True, voxel_size=1):
     scale the input image by the voxel size first (``im *= voxel_size``)
 
     plt.bar(psd.R, psd.satn, width=psd.bin_widths, edgecolor='k')
-
+        
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/metrics/pore_size_distribution.html>_` to view online example.
     """
     im = im.flatten()
     vals = im[im > 0] * voxel_size
@@ -444,6 +466,10 @@ def two_point_correlation_bf(im, spacing=10):
 
     This approach uses a distance matrix so can consume memory very quickly for
     large 3D images and/or close spacing.
+            
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/metrics/two_point_correlation_bf.html>_` to view online example.
 
     """
     _check_for_singleton_axes(im)
@@ -539,7 +565,10 @@ def two_point_correlation_fft(im):
     density. For background read the Scipy fftpack docs and for a good
     explanation see:
     http://www.ucl.ac.uk/~ucapikr/projects/KamilaSuankulova_BSc_Project.pdf
-
+            
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/metrics/two_point_correlation_fft.html>_` to view online example.
     """
     # Calculate half lengths of the image
     hls = (np.ceil(np.shape(im)) / 2).astype(int)
@@ -588,6 +617,10 @@ def chord_counts(im):
     or to ``np.histogram`` to get the histogram data directly. Another useful
     function is ``np.bincount`` which gives the number of chords of each
     length in a format suitable for ``plt.plot``.
+            
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/metrics/chord_counts.html>_` to view online example.
     """
     labels, N = spim.label(im > 0)
     props = regionprops(labels)
@@ -629,7 +662,10 @@ def region_interface_areas(regions, areas, voxel_size=1, strel=None):
         adjacent pair of regions.  For instance, if ``conns[0, 0]`` is 0 and
         ``conns[0, 1]`` is 5, then row 0 of ``area`` contains the interfacial
         area shared by regions 0 and 5.
-
+                
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/metrics/region_interface_areas.html>_` to view online example.
     """
     logger.trace('Finding interfacial areas between each region')
     from skimage.morphology import disk, ball
@@ -709,6 +745,10 @@ def region_surface_areas(regions, voxel_size=1, strel=None):
     result : list
         A list containing the surface area of each region, offset by 1, such
         that the surface area of region 1 is stored in element 0 of the list.
+                
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/metrics/region_surface_areas.html>_` to view online example.
 
     """
     logger.trace('Finding surface area of each region')
@@ -756,6 +796,10 @@ def mesh_surface_area(mesh=None, verts=None, faces=None):
     This function simply calls ``scikit-image.measure.mesh_surface_area``, but
     it allows for the passing of the ``mesh`` tuple returned by the
     ``mesh_region`` function, entirely for convenience.
+            
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/metrics/mesh_surface_area.html>_` to view online example.
     """
     if mesh:
         verts = mesh.verts
@@ -789,7 +833,10 @@ def phase_fraction(im, normed=True):
     See Also
     --------
     porosity
-
+        
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/metrics/phase_fraction.html>_` to view online example.
     """
     if im.dtype == bool:
         im = im.astype(int)
@@ -837,6 +884,10 @@ def porosity(im):
     to get an image of only blind pores.  This can then be added to the orignal
     image such that blind pores have a value of 2, thus allowing the
     calculation of accessible porosity, rather than overall porosity.
+            
+    Examples
+    --------
+    `Click here <https://porespy.org/examples/metrics/porosity.html>_` to view online example.
 
     """
     im = np.array(im, dtype=int)
