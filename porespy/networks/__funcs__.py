@@ -42,7 +42,7 @@ def map_to_regions(regions, values):
         
     Examples
     --------
-    `Click here <https://porespy.org/examples/networks/map_to_regions.html>_` to view online example.
+    `Click here <https://porespy.org/examples/networks/map_to_regions.html>`_ to view online example.
     """
     values = np.array(values).flatten()
     if np.size(values) != regions.max() + 1:
@@ -88,7 +88,7 @@ def add_boundary_regions(regions=None, faces=['front', 'back', 'left',
         
     Examples
     --------
-    `Click here <https://porespy.org/examples/networks/add_boundary_regions.html>_` to view online example.
+    `Click here <https://porespy.org/examples/networks/add_boundary_regions.html>`_ to view online example.
     """
     if faces is None:
         return regions

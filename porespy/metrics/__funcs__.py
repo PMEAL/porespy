@@ -57,7 +57,7 @@ def representative_elementary_volume(im, npoints=1000):
     
     Examples
     --------
-    `Click here <https://porespy.org/examples/metrics/representative_elementary_volume.html>_` to view online example.
+    `Click here <https://porespy.org/examples/metrics/representative_elementary_volume.html>`_ to view online example.
     """
     im_temp = np.zeros_like(im)
     crds = np.array(np.random.rand(npoints, im.ndim) * im.shape, dtype=int)
@@ -102,7 +102,7 @@ def porosity_profile(im, axis=0):
         
     Examples
     --------
-    `Click here <https://porespy.org/examples/metrics/porosity_profile.html>_` to view online example.
+    `Click here <https://porespy.org/examples/metrics/porosity_profile.html>`_ to view online example.
     """
     if axis >= im.ndim:
         raise Exception('axis out of range')
@@ -196,7 +196,7 @@ def radial_density_distribution(im, bins=10, log=False, voxel_size=1):
             
     Examples
     --------
-    `Click here <https://porespy.org/examples/metrics/radial_density.html>_` to view online example.
+    `Click here <https://porespy.org/examples/metrics/radial_density.html>`_ to view online example.
     """
     if im.dtype == bool:
         im = edt(im)
@@ -255,7 +255,7 @@ def lineal_path_distribution(im, bins=25, voxel_size=1, log=False):
             
     Examples
     --------
-    `Click here <https://porespy.org/examples/metrics/linear_density.html>_` to view online example.
+    `Click here <https://porespy.org/examples/metrics/linear_density.html>`_ to view online example.
 
     """
     x = im[im > 0]
@@ -341,7 +341,7 @@ def chord_length_distribution(im, bins=None, log=False, voxel_size=1,
             
     Examples
     --------
-    `Click here <https://porespy.org/examples/metrics/chord_length_distribution.html>_` to view online example.
+    `Click here <https://porespy.org/examples/metrics/chord_length_distribution.html>`_ to view online example.
     """
     x = chord_counts(im)
     if bins is None:
@@ -420,7 +420,7 @@ def pore_size_distribution(im, bins=10, log=True, voxel_size=1):
         
     Examples
     --------
-    `Click here <https://porespy.org/examples/metrics/pore_size_distribution.html>_` to view online example.
+    `Click here <https://porespy.org/examples/metrics/pore_size_distribution.html>`_ to view online example.
     """
     im = im.flatten()
     vals = im[im > 0] * voxel_size
@@ -469,7 +469,7 @@ def two_point_correlation_bf(im, spacing=10):
             
     Examples
     --------
-    `Click here <https://porespy.org/examples/metrics/two_point_correlation_bf.html>_` to view online example.
+    `Click here <https://porespy.org/examples/metrics/two_point_correlation_bf.html>`_ to view online example.
 
     """
     _check_for_singleton_axes(im)
@@ -568,7 +568,7 @@ def two_point_correlation_fft(im):
             
     Examples
     --------
-    `Click here <https://porespy.org/examples/metrics/two_point_correlation_fft.html>_` to view online example.
+    `Click here <https://porespy.org/examples/metrics/two_point_correlation_fft.html>`_ to view online example.
     """
     # Calculate half lengths of the image
     hls = (np.ceil(np.shape(im)) / 2).astype(int)
@@ -620,7 +620,7 @@ def chord_counts(im):
             
     Examples
     --------
-    `Click here <https://porespy.org/examples/metrics/chord_counts.html>_` to view online example.
+    `Click here <https://porespy.org/examples/metrics/chord_counts.html>`_ to view online example.
     """
     labels, N = spim.label(im > 0)
     props = regionprops(labels)
@@ -665,7 +665,7 @@ def region_interface_areas(regions, areas, voxel_size=1, strel=None):
                 
     Examples
     --------
-    `Click here <https://porespy.org/examples/metrics/region_interface_areas.html>_` to view online example.
+    `Click here <https://porespy.org/examples/metrics/region_interface_areas.html>`_ to view online example.
     """
     logger.trace('Finding interfacial areas between each region')
     from skimage.morphology import disk, ball
@@ -748,7 +748,7 @@ def region_surface_areas(regions, voxel_size=1, strel=None):
                 
     Examples
     --------
-    `Click here <https://porespy.org/examples/metrics/region_surface_areas.html>_` to view online example.
+    `Click here <https://porespy.org/examples/metrics/region_surface_areas.html>`_ to view online example.
 
     """
     logger.trace('Finding surface area of each region')
@@ -799,7 +799,7 @@ def mesh_surface_area(mesh=None, verts=None, faces=None):
             
     Examples
     --------
-    `Click here <https://porespy.org/examples/metrics/mesh_surface_area.html>_` to view online example.
+    `Click here <https://porespy.org/examples/metrics/mesh_surface_area.html>`_ to view online example.
     """
     if mesh:
         verts = mesh.verts
@@ -836,7 +836,7 @@ def phase_fraction(im, normed=True):
         
     Examples
     --------
-    `Click here <https://porespy.org/examples/metrics/phase_fraction.html>_` to view online example.
+    `Click here <https://porespy.org/examples/metrics/phase_fraction.html>`_ to view online example.
     """
     if im.dtype == bool:
         im = im.astype(int)
@@ -887,7 +887,7 @@ def porosity(im):
             
     Examples
     --------
-    `Click here <https://porespy.org/examples/metrics/porosity.html>_` to view online example.
+    `Click here <https://porespy.org/examples/metrics/porosity.html>`_ to view online example.
 
     """
     im = np.array(im, dtype=int)
