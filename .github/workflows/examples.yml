@@ -48,33 +48,25 @@ jobs:
       #     condarc-file: requirements/.condarc
       #     python-version: ${{ matrix.python-version }}
 
-      - name: Set up Mambaforge
-        uses: conda-incubator/setup-miniconda@v2
-        with:
-          # mamba-version: "*"
-          allow-softlinks: true
-          use-only-tar-bz2: true
-          show-channel-urls: false
-          auto-activate-base: true
-          channel-priority: flexible
-          channels: conda-forge,defaults
-          condarc-file: requirements/.condarc
-          python-version: ${{ matrix.python-version }}
-          miniforge-variant: Mambaforge
-          miniforge-version: 4.9.2-4
-          # environment-file: ${{ matrix.environment-file }}
-          use-mamba: true
+      # - name: Install dependencies (conda)
+      #   # TODO: once https://github.com/jerry-git/pytest-split/pull/10
+      #   #   is merged, fix the custom pip install for pytest-split.
+      #   run: |
+      #     cat requirements/conda_requirements.txt >> requirements.txt
+      #     cat requirements/test_requirements.txt >> requirements.txt
+      #     cat requirements/optional_requirements.txt >> requirements.txt
+      #     mamba install --file requirements.txt
+      #     pip install git+https://github.com/ma-sadeghi/pytest-split.git@fix_ipynb_bug
+      #     pip install -r requirements/pip_requirements.txt
+      #     # Install porespy from the checked-out branch
+      #     pip install -e . --no-deps
 
-      - name: Install dependencies (conda)
+      - name: Install dependencies (pip)
         # TODO: once https://github.com/jerry-git/pytest-split/pull/10
         #   is merged, fix the custom pip install for pytest-split.
         run: |
-          cat requirements/conda_requirements.txt >> requirements.txt
-          cat requirements/test_requirements.txt >> requirements.txt
-          cat requirements/optional_requirements.txt >> requirements.txt
-          mamba install --file requirements.txt
+          pip install --r requirements/min_requirements_pip.txt
           pip install git+https://github.com/ma-sadeghi/pytest-split.git@fix_ipynb_bug
-          pip install -r requirements/pip_requirements.txt
           # Install porespy from the checked-out branch
           pip install -e . --no-deps
 
