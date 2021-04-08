@@ -42,8 +42,8 @@ jobs:
           use-only-tar-bz2: true
           show-channel-urls: false
           auto-activate-base: true
-          channel-priority: flexible
-          channels: conda-forge,defaults
+          channel-priority: strict
+          channels: conda-forge
           condarc-file: requirements/.condarc
           python-version: ${{ matrix.python-version }}
 

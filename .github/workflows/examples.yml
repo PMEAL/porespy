@@ -38,6 +38,12 @@ jobs:
             ${{ runner.os }}-pip-
             ${{ runner.os }}-
 
+      # Currently, setting up Python and installing requirements using pip
+      #   takes ~ 1 min. On the other hand, doing the same using conda (mamba)
+      #   takes ~ 4.5 mins! When setup-miniconda/issues/89 is fixed, it might be
+      #   worth going back to conda. Anyway, in testing, we're not really using
+      #   any library that's only on conda. So, it's all good.
+
       # - name: Cache conda
       #   uses: actions/cache@v2
       #   env:
@@ -54,8 +60,8 @@ jobs:
       #     use-only-tar-bz2: true
       #     show-channel-urls: false
       #     auto-activate-base: true
-      #     channel-priority: flexible
-      #     channels: conda-forge,defaults
+      #     channel-priority: strict
+      #     channels: conda-forge
       #     condarc-file: requirements/.condarc
       #     python-version: ${{ matrix.python-version }}
 
