@@ -211,11 +211,8 @@
 <span class="sd">    ----------</span>
 <span class="sd">    [1] Bachmat and Bear. On the Concept and Size of a Representative</span>
 <span class="sd">    Elementary Volume (Rev), Advances in Transport Phenomena in Porous Media</span>
-<span class="sd">    (1987)       </span>
-<span class="sd">    </span>
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    `Click here &lt;https://porespy.org/examples/metrics/representative_elementary_volume.html&gt;_` to view online example.</span>
+<span class="sd">    (1987)</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">im_temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
     <span class="n">crds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">npoints</span><span class="p">,</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span> <span class="o">*</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
@@ -256,11 +253,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    result : 1D-array</span>
-<span class="sd">        A 1D-array of porosity along the specified axis  </span>
-<span class="sd">        </span>
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    `Click here &lt;https://porespy.org/examples/metrics/porosity_profile.html&gt;_` to view online example.</span>
+<span class="sd">        A 1D-array of porosity along the specified axis</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">axis</span> <span class="o">&gt;=</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;axis out of range&#39;</span><span class="p">)</span>
@@ -351,10 +344,6 @@
 <span class="sd">    ----------</span>
 <span class="sd">    [1] Torquato, S. Random Heterogeneous Materials: Mircostructure and</span>
 <span class="sd">    Macroscopic Properties. Springer, New York (2002) - See page 48 &amp; 292</span>
-<span class="sd">            </span>
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    `Click here &lt;https://porespy.org/examples/metrics/radial_density.html&gt;_` to view online example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="n">im</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
@@ -410,10 +399,6 @@
 <span class="sd">    ----------</span>
 <span class="sd">    [1] Torquato, S. Random Heterogeneous Materials: Mircostructure and</span>
 <span class="sd">    Macroscopic Properties. Springer, New York (2002)</span>
-<span class="sd">            </span>
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    `Click here &lt;https://porespy.org/examples/metrics/linear_density.html&gt;_` to view online example.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">im</span><span class="p">[</span><span class="n">im</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
@@ -496,10 +481,6 @@
 <span class="sd">    ----------</span>
 <span class="sd">    [1] Torquato, S. Random Heterogeneous Materials: Mircostructure and</span>
 <span class="sd">    Macroscopic Properties. Springer, New York (2002) - See page 45 &amp; 292</span>
-<span class="sd">            </span>
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    `Click here &lt;https://porespy.org/examples/metrics/chord_length_distribution.html&gt;_` to view online example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">chord_counts</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">bins</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -575,10 +556,7 @@
 <span class="sd">    scale the input image by the voxel size first (``im *= voxel_size``)</span>
 
 <span class="sd">    plt.bar(psd.R, psd.satn, width=psd.bin_widths, edgecolor=&#39;k&#39;)</span>
-<span class="sd">        </span>
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    `Click here &lt;https://porespy.org/examples/metrics/pore_size_distribution.html&gt;_` to view online example.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">im</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
     <span class="n">vals</span> <span class="o">=</span> <span class="n">im</span><span class="p">[</span><span class="n">im</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">voxel_size</span>
@@ -624,10 +602,6 @@
 
 <span class="sd">    This approach uses a distance matrix so can consume memory very quickly for</span>
 <span class="sd">    large 3D images and/or close spacing.</span>
-<span class="sd">            </span>
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    `Click here &lt;https://porespy.org/examples/metrics/two_point_correlation_bf.html&gt;_` to view online example.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_check_for_singleton_axes</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
@@ -723,10 +697,7 @@
 <span class="sd">    density. For background read the Scipy fftpack docs and for a good</span>
 <span class="sd">    explanation see:</span>
 <span class="sd">    http://www.ucl.ac.uk/~ucapikr/projects/KamilaSuankulova_BSc_Project.pdf</span>
-<span class="sd">            </span>
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    `Click here &lt;https://porespy.org/examples/metrics/two_point_correlation_fft.html&gt;_` to view online example.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Calculate half lengths of the image</span>
     <span class="n">hls</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">im</span><span class="p">))</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
@@ -775,10 +746,6 @@
 <span class="sd">    or to ``np.histogram`` to get the histogram data directly. Another useful</span>
 <span class="sd">    function is ``np.bincount`` which gives the number of chords of each</span>
 <span class="sd">    length in a format suitable for ``plt.plot``.</span>
-<span class="sd">            </span>
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    `Click here &lt;https://porespy.org/examples/metrics/chord_counts.html&gt;_` to view online example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">labels</span><span class="p">,</span> <span class="n">N</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">im</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
     <span class="n">props</span> <span class="o">=</span> <span class="n">regionprops</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
@@ -820,10 +787,7 @@
 <span class="sd">        adjacent pair of regions.  For instance, if ``conns[0, 0]`` is 0 and</span>
 <span class="sd">        ``conns[0, 1]`` is 5, then row 0 of ``area`` contains the interfacial</span>
 <span class="sd">        area shared by regions 0 and 5.</span>
-<span class="sd">                </span>
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    `Click here &lt;https://porespy.org/examples/metrics/region_interface_areas.html&gt;_` to view online example.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="s1">&#39;Finding interfacial areas between each region&#39;</span><span class="p">)</span>
     <span class="kn">from</span> <span class="nn">skimage.morphology</span> <span class="kn">import</span> <span class="n">disk</span><span class="p">,</span> <span class="n">ball</span>
@@ -903,10 +867,6 @@
 <span class="sd">    result : list</span>
 <span class="sd">        A list containing the surface area of each region, offset by 1, such</span>
 <span class="sd">        that the surface area of region 1 is stored in element 0 of the list.</span>
-<span class="sd">                </span>
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    `Click here &lt;https://porespy.org/examples/metrics/region_surface_areas.html&gt;_` to view online example.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="s1">&#39;Finding surface area of each region&#39;</span><span class="p">)</span>
@@ -954,10 +914,6 @@
 <span class="sd">    This function simply calls ``scikit-image.measure.mesh_surface_area``, but</span>
 <span class="sd">    it allows for the passing of the ``mesh`` tuple returned by the</span>
 <span class="sd">    ``mesh_region`` function, entirely for convenience.</span>
-<span class="sd">            </span>
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    `Click here &lt;https://porespy.org/examples/metrics/mesh_surface_area.html&gt;_` to view online example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">mesh</span><span class="p">:</span>
         <span class="n">verts</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">verts</span>
@@ -991,10 +947,7 @@
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    porosity</span>
-<span class="sd">        </span>
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    `Click here &lt;https://porespy.org/examples/metrics/phase_fraction.html&gt;_` to view online example.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="n">im</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
@@ -1042,10 +995,6 @@
 <span class="sd">    to get an image of only blind pores.  This can then be added to the orignal</span>
 <span class="sd">    image such that blind pores have a value of 2, thus allowing the</span>
 <span class="sd">    calculation of accessible porosity, rather than overall porosity.</span>
-<span class="sd">            </span>
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    `Click here &lt;https://porespy.org/examples/metrics/porosity.html&gt;_` to view online example.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
