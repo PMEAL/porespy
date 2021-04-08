@@ -13,7 +13,7 @@ from skimage.segmentation import clear_border, watershed
 from skimage.morphology import ball, disk, square, cube, diamond, octahedron
 from porespy.tools import _check_for_singleton_axes
 from porespy.tools import randomize_colors, fftmorphology
-from porespy.tools import get_border, extend_slice, extract_subsection
+from porespy.tools import get_border, extend_slice, extract_subsection, subdivide
 from porespy.tools import _create_alias_map
 from porespy.tools import ps_disk, ps_ball
 from porespy import settings
@@ -1626,9 +1626,6 @@ def chunked_func(func,
         # Apply function on sub-slice of overall image
         return func(**kwargs)
 
-    # Import the array_split methods
-    from array_split import shape_split, ARRAY_BOUNDS
-
     # Determine the value for im_arg
     if type(im_arg) == str:
         im_arg = [im_arg]
@@ -1652,8 +1649,7 @@ def chunked_func(func,
                 strel = kwargs[item]
                 break
         halo = np.array(strel.shape) * (divs > 1)
-    slices = np.ravel(shape_split(im.shape, axis=divs, halo=halo.tolist(),
-                                  tile_bounds_policy=ARRAY_BOUNDS))
+    slices = subdivide(im=im, divs=divs, overlap=halo, flatten=True)
     # Apply func to each subsection of the image
     res = []
     for s in slices:

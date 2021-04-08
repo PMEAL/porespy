@@ -179,11 +179,6 @@ def subdivide(im, divs=2, overlap=0, flatten=False):
     --------
     chunked_func
 
-    Notes
-    -----
-    To obtain equal sized subdomains the image size must return an odd number
-    when divide by divs.  An image with an axis of 202 will result in two equal
-    size subdomains when divided into 2, however an image of size 200 will not.
 
     """
     divs = np.ones((im.ndim,), dtype=int) * np.array(divs)
@@ -483,7 +478,7 @@ def extend_slice(slices, shape, pad=1):
         start = 0
         stop = shape[i]
         start = max(s.start - pad[i], 0)
-        stop = min(s.stop + pad[i], shape[i] - 1)
+        stop = min(s.stop + pad[i], shape[i])
         a.append(slice(start, stop, None))
     return tuple(a)
 
