@@ -21,11 +21,11 @@ def unpad(im, pad_width):
     """
     if type(pad_width) == int:
         new_pad_width = []
-        for r in range (0,len(im.shape)):
+        for r in range(0, len(im.shape)):
             new_pad_width.append(pad_width)
         pad_width = new_pad_width
 
-    if type(pad_width) == list and np.ndim (pad_width) == 1:
+    if type(pad_width) == list and np.ndim(pad_width) == 1:
         pad_width = np.asarray(pad_width)
         shape = im.shape - pad_width[0] - pad_width[1]
 
@@ -37,7 +37,7 @@ def unpad(im, pad_width):
             upper_im = shape[dim] + pad_width[0]
             s_im.append(slice(int(lower_im), int(upper_im)))
 
-    if type(pad_width) == list and np.ndim (pad_width) == 2:
+    if type(pad_width) == list and np.ndim(pad_width) == 2:
         pad_width = np.asarray(pad_width)
         shape = np.asarray(im.shape)
         s_im = []
