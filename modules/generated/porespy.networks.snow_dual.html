@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
 
-    <title>generate_voxel_image &#8212; PoreSpy  documentation</title>
+    <title>snow_dual &#8212; PoreSpy  documentation</title>
     
   <link href="../../_static/css/theme.css" rel="stylesheet" />
   <link href="../../_static/css/index.f6b7ca918bee2f46fd9abac01cfb07d5.css" rel="stylesheet" />
@@ -40,8 +40,8 @@
     <script src="../../_static/js/custom.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="maximal_ball" href="porespy.networks.maximal_ball.html" />
-    <link rel="prev" title="add_boundary_regions" href="porespy.networks.add_boundary_regions.html" />
+    <link rel="next" title="map_to_regions" href="porespy.networks.map_to_regions.html" />
+    <link rel="prev" title="snow" href="porespy.networks.snow.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
   </head>
@@ -156,8 +156,8 @@
      snow
     </a>
    </li>
-   <li class="toctree-l3">
-    <a class="reference internal" href="porespy.networks.snow_dual.html">
+   <li class="toctree-l3 current active">
+    <a class="current reference internal" href="#">
      snow_dual
     </a>
    </li>
@@ -176,8 +176,8 @@
      add_boundary_regions
     </a>
    </li>
-   <li class="toctree-l3 current active">
-    <a class="current reference internal" href="#">
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.networks.generate_voxel_image.html">
      generate_voxel_image
     </a>
    </li>
@@ -236,36 +236,64 @@
               
               <div>
                 
-  <section id="generate-voxel-image">
-<h1>generate_voxel_image<a class="headerlink" href="#generate-voxel-image" title="Permalink to this headline">¶</a></h1>
+  <section id="snow-dual">
+<h1>snow_dual<a class="headerlink" href="#snow-dual" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="porespy.networks.generate_voxel_image">
-<code class="sig-name descname"><span class="pre">generate_voxel_image</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pore_shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sphere'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">throat_shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cylinder'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rtol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/networks/__funcs__.html#generate_voxel_image"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.networks.generate_voxel_image" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generates voxel image from an OpenPNM network object.</p>
+<dt id="porespy.networks.snow_dual">
+<code class="sig-name descname"><span class="pre">snow_dual</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voxel_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary_faces</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['top',</span> <span class="pre">'bottom',</span> <span class="pre">'left',</span> <span class="pre">'right',</span> <span class="pre">'front',</span> <span class="pre">'back']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marching_cubes_area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/networks/__snow_dual__.html#snow_dual"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.networks.snow_dual" title="Permalink to this definition">¶</a></dt>
+<dd><p>Analyzes an image that has been partitioned into void and solid regions
+and extracts the void and solid phase geometry as well as network
+connectivity.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>network</strong> (<em>OpenPNM GenericNetwork</em>) – Network from which voxel image is to be generated</p></li>
-<li><p><strong>pore_shape</strong> (<em>str</em>) – Shape of pores in the network, valid choices are “sphere”, “cube”</p></li>
-<li><p><strong>throat_shape</strong> (<em>str</em>) – Shape of throats in the network, valid choices are “cylinder”, “cuboid”</p></li>
-<li><p><strong>max_dim</strong> (<em>int</em>) – Number of voxels in the largest dimension of the network</p></li>
-<li><p><strong>rtol</strong> (<em>float</em>) – Stopping criteria for finding the smallest voxel image such that
-further increasing the number of voxels in each dimension by 25% would
-improve the predicted porosity of the image by less that <code class="docutils literal notranslate"><span class="pre">rtol</span></code></p></li>
+<li><p><strong>im</strong> (<em>ND-array</em>) – Binary image in the Boolean form with True’s as void phase and False’s
+as solid phase. It can process the inverted configuration of the
+boolean image as well, but output labelling of phases will be inverted
+and solid phase properties will be assigned to void phase properties
+labels which will cause confusion while performing the simulation.</p></li>
+<li><p><strong>voxel_size</strong> (<em>scalar</em>) – The resolution of the image, expressed as the length of one side of a
+voxel, so the volume of a voxel would be <strong>voxel_size</strong>-cubed.  The
+default is 1, which is useful when overlaying the PNM on the original
+image since the scale of the image is alway 1 unit lenth per voxel.</p></li>
+<li><p><strong>boundary_faces</strong> (<em>list of strings</em>) – Boundary faces labels are provided to assign hypothetical boundary
+nodes having zero resistance to transport process. For cubical
+geometry, the user can choose ‘left’, ‘right’, ‘top’, ‘bottom’,
+‘front’ and ‘back’ face labels to assign boundary nodes. If no label is
+assigned then all six faces will be selected as boundary nodes
+automatically which can be trimmed later on based on user requirements.</p></li>
+<li><p><strong>marching_cubes_area</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then the surface area and interfacial area between regions
+will be using the marching cube algorithm. This is a more accurate
+representation of area in extracted network, but is quite slow, so
+it is <code class="docutils literal notranslate"><span class="pre">False</span></code> by default.  The default method simply counts voxels
+so does not correctly account for the voxelated nature of the images.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>im</strong> – Voxelated image corresponding to the given pore network model</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ndarray</p>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>A dictionary containing all the void and solid phase size data, as well as</em></p></li>
+<li><p><em>the network topological information.  The dictionary names use the OpenPNM</em></p></li>
+<li><p><em>convention (i.e. ‘pore.coords’, ‘throat.conns’) so it may be converted</em></p></li>
+<li><p>directly to an OpenPNM network object using the <code class="docutils literal notranslate"><span class="pre">update</span></code> command.</p></li>
+<li><p><strong>* ``net``</strong> (<em>A dictionary containing all the void and solid phase size data,</em>) – as well as the network topological information.  The dictionary names
+use the OpenPNM convention (i.e. ‘pore.coords’, ‘throat.conns’) so it
+may be converted directly to an OpenPNM network object using the
+<code class="docutils literal notranslate"><span class="pre">update</span></code> command.</p></li>
+<li><p><strong>* ``im``</strong> (<em>The binary image of the void space</em>)</p></li>
+<li><p><strong>* ``dt``</strong> (<em>The combined distance transform of the image</em>)</p></li>
+<li><p><strong>* ``regions``</strong> (<em>The void and solid space partitioned into pores and solids</em>) – phases using a marker based watershed with the peaks found by the
+SNOW Algorithm.</p></li>
+</ul>
+</p>
 </dd>
 </dl>
-<p class="rubric">Notes</p>
-<p>(1) The generated voxelated image is labeled with 0s, 1s and 2s signifying
-solid phase, pores, and throats respectively.</p>
-<p>(2) If max_dim is not provided, the method calculates it such that the
-further increasing it doesn’t change porosity by much.</p>
+<p class="rubric">References</p>
+<p>[1] Gostick, J. “A versatile and efficient network extraction algorithm
+using marker-based watershed segmenation”.  Phys. Rev. E 96, 023307 (2017)</p>
+<p>[2] Khan, ZA et al.  “Dual network extraction algorithm to investigate
+multiple transport processes in porous materials: Image-based modeling
+of pore and grain-scale processes. Computers and Chemical Engineering.
+123(6), 64-77 (2019)</p>
 </dd></dl>
 
 </section>

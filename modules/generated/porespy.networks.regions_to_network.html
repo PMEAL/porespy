@@ -152,6 +152,16 @@
   </a>
   <ul class="current">
    <li class="toctree-l3">
+    <a class="reference internal" href="porespy.networks.snow.html">
+     snow
+    </a>
+   </li>
+   <li class="toctree-l3">
+    <a class="reference internal" href="porespy.networks.snow_dual.html">
+     snow_dual
+    </a>
+   </li>
+   <li class="toctree-l3">
     <a class="reference internal" href="porespy.networks.map_to_regions.html">
      map_to_regions
     </a>
@@ -230,87 +240,30 @@
 <h1>regions_to_network<a class="headerlink" href="#regions-to-network" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="porespy.networks.regions_to_network">
-<code class="sig-name descname"><span class="pre">regions_to_network</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">regions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phases</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voxel_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accuracy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'standard'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/networks/__getnet__.html#regions_to_network"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.networks.regions_to_network" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">regions_to_network</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voxel_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/networks/__getnet__.html#regions_to_network"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.networks.regions_to_network" title="Permalink to this definition">¶</a></dt>
 <dd><p>Analyzes an image that has been partitioned into pore regions and extracts
 the pore and throat geometry as well as network connectivity.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>regions</strong> (<em>ND-array</em>) – An image of the material partitioned into individual regions.
-Zeros in this image are ignored.</p></li>
-<li><p><strong>phases</strong> (<em>ND-array</em><em>, </em><em>optional</em>) – An image indicating to which phase each voxel belongs. The returned
-network contains a ‘pore.phase’ array with the corresponding value.
-If not given a value of 1 is assigned to every pore.</p></li>
-<li><p><strong>voxel_size</strong> (<em>scalar</em><em> (</em><em>default = 1</em><em>)</em>) – The resolution of the image, expressed as the length of one side of a
-voxel, so the volume of a voxel would be <strong>voxel_size</strong>-cubed.</p></li>
-<li><p><strong>accuracy</strong> (<em>string</em>) – <p>Controls how accurately certain properties are calculated. Options are:</p>
-<dl class="simple">
-<dt>’standard’ (default)</dt><dd><p>Computes the surface areas and perimeters by simply counting
-voxels.  This is <em>much</em> faster but does not properly account
-for the rough, voxelated nature of the surfaces.</p>
-</dd>
-<dt>’high’</dt><dd><p>Computes surface areas using the marching cube method, and
-perimeters using the fast marching method.  These are substantially
-slower but better account for the voxelated nature of the images.</p>
-</dd>
-</dl>
-</p></li>
+<li><p><strong>im</strong> (<em>ND-array</em>) – An image of the pore space partitioned into individual pore regions.
+Note that this image must have zeros indicating the solid phase.</p></li>
+<li><p><strong>dt</strong> (<em>ND-array</em>) – The distance transform of the pore space.  If not given it will be
+calculated, but it can save time to provide one if available.</p></li>
+<li><p><strong>voxel_size</strong> (<em>scalar</em>) – The resolution of the image, expressed as the length of one side of a
+voxel, so the volume of a voxel would be <strong>voxel_size</strong>-cubed.  The
+default is 1, which is useful when overlaying the PNM on the original
+image since the scale of the image is alway 1 unit lenth per voxel.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>net</strong> – A dictionary containing all the pore and throat size data, as well as
-the network topological information.  The dictionary names use the
-OpenPNM convention (i.e. ‘pore.coords’, ‘throat.conns’).</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>dict</p>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>The meaning of each of the values returned in <code class="docutils literal notranslate"><span class="pre">net</span></code> are outlined below:</p>
-<ul class="simple">
-<li><p>‘pore.region_label’: The region labels corresponding to the watershed</p></li>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>A dictionary containing all the pore and throat size data, as well as the</em></p></li>
+<li><p><em>network topological information.  The dictionary names use the OpenPNM</em></p></li>
+<li><p><em>convention (i.e. ‘pore.coords’, ‘throat.conns’) so it may be converted</em></p></li>
+<li><p>directly to an OpenPNM network object using the <code class="docutils literal notranslate"><span class="pre">update</span></code> command.</p></li>
 </ul>
-<p>extraction. The pore indices and regions labels will be offset by 1, so
-pore 0 will be region 1.</p>
-<dl class="simple">
-<dt>‘throat.conns’</dt><dd><p>An <em>Nt-by-2</em> array indicating which pores are connected to each other</p>
-</dd>
-<dt>‘pore.region_label’</dt><dd><p>Mapping of regions in the watershed segmentation to pores in the
-network</p>
-</dd>
-<dt>‘pore.local_peak’</dt><dd><p>The coordinates of the location of the maxima of the distance transform
-performed on the pore region in isolation</p>
-</dd>
-<dt>‘pore.global_peak’</dt><dd><p>The coordinates of the location of the maxima of the distance transform
-performed on the full image</p>
-</dd>
-<dt>‘pore.geometric_centroid’</dt><dd><p>The center of mass of the pore region as calculated by
-<code class="docutils literal notranslate"><span class="pre">skimage.measure.center_of_mass</span></code></p>
-</dd>
-<dt>‘throat.global_peak’</dt><dd><p>The coordinates of the location of the maxima of the distance transform
-performed on the full image</p>
-</dd>
-<dt>‘pore.region_volume’</dt><dd><p>The volume of the pore region computed by summing the voxels</p>
-</dd>
-<dt>‘pore.volume’</dt><dd><p>The volume of the pore found by as volume of a mesh obtained from the
-marching cubes algorithm</p>
-</dd>
-<dt>‘pore.surface_area’</dt><dd><p>blah</p>
-</dd>
-<dt>‘throat.cross_sectional_area’</dt><dd><p>blah</p>
-</dd>
-<dt>‘throat.perimeter’</dt><dd><p>blah</p>
-</dd>
-<dt>‘pore.inscribed_diameter’</dt><dd><p>blah</p>
-</dd>
-<dt>‘pore.extended_diameter’</dt><dd><p>blah</p>
-</dd>
-<dt>‘throat.inscribed_diameter’</dt><dd><p>blah</p>
-</dd>
-<dt>‘throat.total_length’</dt><dd><p>blah</p>
-</dd>
-<dt>‘throat.direct_length’</dt><dd><p>blah</p>
+</p>
 </dd>
 </dl>
 </dd></dl>
