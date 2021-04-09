@@ -25,6 +25,9 @@
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/basic.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
     
   <link rel="preload" as="script" href="../../../_static/js/index.1e043a052b0af929e4d8.js">
@@ -171,7 +174,7 @@
 <span class="kn">from</span> <span class="nn">skimage.morphology</span> <span class="kn">import</span> <span class="n">ball</span><span class="p">,</span> <span class="n">disk</span><span class="p">,</span> <span class="n">square</span><span class="p">,</span> <span class="n">cube</span><span class="p">,</span> <span class="n">diamond</span><span class="p">,</span> <span class="n">octahedron</span>
 <span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">_check_for_singleton_axes</span>
 <span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">randomize_colors</span><span class="p">,</span> <span class="n">fftmorphology</span>
-<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">get_border</span><span class="p">,</span> <span class="n">extend_slice</span><span class="p">,</span> <span class="n">extract_subsection</span>
+<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">get_border</span><span class="p">,</span> <span class="n">extend_slice</span><span class="p">,</span> <span class="n">extract_subsection</span><span class="p">,</span> <span class="n">subdivide</span>
 <span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">_create_alias_map</span>
 <span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">ps_disk</span><span class="p">,</span> <span class="n">ps_ball</span>
 <span class="kn">from</span> <span class="nn">porespy</span> <span class="kn">import</span> <span class="n">settings</span>
@@ -204,6 +207,10 @@
 <span class="sd">    -----</span>
 <span class="sd">    A use case for this is when using ``skimage.morphology.skeletonize_3d``</span>
 <span class="sd">    to ensure that the skeleton extends beyond the edges of the image.</span>
+<span class="sd">    </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here &lt;https://porespy.org/examples/filters/apply_padded.html&gt;`_ to view online example.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">padded</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">pad_width</span><span class="o">=</span><span class="n">pad_width</span><span class="p">,</span>
@@ -231,6 +238,10 @@
 <span class="sd">    im : ndarray</span>
 <span class="sd">        A copy of ``im`` with clusters of voxels smaller than the given</span>
 <span class="sd">        ``size`` removed.</span>
+<span class="sd">    </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here &lt;https://porespy.org/examples/filters/trim_small_clusters.html&gt;`_ to view online example.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
@@ -269,7 +280,10 @@
 
 <span class="sd">    &quot;im&quot; must be a greyscale image. In case a Boolean image is fed into this</span>
 <span class="sd">    method, it will be first converted to float values [0.0,1.0] before proceeding.</span>
-
+<span class="sd">    </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here &lt;https://porespy.org/examples/filters/hold_peaks.html&gt;`_ to view online example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">A</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
@@ -316,8 +330,11 @@
 <span class="sd">    -------</span>
 <span class="sd">    image : ndarray</span>
 <span class="sd">        A copy of ``im`` with each foreground voxel containing the</span>
-<span class="sd">        distance to the nearest background along the specified axis.</span>
-
+<span class="sd">        distance to the nearest background along the specified axis.        </span>
+<span class="sd">        </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here &lt;https://porespy.org/examples/filters/distance_transform_lin.html&gt;`_ to view online example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_check_for_singleton_axes</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
 
@@ -414,7 +431,10 @@
 <span class="sd">    ----------</span>
 <span class="sd">    [1] Gostick, J. &quot;A versatile and efficient network extraction algorithm</span>
 <span class="sd">    using marker-based watershed segmenation&quot;.  Physical Review E. (2017)</span>
-
+<span class="sd">            </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here &lt;https://porespy.org/examples/filters/snow_partitioning.html&gt;`_ to view online example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">tup</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;results&quot;</span><span class="p">,</span> <span class="n">field_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;im&quot;</span><span class="p">,</span> <span class="s2">&quot;dt&quot;</span><span class="p">,</span> <span class="s2">&quot;peaks&quot;</span><span class="p">,</span> <span class="s2">&quot;regions&quot;</span><span class="p">])</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="s2">&quot;Beginning SNOW algorithm&quot;</span><span class="p">)</span>
@@ -451,6 +471,11 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">mask_solid</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">regions</span> <span class="o">=</span> <span class="n">watershed</span><span class="p">(</span><span class="n">image</span><span class="o">=-</span><span class="n">dt</span><span class="p">,</span> <span class="n">markers</span><span class="o">=</span><span class="n">peaks</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">mask_solid</span><span class="p">)</span>
+    <span class="c1"># Catch any isolated regions that were missed</span>
+    <span class="c1"># TODO: I&#39;m not sure if this approach is universal so I&#39;m going to comment it</span>
+    <span class="c1"># out for now, and mark it as a todo</span>
+    <span class="c1"># labels = spim.label((regions == 0)*(im &gt; 0))[0]</span>
+    <span class="c1"># regions += (labels + regions.max())*(labels &gt; 0)</span>
     <span class="k">if</span> <span class="n">randomize</span><span class="p">:</span>
         <span class="n">regions</span> <span class="o">=</span> <span class="n">randomize_colors</span><span class="p">(</span><span class="n">regions</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">return_all</span><span class="p">:</span>
@@ -536,7 +561,10 @@
 <span class="sd">    plateaus in the distance transform. To overcome this, this function</span>
 <span class="sd">    applies the watershed to each of the distance transforms separately,</span>
 <span class="sd">    then merges the segmented regions back into a single image.</span>
-
+<span class="sd">            </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here &lt;https://porespy.org/examples/filters/snow_partitioning_n.html&gt;`_ to view online example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Get alias if provided by user</span>
     <span class="n">al</span> <span class="o">=</span> <span class="n">_create_alias_map</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span>
@@ -614,7 +642,10 @@
 <span class="sd">    The *skimage* function automatically uses a square structuring element</span>
 <span class="sd">    which is significantly faster than using a circular or spherical</span>
 <span class="sd">    element.</span>
-
+<span class="sd">            </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here &lt;https://porespy.org/examples/filters/find_peaks.html&gt;`_ to view online example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">im</span> <span class="o">=</span> <span class="n">dt</span> <span class="o">&gt;</span> <span class="mi">0</span>
     <span class="n">_check_for_singleton_axes</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
@@ -662,7 +693,10 @@
 <span class="sd">    The center of mass of a group of voxels is used as the new single</span>
 <span class="sd">    voxel, so if the group has an odd shape (like a horse shoe), the new</span>
 <span class="sd">    voxel may *not* lie on top of the original set.</span>
-
+<span class="sd">            </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here &lt;https://porespy.org/examples/filters/reduce_peaks.html&gt;`_ to view online example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">peaks</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
         <span class="n">strel</span> <span class="o">=</span> <span class="n">square</span>
@@ -710,7 +744,10 @@
 <span class="sd">    ----------</span>
 <span class="sd">    [1] Gostick, J. &quot;A versatile and efficient network extraction algorithm</span>
 <span class="sd">    using marker-based watershed segmenation&quot;.  Physical Review E. (2017)</span>
-
+<span class="sd">            </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here &lt;https://porespy.org/examples/filters/trim_saddle_points.html&gt;`_ to view online example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">peaks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">peaks</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">dt</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
@@ -720,7 +757,7 @@
     <span class="n">labels</span><span class="p">,</span> <span class="n">N</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">peaks</span><span class="p">)</span>
     <span class="n">slices</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">find_objects</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
-        <span class="n">s</span> <span class="o">=</span> <span class="n">extend_slice</span><span class="p">(</span><span class="n">s</span><span class="o">=</span><span class="n">slices</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">shape</span><span class="o">=</span><span class="n">peaks</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">extend_slice</span><span class="p">(</span><span class="n">slices</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">shape</span><span class="o">=</span><span class="n">peaks</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
         <span class="n">peaks_i</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">==</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
         <span class="n">dt_i</span> <span class="o">=</span> <span class="n">dt</span><span class="p">[</span><span class="n">s</span><span class="p">]</span>
         <span class="n">im_i</span> <span class="o">=</span> <span class="n">dt_i</span> <span class="o">&gt;</span> <span class="mi">0</span>
@@ -775,7 +812,10 @@
 <span class="sd">    [1] Gostick, J. &quot;A versatile and efficient network extraction</span>
 <span class="sd">    algorithm using marker-based watershed segmenation&quot;.  Physical Review</span>
 <span class="sd">    E. (2017)</span>
-
+<span class="sd">            </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here &lt;https://porespy.org/examples/filters/trim_nearby_peaks.html&gt;`_ to view online example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">peaks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">peaks</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">dt</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
@@ -837,6 +877,10 @@
 <span class="sd">    image : ndarray</span>
 <span class="sd">        The returned array (e.g. ``holes``) be used to trim blind pores</span>
 <span class="sd">        from ``im`` using: ``im[holes] = False``</span>
+<span class="sd">                </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here &lt;https://porespy.org/examples/filters/find_disconnected_voxels.html&gt;`_ to view online example.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_check_for_singleton_axes</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
@@ -881,6 +925,10 @@
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    find_disconnected_voxels</span>
+<span class="sd">            </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here &lt;https://porespy.org/examples/filters/fill_blind_pores.html&gt;`_ to view online example.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
@@ -910,6 +958,10 @@
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    find_disconnected_voxels</span>
+<span class="sd">            </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here &lt;https://porespy.org/examples/filters/trim_floating_solid.html&gt;`_ to view online example.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
@@ -950,6 +1002,11 @@
 <span class="sd">    find_disconnected_voxels</span>
 <span class="sd">    trim_floating_solid</span>
 <span class="sd">    trim_blind_pores</span>
+<span class="sd">            </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here &lt;https://porespy.org/examples/filters/trim_nonpercolating_paths.html&gt;`_ to view online example.</span>
+
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">labels</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">im</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
@@ -986,12 +1043,17 @@
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    This function is referred to as **imhmax** or **imhmin** in Matlab.</span>
+<span class="sd">            </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here &lt;https://porespy.org/examples/filters/trim_extrema.html&gt;`_ to view online example.</span>
+
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">im</span>
     <span class="k">if</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;maxima&quot;</span><span class="p">,</span> <span class="s2">&quot;extrema&quot;</span><span class="p">]:</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">reconstruction</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="n">im</span> <span class="o">-</span> <span class="n">h</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;dilation&quot;</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;minima&quot;</span><span class="p">,</span> <span class="s2">&quot;extrema&quot;</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;minima&quot;</span><span class="p">,</span> <span class="s2">&quot;extrema&quot;</span><span class="p">]:</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">reconstruction</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="n">im</span> <span class="o">+</span> <span class="n">h</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;erosion&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">result</span></div>
 
@@ -1031,6 +1093,10 @@
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    prop_to_image</span>
+<span class="sd">            </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here &lt;https://porespy.org/examples/filters/flood.html&gt;`_ to view online example.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">mask</span> <span class="o">=</span> <span class="n">im</span> <span class="o">&gt;</span> <span class="mi">0</span>
@@ -1076,6 +1142,10 @@
 <span class="sd">        that would be found if there were a solid voxel lurking just</span>
 <span class="sd">        beyond the nearest edge of the image.  Obviously, voxels with a</span>
 <span class="sd">        value of zero have no error.</span>
+<span class="sd">                </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here &lt;https://porespy.org/examples/filters/find_dt_artifacts.html&gt;`_ to view online example.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">dt</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
@@ -1109,7 +1179,10 @@
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    flood</span>
-
+<span class="sd">            </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here &lt;https://porespy.org/examples/filters/region_size.html&gt;`_ to view online example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="n">im</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">im</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
@@ -1152,6 +1225,10 @@
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    apply_chords_3D</span>
+<span class="sd">            </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here &lt;https://porespy.org/examples/filters/apply_chords.html&gt;`_ to view online example.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_check_for_singleton_axes</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
@@ -1211,6 +1288,11 @@
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    apply_chords</span>
+<span class="sd">            </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here &lt;https://porespy.org/examples/filters/apply_chords_3D.html&gt;`_ to view online example.</span>
+
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_check_for_singleton_axes</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
@@ -1287,6 +1369,10 @@
 <span class="sd">    ``local_thickness`` and ``porosimetry``, since we can &#39;trim&#39; invaded</span>
 <span class="sd">    regions that are not connected to the inlets in the ``porosimetry``</span>
 <span class="sd">    function. This is not needed in ``local_thickness`` however.</span>
+<span class="sd">            </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here &lt;https://porespy.org/examples/filters/local_thickness.html&gt;`_ to view online example.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">im_new</span> <span class="o">=</span> <span class="n">porosimetry</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">sizes</span><span class="o">=</span><span class="n">sizes</span><span class="p">,</span> <span class="n">access_limited</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -1366,6 +1452,10 @@
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    local_thickness</span>
+<span class="sd">            </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here &lt;https://porespy.org/examples/filters/porosimetry.html&gt;`_ to view online example.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_check_for_singleton_axes</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
@@ -1479,7 +1569,10 @@
 <span class="sd">    image : ndarray</span>
 <span class="sd">        An array of the same shape as ``im``, but with all foreground</span>
 <span class="sd">        voxels not connected to the ``inlets`` removed.</span>
-
+<span class="sd">                </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here &lt;https://porespy.org/examples/filters/trim_disconnected_blobs.html&gt;`_ to view online example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">inlets</span><span class="p">)</span> <span class="o">==</span> <span class="nb">tuple</span><span class="p">:</span>
         <span class="n">temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">inlets</span><span class="p">)</span>
@@ -1634,6 +1727,10 @@
 <span class="sd">    -------</span>
 <span class="sd">    ndarray</span>
 <span class="sd">        An ndarray containing the skeleton with tails removed.</span>
+<span class="sd">            </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here &lt;https://porespy.org/examples/filters/prune_branches.html&gt;`_ to view online example.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">skel</span> <span class="o">=</span> <span class="n">skel</span> <span class="o">&gt;</span> <span class="mi">0</span>
@@ -1776,6 +1873,11 @@
 <span class="sd">    &gt;&gt;&gt; im3 = spim.binary_dilation(input=im, structure=ball(3))</span>
 <span class="sd">    &gt;&gt;&gt; np.all(im2 == im3)</span>
 <span class="sd">    True</span>
+<span class="sd">            </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here &lt;https://porespy.org/examples/filters/chunked_func.html&gt;`_ to view online example.</span>
+
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -1783,9 +1885,6 @@
     <span class="k">def</span> <span class="nf">apply_func</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="c1"># Apply function on sub-slice of overall image</span>
         <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
-    <span class="c1"># Import the array_split methods</span>
-    <span class="kn">from</span> <span class="nn">array_split</span> <span class="kn">import</span> <span class="n">shape_split</span><span class="p">,</span> <span class="n">ARRAY_BOUNDS</span>
 
     <span class="c1"># Determine the value for im_arg</span>
     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">im_arg</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">:</span>
@@ -1810,8 +1909,7 @@
                 <span class="n">strel</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
                 <span class="k">break</span>
         <span class="n">halo</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">strel</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">divs</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="n">slices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">shape_split</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">divs</span><span class="p">,</span> <span class="n">halo</span><span class="o">=</span><span class="n">halo</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
-                                  <span class="n">tile_bounds_policy</span><span class="o">=</span><span class="n">ARRAY_BOUNDS</span><span class="p">))</span>
+    <span class="n">slices</span> <span class="o">=</span> <span class="n">subdivide</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">divs</span><span class="o">=</span><span class="n">divs</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="n">halo</span><span class="p">,</span> <span class="n">flatten</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="c1"># Apply func to each subsection of the image</span>
     <span class="n">res</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">slices</span><span class="p">:</span>
@@ -1914,7 +2012,10 @@
 <span class="sd">        Partitioned image of segmentated regions with unique labels. Each</span>
 <span class="sd">        region correspond to pore body while intersection with other</span>
 <span class="sd">        region correspond throat area.</span>
-
+<span class="sd">                </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here &lt;https://porespy.org/examples/filters/snow_partitioning_parallel.html&gt;`_ to view online example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Adjust image shape according to specified dimension</span>
     <span class="n">tup</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;results&quot;</span><span class="p">,</span> <span class="n">field_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;im&quot;</span><span class="p">,</span> <span class="s2">&quot;dt&quot;</span><span class="p">,</span> <span class="s2">&quot;regions&quot;</span><span class="p">])</span>
