@@ -46,10 +46,11 @@ def insert_shape(im, element, center=None, corner=None, value=1, mode="overwrite
     -------
     im : ND-array
         A copy of ``im`` with the supplied element inserted.
-        
+
     Examples
     --------
     `Click here <https://porespy.org/examples/generators/insert_shape.html>`_ to view online example.
+
     """
     im = im.copy()
     if im.ndim != element.ndim:
@@ -160,7 +161,7 @@ def RSA(im_or_shape: np.array,
     References
     ----------
     [1] Random Heterogeneous Materials, S. Torquato (2001)
-        
+
     Examples
     --------
     `Click here <https://porespy.org/examples/generators/RSA.html>`_ to view online example.
@@ -319,8 +320,8 @@ def bundle_of_tubes(shape: List[int], spacing: int):
     Returns
     -------
     image : ND-array
-        A boolean array with ``True`` values denoting the pore space     
-        
+        A boolean array with ``True`` values denoting the pore space
+
     Examples
     --------
     `Click here <https://porespy.org/examples/generators/bundle_of_tubes.html>`_ to view online example.
@@ -390,7 +391,7 @@ def polydisperse_spheres(
     -------
     image : ND-array
         A boolean array with ``True`` values denoting the pore space
-        
+
     Examples
     --------
     `Click here <https://porespy.org/examples/generators/polydisperse_spheres.html>`_ to view online example.
@@ -436,7 +437,7 @@ def voronoi_edges(shape: List[int], radius: int, ncells: int, flat_faces: bool =
     -------
     image : ND-array
         A boolean array with ``True`` values denoting the pore space
-    
+
     Examples
     --------
     `Click here <https://porespy.org/examples/generators/voronoi_edges.html>`_ to view online example.
@@ -548,7 +549,7 @@ def lattice_spheres(shape: List[int],
     -------
     image : ndarray
         A boolean array with ``True`` values denoting the pore space.
-            
+
     Examples
     --------
     `Click here <https://porespy.org/examples/generators/lattice_spheres.html>`_ to view online example.
@@ -670,7 +671,7 @@ def overlapping_spheres(shape: List[int],
     This method can also be used to generate a dispersion of hollows by
     treating ``porosity`` as solid volume fraction and inverting the
     returned image.
-        
+
     Examples
     --------
     `Click here <https://porespy.org/examples/generators/overlapping_spheres.html>`_ to view online example.
@@ -751,7 +752,7 @@ def blobs(shape: List[int], porosity: float = 0.5, blobiness: int = 1,
     See Also
     --------
     norm_to_uniform
-        
+
     Examples
     --------
     `Click here <https://porespy.org/examples/generators/blobs.html>`_ to view online example.
@@ -824,7 +825,7 @@ def _cylinders(shape: List[int],
     -------
     image : ND-array
         A boolean array with ``True`` values denoting the pore space
-        
+
     Examples
     --------
     `Click here <https://porespy.org/examples/generators/cylinders.html>`_ to view online example.
@@ -1033,7 +1034,7 @@ def line_segment(X0, X1):
         A list of lists containing the X, Y, and Z coordinates of all voxels
         that should be drawn between the start and end points to create a solid
         line.
-        
+
     Examples
     --------
     `Click here <https://porespy.org/examples/generators/line_segment.html>`_ to view online example.
