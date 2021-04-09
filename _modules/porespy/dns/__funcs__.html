@@ -25,9 +25,6 @@
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/basic.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
     
   <link rel="preload" as="script" href="../../../_static/js/index.1e043a052b0af929e4d8.js">
@@ -159,7 +156,8 @@
               <div>
                 
   <h1>Source code for porespy.dns.__funcs__</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">collections</span>
+<span></span><span class="kn">import</span> <span class="nn">importlib</span>
+<span class="kn">import</span> <span class="nn">collections</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
 <span class="kn">from</span> <span class="nn">porespy.filters</span> <span class="kn">import</span> <span class="n">trim_nonpercolating_paths</span>
@@ -198,7 +196,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">axis</span> <span class="o">&gt;</span> <span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">ndim</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;axis&#39; must be &lt;= </span><span class="si">{</span><span class="n">im</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Axis argument is too high&quot;</span><span class="p">)</span>
 
     <span class="c1"># Obtain original porosity</span>
     <span class="n">eps0</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">im</span><span class="o">.</span><span class="n">size</span>
@@ -232,9 +230,9 @@
         <span class="n">fd</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
+            <span class="n">fd</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;solver_family&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;pypardiso&#39;</span>
             <span class="n">fd</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
-        <span class="c1"># TODO: change Exception to ModuleNotFoundError (fix OpenPNM first)</span>
-        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+        <span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
             <span class="n">fd</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;solver_family&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;scipy&#39;</span>
             <span class="n">fd</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;solver_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;cg&#39;</span>
             <span class="n">fd</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>

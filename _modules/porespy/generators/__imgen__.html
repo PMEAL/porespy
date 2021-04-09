@@ -25,9 +25,6 @@
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/basic.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
     
   <link rel="preload" as="script" href="../../../_static/js/index.1e043a052b0af929e4d8.js">
@@ -207,10 +204,7 @@
 <span class="sd">    -------</span>
 <span class="sd">    im : ND-array</span>
 <span class="sd">        A copy of ``im`` with the supplied element inserted.</span>
-<span class="sd">        </span>
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    `Click here &lt;https://porespy.org/examples/generators/insert_shape.html&gt;`_ to view online example.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">im</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="n">element</span><span class="o">.</span><span class="n">ndim</span><span class="p">:</span>
@@ -321,10 +315,6 @@
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
 <span class="sd">    [1] Random Heterogeneous Materials, S. Torquato (2001)</span>
-<span class="sd">        </span>
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    `Click here &lt;https://porespy.org/examples/generators/RSA.html&gt;`_ to view online example.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;RSA: Adding spheres of size </span><span class="si">{</span><span class="n">radius</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -480,11 +470,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    image : ND-array</span>
-<span class="sd">        A boolean array with ``True`` values denoting the pore space     </span>
-<span class="sd">        </span>
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    `Click here &lt;https://porespy.org/examples/generators/bundle_of_tubes.html&gt;`_ to view online example.</span>
+<span class="sd">        A boolean array with ``True`` values denoting the pore space</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -551,10 +537,6 @@
 <span class="sd">    -------</span>
 <span class="sd">    image : ND-array</span>
 <span class="sd">        A boolean array with ``True`` values denoting the pore space</span>
-<span class="sd">        </span>
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    `Click here &lt;https://porespy.org/examples/generators/polydisperse_spheres.html&gt;`_ to view online example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -597,10 +579,6 @@
 <span class="sd">    -------</span>
 <span class="sd">    image : ND-array</span>
 <span class="sd">        A boolean array with ``True`` values denoting the pore space</span>
-<span class="sd">    </span>
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    `Click here &lt;https://porespy.org/examples/generators/voronoi_edges.html&gt;`_ to view online example.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Generating </span><span class="si">{</span><span class="n">ncells</span><span class="si">}</span><span class="s2"> cells&quot;</span><span class="p">)</span>
@@ -709,10 +687,6 @@
 <span class="sd">    -------</span>
 <span class="sd">    image : ndarray</span>
 <span class="sd">        A boolean array with ``True`` values denoting the pore space.</span>
-<span class="sd">            </span>
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    `Click here &lt;https://porespy.org/examples/generators/lattice_spheres.html&gt;`_ to view online example.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Generating </span><span class="si">{</span><span class="n">lattice</span><span class="si">}</span><span class="s2"> lattice&quot;</span><span class="p">)</span>
@@ -831,10 +805,7 @@
 <span class="sd">    This method can also be used to generate a dispersion of hollows by</span>
 <span class="sd">    treating ``porosity`` as solid volume fraction and inverting the</span>
 <span class="sd">    returned image.</span>
-<span class="sd">        </span>
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    `Click here &lt;https://porespy.org/examples/generators/overlapping_spheres.html&gt;`_ to view online example.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -912,10 +883,6 @@
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    norm_to_uniform</span>
-<span class="sd">        </span>
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    `Click here &lt;https://porespy.org/examples/generators/blobs.html&gt;`_ to view online example.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">blobiness</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">blobiness</span><span class="p">)</span>
@@ -985,10 +952,6 @@
 <span class="sd">    -------</span>
 <span class="sd">    image : ND-array</span>
 <span class="sd">        A boolean array with ``True`` values denoting the pore space</span>
-<span class="sd">        </span>
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    `Click here &lt;https://porespy.org/examples/generators/cylinders.html&gt;`_ to view online example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -1194,10 +1157,6 @@
 <span class="sd">        A list of lists containing the X, Y, and Z coordinates of all voxels</span>
 <span class="sd">        that should be drawn between the start and end points to create a solid</span>
 <span class="sd">        line.</span>
-<span class="sd">        </span>
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    `Click here &lt;https://porespy.org/examples/generators/line_segment.html&gt;`_ to view online example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">X0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">around</span><span class="p">(</span><span class="n">X0</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
     <span class="n">X1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">around</span><span class="p">(</span><span class="n">X1</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>

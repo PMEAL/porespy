@@ -25,9 +25,6 @@
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/basic.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
     
   <link rel="preload" as="script" href="../../../_static/js/index.1e043a052b0af929e4d8.js">
@@ -160,112 +157,55 @@
                 
   <h1>Source code for porespy.networks.__getnet__</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
 <span class="kn">import</span> <span class="nn">scipy.ndimage</span> <span class="k">as</span> <span class="nn">spim</span>
-<span class="kn">from</span> <span class="nn">skimage.morphology</span> <span class="kn">import</span> <span class="n">disk</span><span class="p">,</span> <span class="n">ball</span>
-<span class="kn">from</span> <span class="nn">edt</span> <span class="kn">import</span> <span class="n">edt</span>
 <span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">extend_slice</span>
 <span class="kn">from</span> <span class="nn">porespy</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">get_tqdm</span><span class="p">,</span> <span class="n">make_contiguous</span>
-<span class="kn">from</span> <span class="nn">porespy.metrics</span> <span class="kn">import</span> <span class="n">region_surface_areas</span><span class="p">,</span> <span class="n">region_interface_areas</span>
+<span class="kn">import</span> <span class="nn">openpnm.models.geometry</span> <span class="k">as</span> <span class="nn">op_gm</span>
+<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">get_tqdm</span>
 <span class="kn">from</span> <span class="nn">loguru</span> <span class="kn">import</span> <span class="n">logger</span>
 <span class="n">tqdm</span> <span class="o">=</span> <span class="n">get_tqdm</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="regions_to_network"><a class="viewcode-back" href="../../../modules/generated/porespy.networks.regions_to_network.html#porespy.networks.regions_to_network">[docs]</a><span class="k">def</span> <span class="nf">regions_to_network</span><span class="p">(</span><span class="n">regions</span><span class="p">,</span> <span class="n">phases</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">voxel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">accuracy</span><span class="o">=</span><span class="s1">&#39;standard&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="regions_to_network"><a class="viewcode-back" href="../../../modules/generated/porespy.networks.regions_to_network.html#porespy.networks.regions_to_network">[docs]</a><span class="k">def</span> <span class="nf">regions_to_network</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">voxel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Analyzes an image that has been partitioned into pore regions and extracts</span>
 <span class="sd">    the pore and throat geometry as well as network connectivity.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    regions : ND-array</span>
-<span class="sd">        An image of the material partitioned into individual regions.</span>
-<span class="sd">        Zeros in this image are ignored.</span>
-<span class="sd">    phases : ND-array, optional</span>
-<span class="sd">        An image indicating to which phase each voxel belongs. The returned</span>
-<span class="sd">        network contains a &#39;pore.phase&#39; array with the corresponding value.</span>
-<span class="sd">        If not given a value of 1 is assigned to every pore.</span>
-<span class="sd">    voxel_size : scalar (default = 1)</span>
-<span class="sd">        The resolution of the image, expressed as the length of one side of a</span>
-<span class="sd">        voxel, so the volume of a voxel would be **voxel_size**-cubed.</span>
-<span class="sd">    accuracy : string</span>
-<span class="sd">        Controls how accurately certain properties are calculated. Options are:</span>
+<span class="sd">    im : ND-array</span>
+<span class="sd">        An image of the pore space partitioned into individual pore regions.</span>
+<span class="sd">        Note that this image must have zeros indicating the solid phase.</span>
 
-<span class="sd">        &#39;standard&#39; (default)</span>
-<span class="sd">            Computes the surface areas and perimeters by simply counting</span>
-<span class="sd">            voxels.  This is *much* faster but does not properly account</span>
-<span class="sd">            for the rough, voxelated nature of the surfaces.</span>
-<span class="sd">        &#39;high&#39;</span>
-<span class="sd">            Computes surface areas using the marching cube method, and</span>
-<span class="sd">            perimeters using the fast marching method.  These are substantially</span>
-<span class="sd">            slower but better account for the voxelated nature of the images.</span>
+<span class="sd">    dt : ND-array</span>
+<span class="sd">        The distance transform of the pore space.  If not given it will be</span>
+<span class="sd">        calculated, but it can save time to provide one if available.</span>
+
+<span class="sd">    voxel_size : scalar</span>
+<span class="sd">        The resolution of the image, expressed as the length of one side of a</span>
+<span class="sd">        voxel, so the volume of a voxel would be **voxel_size**-cubed.  The</span>
+<span class="sd">        default is 1, which is useful when overlaying the PNM on the original</span>
+<span class="sd">        image since the scale of the image is alway 1 unit lenth per voxel.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    net : dict</span>
-<span class="sd">        A dictionary containing all the pore and throat size data, as well as</span>
-<span class="sd">        the network topological information.  The dictionary names use the</span>
-<span class="sd">        OpenPNM convention (i.e. &#39;pore.coords&#39;, &#39;throat.conns&#39;).</span>
-
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    The meaning of each of the values returned in ``net`` are outlined below:</span>
-
-<span class="sd">    - &#39;pore.region_label&#39;: The region labels corresponding to the watershed</span>
-<span class="sd">    extraction. The pore indices and regions labels will be offset by 1, so</span>
-<span class="sd">    pore 0 will be region 1.</span>
-
-<span class="sd">    &#39;throat.conns&#39;</span>
-<span class="sd">        An *Nt-by-2* array indicating which pores are connected to each other</span>
-<span class="sd">    &#39;pore.region_label&#39;</span>
-<span class="sd">        Mapping of regions in the watershed segmentation to pores in the</span>
-<span class="sd">        network</span>
-<span class="sd">    &#39;pore.local_peak&#39;</span>
-<span class="sd">        The coordinates of the location of the maxima of the distance transform</span>
-<span class="sd">        performed on the pore region in isolation</span>
-<span class="sd">    &#39;pore.global_peak&#39;</span>
-<span class="sd">        The coordinates of the location of the maxima of the distance transform</span>
-<span class="sd">        performed on the full image</span>
-<span class="sd">    &#39;pore.geometric_centroid&#39;</span>
-<span class="sd">        The center of mass of the pore region as calculated by</span>
-<span class="sd">        ``skimage.measure.center_of_mass``</span>
-<span class="sd">    &#39;throat.global_peak&#39;</span>
-<span class="sd">        The coordinates of the location of the maxima of the distance transform</span>
-<span class="sd">        performed on the full image</span>
-<span class="sd">    &#39;pore.region_volume&#39;</span>
-<span class="sd">        The volume of the pore region computed by summing the voxels</span>
-<span class="sd">    &#39;pore.volume&#39;</span>
-<span class="sd">        The volume of the pore found by as volume of a mesh obtained from the</span>
-<span class="sd">        marching cubes algorithm</span>
-<span class="sd">    &#39;pore.surface_area&#39;</span>
-<span class="sd">        blah</span>
-<span class="sd">    &#39;throat.cross_sectional_area&#39;</span>
-<span class="sd">        blah</span>
-<span class="sd">    &#39;throat.perimeter&#39;</span>
-<span class="sd">        blah</span>
-<span class="sd">    &#39;pore.inscribed_diameter&#39;</span>
-<span class="sd">        blah</span>
-<span class="sd">    &#39;pore.extended_diameter&#39;</span>
-<span class="sd">        blah</span>
-<span class="sd">    &#39;throat.inscribed_diameter&#39;</span>
-<span class="sd">        blah</span>
-<span class="sd">    &#39;throat.total_length&#39;</span>
-<span class="sd">        blah</span>
-<span class="sd">    &#39;throat.direct_length&#39;</span>
-<span class="sd">        blah</span>
+<span class="sd">    A dictionary containing all the pore and throat size data, as well as the</span>
+<span class="sd">    network topological information.  The dictionary names use the OpenPNM</span>
+<span class="sd">    convention (i.e. &#39;pore.coords&#39;, &#39;throat.conns&#39;) so it may be converted</span>
+<span class="sd">    directly to an OpenPNM network object using the ``update`` command.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="s1">&#39;Extracting pore/throat information&#39;</span><span class="p">)</span>
-
-    <span class="n">im</span> <span class="o">=</span> <span class="n">make_contiguous</span><span class="p">(</span><span class="n">regions</span><span class="p">)</span>
+    <span class="kn">from</span> <span class="nn">skimage.morphology</span> <span class="kn">import</span> <span class="n">disk</span><span class="p">,</span> <span class="n">ball</span>
     <span class="n">struc_elem</span> <span class="o">=</span> <span class="n">disk</span> <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">ball</span>
 
-    <span class="k">if</span> <span class="n">phases</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">phases</span> <span class="o">=</span> <span class="p">(</span><span class="n">im</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">phases</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;regions and phase are different sizes, probably &#39;</span> <span class="o">+</span>
-                        <span class="s1">&#39;because boundary regions were not added to phases&#39;</span><span class="p">)</span>
-    <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="n">im</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="c1"># if ~np.any(im == 0):</span>
+    <span class="c1">#     raise Exception(&#39;The received image has no solid phase (0\&#39;s)&#39;)</span>
+
+    <span class="k">if</span> <span class="n">dt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">distance_transform_edt</span><span class="p">(</span><span class="n">im</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">gaussian_filter</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
 
     <span class="c1"># Get &#39;slices&#39; into im for each pore region</span>
     <span class="n">slices</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">find_objects</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
@@ -273,22 +213,18 @@
     <span class="c1"># Initialize arrays</span>
     <span class="n">Ps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">im</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">Np</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">Ps</span><span class="p">)</span>
-    <span class="n">p_coords_cm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">Np</span><span class="p">,</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-    <span class="n">p_coords_dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">Np</span><span class="p">,</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-    <span class="n">p_coords_dt_global</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">Np</span><span class="p">,</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">p_coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">Np</span><span class="p">,</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
     <span class="n">p_volume</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">Np</span><span class="p">,</span> <span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
     <span class="n">p_dia_local</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">Np</span><span class="p">,</span> <span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
     <span class="n">p_dia_global</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">Np</span><span class="p">,</span> <span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
     <span class="n">p_label</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">Np</span><span class="p">,</span> <span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
     <span class="n">p_area_surf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">Np</span><span class="p">,</span> <span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
-    <span class="n">p_phase</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">Np</span><span class="p">,</span> <span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
-    <span class="c1"># The number of throats is not known at the start, so lists are used</span>
-    <span class="c1"># which can be dynamically resized more easily.</span>
     <span class="n">t_conns</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">t_dia_inscribed</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">t_area</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">t_perimeter</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">t_coords</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1"># dt_shape = np.array(dt.shape)</span>
 
     <span class="c1"># Start extracting size information for pores and throats</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">Ps</span><span class="p">,</span> <span class="o">**</span><span class="n">settings</span><span class="o">.</span><span class="n">tqdm</span><span class="p">):</span>
@@ -300,19 +236,13 @@
         <span class="n">sub_dt</span> <span class="o">=</span> <span class="n">dt</span><span class="p">[</span><span class="n">s</span><span class="p">]</span>
         <span class="n">pore_im</span> <span class="o">=</span> <span class="n">sub_im</span> <span class="o">==</span> <span class="n">i</span>
         <span class="n">padded_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">pore_im</span><span class="p">,</span> <span class="n">pad_width</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;constant&#39;</span><span class="p">)</span>
-        <span class="n">pore_dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="n">padded_mask</span><span class="p">)</span>
+        <span class="n">pore_dt</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">distance_transform_edt</span><span class="p">(</span><span class="n">padded_mask</span><span class="p">)</span>
         <span class="n">s_offset</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">start</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">s</span><span class="p">])</span>
         <span class="n">p_label</span><span class="p">[</span><span class="n">pore</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
-        <span class="n">p_coords_cm</span><span class="p">[</span><span class="n">pore</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">center_of_mass</span><span class="p">(</span><span class="n">pore_im</span><span class="p">)</span> <span class="o">+</span> <span class="n">s_offset</span>
-        <span class="n">temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">pore_dt</span> <span class="o">==</span> <span class="n">pore_dt</span><span class="o">.</span><span class="n">max</span><span class="p">()))[:,</span> <span class="mi">0</span><span class="p">]</span>
-        <span class="n">p_coords_dt</span><span class="p">[</span><span class="n">pore</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">temp</span> <span class="o">+</span> <span class="n">s_offset</span>
-        <span class="n">p_phase</span><span class="p">[</span><span class="n">pore</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">phases</span><span class="p">[</span><span class="n">s</span><span class="p">]</span><span class="o">*</span><span class="n">pore_im</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
-        <span class="n">temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">sub_dt</span> <span class="o">==</span> <span class="n">sub_dt</span><span class="o">.</span><span class="n">max</span><span class="p">()))[:,</span> <span class="mi">0</span><span class="p">]</span>
-        <span class="n">p_coords_dt_global</span><span class="p">[</span><span class="n">pore</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">temp</span> <span class="o">+</span> <span class="n">s_offset</span>
+        <span class="n">p_coords</span><span class="p">[</span><span class="n">pore</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">center_of_mass</span><span class="p">(</span><span class="n">pore_im</span><span class="p">)</span> <span class="o">+</span> <span class="n">s_offset</span>
         <span class="n">p_volume</span><span class="p">[</span><span class="n">pore</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">pore_im</span><span class="p">)</span>
-        <span class="n">p_dia_local</span><span class="p">[</span><span class="n">pore</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">pore_dt</span><span class="p">)</span>
+        <span class="n">p_dia_local</span><span class="p">[</span><span class="n">pore</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">pore_dt</span><span class="p">))</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
         <span class="n">p_dia_global</span><span class="p">[</span><span class="n">pore</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">sub_dt</span><span class="p">)</span>
-        <span class="c1"># The following is overwritten if use_marching_cubes is True</span>
         <span class="n">p_area_surf</span><span class="p">[</span><span class="n">pore</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">pore_dt</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
         <span class="n">im_w_throats</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">binary_dilation</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">pore_im</span><span class="p">,</span> <span class="n">structure</span><span class="o">=</span><span class="n">struc_elem</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
         <span class="n">im_w_throats</span> <span class="o">=</span> <span class="n">im_w_throats</span><span class="o">*</span><span class="n">sub_im</span>
@@ -322,65 +252,73 @@
                 <span class="n">t_conns</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">pore</span><span class="p">,</span> <span class="n">j</span><span class="p">])</span>
                 <span class="n">vx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">im_w_throats</span> <span class="o">==</span> <span class="p">(</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
                 <span class="n">t_dia_inscribed</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">sub_dt</span><span class="p">[</span><span class="n">vx</span><span class="p">]))</span>
-                <span class="c1"># The following is overwritten if accuracy is set to &#39;high&#39;</span>
                 <span class="n">t_perimeter</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">sub_dt</span><span class="p">[</span><span class="n">vx</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">))</span>
-                <span class="c1"># The following is overwritten if accuracy is set to &#39;high&#39;</span>
                 <span class="n">t_area</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">vx</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
-                <span class="n">p_area_surf</span><span class="p">[</span><span class="n">pore</span><span class="p">]</span> <span class="o">-=</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">vx</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
                 <span class="n">t_inds</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">i</span><span class="o">+</span><span class="n">j</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">vx</span><span class="p">,</span> <span class="n">s_offset</span><span class="p">)])</span>
                 <span class="n">temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">dt</span><span class="p">[</span><span class="n">t_inds</span><span class="p">]</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">dt</span><span class="p">[</span><span class="n">t_inds</span><span class="p">]))[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-                <span class="n">t_coords</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">tuple</span><span class="p">([</span><span class="n">t_inds</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">temp</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">ndim</span><span class="p">)]))</span>
-
+                <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="n">t_coords</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">tuple</span><span class="p">((</span><span class="n">t_inds</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">temp</span><span class="p">],</span>
+                                           <span class="n">t_inds</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">temp</span><span class="p">])))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">t_coords</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">tuple</span><span class="p">((</span><span class="n">t_inds</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">temp</span><span class="p">],</span>
+                                           <span class="n">t_inds</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">temp</span><span class="p">],</span>
+                                           <span class="n">t_inds</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="n">temp</span><span class="p">])))</span>
     <span class="c1"># Clean up values</span>
-    <span class="n">p_coords</span> <span class="o">=</span> <span class="n">p_coords_cm</span>
     <span class="n">Nt</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">t_dia_inscribed</span><span class="p">)</span>  <span class="c1"># Get number of throats</span>
     <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>  <span class="c1"># If 2D, add 0&#39;s in 3rd dimension</span>
-        <span class="n">p_coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">p_coords_cm</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">Np</span><span class="p">,</span> <span class="p">))))</span><span class="o">.</span><span class="n">T</span>
+        <span class="n">p_coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">p_coords</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">Np</span><span class="p">,</span> <span class="p">))))</span><span class="o">.</span><span class="n">T</span>
         <span class="n">t_coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">t_coords</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">Nt</span><span class="p">,</span> <span class="p">))))</span><span class="o">.</span><span class="n">T</span>
 
     <span class="n">net</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="c1"># Define all the fundamental stuff</span>
+    <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.all&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">Np</span><span class="p">,</span> <span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.all&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">Nt</span><span class="p">,</span> <span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">p_coords</span><span class="p">)</span><span class="o">*</span><span class="n">voxel_size</span>
+    <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.centroid&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">p_coords</span><span class="p">)</span><span class="o">*</span><span class="n">voxel_size</span>
+    <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.centroid&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">t_coords</span><span class="p">)</span><span class="o">*</span><span class="n">voxel_size</span>
     <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">t_conns</span><span class="p">)</span>
-    <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">p_coords</span><span class="p">)</span>
-    <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.all&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
-    <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.all&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
-    <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.region_label&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">p_label</span><span class="p">)</span>
-    <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.region_volume&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">p_volume</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">voxel_size</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span>
-    <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.phase&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">p_phase</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
-    <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.phases&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.phase&#39;</span><span class="p">][</span><span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">]]</span>
-    <span class="c1"># Extract the geometric stuff</span>
-    <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.local_peak&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">p_coords_dt</span><span class="p">)</span><span class="o">*</span><span class="n">voxel_size</span>
-    <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.global_peak&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">p_coords_dt_global</span><span class="p">)</span><span class="o">*</span><span class="n">voxel_size</span>
-    <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.geometric_centroid&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">p_coords_cm</span><span class="p">)</span><span class="o">*</span><span class="n">voxel_size</span>
-    <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.global_peak&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">t_coords</span><span class="p">)</span><span class="o">*</span><span class="n">voxel_size</span>
+    <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.label&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">p_label</span><span class="p">)</span>
+    <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.volume&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">p_volume</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">voxel_size</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.volume&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">Nt</span><span class="p">,</span> <span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.diameter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">p_dia_local</span><span class="p">)</span><span class="o">*</span><span class="n">voxel_size</span>
     <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.inscribed_diameter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">p_dia_local</span><span class="p">)</span><span class="o">*</span><span class="n">voxel_size</span>
+    <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.equivalent_diameter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="p">((</span><span class="mi">3</span><span class="o">/</span><span class="mi">4</span><span class="o">*</span><span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.volume&#39;</span><span class="p">]</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">))</span>
     <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.extended_diameter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">p_dia_global</span><span class="p">)</span><span class="o">*</span><span class="n">voxel_size</span>
+    <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.surface_area&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">p_area_surf</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">voxel_size</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+    <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.diameter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">t_dia_inscribed</span><span class="p">)</span><span class="o">*</span><span class="n">voxel_size</span>
     <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.inscribed_diameter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">t_dia_inscribed</span><span class="p">)</span><span class="o">*</span><span class="n">voxel_size</span>
+    <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.area&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">t_area</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">voxel_size</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.perimeter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">t_perimeter</span><span class="p">)</span><span class="o">*</span><span class="n">voxel_size</span>
+    <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.equivalent_diameter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">t_area</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">voxel_size</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span><span class="o">**</span><span class="mf">0.5</span>
     <span class="n">P12</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">]</span>
-    <span class="n">PT1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(((</span><span class="n">p_coords</span><span class="p">[</span><span class="n">P12</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]]</span><span class="o">-</span><span class="n">t_coords</span><span class="p">)</span><span class="o">*</span><span class="n">voxel_size</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span>
-                         <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
-    <span class="n">PT2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(((</span><span class="n">p_coords</span><span class="p">[</span><span class="n">P12</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]]</span><span class="o">-</span><span class="n">t_coords</span><span class="p">)</span><span class="o">*</span><span class="n">voxel_size</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span>
-                         <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">PT1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(((</span><span class="n">p_coords</span><span class="p">[</span><span class="n">P12</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]]</span><span class="o">-</span><span class="n">t_coords</span><span class="p">)</span> <span class="o">*</span> <span class="n">voxel_size</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">PT2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(((</span><span class="n">p_coords</span><span class="p">[</span><span class="n">P12</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]]</span><span class="o">-</span><span class="n">t_coords</span><span class="p">)</span> <span class="o">*</span> <span class="n">voxel_size</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
     <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.total_length&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">PT1</span> <span class="o">+</span> <span class="n">PT2</span>
     <span class="n">PT1</span> <span class="o">=</span> <span class="n">PT1</span><span class="o">-</span><span class="n">p_dia_local</span><span class="p">[</span><span class="n">P12</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]]</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">voxel_size</span>
     <span class="n">PT2</span> <span class="o">=</span> <span class="n">PT2</span><span class="o">-</span><span class="n">p_dia_local</span><span class="p">[</span><span class="n">P12</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]]</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">voxel_size</span>
+    <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.length&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">PT1</span> <span class="o">+</span> <span class="n">PT2</span>
     <span class="n">dist</span> <span class="o">=</span> <span class="p">(</span><span class="n">p_coords</span><span class="p">[</span><span class="n">P12</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]]</span><span class="o">-</span><span class="n">p_coords</span><span class="p">[</span><span class="n">P12</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]])</span><span class="o">*</span><span class="n">voxel_size</span>
     <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.direct_length&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dist</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">accuracy</span> <span class="o">==</span> <span class="s1">&#39;high&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span><span class="p">):</span>
-        <span class="n">areas</span> <span class="o">=</span> <span class="n">region_surface_areas</span><span class="p">(</span><span class="n">regions</span><span class="o">=</span><span class="n">im</span><span class="p">)</span>
-        <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.surface_area&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">areas</span> <span class="o">*</span> <span class="n">voxel_size</span><span class="o">**</span><span class="mi">2</span>
-        <span class="n">interface_area</span> <span class="o">=</span> <span class="n">region_interface_areas</span><span class="p">(</span><span class="n">regions</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">areas</span><span class="o">=</span><span class="n">areas</span><span class="p">,</span>
-                                                <span class="n">voxel_size</span><span class="o">=</span><span class="n">voxel_size</span><span class="p">)</span>
-        <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.cross_sectional_area&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">interface_area</span><span class="o">.</span><span class="n">area</span> <span class="o">*</span> <span class="n">voxel_size</span><span class="o">**</span><span class="mi">2</span>
-        <span class="c1"># This will be implemented in a different PR</span>
-        <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.volume&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">p_volume</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">voxel_size</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span>
-        <span class="c1"># This will be implemented in a different PR</span>
-        <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.perimeter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">t_perimeter</span><span class="p">)</span><span class="o">*</span><span class="n">voxel_size</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.surface_area&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">p_area_surf</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">voxel_size</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
-        <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.cross_sectional_area&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">t_area</span><span class="p">)</span>
-        <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.volume&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">p_volume</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">voxel_size</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span>
-        <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.perimeter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">t_perimeter</span><span class="p">)</span><span class="o">*</span><span class="n">voxel_size</span>
+    <span class="c1"># Make a dummy openpnm network to get the conduit lengths</span>
+    <span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">GenericNetwork</span><span class="p">()</span>
+    <span class="n">pn</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">net</span><span class="p">)</span>
+    <span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.endpoints&#39;</span><span class="p">,</span>
+                 <span class="n">model</span><span class="o">=</span><span class="n">op_gm</span><span class="o">.</span><span class="n">throat_endpoints</span><span class="o">.</span><span class="n">spherical_pores</span><span class="p">,</span>
+                 <span class="n">pore_diameter</span><span class="o">=</span><span class="s1">&#39;pore.inscribed_diameter&#39;</span><span class="p">,</span>
+                 <span class="n">throat_diameter</span><span class="o">=</span><span class="s1">&#39;throat.inscribed_diameter&#39;</span><span class="p">)</span>
+    <span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;throat.conduit_lengths&#39;</span><span class="p">,</span>
+                 <span class="n">model</span><span class="o">=</span><span class="n">op_gm</span><span class="o">.</span><span class="n">throat_length</span><span class="o">.</span><span class="n">conduit_lengths</span><span class="p">)</span>
+    <span class="n">pn</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.area&#39;</span><span class="p">,</span>
+                 <span class="n">model</span><span class="o">=</span><span class="n">op_gm</span><span class="o">.</span><span class="n">pore_area</span><span class="o">.</span><span class="n">sphere</span><span class="p">)</span>
+    <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.endpoints.head&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pn</span><span class="p">[</span><span class="s1">&#39;throat.endpoints.head&#39;</span><span class="p">]</span>
+    <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.endpoints.tail&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pn</span><span class="p">[</span><span class="s1">&#39;throat.endpoints.tail&#39;</span><span class="p">]</span>
+    <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.conduit_lengths.pore1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pn</span><span class="p">[</span><span class="s1">&#39;throat.conduit_lengths.pore1&#39;</span><span class="p">]</span>
+    <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.conduit_lengths.pore2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pn</span><span class="p">[</span><span class="s1">&#39;throat.conduit_lengths.pore2&#39;</span><span class="p">]</span>
+    <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.conduit_lengths.throat&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pn</span><span class="p">[</span><span class="s1">&#39;throat.conduit_lengths.throat&#39;</span><span class="p">]</span>
+    <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.area&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.area&#39;</span><span class="p">]</span>
+    <span class="n">prj</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">project</span>
+    <span class="n">prj</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+    <span class="n">wrk</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">Workspace</span><span class="p">()</span>
+    <span class="n">wrk</span><span class="o">.</span><span class="n">close_project</span><span class="p">(</span><span class="n">prj</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">net</span></div>
 </pre></div>
