@@ -9,7 +9,7 @@ except ModuleNotFoundError:
            " using a virtualenv since conflicts with other packages are"
            " common. This is why it is not explicitly included as a"
            " dependency in porespy.")
-    logger.critical(msg)
+    logger.warning(msg)
 
 
 def imagej_wrapper(im, plugin_name, path):

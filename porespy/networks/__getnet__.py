@@ -6,6 +6,7 @@ from porespy.tools import extend_slice
 from porespy import settings
 from porespy.tools import get_tqdm, make_contiguous
 from porespy.metrics import region_surface_areas, region_interface_areas
+from porespy.metrics import region_volumes
 from loguru import logger
 tqdm = get_tqdm()
 
@@ -130,7 +131,8 @@ def regions_to_network(regions, phases=None, voxel_size=1, accuracy='standard'):
     t_coords = []
 
     # Start extracting size information for pores and throats
-    for i in tqdm(Ps, **settings.tqdm):
+    msg = "Extracting pore and throat properties"
+    for i in tqdm(Ps, desc=msg, **settings.tqdm):
         pore = i - 1
         if slices[pore] is None:
             continue
@@ -206,19 +208,18 @@ def regions_to_network(regions, phases=None, voxel_size=1, accuracy='standard'):
     dist = (p_coords[P12[:, 0]]-p_coords[P12[:, 1]])*voxel_size
     net['throat.direct_length'] = np.sqrt(np.sum(dist**2, axis=1))
     if (accuracy == 'high') and (im.ndim == 3):
+        net['pore.volume'] = region_volumes(regions=im, mode='marching_cubes')
         areas = region_surface_areas(regions=im)
         net['pore.surface_area'] = areas * voxel_size**2
         interface_area = region_interface_areas(regions=im, areas=areas,
                                                 voxel_size=voxel_size)
         net['throat.cross_sectional_area'] = interface_area.area * voxel_size**2
         # This will be implemented in a different PR
-        net['pore.volume'] = np.copy(p_volume)*(voxel_size**3)
-        # This will be implemented in a different PR
         net['throat.perimeter'] = np.array(t_perimeter)*voxel_size
     else:
         net['pore.surface_area'] = np.copy(p_area_surf)*(voxel_size)**2
         net['throat.cross_sectional_area'] = np.array(t_area)
-        net['pore.volume'] = np.copy(p_volume)*(voxel_size**3)
+        net['pore.volume'] = np.copy(net['pore.region_volume'])
         net['throat.perimeter'] = np.array(t_perimeter)*voxel_size
 
     return net

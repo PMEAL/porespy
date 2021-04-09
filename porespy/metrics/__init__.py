@@ -30,7 +30,6 @@ but a few functions can be applied directly to the binary image.
     metrics.region_surface_areas
     metrics.regionprops_3D
     metrics.representative_elementary_volume
-    metrics.two_point_correlation_bf
     metrics.two_point_correlation_fft
 
 """
@@ -46,9 +45,10 @@ from .__funcs__ import radial_density_distribution
 from .__funcs__ import porosity
 from .__funcs__ import porosity_profile
 from .__funcs__ import representative_elementary_volume
-from .__funcs__ import two_point_correlation_bf
 from .__funcs__ import two_point_correlation_fft
-from .__funcs__ import region_surface_areas
-from .__funcs__ import region_interface_areas
-from .__funcs__ import mesh_surface_area
 from .__funcs__ import phase_fraction
+from ._meshtools import region_surface_areas
+from ._meshtools import region_interface_areas
+from ._meshtools import mesh_surface_area
+from ._meshtools import region_volumes
+from ._meshtools import mesh_volume

@@ -44,16 +44,3 @@ from .__getnet__ import regions_to_network
 from .__utils__ import _net_dict
 from ._snow2 import snow2
 from .__maximal_ball__ import maximal_ball
-
-
-# .. autofunction:: add_boundary_regions
-# .. autofunction:: connect_network_phases
-# .. autofunction:: generate_voxel_image
-# .. autofunction:: label_boundary_cells
-# .. autofunction:: map_to_regions
-# .. autofunction:: add_phase_interconnections
-# .. autofunction:: regions_to_network
-# .. autofunction:: snow
-# .. autofunction:: snow_dual
-# .. autofunction:: snow_n
-# .. autofunction:: maximal_ball

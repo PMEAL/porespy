@@ -301,7 +301,7 @@ def label_boundaries(
         A 3-element list, with each element containing a pair of strings
         indicating the label to apply to the beginning and end of each axis.
         The default is ``[['left', 'right'], ['front', 'back'],
-        ['top', 'bottom']]`` will will apply the label ``'left'`` to all
+        ['top', 'bottom']]`` which will apply the label ``'left'`` to all
         pores with the minimum x-coordinate, and ``'right'`` to the pores
         with the maximum x-coordinate, and so on.
 

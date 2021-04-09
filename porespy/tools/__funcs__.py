@@ -792,7 +792,6 @@ def mesh_region(region: bool, strel=None):
     ----------
     im : ND-array
         A boolean image with ``True`` values indicating the region of interest
-
     strel : ND-array
         The structuring element to use when blurring the region.  The blur is
         perfomed using a simple convolution filter.  The point is to create a
