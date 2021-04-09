@@ -161,11 +161,9 @@
 <span class="kn">import</span> <span class="nn">scipy.ndimage</span> <span class="k">as</span> <span class="nn">spim</span>
 <span class="kn">from</span> <span class="nn">skimage.segmentation</span> <span class="kn">import</span> <span class="n">find_boundaries</span>
 <span class="kn">from</span> <span class="nn">skimage.morphology</span> <span class="kn">import</span> <span class="n">ball</span><span class="p">,</span> <span class="n">cube</span><span class="p">,</span> <span class="n">disk</span><span class="p">,</span> <span class="n">square</span>
-<span class="kn">from</span> <span class="nn">skimage.segmentation</span> <span class="kn">import</span> <span class="n">relabel_sequential</span>
 <span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">make_contiguous</span>
-<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">_create_alias_map</span><span class="p">,</span> <span class="n">overlay</span>
+<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">overlay</span>
 <span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">insert_cylinder</span>
-<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">zero_corners</span>
 <span class="kn">from</span> <span class="nn">porespy.generators</span> <span class="kn">import</span> <span class="n">borders</span>
 <span class="kn">from</span> <span class="nn">porespy</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">get_tqdm</span>
@@ -177,9 +175,6 @@
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Maps pore values from a network onto the image from which it was extracted</span>
 
-<span class="sd">    This function assumes that the pore numbering in the network has remained</span>
-<span class="sd">    unchanged from the region labels in the partitioned image.</span>
-
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    regions : ND-array</span>
@@ -188,7 +183,7 @@
 <span class="sd">    values : array_like</span>
 <span class="sd">        An array containing the numerical values to insert into each region.</span>
 <span class="sd">        The value at location *n* will be inserted into the image where</span>
-<span class="sd">        ``regions`` is *n+1*.  This mis-match is caused by the fact that 0&#39;s</span>
+<span class="sd">        ``regions`` is *n+1*.  This mismatch is caused by the fact that 0&#39;s</span>
 <span class="sd">        in the ``regions`` image is assumed to be the backgroung phase, while</span>
 <span class="sd">        pore index 0 is valid.</span>
 
@@ -207,101 +202,7 @@
     <span class="k">return</span> <span class="n">im</span></div>
 
 
-<div class="viewcode-block" id="add_boundary_regions"><a class="viewcode-back" href="../../../modules/generated/porespy.networks.add_boundary_regions.html#porespy.networks.add_boundary_regions">[docs]</a><span class="k">def</span> <span class="nf">add_boundary_regions</span><span class="p">(</span><span class="n">regions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">faces</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;front&#39;</span><span class="p">,</span> <span class="s1">&#39;back&#39;</span><span class="p">,</span> <span class="s1">&#39;left&#39;</span><span class="p">,</span>
-                                              <span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="s1">&#39;top&#39;</span><span class="p">,</span> <span class="s1">&#39;bottom&#39;</span><span class="p">]):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Given an image partitioned into regions, pads specified faces with new</span>
-<span class="sd">    regions</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    regions : ND-array</span>
-<span class="sd">        An image of the pore space partitioned into regions and labeled</span>
-<span class="sd">    faces : list of strings</span>
-<span class="sd">        The faces of ``regions`` which should have boundaries added.  Options</span>
-<span class="sd">        are:</span>
-
-<span class="sd">        *&#39;right&#39;* - Adds boundaries to the x=0 face (``im[0, :, :]``)</span>
-
-<span class="sd">        *&#39;left&#39;* - Adds boundaries to the x=X face (``im[-1, :, :]``)</span>
-
-<span class="sd">        *&#39;front&#39;* - Adds boundaries to the y=0 face (``im[:, ), :]``)</span>
-
-<span class="sd">        *&#39;back&#39;* - Adds boundaries to the x=0 face (``im[:, -1, :]``)</span>
-
-<span class="sd">        *&#39;bottom&#39;* - Adds boundaries to the x=0 face (``im[:, :, 0]``)</span>
-
-<span class="sd">        *&#39;top&#39;* - Adds boundaries to the x=0 face (``im[:, :, -1]``)</span>
-
-<span class="sd">        The default is all faces.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    image : ND-array</span>
-<span class="sd">        A copy of ``regions`` with the specified boundaries added, so will be</span>
-<span class="sd">        slightly larger in each direction where boundaries were added.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">faces</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">regions</span>
-
-    <span class="k">if</span> <span class="n">regions</span><span class="o">.</span><span class="n">ndim</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]:</span>
-        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;add_boundary_regions works only on 2D and 3D images&quot;</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">regions</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">set</span><span class="p">([</span><span class="s2">&quot;bottom&quot;</span><span class="p">,</span> <span class="s2">&quot;top&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">faces</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;For 2D images, use &#39;left&#39;, &#39;right&#39;, &#39;front&#39;, &#39;back&#39; labels&quot;</span><span class="p">)</span>
-
-    <span class="c1"># Map which image slice corresponds to which face</span>
-    <span class="n">face_to_slice</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;left&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;right&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;front&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;back&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;bottom&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;top&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span>
-    <span class="p">}</span>
-    <span class="c1"># Map face label to corresponding axis</span>
-    <span class="n">face_to_axis</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;left&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;right&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;front&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;back&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;bottom&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;top&quot;</span><span class="p">:</span> <span class="mi">2</span>
-    <span class="p">}</span>
-
-    <span class="n">ndim</span> <span class="o">=</span> <span class="n">regions</span><span class="o">.</span><span class="n">ndim</span>
-    <span class="n">indices</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="c1"># Note: pad_width format: each elem is [pad_before, pad_after]</span>
-    <span class="n">pad_width</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ndim</span><span class="p">)]</span>
-    <span class="c1"># 1. Create indices for boundary faces, ex. bottom&quot; =&gt; [:, :, -1]</span>
-    <span class="c1"># Note: slice(None) is equivalent to &quot;:&quot; in fancy indexing, ex. [0, 0, :]</span>
-    <span class="c1"># 2. populate pad_width based on labels</span>
-    <span class="k">for</span> <span class="n">face</span> <span class="ow">in</span> <span class="n">faces</span><span class="p">:</span>
-        <span class="n">temp</span> <span class="o">=</span> <span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ndim</span><span class="p">)]</span>
-        <span class="n">axis</span> <span class="o">=</span> <span class="n">face_to_axis</span><span class="p">[</span><span class="n">face</span><span class="p">]</span>
-        <span class="n">plane</span> <span class="o">=</span> <span class="n">face_to_slice</span><span class="p">[</span><span class="n">face</span><span class="p">]</span>
-        <span class="n">temp</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="n">plane</span>
-        <span class="n">indices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">temp</span><span class="p">))</span>
-        <span class="n">pad_width</span><span class="p">[</span><span class="n">axis</span><span class="p">][</span><span class="n">plane</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>      <span class="c1"># Pad each face by 1 pixel</span>
-
-    <span class="n">regions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">regions</span><span class="p">,</span> <span class="n">pad_width</span><span class="o">=</span><span class="n">pad_width</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;edge&quot;</span><span class="p">)</span>
-
-    <span class="c1"># Increment boundary regions to distinguish from internal regions</span>
-    <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">:</span>
-        <span class="c1"># Only increment non-background regions (i.e. != 0)</span>
-        <span class="n">non_background</span> <span class="o">=</span> <span class="n">regions</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span>
-        <span class="n">regions</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="n">non_background</span><span class="p">]</span> <span class="o">+=</span> <span class="n">regions</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
-
-    <span class="c1"># Remove connections between boundary regions</span>
-    <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">:</span>
-        <span class="n">regions</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">*=</span> <span class="o">~</span><span class="n">find_boundaries</span><span class="p">(</span><span class="n">regions</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;outer&quot;</span><span class="p">)</span>
-
-    <span class="c1"># Pad twice to make boundary regions 3-pixel thick -&gt; required for marching_cube</span>
-    <span class="n">pw</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pad_width</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span>
-    <span class="n">regions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">regions</span><span class="p">,</span> <span class="n">pad_width</span><span class="o">=</span><span class="n">pw</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;edge&quot;</span><span class="p">)</span>
-
-    <span class="c1"># Convert pad-induced corners to 0</span>
-    <span class="n">zero_corners</span><span class="p">(</span><span class="n">regions</span><span class="p">,</span> <span class="n">pw</span> <span class="o">*</span> <span class="mi">3</span><span class="p">)</span>
-
-    <span class="c1"># Make labels contiguous</span>
-    <span class="n">regions</span> <span class="o">=</span> <span class="n">relabel_sequential</span><span class="p">(</span><span class="n">regions</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-
-    <span class="k">return</span> <span class="n">regions</span></div>
-
-
-<span class="k">def</span> <span class="nf">add_boundary_regions2</span><span class="p">(</span><span class="n">regions</span><span class="p">,</span> <span class="n">pad_width</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+<div class="viewcode-block" id="add_boundary_regions"><a class="viewcode-back" href="../../../modules/generated/porespy.networks.add_boundary_regions.html#porespy.networks.add_boundary_regions">[docs]</a><span class="k">def</span> <span class="nf">add_boundary_regions</span><span class="p">(</span><span class="n">regions</span><span class="p">,</span> <span class="n">pad_width</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Add boundary regions on specified faces of an image</span>
 
@@ -310,12 +211,13 @@
 <span class="sd">    regions : ND-image</span>
 <span class="sd">        An image containing labelled regions, such as a watershed segmentation</span>
 <span class="sd">    pad_width : array_like</span>
-<span class="sd">        Number of layers to add to the edges of each axis. An integer pads</span>
-<span class="sd">        each axis equally in both direction.  An ND-by-1 list pads each axis</span>
-<span class="sd">        by given amount in both directions.  An ND-by-1 list of pairs pad</span>
-<span class="sd">        each axis by a unique amount. This argument is handled the same as</span>
-<span class="sd">        ``pad_width`` in the ``np.pad`` function. The default is to add</span>
-<span class="sd">        3 voxels on each axis.</span>
+<span class="sd">        Number of layers to add to the beginnign and end of each axis. This</span>
+<span class="sd">        argument is handled the same as ``pad_width`` in the ``np.pad``</span>
+<span class="sd">        function. A scalar adds the same amount to the beginning and end of</span>
+<span class="sd">        each axis. [A, B] adds A to the beginning of each axis and B to the</span>
+<span class="sd">        ends.  [[A, B], ..., [C, D]] adds A to the beginning and B to the</span>
+<span class="sd">        end of the first axis, and so on. The default is to add 3 voxels on</span>
+<span class="sd">        both ends of each axis.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -329,7 +231,7 @@
     <span class="k">if</span> <span class="n">faces</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">faces</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">faces</span><span class="p">,</span> <span class="n">faces</span><span class="p">]]</span><span class="o">*</span><span class="n">regions</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">faces</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="n">regions</span><span class="o">.</span><span class="n">ndim</span><span class="p">:</span>
-        <span class="n">faces</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">faces</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+        <span class="n">faces</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">faces</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">pass</span>
     <span class="n">t</span> <span class="o">=</span> <span class="n">faces</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
@@ -350,7 +252,7 @@
     <span class="n">s</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="nb">slice</span><span class="p">(</span><span class="n">t</span><span class="o">-</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">-</span><span class="p">(</span><span class="n">t</span><span class="o">-</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="ow">or</span> <span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">faces</span><span class="p">])</span>
     <span class="n">new_regions</span> <span class="o">=</span> <span class="n">new_regions</span><span class="p">[</span><span class="n">s</span><span class="p">]</span>
     <span class="n">new_regions</span> <span class="o">=</span> <span class="n">make_contiguous</span><span class="p">(</span><span class="n">new_regions</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">new_regions</span>
+    <span class="k">return</span> <span class="n">new_regions</span></div>
 
 
 <span class="k">def</span> <span class="nf">_generate_voxel_image</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">pore_shape</span><span class="p">,</span> <span class="n">throat_shape</span><span class="p">,</span> <span class="n">max_dim</span><span class="o">=</span><span class="mi">200</span><span class="p">):</span>
@@ -501,158 +403,84 @@
     <span class="k">return</span> <span class="n">im</span></div>
 
 
-<span class="k">def</span> <span class="nf">add_phase_interconnections</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">snow_partitioning_n</span><span class="p">,</span> <span class="n">voxel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-                               <span class="n">marching_cubes_area</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                               <span class="n">alias</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">label_phases</span><span class="p">(</span>
+        <span class="n">network</span><span class="p">,</span>
+        <span class="n">alias</span><span class="o">=</span><span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;void&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;solid&#39;</span><span class="p">}):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This function connects networks of two or more phases together by</span>
-<span class="sd">    interconnecting neighbouring nodes inside different phases.</span>
-
-<span class="sd">    The resulting network can be used for the study of transport and kinetics</span>
-<span class="sd">    at interphase of two phases.</span>
+<span class="sd">    Creates pore and throat labels based on &#39;pore.phase&#39; values</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    network : 2D or 3D network</span>
-<span class="sd">        A dictoionary containing structural information of two or more</span>
-<span class="sd">        phases networks. The dictonary format must be same as porespy</span>
-<span class="sd">        region_to_network function.</span>
-
-<span class="sd">    snow_partitioning_n : tuple</span>
-<span class="sd">        The output generated by snow_partitioning_n function. The tuple should</span>
-<span class="sd">        have phases_max_labels and original image of material.</span>
-
-<span class="sd">    voxel_size : scalar</span>
-<span class="sd">        The resolution of the image, expressed as the length of one side of a</span>
-<span class="sd">        voxel, so the volume of a voxel would be **voxel_size**-cubed.  The</span>
-<span class="sd">        default is 1, which is useful when overlaying the PNM on the original</span>
-<span class="sd">        image since the scale of the image is alway 1 unit lenth per voxel.</span>
-
-<span class="sd">    marching_cubes_area : bool</span>
-<span class="sd">        If ``True`` then the surface area and interfacial area between regions</span>
-<span class="sd">        will be causing the marching cube algorithm. This is a more accurate</span>
-<span class="sd">        representation of area in extracted network, but is quite slow, so</span>
-<span class="sd">        it is ``False`` by default.  The default method simply counts voxels</span>
-<span class="sd">        so does not correctly account for the voxelated nature of the images.</span>
-
-<span class="sd">    alias : dict (Optional)</span>
-<span class="sd">        A dictionary that assigns unique image label to specific phase.</span>
-<span class="sd">        For example {1: &#39;Solid&#39;} will show all structural properties associated</span>
-<span class="sd">        with label 1 as Solid phase properties.</span>
-<span class="sd">        If ``None`` then default labelling will be used i.e {1: &#39;Phase1&#39;,..}.</span>
+<span class="sd">    network : dict</span>
+<span class="sd">        The network stored as a dictionary as returned from the</span>
+<span class="sd">        ``regions_to_network`` function</span>
+<span class="sd">    alias : dict</span>
+<span class="sd">        A mapping between integer values in &#39;pore.phase&#39; and string labels.</span>
+<span class="sd">        The default is ``{1: &#39;void&#39;, 2: &#39;solid&#39;}`` which will result in the</span>
+<span class="sd">        labels ``&#39;pore.void&#39;`` and ``&#39;pore.solid&#39;``, as well as</span>
+<span class="sd">        ``&#39;throat.solid_void&#39;``, ``&#39;throat.solid_solid&#39;``, and</span>
+<span class="sd">        ``&#39;throat.void_void&#39;``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    A dictionary containing network information of individual and connected</span>
-<span class="sd">    networks. The dictionary names use the OpenPNM convention so it may be</span>
-<span class="sd">    converted directly to an OpenPNM network object using the ``update``</span>
-<span class="sd">    command.</span>
-
+<span class="sd">    network : dict</span>
+<span class="sd">        The same ``network`` as passed in but with new boolean arrays added</span>
+<span class="sd">        for the phase labels.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Get alias if provided by user</span>
-    <span class="n">im</span> <span class="o">=</span> <span class="n">snow_partitioning_n</span><span class="o">.</span><span class="n">im</span>
-    <span class="n">al</span> <span class="o">=</span> <span class="n">_create_alias_map</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span>
-    <span class="c1"># Find interconnection and interfacial area between ith and jth phases</span>
-    <span class="n">conns1</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">]</span>
-    <span class="n">conns2</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">]</span>
-    <span class="n">label</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.label&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
-
-    <span class="n">num</span> <span class="o">=</span> <span class="n">snow_partitioning_n</span><span class="o">.</span><span class="n">phase_max_label</span>
-    <span class="n">num</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">*</span><span class="n">num</span><span class="p">]</span>
-    <span class="n">phases_num</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">im</span> <span class="o">*</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="n">phases_num</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trim_zeros</span><span class="p">(</span><span class="n">phases_num</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">i0</span><span class="p">,</span> <span class="n">i1</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">phases_num</span><span class="p">):</span>
-        <span class="n">loc1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">conns1</span> <span class="o">&gt;=</span> <span class="n">num</span><span class="p">[</span><span class="n">i0</span><span class="p">],</span> <span class="n">conns1</span> <span class="o">&lt;</span> <span class="n">num</span><span class="p">[</span><span class="n">i0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
-        <span class="n">loc2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">conns2</span> <span class="o">&gt;=</span> <span class="n">num</span><span class="p">[</span><span class="n">i0</span><span class="p">],</span> <span class="n">conns2</span> <span class="o">&lt;</span> <span class="n">num</span><span class="p">[</span><span class="n">i0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
-        <span class="n">loc3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">label</span> <span class="o">&gt;=</span> <span class="n">num</span><span class="p">[</span><span class="n">i0</span><span class="p">],</span> <span class="n">label</span> <span class="o">&lt;</span> <span class="n">num</span><span class="p">[</span><span class="n">i0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
-        <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">al</span><span class="p">[</span><span class="n">i1</span><span class="p">])]</span> <span class="o">=</span> <span class="n">loc1</span> <span class="o">*</span> <span class="n">loc2</span>
-        <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">al</span><span class="p">[</span><span class="n">i1</span><span class="p">])]</span> <span class="o">=</span> <span class="n">loc3</span>
-        <span class="k">if</span> <span class="n">i1</span> <span class="o">==</span> <span class="n">phases_num</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
-            <span class="n">loc4</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">conns1</span> <span class="o">&lt;</span> <span class="n">num</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">conns2</span> <span class="o">&gt;=</span> <span class="n">num</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-            <span class="n">loc5</span> <span class="o">=</span> <span class="n">label</span> <span class="o">&gt;=</span> <span class="n">num</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-            <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.boundary&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">loc4</span>
-            <span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.boundary&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">loc5</span>
-        <span class="k">for</span> <span class="n">j0</span><span class="p">,</span> <span class="n">j1</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">phases_num</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">j0</span> <span class="o">&gt;</span> <span class="n">i0</span><span class="p">:</span>
-                <span class="n">pi_pj_sa</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-                <span class="n">loc6</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">conns2</span> <span class="o">&gt;=</span> <span class="n">num</span><span class="p">[</span><span class="n">j0</span><span class="p">],</span> <span class="n">conns2</span> <span class="o">&lt;</span> <span class="n">num</span><span class="p">[</span><span class="n">j0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
-                <span class="n">pi_pj_conns</span> <span class="o">=</span> <span class="n">loc1</span> <span class="o">*</span> <span class="n">loc6</span>
-                <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.</span><span class="si">{}</span><span class="s1">_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">al</span><span class="p">[</span><span class="n">i1</span><span class="p">],</span> <span class="n">al</span><span class="p">[</span><span class="n">j1</span><span class="p">])]</span> <span class="o">=</span> <span class="n">pi_pj_conns</span>
-                <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">pi_pj_conns</span><span class="p">):</span>
-                    <span class="c1"># Calculates phase[i] interfacial area that connects with</span>
-                    <span class="c1"># phase[j] and vice versa</span>
-                    <span class="n">p_conns</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">][</span><span class="n">pi_pj_conns</span><span class="p">]</span>
-                    <span class="n">s_conns</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">][</span><span class="n">pi_pj_conns</span><span class="p">]</span>
-                    <span class="n">ps</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.area&#39;</span><span class="p">][</span><span class="n">pi_pj_conns</span><span class="p">]</span>
-                    <span class="n">p_sa</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span><span class="n">p_conns</span><span class="p">,</span> <span class="n">ps</span><span class="p">)</span>
-                    <span class="c1"># trim zeros at head/tail position to avoid extra bins</span>
-                    <span class="n">p_sa</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trim_zeros</span><span class="p">(</span><span class="n">p_sa</span><span class="p">)</span>
-                    <span class="n">i_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">p_conns</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">p_conns</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-                    <span class="n">j_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">s_conns</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">s_conns</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-                    <span class="n">s_pa</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span><span class="n">s_conns</span><span class="p">,</span> <span class="n">ps</span><span class="p">)</span>
-                    <span class="n">s_pa</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trim_zeros</span><span class="p">(</span><span class="n">s_pa</span><span class="p">)</span>
-                    <span class="n">pi_pj_sa</span><span class="p">[</span><span class="n">i_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">p_sa</span>
-                    <span class="n">pi_pj_sa</span><span class="p">[</span><span class="n">j_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">s_pa</span>
-                    <span class="c1"># Calculates interfacial area using marching cube method</span>
-                    <span class="k">if</span> <span class="n">marching_cubes_area</span><span class="p">:</span>
-                        <span class="n">ps_c</span> <span class="o">=</span> <span class="n">net</span><span class="p">[</span><span class="s1">&#39;throat.area&#39;</span><span class="p">][</span><span class="n">pi_pj_conns</span><span class="p">]</span>
-                        <span class="n">p_sa_c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span><span class="n">p_conns</span><span class="p">,</span> <span class="n">ps_c</span><span class="p">)</span>
-                        <span class="n">p_sa_c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trim_zeros</span><span class="p">(</span><span class="n">p_sa_c</span><span class="p">)</span>
-                        <span class="n">s_pa_c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span><span class="n">s_conns</span><span class="p">,</span> <span class="n">ps_c</span><span class="p">)</span>
-                        <span class="n">s_pa_c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trim_zeros</span><span class="p">(</span><span class="n">s_pa_c</span><span class="p">)</span>
-                        <span class="n">pi_pj_sa</span><span class="p">[</span><span class="n">i_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">p_sa_c</span>
-                        <span class="n">pi_pj_sa</span><span class="p">[</span><span class="n">j_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">s_pa_c</span>
-                    <span class="n">net</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;pore.</span><span class="si">{</span><span class="n">al</span><span class="p">[</span><span class="n">i1</span><span class="p">]</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">al</span><span class="p">[</span><span class="n">j1</span><span class="p">]</span><span class="si">}</span><span class="s1">_area&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pi_pj_sa</span> <span class="o">*</span> <span class="n">voxel_size</span> <span class="o">**</span> <span class="mi">2</span>
-    <span class="k">return</span> <span class="n">net</span>
+    <span class="n">conns</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s1">&#39;throat.conns&#39;</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">alias</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">pore_i_hits</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s1">&#39;pore.phase&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">i</span>
+        <span class="n">network</span><span class="p">[</span><span class="s1">&#39;pore.&#39;</span> <span class="o">+</span> <span class="n">alias</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="n">pore_i_hits</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">alias</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;throat.&#39;</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">([</span><span class="n">alias</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">alias</span><span class="p">[</span><span class="n">j</span><span class="p">]]))</span>
+            <span class="n">pore_j_hits</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s1">&#39;pore.phase&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">j</span>
+            <span class="n">throat_hits</span> <span class="o">=</span> <span class="n">pore_i_hits</span><span class="p">[</span><span class="n">conns</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]]</span> <span class="o">*</span> <span class="n">pore_j_hits</span><span class="p">[</span><span class="n">conns</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]]</span>
+            <span class="n">throat_hits</span> <span class="o">+=</span> <span class="n">pore_i_hits</span><span class="p">[</span><span class="n">conns</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]]</span> <span class="o">*</span> <span class="n">pore_j_hits</span><span class="p">[</span><span class="n">conns</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]]</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">throat_hits</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">network</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="n">network</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">conns</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+                <span class="n">network</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">+=</span> <span class="n">throat_hits</span>
+    <span class="k">return</span> <span class="n">network</span>
 
 
-<span class="k">def</span> <span class="nf">label_boundary_cells</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">boundary_faces</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">label_boundaries</span><span class="p">(</span>
+        <span class="n">network</span><span class="p">,</span>
+        <span class="n">labels</span><span class="o">=</span><span class="p">[[</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;right&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;front&#39;</span><span class="p">,</span> <span class="s1">&#39;back&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;top&#39;</span><span class="p">,</span> <span class="s1">&#39;bottom&#39;</span><span class="p">]],</span>
+        <span class="n">tol</span><span class="o">=</span><span class="mf">1e-9</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Takes 2D or 3D network and assign labels to boundary pores</span>
+<span class="sd">    Creates boundary pore labels based on proximity to axis extrema</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    network : dictionary</span>
-<span class="sd">        A dictionary as produced by the SNOW network extraction algorithms</span>
-<span class="sd">        containing edge/vertex, site/bond, node/link information.</span>
-
-<span class="sd">    boundary_faces : list of strings</span>
-<span class="sd">        The user can choose ‘left’, ‘right’, ‘top’, ‘bottom’, ‘front’ and</span>
-<span class="sd">        ‘back’ face labels to assign boundary nodes. If no label is</span>
-<span class="sd">        assigned then all six faces will be selected as boundary nodes</span>
-<span class="sd">        automatically which can be trimmed later on based on user requirements.</span>
+<span class="sd">    network : dict</span>
+<span class="sd">        The network stored as a dictionary as returned from the</span>
+<span class="sd">        ``regions_to_network`` function</span>
+<span class="sd">    labels : list of lists</span>
+<span class="sd">        A 3-element list, with each element containing a pair of strings</span>
+<span class="sd">        indicating the label to apply to the beginning and end of each axis.</span>
+<span class="sd">        The default is ``[[&#39;left&#39;, &#39;right&#39;], [&#39;front&#39;, &#39;back&#39;],</span>
+<span class="sd">        [&#39;top&#39;, &#39;bottom&#39;]]`` will will apply the label ``&#39;left&#39;`` to all</span>
+<span class="sd">        pores with the minimum x-coordinate, and ``&#39;right&#39;`` to the pores</span>
+<span class="sd">        with the maximum x-coordinate, and so on.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    The same dictionar s pass ing, but containing boundary nodes labels.  For</span>
-<span class="sd">    example network[&#39;pore.left&#39;], network[&#39;pore.right&#39;], network[&#39;pore.top&#39;],</span>
-<span class="sd">    network[&#39;pore.bottom&#39;] etc.</span>
-
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    The dictionary names use the OpenPNM convention so it may be converted</span>
-<span class="sd">    directly to an OpenPNM network object using the ``update`` command.</span>
-
+<span class="sd">    network : dict</span>
+<span class="sd">        The same ``network`` as passed in but with new boolean arrays added</span>
+<span class="sd">        for the boundary labels.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">f</span> <span class="o">=</span> <span class="n">boundary_faces</span>
-    <span class="k">if</span> <span class="n">f</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">coords</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">]</span>
-        <span class="n">condition</span> <span class="o">=</span> <span class="n">coords</span><span class="p">[</span><span class="o">~</span><span class="n">network</span><span class="p">[</span><span class="s1">&#39;pore.boundary&#39;</span><span class="p">]]</span>
-        <span class="n">dic</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;left&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;right&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;front&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;back&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-               <span class="s1">&#39;top&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;bottom&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span>
-        <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">coords</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
-            <span class="n">dic</span><span class="p">[</span><span class="s1">&#39;top&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-            <span class="n">dic</span><span class="p">[</span><span class="s1">&#39;bottom&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;front&#39;</span><span class="p">,</span> <span class="s1">&#39;bottom&#39;</span><span class="p">]:</span>
-                <span class="n">network</span><span class="p">[</span><span class="s1">&#39;pore.</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="n">coords</span><span class="p">[:,</span> <span class="n">dic</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">&lt;</span> <span class="nb">min</span><span class="p">(</span><span class="n">condition</span><span class="p">[:,</span> <span class="n">dic</span><span class="p">[</span><span class="n">i</span><span class="p">]])</span>
-                <span class="p">)</span>
-            <span class="k">elif</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="s1">&#39;back&#39;</span><span class="p">,</span> <span class="s1">&#39;top&#39;</span><span class="p">]:</span>
-                <span class="n">network</span><span class="p">[</span><span class="s1">&#39;pore.</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="n">coords</span><span class="p">[:,</span> <span class="n">dic</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">&gt;</span> <span class="nb">max</span><span class="p">(</span><span class="n">condition</span><span class="p">[:,</span> <span class="n">dic</span><span class="p">[</span><span class="n">i</span><span class="p">]])</span>
-                <span class="p">)</span>
-
+    <span class="n">crds</span> <span class="o">=</span> <span class="n">network</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">]</span>
+    <span class="n">extents</span> <span class="o">=</span> <span class="p">[[</span><span class="n">crds</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">crds</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()]</span>
+               <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">crds</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]))]</span>
+    <span class="n">network</span><span class="p">[</span><span class="s1">&#39;pore.boundary&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">crds</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">axis</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">labels</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">face</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">axis</span><span class="p">):</span>
+                <span class="n">hits</span> <span class="o">=</span> <span class="n">crds</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">extents</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
+                <span class="n">network</span><span class="p">[</span><span class="s1">&#39;pore.boundary&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">hits</span>
+                <span class="n">network</span><span class="p">[</span><span class="s1">&#39;pore.&#39;</span> <span class="o">+</span> <span class="n">labels</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]]</span> <span class="o">=</span> <span class="n">hits</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="k">continue</span>
     <span class="k">return</span> <span class="n">network</span>
 </pre></div>
 

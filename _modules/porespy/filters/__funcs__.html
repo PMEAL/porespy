@@ -451,6 +451,11 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">mask_solid</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">regions</span> <span class="o">=</span> <span class="n">watershed</span><span class="p">(</span><span class="n">image</span><span class="o">=-</span><span class="n">dt</span><span class="p">,</span> <span class="n">markers</span><span class="o">=</span><span class="n">peaks</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">mask_solid</span><span class="p">)</span>
+    <span class="c1"># Catch any isolated regions that were missed</span>
+    <span class="c1"># TODO: I&#39;m not sure if this approach is universal so I&#39;m going to comment it</span>
+    <span class="c1"># out for now, and mark it as a todo</span>
+    <span class="c1"># labels = spim.label((regions == 0)*(im &gt; 0))[0]</span>
+    <span class="c1"># regions += (labels + regions.max())*(labels &gt; 0)</span>
     <span class="k">if</span> <span class="n">randomize</span><span class="p">:</span>
         <span class="n">regions</span> <span class="o">=</span> <span class="n">randomize_colors</span><span class="p">(</span><span class="n">regions</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">return_all</span><span class="p">:</span>
