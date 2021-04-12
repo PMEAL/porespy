@@ -607,13 +607,13 @@
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Create-image-and-element">
-   Create image and element
+  <a class="reference internal nav-link" href="#Create-image-and-element:">
+   Create image and element:
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Apply-generator-function">
-   Apply generator function
+  <a class="reference internal nav-link" href="#Apply-generator-function:">
+   Apply generator function:
   </a>
   <ul class="nav section-nav flex-column">
    <li class="toc-h3 nav-item toc-entry">
@@ -909,6 +909,98 @@ div.rendered_html tbody tr:hover {
 </style>
 <section id="insert_shape">
 <h1>insert_shape<a class="headerlink" href="#insert_shape" title="Permalink to this headline">¶</a></h1>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>import porespy as ps
+from IPython.display import Markdown as show
+show(ps.tools.show_docstring(ps.generators.insert_shape))
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<table class="table">
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>## Documentation for
+<code class="docutils literal notranslate"><span class="pre">insert_shape</span></code></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>*insert_shape<em>(im,
+element, center=None,
+corner=None, value=1,
+mode=‘overwrite’)</em>**</p></td>
+</tr>
+<tr class="row-odd"><td><p>nserts sub-image into a
+larger image at the
+specified location.</p></td>
+</tr>
+<tr class="row-even"><td><p>f the inserted image
+extends beyond the
+boundaries of the image
+it will e cropped
+accordingly.</p></td>
+</tr>
+<tr class="row-odd"><td><p>### Parameters im :
+ND-array The image into
+which the sub-image will
+be inserted element :
+ND-array The sub-image
+to insert center : tuple
+Coordinates indicating
+the position in the main
+image where the inserted
+imaged will be centered.
+If <code class="docutils literal notranslate"><span class="pre">center</span></code> is given
+then <code class="docutils literal notranslate"><span class="pre">corner</span></code> cannot
+be specified. Note that
+<code class="docutils literal notranslate"><span class="pre">center</span></code> can only be
+used if all dimensions
+of <code class="docutils literal notranslate"><span class="pre">element</span></code> are odd,
+otherwise the meaning of
+center is not defined.
+corner : tuple
+Coordinates indicating
+the position in the main
+image where the lower
+corner (i.e. [0, 0, 0])
+of the inserted image
+should be anchored. If
+<code class="docutils literal notranslate"><span class="pre">corner</span></code> is given then
+<code class="docutils literal notranslate"><span class="pre">corner</span></code> cannot be
+specified. value :
+scalar A scalar value to
+apply to the sub-image.
+The default is 1. mode :
+string If ‘overwrite’
+(default) the inserted
+image replaces the
+values in the main
+image. If ‘overlay’ the
+inserted image is added
+to the main image. In
+both cases the inserted
+image is multiplied by
+<code class="docutils literal notranslate"><span class="pre">value</span></code> first.</p></td>
+</tr>
+<tr class="row-even"><td><p>### Returns im :
+ND-array A copy of
+<code class="docutils literal notranslate"><span class="pre">im</span></code> with the supplied
+element inserted.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <section id="Import-packages">
 <h2>Import packages<a class="headerlink" href="#Import-packages" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
@@ -925,8 +1017,8 @@ np.random.seed(10)
 </div>
 </div>
 </section>
-<section id="Create-image-and-element">
-<h2>Create image and element<a class="headerlink" href="#Create-image-and-element" title="Permalink to this headline">¶</a></h2>
+<section id="Create-image-and-element:">
+<h2>Create image and element:<a class="headerlink" href="#Create-image-and-element:" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
@@ -988,8 +1080,9 @@ print(element)
 </div>
 <p>The image array and shape array are both arrays of the same dimensions, in this case 3-dimensional arrays.</p>
 </section>
-<section id="Apply-generator-function">
-<h2>Apply generator function<a class="headerlink" href="#Apply-generator-function" title="Permalink to this headline">¶</a></h2>
+<section id="Apply-generator-function:">
+<h2>Apply generator function:<a class="headerlink" href="#Apply-generator-function:" title="Permalink to this headline">¶</a></h2>
+<p>With different parameters</p>
 <section id="Corner">
 <h3>Corner<a class="headerlink" href="#Corner" title="Permalink to this headline">¶</a></h3>
 <div class="nbinput docutils container">
@@ -997,7 +1090,7 @@ print(element)
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>x = ps.generators.insert_shape(im= image, element=element, center=None, corner=[0,0,0], value=1, mode=&quot;overwrite&quot;)
+<span></span>x = ps.generators.insert_shape(image = image, element=element, center=None, corner=[0,0,0], value=1, mode=&quot;overwrite&quot;)
 print (x)
 </pre></div>
 </div>
@@ -1007,235 +1100,78 @@ print (x)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-[[[10 10 10  2  1]
-  [10 10 10  2  2]
-  [10 10 10  1  1]
-  [ 2  1  1  1  1]
-  [ 1  2  1  1  2]]
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">TypeError</span>                                 Traceback (most recent call last)
+<span class="ansi-green-fg">&lt;ipython-input-4-81b05dc32e91&gt;</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
+<span class="ansi-green-fg">----&gt; 1</span><span class="ansi-red-fg"> </span>x <span class="ansi-blue-fg">=</span> ps<span class="ansi-blue-fg">.</span>generators<span class="ansi-blue-fg">.</span>insert_shape<span class="ansi-blue-fg">(</span>image <span class="ansi-blue-fg">=</span> image<span class="ansi-blue-fg">,</span> element<span class="ansi-blue-fg">=</span>element<span class="ansi-blue-fg">,</span> center<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">None</span><span class="ansi-blue-fg">,</span> corner<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">[</span><span class="ansi-cyan-fg">0</span><span class="ansi-blue-fg">,</span><span class="ansi-cyan-fg">0</span><span class="ansi-blue-fg">,</span><span class="ansi-cyan-fg">0</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">,</span> value<span class="ansi-blue-fg">=</span><span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">,</span> mode<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">&#34;overwrite&#34;</span><span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">      2</span> print <span class="ansi-blue-fg">(</span>x<span class="ansi-blue-fg">)</span>
 
- [[10 10 10  2  1]
-  [10 10 10  1  1]
-  [10 10 10  2  2]
-  [ 2  2  2  1  2]
-  [ 1  1  1  1  2]]
-
- [[10 10 10  2  1]
-  [10 10 10  2  1]
-  [10 10 10  2  1]
-  [ 1  1  2  2  1]
-  [ 1  1  2  1  2]]
-
- [[ 2  1  2  2  1]
-  [ 2  1  1  1  1]
-  [ 1  2  1  2  1]
-  [ 1  1  1  1  1]
-  [ 1  2  2  1  2]]
-
- [[ 2  1  1  2  1]
-  [ 1  2  1  1  1]
-  [ 1  1  1  2  2]
-  [ 2  1  1  1  2]
-  [ 2  2  2  1  2]]]
+<span class="ansi-red-fg">TypeError</span>: insert_shape() got an unexpected keyword argument &#39;image&#39;
 </pre></div></div>
 </div>
 <p>The element is anchored in the [0, 0, 0] corner.</p>
 </section>
 <section id="Center">
 <h3>Center<a class="headerlink" href="#Center" title="Permalink to this headline">¶</a></h3>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>x = ps.generators.insert_shape(im=image, element=element, center=[2,3,2], corner=None, value=1, mode=&quot;overwrite&quot;)
+<span></span>x = ps.generators.insert_shape(image=image, element=element, center=[2,3,2], corner=None, value=1, mode=&quot;overwrite&quot;)
 print (x)
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-[[[ 2  2  1  2  1]
-  [ 2  2  1  2  2]
-  [ 1  2  2  1  1]
-  [ 2  1  1  1  1]
-  [ 1  2  1  1  2]]
-
- [[ 2  1  1  2  1]
-  [ 1  2  1  1  1]
-  [ 2 10 10 10  2]
-  [ 2 10 10 10  2]
-  [ 1 10 10 10  2]]
-
- [[ 1  2  2  2  1]
-  [ 2  1  2  2  1]
-  [ 2 10 10 10  1]
-  [ 1 10 10 10  1]
-  [ 1 10 10 10  2]]
-
- [[ 2  1  2  2  1]
-  [ 2  1  1  1  1]
-  [ 1 10 10 10  1]
-  [ 1 10 10 10  1]
-  [ 1 10 10 10  2]]
-
- [[ 2  1  1  2  1]
-  [ 1  2  1  1  1]
-  [ 1  1  1  2  2]
-  [ 2  1  1  1  2]
-  [ 2  2  2  1  2]]]
-</pre></div></div>
 </div>
 <p>The image is centered at [2, 3, 2].</p>
 </section>
 <section id="Value">
 <h3>Value<a class="headerlink" href="#Value" title="Permalink to this headline">¶</a></h3>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>x = ps.generators.insert_shape(im=image, element=element, center=[2,2,2], corner=None, value=5, mode=&quot;overwrite&quot;)
+<span></span>x = ps.generators.insert_shape(image=image, element=element, center=[2,2,2], corner=None, value=5, mode=&quot;overwrite&quot;)
 print (x)
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-[[[ 2  2  1  2  1]
-  [ 2  2  1  2  2]
-  [ 1  2  2  1  1]
-  [ 2  1  1  1  1]
-  [ 1  2  1  1  2]]
-
- [[ 2  1  1  2  1]
-  [ 1 50 50 50  1]
-  [ 2 50 50 50  2]
-  [ 2 50 50 50  2]
-  [ 1  1  1  1  2]]
-
- [[ 1  2  2  2  1]
-  [ 2 50 50 50  1]
-  [ 2 50 50 50  1]
-  [ 1 50 50 50  1]
-  [ 1  1  2  1  2]]
-
- [[ 2  1  2  2  1]
-  [ 2 50 50 50  1]
-  [ 1 50 50 50  1]
-  [ 1 50 50 50  1]
-  [ 1  2  2  1  2]]
-
- [[ 2  1  1  2  1]
-  [ 1  2  1  1  1]
-  [ 1  1  1  2  2]
-  [ 2  1  1  1  2]
-  [ 2  2  2  1  2]]]
-</pre></div></div>
 </div>
 <p>The element was multiplied by value (5), before being inserted to the image.</p>
 </section>
 <section id="Mode">
 <h3>Mode<a class="headerlink" href="#Mode" title="Permalink to this headline">¶</a></h3>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>x = ps.generators.insert_shape(im=image, element=element, center=[2,2,2], corner=None, value=1, mode=&quot;overwrite&quot;)
+<span></span>x = ps.generators.insert_shape(image=image, element=element, center=[2,2,2], corner=None, value=1, mode=&quot;overwrite&quot;)
 print (x)
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-[[[ 2  2  1  2  1]
-  [ 2  2  1  2  2]
-  [ 1  2  2  1  1]
-  [ 2  1  1  1  1]
-  [ 1  2  1  1  2]]
-
- [[ 2  1  1  2  1]
-  [ 1 10 10 10  1]
-  [ 2 10 10 10  2]
-  [ 2 10 10 10  2]
-  [ 1  1  1  1  2]]
-
- [[ 1  2  2  2  1]
-  [ 2 10 10 10  1]
-  [ 2 10 10 10  1]
-  [ 1 10 10 10  1]
-  [ 1  1  2  1  2]]
-
- [[ 2  1  2  2  1]
-  [ 2 10 10 10  1]
-  [ 1 10 10 10  1]
-  [ 1 10 10 10  1]
-  [ 1  2  2  1  2]]
-
- [[ 2  1  1  2  1]
-  [ 1  2  1  1  1]
-  [ 1  1  1  2  2]
-  [ 2  1  1  1  2]
-  [ 2  2  2  1  2]]]
-</pre></div></div>
 </div>
 <p>The element has been inserted to the image. Since the mode was “overwrite” the specified section of the image is replaced by the element.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>x = ps.generators.insert_shape(im=image, element=element, center=[2,2,2], corner=None, value=1, mode=&quot;overlay&quot;)
+<span></span>x = ps.generators.insert_shape(image=image, element=element, center=[2,2,2], corner=None, value=1, mode=&quot;overlay&quot;)
 print (x)
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-[[[ 2  2  1  2  1]
-  [ 2  2  1  2  2]
-  [ 1  2  2  1  1]
-  [ 2  1  1  1  1]
-  [ 1  2  1  1  2]]
-
- [[ 2  1  1  2  1]
-  [ 1 12 11 11  1]
-  [ 2 12 11 12  2]
-  [ 2 12 12 11  2]
-  [ 1  1  1  1  2]]
-
- [[ 1  2  2  2  1]
-  [ 2 11 12 12  1]
-  [ 2 11 11 12  1]
-  [ 1 11 12 12  1]
-  [ 1  1  2  1  2]]
-
- [[ 2  1  2  2  1]
-  [ 2 11 11 11  1]
-  [ 1 12 11 12  1]
-  [ 1 11 11 11  1]
-  [ 1  2  2  1  2]]
-
- [[ 2  1  1  2  1]
-  [ 1  2  1  1  1]
-  [ 1  1  1  2  2]
-  [ 2  1  1  1  2]
-  [ 2  2  2  1  2]]]
-</pre></div></div>
-</div>
 <p>The element has been inserted to the image. Since the mode was “overlay” the values of the element were added to the values of the image.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>
+</pre></div>
+</div>
+</div>
 </section>
 </section>
 </section>

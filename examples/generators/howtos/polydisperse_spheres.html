@@ -607,13 +607,13 @@
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Create-variables">
-   Create variables
+  <a class="reference internal nav-link" href="#Create-variables:">
+   Create variables:
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Apply-generator-function">
-   Apply generator function
+  <a class="reference internal nav-link" href="#Apply-generator-function:">
+   Apply generator function:
   </a>
   <ul class="nav section-nav flex-column">
    <li class="toc-h3 nav-item toc-entry">
@@ -927,14 +927,14 @@ np.random.seed(10)
 </div>
 </div>
 </section>
-<section id="Create-variables">
-<h2>Create variables<a class="headerlink" href="#Create-variables" title="Permalink to this headline">¶</a></h2>
+<section id="Create-variables:">
+<h2>Create variables:<a class="headerlink" href="#Create-variables:" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>shape = [100,100,100]
+<span></span>shape = [300,300,300]
 porosity = 0.5
 dist = scipy.stats.norm(loc=20, scale=10)
 
@@ -945,57 +945,33 @@ r_min = 5
 </div>
 </div>
 </section>
-<section id="Apply-generator-function">
-<h2>Apply generator function<a class="headerlink" href="#Apply-generator-function" title="Permalink to this headline">¶</a></h2>
+<section id="Apply-generator-function:">
+<h2>Apply generator function:<a class="headerlink" href="#Apply-generator-function:" title="Permalink to this headline">¶</a></h2>
+<p>With different parameters</p>
+<section id="porosity">
+<h3>porosity<a class="headerlink" href="#porosity" title="Permalink to this headline">¶</a></h3>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span>x = ps.generators.polydisperse_spheres(shape, porosity, dist, nbins, r_min)
+xx = ps.generators.polydisperse_spheres(shape, 0.25, dist, nbins, r_min)
 
-fig, ax = plt.subplots(figsize=[7,7]);
-graphx = ps.visualization.imshow(x);
-plt.axis(False)
-plt.title(&#39;default values&#39;);
+graphx = ps.visualization.show_3D(x)
+graphxx = ps.visualization.show_3D(xx)
+fig, ax = plt.subplots(1, 2, figsize=[15, 15]);
+ax[0].imshow(graphx);
+ax[1].imshow(graphxx);
+ax[0].axis(False)
+ax[1].axis(False)
+ax[0].set_title(&#39;porosity = 0.5&#39;)
+ax[1].set_title(&#39;porosity = .25&#39;)
 </pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Text(0.5, 1.0, &#39;default values&#39;)
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../_images/examples_generators_howtos_polydisperse_spheres_7_1.png" src="../../../_images/examples_generators_howtos_polydisperse_spheres_7_1.png" />
-</div>
-</div>
-<p>for this example, shape = [100,100,100], porosity = 0.5, and dist = scipy.stats.norm(loc=20, scale=10)</p>
-<section id="porosity">
-<h3>porosity<a class="headerlink" href="#porosity" title="Permalink to this headline">¶</a></h3>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>xx = ps.generators.polydisperse_spheres(shape, 0.25, dist, nbins, r_min)
-
-fig, ax = plt.subplots(figsize=[7,7]);
-graphx = ps.visualization.imshow(xx);
-plt.axis(False)
-plt.title(&#39;porosity = .25&#39;);
-</pre></div>
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -1007,29 +983,33 @@ Text(0.5, 1.0, &#39;porosity = .25&#39;)
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_generators_howtos_polydisperse_spheres_10_1.png" src="../../../_images/examples_generators_howtos_polydisperse_spheres_10_1.png" />
+<img alt="../../../_images/examples_generators_howtos_polydisperse_spheres_8_1.png" src="../../../_images/examples_generators_howtos_polydisperse_spheres_8_1.png" />
 </div>
 </div>
 </section>
 <section id="dist">
 <h3>dist<a class="headerlink" href="#dist" title="Permalink to this headline">¶</a></h3>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span>d2 = scipy.stats.norm(loc=10, scale=15)
 xx = ps.generators.polydisperse_spheres(shape, porosity, d2, nbins, r_min)
 
-fig, ax = plt.subplots(figsize=[7,7]);
-graphx = ps.visualization.imshow(xx);
-plt.axis(False)
-plt.title(&#39;dist = scipy.stats.norm(loc=10, scale=15)&#39;);
+graphxx = ps.visualization.show_3D(xx)
+fig, ax = plt.subplots(1, 2, figsize=[15, 15]);
+ax[0].imshow(graphx);
+ax[1].imshow(graphxx);
+ax[0].axis(False)
+ax[1].axis(False)
+ax[0].set_title(&#39;dist = scipy.stats.norm(loc=20, scale=10)&#39;)
+ax[1].set_title(&#39;dist = scipy.stats.norm(loc=10, scale=15)&#39;)
 </pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -1041,28 +1021,32 @@ Text(0.5, 1.0, &#39;dist = scipy.stats.norm(loc=10, scale=15)&#39;)
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_generators_howtos_polydisperse_spheres_12_1.png" src="../../../_images/examples_generators_howtos_polydisperse_spheres_12_1.png" />
+<img alt="../../../_images/examples_generators_howtos_polydisperse_spheres_10_1.png" src="../../../_images/examples_generators_howtos_polydisperse_spheres_10_1.png" />
 </div>
 </div>
 </section>
 <section id="nbins">
 <h3>nbins<a class="headerlink" href="#nbins" title="Permalink to this headline">¶</a></h3>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span>xx = ps.generators.polydisperse_spheres(shape, porosity, dist, 10, r_min)
 
-fig, ax = plt.subplots(figsize=[7,7]);
-graphx = ps.visualization.imshow(xx);
-plt.axis(False)
-plt.title(&#39;nbins = 10&#39;);
+graphxx = ps.visualization.show_3D(xx)
+fig, ax = plt.subplots(1, 2, figsize=[15, 15]);
+ax[0].imshow(graphx);
+ax[1].imshow(graphxx);
+ax[0].axis(False)
+ax[1].axis(False)
+ax[0].set_title(&#39;nbins = 5&#39;)
+ax[1].set_title(&#39;nbins = 10&#39;)
 </pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -1074,28 +1058,32 @@ Text(0.5, 1.0, &#39;nbins = 10&#39;)
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_generators_howtos_polydisperse_spheres_14_1.png" src="../../../_images/examples_generators_howtos_polydisperse_spheres_14_1.png" />
+<img alt="../../../_images/examples_generators_howtos_polydisperse_spheres_12_1.png" src="../../../_images/examples_generators_howtos_polydisperse_spheres_12_1.png" />
 </div>
 </div>
 </section>
 <section id="r_min">
 <h3>r_min<a class="headerlink" href="#r_min" title="Permalink to this headline">¶</a></h3>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span>xx = ps.generators.polydisperse_spheres(shape, porosity, dist, nbins, 10)
 
-fig, ax = plt.subplots(figsize=[7,7]);
-graphx = ps.visualization.imshow(xx);
-plt.axis(False)
-plt.title(&#39;r_min = 10&#39;);
+graphxx = ps.visualization.show_3D(xx)
+fig, ax = plt.subplots(1, 2, figsize=[15, 15]);
+ax[0].imshow(graphx);
+ax[1].imshow(graphxx);
+ax[0].axis(False)
+ax[1].axis(False)
+ax[0].set_title(&#39;r_min = 5&#39;)
+ax[1].set_title(&#39;r_min = 10&#39;)
 </pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -1107,7 +1095,16 @@ Text(0.5, 1.0, &#39;r_min = 10&#39;)
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_generators_howtos_polydisperse_spheres_16_1.png" src="../../../_images/examples_generators_howtos_polydisperse_spheres_16_1.png" />
+<img alt="../../../_images/examples_generators_howtos_polydisperse_spheres_14_1.png" src="../../../_images/examples_generators_howtos_polydisperse_spheres_14_1.png" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>
+</pre></div>
 </div>
 </div>
 </section>

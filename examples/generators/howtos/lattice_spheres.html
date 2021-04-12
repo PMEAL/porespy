@@ -607,13 +607,13 @@
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Create-variables">
-   Create variables
+  <a class="reference internal nav-link" href="#Create-variables:">
+   Create variables:
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Apply-generator-function">
-   Apply generator function
+  <a class="reference internal nav-link" href="#Apply-generator-function:">
+   Apply generator function:
   </a>
   <ul class="nav section-nav flex-column">
    <li class="toc-h3 nav-item toc-entry">
@@ -904,6 +904,111 @@ div.rendered_html tbody tr:hover {
 </style>
 <section id="lattice_spheres">
 <h1>lattice_spheres<a class="headerlink" href="#lattice_spheres" title="Permalink to this headline">¶</a></h1>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>import porespy as ps
+from IPython.display import Markdown as show
+show(ps.tools.show_docstring(ps.generators.lattice_spheres))
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<table class="table">
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>## Documentation for
+<code class="docutils literal notranslate"><span class="pre">lattice_spheres</span></code></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>*l
+attice_spheres<em>(shape:
+List[int], radius: int,
+spacing: int = None,
+offset: int = None,
+smooth: bool = True,
+lattice: str =
+‘sc’)</em>**</p></td>
+</tr>
+<tr class="row-odd"><td><p>enerates a cubic packing
+of spheres in a
+specified lattice
+arrangement</p></td>
+</tr>
+<tr class="row-even"><td><p>### Parameters shape :
+list The size of the
+image to generate in
+[Nx, Ny, Nz] where N is
+the number of voxels in
+each direction. For a 2D
+image, use [Nx, Ny].
+radius : int The radius
+of spheres (circles) in
+the packing spacing :
+int or list of ints The
+spacing between unit
+cells. If the spacing is
+too small then spheres
+may overlap. If an
+<code class="docutils literal notranslate"><span class="pre">int</span></code> is given it will
+be applied in all
+directions, while a list
+of <code class="docutils literal notranslate"><span class="pre">int</span></code>s will be
+interpreted to apply
+along each axis. offset
+: int or list of ints
+The amount offset to add
+between sphere centers
+and the edges of the
+image. A single <code class="docutils literal notranslate"><span class="pre">int</span></code>
+will be applied in all
+directions, while a list
+of <code class="docutils literal notranslate"><span class="pre">int</span></code>s will be
+interpreted to apply
+along each axis. smooth
+: bool If <code class="docutils literal notranslate"><span class="pre">True</span></code>
+(default) the outer
+extremities of the
+sphere will not have the
+little bumps on each
+face. lattice : string
+Specifies the type of
+lattice to create.
+Options are:</p></td>
+</tr>
+<tr class="row-odd"><td><p>‘sc’ - Simple Cubic
+(default)</p></td>
+</tr>
+<tr class="row-even"><td><p>‘fcc’ - Face Centered
+Cubic</p></td>
+</tr>
+<tr class="row-odd"><td><p>‘bcc’ - Body Centered
+Cubic</p></td>
+</tr>
+<tr class="row-even"><td><p>For 2D images, ‘sc’
+gives a square lattice
+and both ‘fcc’ and ‘bcc’
+give a triangular
+lattice.</p></td>
+</tr>
+<tr class="row-odd"><td><p>### Returns image :
+ND-array A boolean array
+with <code class="docutils literal notranslate"><span class="pre">True</span></code> values
+denoting the pore space</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <section id="Import-packages">
 <h2>Import packages<a class="headerlink" href="#Import-packages" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
@@ -921,8 +1026,8 @@ np.random.seed(10)
 </div>
 </div>
 </section>
-<section id="Create-variables">
-<h2>Create variables<a class="headerlink" href="#Create-variables" title="Permalink to this headline">¶</a></h2>
+<section id="Create-variables:">
+<h2>Create variables:<a class="headerlink" href="#Create-variables:" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
@@ -938,56 +1043,33 @@ lattice = &quot;sc&quot;
 </div>
 </div>
 </section>
-<section id="Apply-generator-function">
-<h2>Apply generator function<a class="headerlink" href="#Apply-generator-function" title="Permalink to this headline">¶</a></h2>
+<section id="Apply-generator-function:">
+<h2>Apply generator function:<a class="headerlink" href="#Apply-generator-function:" title="Permalink to this headline">¶</a></h2>
+<p>With different parameters</p>
+<section id="radius">
+<h3>radius<a class="headerlink" href="#radius" title="Permalink to this headline">¶</a></h3>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span>x = ps.generators.lattice_spheres(shape=shape, radius=radius, offset=offset, lattice=lattice)
+xx = ps.generators.lattice_spheres(shape=shape, radius=15, offset=offset, lattice=lattice)
 
-fig, ax = plt.subplots(figsize=[7,7]);
-graphx = ps.visualization.imshow(x);
-plt.axis(False)
-plt.title(&#39;default values, radius = 10&#39;);
+graphx = ps.visualization.show_3D(x)
+graphxx = ps.visualization.show_3D(xx)
+fig, ax = plt.subplots(1, 2, figsize=[15, 15]);
+ax[0].imshow(graphx);
+ax[1].imshow(graphxx);
+ax[0].axis(False)
+ax[1].axis(False)
+ax[0].set_title(&#39;radius = 10&#39;)
+ax[1].set_title(&#39;radius = 15&#39;)
 </pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Text(0.5, 1.0, &#39;default values, radius = 10&#39;)
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../_images/examples_generators_howtos_lattice_spheres_6_1.png" src="../../../_images/examples_generators_howtos_lattice_spheres_6_1.png" />
-</div>
-</div>
-<section id="radius">
-<h3>radius<a class="headerlink" href="#radius" title="Permalink to this headline">¶</a></h3>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>xx = ps.generators.lattice_spheres(shape=shape, radius=15, offset=offset, lattice=lattice)
-
-fig, ax = plt.subplots(figsize=[7,7]);
-graphx = ps.visualization.imshow(xx);
-plt.axis(False)
-plt.title(&#39;radius = 15&#39;);
-</pre></div>
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -1006,21 +1088,25 @@ Text(0.5, 1.0, &#39;radius = 15&#39;)
 <section id="offset">
 <h3>offset<a class="headerlink" href="#offset" title="Permalink to this headline">¶</a></h3>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span>xx = ps.generators.lattice_spheres(shape=shape, radius=radius, offset=5, lattice=lattice)
 
-fig, ax = plt.subplots(figsize=[7,7]);
-graphx = ps.visualization.imshow(xx);
-plt.axis(False)
-plt.title(&#39;offset = 5&#39;);
+graphxx = ps.visualization.show_3D(xx)
+fig, ax = plt.subplots(1, 2, figsize=[15, 15]);
+ax[0].imshow(graphx);
+ax[1].imshow(graphxx);
+ax[0].axis(False)
+ax[1].axis(False)
+ax[0].set_title(&#39;offset = 0&#39;)
+ax[1].set_title(&#39;offset = 5&#39;)
 </pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -1040,21 +1126,25 @@ Text(0.5, 1.0, &#39;offset = 5&#39;)
 <h3>lattice<a class="headerlink" href="#lattice" title="Permalink to this headline">¶</a></h3>
 <p>lattice options are sc, fcc, and bcc</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span>xx = ps.generators.lattice_spheres(shape=shape, radius=radius, offset=offset, lattice= &quot;fcc&quot;)
 
-fig, ax = plt.subplots(figsize=[7,7]);
-graphx = ps.visualization.imshow(xx);
-plt.axis(False)
-plt.title(&#39;lattice = fcc&#39;);
+graphxx = ps.visualization.show_3D(xx)
+fig, ax = plt.subplots(1, 2, figsize=[15, 15]);
+ax[0].imshow(graphx);
+ax[1].imshow(graphxx);
+ax[0].axis(False)
+ax[1].axis(False)
+ax[0].set_title(&#39;lattice = sc&#39;)
+ax[1].set_title(&#39;lattice = fcc&#39;)
 </pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="output_area docutils container">

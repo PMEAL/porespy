@@ -595,29 +595,9 @@
               
               <div class="toc-item">
                 
-<div class="tocsection onthispage pt-5 pb-3">
-    <i class="fas fa-list"></i> On this page
-</div>
 
 <nav id="bd-toc-nav">
-    <ul class="visible nav section-nav flex-column">
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Import-packages">
-   Import packages
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Create-variables">
-   Create variables
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Apply-generator-function">
-   Apply generator function
-  </a>
- </li>
-</ul>
-
+    
 </nav>
               </div>
               
@@ -887,8 +867,6 @@ div.rendered_html tbody tr:hover {
 </style>
 <section id="voronoi_edges">
 <h1>voronoi_edges<a class="headerlink" href="#voronoi_edges" title="Permalink to this headline">¶</a></h1>
-<section id="Import-packages">
-<h2>Import packages<a class="headerlink" href="#Import-packages" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -904,65 +882,90 @@ np.random.seed(10)
 </div>
 </div>
 <p>voronoi_edges creates a 3 dimensional image of the egdes of a voronoi tessellation with the shape, radius, and number of cells provided within the function inputs. The variable flat_faces is used to control if the faces of the tessellation are flat.</p>
-</section>
-<section id="Create-variables">
-<h2>Create variables<a class="headerlink" href="#Create-variables" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>shape = [100,100,100]
+<span></span>shape = [200,300,400]
 radius = 1
 ncells = 200
 flat_faces = True
 </pre></div>
 </div>
 </div>
-</section>
-<section id="Apply-generator-function">
-<h2>Apply generator function<a class="headerlink" href="#Apply-generator-function" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>x = ps.generators.voronoi_edges(shape = shape, radius = radius, ncells = ncells, flat_faces=flat_faces)
-plt.subplots(figsize=[7,7])
-ps.visualization.imshow(x);
-plt.axis(False);
+<span></span>x = ps.generators.voronoi_edges(shape, radius, ncells, flat_faces)
+gr = ps.visualization.show_3D(x)
+plt.figure(figsize=[15, 15])
+plt.axis(False)
+fig = plt.imshow(gr);
 </pre></div>
 </div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+voronoi_edges: Generating 200 cells
+</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_generators_howtos_voronoi_edges_7_0.png" src="../../../_images/examples_generators_howtos_voronoi_edges_7_0.png" />
+<img alt="../../../_images/examples_generators_howtos_voronoi_edges_4_1.png" src="../../../_images/examples_generators_howtos_voronoi_edges_4_1.png" />
 </div>
 </div>
 <p>The image produced with flat_faces = True</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>x = ps.generators.voronoi_edges(shape = shape, radius = radius, ncells = ncells, flat_faces=False)
-plt.subplots(figsize=[7,7])
-ps.visualization.imshow(x);
-plt.axis(False);
+<span></span>shape = [200,300,400]
+radius = 1
+ncells = 200
+flat_faces = False
 </pre></div>
 </div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>x = ps.generators.voronoi_edges(shape, radius, ncells, flat_faces)
+gr = ps.visualization.show_3D(x)
+plt.figure(figsize=[15, 15])
+plt.axis(False)
+fig = plt.imshow(gr);
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+voronoi_edges: Generating 200 cells
+</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_generators_howtos_voronoi_edges_9_0.png" src="../../../_images/examples_generators_howtos_voronoi_edges_9_0.png" />
+<img alt="../../../_images/examples_generators_howtos_voronoi_edges_7_1.png" src="../../../_images/examples_generators_howtos_voronoi_edges_7_1.png" />
 </div>
 </div>
 <p>The image produced with flat_faces = False</p>
-</section>
 </section>
 
 
