@@ -4,8 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>map_to_regions &#8212; PoreSpy  documentation</title>
     
   <link href="../../_static/css/theme.css" rel="stylesheet" />
@@ -26,9 +25,6 @@
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
     
   <link rel="preload" as="script" href="../../_static/js/index.c86189f1ce1b71a67eb6.js">
@@ -44,7 +40,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="regions_to_network" href="porespy.networks.regions_to_network.html" />
-    <link rel="prev" title="Networks" href="../networks.html" />
+    <link rel="prev" title="snow_dual" href="porespy.networks.snow_dual.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
     
@@ -493,6 +489,16 @@
    </i>
   </label>
   <ul class="current">
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.networks.snow.html">
+     snow
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.networks.snow_dual.html">
+     snow_dual
+    </a>
+   </li>
    <li class="toctree-l2 current active">
     <a class="current reference internal" href="#">
      map_to_regions
@@ -829,19 +835,21 @@
               
               <div>
                 
-  <section id="map-to-regions">
+  <div class="section" id="map-to-regions">
 <h1>map_to_regions<a class="headerlink" href="#map-to-regions" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="porespy.networks.map_to_regions">
 <code class="sig-name descname"><span class="pre">map_to_regions</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">regions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/networks/__funcs__.html#map_to_regions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.networks.map_to_regions" title="Permalink to this definition">¶</a></dt>
 <dd><p>Maps pore values from a network onto the image from which it was extracted</p>
+<p>This function assumes that the pore numbering in the network has remained
+unchanged from the region labels in the partitioned image.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>regions</strong> (<em>ND-array</em>) – An image of the pore space partitioned into regions and labeled</p></li>
 <li><p><strong>values</strong> (<em>array_like</em>) – An array containing the numerical values to insert into each region.
 The value at location <em>n</em> will be inserted into the image where
-<code class="docutils literal notranslate"><span class="pre">regions</span></code> is <em>n+1</em>.  This mismatch is caused by the fact that 0’s
+<code class="docutils literal notranslate"><span class="pre">regions</span></code> is <em>n+1</em>.  This mis-match is caused by the fact that 0’s
 in the <code class="docutils literal notranslate"><span class="pre">regions</span></code> image is assumed to be the backgroung phase, while
 pore index 0 is valid.</p></li>
 </ul>
@@ -851,11 +859,9 @@ pore index 0 is valid.</p></li>
 <p>This function assumes that the array of pore values are indexed starting
 at location 0, while in the region image 0’s indicate background phase and
 the region indexing starts at 1.  That is, region 1 corresponds to pore 0.</p>
-<p class="rubric">Examples</p>
-<p><a class="reference external" href="https://porespy.org/examples/networks/map_to_regions.html">Click here</a> to view online example.</p>
 </dd></dl>
 
-</section>
+</div>
 
 
               </div>
@@ -881,7 +887,7 @@ the region indexing starts at 1.  That is, region 1 corresponds to pore 0.</p>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
 </p>
     </div>
     
