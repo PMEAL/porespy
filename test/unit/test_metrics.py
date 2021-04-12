@@ -170,6 +170,14 @@ class MetricsTest():
                                            radius=9, offset=4)
         rev = ps.metrics.representative_elementary_volume(im)
         assert_allclose(np.average(rev.porosity), im.sum() / im.size, rtol=1e-1)
+    
+    def test_boxcount(self):
+        np.random.seed(0)
+        im = ps.generators.sierpinski_foam(4, 5)
+        sierp = boxcount(im, bins=10, d_min=1, d_max=None)
+        assert len(sierp.size) == len(sierp.count) == len(sierp.slope)
+        assert np.all(sierp.slope[0:3] < 2) 
+        assert np.all(sierp.slope[0:3] > 1.8)
 
 
 if __name__ == '__main__':
