@@ -16,6 +16,27 @@ class ToolsTest():
         self.im3D = ps.generators.blobs(shape=[51, 51, 51])
         self.labels, N = spim.label(input=self.blobs)
 
+    def test_unpad(self):
+        pad_width = [10, 20]
+        im = ps.generators.blobs([200, 300], porosity=0.3)
+        im1 = np.pad(im, pad_width, mode="constant", constant_values=1)
+        im2 = ps.tools.unpad(im1, pad_width)
+        assert np.all(im == im2)
+
+    def test_unpad_int_padwidth(self):
+        pad_width = 10
+        im = ps.generators.blobs([200, 300], porosity=0.3)
+        im1 = np.pad(im, pad_width, mode="constant", constant_values=1)
+        im2 = ps.tools.unpad(im1, pad_width)
+        assert np.all(im == im2)
+
+    def test_unpad_different_padwidths_on_each_axis(self):
+        pad_width = [[10, 20], [30, 40]]
+        im = ps.generators.blobs([200, 300], porosity=0.3)
+        im1 = np.pad(im, pad_width, mode="constant", constant_values=1)
+        im2 = ps.tools.unpad(im1, pad_width)
+        assert np.all(im == im2)
+
     def test_randomize_colors(self):
         randomized_im = ps.tools.randomize_colors(im=self.im)
         assert np.unique(self.im).size == np.unique(randomized_im).size
