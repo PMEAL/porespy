@@ -490,16 +490,6 @@
   </label>
   <ul>
    <li class="toctree-l2">
-    <a class="reference internal" href="porespy.networks.snow.html">
-     snow
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="porespy.networks.snow_dual.html">
-     snow_dual
-    </a>
-   </li>
-   <li class="toctree-l2">
     <a class="reference internal" href="porespy.networks.map_to_regions.html">
      map_to_regions
     </a>
@@ -869,23 +859,9 @@ be easily queried.</p>
 <dd class="field-odd"><p>ND-array</p>
 </dd>
 </dl>
-<p class="rubric">Notes</p>
-<p>This method uses the
-<a class="reference external" href="https://github.com/array-split/array_split">array_split package</a> which
-offers the same functionality as the <code class="docutils literal notranslate"><span class="pre">split</span></code> method of Numpy’s ND-array,
-but supports the splitting of multidimensional arrays in all dimensions.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><code class="xref py py-obj docutils literal notranslate"><span class="pre">chunked_func</span></code></p>
-</div>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">porespy</span> <span class="k">as</span> <span class="nn">ps</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">blobs</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">200</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">subdivide</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">divs</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">flatten</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">))</span>
-<span class="go">4</span>
-</pre></div>
 </div>
 </dd></dl>
 

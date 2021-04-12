@@ -188,7 +188,7 @@
 <span class="kn">import</span> <span class="nn">scipy.spatial</span> <span class="k">as</span> <span class="nn">sptl</span>
 <span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">fftpack</span> <span class="k">as</span> <span class="n">sp_ft</span>
 <span class="kn">from</span> <span class="nn">skimage.measure</span> <span class="kn">import</span> <span class="n">regionprops</span>
-<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">extend_slice</span><span class="p">,</span> <span class="n">mesh_region</span>
+<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">extend_slice</span><span class="p">,</span> <span class="n">mesh_region</span><span class="p">,</span> <span class="n">ps_round</span>
 <span class="kn">from</span> <span class="nn">porespy.filters</span> <span class="kn">import</span> <span class="n">find_dt_artifacts</span>
 <span class="kn">from</span> <span class="nn">porespy</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">_check_for_singleton_axes</span>
@@ -815,11 +815,11 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="s1">&#39;Finding interfacial areas between each region&#39;</span><span class="p">)</span>
-    <span class="kn">from</span> <span class="nn">skimage.morphology</span> <span class="kn">import</span> <span class="n">disk</span><span class="p">,</span> <span class="n">ball</span>
-    <span class="n">im</span> <span class="o">=</span> <span class="n">regions</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">regions</span>
     <span class="n">_check_for_singleton_axes</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
-    <span class="c1"># cube_elem = square if im.ndim == 2 else cube</span>
-    <span class="n">ball_elem</span> <span class="o">=</span> <span class="n">disk</span> <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">ball</span>
+    <span class="n">ball</span> <span class="o">=</span> <span class="n">ps_round</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">strel</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">strel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">ball</span><span class="p">)</span>
     <span class="c1"># Get &#39;slices&#39; into im for each region</span>
     <span class="n">slices</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">find_objects</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
     <span class="c1"># Initialize arrays</span>
@@ -836,7 +836,7 @@
             <span class="n">mask_im</span> <span class="o">=</span> <span class="n">sub_im</span> <span class="o">==</span> <span class="n">i</span>
             <span class="n">sa</span><span class="p">[</span><span class="n">reg</span><span class="p">]</span> <span class="o">=</span> <span class="n">areas</span><span class="p">[</span><span class="n">reg</span><span class="p">]</span>
             <span class="n">im_w_throats</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">binary_dilation</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">mask_im</span><span class="p">,</span>
-                                                <span class="n">structure</span><span class="o">=</span><span class="n">ball_elem</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+                                                <span class="n">structure</span><span class="o">=</span><span class="n">ball</span><span class="p">)</span>
             <span class="n">im_w_throats</span> <span class="o">=</span> <span class="n">im_w_throats</span> <span class="o">*</span> <span class="n">sub_im</span>
             <span class="n">Pn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">im_w_throats</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="mi">1</span>
             <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">Pn</span><span class="p">:</span>
@@ -895,7 +895,9 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="s1">&#39;Finding surface area of each region&#39;</span><span class="p">)</span>
-    <span class="n">im</span> <span class="o">=</span> <span class="n">regions</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">regions</span>
+    <span class="k">if</span> <span class="n">strel</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">strel</span> <span class="o">=</span> <span class="n">ps_round</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="c1"># Get &#39;slices&#39; into im for each pore region</span>
     <span class="n">slices</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">find_objects</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
     <span class="c1"># Initialize arrays</span>

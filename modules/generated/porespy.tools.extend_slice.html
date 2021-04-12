@@ -490,16 +490,6 @@
   </label>
   <ul>
    <li class="toctree-l2">
-    <a class="reference internal" href="porespy.networks.snow.html">
-     snow
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="porespy.networks.snow_dual.html">
-     snow_dual
-    </a>
-   </li>
-   <li class="toctree-l2">
     <a class="reference internal" href="porespy.networks.map_to_regions.html">
      map_to_regions
     </a>
@@ -839,18 +829,18 @@
 <h1>extend_slice<a class="headerlink" href="#extend-slice" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="porespy.tools.extend_slice">
-<code class="sig-name descname"><span class="pre">extend_slice</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/tools/__funcs__.html#extend_slice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.tools.extend_slice" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">extend_slice</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/tools/__funcs__.html#extend_slice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.tools.extend_slice" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adjust slice indices to include additional voxles around the slice.</p>
 <p>This function does bounds checking to ensure the indices don’t extend
 outside the image.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>s</strong> (<em>list of slice objects</em>) – A list (or tuple) of N slice objects, where N is the number of
+<li><p><strong>slices</strong> (<em>list of slice objects</em>) – A list (or tuple) of N slice objects, where N is the number of
 dimensions in the image.</p></li>
 <li><p><strong>shape</strong> (<em>array_like</em>) – The shape of the image into which the slice objects apply.  This is
 used to check the bounds to prevent indexing beyond the image.</p></li>
-<li><p><strong>pad</strong> (<em>int</em>) – The number of voxels to expand in each direction.</p></li>
+<li><p><strong>pad</strong> (<em>int</em><em> or </em><em>list of ints</em>) – The number of voxels to expand in each direction.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
