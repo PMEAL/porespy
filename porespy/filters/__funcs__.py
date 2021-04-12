@@ -13,7 +13,7 @@ from skimage.segmentation import clear_border, watershed
 from skimage.morphology import ball, disk, square, cube, diamond, octahedron
 from porespy.tools import _check_for_singleton_axes
 from porespy.tools import randomize_colors, fftmorphology
-from porespy.tools import get_border, extend_slice, extract_subsection
+from porespy.tools import get_border, extend_slice, extract_subsection, subdivide
 from porespy.tools import _create_alias_map
 from porespy.tools import ps_disk, ps_ball
 from porespy import settings
@@ -293,6 +293,11 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, return_all=False,
     else:
         mask_solid = None
     regions = watershed(image=-dt, markers=peaks, mask=mask_solid)
+    # Catch any isolated regions that were missed
+    # TODO: I'm not sure if this approach is universal so I'm going to comment it
+    # out for now, and mark it as a todo
+    # labels = spim.label((regions == 0)*(im > 0))[0]
+    # regions += (labels + regions.max())*(labels > 0)
     if randomize:
         regions = randomize_colors(regions)
     if return_all:
@@ -562,7 +567,7 @@ def trim_saddle_points(peaks, dt, max_iters=10):
     labels, N = spim.label(peaks)
     slices = spim.find_objects(labels)
     for i in range(N):
-        s = extend_slice(s=slices[i], shape=peaks.shape, pad=10)
+        s = extend_slice(slices[i], shape=peaks.shape, pad=10)
         peaks_i = labels[s] == i + 1
         dt_i = dt[s]
         im_i = dt_i > 0
@@ -1626,9 +1631,6 @@ def chunked_func(func,
         # Apply function on sub-slice of overall image
         return func(**kwargs)
 
-    # Import the array_split methods
-    from array_split import shape_split, ARRAY_BOUNDS
-
     # Determine the value for im_arg
     if type(im_arg) == str:
         im_arg = [im_arg]
@@ -1652,8 +1654,7 @@ def chunked_func(func,
                 strel = kwargs[item]
                 break
         halo = np.array(strel.shape) * (divs > 1)
-    slices = np.ravel(shape_split(im.shape, axis=divs, halo=halo.tolist(),
-                                  tile_bounds_policy=ARRAY_BOUNDS))
+    slices = subdivide(im=im, divs=divs, overlap=halo, flatten=True)
     # Apply func to each subsection of the image
     res = []
     for s in slices:
