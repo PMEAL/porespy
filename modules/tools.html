@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
     <title>Tools &#8212; PoreSpy  documentation</title>
     
   <link href="../_static/css/theme.css" rel="stylesheet" />
@@ -25,6 +26,9 @@
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css" />
     
   <link rel="preload" as="script" href="../_static/js/index.c86189f1ce1b71a67eb6.js">
@@ -490,16 +494,6 @@
   </label>
   <ul>
    <li class="toctree-l2">
-    <a class="reference internal" href="generated/porespy.networks.snow.html">
-     snow
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="generated/porespy.networks.snow_dual.html">
-     snow_dual
-    </a>
-   </li>
-   <li class="toctree-l2">
     <a class="reference internal" href="generated/porespy.networks.map_to_regions.html">
      map_to_regions
     </a>
@@ -835,7 +829,7 @@
               
               <div>
                 
-  <span class="target" id="module-porespy.tools"><span id="tools"></span></span><div class="section" id="id1">
+  <span class="target" id="module-porespy.tools"><span id="tools"></span></span><section id="id1">
 <h1>Tools<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
 <p><strong>Helper Functions</strong></p>
 <p>This module contains a variety of functions for manipulating images in
@@ -852,7 +846,7 @@ ways do NOT return a modified version of the original image.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.tools.bbox_to_slices.html#porespy.tools.bbox_to_slices" title="porespy.tools.bbox_to_slices"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tools.bbox_to_slices</span></code></a>(bbox)</p></td>
 <td><p>Given a tuple containing bounding box coordinates, return a tuple of slice objects.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.tools.extend_slice.html#porespy.tools.extend_slice" title="porespy.tools.extend_slice"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tools.extend_slice</span></code></a>(s, shape[, pad])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.tools.extend_slice.html#porespy.tools.extend_slice" title="porespy.tools.extend_slice"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tools.extend_slice</span></code></a>(slices, shape[, pad])</p></td>
 <td><p>Adjust slice indices to include additional voxles around the slice.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.tools.extract_subsection.html#porespy.tools.extract_subsection" title="porespy.tools.extract_subsection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tools.extract_subsection</span></code></a>(im, shape)</p></td>
@@ -932,7 +926,7 @@ ways do NOT return a modified version of the original image.</p>
 </tr>
 </tbody>
 </table>
-</div>
+</section>
 
 
               </div>
@@ -958,7 +952,7 @@ ways do NOT return a modified version of the original image.</p>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br/>
 </p>
     </div>
     

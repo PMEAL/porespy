@@ -62,6 +62,14 @@ PoreSpy consists of the following modules:
 .. WARNING: examples.rst MUST BE THE LAST ENTRY, OTHERWISE OUR JS
 .. SCRIPT MIGHT BREAK! SEE _static/js/custom.js
 
+
+Gallery
+#######
+
+.. image:: ./_static/images/montage.svg
+   :name: montage
+
+
 ----
 
 How To Cite

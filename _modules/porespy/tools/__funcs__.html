@@ -25,6 +25,9 @@
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/basic.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
     
   <link rel="preload" as="script" href="../../../_static/js/index.c86189f1ce1b71a67eb6.js">
@@ -189,7 +192,6 @@
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
 <span class="kn">from</span> <span class="nn">skimage.morphology</span> <span class="kn">import</span> <span class="n">ball</span><span class="p">,</span> <span class="n">disk</span>
 <span class="kn">from</span> <span class="nn">skimage.segmentation</span> <span class="kn">import</span> <span class="n">relabel_sequential</span>
-<span class="kn">from</span> <span class="nn">array_split</span> <span class="kn">import</span> <span class="n">shape_split</span><span class="p">,</span> <span class="n">ARRAY_BOUNDS</span>
 <span class="kn">from</span> <span class="nn">scipy.signal</span> <span class="kn">import</span> <span class="n">fftconvolve</span>
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">skimage.measure</span> <span class="kn">import</span> <span class="n">marching_cubes</span>
@@ -213,6 +215,10 @@
 <span class="sd">    -------</span>
 <span class="sd">    image : ND-array</span>
 <span class="sd">        Returns a copy of ``im`` rotated accordingly.</span>
+<span class="sd">    </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here &lt;https://porespy.org/examples/tools/align_image_with_openpnm.html&gt;`_ to view online example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_check_for_singleton_axes</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
     <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
@@ -285,7 +291,10 @@
 <span class="sd">    &gt;&gt;&gt; temp = spim.binary_closing(im, structure=disk(5))</span>
 <span class="sd">    &gt;&gt;&gt; array_equal(result, temp)</span>
 <span class="sd">    True</span>
-
+<span class="sd">                </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here &lt;https://porespy.org/examples/tools/fftmorphology.html&gt;`_ to view online example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">erode</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">strel</span><span class="p">):</span>
@@ -359,13 +368,6 @@
 <span class="sd">        indices.  An ND-array is the preferred container since it&#39;s shape can</span>
 <span class="sd">        be easily queried.</span>
 
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    This method uses the</span>
-<span class="sd">    `array_split package &lt;https://github.com/array-split/array_split&gt;`_ which</span>
-<span class="sd">    offers the same functionality as the ``split`` method of Numpy&#39;s ND-array,</span>
-<span class="sd">    but supports the splitting of multidimensional arrays in all dimensions.</span>
-
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    chunked_func</span>
@@ -378,14 +380,43 @@
 <span class="sd">    &gt;&gt;&gt; s = ps.tools.subdivide(im, divs=[2, 2], flatten=True)</span>
 <span class="sd">    &gt;&gt;&gt; print(len(s))</span>
 <span class="sd">    4</span>
-
+<span class="sd">                </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here &lt;https://porespy.org/examples/tools/subdivide.html&gt;`_ to view online example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">divs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">im</span><span class="o">.</span><span class="n">ndim</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">divs</span><span class="p">)</span>
-    <span class="n">halo</span> <span class="o">=</span> <span class="n">overlap</span> <span class="o">*</span> <span class="p">(</span><span class="n">divs</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="n">slices</span> <span class="o">=</span> <span class="n">shape_split</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">divs</span><span class="p">,</span> <span class="n">halo</span><span class="o">=</span><span class="n">halo</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
-                         <span class="n">tile_bounds_policy</span><span class="o">=</span><span class="n">ARRAY_BOUNDS</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">object</span><span class="p">)</span>
+    <span class="n">overlap</span> <span class="o">=</span> <span class="n">overlap</span> <span class="o">*</span> <span class="p">(</span><span class="n">divs</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">size</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span><span class="o">/</span><span class="n">divs</span><span class="o">/</span><span class="mi">2</span> <span class="o">+</span> <span class="n">overlap</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+    <span class="c1"># Find center points of each subsection</span>
+    <span class="n">cens</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">ndim</span><span class="p">):</span>
+        <span class="n">steps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">ax</span><span class="p">],</span> <span class="n">divs</span><span class="p">[</span><span class="n">ax</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">steps</span> <span class="o">+=</span> <span class="nb">int</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">ax</span><span class="p">]</span><span class="o">/</span><span class="n">divs</span><span class="p">[</span><span class="n">ax</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">cens</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">steps</span><span class="p">)</span>
+    <span class="c1"># Get slices into im for each subsection</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cens</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">append</span><span class="p">([])</span>
+        <span class="n">xtemp</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="n">cens</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">],</span> <span class="n">cens</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">],</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cens</span><span class="p">[</span><span class="mi">1</span><span class="p">])):</span>
+            <span class="n">ytemp</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="n">cens</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="p">],</span> <span class="n">cens</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="p">],</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">stemp</span> <span class="o">=</span> <span class="n">extend_slice</span><span class="p">([</span><span class="n">xtemp</span><span class="p">,</span> <span class="n">ytemp</span><span class="p">],</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="n">size</span><span class="p">)</span>
+                <span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stemp</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">([])</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cens</span><span class="p">[</span><span class="mi">2</span><span class="p">])):</span>
+                    <span class="n">ztemp</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="n">cens</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="n">k</span><span class="p">],</span> <span class="n">cens</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="n">k</span><span class="p">],</span> <span class="kc">None</span><span class="p">)</span>
+                    <span class="n">stemp</span> <span class="o">=</span> <span class="n">extend_slice</span><span class="p">([</span><span class="n">xtemp</span><span class="p">,</span> <span class="n">ytemp</span><span class="p">,</span> <span class="n">ztemp</span><span class="p">],</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="n">size</span><span class="p">)</span>
+                    <span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stemp</span><span class="p">)</span>
+
+    <span class="n">slices</span> <span class="o">=</span> <span class="n">s</span>
     <span class="k">if</span> <span class="n">flatten</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="n">slices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">slices</span><span class="p">)</span>
+        <span class="n">slices</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">sublist</span> <span class="ow">in</span> <span class="n">slices</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">sublist</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">slices</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">sublist</span> <span class="ow">in</span> <span class="n">slices</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">sublist</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">slices</span></div>
 
 
@@ -410,7 +441,11 @@
 <span class="sd">    -------</span>
 <span class="sd">    slices : tuple</span>
 <span class="sd">        A tuple of slice objects that can be used to directly index into a</span>
-<span class="sd">        larger image.</span>
+<span class="sd">        larger image. </span>
+<span class="sd">        </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here &lt;https://porespy.org/examples/tools/bbox_to_slices.html&gt;`_ to view online example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">bbox</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
         <span class="n">ret</span> <span class="o">=</span> <span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="n">bbox</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">bbox</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
@@ -452,11 +487,11 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">r</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">im</span><span class="p">)</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
         <span class="n">r</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">dt</span><span class="p">))</span> <span class="o">*</span> <span class="mi">2</span>
     <span class="n">im_padded</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">array</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">pad_width</span><span class="o">=</span><span class="n">r</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;constant&#39;</span><span class="p">,</span>
                        <span class="n">constant_values</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">im_padded</span><span class="p">)</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="n">im_padded</span><span class="p">)</span>
     <span class="n">seeds</span> <span class="o">=</span> <span class="p">(</span><span class="n">dt</span> <span class="o">&gt;=</span> <span class="n">r</span><span class="p">)</span> <span class="o">+</span> <span class="n">get_border</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">im_padded</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
     <span class="c1"># Remove seeds not connected to edges</span>
     <span class="n">labels</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">seeds</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
@@ -492,6 +527,10 @@
 <span class="sd">    image : ND-array</span>
 <span class="sd">        A copy of ``im`` with values outside the cylindrical area set to 0 or</span>
 <span class="sd">        ``False``.</span>
+<span class="sd">                </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here &lt;https://porespy.org/examples/tools/extract_cylinder.html&gt;`_ to view online example.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># This needs to be imported here since the tools module is imported</span>
@@ -541,7 +580,10 @@
 <span class="sd">    &gt;&gt;&gt; print(im)</span>
 <span class="sd">    [[2 2]</span>
 <span class="sd">     [2 3]]</span>
-
+<span class="sd">     </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here &lt;https://porespy.org/examples/tools/extract_subsection.html&gt;`_ to view online example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Check if shape was given as a fraction</span>
     <span class="n">shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
@@ -576,6 +618,10 @@
 <span class="sd">    -------</span>
 <span class="sd">    planes : list</span>
 <span class="sd">        A list of 2D-images</span>
+<span class="sd">                                </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here &lt;https://porespy.org/examples/tools/get_planes.html&gt;`_ to view online example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
     <span class="n">planes</span> <span class="o">=</span> <span class="p">[</span><span class="n">im</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="n">im</span><span class="p">[:,</span> <span class="n">y</span><span class="p">,</span> <span class="p">:],</span> <span class="n">im</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">z</span><span class="p">]]</span>
@@ -589,7 +635,7 @@
     <span class="k">return</span> <span class="n">planes</span></div>
 
 
-<div class="viewcode-block" id="extend_slice"><a class="viewcode-back" href="../../../modules/generated/porespy.tools.extend_slice.html#porespy.filters.extend_slice">[docs]</a><span class="k">def</span> <span class="nf">extend_slice</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<div class="viewcode-block" id="extend_slice"><a class="viewcode-back" href="../../../modules/generated/porespy.tools.extend_slice.html#porespy.filters.extend_slice">[docs]</a><span class="k">def</span> <span class="nf">extend_slice</span><span class="p">(</span><span class="n">slices</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Adjust slice indices to include additional voxles around the slice.</span>
 
@@ -598,7 +644,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    s : list of slice objects</span>
+<span class="sd">    slices : list of slice objects</span>
 <span class="sd">         A list (or tuple) of N slice objects, where N is the number of</span>
 <span class="sd">         dimensions in the image.</span>
 
@@ -606,7 +652,7 @@
 <span class="sd">        The shape of the image into which the slice objects apply.  This is</span>
 <span class="sd">        used to check the bounds to prevent indexing beyond the image.</span>
 
-<span class="sd">    pad : int</span>
+<span class="sd">    pad : int or list of ints</span>
 <span class="sd">        The number of voxels to expand in each direction.</span>
 
 <span class="sd">    Returns</span>
@@ -644,15 +690,14 @@
 <span class="sd">    As can be seen by the location of the 4s, the slice was extended by 1, and</span>
 <span class="sd">    also handled the extension beyond the boundary correctly.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">pad</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">pad</span><span class="p">)</span>
+    <span class="n">shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">pad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pad</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">shape</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
     <span class="n">a</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">dim</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">shape</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">slices</span><span class="p">):</span>
         <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">stop</span> <span class="o">=</span> <span class="n">dim</span>
-        <span class="k">if</span> <span class="n">i</span><span class="o">.</span><span class="n">start</span> <span class="o">-</span> <span class="n">pad</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">start</span> <span class="o">=</span> <span class="n">i</span><span class="o">.</span><span class="n">start</span> <span class="o">-</span> <span class="n">pad</span>
-        <span class="k">if</span> <span class="n">i</span><span class="o">.</span><span class="n">stop</span> <span class="o">+</span> <span class="n">pad</span> <span class="o">&lt;</span> <span class="n">dim</span><span class="p">:</span>
-            <span class="n">stop</span> <span class="o">=</span> <span class="n">i</span><span class="o">.</span><span class="n">stop</span> <span class="o">+</span> <span class="n">pad</span>
+        <span class="n">stop</span> <span class="o">=</span> <span class="n">shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">start</span> <span class="o">-</span> <span class="n">pad</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">stop</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">stop</span> <span class="o">+</span> <span class="n">pad</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">shape</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
         <span class="n">a</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
     <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">a</span><span class="p">)</span></div>
 
@@ -760,7 +805,10 @@
 <span class="sd">    &gt;&gt;&gt; print(im)</span>
 <span class="sd">    [[0 1 5]</span>
 <span class="sd">     [3 4 2]]</span>
-
+<span class="sd">                </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here &lt;https://porespy.org/examples/tools/make_contiguous.html&gt;`_ to view online example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">keep_zeros</span><span class="p">:</span>
         <span class="n">mask</span> <span class="o">=</span> <span class="n">im</span> <span class="o">==</span> <span class="mi">0</span>
@@ -827,7 +875,10 @@
 <span class="sd">    [[ True  True  True]</span>
 <span class="sd">     [ True False  True]</span>
 <span class="sd">     [ True  True  True]]</span>
-
+<span class="sd">                </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here &lt;https://porespy.org/examples/tools/get_border.html&gt;`_ to view online example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">ndims</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
     <span class="n">t</span> <span class="o">=</span> <span class="n">thickness</span>
@@ -906,6 +957,10 @@
 <span class="sd">    image : ND-array</span>
 <span class="sd">        A copy of ``im`` with uniformly distributed greyscale values spanning</span>
 <span class="sd">        the specified range, if given.</span>
+<span class="sd">                        </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here &lt;https://porespy.org/examples/tools/norm_to_uniform.html&gt;`_ to view online example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">scale</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">scale</span> <span class="o">=</span> <span class="p">[</span><span class="n">im</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">im</span><span class="o">.</span><span class="n">max</span><span class="p">()]</span>
@@ -1022,6 +1077,10 @@
 <span class="sd">    -------</span>
 <span class="sd">    disk : 2D-array</span>
 <span class="sd">        A 2D numpy bool array of the structring element</span>
+<span class="sd">                        </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here &lt;https://porespy.org/examples/tools/ps_disk.html&gt;`_ to view online example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">disk</span> <span class="o">=</span> <span class="n">ps_round</span><span class="p">(</span><span class="n">r</span><span class="o">=</span><span class="n">r</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="n">smooth</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">disk</span></div>
@@ -1043,6 +1102,10 @@
 <span class="sd">    -------</span>
 <span class="sd">    ball : 3D-array</span>
 <span class="sd">        A 3D numpy array of the structuring element</span>
+<span class="sd">                        </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here &lt;https://porespy.org/examples/tools/ps_ball.html&gt;`_ to view online example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">ball</span> <span class="o">=</span> <span class="n">ps_round</span><span class="p">(</span><span class="n">r</span><span class="o">=</span><span class="n">r</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="n">smooth</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">ball</span></div>
@@ -1066,6 +1129,10 @@
 <span class="sd">    -------</span>
 <span class="sd">    strel : 3D-array</span>
 <span class="sd">        A 3D numpy array of the structuring element</span>
+<span class="sd">                        </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here &lt;https://porespy.org/examples/tools/ps_round.html&gt;`_ to view online example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">rad</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">r</span><span class="p">))</span>
     <span class="n">other</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">([</span><span class="mi">2</span><span class="o">*</span><span class="n">rad</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ndim</span><span class="p">)],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
@@ -1093,6 +1160,10 @@
 <span class="sd">    -------</span>
 <span class="sd">    strel : D-aNrray</span>
 <span class="sd">        A numpy array of the structuring element</span>
+<span class="sd">                        </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here &lt;https://porespy.org/examples/tools/ps_rect.html&gt;`_ to view online example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
         <span class="kn">from</span> <span class="nn">skimage.morphology</span> <span class="kn">import</span> <span class="n">square</span>
@@ -1122,6 +1193,10 @@
 <span class="sd">    image : ND-array</span>
 <span class="sd">        A modified version of ``im1``, with ``im2`` overlaid at the specified</span>
 <span class="sd">        location</span>
+<span class="sd">                        </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here &lt;https://porespy.org/examples/tools/overlay.html&gt;`_ to view online example.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">shape</span> <span class="o">=</span> <span class="n">im2</span><span class="o">.</span><span class="n">shape</span>
@@ -1162,7 +1237,11 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    image : ND-array</span>
-<span class="sd">        The original image with a sphere inerted at the specified location</span>
+<span class="sd">        The original image with a sphere inerted at the specified location    </span>
+<span class="sd">        </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here &lt;https://porespy.org/examples/tools/insert_sphere.html&gt;`_ to view online example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Convert image to same type os v for eventual insertion</span>
     <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="nb">type</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
@@ -1216,6 +1295,9 @@
 <span class="sd">    -----</span>
 <span class="sd">    This function is only implemented for 3D images</span>
 
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here &lt;https://porespy.org/examples/tools/insert_cylinder.html&gt;`_ to view online example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;This function is only implemented for 3D images&#39;</span><span class="p">)</span>
@@ -1279,6 +1361,10 @@
 <span class="sd">    See also</span>
 <span class="sd">    --------</span>
 <span class="sd">    add_boundary_regions</span>
+<span class="sd">                    </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here &lt;https://porespy.org/examples/tools/pad_faces.html&gt;`_ to view online example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_check_for_singleton_axes</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
     <span class="n">f</span> <span class="o">=</span> <span class="n">faces</span>
@@ -1377,6 +1463,9 @@
 <span class="sd">        A boolean mask with ``True`` values indicating where the given labels</span>
 <span class="sd">        exist</span>
 
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here &lt;https://porespy.org/examples/tools/extract_regions.html&gt;`_ to view online example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">int</span><span class="p">:</span>
         <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">labels</span><span class="p">]</span>
@@ -1423,7 +1512,10 @@
 <span class="sd">        replaced by the invasion sequence.  This assumes that the invasion</span>
 <span class="sd">        process occurs via increasing pressure steps, such as produced by</span>
 <span class="sd">        the ``porosimetry`` function.</span>
-
+<span class="sd">                </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here &lt;https://porespy.org/examples/tools/size_to_seq.html&gt;`_ to view online example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">solid</span> <span class="o">=</span> <span class="n">size</span> <span class="o">==</span> <span class="mi">0</span>
     <span class="k">if</span> <span class="n">bins</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -1459,7 +1551,10 @@
 <span class="sd">        replaced by the fraction of pores invaded at or below the sequence</span>
 <span class="sd">        number. Solid voxels and uninvaded voxels are represented by 0 and</span>
 <span class="sd">        -1, respectively.</span>
-
+<span class="sd">                </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here &lt;https://porespy.org/examples/tools/seq_to_satn.html&gt;`_ to view online example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">seq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
     <span class="n">solid</span> <span class="o">=</span> <span class="n">seq</span> <span class="o">==</span> <span class="mi">0</span>
@@ -1514,7 +1609,10 @@
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    This modifies the given image in-place.</span>
-
+<span class="sd">                </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here &lt;https://porespy.org/examples/tools/zero_corners.html&gt;`_ to view online example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">pad_width</span> <span class="o">=</span> <span class="n">_parse_pad_width</span><span class="p">(</span><span class="n">pad_width</span><span class="p">,</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
     <span class="n">idx_corners</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1578,7 +1676,10 @@
 <span class="sd">    -------</span>
 <span class="sd">    sanitized : str</span>
 <span class="sd">        Sanitized filename in form of name.extension</span>
-
+<span class="sd">                </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here &lt;https://porespy.org/examples/tools/sanitize_filename.html&gt;`_ to view online example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">ext</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;.</span><span class="si">{</span><span class="n">ext</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">):</span>
@@ -1629,7 +1730,7 @@
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br/>
 </p>
     </div>
     
