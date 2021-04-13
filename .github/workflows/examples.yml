@@ -98,3 +98,4 @@ jobs:
             --splits ${{ strategy.max-parallel}} \
             --group ${{ matrix.test_group }} \
             --durations-path test/fixtures/.test_durations_examples
+            --suppress-no-test-exit-code  # so if no tests collected, CI won't break
