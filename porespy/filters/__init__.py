@@ -45,6 +45,7 @@ image, but with altered values.
     filters.trim_saddle_points
     filters.trim_small_clusters
 
+
 """
 
 from .__funcs__ import apply_chords
