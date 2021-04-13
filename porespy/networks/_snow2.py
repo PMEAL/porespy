@@ -188,7 +188,6 @@ def _parse_pad_width(pad_width, shape):
 def _parse_boundary_labels(boundary_labels, pad_width):
     r"""
     """
-    boundary_labels = None
     if boundary_labels is None:
         boundary_labels = [['left', 'right'],
                            ['front', 'back'],
