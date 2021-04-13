@@ -6,7 +6,6 @@ from loguru import logger
 from collections import namedtuple
 from skimage.morphology import ball, disk
 from skimage.segmentation import relabel_sequential
-from array_split import shape_split, ARRAY_BOUNDS
 from scipy.signal import fftconvolve
 try:
     from skimage.measure import marching_cubes
@@ -176,33 +175,44 @@ def subdivide(im, divs=2, overlap=0, flatten=False):
         indices.  An ND-array is the preferred container since it's shape can
         be easily queried.
 
-    Notes
-    -----
-    This method uses the
-    `array_split package <https://github.com/array-split/array_split>`_ which
-    offers the same functionality as the ``split`` method of Numpy's ND-array,
-    but supports the splitting of multidimensional arrays in all dimensions.
-
     See Also
     --------
     chunked_func
 
-    Examples
-    --------
-    >>> import porespy as ps
-    >>> import matplotlib.pyplot as plt
-    >>> im = ps.generators.blobs(shape=[200, 200])
-    >>> s = ps.tools.subdivide(im, divs=[2, 2], flatten=True)
-    >>> print(len(s))
-    4
 
     """
     divs = np.ones((im.ndim,), dtype=int) * np.array(divs)
-    halo = overlap * (divs > 1)
-    slices = shape_split(im.shape, axis=divs, halo=halo.tolist(),
-                         tile_bounds_policy=ARRAY_BOUNDS).astype(object)
+    overlap = overlap * (divs > 1)
+    size = (np.array(im.shape)/divs/2 + overlap).astype(int)
+
+    # Find center points of each subsection
+    cens = []
+    for ax in range(im.ndim):
+        steps = np.linspace(0, im.shape[ax], divs[ax]+1).astype(int)[:-1]
+        steps += int(im.shape[ax]/divs[ax]/2)
+        cens.append(steps)
+    # Get slices into im for each subsection
+    s = []
+    for i in range(len(cens[0])):
+        s.append([])
+        xtemp = slice(cens[0][i], cens[0][i], None)
+        for j in range(len(cens[1])):
+            ytemp = slice(cens[1][j], cens[1][j], None)
+            if im.ndim == 2:
+                stemp = extend_slice([xtemp, ytemp], im.shape, pad=size)
+                s[i].append(stemp)
+            else:
+                s[i].append([])
+                for k in range(len(cens[2])):
+                    ztemp = slice(cens[2][k], cens[2][k], None)
+                    stemp = extend_slice([xtemp, ytemp, ztemp], im.shape, pad=size)
+                    s[i][j].append(stemp)
+
+    slices = s
     if flatten is True:
-        slices = np.ravel(slices)
+        slices = [item for sublist in slices for item in sublist]
+        if im.ndim == 3:
+            slices = [item for sublist in slices for item in sublist]
     return slices
 
 
@@ -269,11 +279,11 @@ def find_outer_region(im, r=0):
 
     """
     if r == 0:
-        dt = edt(input=im)
+        dt = edt(im)
         r = int(np.amax(dt)) * 2
     im_padded = np.pad(array=im, pad_width=r, mode='constant',
                        constant_values=True)
-    dt = edt(input=im_padded)
+    dt = edt(im_padded)
     seeds = (dt >= r) + get_border(shape=im_padded.shape)
     # Remove seeds not connected to edges
     labels = spim.label(seeds)[0]
@@ -406,7 +416,7 @@ def get_planes(im, squeeze=True):
     return planes
 
 
-def extend_slice(s, shape, pad=1):
+def extend_slice(slices, shape, pad=1):
     r"""
     Adjust slice indices to include additional voxles around the slice.
 
@@ -415,7 +425,7 @@ def extend_slice(s, shape, pad=1):
 
     Parameters
     ----------
-    s : list of slice objects
+    slices : list of slice objects
          A list (or tuple) of N slice objects, where N is the number of
          dimensions in the image.
 
@@ -423,7 +433,7 @@ def extend_slice(s, shape, pad=1):
         The shape of the image into which the slice objects apply.  This is
         used to check the bounds to prevent indexing beyond the image.
 
-    pad : int
+    pad : int or list of ints
         The number of voxels to expand in each direction.
 
     Returns
@@ -461,15 +471,14 @@ def extend_slice(s, shape, pad=1):
     As can be seen by the location of the 4s, the slice was extended by 1, and
     also handled the extension beyond the boundary correctly.
     """
-    pad = int(pad)
+    shape = np.array(shape)
+    pad = np.array(pad).astype(int)*(shape > 0)
     a = []
-    for i, dim in zip(s, shape):
+    for i, s in enumerate(slices):
         start = 0
-        stop = dim
-        if i.start - pad >= 0:
-            start = i.start - pad
-        if i.stop + pad < dim:
-            stop = i.stop + pad
+        stop = shape[i]
+        start = max(s.start - pad[i], 0)
+        stop = min(s.stop + pad[i], shape[i])
         a.append(slice(start, stop, None))
     return tuple(a)
 

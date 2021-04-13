@@ -54,7 +54,6 @@ setup(
                       'pandas',
                       'imageio',
                       'tqdm',
-                      'array_split',
                       'pyevtk',
                       'numba',
                       'numpy-stl',
