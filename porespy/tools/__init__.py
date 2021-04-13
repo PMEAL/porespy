@@ -41,6 +41,7 @@ ways do NOT return a modified version of the original image.
    tools.seq_to_satn
    tools.size_to_seq
    tools.subdivide
+   tools.unpad
    tools.zero_corners
 
 """
@@ -63,15 +64,16 @@ __all__ = [
     "mesh_region",
     "norm_to_uniform",
     "overlay",
-    "randomize_colors",
     "ps_ball",
     "ps_disk",
     "ps_rect",
     "ps_round",
     "pad_faces",
+    "randomize_colors",
     "seq_to_satn",
     "size_to_seq",
     "subdivide",
+    "unpad",
     "zero_corners",
     "sanitize_filename",
     "get_tqdm",
