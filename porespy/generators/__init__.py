@@ -28,6 +28,8 @@ debugging, and illustration purposes.
     generators.pseudo_electrostatic_packing
     generators.pseudo_gravity_packing
     generators.RSA
+    generators.random_cantor_dust
+    generators.sierpinski_foam
     generators.voronoi_edges
 
 """
@@ -47,3 +49,5 @@ from .__electrostatic__ import pseudo_electrostatic_packing
 from .__cylinder__ import cylindrical_plug
 from ._noise import fractal_noise
 from ._borders import *
+from ._fractals import random_cantor_dust
+from ._fractals import sierpinski_foam
