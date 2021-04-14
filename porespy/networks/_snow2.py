@@ -169,4 +169,5 @@ def _parse_pad_width(pad_width, shape):
         pw = np.array(pad_width).T
     elif (pw.size == 3) and (shape.size == 2):
         raise Exception(f'Not sure how to interpret {pad_width} on a 2D image')
+    pw[pw == None] = 0
     return pw.squeeze()
