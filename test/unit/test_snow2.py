@@ -57,6 +57,44 @@ class Snow2Test:
         assert 'pore.phase1' in pn.keys()
         assert 'pore.phase2' in pn.keys()
 
+    def test_parse_pad_width_2D(self):
+        s = [10, 10]
+        pw = ps.networks._parse_pad_width(1, s)
+        assert np.all(pw == [[1, 1], [1, 1]])
+        pw = ps.networks._parse_pad_width(0, s)
+        assert np.all(pw == [[0, 0], [0, 0]])
+        pw = ps.networks._parse_pad_width([1, 2], s)
+        assert np.all(pw == [[1, 2], [1, 2]])
+        pw = ps.networks._parse_pad_width([1, 0], s)
+        assert np.all(pw == [[1, 0], [1, 0]])
+        pw = ps.networks._parse_pad_width([[1, 2], [3, 4]], s)
+        assert np.all(pw == [[1, 2], [3, 4]])
+        pw = ps.networks._parse_pad_width([1, [2, 3]], s)
+        assert np.all(pw == [[1, 1], [2, 3]])
+        pw = ps.networks._parse_pad_width([0, [2, 3]], s)
+        assert np.all(pw == [[0, 0], [2, 3]])
+        pw = ps.networks._parse_pad_width([0, [0, 3]], s)
+        assert np.all(pw == [[0, 0], [0, 3]])
+        with pytest.raises(Exception):
+            pw = ps.networks._parse_pad_width([0, 1, 2], s)
+
+    def test_parse_pad_width_3D(self):
+        s = [10, 10, 10]
+        pw = ps.networks._parse_pad_width(1, s)
+        assert np.all(pw == [[1, 1], [1, 1], [1, 1]])
+        pw = ps.networks._parse_pad_width(0, s)
+        assert np.all(pw == [[0, 0], [0, 0], [0, 0]])
+        pw = ps.networks._parse_pad_width([0, 1], s)
+        assert np.all(pw == [[0, 1], [0, 1], [0, 1]])
+        pw = ps.networks._parse_pad_width([0, [1, 2], 3], s)
+        assert np.all(pw == [[0, 0], [1, 2], [3, 3]])
+        pw = ps.networks._parse_pad_width([0, [1, 2], [3, 4]], s)
+        assert np.all(pw == [[0, 0], [1, 2], [3, 4]])
+        with pytest.raises(Exception):
+            pw = ps.networks._parse_pad_width([0, 1, 2], s)
+        with pytest.raises(Exception):
+            pw = ps.networks._parse_pad_width([], s)
+
 
 if __name__ == '__main__':
     t = Snow2Test()

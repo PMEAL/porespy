@@ -3,7 +3,7 @@ from porespy.networks import regions_to_network
 from porespy.networks import add_boundary_regions
 from porespy.networks import label_phases, label_boundaries
 from porespy.filters import snow_partitioning, snow_partitioning_parallel
-from collections import namedtuple
+from collections import namedtuple, Iterable
 
 
 def snow2(phases,
@@ -155,17 +155,27 @@ def _parse_phase_alias(alias, phases):
 def _parse_pad_width(pad_width, shape):
     r"""
     """
-    pad_width = np.array(pad_width, dtype=object)
     shape = np.array(shape)
-    if pad_width.size == 1:
+    # Case: int
+    if isinstance(pad_width, int):
         pw = np.array([[pad_width, pad_width]]*len(shape))
-    elif pad_width.size == 2:
-        pw = np.array([pad_width]*len(shape))
-    elif (pad_width.size == 3) and (np.size(shape) == 3):
-        temp = [[i]*2 if np.size(i) == 1 else i for i in pad_width]
-        pw = np.array([temp])
-    elif (pad_width.size == 3) and (shape.size == 2):
-        raise Exception(f'Not sure how to interpret {pad_width} on a 2D image')
+    elif np.all([isinstance(i, int) for i in pad_width]):
+        # Case: (before, )
+        if (len(pad_width) == 1):
+            pad_width.extend(pad_width)
+            pw = np.array([pad_width]*len(shape))
+        # Case: (before, after)
+        elif (len(pad_width) == 2):
+            pw = np.array([pad_width]*len(shape))
+        else:
+            raise Exception(f'Incorrect number of values given')
+    # Case: (before, (before, after), ...) or ((before, after), before, ...)
+    elif np.any([isinstance(i, int) for i in pad_width]):  # some ints
+        pw = np.array([[i, i] if isinstance(i, int) else i for i in pad_width])
+    # Case: ((before, after), ..., (before, after))
+    elif np.all([isinstance(i, Iterable) for i in pad_width]):
+        pw = np.array(pad_width)
+    else:
+        raise Exception(f'Not sure how to interpret {pad_width}')
     pw[pw == None] = 0
-    pw[pw == ''] = 0
     return pw.squeeze()
