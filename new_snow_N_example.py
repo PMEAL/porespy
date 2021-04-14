@@ -10,7 +10,7 @@ phases = im1 + (im2 * ~im1)*2
 
 snow_n = ps.networks.snow2(phases,
                            phase_alias={1: 'solid', 2: 'void'},
-                           boundary_width=[0, [5, 0]])
+                           boundary_width=[[0], [5, 0]])
 
 fig = plt.figure()
 plt.imshow(snow_n.regions.T)

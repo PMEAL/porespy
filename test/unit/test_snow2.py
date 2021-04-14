@@ -75,6 +75,10 @@ class Snow2Test:
         assert np.all(pw == [[0, 0], [2, 3]])
         pw = ps.networks._parse_pad_width([0, [0, 3]], s)
         assert np.all(pw == [[0, 0], [0, 3]])
+        pw = ps.networks._parse_pad_width([[1], [2, 3]], s)
+        assert np.all(pw == [[1, 1], [2, 3]])
+        with pytest.raises(Exception):
+            pw = ps.networks._parse_pad_width([[1], [2, 3], 0], s)
         with pytest.raises(Exception):
             pw = ps.networks._parse_pad_width([0, 1, 2], s)
 
@@ -90,6 +94,8 @@ class Snow2Test:
         assert np.all(pw == [[0, 0], [1, 2], [3, 3]])
         pw = ps.networks._parse_pad_width([0, [1, 2], [3, 4]], s)
         assert np.all(pw == [[0, 0], [1, 2], [3, 4]])
+        pw = ps.networks._parse_pad_width([[1], [2, 3], 0], s)
+        assert np.all(pw == [[1, 1], [2, 3], [0, 0]])
         with pytest.raises(Exception):
             pw = ps.networks._parse_pad_width([0, 1, 2], s)
         with pytest.raises(Exception):

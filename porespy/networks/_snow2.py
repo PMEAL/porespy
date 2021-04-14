@@ -158,24 +158,29 @@ def _parse_pad_width(pad_width, shape):
     shape = np.array(shape)
     # Case: int
     if isinstance(pad_width, int):
-        pw = np.array([[pad_width, pad_width]]*len(shape))
+        pw = [[pad_width, pad_width]]*len(shape)
+
     elif np.all([isinstance(i, int) for i in pad_width]):
         # Case: (before, )
         if (len(pad_width) == 1):
             pad_width.extend(pad_width)
-            pw = np.array([pad_width]*len(shape))
+            pw = [pad_width]*len(shape)
         # Case: (before, after)
         elif (len(pad_width) == 2):
-            pw = np.array([pad_width]*len(shape))
+            pw = [pad_width]*len(shape)
         else:
-            raise Exception(f'Incorrect number of values given')
+            raise Exception('Incorrect number of values given')
     # Case: (before, (before, after), ...) or ((before, after), before, ...)
     elif np.any([isinstance(i, int) for i in pad_width]):  # some ints
-        pw = np.array([[i, i] if isinstance(i, int) else i for i in pad_width])
+        pw = [[i, i] if isinstance(i, int) else i for i in pad_width]
+        # Catch case of [2, [2, 2], [2]]
+        pw = [i if len(i) == 2 else i*2 for i in pw]
     # Case: ((before, after), ..., (before, after))
     elif np.all([isinstance(i, Iterable) for i in pad_width]):
-        pw = np.array(pad_width)
+        pw = [i if len(i) == 2 else i*2 for i in pad_width]
     else:
         raise Exception(f'Not sure how to interpret {pad_width}')
-    pw[pw == None] = 0
+    pw = np.array(pw)
+    if pw.shape[0] > len(shape):
+        raise Exception('Too many values given')
     return pw.squeeze()
