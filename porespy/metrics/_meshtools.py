@@ -1,19 +1,88 @@
-from porespy.tools import mesh_region
-from trimesh import Trimesh
-import scipy.ndimage as spim
 import numpy as np
-from porespy.tools import extend_slice, ps_round
+import scipy.ndimage as spim
+from trimesh import Trimesh
+from edt import edt
+from porespy.tools import extend_slice, ps_round, ps_rect
 from porespy.tools import _check_for_singleton_axes
+from porespy.tools import mesh_region
 from collections import namedtuple
 from skimage import measure
 from porespy.tools import get_tqdm
 from loguru import logger
 from porespy import settings
 tqdm = get_tqdm()
+import skfmm
+
+
+def throat_perimeter(throat):
+    r"""
+    """
+    # Find interfacial voxels
+    label, N = spim.label(throat, structure=ps_rect(w=3, ndim=throat.ndim))
+    if N > 1:
+        perim = np.nan
+    elif N == 0:
+        perim = np.nan
+    else:
+        temp = throat
+        inds = np.where(temp)
+        phi = np.ones_like(throat)
+        phi[inds[0][0], inds[1][0]] = 0
+        v = (temp)*1.0
+        perim = skfmm.travel_time(phi=phi, speed=v)
+        perim = perim.max()*2.0
+    return perim
+
+
+def throat_perimeter2(regions):
+    r"""
+    """
+    # Find interfacial voxels
+    im1 = regions == regions.max()
+    im2 = regions * (~im1) > 0
+    dil1 = spim.binary_dilation(input=im1,
+                                structure=ps_rect(w=3, ndim=regions.ndim))
+    dil2 = spim.binary_dilation(input=im2,
+                                structure=ps_rect(w=3, ndim=regions.ndim))
+    throat = dil1*dil2
+    labels, N = spim.label(throat, structure=ps_rect(w=3, ndim=regions.ndim))
+    if N > 1:
+        perim = None
+    else:
+        dt = edt(im1 + im2)
+        temp = throat*(~((im1 > 0) + (im2 > 0)))
+        inds = np.where(temp)
+        phi = np.ones_like(regions)
+        phi[inds[0][0], inds[1][0]] = 0
+        v = (temp)*1.0
+        perim = skfmm.travel_time(phi=phi, speed=v)
+    return perim.max()*2.0
 
 
 def region_volumes(regions, mode='marching_cubes'):
     r"""
+    Computes volumes of each labelled region in an image
+
+    Parameters
+    ----------
+    regions : ND-array
+        An image with labelled regions
+    mode : string
+        Controls the method used. Options are:
+
+        'marching_cubes' (default)
+            Finds a mesh for each region using the marching cubes algorithm
+            from ``scikit-image``, then finds the volume of the mesh using the
+            ``trimesh`` package.
+        'voxel'
+            Calculates the region volume as the sum of voxels within each
+            region.
+
+    Returns
+    -------
+    volumes : ND-array
+        An array of shape [N by 1] where N is the number of labelled regions
+        in the image.
     """
     slices = spim.find_objects(regions)
     vols = np.zeros([len(slices), ])
@@ -29,8 +98,21 @@ def region_volumes(regions, mode='marching_cubes'):
 
 def mesh_volume(region):
     r"""
+    Computes the volume of a single region by meshing it
+
+    Parameters
+    ----------
+    region : ND-array
+        An image with a single region labelled as ``True`` (or > 0)
+
+    Returns
+    -------
+    volume : float
+        The volume of the region computed by applyuing the marching cubes
+        algorithm to the region, then finding the mesh volume using the
+        ``trimesh`` package.
     """
-    mc = mesh_region(region)
+    mc = mesh_region(region > 0)
     m = Trimesh(vertices=mc.verts, faces=mc.faces, vertex_normals=mc.norm)
     if m.is_watertight:
         vol = m.volume
@@ -64,7 +146,7 @@ def region_surface_areas(regions, voxel_size=1, strel=None):
 
     Returns
     -------
-    result : list
+    areas : list
         A list containing the surface area of each region, offset by 1, such
         that the surface area of region 1 is stored in element 0 of the list.
 
@@ -155,7 +237,7 @@ def region_interface_areas(regions, areas, voxel_size=1, strel=None):
 
     Returns
     -------
-    result : named_tuple
+    areas : named_tuple
         A named-tuple containing 2 arrays. ``conns`` holds the connectivity
         information and ``area`` holds the result for each pair.  ``conns`` is
         a N-regions by 2 array with each row containing the region number of an

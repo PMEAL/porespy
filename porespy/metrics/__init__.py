@@ -52,3 +52,4 @@ from ._meshtools import region_interface_areas
 from ._meshtools import mesh_surface_area
 from ._meshtools import region_volumes
 from ._meshtools import mesh_volume
+from ._meshtools import throat_perimeter
