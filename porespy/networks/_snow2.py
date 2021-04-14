@@ -134,7 +134,10 @@ def snow2(phases,
         regions = add_boundary_regions(regions, pad_width=boundary_width)
         phases = np.pad(phases, pad_width=boundary_width, mode='edge')
     # Perform actual extractcion on all regions
-    net = regions_to_network(regions, phases=phases)
+    net = regions_to_network(regions,
+                             phases=phases,
+                             accuracy=accuracy,
+                             voxel_size=voxel_size)
     # If image is multiphase, label pores/throats accordingly
     if phases.max() > 1:
         phase_alias = _parse_phase_alias(phase_alias, phases)
