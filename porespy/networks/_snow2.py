@@ -155,19 +155,17 @@ def _parse_phase_alias(alias, phases):
 def _parse_pad_width(pad_width, shape):
     r"""
     """
+    pad_width = np.array(pad_width, dtype=object)
     shape = np.array(shape)
-    pw = np.array(pad_width)
-    # Deal with integer value
-    if pw.size == 1:
-        pad_width = [[pad_width, pad_width]]*len(shape)
-        pw = np.array(pad_width)
-    elif pw.size == 2:
-        pad_width = [pad_width]*len(shape)
-        pw = np.array(pad_width)
-    elif (pw.size == 3) and (shape.size == 3):
-        pad_width = [pad_width]*2
-        pw = np.array(pad_width).T
-    elif (pw.size == 3) and (shape.size == 2):
+    if pad_width.size == 1:
+        pw = np.array([[pad_width, pad_width]]*len(shape))
+    elif pad_width.size == 2:
+        pw = np.array([pad_width]*len(shape))
+    elif (pad_width.size == 3) and (np.size(shape) == 3):
+        temp = [[i]*2 if np.size(i) == 1 else i for i in pad_width]
+        pw = np.array([temp])
+    elif (pad_width.size == 3) and (shape.size == 2):
         raise Exception(f'Not sure how to interpret {pad_width} on a 2D image')
     pw[pw == None] = 0
+    pw[pw == ''] = 0
     return pw.squeeze()
