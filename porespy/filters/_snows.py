@@ -509,7 +509,7 @@ def snow_partitioning_parallel(im,
     # Applying SNOW to image chunks
     im = da.from_array(dt, chunks=chunk_shape)
     im = da.overlap.overlap(im, depth=depth, boundary='none')
-    im = im.map_blocks(snow_partitioning, r_max=r_max, sigma=sigma)
+    im = im.map_blocks(_snow_chunked, r_max=r_max, sigma=sigma)
     im = da.overlap.trim_internal(im, trim_depth, boundary='none')
     # TODO: use dask ProgressBar once compatible w/ logging.
     logger.trace('Applying snow to image chunks')
@@ -900,3 +900,16 @@ def _resequence_labels(array):
     _sequence(array, count)
 
     return array.reshape(a_shape)
+
+def _snow_chunked(dt, r_max=5, sigma=0.4):
+    r"""
+    This private version of snow is called during snow_parallel.  Dask does not
+    all the calls to the logger between each step apparently.
+    """
+    dt = spim.gaussian_filter(input=dt, sigma=sigma)
+    peaks = find_peaks(dt=dt, r_max=r_max)
+    peaks = trim_saddle_points(peaks=peaks, dt=dt, max_iters=99)
+    peaks = trim_nearby_peaks(peaks=peaks, dt=dt)
+    peaks, N = spim.label(peaks)
+    regions = watershed(image=-dt, markers=peaks, mask=dt > 0)
+    return regions * (dt > 0)
