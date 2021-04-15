@@ -4,6 +4,7 @@ from porespy.networks import add_boundary_regions
 from porespy.networks import label_phases, label_boundaries
 from porespy.filters import snow_partitioning, snow_partitioning_parallel
 from collections import namedtuple, Iterable
+from loguru import logger
 
 
 def snow2(phases,
@@ -95,7 +96,7 @@ def snow2(phases,
        networks from massive tomograms via geometric domain decomposition.
        Advances in Water Resources. 145(Nov), 103734 (2020)
     """
-    regions = np.zeros_like(phases, dtype=int)
+    regions = None
     for i in range(phases.max()):
         phase = phases == (i + 1)
         if parallelization is not None:
@@ -107,9 +108,17 @@ def snow2(phases,
             snow = snow_partitioning(im=phases,
                                      sigma=0.4,
                                      r_max=4)
+        if regions is None:
+            regions = np.zeros_like(snow.regions, dtype=int)
         # Note: Using snow.regions > 0 here instead of phase is needed to
         # handle a bug in snow_partitioning, see issue #169 and #430
         regions += snow.regions + regions.max()*(snow.regions > 0)
+    if phases.shape != regions.shape:
+        logger.warning(f"Image was cropped to {regions.shape} during watershed")
+        for ax in range(phases.ndim):
+            phases = np.swapaxes(phases, 0, ax)
+            phases = phases[:regions.shape[ax], ...]
+            phases = np.swapaxes(phases, 0, ax)
     # Inspect and clean-up boundary_width argument
     boundary_width = _parse_pad_width(boundary_width, phases.shape)
     # If boundaries were specified, pad the images accordingly

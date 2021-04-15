@@ -3,8 +3,8 @@ import matplotlib.pyplot as plt
 import openpnm as op
 
 # np.random.seed(3)
-im1 = ps.generators.blobs(shape=[400, 200], porosity=None, blobiness=2) < 0.4
-im2 = ps.generators.blobs(shape=[400, 200], porosity=None, blobiness=2) < 0.7
+im1 = ps.generators.blobs(shape=[401, 201], porosity=None, blobiness=2) < 0.4
+im2 = ps.generators.blobs(shape=[401, 201], porosity=None, blobiness=2) < 0.7
 phases = im1 + (im2 * ~im1)*2
 # phases = phases > 0
 
