@@ -69,9 +69,10 @@ class Settings:  # pragma: no cover
         controls width.
     logger_fmt : str
         luguru-compatible format used to format the logger messages.
-    loglevel : str
+    loglevel : str, or int
         Determines what messages to get printed in console. Options are:
-        "TRACE", "DEBUG", "INFO", "SUCCESS", "WARNING", "ERROR", "CRITICAL"
+        "TRACE" (5), "DEBUG" (10), "INFO" (20), "SUCCESS" (25), "WARNING" (30),
+        "ERROR" (40), "CRITICAL" (50)
 
     """
     __instance__ = None
@@ -104,6 +105,15 @@ class Settings:  # pragma: no cover
 
     @loglevel.setter
     def loglevel(self, value):
+        if isinstance(value, int):
+            options = {5: "TRACE",
+                       10: "DEBUG",
+                       20: "INFO",
+                       25: "SUCESS",
+                       30: "WARNING",
+                       40: "ERROR",
+                       50: "CRITICAL"}
+            value = options[value]
         self._loglevel = value
         os.environ["LOGURU_LEVEL"] = value
         config_logger(fmt=self.logger_fmt, loglevel=value)
