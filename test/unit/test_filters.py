@@ -380,10 +380,10 @@ class FilterTest():
         im = ps.generators.overlapping_spheres([1000, 1000], radius=10,
                                                 porosity=0.5)
         snow = ps.filters.snow_partitioning_parallel(im,
-                                                      divs=[2, 2],
-                                                      num_workers=None,
-                                                      r_max=5, sigma=0.4,)
-        assert np.amax(snow.regions) == 918
+                                                     divs=[2, 2],
+                                                     num_workers=None,
+                                                     r_max=5, sigma=0.4,)
+        assert np.amax(snow.regions) == 919
         assert not np.any(np.isnan(snow.regions))
         assert not np.any(np.isnan(snow.dt))
         assert not np.any(np.isnan(snow.im))
