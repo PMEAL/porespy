@@ -113,7 +113,7 @@ def gravity_mio(im, inlets, sigma=0.072, rho=1000, g=9.81, voxel_size=1):
     fn = pc + rgh
 
     # Use radii values in mio image for invasion steps
-    Rs = np.unique(mio)[-1:0:-1]
+    Rs = np.arange(int(dt.max()), 1, -1)
     # Convert radii to capillary pressure, assuming perfectly wetting/non-wetting
     Ps = 2*sigma/(Rs*vx_res)
     Ps = np.concatenate([Ps, Ps*10])
