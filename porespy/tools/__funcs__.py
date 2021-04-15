@@ -4,9 +4,11 @@ import scipy.ndimage as spim
 from scipy.stats import rankdata
 import warnings
 from edt import edt
+import scipy.ndimage as spim
+from loguru import logger
 from collections import namedtuple
 from skimage.morphology import ball, disk
-from array_split import shape_split, ARRAY_BOUNDS
+from skimage.segmentation import relabel_sequential
 from scipy.signal import fftconvolve
 try:
     from skimage.measure import marching_cubes
@@ -100,12 +102,7 @@ def align_image_with_openpnm(im):
     image : ND-array
         Returns a copy of ``im`` rotated accordingly.
     """
-    if im.ndim != im.squeeze().ndim:    # pragma: no cover
-        warnings.warn((
-            f"Input image conains a singleton axis: {im.shape}."
-            " Reduce dimensionality with np.squeeze(im) to avoid"
-            " unexpected behavior."
-        ))
+    _check_for_singleton_axes(im)
     im = np.copy(im)
     if im.ndim == 2:
         im = (np.swapaxes(im, 1, 0))
@@ -187,12 +184,7 @@ def fftmorphology(im, strel, mode='opening'):
         t = fftconvolve(im, strel, mode='same') > 0.1
         return t
 
-    if im.ndim != im.squeeze().ndim:    # pragma: no cover
-        warnings.warn((
-            f"Input image conains a singleton axis: {im.shape}."
-            " Reduce dimensionality with np.squeeze(im) to avoid"
-            " unexpected behavior."
-        ))
+    _check_for_singleton_axes(im)
 
     # Perform erosion and dilation
     # The array must be padded with 0's so it works correctly at edges
@@ -255,33 +247,44 @@ def subdivide(im, divs=2, overlap=0, flatten=False):
         indices.  An ND-array is the preferred container since it's shape can
         be easily queried.
 
-    Notes
-    -----
-    This method uses the
-    `array_split package <https://github.com/array-split/array_split>`_ which
-    offers the same functionality as the ``split`` method of Numpy's ND-array,
-    but supports the splitting of multidimensional arrays in all dimensions.
-
     See Also
     --------
     chunked_func
 
-    Examples
-    --------
-    >>> import porespy as ps
-    >>> import matplotlib.pyplot as plt
-    >>> im = ps.generators.blobs(shape=[200, 200])
-    >>> s = ps.tools.subdivide(im, divs=[2, 2], flatten=True)
-    >>> print(len(s))
-    4
 
     """
     divs = np.ones((im.ndim,), dtype=int) * np.array(divs)
-    halo = overlap * (divs > 1)
-    slices = shape_split(im.shape, axis=divs, halo=halo.tolist(),
-                         tile_bounds_policy=ARRAY_BOUNDS).astype(object)
+    overlap = overlap * (divs > 1)
+    size = (np.array(im.shape)/divs/2 + overlap).astype(int)
+
+    # Find center points of each subsection
+    cens = []
+    for ax in range(im.ndim):
+        steps = np.linspace(0, im.shape[ax], divs[ax]+1).astype(int)[:-1]
+        steps += int(im.shape[ax]/divs[ax]/2)
+        cens.append(steps)
+    # Get slices into im for each subsection
+    s = []
+    for i in range(len(cens[0])):
+        s.append([])
+        xtemp = slice(cens[0][i], cens[0][i], None)
+        for j in range(len(cens[1])):
+            ytemp = slice(cens[1][j], cens[1][j], None)
+            if im.ndim == 2:
+                stemp = extend_slice([xtemp, ytemp], im.shape, pad=size)
+                s[i].append(stemp)
+            else:
+                s[i].append([])
+                for k in range(len(cens[2])):
+                    ztemp = slice(cens[2][k], cens[2][k], None)
+                    stemp = extend_slice([xtemp, ytemp, ztemp], im.shape, pad=size)
+                    s[i][j].append(stemp)
+
+    slices = s
     if flatten is True:
-        slices = np.ravel(slices)
+        slices = [item for sublist in slices for item in sublist]
+        if im.ndim == 3:
+            slices = [item for sublist in slices for item in sublist]
     return slices
 
 
@@ -347,11 +350,12 @@ def find_outer_region(im, r=None):
         identified as *outside* the sample.
 
     """
-    dt = edt(im)
-    if r is None:
-        r = int(sp.amax(dt)) * 2
-    im_padded = sp.pad(array=im, pad_width=r, mode='constant',
+    if r == 0:
+        dt = edt(im)
+        r = int(np.amax(dt)) * 2
+    im_padded = np.pad(array=im, pad_width=r, mode='constant',
                        constant_values=True)
+    dt = edt(im_padded)
     seeds = (dt >= r) + get_border(shape=im_padded.shape)
     # Remove seeds not connected to edges
     labels = spim.label(seeds)[0]
@@ -389,15 +393,16 @@ def extract_cylinder(im, r=None, axis=0):
         ``False``.
 
     """
-    if r is None:
-        a = list(im.shape)
-        a.pop(axis)
-        r = np.floor(np.amin(a) / 2)
-    dim = [range(int(-s / 2), int(s / 2) + s % 2) for s in im.shape]
-    inds = np.meshgrid(*dim, indexing='ij')
-    inds[axis] = inds[axis] * 0
-    d = np.sqrt(np.sum(sp.square(inds), axis=0))
-    mask = d < r
+    # This needs to be imported here since the tools module is imported
+    # before the generators module, so placing it at the top of the file
+    # causes an error since the generators module does not exist yet.
+    # Strangly, if I import the ENTIRE package at the top of the file then
+    # things work ok, but this seems quite silly compared to just importing
+    # the function on demand. This is explained in the following
+    # stackoverflow answer: https://stackoverflow.com/a/129810.
+
+    from porespy.generators import cylindrical_plug
+    mask = cylindrical_plug(shape=im.shape, r=r, axis=axis)
     im_temp = im * mask
     return im_temp
 
@@ -483,7 +488,7 @@ def get_planes(im, squeeze=True):
     return planes
 
 
-def extend_slice(s, shape, pad=1):
+def extend_slice(slices, shape, pad=1):
     r"""
     Adjust slice indices to include additional voxles around the slice.
 
@@ -492,7 +497,7 @@ def extend_slice(s, shape, pad=1):
 
     Parameters
     ----------
-    s : list of slice objects
+    slices : list of slice objects
          A list (or tuple) of N slice objects, where N is the number of
          dimensions in the image.
 
@@ -500,7 +505,7 @@ def extend_slice(s, shape, pad=1):
         The shape of the image into which the slice objects apply.  This is
         used to check the bounds to prevent indexing beyond the image.
 
-    pad : int
+    pad : int or list of ints
         The number of voxels to expand in each direction.
 
     Returns
@@ -538,15 +543,14 @@ def extend_slice(s, shape, pad=1):
     As can be seen by the location of the 4s, the slice was extended by 1, and
     also handled the extension beyond the boundary correctly.
     """
-    pad = int(pad)
+    shape = np.array(shape)
+    pad = np.array(pad).astype(int)*(shape > 0)
     a = []
-    for i, dim in zip(s, shape):
+    for i, s in enumerate(slices):
         start = 0
-        stop = dim
-        if i.start - pad >= 0:
-            start = i.start - pad
-        if i.stop + pad < dim:
-            stop = i.stop + pad
+        stop = shape[i]
+        start = max(s.start - pad[i], 0)
+        stop = min(s.stop + pad[i], shape[i])
         a.append(slice(start, stop, None))
     return tuple(a)
 
@@ -742,7 +746,7 @@ def get_border(shape, thickness=1, mode='edges', return_indices=False):
     ``return_indices`` it finds them using ``np.where``.  Since these arrays
     are cubic it should be possible to use more elegant and efficient
     index-based logic to find the indices, then use them to fill an empty
-    image with ``True`` using these     indices.
+    image with ``True`` using these indices.
 
     Examples
     --------
@@ -914,12 +918,7 @@ def mesh_region(region: bool, strel=None):
 
     """
     im = region
-    if im.ndim != im.squeeze().ndim:    # pragma: no cover
-        warnings.warn((
-            f"Input image conains a singleton axis: {im.shape}."
-            " Reduce dimensionality with np.squeeze(im) to avoid"
-            " unexpected behavior."
-        ))
+    _check_for_singleton_axes(im)
     if strel is None:
         if region.ndim == 3:
             strel = ball(1)
@@ -942,46 +941,101 @@ def mesh_region(region: bool, strel=None):
     return result
 
 
-def ps_disk(radius):
+def ps_disk(r, smooth=True):
     r"""
     Creates circular disk structuring element for morphological operations
 
     Parameters
     ----------
-    radius : float or int
+    r : float or int
         The desired radius of the structuring element
+    smooth : boolean
+        Indicates whether the faces of the sphere should have the little
+        nibs (``True``) or not (``False``, default)
 
     Returns
     -------
-    strel : 2D-array
+    disk : 2D-array
         A 2D numpy bool array of the structring element
     """
-    rad = int(np.ceil(radius))
-    other = np.ones((2 * rad + 1, 2 * rad + 1), dtype=bool)
-    other[rad, rad] = False
-    disk = edt(other) < radius
+    disk = ps_round(r=r, ndim=2, smooth=smooth)
     return disk
 
 
-def ps_ball(radius):
+def ps_ball(r, smooth=True):
     r"""
     Creates spherical ball structuring element for morphological operations
 
     Parameters
     ----------
-    radius : float or int
+    r : scalar
         The desired radius of the structuring element
+    smooth : boolean
+        Indicates whether the faces of the sphere should have the little
+        nibs (``True``) or not (``False``, default)
+
+    Returns
+    -------
+    ball : 3D-array
+        A 3D numpy array of the structuring element
+    """
+    ball = ps_round(r=r, ndim=3, smooth=smooth)
+    return ball
+
+
+def ps_round(r, ndim, smooth=True):
+    r"""
+    Creates round structuring element with the given radius and dimensionality
+
+    Parameters
+    ----------
+    r : scalar
+        The desired radius of the structuring element
+    ndim : int
+        The dimensionality of the element, either 2 or 3.
+    smooth : boolean
+        Indicates whether the faces of the sphere should have the little
+        nibs (``True``) or not (``False``, default)
 
     Returns
     -------
     strel : 3D-array
         A 3D numpy array of the structuring element
     """
-    rad = int(np.ceil(radius))
-    other = np.ones((2 * rad + 1, 2 * rad + 1, 2 * rad + 1), dtype=bool)
-    other[rad, rad, rad] = False
-    ball = edt(other) < radius
+    rad = int(np.ceil(r))
+    other = np.ones([2*rad + 1 for i in range(ndim)], dtype=bool)
+    other[tuple(rad for i in range(ndim))] = False
+    if smooth:
+        ball = edt(other) < r
+    else:
+        ball = edt(other) <= r
     return ball
+
+
+def ps_rect(w, ndim):
+    r"""
+    Creates rectilinear structuring element with the given size and
+    dimensionality
+
+    Parameters
+    ----------
+    w : scalar
+        The desired width of the structuring element
+    ndim : int
+        The dimensionality of the element, either 2 or 3.
+
+    Returns
+    -------
+    strel : D-aNrray
+        A numpy array of the structuring element
+    """
+    if ndim == 2:
+        from skimage.morphology import square
+        strel = square(w)
+    if ndim == 3:
+        from skimage.morphology import cube
+        strel = cube(w)
+    return strel
 
 
 def overlay(im1, im2, c):
@@ -1161,12 +1215,7 @@ def pad_faces(im, faces):
     --------
     add_boundary_regions
     """
-    if im.ndim != im.squeeze().ndim:    # pragma: no cover
-        warnings.warn((
-            f"Input image conains a singleton axis: {im.shape}."
-            " Reduce dimensionality with np.squeeze(im) to avoid"
-            " unexpected behavior."
-        ))
+    _check_for_singleton_axes(im)
     f = faces
     if f is not None:
         if im.ndim == 2:
@@ -1209,7 +1258,6 @@ def _create_alias_map(im, alias=None):
     as valuies. If no alias is provided then default labelling is used
     i.e {1: 'Phase1',..}
     """
-    # -------------------------------------------------------------------------
     # Get alias if provided by user
     phases_num = np.unique(im).astype(int)
     phases_num = np.trim_zeros(phases_num)
@@ -1236,12 +1284,11 @@ def _create_alias_map(im, alias=None):
         if phase_labels.size < phases_num.size:
             missed_labels = np.setdiff1d(phases_num, phase_labels)
             for i in missed_labels:
-                warnings.warn(
-                    "label_{} alias is not provided although it "
-                    "exists in the input image.".format(i)
-                    + "The default label alias phase{} is assigned to "
-                      "label_{}".format(i, i))
-                al[i] = 'phase{}'.format(i)
+                logger.warning(
+                    f"label_{i} alias is not provided although it exists in the"
+                    f" input image. The default label alias phase{i} is assigned"
+                    f" to label_{i}")
+                al[i] = f'phase{i}'
     return al
 
 
@@ -1426,10 +1473,10 @@ def zero_corners(im, pad_width):
         Padded image whose corners are to be filled with 0.
 
     pad_width : int or list
-        Pad width of the padded image. If a scalar value is passed, a uniform
-        pad width for all dimensions is assumed. Otherwise, a list of lists
-        should be passed with each inner list being two-element long,
-        pertaining to pad_before and pad_after for each axis.
+        Pad width of the padded image. If a scalar value is passed, a
+        uniform pad width for all dimensions is assumed. Otherwise, a list
+        of lists should be passed with each inner list being two-element
+        long, pertaining to pad_before and pad_after for each axis.
 
     Example
     -------
@@ -1527,3 +1574,20 @@ def sanitize_filename(filename, ext, exclude_ext=False):
         name = filename
     filename_formatted = f"{name}" if exclude_ext else f"{name}.{ext}"
     return filename_formatted
+
+
+def _check_for_singleton_axes(im):  # pragma: no cover
+    r"""
+    Checks for whether the input image contains singleton axes and logs
+    a proper warning in case found.
+
+    Parameters
+    ----------
+    im : ndarray
+        Input image.
+
+    """
+    if im.ndim != im.squeeze().ndim:
+        logger.warning("Input image conains a singleton axis. Reduce"
+                       " dimensionality with np.squeeze(im) to avoid"
+                       " unexpected behavior.")

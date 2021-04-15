@@ -1,12 +1,11 @@
-name: 💡 Examples
+name: Examples
 
 on: [push]
 
 jobs:
   build:
 
-    if: (! contains(github.event.head_commit.message, 'ci min')) &&
-        (! contains(github.event.head_commit.message, 'ci skip'))
+    if: (! contains(github.event.head_commit.message, 'ci min'))
 
     runs-on: ${{ matrix.operating-system }}
     defaults:
@@ -14,10 +13,13 @@ jobs:
         shell: bash -l {0}
 
     strategy:
-      max-parallel: 4
+      fail-fast: false
+      max-parallel: 5
       matrix:
         python-version: [3.8]
         operating-system: [ubuntu-latest]
+        # Next line should be range(1, max-parallel + 1)
+        test_group: [1, 2, 3, 4, 5]
 
     steps:
       - uses: actions/checkout@v2
@@ -26,32 +28,75 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Cache conda
+      - name: Cache pip
         uses: actions/cache@v2
-        env:
-          CACHE_NUMBER: 0  # increase value -> force reset cache
         with:
-          path: ~/conda_pkgs_dir
-          key: ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{ hashFiles('**/conda_requirements.txt') }}
+          # This path is specific to Ubuntu
+          path: ~/.cache/pip
+          # Look to see if there is a cache hit for the corresponding requirements file
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements/min_requirements_pip.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+            ${{ runner.os }}-
 
-      - name: Set up conda
-        uses: conda-incubator/setup-miniconda@v2
-        with:
-          python-version: ${{ matrix.python-version }}
-          condarc-file: requirements/.condarc
-          allow-softlinks: true
-          channel-priority: flexible
-          show-channel-urls: false
-          use-only-tar-bz2: true
-          auto-activate-base: true
+      # Currently, setting up Python and installing requirements using pip
+      #   takes ~ 1 min. On the other hand, doing the same using conda (mamba)
+      #   takes ~ 4.5 mins! When setup-miniconda/issues/89 is fixed, it might be
+      #   worth going back to conda. Anyway, in testing, we're not really using
+      #   any library that's only on conda. So, it's all good.
 
-      - name: Install dependencies (conda)
+      # We disabled caching until setup-miniconda/issues/169 is fixed.
+
+      # - name: Cache conda
+      #   uses: actions/cache@v2
+      #   env:
+      #     CACHE_NUMBER: 0  # increase value -> force reset cache
+      #   with:
+      #     path: ~/conda_pkgs_dir
+      #     key: ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{ hashFiles('**/conda_requirements.txt') }}
+
+      # - name: Set up conda/mamba
+      #   uses: conda-incubator/setup-miniconda@v2
+      #   with:
+      #     mamba-version: "*"
+      #     allow-softlinks: true
+      #     use-only-tar-bz2: true
+      #     show-channel-urls: false
+      #     auto-activate-base: true
+      #     channel-priority: strict
+      #     channels: conda-forge
+      #     condarc-file: requirements/.condarc
+      #     python-version: ${{ matrix.python-version }}
+
+      # - name: Install dependencies (conda)
+      #   # TODO: once https://github.com/jerry-git/pytest-split/pull/10
+      #   #   is merged, fix the custom pip install for pytest-split.
+      #   run: |
+      #     cat requirements/conda_requirements.txt >> requirements.txt
+      #     cat requirements/test_requirements.txt >> requirements.txt
+      #     cat requirements/optional_requirements.txt >> requirements.txt
+      #     mamba install --file requirements.txt
+      #     pip install git+https://github.com/ma-sadeghi/pytest-split.git@fix_ipynb_bug
+      #     pip install -r requirements/pip_requirements.txt
+      #     # Install porespy from the checked-out branch
+      #     pip install -e . --no-deps
+
+      - name: Install dependencies (pip)
+        # TODO: once https://github.com/jerry-git/pytest-split/pull/10
+        #   is merged, fix the custom pip install for pytest-split.
         run: |
-          conda install --file requirements/conda_requirements.txt
-          conda install --file requirements/test_requirements.txt
+          pip install wheel
+          pip install -r requirements/min_requirements_pip.txt
+          pip install git+https://github.com/ma-sadeghi/pytest-split.git@fix_ipynb_bug
           # Install porespy from the checked-out branch
-          pip install -e .
+          pip install -e . --no-deps
 
       - name: Running tests
-        run:
-          pytest --nbval examples/
+        # Make sure to pass max-parallel to --splits
+        run: |
+          pytest examples/ \
+            --nbval-lax \
+            --splits ${{ strategy.max-parallel}} \
+            --group ${{ matrix.test_group }} \
+            --durations-path test/fixtures/.test_durations_examples \
+            --suppress-no-test-exit-code  # so if no tests collected, CI won't break
