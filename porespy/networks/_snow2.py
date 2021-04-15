@@ -99,12 +99,12 @@ def snow2(phases,
     for i in range(phases.max()):
         phase = phases == (i + 1)
         if parallelization is not None:
-            snow = snow_partitioning_parallel(im=phase,
+            snow = snow_partitioning_parallel(im=phases,
                                               sigma=0.4,
                                               r_max=4,
                                               **parallelization)
         else:
-            snow = snow_partitioning(im=phase,
+            snow = snow_partitioning(im=phases,
                                      sigma=0.4,
                                      r_max=4)
         # Note: Using snow.regions > 0 here instead of phase is needed to

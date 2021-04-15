@@ -417,6 +417,7 @@ def trim_nearby_peaks(peaks, dt):
 
 
 def _estimate_overlap(im, mode='dt', zoom=0.25):
+    logger.trace('Calculating overlap thickness')
     if mode == 'watershed':
         rev = spim.interpolation.zoom(im, zoom=zoom, order=0)
         rev = rev > 0
@@ -432,12 +433,11 @@ def _estimate_overlap(im, mode='dt', zoom=0.25):
     return overlap
 
 def snow_partitioning_parallel(im,
-                               r_max=5,
+                               r_max=4,
                                sigma=0.4,
                                divs=2,
                                overlap=None,
-                               num_workers=None,
-                               crop=True):
+                               num_workers=None):
     r"""
     Performs SNOW algorithm in parallel (or serial) to reduce time
     (or memory usage) by geomertirc domain decomposition of large images.
@@ -477,20 +477,16 @@ def snow_partitioning_parallel(im,
     for i in range(im.ndim):
         shape.append(divs[i] * (im.shape[i] // divs[i]))
 
-    if shape != list(im.shape):
-        if crop:
-            for i in range(im.ndim):
-                im = im.swapaxes(0, i)
-                im = im[:shape[i], ...]
-                im = im.swapaxes(i, 0)
-            logger.debug(f'Image was cropped to shape {shape}')
-        else:  # pragma: no cover
-            raise Exception("Image shape incompatible with `divs`.")
+    if tuple(shape) != im.shape:
+        for i in range(im.ndim):
+            im = im.swapaxes(0, i)
+            im = im[:shape[i], ...]
+            im = im.swapaxes(i, 0)
+        logger.debug(f'Image was cropped to shape {shape}')
 
     # Get overlap thickness from distance transform
     chunk_shape = (np.array(shape) / np.array(divs)).astype(int)
     logger.trace('Beginning parallel SNOW algorithm...')
-    logger.trace('Calculating overlap thickness')
 
     if overlap is None:
         overlap = _estimate_overlap(im, mode='dt')
@@ -507,13 +503,13 @@ def snow_partitioning_parallel(im,
         trim_depth[i] = int(2.0 * overlap) - 1
 
     # Applying SNOW to image chunks
-    im = da.from_array(dt, chunks=chunk_shape)
-    im = da.overlap.overlap(im, depth=depth, boundary='none')
-    im = im.map_blocks(_snow_chunked, r_max=r_max, sigma=sigma)
-    im = da.overlap.trim_internal(im, trim_depth, boundary='none')
+    regions = da.from_array(dt, chunks=chunk_shape)
+    regions = da.overlap.overlap(regions, depth=depth, boundary='none')
+    regions = regions.map_blocks(_snow_chunked, r_max=r_max, sigma=sigma)
+    regions = da.overlap.trim_internal(regions, trim_depth, boundary='none')
     # TODO: use dask ProgressBar once compatible w/ logging.
     logger.trace('Applying snow to image chunks')
-    regions = im.compute(num_workers=num_workers)
+    regions = regions.compute(num_workers=num_workers)
 
     # Relabelling watershed chunks
     logger.trace('Relabelling watershed chunks')
@@ -906,10 +902,10 @@ def _snow_chunked(dt, r_max=5, sigma=0.4):
     This private version of snow is called during snow_parallel.  Dask does not
     all the calls to the logger between each step apparently.
     """
-    dt = spim.gaussian_filter(input=dt, sigma=sigma)
-    peaks = find_peaks(dt=dt, r_max=r_max)
-    peaks = trim_saddle_points(peaks=peaks, dt=dt, max_iters=99)
-    peaks = trim_nearby_peaks(peaks=peaks, dt=dt)
+    dt2 = spim.gaussian_filter(input=dt, sigma=sigma)
+    peaks = find_peaks(dt=dt2, r_max=r_max)
+    peaks = trim_saddle_points(peaks=peaks, dt=dt2, max_iters=99)
+    peaks = trim_nearby_peaks(peaks=peaks, dt=dt2)
     peaks, N = spim.label(peaks)
-    regions = watershed(image=-dt, markers=peaks, mask=dt > 0)
+    regions = watershed(image=-dt2, markers=peaks)
     return regions * (dt > 0)
