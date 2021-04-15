@@ -4,6 +4,7 @@ from edt import edt
 import porespy as ps
 import scipy.ndimage as spim
 from skimage.morphology import disk, ball, skeletonize_3d
+from skimage.util import random_noise
 
 
 class FilterTest():
@@ -466,6 +467,14 @@ class FilterTest():
         dt_hold_peaks = ps.filters.hold_peaks(dt, axis=0)
         diff = abs(np.max(dt_hold_peaks, axis=0) - np.max(dt, axis=0))
         assert np.all(diff <= 1e-15)
+
+    def test_nl_means_layered(self):
+        im = ps.generators.blobs(shape=[50, 50, 50], blobiness=.5)
+        im2 = random_noise(im, seed=0)
+        filt = ps.filters.nl_means_layered(im=im2)
+        p1 = (filt[0, ...] > 0.5).sum()
+        p2 = (im[0, ...]).sum()
+        np.testing.assert_approx_equal(np.around(p1 / p2, decimals=1), 1)
 
 
 if __name__ == '__main__':
