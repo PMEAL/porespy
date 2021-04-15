@@ -1,10 +1,16 @@
+<p align="center">
+  <img src="https://github.com/PMEAL/porespy/raw/dev/docs/_static/images/porespy_logo.png" width="35%"></img>
+</p>
+
+-----
+
 [![image](https://github.com/PMEAL/porespy/workflows/Ubuntu/badge.svg)](https://github.com/PMEAL/porespy/actions)
 [![image](https://github.com/PMEAL/porespy/workflows/macOS/badge.svg)](https://github.com/PMEAL/porespy/actions)
 [![image](https://github.com/PMEAL/porespy/workflows/Windows/badge.svg)](https://github.com/PMEAL/porespy/actions)
 [![image](https://github.com/PMEAL/porespy/workflows/Examples/badge.svg)](https://github.com/PMEAL/porespy/actions)<br>
 [![image](https://codecov.io/gh/PMEAL/PoreSpy/branch/dev/graph/badge.svg)](https://codecov.io/gh/PMEAL/PoreSpy)
-[![image](https://img.shields.io/badge/ReadTheDocs-GO-blue.svg)](http://porespy.readthedocs.io/en/dev/)
 [![image](https://img.shields.io/pypi/v/porespy.svg)](https://pypi.python.org/pypi/porespy/)
+[![Pyversions](https://img.shields.io/pypi/pyversions/porespy.svg?style=flat-square&label=Python%20Versions)](https://pypi.python.org/pypi/porespy)
 [![image](https://img.shields.io/badge/DOI-10.21105/joss.01296-blue.svg)](https://doi.org/10.21105/joss.01296)
 
 -----
@@ -14,13 +20,6 @@
 > As of February 12th, 2021, we are actively working on Version 2.0. The ``dev`` branch will no longer be backwards compatible with previous versions of PoreSpy. We expect this conversion to be complete by winter's end.
 
 # What is PoreSpy?
-
-**Cite as:**
-
-> *Gostick J, Khan ZA, Tranter TG, Kok MDR, Agnaou M, Sadeghi MA, Jervis
-> R.* **PoreSpy: A Python Toolkit for Quantitative Analysis of Porous Media
-> Images.** Journal of Open Source Software, 2019.
-> [doi:10.21105/joss.01296](https://doi.org/10.21105/joss.01296)
 
 **PoreSpy** is a collection of image analysis tools used to extract
 information from 3D images of porous materials (typically obtained from
@@ -58,6 +57,19 @@ necessary.
   - `io`: Functions for outputting image data in various formats for use in
     common software
   - `tools`: Various useful tools for working with images
+
+## Gallery
+
+<p align="center">
+  <img src="https://github.com/PMEAL/porespy/raw/dev/docs/_static/images/montage.svg" width="85%"></img>
+</p>
+
+## Cite as
+
+> *Gostick J, Khan ZA, Tranter TG, Kok MDR, Agnaou M, Sadeghi MA, Jervis
+> R.* **PoreSpy: A Python Toolkit for Quantitative Analysis of Porous Media
+> Images.** Journal of Open Source Software, 2019.
+> [doi:10.21105/joss.01296](https://doi.org/10.21105/joss.01296)
 
 # Installation
 
@@ -110,6 +122,7 @@ The following code snippets illustrate generating a 2D image, applying
 several filters, and calculating some common metrics. A set of examples
 is included in this repo, and can be [browsed
 here](https://github.com/PMEAL/porespy/tree/dev/examples).
+
 
 ## Generating an image
 
