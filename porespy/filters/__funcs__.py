@@ -141,16 +141,16 @@ def distance_transform_lin(im, axis=0, mode="both"):
     mode : str
         Controls how the distance is measured. Options are:
 
-            'forward'
-                Distances are measured in the increasing direction
-                along the specified axis
-            'reverse'
-                Distances are measured in the reverse direction.
-                'backward' is also accepted.
-            'both'
-                Distances are calculated in both directions (by
-                recursively calling itself), then reporting the minimum value
-                of the two results.
+        'forward'
+            Distances are measured in the increasing direction
+            along the specified axis
+        'reverse'
+            Distances are measured in the reverse direction.
+            'backward' is also accepted.
+        'both'
+            Distances are calculated in both directions (by
+            recursively calling itself), then reporting the minimum value
+            of the two results.
 
     Returns
     -------
@@ -187,9 +187,6 @@ def distance_transform_lin(im, axis=0, mode="both"):
         e = np.pad(d, pad_width=ax[axis], mode="constant", constant_values=0)
     f = im * (b + e)
     return f
-
-
-
 
 
 def find_disconnected_voxels(im, conn=None):
@@ -635,22 +632,22 @@ def local_thickness(im, sizes=25, mode="hybrid", **kwargs):
     mode : str
         Controls with method is used to compute the result. Options are:
 
-            'hybrid'
-                (default) Performs a distance tranform of the void
-                space, thresholds to find voxels larger than ``sizes[i]``, trims
-                the resulting mask if ``access_limitations`` is ``True``, then
-                dilates it using the efficient fft-method to obtain the
-                non-wetting fluid configuration.
-            'dt'
-                Same as 'hybrid', except uses a second distance transform,
-                relative to the thresholded mask, to find the invading fluid
-                configuration. The choice of 'dt' or 'hybrid' depends on speed,
-                which is system and installation specific.
-            'mio'
-                Using a single morphological image opening step to obtain
-                the invading fluid confirguration directly, *then* trims if
-                ``access_limitations`` is ``True``. This method is not ideal and
-                is included for comparison purposes.
+        'hybrid'
+            (default) Performs a distance tranform of the void
+            space, thresholds to find voxels larger than ``sizes[i]``, trims
+            the resulting mask if ``access_limitations`` is ``True``, then
+            dilates it using the efficient fft-method to obtain the
+            non-wetting fluid configuration.
+        'dt'
+            Same as 'hybrid', except uses a second distance transform,
+            relative to the thresholded mask, to find the invading fluid
+            configuration. The choice of 'dt' or 'hybrid' depends on speed,
+            which is system and installation specific.
+        'mio'
+            Using a single morphological image opening step to obtain
+            the invading fluid confirguration directly, *then* trims if
+            ``access_limitations`` is ``True``. This method is not ideal and
+            is included for comparison purposes.
 
     Returns
     -------
@@ -683,7 +680,7 @@ def local_thickness(im, sizes=25, mode="hybrid", **kwargs):
 
 
 def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
-                fft=True, **kwargs):
+                fft=True, cores=None, divs=2):
     r"""
     Performs a porosimetry simulution on an image.
 
@@ -713,30 +710,37 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
     mode : str
         Controls with method is used to compute the result. Options are:
 
-            'hybrid'
-                (default) Performs a distance tranform of the void
-                space, thresholds to find voxels larger than ``sizes[i]``,
-                trims the resulting mask if ``access_limitations`` is ``True``,
-                then dilates it using the efficient fft-method to obtain the
-                non-wetting fluid configuration.
-            'dt'
-                Same as 'hybrid', except uses a second distance
-                transform, relative to the thresholded mask, to find the
-                invading fluid configuration. The choice of 'dt' or 'hybrid'
-                depends on speed, which is system and installation specific.
-            'mio'
-                Using a single morphological image opening step to
-                obtain the invading fluid confirguration directly, *then* trims
-                if ``access_limitations`` is ``True``.  This method is not
-                ideal and is included for comparison purposes. The
-                morphological operations are done using fft-based method
-                implementations.
+        'hybrid'
+            (default) Performs a distance tranform of the void
+            space, thresholds to find voxels larger than ``sizes[i]``,
+            trims the resulting mask if ``access_limitations`` is ``True``,
+            then dilates it using the efficient fft-method to obtain the
+            non-wetting fluid configuration.
+        'dt'
+            Same as 'hybrid', except uses a second distance
+            transform, relative to the thresholded mask, to find the
+            invading fluid configuration. The choice of 'dt' or 'hybrid'
+            depends on speed, which is system and installation specific.
+        'mio'
+            Using a single morphological image opening step to
+            obtain the invading fluid confirguration directly, *then* trims
+            if ``access_limitations`` is ``True``.  This method is not
+            ideal and is included for comparison purposes. The
+            morphological operations are done using fft-based method
+            implementations.
 
     fft : boolean (default is ``True``)
         Indicates whether to use the ``fftmorphology`` function in
         ``porespy.filters`` or to use the standard morphology functions in
         ``scipy.ndimage``.  Always use ``fft=True`` unless you have a good
         reason not to.
+    cores : int
+        The number of cores to use when parallelizing. A value of ``None`` uses
+        all available cores.
+    divs : int or array_like
+        The number of times to divide the image for parallel processing.  If ``1``
+        then parallel processing does not occur.  ``2`` is equivalent to
+        ``[2, 2, 2]`` for a 3D image.
 
     Returns
     -------
@@ -778,10 +782,11 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
     else:
         strel = ps_ball
 
-    # Parse kwargs for any parallelization arguments
-    parallel = kwargs.pop('parallel', False)
-    cores = kwargs.pop('cores', None)
-    divs = kwargs.pop('divs', 2)
+    parallel = False
+    if isinstance(divs, int):
+        divs = [divs]*im.ndim
+    if max(divs) > 1:
+        parallel = True
 
     if mode == "mio":
         pw = int(np.floor(dt.max()))
@@ -1009,7 +1014,7 @@ def nphase_border(im, include_diagonals=False):
         return out[1:-1, 1:-1, 1:-1].copy()
 
 
-def prune_branches(skel, branch_points=None, iterations=1, **kwargs):
+def prune_branches(skel, branch_points=None, iterations=1):
     r"""
     Removes all dangling ends or tails of a skeleton.
 
@@ -1018,7 +1023,6 @@ def prune_branches(skel, branch_points=None, iterations=1, **kwargs):
     skel : ND-array
         A image of a full or partial skeleton from which the tails should
         be trimmed.
-
     branch_points : ND-array, optional
         An image the same size ``skel`` with True values indicating the
         branch points of the skeleton.  If this is not provided it is
@@ -1035,9 +1039,6 @@ def prune_branches(skel, branch_points=None, iterations=1, **kwargs):
         from skimage.morphology import square as cube
     else:
         from skimage.morphology import cube
-    parallel = kwargs.pop('parallel', False)
-    divs = kwargs.pop('divs', 2)
-    cores = kwargs.pop('cores', None)
     # Create empty image to house results
     im_result = np.zeros_like(skel)
     # If branch points are not supplied, attempt to find them
@@ -1051,12 +1052,7 @@ def prune_branches(skel, branch_points=None, iterations=1, **kwargs):
     # Label arcs
     arc_labels = spim.label(arcs, structure=cube(3))[0]
     # Dilate branch points so they overlap with the arcs
-    if parallel:
-        branch_points = chunked_func(func=spim.binary_dilation,
-                                     input=branch_points, structure=cube(3),
-                                     overlap=3, divs=divs, cores=cores)
-    else:
-        branch_points = spim.binary_dilation(branch_points, structure=cube(3))
+    branch_points = spim.binary_dilation(branch_points, structure=cube(3))
     pts_labels = spim.label(branch_points, structure=cube(3))[0]
     # Now scan through each arc to see if it's connected to two branch points
     slices = spim.find_objects(arc_labels)
@@ -1075,9 +1071,7 @@ def prune_branches(skel, branch_points=None, iterations=1, **kwargs):
         im_temp = np.copy(im_result)
         im_result = prune_branches(skel=im_result,
                                    branch_points=None,
-                                   iterations=iterations,
-                                   parallel=parallel,
-                                   divs=divs, cores=cores)
+                                   iterations=iterations)
         if np.all(im_temp == im_result):
             iterations = 0
     return im_result
