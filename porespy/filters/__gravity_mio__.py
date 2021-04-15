@@ -102,7 +102,7 @@ def _make_ball(r, smooth=True):
     return s
 
 
-def gravity_mio(im, inlets, sigma=0.072, rho=1000, g=9.81, voxel_size=1):
+def gravity_mio(im, inlets, bins=25, sigma=0.072, rho=1000, g=9.81, voxel_size=1):
     vx_res = voxel_size
     # Generate image for correcting entry pressure by gravitational effect
     h = np.arange(0, im.shape[0])*vx_res
@@ -113,7 +113,10 @@ def gravity_mio(im, inlets, sigma=0.072, rho=1000, g=9.81, voxel_size=1):
     fn = pc + rgh
 
     # Use radii values in mio image for invasion steps
-    Rs = np.arange(int(dt.max()), 1, -1)
+    if isinstance(bins, int):
+        Rs = np.unique(np.linspace(1, dt.max(), bins).astype(int))[-1::-1]
+    else:
+        Rs = bins
     # Convert radii to capillary pressure, assuming perfectly wetting/non-wetting
     Ps = 2*sigma/(Rs*vx_res)
     Ps = np.concatenate([Ps, Ps*10])
