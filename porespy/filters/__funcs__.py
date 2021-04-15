@@ -1,6 +1,5 @@
 import dask
 import dask.array as da
-import warnings
 import numpy as np
 from numba import njit, prange
 from edt import edt
@@ -12,7 +11,7 @@ from skimage.morphology import reconstruction
 from skimage.segmentation import clear_border, watershed
 from skimage.morphology import ball, disk, square, cube, diamond, octahedron
 from porespy.tools import _check_for_singleton_axes
-from porespy.tools import randomize_colors, fftmorphology
+from porespy.tools import fftmorphology
 from porespy.tools import get_border, extend_slice, extract_subsection, subdivide
 from porespy.tools import _create_alias_map
 from porespy.tools import ps_disk, ps_ball
@@ -191,16 +190,10 @@ def distance_transform_lin(im, axis=0, mode="both"):
     return f
 
 
-def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, return_all=False,
-                      mask=True, randomize=True):
+def snow_partitioning(im, dt=None, r_max=4, sigma=0.4):
     r"""
-    Partitions the void space into pore regions using a marker-based
+    Partition the void space into pore regions using a marker-based
     watershed algorithm, with specially filtered peaks as markers.
-
-    The SNOW network extraction algorithm (Sub-Network of an
-    Over-segmented Watershed) was designed to handle to perculiarities of
-    high porosity materials, but it applies well to other materials as
-    well.
 
     Parameters
     ----------
@@ -219,38 +212,29 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, return_all=False,
         default is 0.4.  If 0 is given then the filter is not applied,
         which is useful if a distance transform is supplied as the ``im``
         argument that has already been processed.
-    return_all : boolean
-        If set to ``True`` a named tuple is returned containing the
-        original image, the distance transform, the filtered peaks, and
-        the final pore regions.  The default is ``False``.
-    mask : boolean
-        Apply a mask to the regions where the solid phase is. Default is
-        ``True``
-    randomize : boolean
-        If ``True`` (default), then the region colors will be randomized
-        before returning.  This is helpful for visualizing otherwise
-        neighboring regions have simlar coloring are are hard to
-        distinguish.
 
     Returns
     -------
-    image : ndarray
-        An image the same shape as ``im`` with the void space partitioned
-        into pores using a marker based watershed with the peaks found by
-        the SNOW algorithm [1].
+    A **named tuple** containing all of the images used during the
+    process.  They can be accessed as attriutes with the following names:
+
+        ``im``
+            The binary image of the void space
+        ``dt``
+            The distance transform of the image
+        ``peaks``
+            The peaks of the distance transform after applying the steps of the
+            SNOW algorithm
+        ``regions``
+            The void space partitioned into pores using a marker
+            based watershed with the peaks found by the SNOW algorithm
 
     Notes
     -----
-    If ``return_all`` is ``True`` then a **named tuple** is returned
-    containing all of the images used during the process.  They can be
-    access as attriutes with the following names:
-
-    - ``im``: The binary image of the void space
-    - ``dt``: The distance transform of the image
-    - ``peaks``: The peaks of the distance transform after applying the
-      steps of the SNOW algorithm
-    - ``regions``: The void space partitioned into pores using a marker
-      based watershed with the peaks found by the SNOW algorithm
+    The SNOW network extraction algorithm (Sub-Network of an
+    Over-segmented Watershed) was designed to handle to perculiarities of
+    high porosity materials, but it applies well to other materials as
+    well.
 
     References
     ----------
@@ -258,7 +242,6 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, return_all=False,
     using marker-based watershed segmenation".  Physical Review E. (2017)
 
     """
-    tup = namedtuple("results", field_names=["im", "dt", "peaks", "regions"])
     logger.trace("Beginning SNOW algorithm")
     im_shape = np.array(im.shape)
     if im.dtype is not bool:
@@ -267,14 +250,10 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, return_all=False,
     if dt is None:
         logger.trace("Peforming distance transform")
         if np.any(im_shape == 1):
-            ax = np.where(im_shape == 1)[0][0]
             dt = edt(im.squeeze())
-            dt = np.expand_dims(dt, ax)
+            dt = dt.reshape(im.shape)
         else:
             dt = edt(im)
-
-    tup.im = im
-    tup.dt = dt
 
     if sigma > 0:
         logger.trace(f"Applying Gaussian blur with sigma = {sigma}")
@@ -287,28 +266,21 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, return_all=False,
     peaks = trim_nearby_peaks(peaks=peaks, dt=dt)
     peaks, N = spim.label(peaks)
     logger.debug(f"Peaks after trimming nearby peaks: {N}")
-    tup.peaks = peaks
-    if mask:
-        mask_solid = im > 0
-    else:
-        mask_solid = None
-    regions = watershed(image=-dt, markers=peaks, mask=mask_solid)
+    regions = watershed(image=-dt, markers=peaks, mask=im > 0)
     # Catch any isolated regions that were missed
     # TODO: I'm not sure if this approach is universal so I'm going to comment it
     # out for now, and mark it as a todo
     # labels = spim.label((regions == 0)*(im > 0))[0]
     # regions += (labels + regions.max())*(labels > 0)
-    if randomize:
-        regions = randomize_colors(regions)
-    if return_all:
-        tup.regions = regions
-        return tup
-    else:
-        return regions
+    tup = namedtuple("results", field_names=["im", "dt", "peaks", "regions"])
+    tup.im = im
+    tup.dt = dt
+    tup.peaks = peaks
+    tup.regions = regions
+    return tup
 
 
-def snow_partitioning_n(im, r_max=4, sigma=0.4, return_all=True,
-                        mask=True, randomize=False, alias=None):
+def snow_partitioning_n(im, r_max=4, sigma=0.4, phase_alias=None):
     r"""
     This function partitions an imaging oontain an arbitrary number of
     phases into regions using a marker-based watershed segmentation. Its
@@ -317,7 +289,7 @@ def snow_partitioning_n(im, r_max=4, sigma=0.4, return_all=True,
 
     Parameters
     ----------
-    im : ndarray
+    im : ND-array
         Image of porous material where each phase is represented by unique
         integer starting from 1 (0's are ignored).
     r_max : scalar
@@ -328,18 +300,7 @@ def snow_partitioning_n(im, r_max=4, sigma=0.4, return_all=True,
         0.4. If 0 is given then the filter is not applied, which is useful
         if a distance transform is supplied as the ``im`` argument that
         has already been processed.
-    return_all : boolean (default is False)
-        If set to ``True`` a named tuple is returned containing the
-        original image, the combined distance transform, list of each
-        phase max label, and the final combined regions of all phases.
-    mask : boolean (default is True)
-        Apply a mask to the regions which are not under concern.
-    randomize : boolean
-        If ``True`` (default), then the region colors will be randomized
-        before returning.  This is helpful for visualizing otherwise
-        neighboring regions have similar coloring and are hard to
-        distinguish.
-    alias : dict (Optional)
+    phase_alias : dict (Optional)
         A dictionary that assigns unique image label to specific phases.
         For example {1: 'Solid'} will show all structural properties
         associated with label 1 as Solid phase properties. If ``None``
@@ -347,17 +308,18 @@ def snow_partitioning_n(im, r_max=4, sigma=0.4, return_all=True,
 
     Returns
     -------
-    An image the same shape as ``im`` with the all phases partitioned into
-    regions using a marker based watershed with the peaks found by the
-    SNOW algorithm [1].  If ``return_all`` is ``True`` then a
-    **named tuple** is returned with the following attribute:
+    A **named tuple** with the following attribute:
 
-    - ``im`` : The actual image of the porous material
-    - ``dt`` : The combined distance transform of the image
-    - ``phase_max_label`` : The list of max label of each phase in order to
-      distinguish between each other
-    - ``regions`` : The partitioned regions of n phases using a marker
-      based watershed with the peaks found by the SNOW algorithm
+        ``im``
+            The actual image of the porous material
+        ``dt``
+            The combined distance transform of the image
+        ``phase_max_label``
+            The list of max label of each phase in order to
+            distinguish between each other
+        ``regions``
+            The partitioned regions of n phases using a marker
+            based watershed with the peaks found by the SNOW algorithm
 
     References
     ----------
@@ -386,7 +348,7 @@ def snow_partitioning_n(im, r_max=4, sigma=0.4, return_all=True,
 
     """
     # Get alias if provided by user
-    al = _create_alias_map(im=im, alias=alias)
+    al = _create_alias_map(im=im, alias=phase_alias)
     # Perform snow on each phase and merge all segmentation and dt together
     phases_num = np.unique(im * 1)
     phases_num = np.trim_zeros(phases_num)
@@ -394,7 +356,7 @@ def snow_partitioning_n(im, r_max=4, sigma=0.4, return_all=True,
     combined_region = 0
     num = [0]
     for i, j in enumerate(phases_num):
-        if alias is None:
+        if phase_alias is None:
             logger.trace(f"Processing Phase {j}")
         else:
             logger.trace(f"Processing Phase {al[j]}")
@@ -403,9 +365,6 @@ def snow_partitioning_n(im, r_max=4, sigma=0.4, return_all=True,
             dt=None,
             r_max=r_max,
             sigma=sigma,
-            return_all=return_all,
-            mask=mask,
-            randomize=randomize,
         )
         combined_dt += phase_snow.dt
         phase_snow.regions *= phase_snow.im
@@ -414,39 +373,37 @@ def snow_partitioning_n(im, r_max=4, sigma=0.4, return_all=True,
         phase_ws[phase_ws == num[i]] = 0
         combined_region += phase_ws
         num.append(np.amax(combined_region))
-    if return_all:
-        tup = namedtuple(
-            "results", field_names=["im", "dt", "phase_max_label", "regions"]
-        )
-        tup.im = im
-        tup.dt = combined_dt
-        tup.phase_max_label = num[1:]
-        tup.regions = combined_region
-        return tup
-    else:
-        return combined_region
+
+    tup = namedtuple(
+        "results", field_names=["im", "dt", "phase_max_label", "regions"]
+    )
+    tup.im = im
+    tup.dt = combined_dt
+    tup.phase_max_label = num[1:]
+    tup.regions = combined_region
+    return tup
 
 
-def find_peaks(dt, r_max=4, footprint=None, **kwargs):
+def find_peaks(dt, r_max=4, strel=None, **kwargs):
     r"""
     Finds local maxima in the distance transform
 
     Parameters
     ----------
-    dt : ndarray
+    dt : ND-array
         The distance transform of the pore space.  This may be calculated
         and filtered using any means desired.
     r_max : scalar
         The size of the structuring element used in the maximum filter.
         This controls the localness of any maxima. The default is 4 voxels.
-    footprint : ND-array
+    strel : ND-array
         Specifies the shape of the structuring element used to define the
         neighborhood when looking for peaks.  If ``None`` (the default) is
         specified then a spherical shape is used (or circular in 2D).
 
     Returns
     -------
-    image : ndarray
+    image : ND-array
         An array of booleans with ``True`` values at the location of any
         local maxima.
 
@@ -466,23 +423,23 @@ def find_peaks(dt, r_max=4, footprint=None, **kwargs):
     im = dt > 0
     _check_for_singleton_axes(im)
 
-    if footprint is None:
+    if strel is None:
         if im.ndim == 2:
-            footprint = disk
+            strel = disk
         elif im.ndim == 3:
-            footprint = ball
+            strel = ball
         else:  # pragma: no cover
             raise Exception("Only 2d and 3d images are supported")
     parallel = kwargs.pop('parallel', False)
     cores = kwargs.pop('cores', None)
     divs = kwargs.pop('cores', 2)
     if parallel:
-        overlap = max(footprint(r_max).shape)
+        overlap = max(strel(r_max).shape)
         peaks = chunked_func(func=find_peaks, overlap=overlap,
-                             im_arg='dt', dt=dt, footprint=footprint,
+                             im_arg='dt', dt=dt, footprint=strel,
                              cores=cores, divs=divs)
     else:
-        mx = spim.maximum_filter(dt + 2 * (~im), footprint=footprint(r_max))
+        mx = spim.maximum_filter(dt + 2 * (~im), footprint=strel(r_max))
         peaks = (dt == mx) * im
     return peaks
 
@@ -1696,68 +1653,43 @@ def chunked_func(func,
 def snow_partitioning_parallel(im,
                                r_max=5,
                                sigma=0.4,
-                               mode='parallel',
                                divs=2,
-                               overlap='dt',
-                               zoom_factor=0.5,
+                               overlap=None,
                                num_workers=None,
-                               crop=True,
-                               return_all=False):
+                               crop=True):
     r"""
-    Performs SNOW algorithm in parallel and serial mode to reduce time
-    and memory usage repectively by geomertirc domain decomposition of
-    large size image.
+    Performs SNOW algorithm in parallel (or serial) to reduce time
+    (or memory usage) by geomertirc domain decomposition of large images.
 
     Parameters
     ----------
-    im : ndarray
+    im : ND-array
         A binary image of porous media with 'True' values indicating
         phase of interest.
-    overlap : float or int or str
-        Overlapping thickness between two subdomains that is used to
-        merge watershed segmented regions at intersection of two or more
-        subdomains. Options are:
-
-          - 'dt': the overlap will be calculated based on maximum distance
-            transform in the whole image.
-          - 'ws': the overlap will be calculated by finding the maximum
-            dimension of the bounding box of largest segmented region. The
-            image is scale down by 'zoom_factor' provided by user.
-          - float: this value will be considered as overlapping thickness.
+    overlap : float (optional)
+        The amount of overlap to apply between chunks.  If not provided it will
+        be estiamted using ``porespy.tools.estimate_overlap`` with ``mode='dt'``.
     divs : list or int
         Number of domains each axis will be divided. Options are:
           - scalar: it will be assigned to all axis.
           - list: each respective axis will be divided by its corresponding
             number in the list. For example [2, 3, 4] will divide z, y and
             x axis to 2, 3, and 4 respectively.
-    mode : str
-        Options are:
-          - 'parallel': all subdomains processed using ``num_workers`` cores.
-          - 'serial': all subdomains will be processed using 1 core.
     num_workers : int or None
         Number of cores that will be used to parallel process all domains.
-        If None then all cores will be used but user can specify any
-        integer values to control the memory usage.
-    crop : bool
-        If True the image shape is cropped to fit specified division.
-    zoom_factor : float or int
-        The amount of zoom appiled to image to find overlap thickness
-        using 'ws' overlap mode.
-    return_all : boolean
-        If set to ``True`` a named tuple is returned containing the
-        original image, the distance transform, and the final pore
-        regions. The default is ``False``.
+        If ``None`` then all cores will be used but user can specify any
+        integer values to control the memory usage.  Setting value to 1 will
+        effectively process the chunks in serial to minimize memory usage.
 
     Returns
     -------
-    regions : ndarray
+    regions : ND-array
         Partitioned image of segmentated regions with unique labels. Each
         region correspond to pore body while intersection with other
         region correspond throat area.
 
     """
     # Adjust image shape according to specified dimension
-    tup = namedtuple("results", field_names=["im", "dt", "regions"])
     if isinstance(divs, int):
         divs = [divs for i in range(im.ndim)]
     shape = []
@@ -1778,23 +1710,13 @@ def snow_partitioning_parallel(im,
     chunk_shape = (np.array(shape) / np.array(divs)).astype(int)
     logger.trace('Beginning parallel SNOW algorithm...')
     logger.trace('Calculating overlap thickness')
-    if overlap == 'dt':
-        dt = edt((im > 0), parallel=0)
-        overlap = dt.max()
-    elif overlap == 'ws':
-        rev = spim.interpolation.zoom(im, zoom=zoom_factor, order=0)
-        rev = rev > 0
-        dt = edt(rev, parallel=0)
-        rev_snow = snow_partitioning(rev, dt=dt, r_max=r_max, sigma=sigma)
-        labels, counts = np.unique(rev_snow, return_counts=True)
-        node = np.where(counts == counts[1:].max())[0][0]
-        slices = spim.find_objects(rev_snow)
-        overlap = max(rev_snow[slices[node - 1]].shape) / (zoom_factor * 2.0)
-        dt = edt((im > 0), parallel=0)
-    else:
-        overlap = overlap / 2.0
-        dt = edt((im > 0), parallel=0)
+
+    if overlap is None:
+        overlap = _estimate_overlap(im, mode='dt')
+    overlap = overlap / 2.0
     logger.debug(f'Overlap thickness: {int(2 * overlap)} voxels')
+
+    dt = edt((im > 0), parallel=0)
 
     # Get overlap and trim depth of all image dimension
     depth = {}
@@ -1802,20 +1724,12 @@ def snow_partitioning_parallel(im,
     for i in range(im.ndim):
         depth[i] = int(2.0 * overlap)
         trim_depth[i] = int(2.0 * overlap) - 1
-    tup.im = im
-    tup.dt = dt
 
     # Applying SNOW to image chunks
     im = da.from_array(dt, chunks=chunk_shape)
     im = da.overlap.overlap(im, depth=depth, boundary='none')
     im = im.map_blocks(chunked_snow, r_max=r_max, sigma=sigma)
     im = da.overlap.trim_internal(im, trim_depth, boundary='none')
-    if mode == 'serial':
-        num_workers = 1
-    elif mode == 'parallel':
-        num_workers = num_workers
-    else:
-        raise Exception('`mode` can either be `parallel` or `serial`')
     # TODO: use dask ProgressBar once compatible w/ logging.
     logger.trace('Applying snow to image chunks')
     regions = im.compute(num_workers=num_workers)
@@ -1827,11 +1741,28 @@ def snow_partitioning_parallel(im,
     # Stitching watershed chunks
     logger.trace('Stitching watershed chunks')
     regions = _watershed_stitching(im=regions, chunk_shape=chunk_shape)
+    tup = namedtuple("results", field_names=["im", "dt", "regions"])
+    tup.im = im
+    tup.dt = dt
     tup.regions = regions
 
-    if return_all:
-        return tup
-    return regions
+    return tup
+
+
+def _estimate_overlap(im, mode='dt', zoom=0.25):
+    if mode == 'watershed':
+        rev = spim.interpolation.zoom(im, zoom=zoom, order=0)
+        rev = rev > 0
+        dt = edt(rev, parallel=0)
+        rev_snow = snow_partitioning(rev, dt=dt)
+        labels, counts = np.unique(rev_snow, return_counts=True)
+        node = np.where(counts == counts[1:].max())[0][0]
+        slices = spim.find_objects(rev_snow)
+        overlap = max(rev_snow[slices[node - 1]].shape) / (zoom * 2.0)
+    if mode == 'dt':
+        dt = edt((im > 0), parallel=0)
+        overlap = dt.max()
+    return overlap
 
 
 def chunked_snow(im, r_max=5, sigma=0.4):
