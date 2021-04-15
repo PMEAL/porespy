@@ -18,13 +18,13 @@ class Snow2Test:
     def test_single_phase_2D(self):
         im = ps.generators.blobs(shape=[200, 200])
         snow2 = ps.networks.snow2(im, phase_alias={1: 'phase1'})
-        pn, geo = op.io.PoreSpy.import_data(snow2)
+        pn, geo = op.io.PoreSpy.import_data(snow2.network)
         # Ensure phase_alias was ignored since only single phase
         assert 'pore.phase1' not in pn.keys()
 
     def test_return_all(self):
         im = ps.generators.blobs(shape=[200, 200])
-        snow2 = ps.networks.snow2(im, return_all=True)
+        snow2 = ps.networks.snow2(im)
         pn, geo = op.io.PoreSpy.import_data(snow2.network)
         assert hasattr(snow2, 'regions')
         assert hasattr(snow2, 'phases')
@@ -34,7 +34,7 @@ class Snow2Test:
         im2 = ps.generators.blobs(shape=[200, 200], porosity=0.7)
         phases = im1 + (im2 * ~im1)*2
         snow2 = ps.networks.snow2(phases, phase_alias={1: 'phase1', 2: 'test2'})
-        pn, geo = op.io.PoreSpy.import_data(snow2)
+        pn, geo = op.io.PoreSpy.import_data(snow2.network)
         # Ensure phase_alias was interpreted correctly
         assert 'pore.phase1' in pn.keys()
         assert 'pore.test2' in pn.keys()
@@ -43,7 +43,7 @@ class Snow2Test:
     def test_single_phase_3D(self):
         im = ps.generators.blobs(shape=[100, 100, 100], porosity=0.6)
         snow2 = ps.networks.snow2(im, phase_alias={1: 'phase1'})
-        pn, geo = op.io.PoreSpy.import_data(snow2)
+        pn, geo = op.io.PoreSpy.import_data(snow2.network)
         # Ensure phase_alias was ignored since only single phase
         assert 'pore.phase1' not in pn.keys()
 
@@ -52,7 +52,7 @@ class Snow2Test:
         im2 = ps.generators.blobs(shape=[100, 100, 100], porosity=0.7)
         phases = im1 + (im2 * ~im1)*2
         snow2 = ps.networks.snow2(phases, phase_alias={1: 'phase1'})
-        pn, geo = op.io.PoreSpy.import_data(snow2)
+        pn, geo = op.io.PoreSpy.import_data(snow2.network)
         # Ensure phase_alias was was updated since only 1 phases was spec'd
         assert 'pore.phase1' in pn.keys()
         assert 'pore.phase2' in pn.keys()
