@@ -2,9 +2,9 @@ import pytest
 import numpy as np
 from edt import edt
 import porespy as ps
-import scipy as sp
 import scipy.ndimage as spim
 from skimage.morphology import disk, ball, skeletonize_3d
+from skimage.util import random_noise
 
 
 class FilterTest():
@@ -370,9 +370,7 @@ class FilterTest():
 
     def test_snow_partitioning_n(self):
         im = self.im
-        snow = ps.filters.snow_partitioning_n(im + 1, r_max=4, sigma=0.4,
-                                              return_all=True, mask=True,
-                                              randomize=False, alias=None)
+        snow = ps.filters.snow_partitioning_n(im + 1, r_max=4, sigma=0.4)
         assert np.amax(snow.regions) == 44
         assert not np.any(np.isnan(snow.regions))
         assert not np.any(np.isnan(snow.dt))
@@ -381,19 +379,15 @@ class FilterTest():
     def test_snow_partitioning_parallel(self):
         np.random.seed(1)
         im = ps.generators.overlapping_spheres([1000, 1000], radius=10,
-                                               porosity=0.5)
-        for overlap in ['dt', 'ws']:
-            snow = ps.filters.snow_partitioning_parallel(im, overlap=overlap,
-                                                         divs=[2, 2],
-                                                         num_workers=None,
-                                                         mode='parallel',
-                                                         zoom_factor=0.5,
-                                                         r_max=5, sigma=0.4,
-                                                         return_all=True)
-            assert np.amax(snow.regions) == 918
-            assert not np.any(np.isnan(snow.regions))
-            assert not np.any(np.isnan(snow.dt))
-            assert not np.any(np.isnan(snow.im))
+                                                porosity=0.5)
+        snow = ps.filters.snow_partitioning_parallel(im,
+                                                     divs=[2, 2],
+                                                     num_workers=None,
+                                                     r_max=5, sigma=0.4,)
+        assert np.amax(snow.regions) == 919
+        assert not np.any(np.isnan(snow.regions))
+        assert not np.any(np.isnan(snow.dt))
+        assert not np.any(np.isnan(snow.im))
 
     def test_chunked_func_2d(self):
         from skimage.morphology import disk
@@ -474,21 +468,13 @@ class FilterTest():
         diff = abs(np.max(dt_hold_peaks, axis=0) - np.max(dt, axis=0))
         assert np.all(diff <= 1e-15)
 
-    def test_trim_nearby_peaks_threshold(self):
-        np.random.seed(10)
-        dist = sp.stats.norm(loc=7, scale=5)
-        im = ps.generators.polydisperse_spheres([100, 100, 100],
-                                                porosity=0.8, dist=dist)
-        im_dt = edt(im)
-        im_dt = im_dt
-        dt = spim.gaussian_filter(input=im_dt, sigma=0.4)
-        peaks = ps.filters.find_peaks(dt=dt)
-        peaks_far = ps.filters.trim_nearby_peaks(peaks=peaks, dt=dt)
-        peaks_close = ps.filters.trim_nearby_peaks(peaks=peaks, dt=dt,
-                                                   dist_threshold=0.3)
-        num_peaks_after_far_trim = spim.label(peaks_far)[1]
-        num_peaks_after_close_trim = spim.label(peaks_close)[1]
-        assert num_peaks_after_far_trim <= num_peaks_after_close_trim
+    def test_nl_means_layered(self):
+        im = ps.generators.blobs(shape=[50, 50, 50], blobiness=.5)
+        im2 = random_noise(im, seed=0)
+        filt = ps.filters.nl_means_layered(im=im2)
+        p1 = (filt[0, ...] > 0.5).sum()
+        p2 = (im[0, ...]).sum()
+        np.testing.assert_approx_equal(np.around(p1 / p2, decimals=1), 1)
 
 
 if __name__ == '__main__':
