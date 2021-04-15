@@ -11,6 +11,7 @@ from skimage.measure import regionprops
 from skimage.measure._regionprops import RegionProperties
 from pandas import DataFrame
 from edt import edt
+from loguru import logger
 
 
 def props_to_DataFrame(regionprops):
@@ -53,14 +54,12 @@ def props_to_DataFrame(regionprops):
                 pass
     # Create a dictionary of all metrics that are simple scalar properties
     d = {}
-    print('Processing the following properties: ', end="")
     for i, k in enumerate(metrics):
-        print(k + ", ", end="")
+        logger.trace("Processing {k}")
         try:
             d[k] = np.array([r[k] for r in regionprops])
-        except ValueError:
-            print('Error encountered evaluating ' + k + ' so skipping it')
-    print('... done')
+        except ValueError:  # pragma: no cover
+            logger.error(f'Error encountered evaluating {k} so skipping it')
     # Create pandas data frame an return
     df = DataFrame(d)
     return df

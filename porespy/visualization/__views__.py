@@ -4,7 +4,7 @@ import scipy.ndimage as spim
 # from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
 
-def show_3D(im):
+def show_3D(im):  # pragma: no cover
     r"""
     Rotates a 3D image and creates an angled view for rough 2D visualization.
 
@@ -42,7 +42,7 @@ def show_3D(im):
     return view
 
 
-def show_planes(im, spacing=10):
+def show_planes(im, spacing=10):  # pragma: no cover
     r"""
     Create a quick montage showing a 3D image in all three directions
 
@@ -88,7 +88,7 @@ def show_planes(im, spacing=10):
     return new_im
 
 
-def sem(im, axis=0):
+def sem(im, axis=0):  # pragma: no cover
     r"""
     Simulates an SEM photograph looking into the porous material.
 
@@ -122,7 +122,7 @@ def sem(im, axis=0):
     return im
 
 
-def xray(im, axis=0):
+def xray(im, axis=0):  # pragma: no cover
     r"""
     Simulates an X-ray radiograph looking through the porous material.
 
