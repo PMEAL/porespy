@@ -1,12 +1,11 @@
 import scipy as sp
 import numpy as np
-import scipy.ndimage as spim
-import warnings
 from edt import edt
+import scipy.ndimage as spim
+from loguru import logger
 from collections import namedtuple
 from skimage.morphology import ball, disk
 from skimage.segmentation import relabel_sequential
-from array_split import shape_split, ARRAY_BOUNDS
 from scipy.signal import fftconvolve
 try:
     from skimage.measure import marching_cubes
@@ -31,12 +30,7 @@ def align_image_with_openpnm(im):
     image : ND-array
         Returns a copy of ``im`` rotated accordingly.
     """
-    if im.ndim != im.squeeze().ndim:    # pragma: no cover
-        warnings.warn((
-            f"Input image conains a singleton axis: {im.shape}."
-            " Reduce dimensionality with np.squeeze(im) to avoid"
-            " unexpected behavior."
-        ))
+    _check_for_singleton_axes(im)
     im = np.copy(im)
     if im.ndim == 2:
         im = (np.swapaxes(im, 1, 0))
@@ -118,12 +112,7 @@ def fftmorphology(im, strel, mode='opening'):
         t = fftconvolve(im, strel, mode='same') > 0.1
         return t
 
-    if im.ndim != im.squeeze().ndim:    # pragma: no cover
-        warnings.warn((
-            f"Input image conains a singleton axis: {im.shape}."
-            " Reduce dimensionality with np.squeeze(im) to avoid"
-            " unexpected behavior."
-        ))
+    _check_for_singleton_axes(im)
 
     # Perform erosion and dilation
     # The array must be padded with 0's so it works correctly at edges
@@ -186,33 +175,44 @@ def subdivide(im, divs=2, overlap=0, flatten=False):
         indices.  An ND-array is the preferred container since it's shape can
         be easily queried.
 
-    Notes
-    -----
-    This method uses the
-    `array_split package <https://github.com/array-split/array_split>`_ which
-    offers the same functionality as the ``split`` method of Numpy's ND-array,
-    but supports the splitting of multidimensional arrays in all dimensions.
-
     See Also
     --------
     chunked_func
 
-    Examples
-    --------
-    >>> import porespy as ps
-    >>> import matplotlib.pyplot as plt
-    >>> im = ps.generators.blobs(shape=[200, 200])
-    >>> s = ps.tools.subdivide(im, divs=[2, 2], flatten=True)
-    >>> print(len(s))
-    4
 
     """
     divs = np.ones((im.ndim,), dtype=int) * np.array(divs)
-    halo = overlap * (divs > 1)
-    slices = shape_split(im.shape, axis=divs, halo=halo.tolist(),
-                         tile_bounds_policy=ARRAY_BOUNDS).astype(object)
+    overlap = overlap * (divs > 1)
+    size = (np.array(im.shape)/divs/2 + overlap).astype(int)
+
+    # Find center points of each subsection
+    cens = []
+    for ax in range(im.ndim):
+        steps = np.linspace(0, im.shape[ax], divs[ax]+1).astype(int)[:-1]
+        steps += int(im.shape[ax]/divs[ax]/2)
+        cens.append(steps)
+    # Get slices into im for each subsection
+    s = []
+    for i in range(len(cens[0])):
+        s.append([])
+        xtemp = slice(cens[0][i], cens[0][i], None)
+        for j in range(len(cens[1])):
+            ytemp = slice(cens[1][j], cens[1][j], None)
+            if im.ndim == 2:
+                stemp = extend_slice([xtemp, ytemp], im.shape, pad=size)
+                s[i].append(stemp)
+            else:
+                s[i].append([])
+                for k in range(len(cens[2])):
+                    ztemp = slice(cens[2][k], cens[2][k], None)
+                    stemp = extend_slice([xtemp, ytemp, ztemp], im.shape, pad=size)
+                    s[i][j].append(stemp)
+
+    slices = s
     if flatten is True:
-        slices = np.ravel(slices)
+        slices = [item for sublist in slices for item in sublist]
+        if im.ndim == 3:
+            slices = [item for sublist in slices for item in sublist]
     return slices
 
 
@@ -279,11 +279,11 @@ def find_outer_region(im, r=0):
 
     """
     if r == 0:
-        dt = edt(input=im)
+        dt = edt(im)
         r = int(np.amax(dt)) * 2
     im_padded = np.pad(array=im, pad_width=r, mode='constant',
                        constant_values=True)
-    dt = edt(input=im_padded)
+    dt = edt(im_padded)
     seeds = (dt >= r) + get_border(shape=im_padded.shape)
     # Remove seeds not connected to edges
     labels = spim.label(seeds)[0]
@@ -416,7 +416,7 @@ def get_planes(im, squeeze=True):
     return planes
 
 
-def extend_slice(s, shape, pad=1):
+def extend_slice(slices, shape, pad=1):
     r"""
     Adjust slice indices to include additional voxles around the slice.
 
@@ -425,7 +425,7 @@ def extend_slice(s, shape, pad=1):
 
     Parameters
     ----------
-    s : list of slice objects
+    slices : list of slice objects
          A list (or tuple) of N slice objects, where N is the number of
          dimensions in the image.
 
@@ -433,7 +433,7 @@ def extend_slice(s, shape, pad=1):
         The shape of the image into which the slice objects apply.  This is
         used to check the bounds to prevent indexing beyond the image.
 
-    pad : int
+    pad : int or list of ints
         The number of voxels to expand in each direction.
 
     Returns
@@ -471,15 +471,14 @@ def extend_slice(s, shape, pad=1):
     As can be seen by the location of the 4s, the slice was extended by 1, and
     also handled the extension beyond the boundary correctly.
     """
-    pad = int(pad)
+    shape = np.array(shape)
+    pad = np.array(pad).astype(int)*(shape > 0)
     a = []
-    for i, dim in zip(s, shape):
+    for i, s in enumerate(slices):
         start = 0
-        stop = dim
-        if i.start - pad >= 0:
-            start = i.start - pad
-        if i.stop + pad < dim:
-            stop = i.stop + pad
+        stop = shape[i]
+        start = max(s.start - pad[i], 0)
+        stop = min(s.stop + pad[i], shape[i])
         a.append(slice(start, stop, None))
     return tuple(a)
 
@@ -810,12 +809,7 @@ def mesh_region(region: bool, strel=None):
 
     """
     im = region
-    if im.ndim != im.squeeze().ndim:    # pragma: no cover
-        warnings.warn((
-            f"Input image conains a singleton axis: {im.shape}."
-            " Reduce dimensionality with np.squeeze(im) to avoid"
-            " unexpected behavior."
-        ))
+    _check_for_singleton_axes(im)
     if strel is None:
         if region.ndim == 3:
             strel = ball(1)
@@ -1112,12 +1106,7 @@ def pad_faces(im, faces):
     --------
     add_boundary_regions
     """
-    if im.ndim != im.squeeze().ndim:    # pragma: no cover
-        warnings.warn((
-            f"Input image conains a singleton axis: {im.shape}."
-            " Reduce dimensionality with np.squeeze(im) to avoid"
-            " unexpected behavior."
-        ))
+    _check_for_singleton_axes(im)
     f = faces
     if f is not None:
         if im.ndim == 2:
@@ -1160,7 +1149,6 @@ def _create_alias_map(im, alias=None):
     as valuies. If no alias is provided then default labelling is used
     i.e {1: 'Phase1',..}
     """
-    # -------------------------------------------------------------------------
     # Get alias if provided by user
     phases_num = np.unique(im).astype(int)
     phases_num = np.trim_zeros(phases_num)
@@ -1187,12 +1175,11 @@ def _create_alias_map(im, alias=None):
         if phase_labels.size < phases_num.size:
             missed_labels = np.setdiff1d(phases_num, phase_labels)
             for i in missed_labels:
-                warnings.warn(
-                    "label_{} alias is not provided although it "
-                    "exists in the input image.".format(i)
-                    + "The default label alias phase{} is assigned to "
-                      "label_{}".format(i, i))
-                al[i] = 'phase{}'.format(i)
+                logger.warning(
+                    f"label_{i} alias is not provided although it exists in the"
+                    f" input image. The default label alias phase{i} is assigned"
+                    f" to label_{i}")
+                al[i] = f'phase{i}'
     return al
 
 
@@ -1274,11 +1261,9 @@ def size_to_seq(size, bins=None):
     vals = -(vals - vals.max() - 1) * ~solid
     # In case too many bins are given, remove empty ones
     vals = make_contiguous(vals)
-
     # Possibly simpler way?
     #    vals = (-(size - size.max())).astype(int) + 1
     #    vals[vals > size.max()] = 0
-
     return vals
 
 
@@ -1290,16 +1275,16 @@ def seq_to_satn(seq):
     ----------
     seq : ND-image
         The image containing invasion sequence values in each voxel.
-        Note that the invasion steps must be positive integers, solid voxels
-        indicated by 0, and uninvaded voxels indicated by -1.
+        Note that the invasion steps must be positive integers, solid
+        voxels indicated by 0, and uninvaded voxels indicated by -1.
 
     Returns
     -------
     satn : ND-image
-        An ND-iamge the same size as ``seq`` but with sequnece values replaced
-        by the fraction of pores invaded at or below the sequence number.
-        Solid voxels and uninvaded voxels are represented by 0 and -1
-        respectively.
+        An ND-iamge the same size as ``seq`` but with sequnece values
+        replaced by the fraction of pores invaded at or below the sequence
+        number. Solid voxels and uninvaded voxels are represented by 0 and
+        -1, respectively.
 
     """
     seq = np.copy(seq).astype(int)
@@ -1327,10 +1312,10 @@ def zero_corners(im, pad_width):
         Padded image whose corners are to be filled with 0.
 
     pad_width : int or list
-        Pad width of the padded image. If a scalar value is passed, a uniform
-        pad width for all dimensions is assumed. Otherwise, a list of lists
-        should be passed with each inner list being two-element long,
-        pertaining to pad_before and pad_after for each axis.
+        Pad width of the padded image. If a scalar value is passed, a
+        uniform pad width for all dimensions is assumed. Otherwise, a list
+        of lists should be passed with each inner list being two-element
+        long, pertaining to pad_before and pad_after for each axis.
 
     Example
     -------
@@ -1428,3 +1413,20 @@ def sanitize_filename(filename, ext, exclude_ext=False):
         name = filename
     filename_formatted = f"{name}" if exclude_ext else f"{name}.{ext}"
     return filename_formatted
+
+
+def _check_for_singleton_axes(im):  # pragma: no cover
+    r"""
+    Checks for whether the input image contains singleton axes and logs
+    a proper warning in case found.
+
+    Parameters
+    ----------
+    im : ndarray
+        Input image.
+
+    """
+    if im.ndim != im.squeeze().ndim:
+        logger.warning("Input image conains a singleton axis. Reduce"
+                       " dimensionality with np.squeeze(im) to avoid"
+                       " unexpected behavior.")

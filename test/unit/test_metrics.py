@@ -61,9 +61,6 @@ class MetricsTest():
         tol = 0.05
         phi1 = ps.metrics.porosity(im=self.im2D)
         assert np.sqrt((np.mean(tpcf_bf.probability[-5:]) - phi1)**2) < tol
-        # Throw warning if image contains a singleton axis
-        with pytest.warns(UserWarning):
-            _ = ps.metrics.two_point_correlation_bf(np.atleast_3d(self.im2D))
 
     def test_rev(self):
         rev = ps.metrics.representative_elementary_volume(self.blobs)
@@ -147,9 +144,6 @@ class MetricsTest():
         ia = ps.metrics.region_interface_areas(regions, areas)
         assert np.all(ia.conns[0] == [2, 19])
         assert np.around(ia.area[0], decimals=2) == 3.59
-        with pytest.warns(UserWarning):
-            im2D = (np.random.rand(5, 5) * 10).astype(int)
-            _ = ps.metrics.region_interface_areas(np.atleast_3d(im2D), areas)
 
     def test_phase_fraction(self):
         im = np.reshape(np.random.randint(0, 10, 1000), [10, 10, 10])
@@ -176,6 +170,14 @@ class MetricsTest():
                                            radius=9, offset=4)
         rev = ps.metrics.representative_elementary_volume(im)
         assert_allclose(np.average(rev.porosity), im.sum() / im.size, rtol=1e-1)
+
+    def test_boxcount(self):
+        np.random.seed(0)
+        im = ps.generators.sierpinski_foam(4, 5)
+        sierp = ps.metrics.boxcount(im, bins=10, d_min=1, d_max=None)
+        assert len(sierp.size) == len(sierp.count) == len(sierp.slope)
+        assert np.all(sierp.slope[0:3] < 2)
+        assert np.all(sierp.slope[0:3] > 1.8)
 
 
 if __name__ == '__main__':
