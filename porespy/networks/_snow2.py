@@ -100,14 +100,10 @@ def snow2(phases,
     for i in range(phases.max()):
         phase = phases == (i + 1)
         if parallelization is not None:
-            snow = snow_partitioning_parallel(im=phases,
-                                              sigma=0.4,
-                                              r_max=4,
-                                              **parallelization)
+            snow = snow_partitioning_parallel(
+                im=phase, sigma=0.4, r_max=4, **parallelization)
         else:
-            snow = snow_partitioning(im=phases,
-                                     sigma=0.4,
-                                     r_max=4)
+            snow = snow_partitioning(im=phase, sigma=0.4, r_max=4)
         if regions is None:
             regions = np.zeros_like(snow.regions, dtype=int)
         # Note: Using snow.regions > 0 here instead of phase is needed to
@@ -126,10 +122,8 @@ def snow2(phases,
         regions = add_boundary_regions(regions, pad_width=boundary_width)
         phases = np.pad(phases, pad_width=boundary_width, mode='edge')
     # Perform actual extractcion on all regions
-    net = regions_to_network(regions,
-                             phases=phases,
-                             accuracy=accuracy,
-                             voxel_size=voxel_size)
+    net = regions_to_network(
+        regions, phases=phases, accuracy=accuracy, voxel_size=voxel_size)
     # If image is multiphase, label pores/throats accordingly
     if phases.max() > 1:
         phase_alias = _parse_phase_alias(phase_alias, phases)
