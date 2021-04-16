@@ -84,7 +84,7 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4):
         logger.trace(f"Applying Gaussian blur with sigma = {sigma}")
         dt = spim.gaussian_filter(input=dt, sigma=sigma)
 
-    peaks = find_peaks(dt=dt, r_max=r_max)
+    peaks = find_peaks(dt=dt, r_max=r_max, divs=1)
     logger.debug(f"Initial number of peaks: {spim.label(peaks)[1]}")
     peaks = trim_saddle_points(peaks=peaks, dt=dt, max_iters=500)
     logger.debug(f"Peaks after trimming saddle points: {spim.label(peaks)[1]}")
@@ -250,12 +250,13 @@ def find_peaks(dt, r_max=4, strel=None, divs=1):
         logger.info(f'Performing {insp.currentframe().f_code.co_name} in parallel')
     if parallel:
         overlap = max(strel(r_max).shape)
-        peaks = chunked_func(func=find_peaks, overlap=overlap,
-                             im_arg='dt', dt=dt, footprint=strel,
-                             cores=settings.ncores, divs=divs)
+        mx = chunked_func(func=spim.maximum_filter, overlap=overlap,
+                          im_arg='input', input=dt + 2 * (~im),
+                          footprint=strel(r_max),
+                          cores=settings.ncores, divs=divs)
     else:
         mx = spim.maximum_filter(dt + 2 * (~im), footprint=strel(r_max))
-        peaks = (dt == mx) * im
+    peaks = (dt == mx) * im
     return peaks
 
 
@@ -515,7 +516,7 @@ def snow_partitioning_parallel(im,
     # Applying SNOW to image chunks
     regions = da.from_array(dt, chunks=chunk_shape)
     regions = da.overlap.overlap(regions, depth=depth, boundary='none')
-    regions = regions.map_blocks(_snow_chunked, r_max=r_max, sigma=sigma)
+    regions = regions.map_blocks(_snow_chunked, r_max=r_max, sigma=sigma, dtype=dt.dtype)
     regions = da.overlap.trim_internal(regions, trim_depth, boundary='none')
     # TODO: use dask ProgressBar once compatible w/ logging.
     logger.trace('Applying snow to image chunks')
