@@ -731,6 +731,8 @@ def blobs(shape: List[int], porosity: float = 0.5, blobiness: int = 1,
     """
     if isinstance(shape, int):
         shape = [shape]*3
+    if len(shape) == 1:
+        shape = [shape[0]]*3
     shape = np.array(shape)
     if isinstance(blobiness, int):
         blobiness = [blobiness]*len(shape)
@@ -738,7 +740,7 @@ def blobs(shape: List[int], porosity: float = 0.5, blobiness: int = 1,
     parallel = False
     if isinstance(divs, int):
         divs = [divs]*len(shape)
-    if np.any(divs):
+    if max(divs) > 1:
         parallel = True
         logger.info(f'Performing {insp.currentframe().f_code.co_name} in parallel')
     sigma = np.mean(shape) / (40 * blobiness)
@@ -751,6 +753,9 @@ def blobs(shape: List[int], porosity: float = 0.5, blobiness: int = 1,
                                      overlap=overlap)
     else:
         im = spim.gaussian_filter(im, sigma=sigma)
+    # fig, ax = plt.subplots(1, 2)
+    # ax[0].imshow(im1)
+    # ax[1].imshow(im2)
     im = norm_to_uniform(im, scale=[0, 1])
     if porosity:
         im = im < porosity
