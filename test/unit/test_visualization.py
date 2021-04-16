@@ -49,6 +49,11 @@ class VisualizationTest():
         fig = ps.visualization.bar(h)
         assert len(h.pdf) == len(fig.patches)
 
+    def test_volume_slice(self):
+        im = ps.generators.blobs(shape=[10, 20, 30])
+        fig = ps.visualization.volume_slice(im, ind=5, axis='z_axes')
+        assert fig.ndim == 2
+
 
 if __name__ == '__main__':
     t = VisualizationTest()
