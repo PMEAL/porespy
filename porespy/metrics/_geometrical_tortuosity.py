@@ -130,7 +130,6 @@ def geometrical_tortuosity_points(im, axis=0):
 
     if np.ndim(im) == 3:
         labinters, num = spim.label(inters)
-        print(num)
         locx, locy, locz = np.ndarray.nonzero(inters)
         tort = np.zeros([num, num, num])
         inl = spim.find_objects(labinters)
