@@ -797,23 +797,21 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
         imresults = np.zeros(np.shape(impad))
         for r in tqdm(sizes, **settings.tqdm):
             if parallel:
-                imtemp = chunked_func(func=spim.binary_erosion,
-                                      input=impad, structure=strel(r),
-                                      overlap=int(r) + 1,
+                imtemp = chunked_func(func= fftmorphology,
+                                      im=impad, strel=strel(r),
+                                      overlap=int(r) + 1, mode='erosion',
                                       cores=settings.ncores, divs=divs)
             else:
-                imtemp = spim.binary_erosion(input=impad,
-                                             structure=strel(r))
+                imtemp = fftmorphology(im=impad, strel=strel(r), mode='erosion')
             if access_limited:
                 imtemp = trim_disconnected_blobs(imtemp, inlets)
             if parallel:
-                imtemp = chunked_func(func=spim.binary_dilation,
-                                      input=imtemp, structure=strel(r),
-                                      overlap=int(r) + 1,
+                imtemp = chunked_func(func=fftmorphology,
+                                      im=imtemp, strel=strel(r),
+                                      overlap=int(r) + 1, mode='dilation',
                                       cores=settings.ncores, divs=divs)
             else:
-                imtemp = spim.binary_dilation(input=imtemp,
-                                              structure=strel(r))
+                imtemp = fftmorphology(im=imtemp, strel=strel(r), mode='dilation')
             if np.any(imtemp):
                 imresults[(imresults == 0) * imtemp] = r
         imresults = extract_subsection(imresults, shape=im.shape)
