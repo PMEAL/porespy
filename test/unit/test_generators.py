@@ -366,6 +366,33 @@ class GeneratorTest():
                                           uniform=False, cores=1)
         assert im2.min() < 0
 
+    def test_cantor_dust(self):
+        np.random.seed(0)
+        im2D = ps.generators.random_cantor_dust([100, 100], 6, f=0.8)
+        assert im2D.shape == (128, 128)
+        np.testing.assert_allclose(im2D.sum()/im2D.size, 0.29180908203125)
+        np.random.seed(0)
+        im3D = ps.generators.random_cantor_dust([100, 100, 100], 6, f=0.8)
+        assert im3D.shape == (128, 128, 128)
+        np.testing.assert_allclose(im3D.sum()/im3D.size, 0.31614160537720)
+
+    def test_sierpinski_foam(self):
+        im2D = ps.generators.sierpinski_foam(4, 4, 2)
+        assert im2D.shape == (324, 324)
+        im3D = ps.generators.sierpinski_foam(4, 4, 3)
+        assert im3D.shape == (324, 324, 324)
+        im3D = ps.generators.sierpinski_foam(4, 4, 3, max_size=1000)
+        assert im3D.shape == (12, 12, 12)
+        im2D = ps.generators.sierpinski_foam(4, 2, 2)
+        np.testing.assert_allclose(im2D.sum()/im2D.size, 0.7901234567901234)
+        im2D = ps.generators.sierpinski_foam(4, 3, 2)
+        np.testing.assert_allclose(im2D.sum()/im2D.size, 0.7023319615912208)
+        im2D = ps.generators.sierpinski_foam(4, 4, 2)
+        np.testing.assert_allclose(im2D.sum()/im2D.size, 0.6242950769699741)
+        # Ensure the exact same image is produced each time
+        im2D = ps.generators.sierpinski_foam(4, 2, 2)
+        np.testing.assert_allclose(im2D.sum()/im2D.size, 0.7901234567901234)
+
 
 if __name__ == '__main__':
     t = GeneratorTest()

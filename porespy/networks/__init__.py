@@ -43,6 +43,7 @@ from .__funcs__ import label_boundaries
 from .__getnet__ import regions_to_network
 from .__utils__ import _net_dict
 from ._snow2 import snow2
+from ._snow2 import _parse_pad_width
 from .__maximal_ball__ import maximal_ball
 
 

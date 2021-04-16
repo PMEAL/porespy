@@ -11,9 +11,9 @@ import porespy as ps
 class NetworkExtractionTest():
     def setup_class(self):
         self.im = ps.generators.blobs(shape=[300, 300])
-        self.snow = ps.filters.snow_partitioning(self.im, return_all=True)
+        self.snow = ps.filters.snow_partitioning(self.im)
         self.im3d = ps.generators.blobs(shape=[50, 50, 50])
-        self.snow3d = ps.filters.snow_partitioning(self.im3d, return_all=True)
+        self.snow3d = ps.filters.snow_partitioning(self.im3d)
 
     def test_regions_to_network(self):
         im = self.snow.regions*self.im
@@ -44,7 +44,8 @@ class NetworkExtractionTest():
         assert found_nans is False
 
     def test_snow(self):
-        net = ps.networks.snow2(self.im3d)
+        snow = ps.networks.snow2(self.im3d)
+        net = snow.network
         found_nans = False
         for key in net.keys():
             if np.any(np.isnan(net[key])):
@@ -53,7 +54,8 @@ class NetworkExtractionTest():
 
     def test_map_to_regions(self):
         im = self.im
-        regions = ps.filters.snow_partitioning(im)
+        snow = ps.filters.snow_partitioning(im)
+        regions = snow.regions
         values = np.random.rand(regions.max() + 1)
         mapped = ps.networks.map_to_regions(regions, values)
         assert mapped.max() < 1
@@ -73,17 +75,17 @@ class NetworkExtractionTest():
         np.random.seed(1)
         im3 = ps.generators.blobs([1, 100, 100])
         np.random.seed(1)
-        snow_out1 = ps.filters.snow_partitioning(im1, return_all=True)
+        snow_out1 = ps.filters.snow_partitioning(im1)
         pore_map1 = snow_out1.im * snow_out1.regions
         net1 = ps.networks.regions_to_network(regions=pore_map1,
                                               voxel_size=1)
         np.random.seed(1)
-        snow_out2 = ps.filters.snow_partitioning(im2, return_all=True)
+        snow_out2 = ps.filters.snow_partitioning(im2)
         pore_map2 = snow_out2.im * snow_out2.regions
         net2 = ps.networks.regions_to_network(regions=pore_map2,
                                               voxel_size=1)
         np.random.seed(1)
-        snow_out3 = ps.filters.snow_partitioning(im3, return_all=True)
+        snow_out3 = ps.filters.snow_partitioning(im3)
         pore_map3 = snow_out3.im * snow_out3.regions
         net3 = ps.networks.regions_to_network(regions=pore_map3,
                                               voxel_size=1)
