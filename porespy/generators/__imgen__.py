@@ -4,6 +4,7 @@ import porespy as ps
 from numba import njit
 import scipy.spatial as sptl
 import scipy.ndimage as spim
+import scipy.signal as spsg
 from porespy.tools import norm_to_uniform, ps_ball, ps_disk, get_border
 from porespy import settings
 from typing import List
@@ -126,12 +127,14 @@ def RSA(im_or_shape: np.array,
     mode : string (default is 'contained')
         Controls how the edges of the image are handled.  Options are:
 
-        'contained' - Spheres are all completely within the image
+        'contained'
+            Spheres are all completely within the image
+        'extended'
+            Spheres are allowed to extend beyond the edge of the
+            image.  In this mode the volume fraction will be less that
+            requested since some spheres extend beyond the image, but their
+            entire volume is counted as added for computational efficiency.
 
-        'extended' - Spheres are allowed to extend beyond the edge of the
-        image.  In this mode the volume fraction will be less that requested
-        since some spheres extend beyond the image, but their entire volume
-        is counted as added for computational efficiency.
     return_spheres : bool
         If ``True`` then an image containing only the spheres is returned
         rather than the input image with the spheres added, which is the
@@ -304,7 +307,6 @@ def bundle_of_tubes(shape: List[int], spacing: int):
         The size the image, with the 3rd dimension indicating the plate
         thickness.  If the 3rd dimension is not given then a thickness of
         1 voxel is assumed.
-
     spacing : scalar
         The center to center distance of the holes.  The hole sizes will be
         randomly distributed between this values down to 3 voxels.
@@ -356,19 +358,16 @@ def polydisperse_spheres(
         The size of the image to generate in [Nx, Ny, Nz] where Ni is the
         number of voxels in each direction.  If shape is only 2D, then an
         image of polydisperse disks is returns
-
     porosity : scalar
         The porosity of the image, defined as the number of void voxels
         divided by the number of voxels in the image. The specified value
         is only matched approximately, so it's suggested to check this value
         after the image is generated.
-
     dist : scipy.stats distribution object
         This should be an initialized distribution chosen from the large number
         of options in the ``scipy.stats`` submodule.  For instance, a normal
         distribution with a mean of 20 and a standard deviation of 10 can be
         obtained with ``dist = scipy.stats.norm(loc=20, scale=10)``
-
     nbins : scalar
         The number of discrete sphere sizes that will be used to generate the
         image.  This function generates  ``nbins`` images of monodisperse
@@ -406,13 +405,10 @@ def voronoi_edges(shape: List[int], radius: int, ncells: int, flat_faces: bool =
     shape : array_like
         The size of the image to generate in [Nx, Ny, Nz] where Ni is the
         number of voxels in each direction.
-
     radius : scalar
         The radius to which Voronoi edges should be dilated in the final image.
-
     ncells : scalar
         The number of Voronoi cells to include in the tesselation.
-
     flat_faces : Boolean
         Whether the Voronoi edges should lie on the boundary of the
         image (True), or if edges outside the image should be removed (False).
@@ -519,16 +515,23 @@ def lattice_spheres(shape: List[int],
         not have the little bumps on each face.
     lattice : str
         Specifies the type of lattice to create. Options are:
-        - 'sc': Simple Cubic (default)
-        - 'fcc': Face Centered Cubic
-        - 'bcc': Body Centered Cubic
-        For 2D images, 'sc' gives a square lattice and both 'fcc' and
-        'bcc' give a triangular lattice.
+
+        'sc'
+            Simple Cubic (default)
+        'fcc'
+            Face Centered Cubic
+        'bcc'
+            Body Centered Cubic
 
     Returns
     -------
     image : ndarray
         A boolean array with ``True`` values denoting the pore space.
+
+    Notes
+    -----
+    For 2D images, 'sc' gives a square lattice and both 'fcc' and
+    'bcc' give a triangular lattice.
 
     """
     logger.debug(f"Generating {lattice} lattice")
@@ -623,17 +626,13 @@ def overlapping_spheres(shape: List[int],
     shape : list
         The size of the image to generate in [Nx, Ny, Nz] where Ni is the
         number of voxels in the i-th direction.
-
     radius : scalar
         The radius of spheres in the packing.
-
     porosity : scalar
         The porosity of the final image, accurate to the given tolerance.
-
     iter_max : int
         Maximum number of iterations for the iterative algorithm that improves
         the porosity of the final image to match the given value.
-
     tol : float
         Tolerance for porosity of the final image compared to the given value.
 
@@ -696,7 +695,7 @@ def overlapping_spheres(shape: List[int],
 
 
 def blobs(shape: List[int], porosity: float = 0.5, blobiness: int = 1,
-          **kwargs):
+          divs: int = 1, cores: int = 0):
     """
     Generates an image containing amorphous blobs
 
@@ -705,17 +704,22 @@ def blobs(shape: List[int], porosity: float = 0.5, blobiness: int = 1,
     shape : list
         The size of the image to generate in [Nx, Ny, Nz] where N is the
         number of voxels
-
     porosity : float
         If specified, this will threshold the image to the specified value
         prior to returning.  If ``None`` is specified, then the scalar noise
         field is converted to a uniform distribution and returned without
         thresholding.
-
     blobiness : int or list of ints(default = 1)
         Controls the morphology of the blobs.  A higher number results in
         a larger number of small blobs.  If a list is supplied then the blobs
         are anisotropic.
+    divs : int or array_like
+        The number of times to divide the image for parallel processing.
+        If ``1`` then parallel processing does not occur.  The default is
+        ``2``.
+    cores : int
+        The number of cores to use when parallelizing. A value of ``None`` or
+        0 uses all available cores.
 
     Returns
     -------
@@ -727,20 +731,27 @@ def blobs(shape: List[int], porosity: float = 0.5, blobiness: int = 1,
     norm_to_uniform
 
     """
-    blobiness = np.array(blobiness)
+    if isinstance(shape, int):
+        shape = [shape]*3
     shape = np.array(shape)
-    parallel = kwargs.pop('parallel', False)
-    divs = kwargs.pop('divs', 2)
-    cores = kwargs.pop('cores', None)
-    if np.size(shape) == 1:
-        shape = np.full((3, ), int(shape))
+    if isinstance(blobiness, int):
+        blobiness = [blobiness]*len(shape)
+    blobiness = np.array(blobiness)
+    parallel = False
+    if isinstance(divs, int):
+        divs = [divs]*len(shape)
+    if np.any(divs):
+        parallel = True
+        if cores == 0:
+            cores = None
     sigma = np.mean(shape) / (40 * blobiness)
     im = np.random.random(shape)
     if parallel:
-        # TODO: The determination of the overlap should be done rigorously
+        logger.info('Performing convolution in parallel')
+        overlap = max([int(s*4) for s in sigma])
         im = ps.filters.chunked_func(func=spim.gaussian_filter,
                                      input=im, sigma=sigma,
-                                     divs=divs, cores=cores, overlap=10)
+                                     divs=divs, cores=cores, overlap=overlap)
     else:
         im = spim.gaussian_filter(im, sigma=sigma)
     im = norm_to_uniform(im, scale=[0, 1])
