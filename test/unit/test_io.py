@@ -74,15 +74,6 @@ class ExportTest():
         ps.io.to_stl(im, filename="im2stl")
         os.remove("im2stl.stl")
 
-    def test_to_paraview(self):
-        im = ps.generators.blobs(shape=[50, 50, 50], spacing=0.1)
-        ps.io.to_paraview(im=im, filename='test_to_paraview.pvsm')
-        os.remove('test_to_paraview.pvsm')
-
-    def test_open_paraview(self):
-        ps.io.open_paraview(filename='../fixtures/image.pvsm')
-        assert "paraview" in (p.name().split('.')[0] for p in psutil.process_iter())
-
     def test_spheres_to_comsol_radii_centers(self):
         radii = np.array([10, 20, 25, 5])
         centers = np.array([[0, 10, 3],
@@ -97,6 +88,18 @@ class ExportTest():
                                                radius=10, porosity=0.6)
         ps.io.spheres_to_comsol(filename='sphere_pack', im=im)
         os.remove("sphere_pack.mphtxt")
+
+
+"""
+    def test_to_paraview(self):
+        im = ps.generators.blobs(shape=[50, 50, 50], spacing=0.1)
+        ps.io.to_paraview(im=im, filename='test_to_paraview.pvsm')
+        os.remove('test_to_paraview.pvsm')
+
+    def test_open_paraview(self):
+        ps.io.open_paraview(filename='../fixtures/image.pvsm')
+        assert "paraview" in (p.name().split('.')[0] for p in psutil.process_iter())
+"""
 
 
 if __name__ == "__main__":
