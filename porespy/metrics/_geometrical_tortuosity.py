@@ -4,6 +4,8 @@ import scipy.ndimage as spim
 import skimage
 import skfmm
 from skimage.morphology import disk, square, ball, cube
+from porespy.tools import get_tqdm, fftmorphology
+tqdm = get_tqdm()
 
 
 def geometrical_tortuosity(im, axis=0):
@@ -30,7 +32,7 @@ def geometrical_tortuosity(im, axis=0):
     sk1 = skimage.morphology.skeletonize_3d(im2) > 0
     sk1 = ps.tools.unpad(sk1, padding)
     imlen = sk1.shape[0]
-    sk = spim.binary_dilation(sk1, structure=structure)
+    sk = fftmorphology(sk1, strel=structure, mode='dilation')
 
     inlets = np.zeros_like(sk, dtype=bool)
     inlets[0, ...] = True
@@ -38,7 +40,7 @@ def geometrical_tortuosity(im, axis=0):
     labels, n = spim.label(inlets)
     mins = []
     inl = spim.find_objects(labels)
-    for i in range(n):
+    for i in tqdm(range(n)):
 
         phi = np.ones_like(sk)
         phi[inl[i]] = 0
@@ -98,7 +100,7 @@ def geometrical_tortuosity_points(im, axis=0):
     im2 = np.pad(im, padding, "maximum")
     sk1 = skimage.morphology.skeletonize_3d(im2) > 0
     sk1 = ps.tools.unpad(sk1, padding)
-    sk = spim.binary_dilation(sk1, structure=structure)
+    sk = fftmorphology(sk1, strel=structure, mode='dilation')
 
     dns = ps.dns.tortuosity(im=sk, axis=0, return_im=True,
                             solver_family='pypardiso')
