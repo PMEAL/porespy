@@ -1,10 +1,10 @@
 import numpy as np
+import inspect as insp
 from edt import edt
 import porespy as ps
 from numba import njit
 import scipy.spatial as sptl
 import scipy.ndimage as spim
-import scipy.signal as spsg
 from porespy.tools import norm_to_uniform, ps_ball, ps_disk, get_border
 from porespy import settings
 from typing import List
@@ -695,7 +695,7 @@ def overlapping_spheres(shape: List[int],
 
 
 def blobs(shape: List[int], porosity: float = 0.5, blobiness: int = 1,
-          divs: int = 1, cores: int = 0):
+          divs: int = 1):
     """
     Generates an image containing amorphous blobs
 
@@ -714,12 +714,10 @@ def blobs(shape: List[int], porosity: float = 0.5, blobiness: int = 1,
         a larger number of small blobs.  If a list is supplied then the blobs
         are anisotropic.
     divs : int or array_like
-        The number of times to divide the image for parallel processing.
-        If ``1`` then parallel processing does not occur.  The default is
-        ``2``.
-    cores : int
-        The number of cores to use when parallelizing. A value of ``None`` or
-        0 uses all available cores.
+        The number of times to divide the image for parallel processing.  If ``1``
+        then parallel processing does not occur.  ``2`` is equivalent to
+        ``[2, 2, 2]`` for a 3D image.  The number of cores used is specified in
+        ``porespy.settings.ncores`` and defaults to all cores.
 
     Returns
     -------
@@ -742,16 +740,15 @@ def blobs(shape: List[int], porosity: float = 0.5, blobiness: int = 1,
         divs = [divs]*len(shape)
     if np.any(divs):
         parallel = True
-        if cores == 0:
-            cores = None
+        logger.info(f'Performing {insp.currentframe().f_code.co_name} in parallel')
     sigma = np.mean(shape) / (40 * blobiness)
     im = np.random.random(shape)
     if parallel:
-        logger.info('Performing convolution in parallel')
         overlap = max([int(s*4) for s in sigma])
         im = ps.filters.chunked_func(func=spim.gaussian_filter,
                                      input=im, sigma=sigma,
-                                     divs=divs, cores=cores, overlap=overlap)
+                                     divs=divs, cores=settings.ncores,
+                                     overlap=overlap)
     else:
         im = spim.gaussian_filter(im, sigma=sigma)
     im = norm_to_uniform(im, scale=[0, 1])

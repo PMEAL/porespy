@@ -4,6 +4,7 @@ import importlib
 from dataclasses import dataclass
 from loguru import logger
 from tqdm import tqdm
+import psutil
 
 
 def _is_ipython_notebook():  # pragma: no cover
@@ -76,6 +77,7 @@ class Settings:  # pragma: no cover
     """
     __instance__ = None
     notebook = False
+    ncores = psutil.cpu_count()
     # Might need to add 'file': sys.stdout to tqdm dict
     tqdm = {'disable': False,
             'colour': None,

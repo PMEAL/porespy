@@ -1,3 +1,4 @@
+import inspect as insp
 import dask
 import numpy as np
 from edt import edt
@@ -612,7 +613,7 @@ def apply_chords_3D(im, spacing=0, trim_edges=True):
     return chords
 
 
-def local_thickness(im, sizes=25, mode="hybrid", **kwargs):
+def local_thickness(im, sizes=25, mode="hybrid", divs=1):
     r"""
     For each voxel, this function calculates the radius of the largest
     sphere that both engulfs the voxel and fits entirely within the
@@ -649,6 +650,12 @@ def local_thickness(im, sizes=25, mode="hybrid", **kwargs):
             ``access_limitations`` is ``True``. This method is not ideal and
             is included for comparison purposes.
 
+    divs : int or array_like
+        The number of times to divide the image for parallel processing.  If ``1``
+        then parallel processing does not occur.  ``2`` is equivalent to
+        ``[2, 2, 2]`` for a 3D image.  The number of cores used is specified in
+        ``porespy.settings.ncores`` and defaults to all cores.
+
     Returns
     -------
     image : ND-array
@@ -675,12 +682,13 @@ def local_thickness(im, sizes=25, mode="hybrid", **kwargs):
     function. This is not needed in ``local_thickness`` however.
 
     """
-    im_new = porosimetry(im=im, sizes=sizes, access_limited=False, mode=mode, **kwargs)
+    im_new = porosimetry(im=im, sizes=sizes, access_limited=False, mode=mode,
+                         divs=divs)
     return im_new
 
 
 def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
-                cores=None, divs=2):
+                divs=1):
     r"""
     Performs a porosimetry simulution on an image.
 
@@ -728,13 +736,11 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
             This is the only method that can be parallelized by chunking (see
             ``divs`` and ``cores``).
 
-    cores : int
-        The number of cores to use when parallelizing. A value of ``None`` or
-        0 uses all available cores.
     divs : int or array_like
         The number of times to divide the image for parallel processing.  If ``1``
         then parallel processing does not occur.  ``2`` is equivalent to
-        ``[2, 2, 2]`` for a 3D image.
+        ``[2, 2, 2]`` for a 3D image.  The number of cores used is specified in
+        ``porespy.settings.ncores`` and defaults to all cores.
 
     Returns
     -------
@@ -780,10 +786,8 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
     if isinstance(divs, int):
         divs = [divs]*im.ndim
     if max(divs) > 1:
-        logger.info('Performing morphological operations in parallel')
+        logger.info(f'Performing {insp.currentframe().f_code.co_name} in parallel')
         parallel = True
-        if cores == 0:
-            cores = None
 
     if mode == "mio":
         pw = int(np.floor(dt.max()))
@@ -796,7 +800,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
                 imtemp = chunked_func(func=spim.binary_erosion,
                                       input=impad, structure=strel(r),
                                       overlap=int(r) + 1,
-                                      cores=cores, divs=divs)
+                                      cores=settings.ncores, divs=divs)
             else:
                 imtemp = spim.binary_erosion(input=impad,
                                              structure=strel(r))
@@ -806,7 +810,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
                 imtemp = chunked_func(func=spim.binary_dilation,
                                       input=imtemp, structure=strel(r),
                                       overlap=int(r) + 1,
-                                      cores=cores, divs=divs)
+                                      cores=settings.ncores, divs=divs)
             else:
                 imtemp = spim.binary_dilation(input=imtemp,
                                               structure=strel(r))
@@ -824,7 +828,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
                     imtemp = chunked_func(func=edt,
                                           data=~imtemp, im_arg='data',
                                           overlap=int(r) + 1, parallel=0,
-                                          cores=cores, divs=divs) < r
+                                          cores=settings.ncores, divs=divs) < r
                 else:
                     imtemp = edt(~imtemp) < r
                 imresults[(imresults == 0) * imtemp] = r
@@ -839,7 +843,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
                     imtemp = chunked_func(func=fftmorphology, mode='dilation',
                                           im=imtemp, strel=strel(r),
                                           overlap=int(r) + 1,
-                                          cores=cores, divs=divs)
+                                          cores=settings.ncores, divs=divs)
                 else:
                     imtemp = fftmorphology(imtemp, strel(r),
                                            mode="dilation")

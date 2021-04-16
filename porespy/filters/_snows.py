@@ -1,4 +1,5 @@
 import dask.array as da
+import inspect as insp
 import numpy as np
 from numba import njit, prange
 from edt import edt
@@ -10,6 +11,7 @@ from skimage.morphology import ball, disk, square, cube
 from porespy.tools import _check_for_singleton_axes
 from porespy.tools import extend_slice
 from porespy.filters import chunked_func
+from porespy import settings
 from loguru import logger
 
 
@@ -189,7 +191,7 @@ def snow_partitioning_n(im, r_max=4, sigma=0.4):
     return tup
 
 
-def find_peaks(dt, r_max=4, strel=None, **kwargs):
+def find_peaks(dt, r_max=4, strel=None, divs=1):
     r"""
     Finds local maxima in the distance transform
 
@@ -205,6 +207,11 @@ def find_peaks(dt, r_max=4, strel=None, **kwargs):
         Specifies the shape of the structuring element used to define the
         neighborhood when looking for peaks.  If ``None`` (the default) is
         specified then a spherical shape is used (or circular in 2D).
+    divs : int or array_like
+        The number of times to divide the image for parallel processing.  If ``1``
+        then parallel processing does not occur.  ``2`` is equivalent to
+        ``[2, 2, 2]`` for a 3D image.  The number of cores used is specified in
+        ``porespy.settings.ncores`` and defaults to all cores.
 
     Returns
     -------
@@ -235,14 +242,17 @@ def find_peaks(dt, r_max=4, strel=None, **kwargs):
             strel = ball
         else:  # pragma: no cover
             raise Exception("Only 2d and 3d images are supported")
-    parallel = kwargs.pop('parallel', False)
-    cores = kwargs.pop('cores', None)
-    divs = kwargs.pop('cores', 2)
+    parallel = False
+    if isinstance(divs, int):
+        divs = [divs]*len(im.shape)
+    if np.any(divs):
+        parallel = True
+        logger.info(f'Performing {insp.currentframe().f_code.co_name} in parallel')
     if parallel:
         overlap = max(strel(r_max).shape)
         peaks = chunked_func(func=find_peaks, overlap=overlap,
                              im_arg='dt', dt=dt, footprint=strel,
-                             cores=cores, divs=divs)
+                             cores=settings.ncores, divs=divs)
     else:
         mx = spim.maximum_filter(dt + 2 * (~im), footprint=strel(r_max))
         peaks = (dt == mx) * im
@@ -415,7 +425,6 @@ def trim_nearby_peaks(peaks, dt):
     return peaks > 0
 
 
-
 def _estimate_overlap(im, mode='dt', zoom=0.25):
     logger.trace('Calculating overlap thickness')
     if mode == 'watershed':
@@ -432,12 +441,13 @@ def _estimate_overlap(im, mode='dt', zoom=0.25):
         overlap = dt.max()
     return overlap
 
+
 def snow_partitioning_parallel(im,
                                r_max=4,
                                sigma=0.4,
                                divs=2,
                                overlap=None,
-                               num_workers=None):
+                               cores=None):
     r"""
     Performs SNOW algorithm in parallel (or serial) to reduce time
     (or memory usage) by geomertirc domain decomposition of large images.
@@ -456,7 +466,7 @@ def snow_partitioning_parallel(im,
           - list: each respective axis will be divided by its corresponding
             number in the list. For example [2, 3, 4] will divide z, y and
             x axis to 2, 3, and 4 respectively.
-    num_workers : int or None
+    cores : int or None
         Number of cores that will be used to parallel process all domains.
         If ``None`` then all cores will be used but user can specify any
         integer values to control the memory usage.  Setting value to 1 will
@@ -509,7 +519,7 @@ def snow_partitioning_parallel(im,
     regions = da.overlap.trim_internal(regions, trim_depth, boundary='none')
     # TODO: use dask ProgressBar once compatible w/ logging.
     logger.trace('Applying snow to image chunks')
-    regions = regions.compute(num_workers=num_workers)
+    regions = regions.compute(num_workers=cores)
 
     # Relabelling watershed chunks
     logger.trace('Relabelling watershed chunks')
@@ -524,6 +534,7 @@ def snow_partitioning_parallel(im,
     tup.regions = regions
 
     return tup
+
 
 def _pad(im, pad_width=1, constant_value=0):
     r"""
@@ -896,6 +907,7 @@ def _resequence_labels(array):
     _sequence(array, count)
 
     return array.reshape(a_shape)
+
 
 def _snow_chunked(dt, r_max=5, sigma=0.4):
     r"""
