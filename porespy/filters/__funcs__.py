@@ -680,7 +680,7 @@ def local_thickness(im, sizes=25, mode="hybrid", **kwargs):
 
 
 def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
-                fft=True, cores=None, divs=2):
+                cores=None, divs=2):
     r"""
     Performs a porosimetry simulution on an image.
 
@@ -722,21 +722,15 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
             invading fluid configuration. The choice of 'dt' or 'hybrid'
             depends on speed, which is system and installation specific.
         'mio'
-            Using a single morphological image opening step to
-            obtain the invading fluid confirguration directly, *then* trims
-            if ``access_limitations`` is ``True``.  This method is not
-            ideal and is included for comparison purposes. The
-            morphological operations are done using fft-based method
-            implementations.
+            Uses bindary erosion followed by dilation to obtain the invading
+            fluid confirguration directly. If ``access_limitations`` is
+            ``True`` then disconnected blobs are trimmmed before the dilation.
+            This is the only method that can be parallelized by chunking (see
+            ``divs`` and ``cores``).
 
-    fft : boolean (default is ``True``)
-        Indicates whether to use the ``fftmorphology`` function in
-        ``porespy.filters`` or to use the standard morphology functions in
-        ``scipy.ndimage``.  Always use ``fft=True`` unless you have a good
-        reason not to.
     cores : int
-        The number of cores to use when parallelizing. A value of ``None`` uses
-        all available cores.
+        The number of cores to use when parallelizing. A value of ``None`` or
+        0 uses all available cores.
     divs : int or array_like
         The number of times to divide the image for parallel processing.  If ``1``
         then parallel processing does not occur.  ``2`` is equivalent to
@@ -786,7 +780,10 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
     if isinstance(divs, int):
         divs = [divs]*im.ndim
     if max(divs) > 1:
+        logger.info('Performing morphological operations in parallel')
         parallel = True
+        if cores == 0:
+            cores = None
 
     if mode == "mio":
         pw = int(np.floor(dt.max()))
@@ -798,10 +795,8 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
             if parallel:
                 imtemp = chunked_func(func=spim.binary_erosion,
                                       input=impad, structure=strel(r),
-                                      overlap=int(2*r) + 1,
+                                      overlap=int(r) + 1,
                                       cores=cores, divs=divs)
-            elif fft:
-                imtemp = fftmorphology(impad, strel(r), mode="erosion")
             else:
                 imtemp = spim.binary_erosion(input=impad,
                                              structure=strel(r))
@@ -810,10 +805,8 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
             if parallel:
                 imtemp = chunked_func(func=spim.binary_dilation,
                                       input=imtemp, structure=strel(r),
-                                      overlap=int(2*r) + 1,
+                                      overlap=int(r) + 1,
                                       cores=cores, divs=divs)
-            elif fft:
-                imtemp = fftmorphology(imtemp, strel(r), mode="dilation")
             else:
                 imtemp = spim.binary_dilation(input=imtemp,
                                               structure=strel(r))
@@ -827,7 +820,13 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
             if access_limited:
                 imtemp = trim_disconnected_blobs(imtemp, inlets)
             if np.any(imtemp):
-                imtemp = edt(~imtemp) < r
+                if parallel:
+                    imtemp = chunked_func(func=edt,
+                                          data=~imtemp, im_arg='data',
+                                          overlap=int(r) + 1, parallel=0,
+                                          cores=cores, divs=divs) < r
+                else:
+                    imtemp = edt(~imtemp) < r
                 imresults[(imresults == 0) * imtemp] = r
     elif mode == "hybrid":
         imresults = np.zeros(np.shape(im))
@@ -837,16 +836,13 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
                 imtemp = trim_disconnected_blobs(imtemp, inlets)
             if np.any(imtemp):
                 if parallel:
-                    imtemp = chunked_func(func=spim.binary_dilation,
-                                          input=imtemp, structure=strel(r),
-                                          overlap=int(2*r) + 1,
+                    imtemp = chunked_func(func=fftmorphology, mode='dilation',
+                                          im=imtemp, strel=strel(r),
+                                          overlap=int(r) + 1,
                                           cores=cores, divs=divs)
-                elif fft:
+                else:
                     imtemp = fftmorphology(imtemp, strel(r),
                                            mode="dilation")
-                else:
-                    imtemp = spim.binary_dilation(input=imtemp,
-                                                  structure=strel(r))
                 imresults[(imresults == 0) * imtemp] = r
     else:
         raise Exception("Unrecognized mode " + mode)
@@ -1200,14 +1196,14 @@ def chunked_func(func,
     res = []
     for s in slices:
         # Extract subsection from image and input into kwargs
-        kwargs[im_arg] = im[tuple(s)]
+        kwargs[im_arg] = dask.delayed(np.ascontiguousarray(im[tuple(s)]))
         res.append(apply_func(func=func, **kwargs))
     # Have dask actually compute the function on each subsection in parallel
     # with ProgressBar():
         # ims = dask.compute(res, num_workers=cores)[0]
     ims = dask.compute(res, num_workers=cores)[0]
     # Finally, put the pieces back together into a single master image, im2
-    im2 = np.zeros_like(im, dtype=im.dtype)
+    im2 = np.zeros_like(im, dtype=ims[0].dtype)
     for i, s in enumerate(slices):
         # Prepare new slice objects into main and sub-sliced image
         a = []  # Slices into main image
@@ -1235,5 +1231,3 @@ def chunked_func(func,
             raise IndexError('The applied filter seems to have returned a '
                              + 'larger image that it was sent.')
     return im2
-
-
