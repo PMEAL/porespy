@@ -1,18 +1,15 @@
-import warnings
 import numpy as np
-from edt import edt
 import scipy.ndimage as spim
 import scipy.spatial as sptl
 from scipy import fftpack as sp_ft
 from skimage.measure import regionprops
-from porespy.tools import extend_slice, mesh_region, ps_round
-from porespy.filters import find_dt_artifacts
-from porespy import settings
-from porespy.tools import _check_for_singleton_axes
 from collections import namedtuple
 from skimage import measure
-from porespy.tools import get_tqdm
 from loguru import logger
+from porespy.tools import extend_slice, mesh_region, ps_round
+from porespy.tools import _check_for_singleton_axes
+from porespy import settings
+from porespy.tools import get_tqdm
 tqdm = get_tqdm()
 
 
@@ -106,7 +103,7 @@ def porosity_profile(im, axis=0):
     return prof
 
 
-def radial_density_distribution(im, bins=10, log=False, voxel_size=1):
+def radial_density_distribution(dt, bins=10, log=False, voxel_size=1):
     r"""
     Computes radial density function by analyzing the histogram of voxel
     values in the distance transform.  This function is defined by
@@ -131,8 +128,12 @@ def radial_density_distribution(im, bins=10, log=False, voxel_size=1):
 
     Parameters
     ----------
-    im : ND-array
-        A distance transform of the pore space (the ``edt`` package is recommended)
+    dt : ND-array
+        A distance transform of the pore space (the ``edt`` package is
+        recommended).  Note that it is recommended to apply
+        ``find_dt_artifacts`` to this image first, and set potentially
+        erroneous values to 0 with ``dt[mask] = 0`` where
+        ``mask = porespy.filters.find_dt_artifaces(dt)``.
     bins : int or array_like
         This number of bins (if int) or the location of the bins (if array).
         This argument is passed directly to Scipy's ``histogram`` function so
@@ -180,9 +181,7 @@ def radial_density_distribution(im, bins=10, log=False, voxel_size=1):
     [1] Torquato, S. Random Heterogeneous Materials: Mircostructure and
     Macroscopic Properties. Springer, New York (2002) - See page 48 & 292
     """
-    im = np.copy(im)
-    mask = find_dt_artifacts(im) == 0
-    im[mask] = 0
+    im = np.copy(dt)
     x = im[im > 0].flatten()
     if log:
         x = np.log10(x)
