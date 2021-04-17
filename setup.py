@@ -27,7 +27,7 @@ setup(
     long_description_content_type='text/markdown',
     version=about['__version__'],
     zip_safe=False,
-    classifiers=['Development Status :: 3 - Alpha',
+    classifiers=['Development Status :: 5 - Production/Stable',
                  'License :: OSI Approved :: MIT License',
                  'Operating System :: OS Independent',
                  'Programming Language :: Python',

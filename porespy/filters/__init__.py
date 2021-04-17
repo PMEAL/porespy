@@ -78,5 +78,6 @@ from ._snows import reduce_peaks
 from ._snows import trim_nearby_peaks
 from ._snows import trim_saddle_points
 from ._nlmeans import nl_means_layered
+from . import imagej
 from .__ibip__ import ibip
 from .__ibip__ import find_trapped_regions

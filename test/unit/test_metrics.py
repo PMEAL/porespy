@@ -3,6 +3,7 @@ import pytest
 import numpy as np
 import porespy as ps
 from skimage import io
+from edt import edt
 from pathlib import Path
 import scipy.ndimage as spim
 from numpy.testing import assert_allclose
@@ -67,7 +68,8 @@ class MetricsTest():
         assert (np.mean(rev.porosity) - 0.5)**2 < 0.05
 
     def test_radial_density(self):
-        den = ps.metrics.radial_density_distribution(self.blobs)
+        dt = edt(self.blobs)
+        den = ps.metrics.radial_density_distribution(dt)
         assert den.cdf.max() == 1
 
     def test_props_to_DataFrame(self):
@@ -171,13 +173,39 @@ class MetricsTest():
         rev = ps.metrics.representative_elementary_volume(im)
         assert_allclose(np.average(rev.porosity), im.sum() / im.size, rtol=1e-1)
 
-    def test_boxcount(self):
+    def test_geometric_tortuosity_2d(self):
         np.random.seed(0)
-        im = ps.generators.sierpinski_foam(4, 5)
-        sierp = ps.metrics.boxcount(im, bins=10, d_min=1, d_max=None)
-        assert len(sierp.size) == len(sierp.count) == len(sierp.slope)
-        assert np.all(sierp.slope[0:3] < 2)
-        assert np.all(sierp.slope[0:3] > 1.8)
+        im = ps.generators.blobs(shape=[300, 300], porosity=0.6, blobiness=2)
+        out = ps.metrics.geometrical_tortuosity(im)
+        assert np.size(out) ==1
+        assert out >= 1
+
+    def test_geometric_tortuosity_3d(self):
+        np.random.seed(0)
+        im = ps.generators.blobs(shape=[100, 100, 100], porosity=0.6, blobiness=2)
+        out = ps.metrics.geometrical_tortuosity(im)
+        assert np.size(out) ==1
+        assert out >= 1
+
+    def test_geometric_tortuosity_points_2d(self):
+        pass
+        # This function is not quite ready yet
+        # np.random.seed(0)
+        # im = ps.generators.blobs(shape=[300, 300], porosity=0.6, blobiness=2)
+        # out = ps.metrics.geometrical_tortuosity_points(im)
+        # assert np.shape(out[0])[0] ==np.shape(out[0])[1]
+        # assert np.size(out[1]) ==1
+        # assert out[1] >= 1
+
+    def test_geometric_tortuosity_points_3d(self):
+        pass
+        # This function is not quite ready yet
+        # np.random.seed(0)
+        # im = ps.generators.blobs(shape=[50, 50, 50], porosity=0.6, blobiness=2)
+        # out = ps.metrics.geometrical_tortuosity_points(im)
+        # assert np.shape(out[0])[0] ==np.shape(out[0])[1]
+        # assert np.size(out[1]) ==1
+        # assert out[1] >= 1
         
     def test_pc_curve_from_ibip_and_mio(self):
         im = ps.generators.blobs(shape=[100, 100], porosity=0.7)
