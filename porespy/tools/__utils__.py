@@ -76,7 +76,6 @@ class Settings:  # pragma: no cover
 
     """
     __instance__ = None
-    notebook = False
     # Might need to add 'file': sys.stdout to tqdm dict
     tqdm = {'disable': False,
             'colour': None,
@@ -89,6 +88,11 @@ class Settings:  # pragma: no cover
           '\n--> <level>{message}</level>'
     _loglevel = "ERROR" if _is_ipython_notebook() else "INFO"
     config_logger(_logger_fmt, _loglevel)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._notebook = None
+        self._ncores = None
 
     @property
     def logger_fmt(self):
@@ -138,6 +142,16 @@ class Settings:  # pragma: no cover
                     temp = temp.replace(',', '\n' + ' '*(indent + 1))
                 s += temp
         return s
+
+    def _get_notebook(self):
+        if self._notebook is None:
+            self._notebook = _is_ipython_notebook()
+        return self._notebook
+
+    def _set_notebook(self, val):
+        logger.error('This value is determined automatically at runtime')
+
+    notebook = property(fget=_get_notebook, fset=_set_notebook)
 
 
 def get_tqdm():  # pragma: no cover
