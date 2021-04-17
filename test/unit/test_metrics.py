@@ -3,6 +3,7 @@ import pytest
 import numpy as np
 import porespy as ps
 from skimage import io
+from edt import edt
 from pathlib import Path
 import scipy.ndimage as spim
 from numpy.testing import assert_allclose
@@ -67,7 +68,8 @@ class MetricsTest():
         assert (np.mean(rev.porosity) - 0.5)**2 < 0.05
 
     def test_radial_density(self):
-        den = ps.metrics.radial_density_distribution(self.blobs)
+        dt = edt(self.blobs)
+        den = ps.metrics.radial_density_distribution(dt)
         assert den.cdf.max() == 1
 
     def test_props_to_DataFrame(self):
