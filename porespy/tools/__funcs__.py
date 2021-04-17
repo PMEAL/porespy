@@ -336,10 +336,9 @@ def find_outer_region(im, r=None):
     ----------
     im : ND-array
         Image of the porous material with 1's for void and 0's for solid
-
     r : scalar
         The radius of the rolling ball to use.  If not specified then a value
-        is calculated as twice maximum of the distance transform.  The image
+        is calculated as twice maximum of the distance transform. The image
         size is padded by this amount in all directions, so the image can
         become quite large and unwieldy if too large a value is given.
 
@@ -350,7 +349,7 @@ def find_outer_region(im, r=None):
         identified as *outside* the sample.
 
     """
-    if r == 0:
+    if r is None:
         dt = edt(im)
         r = int(np.amax(dt)) * 2
     im_padded = np.pad(array=im, pad_width=r, mode='constant',
