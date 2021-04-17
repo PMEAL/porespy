@@ -62,7 +62,7 @@ from .tools.__utils__ import Settings as _Settings
 from .tools.__utils__ import _is_ipython_notebook
 
 settings = _Settings()
-settings.notebook = _is_ipython_notebook()
+settings.notebook = False
 
 from . import tools
 from . import filters
