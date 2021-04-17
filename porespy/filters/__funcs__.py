@@ -1182,6 +1182,8 @@ def chunked_func(func,
     im = kwargs[im_arg]
     # Determine the number of divisions to create
     divs = np.ones((im.ndim,), dtype=int) * np.array(divs)
+    if cores is None:
+        cores = settings.ncores
     # If overlap given then use it, otherwise search for strel in kwargs
     if overlap is not None:
         halo = overlap * (divs > 1)

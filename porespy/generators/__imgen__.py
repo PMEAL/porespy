@@ -749,8 +749,7 @@ def blobs(shape: List[int], porosity: float = 0.5, blobiness: int = 1,
         overlap = max([int(s*4) for s in sigma])
         im = ps.filters.chunked_func(func=spim.gaussian_filter,
                                      input=im, sigma=sigma,
-                                     divs=divs, cores=settings.ncores,
-                                     overlap=overlap)
+                                     divs=divs, overlap=overlap)
     else:
         im = spim.gaussian_filter(im, sigma=sigma)
     # fig, ax = plt.subplots(1, 2)
