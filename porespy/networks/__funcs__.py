@@ -319,11 +319,9 @@ def label_boundaries(
                for i in range(len(crds[0, :]))]
     network['pore.boundary'] = np.zeros_like(crds[:, 0], dtype=bool)
     for i, axis in enumerate(labels):
-        try:
-            for j, face in enumerate(axis):
+        for j, face in enumerate(axis):
+            if face:
                 hits = crds[:, i] == extents[i][j]
                 network['pore.boundary'] += hits
                 network['pore.' + labels[i][j]] = hits
-        except TypeError:
-            continue
     return network
