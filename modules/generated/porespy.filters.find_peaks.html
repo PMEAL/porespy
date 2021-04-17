@@ -9,7 +9,7 @@
     <title>find_peaks &#8212; PoreSpy  documentation</title>
     
   <link href="../../_static/css/theme.css" rel="stylesheet" />
-  <link href="../../_static/css/index.ee6fb81b276d6fba8a971ad8e9b95dd9.css" rel="stylesheet" />
+  <link href="../../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
 
     
   <link rel="stylesheet"
@@ -31,7 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
     
-  <link rel="preload" as="script" href="../../_static/js/index.c86189f1ce1b71a67eb6.js">
+  <link rel="preload" as="script" href="../../_static/js/index.1c5a1a01449ed65a7b51.js">
 
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
@@ -228,6 +228,16 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="porespy.generators.random_cantor_dust.html">
+     random_cantor_dust
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.generators.sierpinski_foam.html">
+     sierpinski_foam
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="porespy.generators.voronoi_edges.html">
      voronoi_edges
     </a>
@@ -404,6 +414,11 @@
    <li class="toctree-l2">
     <a class="reference internal" href="porespy.metrics.chord_length_distribution.html">
      chord_length_distribution
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.metrics.geometrical_tortuosity.html">
+     geometrical_tortuosity
     </a>
    </li>
    <li class="toctree-l2">
@@ -683,6 +698,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="porespy.tools.unpad.html">
+     unpad
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="porespy.tools.zero_corners.html">
      zero_corners
     </a>
@@ -833,16 +853,16 @@
 <h1>find_peaks<a class="headerlink" href="#find-peaks" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="porespy.filters.find_peaks">
-<code class="sig-name descname"><span class="pre">find_peaks</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">footprint</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/filters/__funcs__.html#find_peaks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.find_peaks" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">find_peaks</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/filters/_snows.html#find_peaks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.find_peaks" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds local maxima in the distance transform</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>dt</strong> (<em>ndarray</em>) – The distance transform of the pore space.  This may be calculated
+<li><p><strong>dt</strong> (<em>ND-array</em>) – The distance transform of the pore space.  This may be calculated
 and filtered using any means desired.</p></li>
 <li><p><strong>r_max</strong> (<em>scalar</em>) – The size of the structuring element used in the maximum filter.
 This controls the localness of any maxima. The default is 4 voxels.</p></li>
-<li><p><strong>footprint</strong> (<em>ND-array</em>) – Specifies the shape of the structuring element used to define the
+<li><p><strong>strel</strong> (<em>ND-array</em>) – Specifies the shape of the structuring element used to define the
 neighborhood when looking for peaks.  If <code class="docutils literal notranslate"><span class="pre">None</span></code> (the default) is
 specified then a spherical shape is used (or circular in 2D).</p></li>
 </ul>
@@ -852,7 +872,7 @@ specified then a spherical shape is used (or circular in 2D).</p></li>
 local maxima.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ndarray</p>
+<dd class="field-odd"><p>ND-array</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -863,8 +883,6 @@ local maxima.</p>
 <p>The <em>skimage</em> function automatically uses a square structuring element
 which is significantly faster than using a circular or spherical
 element.</p>
-<p class="rubric">Examples</p>
-<p><a class="reference external" href="https://porespy.org/examples/filters/find_peaks.html">Click here</a> to view online example.</p>
 </dd></dl>
 
 </section>
@@ -879,7 +897,7 @@ element.</p>
       </div>
     </div>
     
-  <script src="../../_static/js/index.c86189f1ce1b71a67eb6.js"></script>
+  <script src="../../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
 
 
     <footer class="footer mt-5 mt-md-0">

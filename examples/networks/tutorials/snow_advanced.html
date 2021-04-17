@@ -9,7 +9,7 @@
     <title>SNOW network extraction (advanced) &#8212; PoreSpy  documentation</title>
     
   <link href="../../../_static/css/theme.css" rel="stylesheet" />
-  <link href="../../../_static/css/index.ee6fb81b276d6fba8a971ad8e9b95dd9.css" rel="stylesheet" />
+  <link href="../../../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
 
     
   <link rel="stylesheet"
@@ -31,7 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
     
-  <link rel="preload" as="script" href="../../../_static/js/index.c86189f1ce1b71a67eb6.js">
+  <link rel="preload" as="script" href="../../../_static/js/index.1c5a1a01449ed65a7b51.js">
 
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
@@ -1007,11 +1007,11 @@ ax.imshow((regions*im)[:, :, 100], cmap=plt.cm.nipy_spectral);
 </div>
 <p>Finally, this partitioned image can be passed to the network extraction function which analyzes the image and returns a Python <em>dict</em> containing the numerical properties of the network.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>net = ps.networks.regions_to_network(im=regions*im, dt=dt, voxel_size=1)
+<span></span>net = ps.networks.regions_to_network(regions*im, voxel_size=1)
 </pre></div>
 </div>
 </div>
@@ -1023,7 +1023,7 @@ ax.imshow((regions*im)[:, :, 100], cmap=plt.cm.nipy_spectral);
 </div>
 <p>This network can be opened in OpenPNM with ease, and then exported as a VTK file for viewing in ParaView.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -1036,7 +1036,7 @@ prj.export_data(filename=&#39;extracted_network&#39;, filetype=&#39;vtk&#39;)
 </div>
 <p>In order to overlay both the network and the image in ParaView it is necessary to adjust the image and save it as a vtk image file.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -1045,7 +1045,7 @@ ps.io.to_vtk(im, filename=&#39;extracted_network&#39;)
 </pre></div>
 </div>
 </div>
-<p><img alt="8d16935d1f7748ad8a1daf3ec466bde8" class="no-scaled-link" src="https://user-images.githubusercontent.com/14086031/113048590-b68d2480-9170-11eb-9c10-06e6d53ee95d.png" style="width: 350px;" /></p>
+<p><img alt="a92e1a50fad04aabbf17c566679a1538" class="no-scaled-link" src="https://user-images.githubusercontent.com/14086031/113048590-b68d2480-9170-11eb-9c10-06e6d53ee95d.png" style="width: 350px;" /></p>
 </section>
 </section>
 
@@ -1059,7 +1059,7 @@ ps.io.to_vtk(im, filename=&#39;extracted_network&#39;)
       </div>
     </div>
     
-  <script src="../../../_static/js/index.c86189f1ce1b71a67eb6.js"></script>
+  <script src="../../../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
 
 
     <footer class="footer mt-5 mt-md-0">

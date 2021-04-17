@@ -9,7 +9,7 @@
     <title>trim_saddle_points &#8212; PoreSpy  documentation</title>
     
   <link href="../../_static/css/theme.css" rel="stylesheet" />
-  <link href="../../_static/css/index.ee6fb81b276d6fba8a971ad8e9b95dd9.css" rel="stylesheet" />
+  <link href="../../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
 
     
   <link rel="stylesheet"
@@ -31,7 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
     
-  <link rel="preload" as="script" href="../../_static/js/index.c86189f1ce1b71a67eb6.js">
+  <link rel="preload" as="script" href="../../_static/js/index.1c5a1a01449ed65a7b51.js">
 
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
@@ -228,6 +228,16 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="porespy.generators.random_cantor_dust.html">
+     random_cantor_dust
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.generators.sierpinski_foam.html">
+     sierpinski_foam
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="porespy.generators.voronoi_edges.html">
      voronoi_edges
     </a>
@@ -404,6 +414,11 @@
    <li class="toctree-l2">
     <a class="reference internal" href="porespy.metrics.chord_length_distribution.html">
      chord_length_distribution
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.metrics.geometrical_tortuosity.html">
+     geometrical_tortuosity
     </a>
    </li>
    <li class="toctree-l2">
@@ -683,6 +698,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="porespy.tools.unpad.html">
+     unpad
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="porespy.tools.zero_corners.html">
      zero_corners
     </a>
@@ -833,16 +853,16 @@
 <h1>trim_saddle_points<a class="headerlink" href="#trim-saddle-points" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="porespy.filters.trim_saddle_points">
-<code class="sig-name descname"><span class="pre">trim_saddle_points</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">peaks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/filters/__funcs__.html#trim_saddle_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.trim_saddle_points" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">trim_saddle_points</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">peaks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/filters/_snows.html#trim_saddle_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.trim_saddle_points" title="Permalink to this definition">¶</a></dt>
 <dd><p>Removes peaks that were mistakenly identified because they lied on a
 saddle or ridge in the distance transform that was not actually a true
 local peak.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>peaks</strong> (<em>ndarray</em>) – A boolean image containing True values to mark peaks in the
+<li><p><strong>peaks</strong> (<em>ND-array</em>) – A boolean image containing True values to mark peaks in the
 distance transform (<code class="docutils literal notranslate"><span class="pre">dt</span></code>)</p></li>
-<li><p><strong>dt</strong> (<em>ndarray</em>) – The distance transform of the pore space for which the true peaks
+<li><p><strong>dt</strong> (<em>ND-array</em>) – The distance transform of the pore space for which the true peaks
 are sought.</p></li>
 <li><p><strong>max_iters</strong> (<em>int</em>) – The maximum number of iterations to run while eroding the saddle
 points.  The default is 10, which is usually not reached; however,
@@ -860,8 +880,6 @@ points.</p></li>
 <p class="rubric">References</p>
 <p>[1] Gostick, J. “A versatile and efficient network extraction algorithm
 using marker-based watershed segmenation”.  Physical Review E. (2017)</p>
-<p class="rubric">Examples</p>
-<p><a class="reference external" href="https://porespy.org/examples/filters/trim_saddle_points.html">Click here</a> to view online example.</p>
 </dd></dl>
 
 </section>
@@ -876,7 +894,7 @@ using marker-based watershed segmenation”.  Physical Review E. (2017)</p>
       </div>
     </div>
     
-  <script src="../../_static/js/index.c86189f1ce1b71a67eb6.js"></script>
+  <script src="../../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
 
 
     <footer class="footer mt-5 mt-md-0">

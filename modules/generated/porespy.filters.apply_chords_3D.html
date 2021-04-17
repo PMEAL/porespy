@@ -9,7 +9,7 @@
     <title>apply_chords_3D &#8212; PoreSpy  documentation</title>
     
   <link href="../../_static/css/theme.css" rel="stylesheet" />
-  <link href="../../_static/css/index.ee6fb81b276d6fba8a971ad8e9b95dd9.css" rel="stylesheet" />
+  <link href="../../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
 
     
   <link rel="stylesheet"
@@ -31,7 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
     
-  <link rel="preload" as="script" href="../../_static/js/index.c86189f1ce1b71a67eb6.js">
+  <link rel="preload" as="script" href="../../_static/js/index.1c5a1a01449ed65a7b51.js">
 
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
@@ -228,6 +228,16 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="porespy.generators.random_cantor_dust.html">
+     random_cantor_dust
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.generators.sierpinski_foam.html">
+     sierpinski_foam
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="porespy.generators.voronoi_edges.html">
      voronoi_edges
     </a>
@@ -404,6 +414,11 @@
    <li class="toctree-l2">
     <a class="reference internal" href="porespy.metrics.chord_length_distribution.html">
      chord_length_distribution
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.metrics.geometrical_tortuosity.html">
+     geometrical_tortuosity
     </a>
    </li>
    <li class="toctree-l2">
@@ -683,6 +698,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="porespy.tools.unpad.html">
+     unpad
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="porespy.tools.zero_corners.html">
      zero_corners
     </a>
@@ -840,7 +860,7 @@ the X, Y and Z directions are labelled 1, 2 and 3 resepctively.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>im</strong> (<em>ndarray</em>) – A 3D image of the porous material with void space marked as True.</p></li>
+<li><p><strong>im</strong> (<em>ND-array</em>) – A 3D image of the porous material with void space marked as True.</p></li>
 <li><p><strong>spacing</strong> (<em>int</em><em> (</em><em>default = 0</em><em>)</em>) – Chords are automatically separed by 1 voxel on all sides, and this
 argument increases the separation.</p></li>
 <li><p><strong>trim_edges</strong> (bool (default is <code class="docutils literal notranslate"><span class="pre">True</span></code>)) – Whether or not to remove chords that touch the edges of the image.
@@ -854,7 +874,7 @@ distribution</p></li>
 chords.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ndarray</p>
+<dd class="field-odd"><p>ND-array</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -881,7 +901,7 @@ tools that search for connected components, such as
       </div>
     </div>
     
-  <script src="../../_static/js/index.c86189f1ce1b71a67eb6.js"></script>
+  <script src="../../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
 
 
     <footer class="footer mt-5 mt-md-0">

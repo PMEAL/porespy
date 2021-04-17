@@ -9,7 +9,7 @@
     <title>find_disconnected_voxels &#8212; PoreSpy  documentation</title>
     
   <link href="../../_static/css/theme.css" rel="stylesheet" />
-  <link href="../../_static/css/index.ee6fb81b276d6fba8a971ad8e9b95dd9.css" rel="stylesheet" />
+  <link href="../../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
 
     
   <link rel="stylesheet"
@@ -31,7 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
     
-  <link rel="preload" as="script" href="../../_static/js/index.c86189f1ce1b71a67eb6.js">
+  <link rel="preload" as="script" href="../../_static/js/index.1c5a1a01449ed65a7b51.js">
 
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
@@ -228,6 +228,16 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="porespy.generators.random_cantor_dust.html">
+     random_cantor_dust
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.generators.sierpinski_foam.html">
+     sierpinski_foam
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="porespy.generators.voronoi_edges.html">
      voronoi_edges
     </a>
@@ -404,6 +414,11 @@
    <li class="toctree-l2">
     <a class="reference internal" href="porespy.metrics.chord_length_distribution.html">
      chord_length_distribution
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.metrics.geometrical_tortuosity.html">
+     geometrical_tortuosity
     </a>
    </li>
    <li class="toctree-l2">
@@ -683,6 +698,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="porespy.tools.unpad.html">
+     unpad
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="porespy.tools.zero_corners.html">
      zero_corners
     </a>
@@ -840,7 +860,7 @@ remove artifacts such as solid phase voxels that are floating in space.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>im</strong> (<em>ndarray</em>) – A Boolean image, with True values indicating the phase for which
+<li><p><strong>im</strong> (<em>ND-array</em>) – A Boolean image, with True values indicating the phase for which
 disconnected voxels are sought.</p></li>
 <li><p><strong>conn</strong> (<em>int</em>) – For 2D the options are 4 and 8 for square and diagonal neighbors,
 while for the 3D the options are 6 and 26, similarily for square
@@ -853,12 +873,12 @@ voxels of the phase of interest (i.e. True values in the original
 image) that are not connected to the outer edges.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ndarray</p>
+<dd class="field-odd"><p>ND-array</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
 <dl class="simple">
-<dt>image<span class="classifier">ndarray</span></dt><dd><p>The returned array (e.g. <code class="docutils literal notranslate"><span class="pre">holes</span></code>) be used to trim blind pores
+<dt>image<span class="classifier">ND-array</span></dt><dd><p>The returned array (e.g. <code class="docutils literal notranslate"><span class="pre">holes</span></code>) be used to trim blind pores
 from <code class="docutils literal notranslate"><span class="pre">im</span></code> using: <code class="docutils literal notranslate"><span class="pre">im[holes]</span> <span class="pre">=</span> <span class="pre">False</span></code></p>
 </dd>
 </dl>
@@ -878,7 +898,7 @@ from <code class="docutils literal notranslate"><span class="pre">im</span></cod
       </div>
     </div>
     
-  <script src="../../_static/js/index.c86189f1ce1b71a67eb6.js"></script>
+  <script src="../../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
 
 
     <footer class="footer mt-5 mt-md-0">

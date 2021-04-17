@@ -9,7 +9,7 @@
     <title>distance_transform_lin &#8212; PoreSpy  documentation</title>
     
   <link href="../../_static/css/theme.css" rel="stylesheet" />
-  <link href="../../_static/css/index.ee6fb81b276d6fba8a971ad8e9b95dd9.css" rel="stylesheet" />
+  <link href="../../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
 
     
   <link rel="stylesheet"
@@ -31,7 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
     
-  <link rel="preload" as="script" href="../../_static/js/index.c86189f1ce1b71a67eb6.js">
+  <link rel="preload" as="script" href="../../_static/js/index.1c5a1a01449ed65a7b51.js">
 
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
@@ -228,6 +228,16 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="porespy.generators.random_cantor_dust.html">
+     random_cantor_dust
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.generators.sierpinski_foam.html">
+     sierpinski_foam
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="porespy.generators.voronoi_edges.html">
      voronoi_edges
     </a>
@@ -404,6 +414,11 @@
    <li class="toctree-l2">
     <a class="reference internal" href="porespy.metrics.chord_length_distribution.html">
      chord_length_distribution
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.metrics.geometrical_tortuosity.html">
+     geometrical_tortuosity
     </a>
    </li>
    <li class="toctree-l2">
@@ -683,6 +698,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="porespy.tools.unpad.html">
+     unpad
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="porespy.tools.zero_corners.html">
      zero_corners
     </a>
@@ -839,22 +859,25 @@ voxel along the specified axis.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>im</strong> (<em>ndarray</em>) – The image of the porous material with <code class="docutils literal notranslate"><span class="pre">True</span></code> values indicating
+<li><p><strong>im</strong> (<em>ND-array</em>) – The image of the porous material with <code class="docutils literal notranslate"><span class="pre">True</span></code> values indicating
 the void phase (or phase of interest).</p></li>
 <li><p><strong>axis</strong> (<em>int</em>) – The direction along which the distance should be measured, the
 default is 0 (i.e. along the x-direction).</p></li>
-<li><p><strong>mode</strong> (<em>str</em>) – <dl class="simple">
-<dt>Controls how the distance is measured. Options are:</dt><dd><ul>
-<li><p>’forward’: Distances are measured in the increasing direction
-along the specified axis</p></li>
-<li><p>’reverse’: Distances are measured in the reverse direction.
-‘backward’ is also accepted.</p></li>
-<li><p>’both’: Distances are calculated in both directions (by
+<li><p><strong>mode</strong> (<em>str</em>) – <p>Controls how the distance is measured. Options are:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>’forward’</dt><dd><p>Distances are measured in the increasing direction
+along the specified axis</p>
+</dd>
+<dt>’reverse’</dt><dd><p>Distances are measured in the reverse direction.
+‘backward’ is also accepted.</p>
+</dd>
+<dt>’both’</dt><dd><p>Distances are calculated in both directions (by
 recursively calling itself), then reporting the minimum value
-of the two results.</p></li>
-</ul>
+of the two results.</p>
 </dd>
 </dl>
+</div></blockquote>
 </p></li>
 </ul>
 </dd>
@@ -863,7 +886,7 @@ of the two results.</p></li>
 distance to the nearest background along the specified axis.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ndarray</p>
+<dd class="field-odd"><p>ND-array</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -882,7 +905,7 @@ distance to the nearest background along the specified axis.</p>
       </div>
     </div>
     
-  <script src="../../_static/js/index.c86189f1ce1b71a67eb6.js"></script>
+  <script src="../../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
 
 
     <footer class="footer mt-5 mt-md-0">

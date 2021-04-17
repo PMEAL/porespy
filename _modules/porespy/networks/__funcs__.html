@@ -8,7 +8,7 @@
     <title>porespy.networks.__funcs__ &#8212; PoreSpy  documentation</title>
     
   <link href="../../../_static/css/theme.css" rel="stylesheet" />
-  <link href="../../../_static/css/index.ee6fb81b276d6fba8a971ad8e9b95dd9.css" rel="stylesheet" />
+  <link href="../../../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
 
     
   <link rel="stylesheet"
@@ -30,7 +30,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
     
-  <link rel="preload" as="script" href="../../../_static/js/index.c86189f1ce1b71a67eb6.js">
+  <link rel="preload" as="script" href="../../../_static/js/index.1c5a1a01449ed65a7b51.js">
 
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
@@ -505,13 +505,11 @@
                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">crds</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]))]</span>
     <span class="n">network</span><span class="p">[</span><span class="s1">&#39;pore.boundary&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">crds</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">axis</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">labels</span><span class="p">):</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">face</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">axis</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">face</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">axis</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">face</span><span class="p">:</span>
                 <span class="n">hits</span> <span class="o">=</span> <span class="n">crds</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">extents</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
                 <span class="n">network</span><span class="p">[</span><span class="s1">&#39;pore.boundary&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">hits</span>
                 <span class="n">network</span><span class="p">[</span><span class="s1">&#39;pore.&#39;</span> <span class="o">+</span> <span class="n">labels</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]]</span> <span class="o">=</span> <span class="n">hits</span>
-        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
-            <span class="k">continue</span>
     <span class="k">return</span> <span class="n">network</span>
 </pre></div>
 
@@ -524,7 +522,7 @@
       </div>
     </div>
     
-  <script src="../../../_static/js/index.c86189f1ce1b71a67eb6.js"></script>
+  <script src="../../../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
 
 
     <footer class="footer mt-5 mt-md-0">

@@ -9,7 +9,7 @@
     <title>porosimetry &#8212; PoreSpy  documentation</title>
     
   <link href="../../_static/css/theme.css" rel="stylesheet" />
-  <link href="../../_static/css/index.ee6fb81b276d6fba8a971ad8e9b95dd9.css" rel="stylesheet" />
+  <link href="../../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
 
     
   <link rel="stylesheet"
@@ -31,7 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
     
-  <link rel="preload" as="script" href="../../_static/js/index.c86189f1ce1b71a67eb6.js">
+  <link rel="preload" as="script" href="../../_static/js/index.1c5a1a01449ed65a7b51.js">
 
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
@@ -228,6 +228,16 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="porespy.generators.random_cantor_dust.html">
+     random_cantor_dust
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.generators.sierpinski_foam.html">
+     sierpinski_foam
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="porespy.generators.voronoi_edges.html">
      voronoi_edges
     </a>
@@ -404,6 +414,11 @@
    <li class="toctree-l2">
     <a class="reference internal" href="porespy.metrics.chord_length_distribution.html">
      chord_length_distribution
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.metrics.geometrical_tortuosity.html">
+     geometrical_tortuosity
     </a>
    </li>
    <li class="toctree-l2">
@@ -683,6 +698,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="porespy.tools.unpad.html">
+     unpad
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="porespy.tools.zero_corners.html">
      zero_corners
     </a>
@@ -838,12 +858,12 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>im</strong> (<em>ndarray</em>) – An ND image of the porous material containing <code class="docutils literal notranslate"><span class="pre">True</span></code> values in the
+<li><p><strong>im</strong> (<em>ND-array</em>) – An ND image of the porous material containing <code class="docutils literal notranslate"><span class="pre">True</span></code> values in the
 pore space.</p></li>
 <li><p><strong>sizes</strong> (<em>array_like</em><em> or </em><em>scalar</em>) – The sizes to invade.  If a list of values of provided they are
 used directly.  If a scalar is provided then that number of points
 spanning the min and max of the distance transform are used.</p></li>
-<li><p><strong>inlets</strong> (<em>ndarray</em><em>, </em><em>boolean</em>) – A boolean mask with <code class="docutils literal notranslate"><span class="pre">True</span></code> values indicating where the invasion
+<li><p><strong>inlets</strong> (<em>ND-array</em><em>, </em><em>boolean</em>) – A boolean mask with <code class="docutils literal notranslate"><span class="pre">True</span></code> values indicating where the invasion
 enters the image.  By default all faces are considered inlets,
 akin to a mercury porosimetry experiment.  Users can also apply
 solid boundaries to their image externally before passing it in,
@@ -855,26 +875,29 @@ or if the invading phase should be allowed to appear in the core
 of the image.  The former simulates experimental tools like
 mercury intrusion porosimetry, while the latter is useful for
 comparison to gauge the extent of shielding effects in the sample.</p></li>
-<li><p><strong>mode</strong> (<em>str</em>) – <dl class="simple">
-<dt>Controls with method is used to compute the result. Options are:</dt><dd><ul>
-<li><p>’hybrid’: (default) Performs a distance tranform of the void
+<li><p><strong>mode</strong> (<em>str</em>) – <p>Controls with method is used to compute the result. Options are:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>’hybrid’</dt><dd><p>(default) Performs a distance tranform of the void
 space, thresholds to find voxels larger than <code class="docutils literal notranslate"><span class="pre">sizes[i]</span></code>,
 trims the resulting mask if <code class="docutils literal notranslate"><span class="pre">access_limitations</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>,
 then dilates it using the efficient fft-method to obtain the
-non-wetting fluid configuration.</p></li>
-<li><p>’dt’: Same as ‘hybrid’, except uses a second distance
+non-wetting fluid configuration.</p>
+</dd>
+<dt>’dt’</dt><dd><p>Same as ‘hybrid’, except uses a second distance
 transform, relative to the thresholded mask, to find the
 invading fluid configuration. The choice of ‘dt’ or ‘hybrid’
-depends on speed, which is system and installation specific.</p></li>
-<li><p>’mio’: Using a single morphological image opening step to
+depends on speed, which is system and installation specific.</p>
+</dd>
+<dt>’mio’</dt><dd><p>Using a single morphological image opening step to
 obtain the invading fluid confirguration directly, <em>then</em> trims
 if <code class="docutils literal notranslate"><span class="pre">access_limitations</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.  This method is not
-ideal and is included mostly for comparison purposes. The
+ideal and is included for comparison purposes. The
 morphological operations are done using fft-based method
-implementations.</p></li>
-</ul>
+implementations.</p>
 </dd>
 </dl>
+</div></blockquote>
 </p></li>
 <li><p><strong>fft</strong> (boolean (default is <code class="docutils literal notranslate"><span class="pre">True</span></code>)) – Indicates whether to use the <code class="docutils literal notranslate"><span class="pre">fftmorphology</span></code> function in
 <code class="docutils literal notranslate"><span class="pre">porespy.filters</span></code> or to use the standard morphology functions in
@@ -892,7 +915,7 @@ the invading sphere.  Of course, <code class="docutils literal notranslate"><spa
 capillary pressure using a preferred model.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ndarray</p>
+<dd class="field-odd"><p>ND-array</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -921,7 +944,7 @@ radii.</p>
       </div>
     </div>
     
-  <script src="../../_static/js/index.c86189f1ce1b71a67eb6.js"></script>
+  <script src="../../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
 
 
     <footer class="footer mt-5 mt-md-0">

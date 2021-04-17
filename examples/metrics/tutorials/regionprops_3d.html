@@ -9,7 +9,7 @@
     <title>Using regionprops_3d to analyze properties of each pore &#8212; PoreSpy  documentation</title>
     
   <link href="../../../_static/css/theme.css" rel="stylesheet" />
-  <link href="../../../_static/css/index.ee6fb81b276d6fba8a971ad8e9b95dd9.css" rel="stylesheet" />
+  <link href="../../../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
 
     
   <link rel="stylesheet"
@@ -31,7 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
     
-  <link rel="preload" as="script" href="../../../_static/js/index.c86189f1ce1b71a67eb6.js">
+  <link rel="preload" as="script" href="../../../_static/js/index.1c5a1a01449ed65a7b51.js">
 
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
@@ -961,7 +961,7 @@ ax.imshow(im, cmap=plt.cm.inferno);
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>snow = ps.filters.snow_partitioning(im=im, return_all=True)
+<span></span>snow = ps.filters.snow_partitioning(im=im)
 regions = snow.regions*snow.im
 </pre></div>
 </div>
@@ -1011,7 +1011,7 @@ another larger <em>gotcha</em>: Each of the region objects are collected in a li
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>r = props[0]
+<span></span>r = props[3]
 attrs = [a for a in r.__dir__() if not a.startswith(&#39;_&#39;)]
 print(attrs)
 </pre></div>
@@ -1022,7 +1022,7 @@ print(attrs)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-[&#39;label&#39;, &#39;slice&#39;, &#39;mask&#39;, &#39;slices&#39;, &#39;volume&#39;, &#39;bbox_volume&#39;, &#39;border&#39;, &#39;dt&#39;, &#39;inscribed_sphere&#39;, &#39;sphericity&#39;, &#39;skeleton&#39;, &#39;surface_area&#39;, &#39;surface_mesh_vertices&#39;, &#39;surface_mesh_simplices&#39;, &#39;convex_volume&#39;, &#39;area&#39;, &#39;bbox&#39;, &#39;bbox_area&#39;, &#39;centroid&#39;, &#39;convex_area&#39;, &#39;convex_image&#39;, &#39;coords&#39;, &#39;eccentricity&#39;, &#39;equivalent_diameter&#39;, &#39;euler_number&#39;, &#39;extent&#39;, &#39;feret_diameter_max&#39;, &#39;filled_area&#39;, &#39;filled_image&#39;, &#39;image&#39;, &#39;inertia_tensor&#39;, &#39;inertia_tensor_eigvals&#39;, &#39;intensity_image&#39;, &#39;local_centroid&#39;, &#39;max_intensity&#39;, &#39;mean_intensity&#39;, &#39;min_intensity&#39;, &#39;major_axis_length&#39;, &#39;minor_axis_length&#39;, &#39;moments&#39;, &#39;moments_central&#39;, &#39;moments_hu&#39;, &#39;moments_normalized&#39;, &#39;orientation&#39;, &#39;perimeter&#39;, &#39;perimeter_crofton&#39;, &#39;solidity&#39;, &#39;weighted_centroid&#39;, &#39;weighted_local_centroid&#39;, &#39;weighted_moments&#39;, &#39;weighted_moments_central&#39;, &#39;weighted_moments_hu&#39;, &#39;weighted_moments_normalized&#39;]
+[&#39;label&#39;, &#39;slice&#39;, &#39;mask&#39;, &#39;slices&#39;, &#39;volume&#39;, &#39;bbox_volume&#39;, &#39;border&#39;, &#39;dt&#39;, &#39;inscribed_sphere&#39;, &#39;sphericity&#39;, &#39;skeleton&#39;, &#39;surface_area&#39;, &#39;surface_mesh_vertices&#39;, &#39;surface_mesh_simplices&#39;, &#39;convex_volume&#39;, &#39;area&#39;, &#39;bbox&#39;, &#39;bbox_area&#39;, &#39;centroid&#39;, &#39;convex_area&#39;, &#39;convex_image&#39;, &#39;coords&#39;, &#39;eccentricity&#39;, &#39;equivalent_diameter&#39;, &#39;euler_number&#39;, &#39;extent&#39;, &#39;filled_area&#39;, &#39;filled_image&#39;, &#39;image&#39;, &#39;inertia_tensor&#39;, &#39;inertia_tensor_eigvals&#39;, &#39;intensity_image&#39;, &#39;local_centroid&#39;, &#39;max_intensity&#39;, &#39;mean_intensity&#39;, &#39;min_intensity&#39;, &#39;major_axis_length&#39;, &#39;minor_axis_length&#39;, &#39;moments&#39;, &#39;moments_central&#39;, &#39;moments_hu&#39;, &#39;moments_normalized&#39;, &#39;orientation&#39;, &#39;perimeter&#39;, &#39;solidity&#39;, &#39;weighted_centroid&#39;, &#39;weighted_local_centroid&#39;, &#39;weighted_moments&#39;, &#39;weighted_moments_central&#39;, &#39;weighted_moments_hu&#39;, &#39;weighted_moments_normalized&#39;]
 </pre></div></div>
 </div>
 </section>
@@ -1093,7 +1093,7 @@ ax.imshow(r.image + 1.0*r.convex_image);
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Solidity: 0.918
+Solidity: 0.874
 </pre></div></div>
 </div>
 </section>
@@ -1148,27 +1148,25 @@ ax[2].set_title(&quot;Sphericity&quot;);
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-label                     1.000000
-volume                  912.000000
-bbox_volume            1107.000000
-sphericity                2.590389
-surface_area            175.569504
-convex_volume           994.000000
-area                    912.000000
-bbox_area              1107.000000
-convex_area             994.000000
-eccentricity              0.749290
-equivalent_diameter      34.076304
-euler_number              1.000000
-extent                    0.823848
-feret_diameter_max       47.169906
-filled_area             912.000000
-major_axis_length        43.448691
-minor_axis_length        28.773566
-orientation               0.209609
-perimeter               129.455844
-perimeter_crofton       125.413353
-solidity                  0.917505
+label                   1.000000
+volume                 54.000000
+bbox_volume            66.000000
+sphericity              1.639501
+surface_area           42.140678
+convex_volume          59.000000
+area                   54.000000
+bbox_area              66.000000
+convex_area            59.000000
+eccentricity            0.992984
+equivalent_diameter     8.291860
+euler_number            1.000000
+extent                  0.818182
+filled_area            54.000000
+major_axis_length      24.417117
+minor_axis_length       2.887327
+orientation            -1.538946
+perimeter              43.414214
+solidity                0.915254
 Name: 0, dtype: float64
 </pre></div></div>
 </div>
@@ -1230,7 +1228,7 @@ ax.imshow(sph + 0.5*(~im) , cmap=plt.cm.jet);
       </div>
     </div>
     
-  <script src="../../../_static/js/index.c86189f1ce1b71a67eb6.js"></script>
+  <script src="../../../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
 
 
     <footer class="footer mt-5 mt-md-0">

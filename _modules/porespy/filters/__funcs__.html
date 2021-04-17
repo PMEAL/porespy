@@ -8,7 +8,7 @@
     <title>porespy.filters.__funcs__ &#8212; PoreSpy  documentation</title>
     
   <link href="../../../_static/css/theme.css" rel="stylesheet" />
-  <link href="../../../_static/css/index.ee6fb81b276d6fba8a971ad8e9b95dd9.css" rel="stylesheet" />
+  <link href="../../../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
 
     
   <link rel="stylesheet"
@@ -30,7 +30,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
     
-  <link rel="preload" as="script" href="../../../_static/js/index.c86189f1ce1b71a67eb6.js">
+  <link rel="preload" as="script" href="../../../_static/js/index.1c5a1a01449ed65a7b51.js">
 
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
@@ -185,22 +185,17 @@
                 
   <h1>Source code for porespy.filters.__funcs__</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">dask</span>
-<span class="kn">import</span> <span class="nn">dask.array</span> <span class="k">as</span> <span class="nn">da</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">numba</span> <span class="kn">import</span> <span class="n">njit</span><span class="p">,</span> <span class="n">prange</span>
 <span class="kn">from</span> <span class="nn">edt</span> <span class="kn">import</span> <span class="n">edt</span>
 <span class="kn">import</span> <span class="nn">operator</span> <span class="k">as</span> <span class="nn">op</span>
 <span class="kn">import</span> <span class="nn">scipy.ndimage</span> <span class="k">as</span> <span class="nn">spim</span>
-<span class="kn">import</span> <span class="nn">scipy.spatial</span> <span class="k">as</span> <span class="nn">sptl</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
 <span class="kn">from</span> <span class="nn">skimage.morphology</span> <span class="kn">import</span> <span class="n">reconstruction</span>
-<span class="kn">from</span> <span class="nn">skimage.segmentation</span> <span class="kn">import</span> <span class="n">clear_border</span><span class="p">,</span> <span class="n">watershed</span>
+<span class="kn">from</span> <span class="nn">skimage.segmentation</span> <span class="kn">import</span> <span class="n">clear_border</span>
 <span class="kn">from</span> <span class="nn">skimage.morphology</span> <span class="kn">import</span> <span class="n">ball</span><span class="p">,</span> <span class="n">disk</span><span class="p">,</span> <span class="n">square</span><span class="p">,</span> <span class="n">cube</span><span class="p">,</span> <span class="n">diamond</span><span class="p">,</span> <span class="n">octahedron</span>
 <span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">_check_for_singleton_axes</span>
-<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">randomize_colors</span><span class="p">,</span> <span class="n">fftmorphology</span>
-<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">get_border</span><span class="p">,</span> <span class="n">extend_slice</span><span class="p">,</span> <span class="n">extract_subsection</span><span class="p">,</span> <span class="n">subdivide</span>
-<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">_create_alias_map</span>
+<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">fftmorphology</span>
+<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">get_border</span><span class="p">,</span> <span class="n">subdivide</span>
+<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">unpad</span><span class="p">,</span> <span class="n">extract_subsection</span>
 <span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">ps_disk</span><span class="p">,</span> <span class="n">ps_ball</span>
 <span class="kn">from</span> <span class="nn">porespy</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">get_tqdm</span>
@@ -215,7 +210,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    im : ndarray</span>
+<span class="sd">    im : ND-array</span>
 <span class="sd">        The image to which ``func`` should be applied</span>
 <span class="sd">    pad_width : int or list of ints</span>
 <span class="sd">        The amount of padding to apply to each axis. Refer to</span>
@@ -241,17 +236,17 @@
     <span class="n">padded</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">pad_width</span><span class="o">=</span><span class="n">pad_width</span><span class="p">,</span>
                     <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;constant&#39;</span><span class="p">,</span> <span class="n">constant_values</span><span class="o">=</span><span class="n">pad_val</span><span class="p">)</span>
     <span class="n">temp</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">padded</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">extract_subsection</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">temp</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">unpad</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">temp</span><span class="p">,</span> <span class="n">pad_width</span><span class="o">=</span><span class="n">pad_width</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">result</span></div>
 
 
 <div class="viewcode-block" id="trim_small_clusters"><a class="viewcode-back" href="../../../modules/generated/porespy.filters.trim_small_clusters.html#porespy.filters.trim_small_clusters">[docs]</a><span class="k">def</span> <span class="nf">trim_small_clusters</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Remove isolated voxels or clusters of a given size or smaller.</span>
+<span class="sd">    Remove isolated voxels or clusters of a given size or smaller</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    im : ndarray</span>
+<span class="sd">    im : ND-array</span>
 <span class="sd">        The binary image from which voxels are to be removed.</span>
 <span class="sd">    size : scalar</span>
 <span class="sd">        The threshold size of clusters to trim.  As clusters with this</span>
@@ -260,7 +255,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    im : ndarray</span>
+<span class="sd">    im : ND-array</span>
 <span class="sd">        A copy of ``im`` with clusters of voxels smaller than the given</span>
 <span class="sd">        ``size`` removed.</span>
 
@@ -289,7 +284,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    im : ndarray</span>
+<span class="sd">    im : ND-array</span>
 <span class="sd">        A greyscale image whose peaks are to be found.</span>
 <span class="sd">    axis : int</span>
 <span class="sd">        The axis along which the operation is to be applied.</span>
@@ -302,7 +297,6 @@
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-
 <span class="sd">    &quot;im&quot; must be a greyscale image. In case a Boolean image is fed into this</span>
 <span class="sd">    method, it will be first converted to float values [0.0,1.0] before proceeding.</span>
 
@@ -336,7 +330,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    im : ndarray</span>
+<span class="sd">    im : ND-array</span>
 <span class="sd">        The image of the porous material with ``True`` values indicating</span>
 <span class="sd">        the void phase (or phase of interest).</span>
 <span class="sd">    axis : int</span>
@@ -344,17 +338,21 @@
 <span class="sd">        default is 0 (i.e. along the x-direction).</span>
 <span class="sd">    mode : str</span>
 <span class="sd">        Controls how the distance is measured. Options are:</span>
-<span class="sd">          - &#39;forward&#39;: Distances are measured in the increasing direction</span>
-<span class="sd">            along the specified axis</span>
-<span class="sd">          - &#39;reverse&#39;: Distances are measured in the reverse direction.</span>
-<span class="sd">            &#39;backward&#39; is also accepted.</span>
-<span class="sd">          - &#39;both&#39;: Distances are calculated in both directions (by</span>
-<span class="sd">            recursively calling itself), then reporting the minimum value</span>
-<span class="sd">            of the two results.</span>
+
+<span class="sd">            &#39;forward&#39;</span>
+<span class="sd">                Distances are measured in the increasing direction</span>
+<span class="sd">                along the specified axis</span>
+<span class="sd">            &#39;reverse&#39;</span>
+<span class="sd">                Distances are measured in the reverse direction.</span>
+<span class="sd">                &#39;backward&#39; is also accepted.</span>
+<span class="sd">            &#39;both&#39;</span>
+<span class="sd">                Distances are calculated in both directions (by</span>
+<span class="sd">                recursively calling itself), then reporting the minimum value</span>
+<span class="sd">                of the two results.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    image : ndarray</span>
+<span class="sd">    image : ND-array</span>
 <span class="sd">        A copy of ``im`` with each foreground voxel containing the</span>
 <span class="sd">        distance to the nearest background along the specified axis.</span>
 
@@ -393,493 +391,7 @@
     <span class="k">return</span> <span class="n">f</span></div>
 
 
-<div class="viewcode-block" id="snow_partitioning"><a class="viewcode-back" href="../../../modules/generated/porespy.filters.snow_partitioning.html#porespy.filters.snow_partitioning">[docs]</a><span class="k">def</span> <span class="nf">snow_partitioning</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">r_max</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">return_all</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                      <span class="n">mask</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">randomize</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Partitions the void space into pore regions using a marker-based</span>
-<span class="sd">    watershed algorithm, with specially filtered peaks as markers.</span>
 
-<span class="sd">    The SNOW network extraction algorithm (Sub-Network of an</span>
-<span class="sd">    Over-segmented Watershed) was designed to handle to perculiarities of</span>
-<span class="sd">    high porosity materials, but it applies well to other materials as</span>
-<span class="sd">    well.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    im : array_like</span>
-<span class="sd">        A boolean image of the domain, with ``True`` indicating the pore</span>
-<span class="sd">        space and ``False`` elsewhere.</span>
-<span class="sd">    dt : array_like, optional</span>
-<span class="sd">        The distance transform of the pore space.  This is done</span>
-<span class="sd">        automatically if not provided, but if the distance transform has</span>
-<span class="sd">        already been computed then supplying it can save some time.</span>
-<span class="sd">    r_max : int</span>
-<span class="sd">        The radius of the spherical structuring element to use in the</span>
-<span class="sd">        Maximum filter stage that is used to find peaks. The default is 4.</span>
-<span class="sd">    sigma : float</span>
-<span class="sd">        The standard deviation of the Gaussian filter used in step 1. The</span>
-<span class="sd">        default is 0.4.  If 0 is given then the filter is not applied,</span>
-<span class="sd">        which is useful if a distance transform is supplied as the ``im``</span>
-<span class="sd">        argument that has already been processed.</span>
-<span class="sd">    return_all : boolean</span>
-<span class="sd">        If set to ``True`` a named tuple is returned containing the</span>
-<span class="sd">        original image, the distance transform, the filtered peaks, and</span>
-<span class="sd">        the final pore regions.  The default is ``False``.</span>
-<span class="sd">    mask : boolean</span>
-<span class="sd">        Apply a mask to the regions where the solid phase is. Default is</span>
-<span class="sd">        ``True``</span>
-<span class="sd">    randomize : boolean</span>
-<span class="sd">        If ``True`` (default), then the region colors will be randomized</span>
-<span class="sd">        before returning.  This is helpful for visualizing otherwise</span>
-<span class="sd">        neighboring regions have simlar coloring are are hard to</span>
-<span class="sd">        distinguish.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    image : ndarray</span>
-<span class="sd">        An image the same shape as ``im`` with the void space partitioned</span>
-<span class="sd">        into pores using a marker based watershed with the peaks found by</span>
-<span class="sd">        the SNOW algorithm [1].</span>
-
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    If ``return_all`` is ``True`` then a **named tuple** is returned</span>
-<span class="sd">    containing all of the images used during the process.  They can be</span>
-<span class="sd">    access as attriutes with the following names:</span>
-
-<span class="sd">    - ``im``: The binary image of the void space</span>
-<span class="sd">    - ``dt``: The distance transform of the image</span>
-<span class="sd">    - ``peaks``: The peaks of the distance transform after applying the</span>
-<span class="sd">      steps of the SNOW algorithm</span>
-<span class="sd">    - ``regions``: The void space partitioned into pores using a marker</span>
-<span class="sd">      based watershed with the peaks found by the SNOW algorithm</span>
-
-<span class="sd">    References</span>
-<span class="sd">    ----------</span>
-<span class="sd">    [1] Gostick, J. &quot;A versatile and efficient network extraction algorithm</span>
-<span class="sd">    using marker-based watershed segmenation&quot;.  Physical Review E. (2017)</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    `Click here &lt;https://porespy.org/examples/filters/snow_partitioning.html&gt;`_ to view online example.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">tup</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;results&quot;</span><span class="p">,</span> <span class="n">field_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;im&quot;</span><span class="p">,</span> <span class="s2">&quot;dt&quot;</span><span class="p">,</span> <span class="s2">&quot;peaks&quot;</span><span class="p">,</span> <span class="s2">&quot;regions&quot;</span><span class="p">])</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="s2">&quot;Beginning SNOW algorithm&quot;</span><span class="p">)</span>
-    <span class="n">im_shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="s2">&quot;Converting supplied image to boolean&quot;</span><span class="p">)</span>
-        <span class="n">im</span> <span class="o">=</span> <span class="n">im</span> <span class="o">&gt;</span> <span class="mi">0</span>
-    <span class="k">if</span> <span class="n">dt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="s2">&quot;Peforming distance transform&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">im_shape</span> <span class="o">==</span> <span class="mi">1</span><span class="p">):</span>
-            <span class="n">ax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">im_shape</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">squeeze</span><span class="p">())</span>
-            <span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">ax</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
-
-    <span class="n">tup</span><span class="o">.</span><span class="n">im</span> <span class="o">=</span> <span class="n">im</span>
-    <span class="n">tup</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="n">dt</span>
-
-    <span class="k">if</span> <span class="n">sigma</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Applying Gaussian blur with sigma = </span><span class="si">{</span><span class="n">sigma</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">dt</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">gaussian_filter</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">)</span>
-
-    <span class="n">peaks</span> <span class="o">=</span> <span class="n">find_peaks</span><span class="p">(</span><span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">r_max</span><span class="o">=</span><span class="n">r_max</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Initial number of peaks: </span><span class="si">{</span><span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">peaks</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">peaks</span> <span class="o">=</span> <span class="n">trim_saddle_points</span><span class="p">(</span><span class="n">peaks</span><span class="o">=</span><span class="n">peaks</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">max_iters</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Peaks after trimming saddle points: </span><span class="si">{</span><span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">peaks</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">peaks</span> <span class="o">=</span> <span class="n">trim_nearby_peaks</span><span class="p">(</span><span class="n">peaks</span><span class="o">=</span><span class="n">peaks</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
-    <span class="n">peaks</span><span class="p">,</span> <span class="n">N</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">peaks</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Peaks after trimming nearby peaks: </span><span class="si">{</span><span class="n">N</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">tup</span><span class="o">.</span><span class="n">peaks</span> <span class="o">=</span> <span class="n">peaks</span>
-    <span class="k">if</span> <span class="n">mask</span><span class="p">:</span>
-        <span class="n">mask_solid</span> <span class="o">=</span> <span class="n">im</span> <span class="o">&gt;</span> <span class="mi">0</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">mask_solid</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">regions</span> <span class="o">=</span> <span class="n">watershed</span><span class="p">(</span><span class="n">image</span><span class="o">=-</span><span class="n">dt</span><span class="p">,</span> <span class="n">markers</span><span class="o">=</span><span class="n">peaks</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">mask_solid</span><span class="p">)</span>
-    <span class="c1"># Catch any isolated regions that were missed</span>
-    <span class="c1"># TODO: I&#39;m not sure if this approach is universal so I&#39;m going to comment it</span>
-    <span class="c1"># out for now, and mark it as a todo</span>
-    <span class="c1"># labels = spim.label((regions == 0)*(im &gt; 0))[0]</span>
-    <span class="c1"># regions += (labels + regions.max())*(labels &gt; 0)</span>
-    <span class="k">if</span> <span class="n">randomize</span><span class="p">:</span>
-        <span class="n">regions</span> <span class="o">=</span> <span class="n">randomize_colors</span><span class="p">(</span><span class="n">regions</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">return_all</span><span class="p">:</span>
-        <span class="n">tup</span><span class="o">.</span><span class="n">regions</span> <span class="o">=</span> <span class="n">regions</span>
-        <span class="k">return</span> <span class="n">tup</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">regions</span></div>
-
-
-<div class="viewcode-block" id="snow_partitioning_n"><a class="viewcode-back" href="../../../modules/generated/porespy.filters.snow_partitioning_n.html#porespy.filters.snow_partitioning_n">[docs]</a><span class="k">def</span> <span class="nf">snow_partitioning_n</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">r_max</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">return_all</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                        <span class="n">mask</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">randomize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This function partitions an imaging oontain an arbitrary number of</span>
-<span class="sd">    phases into regions using a marker-based watershed segmentation. Its</span>
-<span class="sd">    an extension of snow_partitioning function with all phases partitioned</span>
-<span class="sd">    together.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    im : ndarray</span>
-<span class="sd">        Image of porous material where each phase is represented by unique</span>
-<span class="sd">        integer starting from 1 (0&#39;s are ignored).</span>
-<span class="sd">    r_max : scalar</span>
-<span class="sd">        The radius of the spherical structuring element to use in the</span>
-<span class="sd">        Maximum filter stage that is used to find peaks. The default is 4.</span>
-<span class="sd">    sigma : scalar</span>
-<span class="sd">        The standard deviation of the Gaussian filter used. The default is</span>
-<span class="sd">        0.4. If 0 is given then the filter is not applied, which is useful</span>
-<span class="sd">        if a distance transform is supplied as the ``im`` argument that</span>
-<span class="sd">        has already been processed.</span>
-<span class="sd">    return_all : boolean (default is False)</span>
-<span class="sd">        If set to ``True`` a named tuple is returned containing the</span>
-<span class="sd">        original image, the combined distance transform, list of each</span>
-<span class="sd">        phase max label, and the final combined regions of all phases.</span>
-<span class="sd">    mask : boolean (default is True)</span>
-<span class="sd">        Apply a mask to the regions which are not under concern.</span>
-<span class="sd">    randomize : boolean</span>
-<span class="sd">        If ``True`` (default), then the region colors will be randomized</span>
-<span class="sd">        before returning.  This is helpful for visualizing otherwise</span>
-<span class="sd">        neighboring regions have similar coloring and are hard to</span>
-<span class="sd">        distinguish.</span>
-<span class="sd">    alias : dict (Optional)</span>
-<span class="sd">        A dictionary that assigns unique image label to specific phases.</span>
-<span class="sd">        For example {1: &#39;Solid&#39;} will show all structural properties</span>
-<span class="sd">        associated with label 1 as Solid phase properties. If ``None``</span>
-<span class="sd">        then default labelling will be used i.e {1: &#39;Phase1&#39;,..}.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    An image the same shape as ``im`` with the all phases partitioned into</span>
-<span class="sd">    regions using a marker based watershed with the peaks found by the</span>
-<span class="sd">    SNOW algorithm [1].  If ``return_all`` is ``True`` then a</span>
-<span class="sd">    **named tuple** is returned with the following attribute:</span>
-
-<span class="sd">    - ``im`` : The actual image of the porous material</span>
-<span class="sd">    - ``dt`` : The combined distance transform of the image</span>
-<span class="sd">    - ``phase_max_label`` : The list of max label of each phase in order to</span>
-<span class="sd">      distinguish between each other</span>
-<span class="sd">    - ``regions`` : The partitioned regions of n phases using a marker</span>
-<span class="sd">      based watershed with the peaks found by the SNOW algorithm</span>
-
-<span class="sd">    References</span>
-<span class="sd">    ----------</span>
-<span class="sd">    [1] Gostick, J. &quot;A versatile and efficient network extraction</span>
-<span class="sd">    algorithm using marker-based watershed segmentation&quot;.  Physical Review</span>
-<span class="sd">    E. (2017)</span>
-
-<span class="sd">    [2] Khan, ZA et al. &quot;Dual network extraction algorithm to investigate</span>
-<span class="sd">    multiple transport processes in porous materials: Image-based modeling</span>
-<span class="sd">    of pore and grain-scale processes&quot;. Computers in Chemical Engineering.</span>
-<span class="sd">    (2019)</span>
-
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    snow_partitioning</span>
-
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    In principle it is possible to perform a distance transform on each</span>
-<span class="sd">    phase separately, merge these into a single image, then apply the</span>
-<span class="sd">    watershed only once. This, however, has been found to create edge</span>
-<span class="sd">    artifacts between regions arising from the way watershed handles</span>
-<span class="sd">    plateaus in the distance transform. To overcome this, this function</span>
-<span class="sd">    applies the watershed to each of the distance transforms separately,</span>
-<span class="sd">    then merges the segmented regions back into a single image.</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    `Click here &lt;https://porespy.org/examples/filters/snow_partitioning_n.html&gt;`_ to view online example.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Get alias if provided by user</span>
-    <span class="n">al</span> <span class="o">=</span> <span class="n">_create_alias_map</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span>
-    <span class="c1"># Perform snow on each phase and merge all segmentation and dt together</span>
-    <span class="n">phases_num</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">im</span> <span class="o">*</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="n">phases_num</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trim_zeros</span><span class="p">(</span><span class="n">phases_num</span><span class="p">)</span>
-    <span class="n">combined_dt</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">combined_region</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">num</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">phases_num</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">alias</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Processing Phase </span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Processing Phase </span><span class="si">{</span><span class="n">al</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">phase_snow</span> <span class="o">=</span> <span class="n">snow_partitioning</span><span class="p">(</span>
-            <span class="n">im</span> <span class="o">==</span> <span class="n">j</span><span class="p">,</span>
-            <span class="n">dt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">r_max</span><span class="o">=</span><span class="n">r_max</span><span class="p">,</span>
-            <span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">,</span>
-            <span class="n">return_all</span><span class="o">=</span><span class="n">return_all</span><span class="p">,</span>
-            <span class="n">mask</span><span class="o">=</span><span class="n">mask</span><span class="p">,</span>
-            <span class="n">randomize</span><span class="o">=</span><span class="n">randomize</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="n">combined_dt</span> <span class="o">+=</span> <span class="n">phase_snow</span><span class="o">.</span><span class="n">dt</span>
-        <span class="n">phase_snow</span><span class="o">.</span><span class="n">regions</span> <span class="o">*=</span> <span class="n">phase_snow</span><span class="o">.</span><span class="n">im</span>
-        <span class="n">phase_snow</span><span class="o">.</span><span class="n">regions</span> <span class="o">+=</span> <span class="n">num</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-        <span class="n">phase_ws</span> <span class="o">=</span> <span class="n">phase_snow</span><span class="o">.</span><span class="n">regions</span> <span class="o">*</span> <span class="n">phase_snow</span><span class="o">.</span><span class="n">im</span>
-        <span class="n">phase_ws</span><span class="p">[</span><span class="n">phase_ws</span> <span class="o">==</span> <span class="n">num</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">combined_region</span> <span class="o">+=</span> <span class="n">phase_ws</span>
-        <span class="n">num</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">combined_region</span><span class="p">))</span>
-    <span class="k">if</span> <span class="n">return_all</span><span class="p">:</span>
-        <span class="n">tup</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span>
-            <span class="s2">&quot;results&quot;</span><span class="p">,</span> <span class="n">field_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;im&quot;</span><span class="p">,</span> <span class="s2">&quot;dt&quot;</span><span class="p">,</span> <span class="s2">&quot;phase_max_label&quot;</span><span class="p">,</span> <span class="s2">&quot;regions&quot;</span><span class="p">]</span>
-        <span class="p">)</span>
-        <span class="n">tup</span><span class="o">.</span><span class="n">im</span> <span class="o">=</span> <span class="n">im</span>
-        <span class="n">tup</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="n">combined_dt</span>
-        <span class="n">tup</span><span class="o">.</span><span class="n">phase_max_label</span> <span class="o">=</span> <span class="n">num</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
-        <span class="n">tup</span><span class="o">.</span><span class="n">regions</span> <span class="o">=</span> <span class="n">combined_region</span>
-        <span class="k">return</span> <span class="n">tup</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">combined_region</span></div>
-
-
-<div class="viewcode-block" id="find_peaks"><a class="viewcode-back" href="../../../modules/generated/porespy.filters.find_peaks.html#porespy.filters.find_peaks">[docs]</a><span class="k">def</span> <span class="nf">find_peaks</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">r_max</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">footprint</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Finds local maxima in the distance transform</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    dt : ndarray</span>
-<span class="sd">        The distance transform of the pore space.  This may be calculated</span>
-<span class="sd">        and filtered using any means desired.</span>
-<span class="sd">    r_max : scalar</span>
-<span class="sd">        The size of the structuring element used in the maximum filter.</span>
-<span class="sd">        This controls the localness of any maxima. The default is 4 voxels.</span>
-<span class="sd">    footprint : ND-array</span>
-<span class="sd">        Specifies the shape of the structuring element used to define the</span>
-<span class="sd">        neighborhood when looking for peaks.  If ``None`` (the default) is</span>
-<span class="sd">        specified then a spherical shape is used (or circular in 2D).</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    image : ndarray</span>
-<span class="sd">        An array of booleans with ``True`` values at the location of any</span>
-<span class="sd">        local maxima.</span>
-
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    It is also possible ot the ``peak_local_max`` function from the</span>
-<span class="sd">    ``skimage.feature`` module as follows:</span>
-
-<span class="sd">    ``peaks = peak_local_max(image=dt, min_distance=r, exclude_border=0,</span>
-<span class="sd">    indices=False)``</span>
-
-<span class="sd">    The *skimage* function automatically uses a square structuring element</span>
-<span class="sd">    which is significantly faster than using a circular or spherical</span>
-<span class="sd">    element.</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    `Click here &lt;https://porespy.org/examples/filters/find_peaks.html&gt;`_ to view online example.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">im</span> <span class="o">=</span> <span class="n">dt</span> <span class="o">&gt;</span> <span class="mi">0</span>
-    <span class="n">_check_for_singleton_axes</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">footprint</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="n">footprint</span> <span class="o">=</span> <span class="n">disk</span>
-        <span class="k">elif</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-            <span class="n">footprint</span> <span class="o">=</span> <span class="n">ball</span>
-        <span class="k">else</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Only 2d and 3d images are supported&quot;</span><span class="p">)</span>
-    <span class="n">parallel</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;parallel&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
-    <span class="n">cores</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;cores&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-    <span class="n">divs</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;cores&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">parallel</span><span class="p">:</span>
-        <span class="n">overlap</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">footprint</span><span class="p">(</span><span class="n">r_max</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-        <span class="n">peaks</span> <span class="o">=</span> <span class="n">chunked_func</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">find_peaks</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">,</span>
-                             <span class="n">im_arg</span><span class="o">=</span><span class="s1">&#39;dt&#39;</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">footprint</span><span class="o">=</span><span class="n">footprint</span><span class="p">,</span>
-                             <span class="n">cores</span><span class="o">=</span><span class="n">cores</span><span class="p">,</span> <span class="n">divs</span><span class="o">=</span><span class="n">divs</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">mx</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">maximum_filter</span><span class="p">(</span><span class="n">dt</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="o">~</span><span class="n">im</span><span class="p">),</span> <span class="n">footprint</span><span class="o">=</span><span class="n">footprint</span><span class="p">(</span><span class="n">r_max</span><span class="p">))</span>
-        <span class="n">peaks</span> <span class="o">=</span> <span class="p">(</span><span class="n">dt</span> <span class="o">==</span> <span class="n">mx</span><span class="p">)</span> <span class="o">*</span> <span class="n">im</span>
-    <span class="k">return</span> <span class="n">peaks</span></div>
-
-
-<div class="viewcode-block" id="reduce_peaks"><a class="viewcode-back" href="../../../modules/generated/porespy.filters.reduce_peaks.html#porespy.filters.reduce_peaks">[docs]</a><span class="k">def</span> <span class="nf">reduce_peaks</span><span class="p">(</span><span class="n">peaks</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Any peaks that are broad or elongated are replaced with a single voxel</span>
-<span class="sd">    that is located at the center of mass of the original voxels.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    peaks : ND-image</span>
-<span class="sd">        An image containing ``True`` values indicating peaks in the</span>
-<span class="sd">        distance transform</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    image : ND-array</span>
-<span class="sd">        An array with the same number of isolated peaks as the original</span>
-<span class="sd">        image, but fewer total ``True`` voxels.</span>
-
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    The center of mass of a group of voxels is used as the new single</span>
-<span class="sd">    voxel, so if the group has an odd shape (like a horse shoe), the new</span>
-<span class="sd">    voxel may *not* lie on top of the original set.</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    `Click here &lt;https://porespy.org/examples/filters/reduce_peaks.html&gt;`_ to view online example.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">peaks</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="n">strel</span> <span class="o">=</span> <span class="n">square</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">strel</span> <span class="o">=</span> <span class="n">cube</span>
-    <span class="n">markers</span><span class="p">,</span> <span class="n">N</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">peaks</span><span class="p">,</span> <span class="n">structure</span><span class="o">=</span><span class="n">strel</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
-    <span class="n">inds</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">measurements</span><span class="o">.</span><span class="n">center_of_mass</span><span class="p">(</span>
-        <span class="nb">input</span><span class="o">=</span><span class="n">peaks</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">markers</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">N</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="p">)</span>
-    <span class="n">inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">inds</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
-    <span class="c1"># Centroid may not be on old pixel, so create a new peaks image</span>
-    <span class="n">peaks_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">peaks</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
-    <span class="n">peaks_new</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">inds</span><span class="o">.</span><span class="n">T</span><span class="p">)]</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="k">return</span> <span class="n">peaks_new</span></div>
-
-
-<div class="viewcode-block" id="trim_saddle_points"><a class="viewcode-back" href="../../../modules/generated/porespy.filters.trim_saddle_points.html#porespy.filters.trim_saddle_points">[docs]</a><span class="k">def</span> <span class="nf">trim_saddle_points</span><span class="p">(</span><span class="n">peaks</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">max_iters</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Removes peaks that were mistakenly identified because they lied on a</span>
-<span class="sd">    saddle or ridge in the distance transform that was not actually a true</span>
-<span class="sd">    local peak.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    peaks : ndarray</span>
-<span class="sd">        A boolean image containing True values to mark peaks in the</span>
-<span class="sd">        distance transform (``dt``)</span>
-
-<span class="sd">    dt : ndarray</span>
-<span class="sd">        The distance transform of the pore space for which the true peaks</span>
-<span class="sd">        are sought.</span>
-
-<span class="sd">    max_iters : int</span>
-<span class="sd">        The maximum number of iterations to run while eroding the saddle</span>
-<span class="sd">        points.  The default is 10, which is usually not reached; however,</span>
-<span class="sd">        a warning is issued if the loop ends prior to removing all saddle</span>
-<span class="sd">        points.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    image : ND-array</span>
-<span class="sd">        An image with fewer peaks than the input image</span>
-
-<span class="sd">    References</span>
-<span class="sd">    ----------</span>
-<span class="sd">    [1] Gostick, J. &quot;A versatile and efficient network extraction algorithm</span>
-<span class="sd">    using marker-based watershed segmenation&quot;.  Physical Review E. (2017)</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    `Click here &lt;https://porespy.org/examples/filters/trim_saddle_points.html&gt;`_ to view online example.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">peaks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">peaks</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">dt</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">skimage.morphology</span> <span class="kn">import</span> <span class="n">square</span> <span class="k">as</span> <span class="n">cube</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">skimage.morphology</span> <span class="kn">import</span> <span class="n">cube</span>
-    <span class="n">labels</span><span class="p">,</span> <span class="n">N</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">peaks</span><span class="p">)</span>
-    <span class="n">slices</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">find_objects</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
-        <span class="n">s</span> <span class="o">=</span> <span class="n">extend_slice</span><span class="p">(</span><span class="n">slices</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">shape</span><span class="o">=</span><span class="n">peaks</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-        <span class="n">peaks_i</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">==</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
-        <span class="n">dt_i</span> <span class="o">=</span> <span class="n">dt</span><span class="p">[</span><span class="n">s</span><span class="p">]</span>
-        <span class="n">im_i</span> <span class="o">=</span> <span class="n">dt_i</span> <span class="o">&gt;</span> <span class="mi">0</span>
-        <span class="n">iters</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">peaks_dil</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">peaks_i</span><span class="p">)</span>
-        <span class="k">while</span> <span class="n">iters</span> <span class="o">&lt;</span> <span class="n">max_iters</span><span class="p">:</span>
-            <span class="n">iters</span> <span class="o">+=</span> <span class="mi">1</span>
-            <span class="n">peaks_dil</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">binary_dilation</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">peaks_dil</span><span class="p">,</span> <span class="n">structure</span><span class="o">=</span><span class="n">cube</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
-            <span class="n">peaks_max</span> <span class="o">=</span> <span class="n">peaks_dil</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">dt_i</span> <span class="o">*</span> <span class="n">peaks_dil</span><span class="p">)</span>
-            <span class="n">peaks_extended</span> <span class="o">=</span> <span class="p">(</span><span class="n">peaks_max</span> <span class="o">==</span> <span class="n">dt_i</span><span class="p">)</span> <span class="o">*</span> <span class="n">im_i</span>
-            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">peaks_extended</span> <span class="o">==</span> <span class="n">peaks_i</span><span class="p">):</span>
-                <span class="k">break</span>  <span class="c1"># Found a true peak</span>
-            <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">peaks_extended</span> <span class="o">*</span> <span class="n">peaks_i</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">peaks_i</span> <span class="o">=</span> <span class="kc">False</span>
-                <span class="k">break</span>  <span class="c1"># Found a saddle point</span>
-        <span class="n">peaks</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="n">peaks_i</span>
-        <span class="k">if</span> <span class="n">iters</span> <span class="o">&gt;=</span> <span class="n">max_iters</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Maximum number of iterations reached, consider&quot;</span>
-                           <span class="s2">&quot; running again with a larger value of max_iters&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">peaks</span></div>
-
-
-<div class="viewcode-block" id="trim_nearby_peaks"><a class="viewcode-back" href="../../../modules/generated/porespy.filters.trim_nearby_peaks.html#porespy.filters.trim_nearby_peaks">[docs]</a><span class="k">def</span> <span class="nf">trim_nearby_peaks</span><span class="p">(</span><span class="n">peaks</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Finds pairs of peaks that are nearer to each other than to the solid</span>
-<span class="sd">    phase, and removes the peak that is closer to the solid.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    peaks : ndarray</span>
-<span class="sd">        A boolean image containing True values to mark peaks in the</span>
-<span class="sd">        distance transform (``dt``)</span>
-
-<span class="sd">    dt : ndarray</span>
-<span class="sd">        The distance transform of the pore space for which the true peaks</span>
-<span class="sd">        are sought.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    image : ndarray</span>
-<span class="sd">        An array the same size as ``peaks`` containing a subset of the</span>
-<span class="sd">        peaks in the original image.</span>
-
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    Each pair of peaks is considered simultaneously, so for a triplet of</span>
-<span class="sd">    peaks each pair is considered.  This ensures that only the single peak</span>
-<span class="sd">    that is furthest from the solid is kept.  No iteration is required.</span>
-
-<span class="sd">    References</span>
-<span class="sd">    ----------</span>
-<span class="sd">    [1] Gostick, J. &quot;A versatile and efficient network extraction</span>
-<span class="sd">    algorithm using marker-based watershed segmenation&quot;.  Physical Review</span>
-<span class="sd">    E. (2017)</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    `Click here &lt;https://porespy.org/examples/filters/trim_nearby_peaks.html&gt;`_ to view online example.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">peaks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">peaks</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">dt</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">skimage.morphology</span> <span class="kn">import</span> <span class="n">square</span> <span class="k">as</span> <span class="n">cube</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">skimage.morphology</span> <span class="kn">import</span> <span class="n">cube</span>
-    <span class="n">peaks</span><span class="p">,</span> <span class="n">N</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">peaks</span><span class="p">,</span> <span class="n">structure</span><span class="o">=</span><span class="n">cube</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
-    <span class="n">crds</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">measurements</span><span class="o">.</span><span class="n">center_of_mass</span><span class="p">(</span><span class="n">peaks</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">peaks</span><span class="p">,</span>
-                                            <span class="n">index</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">N</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
-    <span class="n">crds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">crds</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>  <span class="c1"># Convert to numpy array of ints</span>
-    <span class="c1"># Get distance between each peak as a distance map</span>
-    <span class="n">tree</span> <span class="o">=</span> <span class="n">sptl</span><span class="o">.</span><span class="n">cKDTree</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">crds</span><span class="p">)</span>
-    <span class="n">temp</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">crds</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-    <span class="n">nearest_neighbor</span> <span class="o">=</span> <span class="n">temp</span><span class="p">[</span><span class="mi">1</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">]</span>
-    <span class="n">dist_to_neighbor</span> <span class="o">=</span> <span class="n">temp</span><span class="p">[</span><span class="mi">0</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">]</span>
-    <span class="k">del</span> <span class="n">temp</span><span class="p">,</span> <span class="n">tree</span>  <span class="c1"># Free-up memory</span>
-    <span class="n">dist_to_solid</span> <span class="o">=</span> <span class="n">dt</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">crds</span><span class="o">.</span><span class="n">T</span><span class="p">)]</span>  <span class="c1"># Get distance to solid for each peak</span>
-    <span class="n">hits</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">dist_to_neighbor</span> <span class="o">&lt;</span> <span class="n">dist_to_solid</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="c1"># Drop peak that is closer to the solid than it&#39;s neighbor</span>
-    <span class="n">drop_peaks</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">peak</span> <span class="ow">in</span> <span class="n">hits</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">dist_to_solid</span><span class="p">[</span><span class="n">peak</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">dist_to_solid</span><span class="p">[</span><span class="n">nearest_neighbor</span><span class="p">[</span><span class="n">peak</span><span class="p">]]:</span>
-            <span class="n">drop_peaks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">peak</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">drop_peaks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nearest_neighbor</span><span class="p">[</span><span class="n">peak</span><span class="p">])</span>
-    <span class="n">drop_peaks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">drop_peaks</span><span class="p">)</span>
-    <span class="c1"># Remove peaks from image</span>
-    <span class="n">slices</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">find_objects</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">peaks</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">drop_peaks</span><span class="p">:</span>
-        <span class="n">peaks</span><span class="p">[</span><span class="n">slices</span><span class="p">[</span><span class="n">s</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">return</span> <span class="n">peaks</span> <span class="o">&gt;</span> <span class="mi">0</span></div>
 
 
 <div class="viewcode-block" id="find_disconnected_voxels"><a class="viewcode-back" href="../../../modules/generated/porespy.filters.find_disconnected_voxels.html#porespy.filters.find_disconnected_voxels">[docs]</a><span class="k">def</span> <span class="nf">find_disconnected_voxels</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">conn</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -890,7 +402,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    im : ndarray</span>
+<span class="sd">    im : ND-array</span>
 <span class="sd">        A Boolean image, with True values indicating the phase for which</span>
 <span class="sd">        disconnected voxels are sought.</span>
 <span class="sd">    conn : int</span>
@@ -900,14 +412,14 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    image : ndarray</span>
+<span class="sd">    image : ND-array</span>
 <span class="sd">        An ND-image the same size as ``im``, with True values indicating</span>
 <span class="sd">        voxels of the phase of interest (i.e. True values in the original</span>
 <span class="sd">        image) that are not connected to the outer edges.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    image : ndarray</span>
+<span class="sd">    image : ND-array</span>
 <span class="sd">        The returned array (e.g. ``holes``) be used to trim blind pores</span>
 <span class="sd">        from ``im`` using: ``im[holes] = False``</span>
 
@@ -976,7 +488,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    im : ndarray</span>
+<span class="sd">    im : ND-array</span>
 <span class="sd">        The image of the porous material</span>
 <span class="sd">    conn : int</span>
 <span class="sd">        For 2D the options are 4 and 8 for square and diagonal neighbors,</span>
@@ -985,7 +497,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    image : ndarray</span>
+<span class="sd">    image : ND-array</span>
 <span class="sd">        A version of ``im`` but with all the disconnected solid removed.</span>
 
 <span class="sd">    See Also</span>
@@ -1005,7 +517,7 @@
 
 <div class="viewcode-block" id="trim_nonpercolating_paths"><a class="viewcode-back" href="../../../modules/generated/porespy.filters.trim_nonpercolating_paths.html#porespy.filters.trim_nonpercolating_paths">[docs]</a><span class="k">def</span> <span class="nf">trim_nonpercolating_paths</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">inlets</span><span class="p">,</span> <span class="n">outlets</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Removes all nonpercolating paths between specified edges or faces</span>
+<span class="sd">    Remove all nonpercolating paths between specified edges or faces</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1057,18 +569,16 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    im : ndarray</span>
+<span class="sd">    im : ND-array</span>
 <span class="sd">        The image whose extrema are to be removed</span>
-
 <span class="sd">    h : float</span>
 <span class="sd">        The height to remove from each peak or fill in each valley</span>
-
 <span class="sd">    mode : string {&#39;maxima&#39; | &#39;minima&#39; | &#39;extrema&#39;}</span>
 <span class="sd">        Specifies whether to remove maxima or minima or both</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    image : ndarray</span>
+<span class="sd">    image : ND-array</span>
 <span class="sd">        A copy of the input image with all the peaks and/or valleys</span>
 <span class="sd">        removed.</span>
 
@@ -1109,15 +619,20 @@
 <span class="sd">        Specifies how to determine which value should be used to flood</span>
 <span class="sd">        each region. Options are:</span>
 
-<span class="sd">        - &#39;maximum&#39;: Floods each region with the local max in that region</span>
-<span class="sd">        - &#39;minimum&#39;: Floods each region the local minimum in that region</span>
-<span class="sd">        - &#39;median&#39;: Floods each region the local median in that region</span>
-<span class="sd">        - &#39;mean&#39;: Floods each region the local mean in that region</span>
-<span class="sd">        - &#39;size&#39;: Floods each region with the size of that region</span>
+<span class="sd">            &#39;maximum&#39;</span>
+<span class="sd">                Floods each region with the local max in that region</span>
+<span class="sd">            &#39;minimum&#39;</span>
+<span class="sd">                Floods each region the local minimum in that region</span>
+<span class="sd">            &#39;median&#39;</span>
+<span class="sd">                Floods each region the local median in that region</span>
+<span class="sd">            &#39;mean&#39;</span>
+<span class="sd">                Floods each region the local mean in that region</span>
+<span class="sd">            &#39;size&#39;</span>
+<span class="sd">                Floods each region with the size of that region</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    image : ndarray</span>
+<span class="sd">    image : ND-array</span>
 <span class="sd">        A copy of ``im`` with new values placed in each forground voxel</span>
 <span class="sd">        based on the ``mode``.</span>
 
@@ -1151,7 +666,7 @@
 
 <div class="viewcode-block" id="find_dt_artifacts"><a class="viewcode-back" href="../../../modules/generated/porespy.filters.find_dt_artifacts.html#porespy.filters.find_dt_artifacts">[docs]</a><span class="k">def</span> <span class="nf">find_dt_artifacts</span><span class="p">(</span><span class="n">dt</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Finds points in a distance transform that are closer to wall than</span>
+<span class="sd">    lavel points in a distance transform that are closer to image bounadry than</span>
 <span class="sd">    solid.</span>
 
 <span class="sd">    These points could *potentially* be erroneously high since their</span>
@@ -1160,13 +675,13 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    dt : ndarray</span>
+<span class="sd">    dt : ND-array</span>
 <span class="sd">        The distance transform of the phase of interest.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    image : ndarray</span>
-<span class="sd">        An ndarray the same shape as ``dt`` with numerical values</span>
+<span class="sd">    image : ND-array</span>
+<span class="sd">        An ND-array the same shape as ``dt`` with numerical values</span>
 <span class="sd">        indicating the maximum amount of error in each volxel, which is</span>
 <span class="sd">        found by subtracting the distance to nearest edge of image from</span>
 <span class="sd">        the distance transform value. In other words, this is the error</span>
@@ -1190,11 +705,11 @@
 
 <div class="viewcode-block" id="region_size"><a class="viewcode-back" href="../../../modules/generated/porespy.filters.region_size.html#porespy.filters.region_size">[docs]</a><span class="k">def</span> <span class="nf">region_size</span><span class="p">(</span><span class="n">im</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Replace each voxel with size of region to which it belongs.</span>
+<span class="sd">    Replace each voxel with size of region to which it belongs</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    im : ndarray</span>
+<span class="sd">    im : ND-array</span>
 <span class="sd">        Either a boolean image wtih ``True`` indicating the features of</span>
 <span class="sd">        interest, in which case ``scipy.ndimage.label`` will be applied to</span>
 <span class="sd">        find regions, or a greyscale image with integer values indicating</span>
@@ -1202,7 +717,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    image : ndarray</span>
+<span class="sd">    image : ND-array</span>
 <span class="sd">        A copy of ``im`` with each voxel value indicating the size of the</span>
 <span class="sd">        region to which it belongs.  This is particularly useful for</span>
 <span class="sd">        finding chord sizes on the image produced by ``apply_chords``.</span>
@@ -1231,7 +746,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    im : ndarray</span>
+<span class="sd">    im : ND-array</span>
 <span class="sd">        An image of the porous material with void marked as ``True``.</span>
 <span class="sd">    spacing : int</span>
 <span class="sd">        Separation between chords.  The default is 1 voxel.  This can be</span>
@@ -1251,7 +766,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    image : ndarray</span>
+<span class="sd">    image : ND-array</span>
 <span class="sd">        A copy of ``im`` with non-zero values indicating the chords.</span>
 
 <span class="sd">    See Also</span>
@@ -1294,7 +809,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    im : ndarray</span>
+<span class="sd">    im : ND-array</span>
 <span class="sd">        A 3D image of the porous material with void space marked as True.</span>
 <span class="sd">    spacing : int (default = 0)</span>
 <span class="sd">        Chords are automatically separed by 1 voxel on all sides, and this</span>
@@ -1306,7 +821,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    image : ndarray</span>
+<span class="sd">    image : ND-array</span>
 <span class="sd">        A copy of ``im`` with values of 1 indicating x-direction chords,</span>
 <span class="sd">        2 indicating y-direction chords, and 3 indicating z-direction</span>
 <span class="sd">        chords.</span>
@@ -1353,7 +868,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    im : ndarray</span>
+<span class="sd">    im : ND-array</span>
 <span class="sd">        A binary image with the phase of interest set to True</span>
 <span class="sd">    sizes : array_like or scalar</span>
 <span class="sd">        The sizes to invade.  If a list of values of provided they are</span>
@@ -1362,23 +877,26 @@
 <span class="sd">    mode : str</span>
 <span class="sd">        Controls with method is used to compute the result. Options are:</span>
 
-<span class="sd">        - &#39;hybrid&#39;: (default) Performs a distance tranform of the void</span>
-<span class="sd">          space, thresholds to find voxels larger than ``sizes[i]``, trims</span>
-<span class="sd">          the resulting mask if ``access_limitations`` is ``True``, then</span>
-<span class="sd">          dilates it using the efficient fft-method to obtain the</span>
-<span class="sd">          non-wetting fluid configuration.</span>
-<span class="sd">        - &#39;dt&#39;: Same as &#39;hybrid&#39;, except uses a second distance transform,</span>
-<span class="sd">          relative to the thresholded mask, to find the invading fluid</span>
-<span class="sd">          configuration. The choice of &#39;dt&#39; or &#39;hybrid&#39; depends on speed,</span>
-<span class="sd">          which is system and installation specific.</span>
-<span class="sd">        - &#39;mio&#39;: Using a single morphological image opening step to obtain</span>
-<span class="sd">          the invading fluid confirguration directly, *then* trims if</span>
-<span class="sd">          ``access_limitations`` is ``True``. This method is not ideal and</span>
-<span class="sd">          is included mostly for comparison purposes.</span>
+<span class="sd">            &#39;hybrid&#39;</span>
+<span class="sd">                (default) Performs a distance tranform of the void</span>
+<span class="sd">                space, thresholds to find voxels larger than ``sizes[i]``, trims</span>
+<span class="sd">                the resulting mask if ``access_limitations`` is ``True``, then</span>
+<span class="sd">                dilates it using the efficient fft-method to obtain the</span>
+<span class="sd">                non-wetting fluid configuration.</span>
+<span class="sd">            &#39;dt&#39;</span>
+<span class="sd">                Same as &#39;hybrid&#39;, except uses a second distance transform,</span>
+<span class="sd">                relative to the thresholded mask, to find the invading fluid</span>
+<span class="sd">                configuration. The choice of &#39;dt&#39; or &#39;hybrid&#39; depends on speed,</span>
+<span class="sd">                which is system and installation specific.</span>
+<span class="sd">            &#39;mio&#39;</span>
+<span class="sd">                Using a single morphological image opening step to obtain</span>
+<span class="sd">                the invading fluid confirguration directly, *then* trims if</span>
+<span class="sd">                ``access_limitations`` is ``True``. This method is not ideal and</span>
+<span class="sd">                is included for comparison purposes.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    image : ndarray</span>
+<span class="sd">    image : ND-array</span>
 <span class="sd">        A copy of ``im`` with the pore size values in each voxel.</span>
 
 <span class="sd">    See Also</span>
@@ -1417,14 +935,14 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    im : ndarray</span>
+<span class="sd">    im : ND-array</span>
 <span class="sd">        An ND image of the porous material containing ``True`` values in the</span>
 <span class="sd">        pore space.</span>
 <span class="sd">    sizes : array_like or scalar</span>
 <span class="sd">        The sizes to invade.  If a list of values of provided they are</span>
 <span class="sd">        used directly.  If a scalar is provided then that number of points</span>
 <span class="sd">        spanning the min and max of the distance transform are used.</span>
-<span class="sd">    inlets : ndarray, boolean</span>
+<span class="sd">    inlets : ND-array, boolean</span>
 <span class="sd">        A boolean mask with ``True`` values indicating where the invasion</span>
 <span class="sd">        enters the image.  By default all faces are considered inlets,</span>
 <span class="sd">        akin to a mercury porosimetry experiment.  Users can also apply</span>
@@ -1440,21 +958,26 @@
 <span class="sd">        comparison to gauge the extent of shielding effects in the sample.</span>
 <span class="sd">    mode : str</span>
 <span class="sd">        Controls with method is used to compute the result. Options are:</span>
-<span class="sd">          - &#39;hybrid&#39;: (default) Performs a distance tranform of the void</span>
-<span class="sd">            space, thresholds to find voxels larger than ``sizes[i]``,</span>
-<span class="sd">            trims the resulting mask if ``access_limitations`` is ``True``,</span>
-<span class="sd">            then dilates it using the efficient fft-method to obtain the</span>
-<span class="sd">            non-wetting fluid configuration.</span>
-<span class="sd">          - &#39;dt&#39;: Same as &#39;hybrid&#39;, except uses a second distance</span>
-<span class="sd">            transform, relative to the thresholded mask, to find the</span>
-<span class="sd">            invading fluid configuration. The choice of &#39;dt&#39; or &#39;hybrid&#39;</span>
-<span class="sd">            depends on speed, which is system and installation specific.</span>
-<span class="sd">          - &#39;mio&#39;: Using a single morphological image opening step to</span>
-<span class="sd">            obtain the invading fluid confirguration directly, *then* trims</span>
-<span class="sd">            if ``access_limitations`` is ``True``.  This method is not</span>
-<span class="sd">            ideal and is included mostly for comparison purposes. The</span>
-<span class="sd">            morphological operations are done using fft-based method</span>
-<span class="sd">            implementations.</span>
+
+<span class="sd">            &#39;hybrid&#39;</span>
+<span class="sd">                (default) Performs a distance tranform of the void</span>
+<span class="sd">                space, thresholds to find voxels larger than ``sizes[i]``,</span>
+<span class="sd">                trims the resulting mask if ``access_limitations`` is ``True``,</span>
+<span class="sd">                then dilates it using the efficient fft-method to obtain the</span>
+<span class="sd">                non-wetting fluid configuration.</span>
+<span class="sd">            &#39;dt&#39;</span>
+<span class="sd">                Same as &#39;hybrid&#39;, except uses a second distance</span>
+<span class="sd">                transform, relative to the thresholded mask, to find the</span>
+<span class="sd">                invading fluid configuration. The choice of &#39;dt&#39; or &#39;hybrid&#39;</span>
+<span class="sd">                depends on speed, which is system and installation specific.</span>
+<span class="sd">            &#39;mio&#39;</span>
+<span class="sd">                Using a single morphological image opening step to</span>
+<span class="sd">                obtain the invading fluid confirguration directly, *then* trims</span>
+<span class="sd">                if ``access_limitations`` is ``True``.  This method is not</span>
+<span class="sd">                ideal and is included for comparison purposes. The</span>
+<span class="sd">                morphological operations are done using fft-based method</span>
+<span class="sd">                implementations.</span>
+
 <span class="sd">    fft : boolean (default is ``True``)</span>
 <span class="sd">        Indicates whether to use the ``fftmorphology`` function in</span>
 <span class="sd">        ``porespy.filters`` or to use the standard morphology functions in</span>
@@ -1463,7 +986,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    image : ndarray</span>
+<span class="sd">    image : ND-array</span>
 <span class="sd">        A copy of ``im`` with voxel values indicating the sphere radius at</span>
 <span class="sd">        which it becomes accessible from the inlets.  This image can be</span>
 <span class="sd">        used to find invading fluid configurations as a function of</span>
@@ -1581,14 +1104,14 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    im : ndarray</span>
+<span class="sd">    im : ND-array</span>
 <span class="sd">        The image containing the blobs to be trimmed</span>
-<span class="sd">    inlets : ndarray or tuple of indices</span>
+<span class="sd">    inlets : ND-array or tuple of indices</span>
 <span class="sd">        The locations of the inlets.  Can either be a boolean mask the</span>
 <span class="sd">        same shape as ``im``, or a tuple of indices such as that returned</span>
 <span class="sd">        by the ``where`` function.  Any voxels *not* connected directly to</span>
 <span class="sd">        the inlets will be trimmed.</span>
-<span class="sd">    strel : ndarray</span>
+<span class="sd">    strel : array-like</span>
 <span class="sd">        The neighborhood over which connectivity should be checked. It</span>
 <span class="sd">        must be symmetric and the same dimensionality as the image. It is</span>
 <span class="sd">        passed directly to the ``scipy.ndimage.label`` function as the</span>
@@ -1597,7 +1120,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    image : ndarray</span>
+<span class="sd">    image : ND-array</span>
 <span class="sd">        An array of the same shape as ``im``, but with all foreground</span>
 <span class="sd">        voxels not connected to the ``inlets`` removed.</span>
 
@@ -1697,7 +1220,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    im : ndarray</span>
+<span class="sd">    im : ND-array</span>
 <span class="sd">        An ND image of the porous material containing discrete values in</span>
 <span class="sd">        the pore space identifying different regions. e.g. the result of a</span>
 <span class="sd">        snow-partition</span>
@@ -1708,7 +1231,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    image : ndarray</span>
+<span class="sd">    image : ND-array</span>
 <span class="sd">        A copy of ``im`` with voxel values equal to the number of uniquely</span>
 <span class="sd">        different bordering values</span>
 
@@ -1746,19 +1269,19 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    skel : ndarray</span>
+<span class="sd">    skel : ND-array</span>
 <span class="sd">        A image of a full or partial skeleton from which the tails should</span>
 <span class="sd">        be trimmed.</span>
 
-<span class="sd">    branch_points : ndarray, optional</span>
+<span class="sd">    branch_points : ND-array, optional</span>
 <span class="sd">        An image the same size ``skel`` with True values indicating the</span>
 <span class="sd">        branch points of the skeleton.  If this is not provided it is</span>
 <span class="sd">        calculated automatically.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    ndarray</span>
-<span class="sd">        An ndarray containing the skeleton with tails removed.</span>
+<span class="sd">    array</span>
+<span class="sd">        An ND-array containing the skeleton with tails removed.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1874,7 +1397,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    result : ndarray</span>
+<span class="sd">    result : ND-array</span>
 <span class="sd">        An image the same size as the input image, with the specified</span>
 <span class="sd">        filter applied as though done on a single large image. There</span>
 <span class="sd">        should be *no* difference.</span>
@@ -1982,569 +1505,6 @@
     <span class="k">return</span> <span class="n">im2</span></div>
 
 
-<div class="viewcode-block" id="snow_partitioning_parallel"><a class="viewcode-back" href="../../../modules/generated/porespy.filters.snow_partitioning_parallel.html#porespy.filters.snow_partitioning_parallel">[docs]</a><span class="k">def</span> <span class="nf">snow_partitioning_parallel</span><span class="p">(</span><span class="n">im</span><span class="p">,</span>
-                               <span class="n">r_max</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
-                               <span class="n">sigma</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span>
-                               <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;parallel&#39;</span><span class="p">,</span>
-                               <span class="n">divs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-                               <span class="n">overlap</span><span class="o">=</span><span class="s1">&#39;dt&#39;</span><span class="p">,</span>
-                               <span class="n">zoom_factor</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
-                               <span class="n">num_workers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                               <span class="n">crop</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                               <span class="n">return_all</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Performs SNOW algorithm in parallel and serial mode to reduce time</span>
-<span class="sd">    and memory usage repectively by geomertirc domain decomposition of</span>
-<span class="sd">    large size image.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    im : ndarray</span>
-<span class="sd">        A binary image of porous media with &#39;True&#39; values indicating</span>
-<span class="sd">        phase of interest.</span>
-<span class="sd">    overlap : float or int or str</span>
-<span class="sd">        Overlapping thickness between two subdomains that is used to</span>
-<span class="sd">        merge watershed segmented regions at intersection of two or more</span>
-<span class="sd">        subdomains. Options are:</span>
-
-<span class="sd">          - &#39;dt&#39;: the overlap will be calculated based on maximum distance</span>
-<span class="sd">            transform in the whole image.</span>
-<span class="sd">          - &#39;ws&#39;: the overlap will be calculated by finding the maximum</span>
-<span class="sd">            dimension of the bounding box of largest segmented region. The</span>
-<span class="sd">            image is scale down by &#39;zoom_factor&#39; provided by user.</span>
-<span class="sd">          - float: this value will be considered as overlapping thickness.</span>
-<span class="sd">    divs : list or int</span>
-<span class="sd">        Number of domains each axis will be divided. Options are:</span>
-<span class="sd">          - scalar: it will be assigned to all axis.</span>
-<span class="sd">          - list: each respective axis will be divided by its corresponding</span>
-<span class="sd">            number in the list. For example [2, 3, 4] will divide z, y and</span>
-<span class="sd">            x axis to 2, 3, and 4 respectively.</span>
-<span class="sd">    mode : str</span>
-<span class="sd">        Options are:</span>
-<span class="sd">          - &#39;parallel&#39;: all subdomains processed using ``num_workers`` cores.</span>
-<span class="sd">          - &#39;serial&#39;: all subdomains will be processed using 1 core.</span>
-<span class="sd">    num_workers : int or None</span>
-<span class="sd">        Number of cores that will be used to parallel process all domains.</span>
-<span class="sd">        If None then all cores will be used but user can specify any</span>
-<span class="sd">        integer values to control the memory usage.</span>
-<span class="sd">    crop : bool</span>
-<span class="sd">        If True the image shape is cropped to fit specified division.</span>
-<span class="sd">    zoom_factor : float or int</span>
-<span class="sd">        The amount of zoom appiled to image to find overlap thickness</span>
-<span class="sd">        using &#39;ws&#39; overlap mode.</span>
-<span class="sd">    return_all : boolean</span>
-<span class="sd">        If set to ``True`` a named tuple is returned containing the</span>
-<span class="sd">        original image, the distance transform, and the final pore</span>
-<span class="sd">        regions. The default is ``False``.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    regions : ndarray</span>
-<span class="sd">        Partitioned image of segmentated regions with unique labels. Each</span>
-<span class="sd">        region correspond to pore body while intersection with other</span>
-<span class="sd">        region correspond throat area.</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    `Click here &lt;https://porespy.org/examples/filters/snow_partitioning_parallel.html&gt;`_ to view online example.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Adjust image shape according to specified dimension</span>
-    <span class="n">tup</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;results&quot;</span><span class="p">,</span> <span class="n">field_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;im&quot;</span><span class="p">,</span> <span class="s2">&quot;dt&quot;</span><span class="p">,</span> <span class="s2">&quot;regions&quot;</span><span class="p">])</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">divs</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-        <span class="n">divs</span> <span class="o">=</span> <span class="p">[</span><span class="n">divs</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">ndim</span><span class="p">)]</span>
-    <span class="n">shape</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">ndim</span><span class="p">):</span>
-        <span class="n">shape</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">divs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">//</span> <span class="n">divs</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
-
-    <span class="k">if</span> <span class="n">shape</span> <span class="o">!=</span> <span class="nb">list</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">crop</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">ndim</span><span class="p">):</span>
-                <span class="n">im</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
-                <span class="n">im</span> <span class="o">=</span> <span class="n">im</span><span class="p">[:</span><span class="n">shape</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="o">...</span><span class="p">]</span>
-                <span class="n">im</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Image was cropped to shape </span><span class="si">{</span><span class="n">shape</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Image shape incompatible with `divs`.&quot;</span><span class="p">)</span>
-
-    <span class="c1"># Get overlap thickness from distance transform</span>
-    <span class="n">chunk_shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">divs</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="s1">&#39;Beginning parallel SNOW algorithm...&#39;</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="s1">&#39;Calculating overlap thickness&#39;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">overlap</span> <span class="o">==</span> <span class="s1">&#39;dt&#39;</span><span class="p">:</span>
-        <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">((</span><span class="n">im</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">),</span> <span class="n">parallel</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-        <span class="n">overlap</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
-    <span class="k">elif</span> <span class="n">overlap</span> <span class="o">==</span> <span class="s1">&#39;ws&#39;</span><span class="p">:</span>
-        <span class="n">rev</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">interpolation</span><span class="o">.</span><span class="n">zoom</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">zoom</span><span class="o">=</span><span class="n">zoom_factor</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-        <span class="n">rev</span> <span class="o">=</span> <span class="n">rev</span> <span class="o">&gt;</span> <span class="mi">0</span>
-        <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="n">rev</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-        <span class="n">rev_snow</span> <span class="o">=</span> <span class="n">snow_partitioning</span><span class="p">(</span><span class="n">rev</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">r_max</span><span class="o">=</span><span class="n">r_max</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">)</span>
-        <span class="n">labels</span><span class="p">,</span> <span class="n">counts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">rev_snow</span><span class="p">,</span> <span class="n">return_counts</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">node</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">counts</span> <span class="o">==</span> <span class="n">counts</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">max</span><span class="p">())[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">slices</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">find_objects</span><span class="p">(</span><span class="n">rev_snow</span><span class="p">)</span>
-        <span class="n">overlap</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">rev_snow</span><span class="p">[</span><span class="n">slices</span><span class="p">[</span><span class="n">node</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">zoom_factor</span> <span class="o">*</span> <span class="mf">2.0</span><span class="p">)</span>
-        <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">((</span><span class="n">im</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">),</span> <span class="n">parallel</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">overlap</span> <span class="o">=</span> <span class="n">overlap</span> <span class="o">/</span> <span class="mf">2.0</span>
-        <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">((</span><span class="n">im</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">),</span> <span class="n">parallel</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Overlap thickness: </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">overlap</span><span class="p">)</span><span class="si">}</span><span class="s1"> voxels&#39;</span><span class="p">)</span>
-
-    <span class="c1"># Get overlap and trim depth of all image dimension</span>
-    <span class="n">depth</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="n">trim_depth</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">ndim</span><span class="p">):</span>
-        <span class="n">depth</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">overlap</span><span class="p">)</span>
-        <span class="n">trim_depth</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">overlap</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
-    <span class="n">tup</span><span class="o">.</span><span class="n">im</span> <span class="o">=</span> <span class="n">im</span>
-    <span class="n">tup</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="n">dt</span>
-
-    <span class="c1"># Applying SNOW to image chunks</span>
-    <span class="n">im</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">from_array</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">chunks</span><span class="o">=</span><span class="n">chunk_shape</span><span class="p">)</span>
-    <span class="n">im</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">overlap</span><span class="o">.</span><span class="n">overlap</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="n">depth</span><span class="p">,</span> <span class="n">boundary</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">)</span>
-    <span class="n">im</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">map_blocks</span><span class="p">(</span><span class="n">chunked_snow</span><span class="p">,</span> <span class="n">r_max</span><span class="o">=</span><span class="n">r_max</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">)</span>
-    <span class="n">im</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">overlap</span><span class="o">.</span><span class="n">trim_internal</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">trim_depth</span><span class="p">,</span> <span class="n">boundary</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;serial&#39;</span><span class="p">:</span>
-        <span class="n">num_workers</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;parallel&#39;</span><span class="p">:</span>
-        <span class="n">num_workers</span> <span class="o">=</span> <span class="n">num_workers</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;`mode` can either be `parallel` or `serial`&#39;</span><span class="p">)</span>
-    <span class="c1"># TODO: use dask ProgressBar once compatible w/ logging.</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="s1">&#39;Applying snow to image chunks&#39;</span><span class="p">)</span>
-    <span class="n">regions</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">num_workers</span><span class="o">=</span><span class="n">num_workers</span><span class="p">)</span>
-
-    <span class="c1"># Relabelling watershed chunks</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="s1">&#39;Relabelling watershed chunks&#39;</span><span class="p">)</span>
-    <span class="n">regions</span> <span class="o">=</span> <span class="n">relabel_chunks</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">regions</span><span class="p">,</span> <span class="n">chunk_shape</span><span class="o">=</span><span class="n">chunk_shape</span><span class="p">)</span>
-
-    <span class="c1"># Stitching watershed chunks</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="s1">&#39;Stitching watershed chunks&#39;</span><span class="p">)</span>
-    <span class="n">regions</span> <span class="o">=</span> <span class="n">_watershed_stitching</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">regions</span><span class="p">,</span> <span class="n">chunk_shape</span><span class="o">=</span><span class="n">chunk_shape</span><span class="p">)</span>
-    <span class="n">tup</span><span class="o">.</span><span class="n">regions</span> <span class="o">=</span> <span class="n">regions</span>
-
-    <span class="k">if</span> <span class="n">return_all</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">tup</span>
-    <span class="k">return</span> <span class="n">regions</span></div>
-
-
-<span class="k">def</span> <span class="nf">chunked_snow</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">r_max</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">0.4</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Partitions the void space into pore regions using a marker-based</span>
-<span class="sd">    watershed algorithm, with specially filtered peaks as markers.</span>
-
-<span class="sd">    The SNOW network extraction algorithm (Sub-Network of an</span>
-<span class="sd">    Over-segmented Watershed) was designed to handle to perculiarities of</span>
-<span class="sd">    high porosity materials, but it applies well to other materials as</span>
-<span class="sd">    well.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    im : array_like</span>
-<span class="sd">        Distance transform of phase of interest in a binary image</span>
-<span class="sd">    r_max : int</span>
-<span class="sd">        The radius of the spherical structuring element to use in the</span>
-<span class="sd">        maximum filter stage that is used to find peaks.  The default is 5</span>
-<span class="sd">    sigma : float</span>
-<span class="sd">        The standard deviation of the Gaussian filter used in step 1. The</span>
-<span class="sd">        default is 0.4.  If 0 is given then the filter is not applied,</span>
-<span class="sd">        which is useful if a distance transform is supplied as the ``im``</span>
-<span class="sd">        argument that has already been processed.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    image : ndarray</span>
-<span class="sd">        An image the same shape as ``im`` with the void space partitioned</span>
-<span class="sd">        into pores using a marker based watershed with the peaks found by</span>
-<span class="sd">        the SNOW algorithm [1].</span>
-
-<span class="sd">    References</span>
-<span class="sd">    ----------</span>
-<span class="sd">    [1] Gostick, J. &quot;A versatile and efficient network extraction algorithm</span>
-<span class="sd">    using marker-based watershed segmenation&quot;.  Physical Review E. (2017)</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">dt</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">gaussian_filter</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">)</span>
-    <span class="n">peaks</span> <span class="o">=</span> <span class="n">find_peaks</span><span class="p">(</span><span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">r_max</span><span class="o">=</span><span class="n">r_max</span><span class="p">)</span>
-    <span class="n">peaks</span> <span class="o">=</span> <span class="n">trim_saddle_points</span><span class="p">(</span><span class="n">peaks</span><span class="o">=</span><span class="n">peaks</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">max_iters</span><span class="o">=</span><span class="mi">99</span><span class="p">)</span>
-    <span class="n">peaks</span> <span class="o">=</span> <span class="n">trim_nearby_peaks</span><span class="p">(</span><span class="n">peaks</span><span class="o">=</span><span class="n">peaks</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
-    <span class="n">peaks</span><span class="p">,</span> <span class="n">N</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">peaks</span><span class="p">)</span>
-    <span class="n">regions</span> <span class="o">=</span> <span class="n">watershed</span><span class="p">(</span><span class="n">image</span><span class="o">=-</span><span class="n">dt</span><span class="p">,</span> <span class="n">markers</span><span class="o">=</span><span class="n">peaks</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">im</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">regions</span> <span class="o">*</span> <span class="p">(</span><span class="n">im</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">pad</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">pad_width</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">constant_value</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Pad the image with a constant values and width.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    im : ndarray</span>
-<span class="sd">        The image that requires padding</span>
-<span class="sd">    pad_width : int</span>
-<span class="sd">        The number of values that will be padded from the edges. Default</span>
-<span class="sd">        values is 1.</span>
-<span class="sd">    contant_value : int</span>
-<span class="sd">        Pads with the specified constant value</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    output: ndarray</span>
-<span class="sd">        Padded image with same dimnesions as provided image</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-    <span class="n">pad_shape</span> <span class="o">=</span> <span class="n">shape</span> <span class="o">+</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">pad_width</span><span class="p">)</span>
-    <span class="n">temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">pad_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">constant_value</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">temp</span> <span class="o">=</span> <span class="n">temp</span> <span class="o">+</span> <span class="n">constant_value</span>
-    <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-        <span class="n">temp</span><span class="p">[</span><span class="n">pad_width</span><span class="p">:</span> <span class="o">-</span><span class="n">pad_width</span><span class="p">,</span>
-             <span class="n">pad_width</span><span class="p">:</span> <span class="o">-</span><span class="n">pad_width</span><span class="p">,</span>
-             <span class="n">pad_width</span><span class="p">:</span> <span class="o">-</span><span class="n">pad_width</span><span class="p">]</span> <span class="o">=</span> <span class="n">im</span>
-    <span class="k">elif</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="n">temp</span><span class="p">[</span><span class="n">pad_width</span><span class="p">:</span> <span class="o">-</span><span class="n">pad_width</span><span class="p">,</span>
-             <span class="n">pad_width</span><span class="p">:</span> <span class="o">-</span><span class="n">pad_width</span><span class="p">]</span> <span class="o">=</span> <span class="n">im</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">temp</span><span class="p">[</span><span class="n">pad_width</span><span class="p">:</span> <span class="o">-</span><span class="n">pad_width</span><span class="p">]</span> <span class="o">=</span> <span class="n">im</span>
-
-    <span class="k">return</span> <span class="n">temp</span>
-
-
-<span class="k">def</span> <span class="nf">relabel_chunks</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">chunk_shape</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Assign new labels to each chunk or sub-domain of actual image. This</span>
-<span class="sd">    prevents from two or more regions to have same label.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    im: ndarray</span>
-<span class="sd">        Actual image that contains repeating labels in chunks/sub-domains.</span>
-
-<span class="sd">    chunk_shape: tuple</span>
-<span class="sd">        The shape of chunk that will be relabeled in actual image. Note</span>
-<span class="sd">        the chunk shape should be a multiple of actual image shape</span>
-<span class="sd">        otherwise some labels will not be relabeled.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    output : ndarray</span>
-<span class="sd">        Relabeled image with unique label assigned to each region.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">im</span> <span class="o">=</span> <span class="n">pad</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">pad_width</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">im_shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">)</span>
-    <span class="n">max_num</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">chunk_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span>
-    <span class="n">num</span> <span class="o">=</span> <span class="p">(</span><span class="n">im_shape</span> <span class="o">/</span> <span class="n">c</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">z</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
-            <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
-                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num</span><span class="p">[</span><span class="mi">2</span><span class="p">]):</span>
-                    <span class="n">chunk</span> <span class="o">=</span> <span class="n">im</span><span class="p">[</span><span class="n">z</span> <span class="o">*</span> <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="p">(</span><span class="n">z</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-                               <span class="n">y</span> <span class="o">*</span> <span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="p">(</span><span class="n">y</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-                               <span class="n">x</span> <span class="o">*</span> <span class="n">c</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">c</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span>
-                    <span class="n">chunk</span> <span class="o">+=</span> <span class="n">max_num</span>
-                    <span class="n">chunk</span><span class="p">[</span><span class="n">chunk</span> <span class="o">==</span> <span class="n">max_num</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-                    <span class="n">max_num</span> <span class="o">=</span> <span class="n">chunk</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
-                    <span class="n">im</span><span class="p">[</span><span class="n">z</span> <span class="o">*</span> <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="p">(</span><span class="n">z</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-                       <span class="n">y</span> <span class="o">*</span> <span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="p">(</span><span class="n">y</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-                       <span class="n">x</span> <span class="o">*</span> <span class="n">c</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">c</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span> <span class="o">=</span> <span class="n">chunk</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
-            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
-                <span class="n">chunk</span> <span class="o">=</span> <span class="n">im</span><span class="p">[</span><span class="n">y</span> <span class="o">*</span> <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="p">(</span><span class="n">y</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-                           <span class="n">x</span> <span class="o">*</span> <span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
-                <span class="n">chunk</span> <span class="o">+=</span> <span class="n">max_num</span>
-                <span class="n">chunk</span><span class="p">[</span><span class="n">chunk</span> <span class="o">==</span> <span class="n">max_num</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-                <span class="n">max_num</span> <span class="o">=</span> <span class="n">chunk</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
-                <span class="n">im</span><span class="p">[</span><span class="n">y</span> <span class="o">*</span> <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="p">(</span><span class="n">y</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-                   <span class="n">x</span> <span class="o">*</span> <span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">chunk</span>
-
-    <span class="k">return</span> <span class="n">im</span>
-
-
-<span class="k">def</span> <span class="nf">_trim_internal_slice</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">chunk_shape</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Delete extra slices from image that were used to stitch two or more</span>
-<span class="sd">    chunks together.</span>
-
-<span class="sd">    Parameters:</span>
-<span class="sd">    -----------</span>
-<span class="sd">    im :  ND-array</span>
-<span class="sd">        image that contains extra slices in x, y, z direction.</span>
-
-<span class="sd">    chunk_shape : tuple</span>
-<span class="sd">        The shape of the chunk from which image is subdivided.</span>
-
-<span class="sd">    Return:</span>
-<span class="sd">    -------</span>
-<span class="sd">    output : ndarray</span>
-<span class="sd">        Image without extra internal slices. The shape of the image will</span>
-<span class="sd">        be same as input image provided for waterhsed segmentation.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">im_shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">)</span>
-    <span class="n">c1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">chunk_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span>
-    <span class="n">c2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">chunk_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">)</span>
-    <span class="n">num</span> <span class="o">=</span> <span class="p">(</span><span class="n">im_shape</span> <span class="o">/</span> <span class="n">c1</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
-    <span class="n">out_shape</span> <span class="o">=</span> <span class="n">num</span> <span class="o">*</span> <span class="n">c2</span>
-    <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">out_shape</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">z</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
-            <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
-                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num</span><span class="p">[</span><span class="mi">2</span><span class="p">]):</span>
-                    <span class="n">chunk</span> <span class="o">=</span> <span class="n">im</span><span class="p">[</span><span class="n">z</span> <span class="o">*</span> <span class="n">c1</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="p">(</span><span class="n">z</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">c1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-                               <span class="n">y</span> <span class="o">*</span> <span class="n">c1</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="p">(</span><span class="n">y</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">c1</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-                               <span class="n">x</span> <span class="o">*</span> <span class="n">c1</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">c1</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span>
-
-                    <span class="n">out</span><span class="p">[</span><span class="n">z</span> <span class="o">*</span> <span class="n">c2</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="p">(</span><span class="n">z</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">c2</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-                        <span class="n">y</span> <span class="o">*</span> <span class="n">c2</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="p">(</span><span class="n">y</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">c2</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-                        <span class="n">x</span> <span class="o">*</span> <span class="n">c2</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">c2</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span> <span class="o">=</span> <span class="n">chunk</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
-            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
-                <span class="n">chunk</span> <span class="o">=</span> <span class="n">im</span><span class="p">[</span><span class="n">y</span> <span class="o">*</span> <span class="n">c1</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="p">(</span><span class="n">y</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">c1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-                           <span class="n">x</span> <span class="o">*</span> <span class="n">c1</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">c1</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
-
-                <span class="n">out</span><span class="p">[</span><span class="n">y</span> <span class="o">*</span> <span class="n">c2</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="p">(</span><span class="n">y</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">c2</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-                    <span class="n">x</span> <span class="o">*</span> <span class="n">c2</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">c2</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">chunk</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-
-    <span class="k">return</span> <span class="n">out</span>
-
-
-<span class="k">def</span> <span class="nf">_watershed_stitching</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">chunk_shape</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Stitch individual sub-domains of watershed segmentation into one big</span>
-<span class="sd">    segmentation with all boundary labels of each sub-domain relabeled to</span>
-<span class="sd">    merge boundary regions.</span>
-
-<span class="sd">    Parameters:</span>
-<span class="sd">    -----------</span>
-<span class="sd">    im : ndarray</span>
-<span class="sd">        A worked image with watershed segmentation performed on all</span>
-<span class="sd">        sub-domains individually.</span>
-
-<span class="sd">    chunk_shape: tuple</span>
-<span class="sd">        The shape of the sub-domain in which segmentation is performed.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    output : ndarray</span>
-<span class="sd">        Stitched watershed segmentation with all sub-domains merged to</span>
-<span class="sd">        form a single watershed segmentation.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">c_shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">chunk_shape</span><span class="p">)</span>
-    <span class="n">cuts_num</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">/</span> <span class="n">c_shape</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">)</span>
-
-    <span class="k">for</span> <span class="n">axis</span><span class="p">,</span> <span class="n">num</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">cuts_num</span><span class="p">):</span>
-        <span class="n">keys</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">values</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">if</span> <span class="n">num</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">im</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">num</span><span class="p">):</span>
-                <span class="n">sl</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="p">(</span><span class="n">chunk_shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">+</span> <span class="mi">3</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
-                <span class="n">sl1</span> <span class="o">=</span> <span class="n">im</span><span class="p">[</span><span class="n">sl</span> <span class="o">-</span> <span class="mi">3</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
-                <span class="n">sl1_mask</span> <span class="o">=</span> <span class="n">sl1</span> <span class="o">&gt;</span> <span class="mi">0</span>
-                <span class="n">sl2</span> <span class="o">=</span> <span class="n">im</span><span class="p">[</span><span class="n">sl</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">*</span> <span class="n">sl1_mask</span>
-                <span class="n">sl1_labels</span> <span class="o">=</span> <span class="n">sl1</span><span class="o">.</span><span class="n">flatten</span><span class="p">()[</span><span class="n">sl1</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
-                <span class="n">sl2_labels</span> <span class="o">=</span> <span class="n">sl2</span><span class="o">.</span><span class="n">flatten</span><span class="p">()[</span><span class="n">sl2</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">sl1_labels</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">sl2_labels</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;The selected overlapping thickness is not &#39;</span>
-                                    <span class="s1">&#39;suitable for input image. Change &#39;</span>
-                                    <span class="s1">&#39;overlapping criteria &#39;</span>
-                                    <span class="s1">&#39;or manually input value.&#39;</span><span class="p">)</span>
-                <span class="n">keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sl1_labels</span><span class="p">)</span>
-                <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sl2_labels</span><span class="p">)</span>
-            <span class="n">im</span> <span class="o">=</span> <span class="n">_replace_labels</span><span class="p">(</span><span class="n">array</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="n">keys</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">values</span><span class="p">)</span>
-            <span class="n">im</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-    <span class="n">im</span> <span class="o">=</span> <span class="n">_trim_internal_slice</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">chunk_shape</span><span class="o">=</span><span class="n">chunk_shape</span><span class="p">)</span>
-    <span class="n">im</span> <span class="o">=</span> <span class="n">_resequence_labels</span><span class="p">(</span><span class="n">array</span><span class="o">=</span><span class="n">im</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">im</span>
-
-
-<span class="nd">@njit</span><span class="p">(</span><span class="n">parallel</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">_copy</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">output</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    The function copy the input array and make output array that is</span>
-<span class="sd">    allocated in different memory space. This a numba version of copy</span>
-<span class="sd">    function of numpy. Because each element is copied using parallel</span>
-<span class="sd">    approach this implementation is faster than numpy version of copy.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    array: ndarray</span>
-<span class="sd">        Array that needs to be copied.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    output: ndarray</span>
-<span class="sd">        Copied array.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">prange</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
-            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">prange</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
-                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">prange</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]):</span>
-                    <span class="n">output</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">im</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span>
-    <span class="k">elif</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">prange</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
-            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">prange</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
-                <span class="n">output</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">im</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">prange</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
-            <span class="n">output</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">im</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-
-    <span class="k">return</span> <span class="n">output</span>
-
-
-<span class="nd">@njit</span><span class="p">(</span><span class="n">parallel</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">_replace</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">ind_sort</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This function replace keys elements in input array with new value</span>
-<span class="sd">    elements. This function is used as internal function of</span>
-<span class="sd">    replace_relabels.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    array : ndarray</span>
-<span class="sd">        Array which requires replacing labels.</span>
-<span class="sd">    keys :  ndarray</span>
-<span class="sd">        1d array containing unique labels that need to be replaced.</span>
-<span class="sd">    values : ndarray</span>
-<span class="sd">        1d array containing unique values that will be assigned to labels.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    array : ndarray</span>
-<span class="sd">        Array with replaced labels.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># ind_sort = np.argsort(keys)</span>
-    <span class="n">keys_sorted</span> <span class="o">=</span> <span class="n">keys</span><span class="p">[</span><span class="n">ind_sort</span><span class="p">]</span>
-    <span class="n">values_sorted</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="n">ind_sort</span><span class="p">]</span>
-    <span class="n">s_keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span>
-
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">prange</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
-        <span class="k">if</span> <span class="n">array</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">in</span> <span class="n">s_keys</span><span class="p">:</span>
-            <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">keys_sorted</span><span class="p">,</span> <span class="n">array</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-            <span class="n">array</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">values_sorted</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
-
-
-<span class="k">def</span> <span class="nf">_replace_labels</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Replace labels in array provided as keys to values.</span>
-
-<span class="sd">    Parameter:</span>
-<span class="sd">    ----------</span>
-<span class="sd">    array : ND-array</span>
-<span class="sd">        Array which requires replacing labels</span>
-<span class="sd">    keys :  1D-array</span>
-<span class="sd">        The unique labels that need to be replaced</span>
-<span class="sd">    values : 1D-array</span>
-<span class="sd">        The unique values that will be assigned to labels</span>
-
-<span class="sd">    return:</span>
-<span class="sd">    -------</span>
-<span class="sd">    array : ND-array</span>
-<span class="sd">        Array with replaced labels.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">a_shape</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">shape</span>
-    <span class="n">array</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
-    <span class="n">keys</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">ind_sort</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span>
-    <span class="n">_replace</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">ind_sort</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">array</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">a_shape</span><span class="p">)</span>
-
-
-<span class="nd">@njit</span><span class="p">()</span>
-<span class="k">def</span> <span class="nf">_sequence</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">count</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Internal function of resequnce_labels method. This function resquence</span>
-<span class="sd">    array elements in an ascending order using numba technique which is</span>
-<span class="sd">    many folds faster than make contigious funcition.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    array: ndarray</span>
-<span class="sd">        1d array that needs resquencing.</span>
-<span class="sd">    count: ndarray</span>
-<span class="sd">        1d array of zeros having same size as array.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    array: 1d-array</span>
-<span class="sd">        The input array with elements resequenced in ascending order</span>
-
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    The output of this function is not same as make_contigous or</span>
-<span class="sd">    relabel_sequential function of scikit-image. This function resequence</span>
-<span class="sd">    and randomize the regions while other methods only do resequencing and</span>
-<span class="sd">    output sorted array.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">a</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">array</span><span class="p">)):</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">array</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">data</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">count</span><span class="p">[</span><span class="n">data</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">count</span><span class="p">[</span><span class="n">data</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span>
-                <span class="n">a</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="n">array</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">count</span><span class="p">[</span><span class="n">data</span><span class="p">]</span>
-        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
-
-
-<span class="nd">@njit</span><span class="p">(</span><span class="n">parallel</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">_amax</span><span class="p">(</span><span class="n">array</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Find largest element in an array using fast parallel numba technique.</span>
-
-<span class="sd">    Parameter:</span>
-<span class="sd">    ----------</span>
-<span class="sd">    array: ndarray</span>
-<span class="sd">        Array in which largest elements needs to be calcuted.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    scalar: float or int</span>
-<span class="sd">        The largest element value in the input array.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">_resequence_labels</span><span class="p">(</span><span class="n">array</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Resequence the lablels to make them contigious.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    array: ndarray</span>
-<span class="sd">        Array that requires resequencing.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    array : ndarray</span>
-<span class="sd">        Resequenced array with same shape as input array.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">a_shape</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">shape</span>
-    <span class="n">array</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
-    <span class="n">max_num</span> <span class="o">=</span> <span class="n">_amax</span><span class="p">(</span><span class="n">array</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
-    <span class="n">count</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">max_num</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">)</span>
-    <span class="n">_sequence</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">array</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">a_shape</span><span class="p">)</span>
 </pre></div>
 
               </div>
@@ -2556,7 +1516,7 @@
       </div>
     </div>
     
-  <script src="../../../_static/js/index.c86189f1ce1b71a67eb6.js"></script>
+  <script src="../../../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
 
 
     <footer class="footer mt-5 mt-md-0">

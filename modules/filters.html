@@ -9,7 +9,7 @@
     <title>Filters &#8212; PoreSpy  documentation</title>
     
   <link href="../_static/css/theme.css" rel="stylesheet" />
-  <link href="../_static/css/index.ee6fb81b276d6fba8a971ad8e9b95dd9.css" rel="stylesheet" />
+  <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
 
     
   <link rel="stylesheet"
@@ -31,7 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css" />
     
-  <link rel="preload" as="script" href="../_static/js/index.c86189f1ce1b71a67eb6.js">
+  <link rel="preload" as="script" href="../_static/js/index.1c5a1a01449ed65a7b51.js">
 
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
@@ -228,6 +228,16 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="generated/porespy.generators.random_cantor_dust.html">
+     random_cantor_dust
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="generated/porespy.generators.sierpinski_foam.html">
+     sierpinski_foam
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="generated/porespy.generators.voronoi_edges.html">
      voronoi_edges
     </a>
@@ -404,6 +414,11 @@
    <li class="toctree-l2">
     <a class="reference internal" href="generated/porespy.metrics.chord_length_distribution.html">
      chord_length_distribution
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="generated/porespy.metrics.geometrical_tortuosity.html">
+     geometrical_tortuosity
     </a>
    </li>
    <li class="toctree-l2">
@@ -683,6 +698,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="generated/porespy.tools.unpad.html">
+     unpad
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="generated/porespy.tools.zero_corners.html">
      zero_corners
     </a>
@@ -867,9 +887,9 @@ image, but with altered values.</p>
 <td><p>This identifies all pore (or solid) voxels that are not connected to the edge of the image.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.filters.find_dt_artifacts.html#porespy.filters.find_dt_artifacts" title="porespy.filters.find_dt_artifacts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.find_dt_artifacts</span></code></a>(dt)</p></td>
-<td><p>Finds points in a distance transform that are closer to wall than solid.</p></td>
+<td><p>lavel points in a distance transform that are closer to image bounadry than solid.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.filters.find_peaks.html#porespy.filters.find_peaks" title="porespy.filters.find_peaks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.find_peaks</span></code></a>(dt[, r_max, footprint])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.filters.find_peaks.html#porespy.filters.find_peaks" title="porespy.filters.find_peaks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.find_peaks</span></code></a>(dt[, r_max, strel])</p></td>
 <td><p>Finds local maxima in the distance transform</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.filters.flood.html#porespy.filters.flood" title="porespy.filters.flood"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.flood</span></code></a>(im[, regions, mode])</p></td>
@@ -894,16 +914,16 @@ image, but with altered values.</p>
 <td><p>Any peaks that are broad or elongated are replaced with a single voxel that is located at the center of mass of the original voxels.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.filters.region_size.html#porespy.filters.region_size" title="porespy.filters.region_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.region_size</span></code></a>(im)</p></td>
-<td><p>Replace each voxel with size of region to which it belongs.</p></td>
+<td><p>Replace each voxel with size of region to which it belongs</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.filters.snow_partitioning.html#porespy.filters.snow_partitioning" title="porespy.filters.snow_partitioning"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.snow_partitioning</span></code></a>(im[, dt, r_max, …])</p></td>
-<td><p>Partitions the void space into pore regions using a marker-based watershed algorithm, with specially filtered peaks as markers.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.filters.snow_partitioning.html#porespy.filters.snow_partitioning" title="porespy.filters.snow_partitioning"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.snow_partitioning</span></code></a>(im[, dt, r_max, sigma])</p></td>
+<td><p>Partition the void space into pore regions using a marker-based watershed algorithm, with specially filtered peaks as markers.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.filters.snow_partitioning_n.html#porespy.filters.snow_partitioning_n" title="porespy.filters.snow_partitioning_n"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.snow_partitioning_n</span></code></a>(im[, r_max, …])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.filters.snow_partitioning_n.html#porespy.filters.snow_partitioning_n" title="porespy.filters.snow_partitioning_n"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.snow_partitioning_n</span></code></a>(im[, r_max, sigma])</p></td>
 <td><p>This function partitions an imaging oontain an arbitrary number of phases into regions using a marker-based watershed segmentation.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.filters.snow_partitioning_parallel.html#porespy.filters.snow_partitioning_parallel" title="porespy.filters.snow_partitioning_parallel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.snow_partitioning_parallel</span></code></a>(im[, …])</p></td>
-<td><p>Performs SNOW algorithm in parallel and serial mode to reduce time and memory usage repectively by geomertirc domain decomposition of large size image.</p></td>
+<td><p>Performs SNOW algorithm in parallel (or serial) to reduce time (or memory usage) by geomertirc domain decomposition of large images.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.filters.trim_disconnected_blobs.html#porespy.filters.trim_disconnected_blobs" title="porespy.filters.trim_disconnected_blobs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.trim_disconnected_blobs</span></code></a>(im, inlets)</p></td>
 <td><p>Removes foreground voxels not connected to specified inlets.</p></td>
@@ -914,17 +934,17 @@ image, but with altered values.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.filters.trim_floating_solid.html#porespy.filters.trim_floating_solid" title="porespy.filters.trim_floating_solid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.trim_floating_solid</span></code></a>(im[, conn])</p></td>
 <td><p>Removes all solid that that is not attached to the edges of the image.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.filters.trim_nearby_peaks.html#porespy.filters.trim_nearby_peaks" title="porespy.filters.trim_nearby_peaks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.trim_nearby_peaks</span></code></a>(peaks, dt)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.filters.trim_nearby_peaks.html#porespy.filters.trim_nearby_peaks" title="porespy.filters.trim_nearby_peaks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.trim_nearby_peaks</span></code></a>(peaks, dt[, f])</p></td>
 <td><p>Finds pairs of peaks that are nearer to each other than to the solid phase, and removes the peak that is closer to the solid.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.filters.trim_nonpercolating_paths.html#porespy.filters.trim_nonpercolating_paths" title="porespy.filters.trim_nonpercolating_paths"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.trim_nonpercolating_paths</span></code></a>(im, …)</p></td>
-<td><p>Removes all nonpercolating paths between specified edges or faces</p></td>
+<td><p>Remove all nonpercolating paths between specified edges or faces</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.filters.trim_saddle_points.html#porespy.filters.trim_saddle_points" title="porespy.filters.trim_saddle_points"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.trim_saddle_points</span></code></a>(peaks, dt[, …])</p></td>
 <td><p>Removes peaks that were mistakenly identified because they lied on a saddle or ridge in the distance transform that was not actually a true local peak.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.filters.trim_small_clusters.html#porespy.filters.trim_small_clusters" title="porespy.filters.trim_small_clusters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.trim_small_clusters</span></code></a>(im[, size])</p></td>
-<td><p>Remove isolated voxels or clusters of a given size or smaller.</p></td>
+<td><p>Remove isolated voxels or clusters of a given size or smaller</p></td>
 </tr>
 </tbody>
 </table>
@@ -940,7 +960,7 @@ image, but with altered values.</p>
       </div>
     </div>
     
-  <script src="../_static/js/index.c86189f1ce1b71a67eb6.js"></script>
+  <script src="../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
 
 
     <footer class="footer mt-5 mt-md-0">

@@ -9,7 +9,7 @@
     <title>SNOW partitioning &#8212; PoreSpy  documentation</title>
     
   <link href="../../../_static/css/theme.css" rel="stylesheet" />
-  <link href="../../../_static/css/index.ee6fb81b276d6fba8a971ad8e9b95dd9.css" rel="stylesheet" />
+  <link href="../../../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
 
     
   <link rel="stylesheet"
@@ -31,7 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
     
-  <link rel="preload" as="script" href="../../../_static/js/index.c86189f1ce1b71a67eb6.js">
+  <link rel="preload" as="script" href="../../../_static/js/index.1c5a1a01449ed65a7b51.js">
 
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
@@ -910,7 +910,7 @@ ax.imshow(im, origin=&#39;lower&#39;);
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>snow_out = ps.filters.snow_partitioning(im, r_max=4, sigma=0.4, return_all=True)
+<span></span>snow_out = ps.filters.snow_partitioning(im, r_max=4, sigma=0.4)
 print(snow_out._fields)
 </pre></div>
 </div>
@@ -935,7 +935,7 @@ dt_peak = snow_out.dt.copy()
 peaks_dilated = binary_dilation(snow_out.peaks &gt; 0)
 dt_peak[peaks_dilated &gt; 0] = np.nan
 ax[1, 0].imshow(dt_peak, origin=&#39;lower&#39;)
-ax[1, 1].imshow(snow_out.regions, origin=&#39;lower&#39;)
+ax[1, 1].imshow(ps.tools.randomize_colors(snow_out.regions), origin=&#39;lower&#39;)
 ax[0, 0].set_title(&quot;Binary image&quot;)
 ax[0, 1].set_title(&quot;Distance transform&quot;)
 ax[1, 0].set_title(&quot;Distance transform peaks&quot;)
@@ -961,7 +961,7 @@ ax[1, 1].set_title(&quot;Segmentation&quot;);
       </div>
     </div>
     
-  <script src="../../../_static/js/index.c86189f1ce1b71a67eb6.js"></script>
+  <script src="../../../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
 
 
     <footer class="footer mt-5 mt-md-0">

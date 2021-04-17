@@ -9,7 +9,7 @@
     <title>snow_partitioning &#8212; PoreSpy  documentation</title>
     
   <link href="../../_static/css/theme.css" rel="stylesheet" />
-  <link href="../../_static/css/index.ee6fb81b276d6fba8a971ad8e9b95dd9.css" rel="stylesheet" />
+  <link href="../../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
 
     
   <link rel="stylesheet"
@@ -31,7 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
     
-  <link rel="preload" as="script" href="../../_static/js/index.c86189f1ce1b71a67eb6.js">
+  <link rel="preload" as="script" href="../../_static/js/index.1c5a1a01449ed65a7b51.js">
 
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
@@ -228,6 +228,16 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="porespy.generators.random_cantor_dust.html">
+     random_cantor_dust
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.generators.sierpinski_foam.html">
+     sierpinski_foam
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="porespy.generators.voronoi_edges.html">
      voronoi_edges
     </a>
@@ -404,6 +414,11 @@
    <li class="toctree-l2">
     <a class="reference internal" href="porespy.metrics.chord_length_distribution.html">
      chord_length_distribution
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.metrics.geometrical_tortuosity.html">
+     geometrical_tortuosity
     </a>
    </li>
    <li class="toctree-l2">
@@ -683,6 +698,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="porespy.tools.unpad.html">
+     unpad
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="porespy.tools.zero_corners.html">
      zero_corners
     </a>
@@ -833,13 +853,9 @@
 <h1>snow_partitioning<a class="headerlink" href="#snow-partitioning" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="porespy.filters.snow_partitioning">
-<code class="sig-name descname"><span class="pre">snow_partitioning</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_all</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">randomize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/filters/__funcs__.html#snow_partitioning"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.snow_partitioning" title="Permalink to this definition">¶</a></dt>
-<dd><p>Partitions the void space into pore regions using a marker-based
+<code class="sig-name descname"><span class="pre">snow_partitioning</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.4</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/filters/_snows.html#snow_partitioning"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.snow_partitioning" title="Permalink to this definition">¶</a></dt>
+<dd><p>Partition the void space into pore regions using a marker-based
 watershed algorithm, with specially filtered peaks as markers.</p>
-<p>The SNOW network extraction algorithm (Sub-Network of an
-Over-segmented Watershed) was designed to handle to perculiarities of
-high porosity materials, but it applies well to other materials as
-well.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -854,43 +870,37 @@ Maximum filter stage that is used to find peaks. The default is 4.</p></li>
 default is 0.4.  If 0 is given then the filter is not applied,
 which is useful if a distance transform is supplied as the <code class="docutils literal notranslate"><span class="pre">im</span></code>
 argument that has already been processed.</p></li>
-<li><p><strong>return_all</strong> (<em>boolean</em>) – If set to <code class="docutils literal notranslate"><span class="pre">True</span></code> a named tuple is returned containing the
-original image, the distance transform, the filtered peaks, and
-the final pore regions.  The default is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
-<li><p><strong>mask</strong> (<em>boolean</em>) – Apply a mask to the regions where the solid phase is. Default is
-<code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
-<li><p><strong>randomize</strong> (<em>boolean</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> (default), then the region colors will be randomized
-before returning.  This is helpful for visualizing otherwise
-neighboring regions have simlar coloring are are hard to
-distinguish.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>image</strong> – An image the same shape as <code class="docutils literal notranslate"><span class="pre">im</span></code> with the void space partitioned
-into pores using a marker based watershed with the peaks found by
-the SNOW algorithm [1].</p>
+<dd class="field-even"><p><ul>
+<li><p><em>A **named tuple*</em> containing all of the images used during the*</p></li>
+<li><p><em>process.  They can be accessed as attriutes with the following names</em> –</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">im</span></code></dt><dd><p>The binary image of the void space</p>
 </dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ndarray</p>
+<dt><code class="docutils literal notranslate"><span class="pre">dt</span></code></dt><dd><p>The distance transform of the image</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">peaks</span></code></dt><dd><p>The peaks of the distance transform after applying the steps of the
+SNOW algorithm</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">regions</span></code></dt><dd><p>The void space partitioned into pores using a marker
+based watershed with the peaks found by the SNOW algorithm</p>
+</dd>
+</dl>
+</li>
+</ul>
+</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>If <code class="docutils literal notranslate"><span class="pre">return_all</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code> then a <strong>named tuple</strong> is returned
-containing all of the images used during the process.  They can be
-access as attriutes with the following names:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">im</span></code>: The binary image of the void space</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">dt</span></code>: The distance transform of the image</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">peaks</span></code>: The peaks of the distance transform after applying the
-steps of the SNOW algorithm</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">regions</span></code>: The void space partitioned into pores using a marker
-based watershed with the peaks found by the SNOW algorithm</p></li>
-</ul>
+<p>The SNOW network extraction algorithm (Sub-Network of an
+Over-segmented Watershed) was designed to handle to perculiarities of
+high porosity materials, but it applies well to other materials as
+well.</p>
 <p class="rubric">References</p>
 <p>[1] Gostick, J. “A versatile and efficient network extraction algorithm
 using marker-based watershed segmenation”.  Physical Review E. (2017)</p>
-<p class="rubric">Examples</p>
-<p><a class="reference external" href="https://porespy.org/examples/filters/snow_partitioning.html">Click here</a> to view online example.</p>
 </dd></dl>
 
 </section>
@@ -905,7 +915,7 @@ using marker-based watershed segmenation”.  Physical Review E. (2017)</p>
       </div>
     </div>
     
-  <script src="../../_static/js/index.c86189f1ce1b71a67eb6.js"></script>
+  <script src="../../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
 
 
     <footer class="footer mt-5 mt-md-0">

@@ -9,7 +9,7 @@
     <title>SNOW network extraction &#8212; PoreSpy  documentation</title>
     
   <link href="../../../_static/css/theme.css" rel="stylesheet" />
-  <link href="../../../_static/css/index.ee6fb81b276d6fba8a971ad8e9b95dd9.css" rel="stylesheet" />
+  <link href="../../../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
 
     
   <link rel="stylesheet"
@@ -31,7 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
     
-  <link rel="preload" as="script" href="../../../_static/js/index.c86189f1ce1b71a67eb6.js">
+  <link rel="preload" as="script" href="../../../_static/js/index.1c5a1a01449ed65a7b51.js">
 
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
@@ -913,11 +913,7 @@ ax.imshow(im);
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>snow_output = ps.networks.snow(
-    im,
-    voxel_size=1,
-    boundary_faces=[&#39;left&#39;,&#39;right&#39;,&#39;front&#39;,&#39;back&#39;],
-    marching_cubes_area=False)
+<span></span>snow_output = ps.networks.snow2(im, voxel_size=1)
 </pre></div>
 </div>
 </div>
@@ -925,7 +921,7 @@ ax.imshow(im);
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "ebff4da4767a4ea08d5e2207489f41ec", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">snow</span></code> function returns a python <em>dict</em> that is suitable for use in OpenPNM.</p>
 <div class="nbinput nblast docutils container">
@@ -934,7 +930,7 @@ ax.imshow(im);
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span>pn = op.network.GenericNetwork()
-pn.update(snow_output)
+pn.update(snow_output.network)
 prj = pn.project
 </pre></div>
 </div>
@@ -960,7 +956,7 @@ prj = pn.project
 </div>
 </div>
 <p>And the result after opening both files in ParaView is:</p>
-<p><img alt="225cb872947e421b82d1944f082e9bcb" class="no-scaled-link" src="https://user-images.githubusercontent.com/14086031/113048593-b725bb00-9170-11eb-8f65-93de3278e229.png" style="width: 300px;" /></p>
+<p><img alt="e167a0c1b4f14509baae52eca8d16cc1" class="no-scaled-link" src="https://user-images.githubusercontent.com/14086031/113048593-b725bb00-9170-11eb-8f65-93de3278e229.png" style="width: 300px;" /></p>
 </section>
 
 
@@ -973,7 +969,7 @@ prj = pn.project
       </div>
     </div>
     
-  <script src="../../../_static/js/index.c86189f1ce1b71a67eb6.js"></script>
+  <script src="../../../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
 
 
     <footer class="footer mt-5 mt-md-0">

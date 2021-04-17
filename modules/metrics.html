@@ -9,7 +9,7 @@
     <title>Metrics &#8212; PoreSpy  documentation</title>
     
   <link href="../_static/css/theme.css" rel="stylesheet" />
-  <link href="../_static/css/index.ee6fb81b276d6fba8a971ad8e9b95dd9.css" rel="stylesheet" />
+  <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
 
     
   <link rel="stylesheet"
@@ -31,7 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css" />
     
-  <link rel="preload" as="script" href="../_static/js/index.c86189f1ce1b71a67eb6.js">
+  <link rel="preload" as="script" href="../_static/js/index.1c5a1a01449ed65a7b51.js">
 
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
@@ -228,6 +228,16 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="generated/porespy.generators.random_cantor_dust.html">
+     random_cantor_dust
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="generated/porespy.generators.sierpinski_foam.html">
+     sierpinski_foam
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="generated/porespy.generators.voronoi_edges.html">
      voronoi_edges
     </a>
@@ -404,6 +414,11 @@
    <li class="toctree-l2">
     <a class="reference internal" href="generated/porespy.metrics.chord_length_distribution.html">
      chord_length_distribution
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="generated/porespy.metrics.geometrical_tortuosity.html">
+     geometrical_tortuosity
     </a>
    </li>
    <li class="toctree-l2">
@@ -683,6 +698,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="generated/porespy.tools.unpad.html">
+     unpad
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="generated/porespy.tools.zero_corners.html">
      zero_corners
     </a>
@@ -847,49 +867,52 @@ but a few functions can be applied directly to the binary image.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.metrics.chord_length_distribution.html#porespy.metrics.chord_length_distribution" title="porespy.metrics.chord_length_distribution"><code class="xref py py-obj docutils literal notranslate"><span class="pre">metrics.chord_length_distribution</span></code></a>(im[, …])</p></td>
 <td><p>Determines the distribution of chord lengths in an image containing chords.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.metrics.lineal_path_distribution.html#porespy.metrics.lineal_path_distribution" title="porespy.metrics.lineal_path_distribution"><code class="xref py py-obj docutils literal notranslate"><span class="pre">metrics.lineal_path_distribution</span></code></a>(im[, bins, …])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.metrics.geometrical_tortuosity.html#porespy.metrics.geometrical_tortuosity" title="porespy.metrics.geometrical_tortuosity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">metrics.geometrical_tortuosity</span></code></a>(im[, axis])</p></td>
+<td><p>Calculate geometrical tortuosity of an image.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.metrics.lineal_path_distribution.html#porespy.metrics.lineal_path_distribution" title="porespy.metrics.lineal_path_distribution"><code class="xref py py-obj docutils literal notranslate"><span class="pre">metrics.lineal_path_distribution</span></code></a>(im[, bins, …])</p></td>
 <td><p>Determines the probability that a point lies within a certain distance of the opposite phase <em>along a specified direction</em></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.metrics.mesh_surface_area.html#porespy.metrics.mesh_surface_area" title="porespy.metrics.mesh_surface_area"><code class="xref py py-obj docutils literal notranslate"><span class="pre">metrics.mesh_surface_area</span></code></a>([mesh, verts, faces])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.metrics.mesh_surface_area.html#porespy.metrics.mesh_surface_area" title="porespy.metrics.mesh_surface_area"><code class="xref py py-obj docutils literal notranslate"><span class="pre">metrics.mesh_surface_area</span></code></a>([mesh, verts, faces])</p></td>
 <td><p>Calculates the surface area of a meshed region</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.metrics.phase_fraction.html#porespy.metrics.phase_fraction" title="porespy.metrics.phase_fraction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">metrics.phase_fraction</span></code></a>(im[, normed])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.metrics.phase_fraction.html#porespy.metrics.phase_fraction" title="porespy.metrics.phase_fraction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">metrics.phase_fraction</span></code></a>(im[, normed])</p></td>
 <td><p>Calculates the number (or fraction) of each phase in an image</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.metrics.pore_size_distribution.html#porespy.metrics.pore_size_distribution" title="porespy.metrics.pore_size_distribution"><code class="xref py py-obj docutils literal notranslate"><span class="pre">metrics.pore_size_distribution</span></code></a>(im[, bins, …])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.metrics.pore_size_distribution.html#porespy.metrics.pore_size_distribution" title="porespy.metrics.pore_size_distribution"><code class="xref py py-obj docutils literal notranslate"><span class="pre">metrics.pore_size_distribution</span></code></a>(im[, bins, …])</p></td>
 <td><p>Calculate a pore-size distribution based on the image produced by the <code class="docutils literal notranslate"><span class="pre">porosimetry</span></code> or <code class="docutils literal notranslate"><span class="pre">local_thickness</span></code> functions.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.metrics.porosity.html#porespy.metrics.porosity" title="porespy.metrics.porosity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">metrics.porosity</span></code></a>(im)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.metrics.porosity.html#porespy.metrics.porosity" title="porespy.metrics.porosity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">metrics.porosity</span></code></a>(im)</p></td>
 <td><p>Calculates the porosity of an image assuming 1’s are void space and 0’s are solid phase.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.metrics.porosity_profile.html#porespy.metrics.porosity_profile" title="porespy.metrics.porosity_profile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">metrics.porosity_profile</span></code></a>(im[, axis])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.metrics.porosity_profile.html#porespy.metrics.porosity_profile" title="porespy.metrics.porosity_profile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">metrics.porosity_profile</span></code></a>(im[, axis])</p></td>
 <td><p>Returns a porosity profile along the specified axis</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.metrics.prop_to_image.html#porespy.metrics.prop_to_image" title="porespy.metrics.prop_to_image"><code class="xref py py-obj docutils literal notranslate"><span class="pre">metrics.prop_to_image</span></code></a>(regionprops, shape, prop)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.metrics.prop_to_image.html#porespy.metrics.prop_to_image" title="porespy.metrics.prop_to_image"><code class="xref py py-obj docutils literal notranslate"><span class="pre">metrics.prop_to_image</span></code></a>(regionprops, shape, prop)</p></td>
 <td><p>Creates an image with each region colored according the specified <code class="docutils literal notranslate"><span class="pre">prop</span></code>, as obtained by <code class="docutils literal notranslate"><span class="pre">regionprops_3d</span></code>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.metrics.props_to_DataFrame.html#porespy.metrics.props_to_DataFrame" title="porespy.metrics.props_to_DataFrame"><code class="xref py py-obj docutils literal notranslate"><span class="pre">metrics.props_to_DataFrame</span></code></a>(regionprops)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.metrics.props_to_DataFrame.html#porespy.metrics.props_to_DataFrame" title="porespy.metrics.props_to_DataFrame"><code class="xref py py-obj docutils literal notranslate"><span class="pre">metrics.props_to_DataFrame</span></code></a>(regionprops)</p></td>
 <td><p>Returns a Pandas DataFrame containing all the scalar metrics for each region, such as volume, sphericity, and so on, calculated by <code class="docutils literal notranslate"><span class="pre">regionprops_3D</span></code>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.metrics.radial_density_distribution.html#porespy.metrics.radial_density_distribution" title="porespy.metrics.radial_density_distribution"><code class="xref py py-obj docutils literal notranslate"><span class="pre">metrics.radial_density_distribution</span></code></a>(im[, …])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.metrics.radial_density_distribution.html#porespy.metrics.radial_density_distribution" title="porespy.metrics.radial_density_distribution"><code class="xref py py-obj docutils literal notranslate"><span class="pre">metrics.radial_density_distribution</span></code></a>(im[, …])</p></td>
 <td><p>Computes radial density function by analyzing the histogram of voxel values in the distance transform.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.metrics.region_interface_areas.html#porespy.metrics.region_interface_areas" title="porespy.metrics.region_interface_areas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">metrics.region_interface_areas</span></code></a>(regions, areas)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.metrics.region_interface_areas.html#porespy.metrics.region_interface_areas" title="porespy.metrics.region_interface_areas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">metrics.region_interface_areas</span></code></a>(regions, areas)</p></td>
 <td><p>Calculates the interfacial area between all pairs of adjecent regions</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.metrics.region_surface_areas.html#porespy.metrics.region_surface_areas" title="porespy.metrics.region_surface_areas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">metrics.region_surface_areas</span></code></a>(regions[, …])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.metrics.region_surface_areas.html#porespy.metrics.region_surface_areas" title="porespy.metrics.region_surface_areas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">metrics.region_surface_areas</span></code></a>(regions[, …])</p></td>
 <td><p>Extracts the surface area of each region in a labeled image.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.metrics.regionprops_3D.html#porespy.metrics.regionprops_3D" title="porespy.metrics.regionprops_3D"><code class="xref py py-obj docutils literal notranslate"><span class="pre">metrics.regionprops_3D</span></code></a>(im)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.metrics.regionprops_3D.html#porespy.metrics.regionprops_3D" title="porespy.metrics.regionprops_3D"><code class="xref py py-obj docutils literal notranslate"><span class="pre">metrics.regionprops_3D</span></code></a>(im)</p></td>
 <td><p>Calculates various metrics for each labeled region in a 3D image.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.metrics.representative_elementary_volume.html#porespy.metrics.representative_elementary_volume" title="porespy.metrics.representative_elementary_volume"><code class="xref py py-obj docutils literal notranslate"><span class="pre">metrics.representative_elementary_volume</span></code></a>(im)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.metrics.representative_elementary_volume.html#porespy.metrics.representative_elementary_volume" title="porespy.metrics.representative_elementary_volume"><code class="xref py py-obj docutils literal notranslate"><span class="pre">metrics.representative_elementary_volume</span></code></a>(im)</p></td>
 <td><p>Calculates the porosity of the image as a function subdomain size.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.metrics.two_point_correlation_bf.html#porespy.metrics.two_point_correlation_bf" title="porespy.metrics.two_point_correlation_bf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">metrics.two_point_correlation_bf</span></code></a>(im[, spacing])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.metrics.two_point_correlation_bf.html#porespy.metrics.two_point_correlation_bf" title="porespy.metrics.two_point_correlation_bf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">metrics.two_point_correlation_bf</span></code></a>(im[, spacing])</p></td>
 <td><p>Calculates the two-point correlation function using brute-force (see Notes)</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.metrics.two_point_correlation_fft.html#porespy.metrics.two_point_correlation_fft" title="porespy.metrics.two_point_correlation_fft"><code class="xref py py-obj docutils literal notranslate"><span class="pre">metrics.two_point_correlation_fft</span></code></a>(im)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.metrics.two_point_correlation_fft.html#porespy.metrics.two_point_correlation_fft" title="porespy.metrics.two_point_correlation_fft"><code class="xref py py-obj docutils literal notranslate"><span class="pre">metrics.two_point_correlation_fft</span></code></a>(im)</p></td>
 <td><p>Calculates the two-point correlation function using fourier transforms.</p></td>
 </tr>
 </tbody>
@@ -906,7 +929,7 @@ but a few functions can be applied directly to the binary image.</p>
       </div>
     </div>
     
-  <script src="../_static/js/index.c86189f1ce1b71a67eb6.js"></script>
+  <script src="../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
 
 
     <footer class="footer mt-5 mt-md-0">
