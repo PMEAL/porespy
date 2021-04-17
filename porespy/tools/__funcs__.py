@@ -216,6 +216,39 @@ def subdivide(im, divs=2, overlap=0, flatten=False):
     return slices
 
 
+def recombine(shape, ims, slices, overlap):
+    if isinstance(overlap, int):
+        overlap = [overlap]*len(shape)
+    im = np.zeros(shape, dtype=ims[0].dtype)
+    for i, s in enumerate(slices):
+        # Prepare new slice objects into main and sub-sliced image
+        a = []  # Slices into original image
+        b = []  # Slices into chunked image
+        for dim in range(im.ndim):
+            if s[dim].start == 0:
+                ax = bx = 0
+            else:
+                ax = s[dim].start + overlap[dim]
+                bx = overlap[dim]
+            if s[dim].stop == im.shape[dim]:
+                ay = by = im.shape[dim]
+            else:
+                ay = s[dim].stop - overlap[dim] + 1
+                by = s[dim].stop - s[dim].start - overlap[dim] + 1
+            a.append(slice(ax, ay, None))
+            b.append(slice(bx, by, None))
+        # Convert lists of slices to tuples
+        a = tuple(a)
+        b = tuple(b)
+        # Insert image chunk into main image
+        try:
+            im[a] = ims[i][b]
+        except ValueError:
+            raise IndexError('The applied filter seems to have returned a '
+                             + 'larger image that it was sent.')
+    return im
+
+
 def bbox_to_slices(bbox):
     r"""
     Given a tuple containing bounding box coordinates, return a tuple of slice
