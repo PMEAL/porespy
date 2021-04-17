@@ -819,6 +819,130 @@ def phase_fraction(im, normed=True):
     return results
 
 
+def pc_curve_from_ibip(seq, sizes, im=None, sigma=0.072, theta=180, voxel_size=1,
+                       stepped=True):
+    r"""
+    Produces a Pc-Snwp curve from the output of ``ibip``
+
+    Parameters
+    ----------
+    seq : ND-array
+        The image containing the invasion sequence values returned from the
+        ``ibip`` function.
+    sizes : ND-array
+        This image is returned from ``ibip`` when ``return_sizes``
+        is set to ``True``.
+    im : ND-array
+        The voxel image of the porous media.  It not provided then the void
+        space is assumed to be ``im = !(seq == 0)``.
+    sigma : float
+        The surface tension of the fluid-fluid system of interest
+    theta : float
+        The contact angle through the invading phase in degrees
+    voxel_size : float
+        The voxel resolution of the image
+    stepped : boolean
+        If ``True`` (default) the returned data has steps between each point
+        instead of connecting points directly with sloped lines.
+
+    Returns
+    -------
+    pc_curve : namedtuple
+        A namedtuple containing the capillary pressure (``pc``) and
+        non-wetting phase saturation (``snwp``). If ``stepped`` was set to
+        ``True`` then the values in this tuple include the corners of the
+        steps.
+
+    """
+    if im is None:
+        im = ~(seq == 0)
+    seqs = np.unique(seq)[1:]
+    x = []
+    y = []
+    with tqdm(seqs) as pbar:
+        for n in seqs:
+            pbar.update()
+            mask = seq == n
+            # The following assumes only one size found, which was confirmed
+            r = sizes[mask][0]*voxel_size
+            pc = -2*sigma*np.cos(np.deg2rad(theta))/r
+            x.append(pc)
+            snwp = ((seq <= n)*(seq > 0)*(im == 1)).sum()/im.sum()
+            y.append(snwp)
+    if stepped:
+        pc = x.copy()
+        snwp = y.copy()
+        for i in range(0, len(x)-1):
+            j = 2*i + 1
+            pc.insert(j, x[i+1])
+            snwp.insert(j, y[i])
+        x = pc
+        y = snwp
+    pc_curve = namedtuple('data', field_names=['pc', 'snwp'])
+    pc_curve.pc = x
+    pc_curve.snwp = y
+    return pc_curve
+
+
+def pc_curve_from_mio(sizes, im=None, sigma=0.072, theta=180, voxel_size=1,
+                      stepped=True):
+    r"""
+    Produces a Pc-Snwp curve from the output of ``porosimetry``
+
+    Parameters
+    ----------
+    sizes : ND-array
+        This image is returned from ``porosimetry``
+    im : ND-array
+        The voxel image of the porous media.  It not provided then the void
+        space is assumed to be ``im = ~(sizes == 0)``.
+    sigma : float
+        The surface tension of the fluid-fluid system of interest
+    theta : float
+        The contact angle through the invading phase in degrees
+    voxel_size : float
+        The voxel resolution of the image
+    stepped : boolean
+        If ``True`` (default) the returned data has steps between each point
+        instead of connecting points directly with sloped lines.
+
+    Returns
+    -------
+    pc_curve : namedtuple
+        A namedtuple containing the capillary pressure (``pc``) and
+        non-wetting phase saturation (``snwp``).  If ``stepped`` was set to
+        ``True`` then the values in this tuple include the corners of the
+        steps.
+
+    """
+    if im is None:
+        im = ~(sizes == 0)
+    sz = np.unique(sizes)[:0:-1]
+    x = []
+    y = []
+    with tqdm(sz) as pbar:
+        for n in sz:
+            pbar.update()
+            r = n*voxel_size
+            pc = -2*sigma*np.cos(np.deg2rad(theta))/r
+            x.append(pc)
+            snwp = ((sizes >= n)*(im == 1)).sum()/im.sum()
+            y.append(snwp)
+    if stepped:
+        pc = x.copy()
+        snwp = y.copy()
+        for i in range(0, len(x)-1):
+            j = 2*i + 1
+            pc.insert(j, x[i+1])
+            snwp.insert(j, y[i])
+        x = pc
+        y = snwp
+    pc_curve = namedtuple('data', field_names=['pc', 'snwp'])
+    pc_curve.pc = x
+    pc_curve.snwp = y
+    return pc_curve
+    
+    
 def porosity(im):
     r"""
     Calculates the porosity of an image assuming 1's are void space and 0's are

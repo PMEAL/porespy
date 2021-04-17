@@ -177,14 +177,14 @@ class MetricsTest():
         np.random.seed(0)
         im = ps.generators.blobs(shape=[300, 300], porosity=0.6, blobiness=2)
         out = ps.metrics.geometrical_tortuosity(im)
-        assert np.size(out) ==1
+        assert np.size(out) == 1
         assert out >= 1
 
     def test_geometric_tortuosity_3d(self):
         np.random.seed(0)
         im = ps.generators.blobs(shape=[100, 100, 100], porosity=0.6, blobiness=2)
         out = ps.metrics.geometrical_tortuosity(im)
-        assert np.size(out) ==1
+        assert np.size(out) == 1
         assert out >= 1
 
     def test_geometric_tortuosity_points_2d(self):
@@ -206,6 +206,17 @@ class MetricsTest():
         # assert np.shape(out[0])[0] ==np.shape(out[0])[1]
         # assert np.size(out[1]) ==1
         # assert out[1] >= 1
+
+    def test_pc_curve_from_ibip_and_mio(self):
+        im = ps.generators.blobs(shape=[100, 100], porosity=0.7)
+        sizes = ps.filters.porosimetry(im=im)
+        pc1 = ps.metrics.pc_curve_from_mio(sizes=sizes)
+        seq, sizes = ps.filters.ibip(im=im, return_sizes=True)
+        pc2 = ps.metrics.pc_curve_from_ibip(sizes=sizes, seq=seq)
+        assert hasattr(pc1, 'pc')
+        assert hasattr(pc1, 'snwp')
+        assert hasattr(pc2, 'pc')
+        assert hasattr(pc2, 'snwp')
 
 
 if __name__ == '__main__':

@@ -189,9 +189,6 @@ def distance_transform_lin(im, axis=0, mode="both"):
     return f
 
 
-
-
-
 def find_disconnected_voxels(im, conn=None):
     r"""
     This identifies all pore (or solid) voxels that are not connected to
@@ -366,14 +363,21 @@ def trim_extrema(im, h, mode="maxima"):
 
     Notes
     -----
-    This function is referred to as **imhmax** or **imhmin** in Matlab.
+    (1) This function is referred to as **imhmax** or **imhmin** in Matlab.
+
+    (2) If the provided ``h`` is larger than ALL peaks in the array, then the
+    baseline values of the array are changed as well.
 
     """
-    result = im
-    if mode in ["maxima", "extrema"]:
-        result = reconstruction(seed=im - h, mask=im, method="dilation")
-    elif mode in ["minima", "extrema"]:
-        result = reconstruction(seed=im + h, mask=im, method="erosion")
+    mask = np.copy(im)
+    im = np.copy(im)
+    if mode == 'maxima':
+        result = reconstruction(seed=im - h, mask=mask, method='dilation')
+    elif mode == 'minima':
+        result = reconstruction(seed=im + h, mask=mask, method='erosion')
+    elif mode == 'extrema':
+        result = reconstruction(seed=im - h, mask=mask, method='dilation')
+        result = reconstruction(seed=result + h, mask=result, method='erosion')
     return result
 
 
@@ -436,6 +440,43 @@ def flood(im, regions=None, mode="max"):
     else:
         raise Exception(mode + " is not a recognized mode")
     return im_flooded
+
+
+def flood_func(im, func, labels=None):
+    r"""
+    Flood each isolated region in an image with a constant value calculated by
+    the given function.
+
+    Parameters
+    ----------
+    im : ND-array
+        The image containing distinct regions which should each be flooded
+    func : Numpy function handle
+        The function to be applied to each region in the image.  Any Numpy
+        function that returns a scalar value can be passed, such as ``amin``,
+        ``amax``, ``sum``, ``mean``, ``median``, etc.
+    labels : ND-image, optional
+        An array containing labels identify each individual region to be
+        flooded. If not provided then ``scipy.ndimage.label`` is applied to
+        ``im > 0``.
+
+    Returns
+    -------
+    flooded : ND-array
+        An image the same size as ``im`` with each isolated region flooded
+        with a constant value based on the given ``func`` and the values
+        in ``im``.
+
+    """
+    if labels is None:
+        labels, N = spim.label(im > 0)
+    slices = spim.find_objects(labels)
+    new_im = np.zeros_like(im, dtype=float)
+    for i, s in enumerate(slices):
+        sub_im = labels[s] == (i + 1)
+        val = func(im[s][sub_im])
+        new_im[s] += sub_im*val
+    return new_im
 
 
 def find_dt_artifacts(dt):
@@ -775,9 +816,10 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
 
     if im.ndim == 2:
         strel = ps_disk
+        strel_2 = disk
     else:
         strel = ps_ball
-
+        strel_2 = ball
     # Parse kwargs for any parallelization arguments
     parallel = kwargs.pop('parallel', False)
     cores = kwargs.pop('cores', None)
@@ -801,7 +843,8 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
                 imtemp = spim.binary_erosion(input=impad,
                                              structure=strel(r))
             if access_limited:
-                imtemp = trim_disconnected_blobs(imtemp, inlets)
+                imtemp = trim_disconnected_blobs(imtemp, inlets,
+                                                 strel=strel_2(1))
             if parallel:
                 imtemp = chunked_func(func=spim.binary_dilation,
                                       input=imtemp, structure=strel(r),
@@ -820,7 +863,8 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
         for r in tqdm(sizes, **settings.tqdm):
             imtemp = dt >= r
             if access_limited:
-                imtemp = trim_disconnected_blobs(imtemp, inlets)
+                imtemp = trim_disconnected_blobs(imtemp, inlets,
+                                                 strel=strel_2(1))
             if np.any(imtemp):
                 imtemp = edt(~imtemp) < r
                 imresults[(imresults == 0) * imtemp] = r
@@ -829,7 +873,8 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
         for r in tqdm(sizes, **settings.tqdm):
             imtemp = dt >= r
             if access_limited:
-                imtemp = trim_disconnected_blobs(imtemp, inlets)
+                imtemp = trim_disconnected_blobs(imtemp, inlets,
+                                                 strel=strel_2(1))
             if np.any(imtemp):
                 if parallel:
                     imtemp = chunked_func(func=spim.binary_dilation,
@@ -883,17 +928,15 @@ def trim_disconnected_blobs(im, inlets, strel=None):
         inlets = inlets.astype(bool)
     else:
         raise Exception("inlets not valid, refer to docstring for info")
-    if im.ndim == 3:
-        strel = cube
-    else:
-        strel = square
-    labels = spim.label(inlets + (im > 0), structure=strel(3))[0]
+    if strel is None:
+        if im.ndim == 3:
+            strel = cube(3)
+        else:
+            strel = square(3)
+    labels = spim.label(inlets + (im > 0), structure=strel)[0]
     keep = np.unique(labels[inlets])
     keep = keep[keep > 0]
-    if len(keep) > 0:
-        im2 = np.reshape(np.in1d(labels, keep), newshape=im.shape)
-    else:
-        im2 = np.zeros_like(im)
+    im2 = np.isin(labels, keep)
     im2 = im2 * im
     return im2
 
@@ -1241,5 +1284,3 @@ def chunked_func(func,
             raise IndexError('The applied filter seems to have returned a '
                              + 'larger image that it was sent.')
     return im2
-
-

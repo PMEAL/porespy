@@ -58,6 +58,7 @@ from .__funcs__ import fill_blind_pores
 from .__funcs__ import find_disconnected_voxels
 from .__funcs__ import find_dt_artifacts
 from .__funcs__ import flood
+from .__funcs__ import flood_func
 from .__funcs__ import hold_peaks
 from .__funcs__ import local_thickness
 from .__funcs__ import nphase_border
@@ -78,3 +79,5 @@ from ._snows import trim_nearby_peaks
 from ._snows import trim_saddle_points
 from ._nlmeans import nl_means_layered
 from . import imagej
+from .__ibip__ import ibip
+from .__ibip__ import find_trapped_regions

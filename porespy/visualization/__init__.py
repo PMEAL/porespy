@@ -37,4 +37,4 @@ __all__ = [
 
 from .__views__ import sem, show_planes, xray, show_3D
 from .__plots__ import imshow, bar, show_mesh
-from .__funcs__ import set_mpl_style
+from .__funcs__ import set_mpl_style, satn_to_movie
