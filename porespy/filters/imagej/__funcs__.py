@@ -1,15 +1,5 @@
 import numpy as np
 from loguru import logger
-try:
-    import imagej
-    from scyjava import jimport
-except ModuleNotFoundError:
-    msg = ("The pyimagej python bindings must be installed using conda"
-           " install -c conda-forge paraview, however this may require"
-           " using a virtualenv since conflicts with other packages are"
-           " common. This is why it is not explicitly included as a"
-           " dependency in porespy.")
-    logger.critical(msg)
 
 
 def imagej_wrapper(im, plugin_name, path):
@@ -43,6 +33,17 @@ def imagej_wrapper(im, plugin_name, path):
         Outputs a ndarray after applying the desired filter on the image.
 
     """
+    try:
+        import imagej
+        from scyjava import jimport
+    except ModuleNotFoundError:
+        msg = ("The pyimagej python bindings must be installed using conda"
+               " install -c conda-forge paraview, however this may require"
+               " using a virtualenv since conflicts with other packages are"
+               " common. This is why it is not explicitly included as a"
+               " dependency in porespy.")
+        logger.critical(msg)
+
     i = False
     ij = imagej.init(path, headless=False)
     img = 255 * np.array(im.astype("uint8"))
@@ -133,6 +134,16 @@ def imagej_plugin(im, path, plugin_name, args=None):
         Outputs a ndarray after applying the desired filter on the image.
 
     """
+    try:
+        import imagej
+        from scyjava import jimport
+    except ModuleNotFoundError:
+        msg = ("The pyimagej python bindings must be installed using conda"
+               " install -c conda-forge paraview, however this may require"
+               " using a virtualenv since conflicts with other packages are"
+               " common. This is why it is not explicitly included as a"
+               " dependency in porespy.")
+        logger.critical(msg)
     ij = imagej.init(path, headless=False)
     img = 255 * np.array(im.astype("uint8"))
     WindowManager = jimport('ij.WindowManager')

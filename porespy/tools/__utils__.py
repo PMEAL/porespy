@@ -77,8 +77,6 @@ class Settings:  # pragma: no cover
 
     """
     __instance__ = None
-    notebook = False
-    ncores = psutil.cpu_count()
     # Might need to add 'file': sys.stdout to tqdm dict
     tqdm = {'disable': False,
             'colour': None,
@@ -91,6 +89,11 @@ class Settings:  # pragma: no cover
           '\n--> <level>{message}</level>'
     _loglevel = "ERROR" if _is_ipython_notebook() else "INFO"
     config_logger(_logger_fmt, _loglevel)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._notebook = None
+        self._ncores = psutil.cpu_count()
 
     @property
     def logger_fmt(self):
@@ -140,6 +143,31 @@ class Settings:  # pragma: no cover
                     temp = temp.replace(',', '\n' + ' '*(indent + 1))
                 s += temp
         return s
+
+    def _get_ncores(self):
+        if self._ncores is None:
+            self._ncores = psutil.cpu_count()
+        return self._ncores
+
+    def _set_ncores(self, val):
+        if val is None:
+            val = psutil.cpu_count()
+        elif val > psutil.cpu_count():
+            logger.error('Value is more than the available number of cores')
+            val = psutil.cpu_count()
+        self._ncores = val
+
+    ncores = property(fget=_get_ncores, fset=_set_ncores)
+
+    def _get_notebook(self):
+        if self._notebook is None:
+            self._notebook = _is_ipython_notebook()
+        return self._notebook
+
+    def _set_notebook(self, val):
+        logger.error('This value is determined automatically at runtime')
+
+    notebook = property(fget=_get_notebook, fset=_set_notebook)
 
 
 def get_tqdm():  # pragma: no cover
