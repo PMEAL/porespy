@@ -1,5 +1,8 @@
 import scipy as sp
 import numpy as np
+import scipy.ndimage as spim
+from scipy.stats import rankdata
+import warnings
 from edt import edt
 import scipy.ndimage as spim
 from loguru import logger
@@ -13,17 +16,86 @@ except ImportError:
     from skimage.measure import marching_cubes_lewiner as marching_cubes
 
 
+def isolate_object(region, i, s=None):
+    r"""
+    Given an image containing labels, removes all labels except the specified
+    one.
+
+    Parameters
+    ----------
+    region : ND-array
+        An image containing labelled regions, as returned by
+        ``scipy.ndimage.label``.
+    i : int
+        The integer value
+    s : tuple of slice objects, optional
+        If provided, then a subsection of ``region`` will be extracted and the
+        function will be applied to this subsection only.
+
+    Returns
+    -------
+    label : ND-array
+        An ND-array the same size as ``region`` containing *only* the objects
+        with the given value ``i``.  If ``s`` is provided, the returned image
+        will be a subsection of ``region``.
+    """
+    if s is not None:
+        region = region[s]
+    im = (region == i)*i
+    return im
+
+
+def marching_map(path, start):
+    r"""
+    Use the fast marching method to find distance of each voxel from a starting
+    point
+
+    Parameters
+    ----------
+    path : ND-image
+        A boolean image with ``True`` values demarcating the path along which
+        the march will occur
+    start : ND-image
+        A boolean image with ``True`` values indicating where the march should
+        start.
+
+    Returns
+    -------
+    distance : ND-image
+        An array the same size as ``path`` with numerical values in each voxel
+        indicating it's distance from the start point(s) along the given path.
+
+    Notes
+    -----
+    This function assumes scikit-fmm is installed on your machine. This
+    package requires downloading and installing the binaries specific for your
+    platform.  Mac and Linux builds are available fron conda, while windows
+    builds can be downloaded from Christoph Gohlke website.
+
+    """
+    try:
+        import skfmm
+    except ModuleNotFoundError:
+        raise ModuleNotFoundError('scikit-fmm must be install to use this ' +
+                                  'function')
+    phi = start*2.0 - 1.0
+    speed = path*1.0
+    t = skfmm.travel_time(phi, speed)
+    return t.data
+
+
 def align_image_with_openpnm(im):
     r"""
-    Rotates an image to agree with the coordinates used in OpenPNM.  It is
-    unclear why they are not in agreement to start with.  This is necessary
-    for overlaying the image and the network in Paraview.
+    Rotates an image to agree with the coordinates used in OpenPNM.
+
+    It is unclear why they are not in agreement to start with.  This is
+    necessary for overlaying the image and the network in Paraview.
 
     Parameters
     ----------
     im : ND-array
-        The image to be rotated.  Can be the Boolean image of the pore space or
-        any other image of interest.
+        The image to be rotated.  Can be the Boolean image of the pore space
+        or any other image of interest.
 
     Returns
     -------
@@ -311,7 +383,7 @@ def bbox_to_slices(bbox):
     return ret
 
 
-def find_outer_region(im, r=0):
+def find_outer_region(im, r=None):
     r"""
     Finds regions of the image that are outside of the solid matrix.
 
@@ -326,10 +398,9 @@ def find_outer_region(im, r=0):
     ----------
     im : ND-array
         Image of the porous material with 1's for void and 0's for solid
-
     r : scalar
         The radius of the rolling ball to use.  If not specified then a value
-        is calculated as twice maximum of the distance transform.  The image
+        is calculated as twice maximum of the distance transform. The image
         size is padded by this amount in all directions, so the image can
         become quite large and unwieldy if too large a value is given.
 
@@ -340,7 +411,7 @@ def find_outer_region(im, r=0):
         identified as *outside* the sample.
 
     """
-    if r == 0:
+    if r is None:
         dt = edt(im)
         r = int(np.amax(dt)) * 2
     im_padded = np.pad(array=im, pad_width=r, mode='constant',
@@ -613,31 +684,41 @@ def randomize_colors(im, keep_vals=[0]):
     return im_new
 
 
-def make_contiguous(im, keep_zeros=True):
+def make_contiguous(im, mode='keep_zeros'):
     r"""
     Take an image with arbitrary greyscale values and adjust them to ensure
     all values fall in a contiguous range starting at 0.
-
-    This function will handle negative numbers such that the most negative
-    number will become 0, *unless* ``keep_zeros`` is ``True`` in which case
-    it will become 1, and all 0's in the original image remain 0.
 
     Parameters
     ----------
     im : array_like
         An ND array containing greyscale values
 
-    keep_zeros : Boolean
-        If ``True`` (default) then 0 values remain 0, regardless of how the
-        other numbers are adjusted.  This is only relevant when the array
-        contains negative numbers, and means that -1 will become +1, while
-        0 values remain 0.
+    mode : string
+        Controls how the ranking is applied in the presence of numbers less
+        than or equal to 0.
+
+        'keep_zeros' : (default) Voxels equal to 0 remain 0, and all other
+        numbers are ranked starting at 1, include negative numbers,
+        so [-1, 0, 4] becomes [1, 0, 2]
+
+        'symmetric' : Negative and positive voxels are ranked based on their
+        respective distances to 0, so [-4, -1, 0, 5] becomes [-2, -1, 0, 1]
+
+        'clipped' : Voxels less than or equal to 0 are set to 0, while
+        all other numbers are ranked starting at 1, so [-3, 0, 2] becomes
+        [0, 0, 1].
+
+        'none' : Voxels are ranked such that the smallest or most
+        negative number becomes 1, so [-4, 2, 0] becomes [1, 3, 2].
+        This is equivalent to calling ``scipy.stats.rankdata`` directly,
+        and reshaping the result to match ``im``.
 
     Returns
     -------
     image : ND-array
         An ND-array the same size as ``im`` but with all values in contiguous
-        orders.
+        order.
 
     Example
     -------
@@ -650,15 +731,42 @@ def make_contiguous(im, keep_zeros=True):
      [3 4 2]]
 
     """
-    if keep_zeros:
-        mask = im == 0
-        im = im + np.abs(np.min(im)) + 1
-        im[mask] = 0
-    elif np.min(im) < 0:
-        im = im + np.abs(np.min(im))
+    im = np.copy(im)
+    im_flat = im.flatten()
 
-    im_new = relabel_sequential(im)[0]
-    return im_new
+    if mode == 'none':
+        im_new = rankdata(im_flat, method='dense')
+        im_new = np.reshape(im_new, im.shape)
+        return im_new
+
+    elif mode.startswith('clip'):
+        mask = im_flat <= 0
+        im_flat[mask] = 0
+        im_new = rankdata(im_flat, method='dense') - 1
+        im_new[mask] = 0
+        im_new = np.reshape(im_new, im.shape)
+        return im_new
+
+    elif mode.startswith('keep_zero'):
+        mask = im_flat == 0
+        im_flat[mask] = im.min() - 1
+        im_new = rankdata(im_flat, method='dense') - 1
+        im_new[mask] = 0
+        im_new = np.reshape(im_new, im.shape)
+        return im_new
+
+    elif mode.startswith('sym'):
+        mask_neg = im_flat < 0
+        im_neg = -rankdata(-im_flat[mask_neg], method='dense')
+        mask_pos = im_flat > 0
+        im_pos = rankdata(im_flat[mask_pos], method='dense')
+        im_flat[mask_pos] = im_pos
+        im_flat[mask_neg] = im_neg
+        im_new = np.reshape(im_flat, im.shape)
+        return im_new
+
+    else:
+        raise Exception("Unrecognized mode:" + mode)
 
 
 def get_border(shape, thickness=1, mode='edges', return_indices=False):
@@ -1070,9 +1178,9 @@ def insert_sphere(im, c, r, v=True, overwrite=True):
     # Obtain slices into image
     s = bbox_to_slices(bbox)
     # Generate sphere template within image boundaries
-    blank = np.ones_like(im[s], dtype=int)
-    blank[tuple(c - bbox[0:im.ndim])] = 0
-    sph = edt(blank) < r
+    blank = np.ones_like(im[s], dtype=float)
+    blank[tuple(c - bbox[0:im.ndim])] = 0.0
+    sph = spim.distance_transform_edt(blank) < r
     if overwrite:  # Clear voxles under sphere to be zero
         temp = im[s] * sph > 0
         im[s][temp] = 0
@@ -1287,9 +1395,9 @@ def extract_regions(regions, labels: list, trim=True):
     return im_new
 
 
-def size_to_seq(size, bins=None):
+def size_to_seq(size, im=None, bins=None):
     r"""
-    Converts an image of invasion size values into sequence values.
+    Converts an image of invasion size values into sequence values
 
     This is meant to accept the output of the ``porosimetry`` function.
 
@@ -1297,6 +1405,10 @@ def size_to_seq(size, bins=None):
     ----------
     size : ND-image
         The image containing invasion size values in each voxel.
+    im : ND-image, optional
+        A binary image of the porous media, with ``True`` indicating the
+        void space and ``False`` indicating the solid phase. If not given
+        then it is assumed that the solid is identified as ``size == 0``.
     bins : array_like or int (optional)
         The bins to use when converting sizes to sequence.  The default is
         to create 1 bin for each unique value in ``size``.  If an **int**
@@ -1322,44 +1434,92 @@ def size_to_seq(size, bins=None):
     # Invert the vals so smallest size has largest sequence
     vals = -(vals - vals.max() - 1) * ~solid
     # In case too many bins are given, remove empty ones
-    vals = make_contiguous(vals)
-    # Possibly simpler way?
-    #    vals = (-(size - size.max())).astype(int) + 1
-    #    vals[vals > size.max()] = 0
+    vals = make_contiguous(vals, mode='keep_zeros')
     return vals
 
 
-def seq_to_satn(seq):
+def size_to_satn(size, im=None, bins=None):
+    r"""
+    Converts an image of invasion size values into saturations
+
+    Parameters
+    ----------
+    size : ND-image
+        The image containing invasion size values in each voxel.
+    im : ND-image, optional
+        A binary image of the porous media, with ``True`` indicating the
+        void space and ``False`` indicating the solid phase. If not given
+        then it is assumed that the solid is identified as ``size == 0``.
+    bins : array_like or int (optional)
+        The bins to use when converting sizes to saturation.  The default is
+        to create 1 bin for each unique value in ``size``.  If an **int**
+        is supplied it is interpreted as the number of bins between 0 and the
+        maximum value in ``size``.  If an array is supplied it is used as
+        the bins directly.
+
+    Returns
+    -------
+    satn : ND-image
+        An ND-image the same size as ``seq`` but with sequence values replaced
+        by the fraction of void space invaded at or below the sequence number.
+        Solid voxels and uninvaded voxels are represented by 0 and -1,
+        respectively.
+    """
+    if bins is None:
+        bins = np.unique(size)
+    elif isinstance(bins, int):
+        bins = np.linspace(0, size.max(), bins)
+    if im is None:
+        im = (size != 0)
+    void_vol = im.sum()
+    satn = -np.ones_like(size, dtype=float)
+    for r in bins[-1::-1]:
+        hits = (size >= r) * (size > 0)
+        temp = hits.sum()/void_vol
+        satn[hits * (satn == -1)] = temp
+    satn *= (im > 0)
+    return satn
+
+
+def seq_to_satn(seq, im=None):
     r"""
     Converts an image of invasion sequence values to saturation values.
 
     Parameters
     ----------
     seq : ND-image
-        The image containing invasion sequence values in each voxel.
-        Note that the invasion steps must be positive integers, solid
-        voxels indicated by 0, and uninvaded voxels indicated by -1.
+        The image containing invasion sequence values in each voxel.  Solid
+        should be indicated as 0's and uninvaded voxels as -1.
+    im : ND-image, optional
+        A binary image of the porous media, with ``True`` indicating the
+        void space and ``False`` indicating the solid phase. If not given
+        then it is assumed that the solid is identified as ``seq == 0``.
 
     Returns
     -------
     satn : ND-image
-        An ND-iamge the same size as ``seq`` but with sequnece values
-        replaced by the fraction of pores invaded at or below the sequence
-        number. Solid voxels and uninvaded voxels are represented by 0 and
-        -1, respectively.
+        An ND-image the same size as ``seq`` but with sequence values replaced
+        by the fraction of void space invaded at or below the sequence number.
+        Solid voxels and uninvaded voxels are represented by 0 and -1,
+        respectively.
 
     """
-    seq = np.copy(seq).astype(int)
-    solid = seq == 0
-    uninvaded = seq == -1
-    seq = np.clip(seq, a_min=0, a_max=None)
-    seq = make_contiguous(seq)
-    b = np.bincount(seq.flatten())
-    b[0] = 0
-    c = np.cumsum(b)
-    satn = c[seq] / ((seq > 0).sum() + uninvaded.sum())
-    satn[solid] = 0.0
-    satn[uninvaded] = -1.0
+    seq = sp.copy(seq).astype(int)
+    if im is None:
+        solid_mask = seq == 0
+    else:
+        solid_mask = im == 0
+    uninvaded_mask = seq == -1
+    seq[seq <= 0] = 0
+    seq = rankdata(seq, method='dense') - 1
+    b = sp.bincount(seq)
+    if (solid_mask.sum() > 0) or (uninvaded_mask.sum() > 0):
+        b[0] = 0
+    c = sp.cumsum(b)
+    seq = np.reshape(seq, solid_mask.shape)
+    satn = c[seq]/(seq.size - solid_mask.sum())
+    satn[solid_mask] = 0
+    satn[uninvaded_mask] = -1
     return satn
 
 

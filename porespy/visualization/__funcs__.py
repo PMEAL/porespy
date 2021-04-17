@@ -1,5 +1,9 @@
 import porespy as ps
 import matplotlib.pyplot as plt
+import numpy as np
+from tqdm import tqdm
+from matplotlib import animation
+from copy import copy
 
 
 def set_mpl_style():  # pragma: no cover
@@ -47,3 +51,39 @@ def set_mpl_style():  # pragma: no cover
     if ps.settings.notebook:
         import IPython
         IPython.display.set_matplotlib_formats('svg')
+
+
+def satn_to_movie(im, satn, cmap='viridis',
+                  c_under='grey', c_over='white',
+                  v_under=1e-3, v_over=1.0, fps=10, repeat=True):
+    r"""
+
+    Notes
+    -----
+    To save animation as a file use:
+    ``ani.save('image_based_ip.gif', writer='imagemagick', fps=3)``
+    """
+    # Define nice color map
+    cmap = copy(plt.cm.get_cmap(name=cmap))
+    cmap.set_over(color=c_over)
+    cmap.set_under(color=c_under)
+
+    # Reduce inv_satn image to limited number of values to speed-up movie
+    target = np.around(satn, decimals=3)
+    seq = np.zeros_like(target)  # Empty image to place frame
+    movie = []  # List to append each frame
+    fig, ax = plt.subplots(1, 1)
+    steps = np.unique(target)[1:]
+    with tqdm(steps) as pbar:
+        for v in steps:
+            pbar.update()
+            seq += v*(target == v)
+            seq[~im] = target.max() + 10
+            frame1 = ax.imshow(seq, vmin=v_under, vmax=v_over,
+                               animated=True, cmap=cmap, origin='lower',
+                               interpolation='none')
+            movie.append([frame1])
+    ani = animation.ArtistAnimation(fig, movie, interval=int(1000/fps),
+                                    blit=True, repeat=repeat,
+                                    repeat_delay=1.0)
+    return ani
