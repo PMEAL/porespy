@@ -77,3 +77,4 @@ from ._snows import reduce_peaks
 from ._snows import trim_nearby_peaks
 from ._snows import trim_saddle_points
 from ._nlmeans import nl_means_layered
+from . import imagej
