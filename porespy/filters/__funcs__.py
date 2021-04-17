@@ -9,7 +9,7 @@ from skimage.segmentation import clear_border
 from skimage.morphology import ball, disk, square, cube, diamond, octahedron
 from porespy.tools import _check_for_singleton_axes
 from porespy.tools import fftmorphology
-from porespy.tools import get_border, subdivide
+from porespy.tools import get_border, subdivide, recombine
 from porespy.tools import unpad, extract_subsection
 from porespy.tools import ps_disk, ps_ball
 from porespy import settings
@@ -1207,31 +1207,5 @@ def chunked_func(func,
         # ims = dask.compute(res, num_workers=cores)[0]
     ims = dask.compute(res, num_workers=cores)[0]
     # Finally, put the pieces back together into a single master image, im2
-    im2 = np.zeros_like(im, dtype=ims[0].dtype)
-    for i, s in enumerate(slices):
-        # Prepare new slice objects into main and sub-sliced image
-        a = []  # Slices into main image
-        b = []  # Slices into chunked image
-        for dim in range(im.ndim):
-            if s[dim].start == 0:
-                ax = bx = 0
-            else:
-                ax = s[dim].start + halo[dim]
-                bx = halo[dim]
-            if s[dim].stop == im.shape[dim]:
-                ay = by = im.shape[dim]
-            else:
-                ay = s[dim].stop - halo[dim]
-                by = s[dim].stop - s[dim].start - halo[dim]
-            a.append(slice(ax, ay, None))
-            b.append(slice(bx, by, None))
-        # Convert lists of slices to tuples
-        a = tuple(a)
-        b = tuple(b)
-        # Insert image chunk into main image
-        try:
-            im2[a] = ims[i][b]
-        except ValueError:
-            raise IndexError('The applied filter seems to have returned a '
-                             + 'larger image that it was sent.')
+    im2 = recombine(ims=ims, slices=slices, overlap=overlap)
     return im2

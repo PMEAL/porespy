@@ -38,6 +38,7 @@ ways do NOT return a modified version of the original image.
    tools.ps_round
    tools.pad_faces
    tools.randomize_colors
+   tools.recombine
    tools.seq_to_satn
    tools.size_to_seq
    tools.subdivide
@@ -70,6 +71,7 @@ __all__ = [
     "ps_round",
     "pad_faces",
     "randomize_colors",
+    "recombine",
     "seq_to_satn",
     "size_to_seq",
     "subdivide",
@@ -98,6 +100,7 @@ from .__funcs__ import mesh_region
 from .__funcs__ import norm_to_uniform
 from .__funcs__ import overlay
 from .__funcs__ import randomize_colors
+from .__funcs__ import recombine
 from .__funcs__ import ps_ball
 from .__funcs__ import ps_disk
 from .__funcs__ import ps_rect

@@ -216,9 +216,38 @@ def subdivide(im, divs=2, overlap=0, flatten=False):
     return slices
 
 
-def recombine(shape, ims, slices, overlap):
+def recombine(ims, slices, overlap):
+    r"""
+    Recombines image chunks back into full image of original shape
+
+    Parameters
+    ----------
+    ims : list of ND-arrays
+        The chunks of the original image, which may or may not have been
+        processed.
+    slices : list of slice objects
+        The slice objects which were used to obtain the chunks in ``ims``
+    overlap : int of list ints
+        The amount of overlap used when creating chunks
+
+    Returns
+    -------
+    im : ND-array
+        An image constituted from the chunks in ``ims`` of the same shape
+        as the original image.
+    """
+    shape = [0]*ims[0].ndim
+    for s in slices:
+        for dim in range(len(slices[0])):
+            shape[dim] = max(shape[dim], s[dim].stop)
+
+    # temp = np.zeros(shape=shape)
+    # for s in slices:
+    #     temp[s] = temp[s] + 1
+
     if isinstance(overlap, int):
         overlap = [overlap]*len(shape)
+
     im = np.zeros(shape, dtype=ims[0].dtype)
     for i, s in enumerate(slices):
         # Prepare new slice objects into main and sub-sliced image
