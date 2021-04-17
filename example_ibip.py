@@ -26,6 +26,3 @@ plt.imshow(inv_seq, cmap=cmap, vmin=1e-3, interpolation='none', origin='lower')
 
 # %%
 mov = ps.visualization.satn_to_movie(im, inv_satn)
-
-
-

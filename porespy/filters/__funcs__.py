@@ -15,13 +15,6 @@ from porespy import settings
 from porespy.tools import get_tqdm
 from loguru import logger
 tqdm = get_tqdm()
-from porespy.tools import randomize_colors, fftmorphology
-from porespy.tools import get_border, extend_slice, extract_subsection
-from porespy.tools import make_contiguous
-from porespy.tools import _create_alias_map
-from porespy.tools import ps_disk, ps_ball
-import numba
-import sys
 
 
 def apply_padded(im, pad_width, func, pad_val=1, **kwargs):
@@ -194,9 +187,6 @@ def distance_transform_lin(im, axis=0, mode="both"):
         e = np.pad(d, pad_width=ax[axis], mode="constant", constant_values=0)
     f = im * (b + e)
     return f
-
-
-
 
 
 def find_disconnected_voxels(im, conn=None):
@@ -853,8 +843,8 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
                 imtemp = spim.binary_erosion(input=impad,
                                              structure=strel(r))
             if access_limited:
-                    imtemp = trim_disconnected_blobs(imtemp, inlets,
-                                                     strel=strel_2(1))
+                imtemp = trim_disconnected_blobs(imtemp, inlets,
+                                                 strel=strel_2(1))
             if parallel:
                 imtemp = chunked_func(func=spim.binary_dilation,
                                       input=imtemp, structure=strel(r),
@@ -873,8 +863,8 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
         for r in tqdm(sizes, **settings.tqdm):
             imtemp = dt >= r
             if access_limited:
-                    imtemp = trim_disconnected_blobs(imtemp, inlets,
-                                                     strel=strel_2(1))
+                imtemp = trim_disconnected_blobs(imtemp, inlets,
+                                                 strel=strel_2(1))
             if np.any(imtemp):
                 imtemp = edt(~imtemp) < r
                 imresults[(imresults == 0) * imtemp] = r
@@ -883,8 +873,8 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
         for r in tqdm(sizes, **settings.tqdm):
             imtemp = dt >= r
             if access_limited:
-                    imtemp = trim_disconnected_blobs(imtemp, inlets,
-                                                     strel=strel_2(1))
+                imtemp = trim_disconnected_blobs(imtemp, inlets,
+                                                 strel=strel_2(1))
             if np.any(imtemp):
                 if parallel:
                     imtemp = chunked_func(func=spim.binary_dilation,
@@ -1294,5 +1284,3 @@ def chunked_func(func,
             raise IndexError('The applied filter seems to have returned a '
                              + 'larger image that it was sent.')
     return im2
-
-
