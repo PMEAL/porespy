@@ -11,7 +11,7 @@ class IBIPTest():
     def setup_class(self):
         np.random.seed(0)
         self.im = ps.generators.lattice_spheres(shape=[101, 101],
-                                                radius=5, spacing=25,
+                                                r=5, spacing=25,
                                                 offset=[5, 5], lattice='tri')
         bd = np.zeros_like(self.im)
         bd[:, 0] = True
@@ -44,7 +44,7 @@ class IBIPTest():
     def test_mio_w_trapping(self):
         np.random.seed(0)
         im = ps.generators.overlapping_spheres(shape=[100, 100],
-                                               radius=6, porosity=0.6)
+                                               r=6, porosity=0.6)
         bd = np.zeros_like(im)
         bd[:, 0] = True
         inv = ps.filters.porosimetry(im, inlets=bd)
