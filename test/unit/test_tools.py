@@ -329,7 +329,7 @@ class ToolsTest():
 
     def test_marching_map(self):
         im = ps.generators.lattice_spheres(shape=[101, 101],
-                                           radius=5, spacing=25,
+                                           r=5, spacing=25,
                                            offset=[5, 5], lattice='tri')
         bd = np.zeros_like(im)
         bd[:, 0] = True

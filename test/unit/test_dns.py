@@ -10,7 +10,7 @@ class DNSTest():
 
     def test_tortuosity_2D_lattice_spheres(self):
         im = ps.generators.lattice_spheres(shape=[200, 200],
-                                           radius=8, spacing=26)
+                                           r=8, spacing=26)
         t = ps.dns.tortuosity(im=im, axis=1, solver_family='scipy')
         assert np.around(t.tortuosity, decimals=6) == 1.359947
 
@@ -21,7 +21,7 @@ class DNSTest():
 
     def test_tortuosity_different_solvers(self):
         im = ps.generators.lattice_spheres(shape=[200, 200],
-                                           radius=8, spacing=26)
+                                           r=8, spacing=26)
         t = ps.dns.tortuosity(im=im, axis=1, solver_family='scipy',
                               solver_type='cg')
         a = 1.359947

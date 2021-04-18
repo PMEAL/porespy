@@ -16,20 +16,20 @@ class GeneratorTest():
         X = Y = 100
         # Fibers don't work in 2D
         with pytest.raises(Exception):
-            im = ps.generators.cylinders(shape=[X, Y], radius=4, ncylinders=20)
+            im = ps.generators.cylinders(shape=[X, Y], r=4, ncylinders=20)
         # But this works
-        im = ps.generators.cylinders(shape=[1, X, Y], radius=1, ncylinders=20)
+        im = ps.generators.cylinders(shape=[1, X, Y], r=1, ncylinders=20)
         assert im.dtype == bool
         assert np.shape(im.squeeze()) == (X, Y)
-        im = ps.generators.cylinders(shape=[50, 50, 50], radius=1, ncylinders=20)
+        im = ps.generators.cylinders(shape=[50, 50, 50], r=1, ncylinders=20)
         assert np.shape(im.squeeze()) == (50, 50, 50)
         # Now, testing cylinders with porosity as input
         # max_iter must at least be 3
         with pytest.raises(Exception):
             im = ps.generators.cylinders(
-                shape=[50, 50, 50], radius=4, porosity=0.5, max_iter=2)
+                shape=[50, 50, 50], r=4, porosity=0.5, max_iter=2)
         im = ps.generators.cylinders(
-            shape=[50, 50, 50], radius=3, porosity=0.5, max_iter=10)
+            shape=[50, 50, 50], r=3, porosity=0.5, max_iter=10)
         assert im.dtype == bool
         assert np.shape(im.squeeze()) == (50, 50, 50)
         porosity = im.sum() / im.size
@@ -138,7 +138,7 @@ class GeneratorTest():
         phis = np.arange(0.1, 0.9, 0.2)
         for phi in phis:
             im = ps.generators.overlapping_spheres(
-                shape=[101, 101], radius=5, porosity=phi)
+                shape=[101, 101], r=5, porosity=phi)
             phi_actual = im.sum() / np.size(im)
             assert abs(phi_actual - phi) < 0.02
 
@@ -146,7 +146,7 @@ class GeneratorTest():
         phis = np.arange(0.1, 0.9, 0.2)
         for phi in phis:
             im = ps.generators.overlapping_spheres(
-                shape=[100, 100, 50], radius=8, porosity=phi)
+                shape=[100, 100, 50], r=8, porosity=phi)
             phi_actual = im.sum() / np.size(im)
             assert abs(phi_actual - phi) < 0.02
 
@@ -162,37 +162,37 @@ class GeneratorTest():
     def test_voronoi_edges(self):
         np.random.seed(0)
         im = ps.generators.voronoi_edges(
-            shape=[50, 50, 50], radius=2, ncells=25, flat_faces=True)
+            shape=[50, 50, 50], r=2, ncells=25, flat_faces=True)
         top_slice = im[:, :, 0]
         assert np.sum(top_slice) == 1409
 
     def test_lattice_spheres_square(self):
         im = ps.generators.lattice_spheres(
-            shape=[101, 101], radius=5, spacing=10, lattice='sc')
+            shape=[101, 101], r=5, spacing=10, lattice='sc')
         labels, N = spim.label(input=~im)
         assert N == 100
 
     def test_lattice_spheres_triangular(self):
         im = ps.generators.lattice_spheres(
-            shape=[101, 101], radius=5, spacing=15, lattice='triangular')
+            shape=[101, 101], r=5, spacing=15, lattice='triangular')
         labels, N = spim.label(input=~im)
         assert N == 85
 
     def test_lattice_spheres_sc(self):
         im = ps.generators.lattice_spheres(
-            shape=[101, 101, 101], radius=4, spacing=10, lattice='sc')
+            shape=[101, 101, 101], r=4, spacing=10, lattice='sc')
         labels, N = spim.label(input=~im)
         assert N == 1000
 
     def test_lattice_spheres_fcc(self):
         im = ps.generators.lattice_spheres(
-            shape=[101, 101, 101], radius=4, spacing=12, lattice='fcc')
+            shape=[101, 101, 101], r=4, spacing=12, lattice='fcc')
         labels, N = spim.label(input=~im)
         assert N == 2457
 
     def test_lattice_spheres_bcc(self):
         im = ps.generators.lattice_spheres(
-            shape=[101, 101, 101], radius=4, spacing=12, lattice='bcc')
+            shape=[101, 101, 101], r=4, spacing=12, lattice='bcc')
         labels, N = spim.label(input=~im)
         assert N == 1241
 
@@ -202,66 +202,66 @@ class GeneratorTest():
 
     def test_RSA_2d_contained(self):
         im = np.zeros([100, 100], dtype=int)
-        im = ps.generators.RSA(im, radius=10, volume_fraction=0.5, mode='contained')
+        im = ps.generators.RSA(im, r=10, volume_fraction=0.5, mode='contained')
         im = np.pad(im, pad_width=1, mode='constant', constant_values=False)
         lt = ps.filters.local_thickness(im)
         assert len(np.unique(lt)) == 2
 
     def test_RSA_2d_extended(self):
         im = np.zeros([100, 100], dtype=int)
-        im = ps.generators.RSA(im, radius=10, volume_fraction=0.5, mode='extended')
+        im = ps.generators.RSA(im, r=10, volume_fraction=0.5, mode='extended')
         im = np.pad(im, pad_width=1, mode='constant', constant_values=False)
         lt = ps.filters.local_thickness(im)
         assert len(np.unique(lt)) > 2
 
     def test_RSA_3d_contained(self):
         im = np.zeros([100, 100, 100], dtype=int)
-        im = ps.generators.RSA(im, radius=10, volume_fraction=0.5, mode='contained')
+        im = ps.generators.RSA(im, r=10, volume_fraction=0.5, mode='contained')
         lt = ps.filters.local_thickness(im, sizes=[10, 9, 8, 7, 6, 5])
         assert len(np.unique(lt)) == 2
 
     def test_RSA_3d_extended(self):
         im = np.zeros([100, 100, 100], dtype=int)
-        im = ps.generators.RSA(im, radius=10, volume_fraction=0.5, mode='extended')
+        im = ps.generators.RSA(im, r=10, volume_fraction=0.5, mode='extended')
         im = np.pad(im, pad_width=1, mode='constant', constant_values=False)
         lt = ps.filters.local_thickness(im, sizes=[10, 9, 8, 7, 6, 5])
         assert len(np.unique(lt)) > 2
 
     def test_RSA_2d_seqential_additions(self):
         im = np.zeros([100, 100], dtype=int)
-        im = ps.generators.RSA(im, radius=10)
+        im = ps.generators.RSA(im, r=10)
         phi1 = ps.metrics.porosity(im)
-        im = ps.generators.RSA(im, radius=5)
+        im = ps.generators.RSA(im, r=5)
         phi2 = ps.metrics.porosity(im)
         assert phi2 > phi1
 
     def test_RSA_preexisting_structure(self):
         im = ps.generators.blobs(shape=[200, 200, 200])
         phi1 = im.sum()/im.size
-        im = ps.generators.RSA(im, radius=8, n_max=200, mode='contained')
+        im = ps.generators.RSA(im, r=8, n_max=200, mode='contained')
         phi2 = im.sum()/im.size
         assert phi2 > phi1
         # Ensure that 3 passes through RSA fills up image
-        im = ps.generators.RSA(im, radius=8, n_max=200, mode='contained')
-        im = ps.generators.RSA(im, radius=8, n_max=200, mode='contained')
-        im = ps.generators.RSA(im, radius=8, n_max=200, mode='contained')
+        im = ps.generators.RSA(im, r=8, n_max=200, mode='contained')
+        im = ps.generators.RSA(im, r=8, n_max=200, mode='contained')
+        im = ps.generators.RSA(im, r=8, n_max=200, mode='contained')
         phi1 = im.sum()/im.size
-        im = ps.generators.RSA(im, radius=8, n_max=200, mode='contained')
+        im = ps.generators.RSA(im, r=8, n_max=200, mode='contained')
         phi2 = im.sum()/im.size
         assert phi2 == phi1
 
     def test_RSA_shape(self):
-        rsa = ps.generators.RSA(im_or_shape=[200, 200], radius=10)
+        rsa = ps.generators.RSA(im_or_shape=[200, 200], r=10)
         assert np.all(rsa.shape == (200, 200))
 
     def test_RSA_clearance(self):
         np.random.seed(0)
-        rsa0 = ps.generators.RSA(im_or_shape=[200, 200], radius=9, clearance=0)
+        rsa0 = ps.generators.RSA(im_or_shape=[200, 200], r=9, clearance=0)
         np.random.seed(0)
-        rsa2p = ps.generators.RSA(im_or_shape=[200, 200], radius=9, clearance=2)
+        rsa2p = ps.generators.RSA(im_or_shape=[200, 200], r=9, clearance=2)
         assert rsa0.sum() > rsa2p.sum()
         np.random.seed(0)
-        rsa1n = ps.generators.RSA(im_or_shape=[200, 200], radius=9, clearance=-1)
+        rsa1n = ps.generators.RSA(im_or_shape=[200, 200], r=9, clearance=-1)
         assert rsa0.sum() < rsa1n.sum()
 
     def test_line_segment(self):

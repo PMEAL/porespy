@@ -14,13 +14,13 @@ class MetricsTest():
     def setup_class(self):
         np.random.seed(0)
         self.im2D = ps.generators.lattice_spheres(shape=[101, 101],
-                                                  radius=5, spacing=15,
+                                                  r=5, spacing=15,
                                                   lattice='square')
         self.im2D_big = ps.generators.lattice_spheres(shape=[500, 500],
-                                                      radius=10, spacing=25,
+                                                      r=10, spacing=25,
                                                       lattice='square')
         self.im3D = ps.generators.lattice_spheres(shape=[51, 51, 51],
-                                                  radius=4, spacing=14,
+                                                  r=4, spacing=14,
                                                   lattice='cubic')
         self.blobs = ps.generators.blobs(shape=[101, 101, 101], porosity=0.5,
                                          blobiness=[1, 2, 3])
@@ -84,7 +84,7 @@ class MetricsTest():
 
     def test_porosity_profile(self):
         im = ps.generators.lattice_spheres(shape=[999, 999],
-                                           radius=15, spacing=38)
+                                           r=15, spacing=38)
         p = ps.metrics.porosity_profile(im, axis=0)
         assert p.max() == 1.0
         assert_allclose(p.min(), 0.24524524524524523)
@@ -164,12 +164,12 @@ class MetricsTest():
 
     def test_representative_elementary_volume(self):
         im = ps.generators.lattice_spheres(shape=[999, 999],
-                                           radius=15, offset=4)
+                                           r=15, offset=4)
         rev = ps.metrics.representative_elementary_volume(im)
         assert_allclose(np.average(rev.porosity), im.sum() / im.size, rtol=1e-1)
 
         im = ps.generators.lattice_spheres(shape=[151, 151, 151],
-                                           radius=9, offset=4)
+                                           r=9, offset=4)
         rev = ps.metrics.representative_elementary_volume(im)
         assert_allclose(np.average(rev.porosity), im.sum() / im.size, rtol=1e-1)
 
