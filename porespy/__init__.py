@@ -59,10 +59,8 @@ Use some filters from PoreSpy:
 
 from .__version__ import __version__
 from .tools.__utils__ import Settings as _Settings
-from .tools.__utils__ import _is_ipython_notebook
 
 settings = _Settings()
-settings.notebook = False
 
 from . import tools
 from . import filters
@@ -72,7 +70,6 @@ from . import generators
 from . import dns
 from . import visualization
 from . import io
-from . import imagej
 
 from .visualization import imshow
 
