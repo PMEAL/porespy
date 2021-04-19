@@ -4,8 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SNOW network extraction (advanced) &#8212; PoreSpy  documentation</title>
     
   <link href="../../../_static/css/theme.css" rel="stylesheet" />
@@ -885,7 +884,7 @@ div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
 </style>
-<section id="SNOW-network-extraction-(advanced)">
+<div class="section" id="SNOW-network-extraction-(advanced)">
 <h1>SNOW network extraction (advanced)<a class="headerlink" href="#SNOW-network-extraction-(advanced)" title="Permalink to this headline">¶</a></h1>
 <p>The SNOW algorithm, <a class="reference external" href="https://doi.org/10.1103/PhysRevE.96.023307">published in Physical Review E</a>, uses a marker-based watershed segmentation algorithm to partition an image into regions belonging to each pore. The main contribution of the SNOW algorithm is to find a suitable set of initial markers in the image so that the watershed is not over-segmented. SNOW is an acronym for Sub-Network of an Over-segmented Watershed. PoreSpy includes a predefined function called <code class="docutils literal notranslate"><span class="pre">snow</span></code> that applies all
 the steps automatically, but this example will illustrate the individual steps explicitly on a 3D image.</p>
@@ -909,7 +908,7 @@ np.random.seed(10)
 </pre></div>
 </div>
 </div>
-<section id="Generate-artificial-image">
+<div class="section" id="Generate-artificial-image">
 <h2>Generate artificial image<a class="headerlink" href="#Generate-artificial-image" title="Permalink to this headline">¶</a></h2>
 <p>One of the main aims when developing the SNOW algorithm was to extract networks from images other than sandstone, which is the main material studied by geoscientists. For this demonstration we’ll use a high porosity (&gt;85%) image of fibrous media.</p>
 <div class="nbinput docutils container">
@@ -917,7 +916,7 @@ np.random.seed(10)
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>im = ps.generators.cylinders(shape=[300, 300, 300], radius=5, ncylinders=200)
+<span></span>im = ps.generators.cylinders(shape=[300, 300, 300], r=5, ncylinders=200)
 fig, ax = plt.subplots()
 ax.imshow(ps.visualization.show_planes(im), cmap=plt.cm.bone);
 </pre></div>
@@ -935,8 +934,8 @@ ax.imshow(ps.visualization.show_planes(im), cmap=plt.cm.bone);
 <div class="output_area docutils container">
 <img alt="../../../_images/examples_networks_tutorials_snow_advanced_6_1.svg" src="../../../_images/examples_networks_tutorials_snow_advanced_6_1.svg" /></div>
 </div>
-</section>
-<section id="Step-by-step-application-of-the-SNOW-algorithm">
+</div>
+<div class="section" id="Step-by-step-application-of-the-SNOW-algorithm">
 <h2>Step-by-step application of the SNOW algorithm<a class="headerlink" href="#Step-by-step-application-of-the-SNOW-algorithm" title="Permalink to this headline">¶</a></h2>
 <p>Fist let’s find all the peaks of the distance transform which are theoretically suppose to lie at the center of each pore region. In reality this process finds too many peaks, but we’ll deal with this later.</p>
 <div class="nbinput nblast docutils container">
@@ -1045,9 +1044,9 @@ ps.io.to_vtk(im, filename=&#39;extracted_network&#39;)
 </pre></div>
 </div>
 </div>
-<p><img alt="a92e1a50fad04aabbf17c566679a1538" class="no-scaled-link" src="https://user-images.githubusercontent.com/14086031/113048590-b68d2480-9170-11eb-9c10-06e6d53ee95d.png" style="width: 350px;" /></p>
-</section>
-</section>
+<p><img alt="d000f2f3e92242548b989f073c01e23e" class="no-scaled-link" src="https://user-images.githubusercontent.com/14086031/113048590-b68d2480-9170-11eb-9c10-06e6d53ee95d.png" style="width: 350px;" /></p>
+</div>
+</div>
 
 
               </div>
@@ -1073,7 +1072,7 @@ ps.io.to_vtk(im, filename=&#39;extracted_network&#39;)
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
 </p>
     </div>
     

@@ -4,8 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Import packages &#8212; PoreSpy  documentation</title>
     
   <link href="../../../_static/css/theme.css" rel="stylesheet" />
@@ -899,7 +898,7 @@ div.rendered_html tbody tr:hover {
 </style>
 <p>The following recipe illustrates how to simulate mercury intrusion porosimetry on an image using the <code class="docutils literal notranslate"><span class="pre">porosimetry</span></code> filter. The PoreSpy implementation is equivalent to ‘morphological image opening’ of <a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S0309170800000567?via%3Dihub">Hilpert et al</a>. PoreSpy’s implementation uses distance transforms instead of morphological operations so it is generally faster, especially for larger sphere sizes since binary opening slows down with larger
 structuring elements.</p>
-<section id="Import-packages">
+<div class="section" id="Import-packages">
 <h1>Import packages<a class="headerlink" href="#Import-packages" title="Permalink to this headline">¶</a></h1>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
@@ -912,8 +911,8 @@ ps.visualization.set_mpl_style()
 </pre></div>
 </div>
 </div>
-</section>
-<section id="Create-image-and-variables">
+</div>
+<div class="section" id="Create-image-and-variables">
 <h1>Create image and variables<a class="headerlink" href="#Create-image-and-variables" title="Permalink to this headline">¶</a></h1>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
@@ -933,10 +932,10 @@ plt.show();
 <div class="output_area docutils container">
 <img alt="../../../_images/examples_filters_howtos_porosimetry_4_0.svg" src="../../../_images/examples_filters_howtos_porosimetry_4_0.svg" /></div>
 </div>
-</section>
-<section id="Apply-filter-function">
+</div>
+<div class="section" id="Apply-filter-function">
 <h1>Apply filter function<a class="headerlink" href="#Apply-filter-function" title="Permalink to this headline">¶</a></h1>
-<section id="access_limited">
+<div class="section" id="access_limited">
 <h2>access_limited<a class="headerlink" href="#access_limited" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
@@ -994,8 +993,8 @@ plt.show();
 <div class="output_area docutils container">
 <img alt="../../../_images/examples_filters_howtos_porosimetry_9_0.svg" src="../../../_images/examples_filters_howtos_porosimetry_9_0.svg" /></div>
 </div>
-</section>
-</section>
+</div>
+</div>
 
 
               </div>
@@ -1021,7 +1020,7 @@ plt.show();
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
 </p>
     </div>
     

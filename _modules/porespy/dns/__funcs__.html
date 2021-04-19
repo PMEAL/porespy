@@ -260,6 +260,7 @@
             <span class="n">fd</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
         <span class="c1"># TODO: change Exception to ModuleNotFoundError (fix OpenPNM first)</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;pypardiso not found, using cg from scipy&#39;</span><span class="p">)</span>
             <span class="n">fd</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;solver_family&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;scipy&#39;</span>
             <span class="n">fd</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;solver_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;cg&#39;</span>
             <span class="n">fd</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
@@ -271,7 +272,7 @@
     <span class="n">delta_C</span> <span class="o">=</span> <span class="n">C_in</span> <span class="o">-</span> <span class="n">C_out</span>
     <span class="n">L</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span>
     <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">/</span> <span class="n">L</span>
-    <span class="n">N_A</span> <span class="o">=</span> <span class="n">A</span> <span class="o">/</span> <span class="n">L</span> <span class="o">*</span> <span class="n">delta_C</span>
+    <span class="n">N_A</span> <span class="o">=</span> <span class="n">A</span> <span class="o">/</span> <span class="p">(</span><span class="n">L</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">delta_C</span>  <span class="c1"># -1 because BCs are put inside domain, see #495</span>
     <span class="n">Deff</span> <span class="o">=</span> <span class="n">rate_in</span> <span class="o">/</span> <span class="n">N_A</span>
     <span class="n">tau</span> <span class="o">=</span> <span class="n">eps</span> <span class="o">/</span> <span class="n">Deff</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span>
@@ -318,7 +319,7 @@
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
 </p>
     </div>
     

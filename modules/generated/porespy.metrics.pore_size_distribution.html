@@ -4,8 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>pore_size_distribution &#8212; PoreSpy  documentation</title>
     
   <link href="../../_static/css/theme.css" rel="stylesheet" />
@@ -849,7 +848,7 @@
               
               <div>
                 
-  <section id="pore-size-distribution">
+  <div class="section" id="pore-size-distribution">
 <h1>pore_size_distribution<a class="headerlink" href="#pore-size-distribution" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="porespy.metrics.pore_size_distribution">
@@ -874,17 +873,27 @@ user can apply the scaling to the returned results after the fact.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><strong>result</strong> – A named-tuple containing several values:</p>
-<p><em>R</em> or <em>logR</em> - radius, equivalent to <code class="docutils literal notranslate"><span class="pre">bin_centers</span></code></p>
-<p><em>pdf</em> - probability density function</p>
-<p><em>cdf</em> - cumulative density function</p>
-<p><em>satn</em> - phase saturation in differential form.  For the cumulative
+<dd class="field-even"><p><p><strong>result</strong> – A named-tuple containing the following attributes which can be accessed
+by name:</p>
+<dl class="simple">
+<dt><em>R</em> or <em>logR</em></dt><dd><p>Radius, equivalent to <code class="docutils literal notranslate"><span class="pre">bin_centers</span></code></p>
+</dd>
+<dt><em>pdf</em></dt><dd><p>Probability density function</p>
+</dd>
+<dt><em>cdf</em></dt><dd><p>Cumulative density function</p>
+</dd>
+<dt><em>satn</em></dt><dd><p>Phase saturation in differential form.  For the cumulative
 saturation, just use <em>cfd</em> which is already normalized to 1.</p>
-<p><em>bin_centers</em> - the center point of each bin</p>
-<p><em>bin_edges</em> - locations of bin divisions, including 1 more value than
+</dd>
+<dt><em>bin_centers</em></dt><dd><p>The center point of each bin</p>
+</dd>
+<dt><em>bin_edges</em></dt><dd><p>Locations of bin divisions, including 1 more value than
 the number of bins</p>
-<p><em>bin_widths</em> - useful for passing to the <code class="docutils literal notranslate"><span class="pre">width</span></code> argument of
+</dd>
+<dt><em>bin_widths</em></dt><dd><p>Useful for passing to the <code class="docutils literal notranslate"><span class="pre">width</span></code> argument of
 <code class="docutils literal notranslate"><span class="pre">matplotlib.pyplot.bar</span></code></p>
+</dd>
+</dl>
 </p>
 </dd>
 <dt class="field-odd">Return type</dt>
@@ -899,7 +908,7 @@ scale the input image by the voxel size first (<code class="docutils literal not
 <p><a class="reference external" href="https://porespy.org/examples/metrics/pore_size_distribution.html">Click here</a> to view online example.</p>
 </dd></dl>
 
-</section>
+</div>
 
 
               </div>
@@ -925,7 +934,7 @@ scale the input image by the voxel size first (<code class="docutils literal not
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
 </p>
     </div>
     

@@ -4,8 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Using regionprops_3d to analyze properties of each pore &#8212; PoreSpy  documentation</title>
     
   <link href="../../../_static/css/theme.css" rel="stylesheet" />
@@ -915,7 +914,7 @@ div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
 </style>
-<section id="Using-regionprops_3d-to-analyze-properties-of-each-pore">
+<div class="section" id="Using-regionprops_3d-to-analyze-properties-of-each-pore">
 <h1>Using regionprops_3d to analyze properties of each pore<a class="headerlink" href="#Using-regionprops_3d-to-analyze-properties-of-each-pore" title="Permalink to this headline">¶</a></h1>
 <p>The <code class="docutils literal notranslate"><span class="pre">regionprops</span></code> function included in <em>Scikit-image</em> is pretty thorough, and the recent version of <em>Scikit-image</em> (&gt;0.14) vastly increase support for 3D images. Nonetheless, there are still a handful of features and properties that are useful for porous media analysis. The <code class="docutils literal notranslate"><span class="pre">regionprops_3d</span></code> in <em>PoreSpy</em> aims to address thsi need, and it’s use is illustrated here.</p>
 <div class="nbinput nblast docutils container">
@@ -932,7 +931,7 @@ np.random.seed(1)
 </pre></div>
 </div>
 </div>
-<section id="Generating-a-test-image">
+<div class="section" id="Generating-a-test-image">
 <h2>Generating a test image<a class="headerlink" href="#Generating-a-test-image" title="Permalink to this headline">¶</a></h2>
 <p>Start by generating a test image using the <code class="docutils literal notranslate"><span class="pre">generators</span></code> module in <em>PoreSpy</em>.</p>
 <div class="nbinput docutils container">
@@ -952,8 +951,8 @@ ax.imshow(im, cmap=plt.cm.inferno);
 <div class="output_area docutils container">
 <img alt="../../../_images/examples_metrics_tutorials_regionprops_3d_3_0.svg" src="../../../_images/examples_metrics_tutorials_regionprops_3d_3_0.svg" /></div>
 </div>
-</section>
-<section id="Segementing-void-space-into-regions-for-individual-analysis">
+</div>
+<div class="section" id="Segementing-void-space-into-regions-for-individual-analysis">
 <h2>Segementing void space into regions for individual analysis<a class="headerlink" href="#Segementing-void-space-into-regions-for-individual-analysis" title="Permalink to this headline">¶</a></h2>
 <p>Next, we need to segment the image into discrete pores, which will become the <em>regions</em> that we analyze. For this purpose we’ll use the SNOW algorithm, which helps to find true local maximums in the distance transform that are used as markers in the <em>watershed</em> segementation.</p>
 <div class="nbinput nblast docutils container">
@@ -982,8 +981,8 @@ ax.imshow(regions, cmap=plt.cm.inferno);
 <div class="output_area docutils container">
 <img alt="../../../_images/examples_metrics_tutorials_regionprops_3d_6_0.svg" src="../../../_images/examples_metrics_tutorials_regionprops_3d_6_0.svg" /></div>
 </div>
-</section>
-<section id="Applying-regionsprops_3d">
+</div>
+<div class="section" id="Applying-regionsprops_3d">
 <h2>Applying regionsprops_3d<a class="headerlink" href="#Applying-regionsprops_3d" title="Permalink to this headline">¶</a></h2>
 <p>Now that the void space has been segmented into discrete regions, it’s possible to extract information about each region using <code class="docutils literal notranslate"><span class="pre">regionsprops_3d</span></code>.</p>
 <blockquote>
@@ -1002,8 +1001,8 @@ ax.imshow(regions, cmap=plt.cm.inferno);
 <div><p><strong>NOTE:</strong> The <code class="docutils literal notranslate"><span class="pre">regionprops_3d</span></code> function in <em>PoreSpy</em> is compatible with the <code class="docutils literal notranslate"><span class="pre">regionsprops</span></code> function in <em>Scikit-image</em>, which returns the results in a somewhat confusing format. An object is created for each region, and the properites of that region can be accessed as attributes of the object (e.g. <code class="docutils literal notranslate"><span class="pre">obj[10].area</span></code>). This makes it somewhat annoying, since all the <code class="docutils literal notranslate"><span class="pre">area</span></code> values cannot be accessed as a single array (<em>PoreSpy</em> has a function to address this, described below), but there is
 another larger <em>gotcha</em>: Each of the region objects are collected in a list like <code class="docutils literal notranslate"><span class="pre">[obj1,</span> <span class="pre">obj2,</span> <span class="pre">...]</span></code>, <strong>BUT</strong> all regions labelled with 0 are ignored (which is solid phase in this example), so the object located in position 0 of the list corresponds to region 1. Hence, users must be careful to index into the list correctly.</p>
 </div></blockquote>
-</section>
-<section id="Listing-all-available-properties">
+</div>
+<div class="section" id="Listing-all-available-properties">
 <h2>Listing all available properties<a class="headerlink" href="#Listing-all-available-properties" title="Permalink to this headline">¶</a></h2>
 <p>Let’s look at some of the properties for the regions, starting by printing a list of all available properties for a given region:</p>
 <div class="nbinput docutils container">
@@ -1025,8 +1024,8 @@ print(attrs)
 [&#39;label&#39;, &#39;slice&#39;, &#39;mask&#39;, &#39;slices&#39;, &#39;volume&#39;, &#39;bbox_volume&#39;, &#39;border&#39;, &#39;dt&#39;, &#39;inscribed_sphere&#39;, &#39;sphericity&#39;, &#39;skeleton&#39;, &#39;surface_area&#39;, &#39;surface_mesh_vertices&#39;, &#39;surface_mesh_simplices&#39;, &#39;convex_volume&#39;, &#39;area&#39;, &#39;bbox&#39;, &#39;bbox_area&#39;, &#39;centroid&#39;, &#39;convex_area&#39;, &#39;convex_image&#39;, &#39;coords&#39;, &#39;eccentricity&#39;, &#39;equivalent_diameter&#39;, &#39;euler_number&#39;, &#39;extent&#39;, &#39;filled_area&#39;, &#39;filled_image&#39;, &#39;image&#39;, &#39;inertia_tensor&#39;, &#39;inertia_tensor_eigvals&#39;, &#39;intensity_image&#39;, &#39;local_centroid&#39;, &#39;max_intensity&#39;, &#39;mean_intensity&#39;, &#39;min_intensity&#39;, &#39;major_axis_length&#39;, &#39;minor_axis_length&#39;, &#39;moments&#39;, &#39;moments_central&#39;, &#39;moments_hu&#39;, &#39;moments_normalized&#39;, &#39;orientation&#39;, &#39;perimeter&#39;, &#39;solidity&#39;, &#39;weighted_centroid&#39;, &#39;weighted_local_centroid&#39;, &#39;weighted_moments&#39;, &#39;weighted_moments_central&#39;, &#39;weighted_moments_hu&#39;, &#39;weighted_moments_normalized&#39;]
 </pre></div></div>
 </div>
-</section>
-<section id="Analyze-properties-for-a-single-region">
+</div>
+<div class="section" id="Analyze-properties-for-a-single-region">
 <h2>Analyze properties for a single region<a class="headerlink" href="#Analyze-properties-for-a-single-region" title="Permalink to this headline">¶</a></h2>
 <p>Now let’s look at some of the properties for each region, first view image of the region in isolation</p>
 <div class="nbinput docutils container">
@@ -1096,8 +1095,8 @@ ax.imshow(r.image + 1.0*r.convex_image);
 Solidity: 0.874
 </pre></div></div>
 </div>
-</section>
-<section id="Extracting-one-property-for-all-regions-as-an-array">
+</div>
+<div class="section" id="Extracting-one-property-for-all-regions-as-an-array">
 <h2>Extracting one property for all regions as an array<a class="headerlink" href="#Extracting-one-property-for-all-regions-as-an-array" title="Permalink to this headline">¶</a></h2>
 <p>As mentioned above, the <em>list</em> of objects that are returned by the <code class="docutils literal notranslate"><span class="pre">regionprops_3d</span></code> funciton is a bit inconvenient for accessing one piece of information for all regions at once. <em>PoreSpy</em> has a function called <code class="docutils literal notranslate"><span class="pre">props_to_DataFrame</span></code> which helps in this regard by generating a Pandas DataFrame object with all of the <em>key metrics</em> listed as Numpy arrays in each column. <em>Key metrics</em> refers to scalar values like area and solidity.</p>
 <div class="nbinput nblast docutils container">
@@ -1170,8 +1169,8 @@ solidity                0.915254
 Name: 0, dtype: float64
 </pre></div></div>
 </div>
-</section>
-<section id="Creating-a-composite-image-of-region-images">
+</div>
+<div class="section" id="Creating-a-composite-image-of-region-images">
 <h2>Creating a composite image of region images<a class="headerlink" href="#Creating-a-composite-image-of-region-images" title="Permalink to this headline">¶</a></h2>
 <p>Another useful function available in <em>PoreSpy</em> is <code class="docutils literal notranslate"><span class="pre">prop_to_image</span></code>, which can create an image from the various subimages available on each region.</p>
 <div class="nbinput docutils container">
@@ -1192,8 +1191,8 @@ ax.imshow(sph + 0.5*(~im) , cmap=plt.cm.inferno);
 <div class="output_area docutils container">
 <img alt="../../../_images/examples_metrics_tutorials_regionprops_3d_26_0.svg" src="../../../_images/examples_metrics_tutorials_regionprops_3d_26_0.svg" /></div>
 </div>
-</section>
-<section id="Creating-a-colorized-image-based-on-region-properties">
+</div>
+<div class="section" id="Creating-a-colorized-image-based-on-region-properties">
 <h2>Creating a colorized image based on region properties<a class="headerlink" href="#Creating-a-colorized-image-based-on-region-properties" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">prop_to_image</span></code> function can also accept a scalar property which will result in an image of the regions colorized according to the local value of that property.</p>
 <div class="nbinput docutils container">
@@ -1215,8 +1214,8 @@ ax.imshow(sph + 0.5*(~im) , cmap=plt.cm.jet);
 <img alt="../../../_images/examples_metrics_tutorials_regionprops_3d_28_0.svg" src="../../../_images/examples_metrics_tutorials_regionprops_3d_28_0.svg" /></div>
 </div>
 <p>An interesting result can be seen where the regions at the edges are darker signifying more <em>solidity</em>. This is because the straight edges conform exactly to their convex hulls.</p>
-</section>
-</section>
+</div>
+</div>
 
 
               </div>
@@ -1242,7 +1241,7 @@ ax.imshow(sph + 0.5*(~im) , cmap=plt.cm.jet);
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
 </p>
     </div>
     

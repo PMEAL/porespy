@@ -4,8 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>find_outer_region &#8212; PoreSpy  documentation</title>
     
   <link href="../../_static/css/theme.css" rel="stylesheet" />
@@ -849,11 +848,11 @@
               
               <div>
                 
-  <section id="find-outer-region">
+  <div class="section" id="find-outer-region">
 <h1>find_outer_region<a class="headerlink" href="#find-outer-region" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="porespy.tools.find_outer_region">
-<code class="sig-name descname"><span class="pre">find_outer_region</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/tools/__funcs__.html#find_outer_region"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.tools.find_outer_region" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">find_outer_region</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/tools/__funcs__.html#find_outer_region"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.tools.find_outer_region" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds regions of the image that are outside of the solid matrix.</p>
 <p>This function uses the rolling ball method to define where the outer region
 ends and the void space begins.</p>
@@ -865,7 +864,7 @@ parallel faces.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>im</strong> (<em>ND-array</em>) – Image of the porous material with 1’s for void and 0’s for solid</p></li>
 <li><p><strong>r</strong> (<em>scalar</em>) – The radius of the rolling ball to use.  If not specified then a value
-is calculated as twice maximum of the distance transform.  The image
+is calculated as twice maximum of the distance transform. The image
 size is padded by this amount in all directions, so the image can
 become quite large and unwieldy if too large a value is given.</p></li>
 </ul>
@@ -880,7 +879,7 @@ identified as <em>outside</em> the sample.</p>
 </dl>
 </dd></dl>
 
-</section>
+</div>
 
 
               </div>
@@ -906,7 +905,7 @@ identified as <em>outside</em> the sample.</p>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
 </p>
     </div>
     

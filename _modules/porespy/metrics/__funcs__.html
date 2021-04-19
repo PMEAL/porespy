@@ -184,21 +184,18 @@
               <div>
                 
   <h1>Source code for porespy.metrics.__funcs__</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">edt</span> <span class="kn">import</span> <span class="n">edt</span>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">scipy.ndimage</span> <span class="k">as</span> <span class="nn">spim</span>
 <span class="kn">import</span> <span class="nn">scipy.spatial</span> <span class="k">as</span> <span class="nn">sptl</span>
 <span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">fftpack</span> <span class="k">as</span> <span class="n">sp_ft</span>
 <span class="kn">from</span> <span class="nn">skimage.measure</span> <span class="kn">import</span> <span class="n">regionprops</span>
-<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">extend_slice</span><span class="p">,</span> <span class="n">mesh_region</span><span class="p">,</span> <span class="n">ps_round</span>
-<span class="kn">from</span> <span class="nn">porespy.filters</span> <span class="kn">import</span> <span class="n">find_dt_artifacts</span>
-<span class="kn">from</span> <span class="nn">porespy</span> <span class="kn">import</span> <span class="n">settings</span>
-<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">_check_for_singleton_axes</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
 <span class="kn">from</span> <span class="nn">skimage</span> <span class="kn">import</span> <span class="n">measure</span>
-<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">get_tqdm</span>
 <span class="kn">from</span> <span class="nn">loguru</span> <span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">extend_slice</span><span class="p">,</span> <span class="n">mesh_region</span><span class="p">,</span> <span class="n">ps_round</span>
+<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">_check_for_singleton_axes</span>
+<span class="kn">from</span> <span class="nn">porespy</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">get_tqdm</span>
 <span class="n">tqdm</span> <span class="o">=</span> <span class="n">get_tqdm</span><span class="p">()</span>
 
 
@@ -299,7 +296,7 @@
     <span class="k">return</span> <span class="n">prof</span></div>
 
 
-<div class="viewcode-block" id="radial_density_distribution"><a class="viewcode-back" href="../../../modules/generated/porespy.metrics.radial_density_distribution.html#porespy.metrics.radial_density_distribution">[docs]</a><span class="k">def</span> <span class="nf">radial_density_distribution</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">voxel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<div class="viewcode-block" id="radial_density_distribution"><a class="viewcode-back" href="../../../modules/generated/porespy.metrics.radial_density_distribution.html#porespy.metrics.radial_density_distribution">[docs]</a><span class="k">def</span> <span class="nf">radial_density_distribution</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">voxel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes radial density function by analyzing the histogram of voxel</span>
 <span class="sd">    values in the distance transform.  This function is defined by</span>
@@ -324,10 +321,12 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    im : ND-array</span>
-<span class="sd">        Either a binary image of the pore space with ``True`` indicating the</span>
-<span class="sd">        pore phase (or phase of interest), or a pre-calculated distance</span>
-<span class="sd">        transform which can save time.</span>
+<span class="sd">    dt : ND-array</span>
+<span class="sd">        A distance transform of the pore space (the ``edt`` package is</span>
+<span class="sd">        recommended).  Note that it is recommended to apply</span>
+<span class="sd">        ``find_dt_artifacts`` to this image first, and set potentially</span>
+<span class="sd">        erroneous values to 0 with ``dt[mask] = 0`` where</span>
+<span class="sd">        ``mask = porespy.filters.find_dt_artifaces(dt)``.</span>
 <span class="sd">    bins : int or array_like</span>
 <span class="sd">        This number of bins (if int) or the location of the bins (if array).</span>
 <span class="sd">        This argument is passed directly to Scipy&#39;s ``histogram`` function so</span>
@@ -348,28 +347,23 @@
 <span class="sd">    result : named_tuple</span>
 <span class="sd">        A named-tuple containing several 1D arrays:</span>
 
-<span class="sd">        *R* or *LogR* - radius, equivalent to ``bin_centers``</span>
-
-<span class="sd">        *pdf* - probability density function</span>
-
-<span class="sd">        *cdf* - cumulative density function</span>
-
-<span class="sd">        *bin_centers* - the center point of each bin</span>
-
-<span class="sd">        *bin_edges* - locations of bin divisions, including 1 more value than</span>
-<span class="sd">        the number of bins</span>
-
-<span class="sd">        *bin_widths* - useful for passing to the ``width`` argument of</span>
-<span class="sd">        ``matplotlib.pyplot.bar``</span>
+<span class="sd">        *R* or *LogR*</span>
+<span class="sd">            Radius, equivalent to ``bin_centers``</span>
+<span class="sd">        *pdf*</span>
+<span class="sd">            Probability density function</span>
+<span class="sd">        *cdf*</span>
+<span class="sd">            Cumulative density function</span>
+<span class="sd">        *bin_centers*</span>
+<span class="sd">            The center point of each bin</span>
+<span class="sd">        *bin_edges*</span>
+<span class="sd">            Locations of bin divisions, including 1 more value than</span>
+<span class="sd">            the number of bins</span>
+<span class="sd">        *bin_widths*</span>
+<span class="sd">            Useful for passing to the ``width`` argument of</span>
+<span class="sd">            ``matplotlib.pyplot.bar``</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    This function should not be taken as a pore size distribution in the</span>
-<span class="sd">    explict sense, but rather an indicator of the sizes in the image.  The</span>
-<span class="sd">    distance transform contains a very skewed number of voxels with small</span>
-<span class="sd">    values near the solid walls.  Nonetheless, it does provide a useful</span>
-<span class="sd">    indicator and it&#39;s mathematical formalism is handy.</span>
-
 <span class="sd">    Torquato refers to this as the *pore-size density function*, and mentions</span>
 <span class="sd">    that it is also known as the *pore-size distribution function*.  These</span>
 <span class="sd">    terms are avoided here since they have specific connotations in porous</span>
@@ -384,10 +378,7 @@
 <span class="sd">    --------</span>
 <span class="sd">    `Click here &lt;https://porespy.org/examples/metrics/radial_density.html&gt;`_ to view online example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="n">im</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
-    <span class="n">mask</span> <span class="o">=</span> <span class="n">find_dt_artifacts</span><span class="p">(</span><span class="n">im</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
-    <span class="n">im</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">im</span><span class="p">[</span><span class="n">im</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">log</span><span class="p">:</span>
         <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
@@ -433,6 +424,24 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    result : named_tuple</span>
+<span class="sd">        *L* or *LogL*</span>
+<span class="sd">            Length, equivalent to ``bin_centers``</span>
+<span class="sd">        *pdf*</span>
+<span class="sd">            Probability density function</span>
+<span class="sd">        *cdf*</span>
+<span class="sd">            Cumulative density function</span>
+<span class="sd">        *relfreq*</span>
+<span class="sd">            Relative frequency chords in each bin.  The sum of all bin</span>
+<span class="sd">            heights is 1.0.  For the cumulative relativce, use *cdf* which is</span>
+<span class="sd">            already normalized to 1.</span>
+<span class="sd">        *bin_centers*</span>
+<span class="sd">            The center point of each bin</span>
+<span class="sd">        *bin_edges*</span>
+<span class="sd">            Locations of bin divisions, including 1 more value than</span>
+<span class="sd">            the number of bins</span>
+<span class="sd">        *bin_widths*</span>
+<span class="sd">            Useful for passing to the ``width`` argument of</span>
+<span class="sd">            ``matplotlib.pyplot.bar``</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
@@ -465,13 +474,11 @@
 <span class="sd">    ----------</span>
 <span class="sd">    im : ND-image</span>
 <span class="sd">        An image with chords drawn in the pore space, as produced by</span>
-<span class="sd">        ``apply_chords`` or ``apply_chords_3d``.</span>
-
-<span class="sd">        ``im`` can be either boolean, in which case each chord will be</span>
-<span class="sd">        identified using ``scipy.ndimage.label``, or numerical values in which</span>
-<span class="sd">        case it is assumed that chords have already been identifed and labeled.</span>
-<span class="sd">        In both cases, the size of each chord will be computed as the number</span>
-<span class="sd">        of voxels belonging to each labelled region.</span>
+<span class="sd">        ``apply_chords`` or ``apply_chords_3d``.  ``im`` can be either boolean,</span>
+<span class="sd">        in which case each chord will be identified using ``scipy.ndimage.label``,</span>
+<span class="sd">        or numerical values in case it is assumed that chords have already been</span>
+<span class="sd">        identifed and labeled. In both cases, the size of each chord will be</span>
+<span class="sd">        computed as the number of voxels belonging to each labelled region.</span>
 <span class="sd">    bins : scalar or array_like</span>
 <span class="sd">        If a scalar is given it is interpreted as the number of bins to use,</span>
 <span class="sd">        and if an array is given they are used as the bins directly.</span>
@@ -484,14 +491,16 @@
 <span class="sd">    normalization : string</span>
 <span class="sd">        Indicates how to normalize the bin heights.  Options are:</span>
 
-<span class="sd">        *&#39;count&#39; or &#39;number&#39;* - (default) This simply counts the number of</span>
-<span class="sd">        chords in each bin in the normal sense of a histogram.  This is the</span>
-<span class="sd">        rigorous definition according to Torquato [1].</span>
+<span class="sd">        *&#39;count&#39; or &#39;number&#39;*</span>
+<span class="sd">            (default) This simply counts the number of chords in each bin in</span>
+<span class="sd">            the normal sense of a histogram.  This is the rigorous definition</span>
+<span class="sd">            according to Torquato [1].</span>
+<span class="sd">        *&#39;length&#39;*</span>
+<span class="sd">            This multiplies the number of chords in each bin by the</span>
+<span class="sd">            chord length (i.e. bin size).  The normalization scheme accounts for</span>
+<span class="sd">            the fact that long chords are less frequent than shorert chords,</span>
+<span class="sd">            thus giving a more balanced distribution.</span>
 
-<span class="sd">        *&#39;length&#39;* - This multiplies the number of chords in each bin by the</span>
-<span class="sd">        chord length (i.e. bin size).  The normalization scheme accounts for</span>
-<span class="sd">        the fact that long chords are less frequent than shorert chords,</span>
-<span class="sd">        thus giving a more balanced distribution.</span>
 <span class="sd">    voxel_size : scalar</span>
 <span class="sd">        The size of a voxel side in preferred units.  The default is 1, so the</span>
 <span class="sd">        user can apply the scaling to the returned results after the fact.</span>
@@ -502,23 +511,24 @@
 <span class="sd">        A tuple containing the following elements, which can be retrieved by</span>
 <span class="sd">        attribute name:</span>
 
-<span class="sd">        *L* or *LogL* - chord length, equivalent to ``bin_centers``</span>
-
-<span class="sd">        *pdf* - probability density function</span>
-
-<span class="sd">        *cdf* - cumulative density function</span>
-
-<span class="sd">        *relfreq* - relative frequency chords in each bin.  The sum of all bin</span>
-<span class="sd">        heights is 1.0.  For the cumulative relativce, use *cdf* which is</span>
-<span class="sd">        already normalized to 1.</span>
-
-<span class="sd">        *bin_centers* - the center point of each bin</span>
-
-<span class="sd">        *bin_edges* - locations of bin divisions, including 1 more value than</span>
-<span class="sd">        the number of bins</span>
-
-<span class="sd">        *bin_widths* - useful for passing to the ``width`` argument of</span>
-<span class="sd">        ``matplotlib.pyplot.bar``</span>
+<span class="sd">        *L* or *LogL*</span>
+<span class="sd">            Chord length, equivalent to ``bin_centers``</span>
+<span class="sd">        *pdf*</span>
+<span class="sd">            Probability density function</span>
+<span class="sd">        *cdf*</span>
+<span class="sd">            Cumulative density function</span>
+<span class="sd">        *relfreq*</span>
+<span class="sd">            Relative frequency chords in each bin.  The sum of all bin</span>
+<span class="sd">            heights is 1.0.  For the cumulative relativce, use *cdf* which is</span>
+<span class="sd">            already normalized to 1.</span>
+<span class="sd">        *bin_centers*</span>
+<span class="sd">            The center point of each bin</span>
+<span class="sd">        *bin_edges*</span>
+<span class="sd">            Locations of bin divisions, including 1 more value than</span>
+<span class="sd">            the number of bins</span>
+<span class="sd">        *bin_widths*</span>
+<span class="sd">            Useful for passing to the ``width`` argument of</span>
+<span class="sd">            ``matplotlib.pyplot.bar``</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
@@ -578,24 +588,26 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    result : named_tuple</span>
-<span class="sd">        A named-tuple containing several values:</span>
+<span class="sd">        A named-tuple containing the following attributes which can be accessed</span>
+<span class="sd">        by name:</span>
 
-<span class="sd">        *R* or *logR* - radius, equivalent to ``bin_centers``</span>
-
-<span class="sd">        *pdf* - probability density function</span>
-
-<span class="sd">        *cdf* - cumulative density function</span>
-
-<span class="sd">        *satn* - phase saturation in differential form.  For the cumulative</span>
-<span class="sd">        saturation, just use *cfd* which is already normalized to 1.</span>
-
-<span class="sd">        *bin_centers* - the center point of each bin</span>
-
-<span class="sd">        *bin_edges* - locations of bin divisions, including 1 more value than</span>
-<span class="sd">        the number of bins</span>
-
-<span class="sd">        *bin_widths* - useful for passing to the ``width`` argument of</span>
-<span class="sd">        ``matplotlib.pyplot.bar``</span>
+<span class="sd">        *R* or *logR*</span>
+<span class="sd">            Radius, equivalent to ``bin_centers``</span>
+<span class="sd">        *pdf*</span>
+<span class="sd">            Probability density function</span>
+<span class="sd">        *cdf*</span>
+<span class="sd">            Cumulative density function</span>
+<span class="sd">        *satn*</span>
+<span class="sd">            Phase saturation in differential form.  For the cumulative</span>
+<span class="sd">            saturation, just use *cfd* which is already normalized to 1.</span>
+<span class="sd">        *bin_centers*</span>
+<span class="sd">            The center point of each bin</span>
+<span class="sd">        *bin_edges*</span>
+<span class="sd">            Locations of bin divisions, including 1 more value than</span>
+<span class="sd">            the number of bins</span>
+<span class="sd">        *bin_widths*</span>
+<span class="sd">            Useful for passing to the ``width`` argument of</span>
+<span class="sd">            ``matplotlib.pyplot.bar``</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -684,6 +696,7 @@
 <span class="k">def</span> <span class="nf">_radial_profile</span><span class="p">(</span><span class="n">autocorr</span><span class="p">,</span> <span class="n">r_max</span><span class="p">,</span> <span class="n">nbins</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper functions to calculate the radial profile of the autocorrelation</span>
+
 <span class="sd">    Masks the image in radial segments from the center and averages the values</span>
 <span class="sd">    The distance values are normalized and 100 bins are used as default.</span>
 
@@ -749,8 +762,8 @@
 <span class="sd">    The fourier transform approach utilizes the fact that the</span>
 <span class="sd">    autocorrelation function is the inverse FT of the power spectrum</span>
 <span class="sd">    density. For background read the Scipy fftpack docs and for a good</span>
-<span class="sd">    explanation see:</span>
-<span class="sd">    http://www.ucl.ac.uk/~ucapikr/projects/KamilaSuankulova_BSc_Project.pdf</span>
+<span class="sd">    explanation `see this thesis &lt;</span>
+<span class="sd">    http://www.ucl.ac.uk/~ucapikr/projects/KamilaSuankulova_BSc_Project.pdf&gt;`_</span>
 <span class="sd">            </span>
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1039,6 +1052,130 @@
     <span class="k">return</span> <span class="n">results</span></div>
 
 
+<span class="k">def</span> <span class="nf">pc_curve_from_ibip</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span> <span class="n">sizes</span><span class="p">,</span> <span class="n">im</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">0.072</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="mi">180</span><span class="p">,</span> <span class="n">voxel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                       <span class="n">stepped</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Produces a Pc-Snwp curve from the output of ``ibip``</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    seq : ND-array</span>
+<span class="sd">        The image containing the invasion sequence values returned from the</span>
+<span class="sd">        ``ibip`` function.</span>
+<span class="sd">    sizes : ND-array</span>
+<span class="sd">        This image is returned from ``ibip`` when ``return_sizes``</span>
+<span class="sd">        is set to ``True``.</span>
+<span class="sd">    im : ND-array</span>
+<span class="sd">        The voxel image of the porous media.  It not provided then the void</span>
+<span class="sd">        space is assumed to be ``im = !(seq == 0)``.</span>
+<span class="sd">    sigma : float</span>
+<span class="sd">        The surface tension of the fluid-fluid system of interest</span>
+<span class="sd">    theta : float</span>
+<span class="sd">        The contact angle through the invading phase in degrees</span>
+<span class="sd">    voxel_size : float</span>
+<span class="sd">        The voxel resolution of the image</span>
+<span class="sd">    stepped : boolean</span>
+<span class="sd">        If ``True`` (default) the returned data has steps between each point</span>
+<span class="sd">        instead of connecting points directly with sloped lines.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pc_curve : namedtuple</span>
+<span class="sd">        A namedtuple containing the capillary pressure (``pc``) and</span>
+<span class="sd">        non-wetting phase saturation (``snwp``). If ``stepped`` was set to</span>
+<span class="sd">        ``True`` then the values in this tuple include the corners of the</span>
+<span class="sd">        steps.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">im</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="o">~</span><span class="p">(</span><span class="n">seq</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">seqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">seq</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">with</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">seqs</span><span class="p">)</span> <span class="k">as</span> <span class="n">pbar</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">seqs</span><span class="p">:</span>
+            <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">seq</span> <span class="o">==</span> <span class="n">n</span>
+            <span class="c1"># The following assumes only one size found, which was confirmed</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">sizes</span><span class="p">[</span><span class="n">mask</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">voxel_size</span>
+            <span class="n">pc</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">sigma</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">theta</span><span class="p">))</span><span class="o">/</span><span class="n">r</span>
+            <span class="n">x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pc</span><span class="p">)</span>
+            <span class="n">snwp</span> <span class="o">=</span> <span class="p">((</span><span class="n">seq</span> <span class="o">&lt;=</span> <span class="n">n</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">seq</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">im</span> <span class="o">==</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">/</span><span class="n">im</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+            <span class="n">y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">snwp</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">stepped</span><span class="p">:</span>
+        <span class="n">pc</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">snwp</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">j</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">pc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">snwp</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">pc</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">snwp</span>
+    <span class="n">pc_curve</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="n">field_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;pc&#39;</span><span class="p">,</span> <span class="s1">&#39;snwp&#39;</span><span class="p">])</span>
+    <span class="n">pc_curve</span><span class="o">.</span><span class="n">pc</span> <span class="o">=</span> <span class="n">x</span>
+    <span class="n">pc_curve</span><span class="o">.</span><span class="n">snwp</span> <span class="o">=</span> <span class="n">y</span>
+    <span class="k">return</span> <span class="n">pc_curve</span>
+
+
+<span class="k">def</span> <span class="nf">pc_curve_from_mio</span><span class="p">(</span><span class="n">sizes</span><span class="p">,</span> <span class="n">im</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">0.072</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="mi">180</span><span class="p">,</span> <span class="n">voxel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                      <span class="n">stepped</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Produces a Pc-Snwp curve from the output of ``porosimetry``</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    sizes : ND-array</span>
+<span class="sd">        This image is returned from ``porosimetry``</span>
+<span class="sd">    im : ND-array</span>
+<span class="sd">        The voxel image of the porous media.  It not provided then the void</span>
+<span class="sd">        space is assumed to be ``im = ~(sizes == 0)``.</span>
+<span class="sd">    sigma : float</span>
+<span class="sd">        The surface tension of the fluid-fluid system of interest</span>
+<span class="sd">    theta : float</span>
+<span class="sd">        The contact angle through the invading phase in degrees</span>
+<span class="sd">    voxel_size : float</span>
+<span class="sd">        The voxel resolution of the image</span>
+<span class="sd">    stepped : boolean</span>
+<span class="sd">        If ``True`` (default) the returned data has steps between each point</span>
+<span class="sd">        instead of connecting points directly with sloped lines.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pc_curve : namedtuple</span>
+<span class="sd">        A namedtuple containing the capillary pressure (``pc``) and</span>
+<span class="sd">        non-wetting phase saturation (``snwp``).  If ``stepped`` was set to</span>
+<span class="sd">        ``True`` then the values in this tuple include the corners of the</span>
+<span class="sd">        steps.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">im</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="o">~</span><span class="p">(</span><span class="n">sizes</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">sz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">sizes</span><span class="p">)[:</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">with</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">sz</span><span class="p">)</span> <span class="k">as</span> <span class="n">pbar</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">sz</span><span class="p">:</span>
+            <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">n</span><span class="o">*</span><span class="n">voxel_size</span>
+            <span class="n">pc</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">sigma</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">theta</span><span class="p">))</span><span class="o">/</span><span class="n">r</span>
+            <span class="n">x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pc</span><span class="p">)</span>
+            <span class="n">snwp</span> <span class="o">=</span> <span class="p">((</span><span class="n">sizes</span> <span class="o">&gt;=</span> <span class="n">n</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">im</span> <span class="o">==</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">/</span><span class="n">im</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+            <span class="n">y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">snwp</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">stepped</span><span class="p">:</span>
+        <span class="n">pc</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">snwp</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">j</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">pc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">snwp</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">pc</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">snwp</span>
+    <span class="n">pc_curve</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="n">field_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;pc&#39;</span><span class="p">,</span> <span class="s1">&#39;snwp&#39;</span><span class="p">])</span>
+    <span class="n">pc_curve</span><span class="o">.</span><span class="n">pc</span> <span class="o">=</span> <span class="n">x</span>
+    <span class="n">pc_curve</span><span class="o">.</span><span class="n">snwp</span> <span class="o">=</span> <span class="n">y</span>
+    <span class="k">return</span> <span class="n">pc_curve</span>
+    
+    
 <div class="viewcode-block" id="porosity"><a class="viewcode-back" href="../../../modules/generated/porespy.metrics.porosity.html#porespy.metrics.porosity">[docs]</a><span class="k">def</span> <span class="nf">porosity</span><span class="p">(</span><span class="n">im</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates the porosity of an image assuming 1&#39;s are void space and 0&#39;s are</span>
@@ -1108,7 +1245,7 @@
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
 </p>
     </div>
     

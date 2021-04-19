@@ -4,8 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SNOW partitioning &#8212; PoreSpy  documentation</title>
     
   <link href="../../../_static/css/theme.css" rel="stylesheet" />
@@ -870,7 +869,7 @@ div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
 </style>
-<section id="SNOW-partitioning">
+<div class="section" id="SNOW-partitioning">
 <h1>SNOW partitioning<a class="headerlink" href="#SNOW-partitioning" title="Permalink to this headline">¶</a></h1>
 <p>The filter is used to partition an image into regions using the <a class="reference external" href="https://journals.aps.org/pre/abstract/10.1103/PhysRevE.96.023307">SNOW</a> algorithm which stands for the subnetwork of the oversegmented watershed. The steps taken are described in detail in the snow_advanced notebook. We provide a filter function that combines all the steps and it is explored here:</p>
 <div class="nbinput nblast docutils container">
@@ -893,7 +892,7 @@ np.random.seed(1)
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>im = ps.generators.overlapping_spheres([500, 500], radius=10, porosity=0.5)
+<span></span>im = ps.generators.overlapping_spheres([500, 500], r=10, porosity=0.5)
 fig, ax = plt.subplots()
 ax.imshow(im, origin=&#39;lower&#39;);
 </pre></div>
@@ -949,7 +948,7 @@ ax[1, 1].set_title(&quot;Segmentation&quot;);
 <div class="output_area docutils container">
 <img alt="../../../_images/examples_filters_tutorials_snow_partitioning_4_0.svg" src="../../../_images/examples_filters_tutorials_snow_partitioning_4_0.svg" /></div>
 </div>
-</section>
+</div>
 
 
               </div>
@@ -975,7 +974,7 @@ ax[1, 1].set_title(&quot;Segmentation&quot;);
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
 </p>
     </div>
     

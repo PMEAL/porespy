@@ -391,9 +391,6 @@
     <span class="k">return</span> <span class="n">f</span></div>
 
 
-
-
-
 <div class="viewcode-block" id="find_disconnected_voxels"><a class="viewcode-back" href="../../../modules/generated/porespy.filters.find_disconnected_voxels.html#porespy.filters.find_disconnected_voxels">[docs]</a><span class="k">def</span> <span class="nf">find_disconnected_voxels</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">conn</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This identifies all pore (or solid) voxels that are not connected to</span>
@@ -584,18 +581,25 @@
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    This function is referred to as **imhmax** or **imhmin** in Matlab.</span>
+<span class="sd">    (1) This function is referred to as **imhmax** or **imhmin** in Matlab.</span>
+
+<span class="sd">    (2) If the provided ``h`` is larger than ALL peaks in the array, then the</span>
+<span class="sd">    baseline values of the array are changed as well.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    `Click here &lt;https://porespy.org/examples/filters/trim_extrema.html&gt;`_ to view online example.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">im</span>
-    <span class="k">if</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;maxima&quot;</span><span class="p">,</span> <span class="s2">&quot;extrema&quot;</span><span class="p">]:</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">reconstruction</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="n">im</span> <span class="o">-</span> <span class="n">h</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;dilation&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;minima&quot;</span><span class="p">,</span> <span class="s2">&quot;extrema&quot;</span><span class="p">]:</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">reconstruction</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="n">im</span> <span class="o">+</span> <span class="n">h</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;erosion&quot;</span><span class="p">)</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;maxima&#39;</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">reconstruction</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="n">im</span> <span class="o">-</span> <span class="n">h</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">mask</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;dilation&#39;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;minima&#39;</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">reconstruction</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="n">im</span> <span class="o">+</span> <span class="n">h</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">mask</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;erosion&#39;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;extrema&#39;</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">reconstruction</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="n">im</span> <span class="o">-</span> <span class="n">h</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">mask</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;dilation&#39;</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">reconstruction</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="n">result</span> <span class="o">+</span> <span class="n">h</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">result</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;erosion&#39;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">result</span></div>
 
 
@@ -662,6 +666,43 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">mode</span> <span class="o">+</span> <span class="s2">&quot; is not a recognized mode&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">im_flooded</span></div>
+
+
+<span class="k">def</span> <span class="nf">flood_func</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Flood each isolated region in an image with a constant value calculated by</span>
+<span class="sd">    the given function.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    im : ND-array</span>
+<span class="sd">        The image containing distinct regions which should each be flooded</span>
+<span class="sd">    func : Numpy function handle</span>
+<span class="sd">        The function to be applied to each region in the image.  Any Numpy</span>
+<span class="sd">        function that returns a scalar value can be passed, such as ``amin``,</span>
+<span class="sd">        ``amax``, ``sum``, ``mean``, ``median``, etc.</span>
+<span class="sd">    labels : ND-image, optional</span>
+<span class="sd">        An array containing labels identify each individual region to be</span>
+<span class="sd">        flooded. If not provided then ``scipy.ndimage.label`` is applied to</span>
+<span class="sd">        ``im &gt; 0``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    flooded : ND-array</span>
+<span class="sd">        An image the same size as ``im`` with each isolated region flooded</span>
+<span class="sd">        with a constant value based on the given ``func`` and the values</span>
+<span class="sd">        in ``im``.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">labels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">labels</span><span class="p">,</span> <span class="n">N</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">im</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">slices</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">find_objects</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
+    <span class="n">new_im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">slices</span><span class="p">):</span>
+        <span class="n">sub_im</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">==</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">im</span><span class="p">[</span><span class="n">s</span><span class="p">][</span><span class="n">sub_im</span><span class="p">])</span>
+        <span class="n">new_im</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">+=</span> <span class="n">sub_im</span><span class="o">*</span><span class="n">val</span>
+    <span class="k">return</span> <span class="n">new_im</span>
 
 
 <div class="viewcode-block" id="find_dt_artifacts"><a class="viewcode-back" href="../../../modules/generated/porespy.filters.find_dt_artifacts.html#porespy.filters.find_dt_artifacts">[docs]</a><span class="k">def</span> <span class="nf">find_dt_artifacts</span><span class="p">(</span><span class="n">dt</span><span class="p">):</span>
@@ -1025,9 +1066,10 @@
 
     <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
         <span class="n">strel</span> <span class="o">=</span> <span class="n">ps_disk</span>
+        <span class="n">strel_2</span> <span class="o">=</span> <span class="n">disk</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">strel</span> <span class="o">=</span> <span class="n">ps_ball</span>
-
+        <span class="n">strel_2</span> <span class="o">=</span> <span class="n">ball</span>
     <span class="c1"># Parse kwargs for any parallelization arguments</span>
     <span class="n">parallel</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;parallel&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
     <span class="n">cores</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;cores&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -1051,7 +1093,8 @@
                 <span class="n">imtemp</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">binary_erosion</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">impad</span><span class="p">,</span>
                                              <span class="n">structure</span><span class="o">=</span><span class="n">strel</span><span class="p">(</span><span class="n">r</span><span class="p">))</span>
             <span class="k">if</span> <span class="n">access_limited</span><span class="p">:</span>
-                <span class="n">imtemp</span> <span class="o">=</span> <span class="n">trim_disconnected_blobs</span><span class="p">(</span><span class="n">imtemp</span><span class="p">,</span> <span class="n">inlets</span><span class="p">)</span>
+                <span class="n">imtemp</span> <span class="o">=</span> <span class="n">trim_disconnected_blobs</span><span class="p">(</span><span class="n">imtemp</span><span class="p">,</span> <span class="n">inlets</span><span class="p">,</span>
+                                                 <span class="n">strel</span><span class="o">=</span><span class="n">strel_2</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
             <span class="k">if</span> <span class="n">parallel</span><span class="p">:</span>
                 <span class="n">imtemp</span> <span class="o">=</span> <span class="n">chunked_func</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">spim</span><span class="o">.</span><span class="n">binary_dilation</span><span class="p">,</span>
                                       <span class="nb">input</span><span class="o">=</span><span class="n">imtemp</span><span class="p">,</span> <span class="n">structure</span><span class="o">=</span><span class="n">strel</span><span class="p">(</span><span class="n">r</span><span class="p">),</span>
@@ -1070,7 +1113,8 @@
         <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">sizes</span><span class="p">,</span> <span class="o">**</span><span class="n">settings</span><span class="o">.</span><span class="n">tqdm</span><span class="p">):</span>
             <span class="n">imtemp</span> <span class="o">=</span> <span class="n">dt</span> <span class="o">&gt;=</span> <span class="n">r</span>
             <span class="k">if</span> <span class="n">access_limited</span><span class="p">:</span>
-                <span class="n">imtemp</span> <span class="o">=</span> <span class="n">trim_disconnected_blobs</span><span class="p">(</span><span class="n">imtemp</span><span class="p">,</span> <span class="n">inlets</span><span class="p">)</span>
+                <span class="n">imtemp</span> <span class="o">=</span> <span class="n">trim_disconnected_blobs</span><span class="p">(</span><span class="n">imtemp</span><span class="p">,</span> <span class="n">inlets</span><span class="p">,</span>
+                                                 <span class="n">strel</span><span class="o">=</span><span class="n">strel_2</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
             <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">imtemp</span><span class="p">):</span>
                 <span class="n">imtemp</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="o">~</span><span class="n">imtemp</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">r</span>
                 <span class="n">imresults</span><span class="p">[(</span><span class="n">imresults</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="n">imtemp</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span>
@@ -1079,7 +1123,8 @@
         <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">sizes</span><span class="p">,</span> <span class="o">**</span><span class="n">settings</span><span class="o">.</span><span class="n">tqdm</span><span class="p">):</span>
             <span class="n">imtemp</span> <span class="o">=</span> <span class="n">dt</span> <span class="o">&gt;=</span> <span class="n">r</span>
             <span class="k">if</span> <span class="n">access_limited</span><span class="p">:</span>
-                <span class="n">imtemp</span> <span class="o">=</span> <span class="n">trim_disconnected_blobs</span><span class="p">(</span><span class="n">imtemp</span><span class="p">,</span> <span class="n">inlets</span><span class="p">)</span>
+                <span class="n">imtemp</span> <span class="o">=</span> <span class="n">trim_disconnected_blobs</span><span class="p">(</span><span class="n">imtemp</span><span class="p">,</span> <span class="n">inlets</span><span class="p">,</span>
+                                                 <span class="n">strel</span><span class="o">=</span><span class="n">strel_2</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
             <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">imtemp</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">parallel</span><span class="p">:</span>
                     <span class="n">imtemp</span> <span class="o">=</span> <span class="n">chunked_func</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">spim</span><span class="o">.</span><span class="n">binary_dilation</span><span class="p">,</span>
@@ -1137,17 +1182,15 @@
         <span class="n">inlets</span> <span class="o">=</span> <span class="n">inlets</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;inlets not valid, refer to docstring for info&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-        <span class="n">strel</span> <span class="o">=</span> <span class="n">cube</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">strel</span> <span class="o">=</span> <span class="n">square</span>
-    <span class="n">labels</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">inlets</span> <span class="o">+</span> <span class="p">(</span><span class="n">im</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">),</span> <span class="n">structure</span><span class="o">=</span><span class="n">strel</span><span class="p">(</span><span class="mi">3</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">strel</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">strel</span> <span class="o">=</span> <span class="n">cube</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">strel</span> <span class="o">=</span> <span class="n">square</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">inlets</span> <span class="o">+</span> <span class="p">(</span><span class="n">im</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">),</span> <span class="n">structure</span><span class="o">=</span><span class="n">strel</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">keep</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">labels</span><span class="p">[</span><span class="n">inlets</span><span class="p">])</span>
     <span class="n">keep</span> <span class="o">=</span> <span class="n">keep</span><span class="p">[</span><span class="n">keep</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">keep</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">im2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">in1d</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">keep</span><span class="p">),</span> <span class="n">newshape</span><span class="o">=</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">im2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+    <span class="n">im2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">keep</span><span class="p">)</span>
     <span class="n">im2</span> <span class="o">=</span> <span class="n">im2</span> <span class="o">*</span> <span class="n">im</span>
     <span class="k">return</span> <span class="n">im2</span></div>
 
@@ -1503,8 +1546,6 @@
             <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s1">&#39;The applied filter seems to have returned a &#39;</span>
                              <span class="o">+</span> <span class="s1">&#39;larger image that it was sent.&#39;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">im2</span></div>
-
-
 </pre></div>
 
               </div>
@@ -1530,7 +1571,7 @@
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
 </p>
     </div>
     

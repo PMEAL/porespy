@@ -4,8 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>chord_length_distribution &#8212; PoreSpy  documentation</title>
     
   <link href="../../_static/css/theme.css" rel="stylesheet" />
@@ -849,7 +848,7 @@
               
               <div>
                 
-  <section id="chord-length-distribution">
+  <div class="section" id="chord-length-distribution">
 <h1>chord_length_distribution<a class="headerlink" href="#chord-length-distribution" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="porespy.metrics.chord_length_distribution">
@@ -858,14 +857,12 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>im</strong> (<em>ND-image</em>) – <p>An image with chords drawn in the pore space, as produced by
-<code class="docutils literal notranslate"><span class="pre">apply_chords</span></code> or <code class="docutils literal notranslate"><span class="pre">apply_chords_3d</span></code>.</p>
-<p><code class="docutils literal notranslate"><span class="pre">im</span></code> can be either boolean, in which case each chord will be
-identified using <code class="docutils literal notranslate"><span class="pre">scipy.ndimage.label</span></code>, or numerical values in which
-case it is assumed that chords have already been identifed and labeled.
-In both cases, the size of each chord will be computed as the number
-of voxels belonging to each labelled region.</p>
-</p></li>
+<li><p><strong>im</strong> (<em>ND-image</em>) – An image with chords drawn in the pore space, as produced by
+<code class="docutils literal notranslate"><span class="pre">apply_chords</span></code> or <code class="docutils literal notranslate"><span class="pre">apply_chords_3d</span></code>.  <code class="docutils literal notranslate"><span class="pre">im</span></code> can be either boolean,
+in which case each chord will be identified using <code class="docutils literal notranslate"><span class="pre">scipy.ndimage.label</span></code>,
+or numerical values in case it is assumed that chords have already been
+identifed and labeled. In both cases, the size of each chord will be
+computed as the number of voxels belonging to each labelled region.</p></li>
 <li><p><strong>bins</strong> (<em>scalar</em><em> or </em><em>array_like</em>) – If a scalar is given it is interpreted as the number of bins to use,
 and if an array is given they are used as the bins directly.</p></li>
 <li><p><strong>log</strong> (<em>boolean</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> (default) the size data is converted to log (base-10)
@@ -874,13 +871,17 @@ distributions or to better visualize the in the small size region.
 Note that you should not anti-log the radii values in the retunred
 <code class="docutils literal notranslate"><span class="pre">tuple</span></code>, since the binning is performed on the logged radii values.</p></li>
 <li><p><strong>normalization</strong> (<em>string</em>) – <p>Indicates how to normalize the bin heights.  Options are:</p>
-<p><em>’count’ or ‘number’</em> - (default) This simply counts the number of
-chords in each bin in the normal sense of a histogram.  This is the
-rigorous definition according to Torquato [1].</p>
-<p><em>’length’</em> - This multiplies the number of chords in each bin by the
+<dl class="simple">
+<dt><em>’count’ or ‘number’</em></dt><dd><p>(default) This simply counts the number of chords in each bin in
+the normal sense of a histogram.  This is the rigorous definition
+according to Torquato [1].</p>
+</dd>
+<dt><em>’length’</em></dt><dd><p>This multiplies the number of chords in each bin by the
 chord length (i.e. bin size).  The normalization scheme accounts for
 the fact that long chords are less frequent than shorert chords,
 thus giving a more balanced distribution.</p>
+</dd>
+</dl>
 </p></li>
 <li><p><strong>voxel_size</strong> (<em>scalar</em>) – The size of a voxel side in preferred units.  The default is 1, so the
 user can apply the scaling to the returned results after the fact.</p></li>
@@ -889,17 +890,26 @@ user can apply the scaling to the returned results after the fact.</p></li>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><p><strong>result</strong> – A tuple containing the following elements, which can be retrieved by
 attribute name:</p>
-<p><em>L</em> or <em>LogL</em> - chord length, equivalent to <code class="docutils literal notranslate"><span class="pre">bin_centers</span></code></p>
-<p><em>pdf</em> - probability density function</p>
-<p><em>cdf</em> - cumulative density function</p>
-<p><em>relfreq</em> - relative frequency chords in each bin.  The sum of all bin
+<dl class="simple">
+<dt><em>L</em> or <em>LogL</em></dt><dd><p>Chord length, equivalent to <code class="docutils literal notranslate"><span class="pre">bin_centers</span></code></p>
+</dd>
+<dt><em>pdf</em></dt><dd><p>Probability density function</p>
+</dd>
+<dt><em>cdf</em></dt><dd><p>Cumulative density function</p>
+</dd>
+<dt><em>relfreq</em></dt><dd><p>Relative frequency chords in each bin.  The sum of all bin
 heights is 1.0.  For the cumulative relativce, use <em>cdf</em> which is
 already normalized to 1.</p>
-<p><em>bin_centers</em> - the center point of each bin</p>
-<p><em>bin_edges</em> - locations of bin divisions, including 1 more value than
+</dd>
+<dt><em>bin_centers</em></dt><dd><p>The center point of each bin</p>
+</dd>
+<dt><em>bin_edges</em></dt><dd><p>Locations of bin divisions, including 1 more value than
 the number of bins</p>
-<p><em>bin_widths</em> - useful for passing to the <code class="docutils literal notranslate"><span class="pre">width</span></code> argument of
+</dd>
+<dt><em>bin_widths</em></dt><dd><p>Useful for passing to the <code class="docutils literal notranslate"><span class="pre">width</span></code> argument of
 <code class="docutils literal notranslate"><span class="pre">matplotlib.pyplot.bar</span></code></p>
+</dd>
+</dl>
 </p>
 </dd>
 <dt class="field-odd">Return type</dt>
@@ -913,7 +923,7 @@ Macroscopic Properties. Springer, New York (2002) - See page 45 &amp; 292</p>
 <p><a class="reference external" href="https://porespy.org/examples/metrics/chord_length_distribution.html">Click here</a> to view online example.</p>
 </dd></dl>
 
-</section>
+</div>
 
 
               </div>
@@ -939,7 +949,7 @@ Macroscopic Properties. Springer, New York (2002) - See page 45 &amp; 292</p>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
 </p>
     </div>
     

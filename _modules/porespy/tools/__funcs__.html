@@ -186,6 +186,9 @@
   <h1>Source code for porespy.tools.__funcs__</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">scipy</span> <span class="k">as</span> <span class="nn">sp</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy.ndimage</span> <span class="k">as</span> <span class="nn">spim</span>
+<span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">rankdata</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">edt</span> <span class="kn">import</span> <span class="n">edt</span>
 <span class="kn">import</span> <span class="nn">scipy.ndimage</span> <span class="k">as</span> <span class="nn">spim</span>
 <span class="kn">from</span> <span class="nn">loguru</span> <span class="kn">import</span> <span class="n">logger</span>
@@ -199,17 +202,86 @@
     <span class="kn">from</span> <span class="nn">skimage.measure</span> <span class="kn">import</span> <span class="n">marching_cubes_lewiner</span> <span class="k">as</span> <span class="n">marching_cubes</span>
 
 
+<span class="k">def</span> <span class="nf">isolate_object</span><span class="p">(</span><span class="n">region</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given an image containing labels, removes all labels except the specified</span>
+<span class="sd">    one.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    region : ND-array</span>
+<span class="sd">        An image containing labelled regions, as returned by</span>
+<span class="sd">        ``scipy.ndimage.label``.</span>
+<span class="sd">    i : int</span>
+<span class="sd">        The integer value</span>
+<span class="sd">    s : tuple of slice objects, optional</span>
+<span class="sd">        If provided, then a subsection of ``region`` will be extracted and the</span>
+<span class="sd">        function will be applied to this subsection only.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    label : ND-array</span>
+<span class="sd">        An ND-array the same size as ``region`` containing *only* the objects</span>
+<span class="sd">        with the given value ``i``.  If ``s`` is provided, the returned image</span>
+<span class="sd">        will be a subsection of ``region``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">s</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">region</span> <span class="o">=</span> <span class="n">region</span><span class="p">[</span><span class="n">s</span><span class="p">]</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="p">(</span><span class="n">region</span> <span class="o">==</span> <span class="n">i</span><span class="p">)</span><span class="o">*</span><span class="n">i</span>
+    <span class="k">return</span> <span class="n">im</span>
+
+
+<span class="k">def</span> <span class="nf">marching_map</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">start</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Use the fast marching method to find distance of each voxel from a starting</span>
+<span class="sd">    point</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    path : ND-image</span>
+<span class="sd">        A boolean image with ``True`` values demarcating the path along which</span>
+<span class="sd">        the march will occur</span>
+<span class="sd">    start : ND-image</span>
+<span class="sd">        A boolean image with ``True`` values indicating where the march should</span>
+<span class="sd">        start.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    distance : ND-image</span>
+<span class="sd">        An array the same size as ``path`` with numerical values in each voxel</span>
+<span class="sd">        indicating it&#39;s distance from the start point(s) along the given path.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function assumes scikit-fmm is installed on your machine. This</span>
+<span class="sd">    package requires downloading and installing the binaries specific for your</span>
+<span class="sd">    platform.  Mac and Linux builds are available fron conda, while windows</span>
+<span class="sd">    builds can be downloaded from Christoph Gohlke website.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">skfmm</span>
+    <span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ModuleNotFoundError</span><span class="p">(</span><span class="s1">&#39;scikit-fmm must be install to use this &#39;</span> <span class="o">+</span>
+                                  <span class="s1">&#39;function&#39;</span><span class="p">)</span>
+    <span class="n">phi</span> <span class="o">=</span> <span class="n">start</span><span class="o">*</span><span class="mf">2.0</span> <span class="o">-</span> <span class="mf">1.0</span>
+    <span class="n">speed</span> <span class="o">=</span> <span class="n">path</span><span class="o">*</span><span class="mf">1.0</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">skfmm</span><span class="o">.</span><span class="n">travel_time</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span> <span class="n">speed</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">t</span><span class="o">.</span><span class="n">data</span>
+
+
 <div class="viewcode-block" id="align_image_with_openpnm"><a class="viewcode-back" href="../../../modules/generated/porespy.tools.align_image_with_openpnm.html#porespy.filters.align_image_with_openpnm">[docs]</a><span class="k">def</span> <span class="nf">align_image_with_openpnm</span><span class="p">(</span><span class="n">im</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Rotates an image to agree with the coordinates used in OpenPNM.  It is</span>
-<span class="sd">    unclear why they are not in agreement to start with.  This is necessary</span>
-<span class="sd">    for overlaying the image and the network in Paraview.</span>
+<span class="sd">    Rotates an image to agree with the coordinates used in OpenPNM.</span>
+
+<span class="sd">    It is unclear why they are not in agreement to start with.  This is</span>
+<span class="sd">    necessary for overlaying the image and the network in Paraview.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    im : ND-array</span>
-<span class="sd">        The image to be rotated.  Can be the Boolean image of the pore space or</span>
-<span class="sd">        any other image of interest.</span>
+<span class="sd">        The image to be rotated.  Can be the Boolean image of the pore space</span>
+<span class="sd">        or any other image of interest.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -457,7 +529,7 @@
     <span class="k">return</span> <span class="n">ret</span></div>
 
 
-<div class="viewcode-block" id="find_outer_region"><a class="viewcode-back" href="../../../modules/generated/porespy.tools.find_outer_region.html#porespy.filters.find_outer_region">[docs]</a><span class="k">def</span> <span class="nf">find_outer_region</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<div class="viewcode-block" id="find_outer_region"><a class="viewcode-back" href="../../../modules/generated/porespy.tools.find_outer_region.html#porespy.filters.find_outer_region">[docs]</a><span class="k">def</span> <span class="nf">find_outer_region</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Finds regions of the image that are outside of the solid matrix.</span>
 
@@ -472,10 +544,9 @@
 <span class="sd">    ----------</span>
 <span class="sd">    im : ND-array</span>
 <span class="sd">        Image of the porous material with 1&#39;s for void and 0&#39;s for solid</span>
-
 <span class="sd">    r : scalar</span>
 <span class="sd">        The radius of the rolling ball to use.  If not specified then a value</span>
-<span class="sd">        is calculated as twice maximum of the distance transform.  The image</span>
+<span class="sd">        is calculated as twice maximum of the distance transform. The image</span>
 <span class="sd">        size is padded by this amount in all directions, so the image can</span>
 <span class="sd">        become quite large and unwieldy if too large a value is given.</span>
 
@@ -486,7 +557,7 @@
 <span class="sd">        identified as *outside* the sample.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">r</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">r</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
         <span class="n">r</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">dt</span><span class="p">))</span> <span class="o">*</span> <span class="mi">2</span>
     <span class="n">im_padded</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">array</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">pad_width</span><span class="o">=</span><span class="n">r</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;constant&#39;</span><span class="p">,</span>
@@ -770,31 +841,41 @@
     <span class="k">return</span> <span class="n">im_new</span></div>
 
 
-<div class="viewcode-block" id="make_contiguous"><a class="viewcode-back" href="../../../modules/generated/porespy.tools.make_contiguous.html#porespy.filters.make_contiguous">[docs]</a><span class="k">def</span> <span class="nf">make_contiguous</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">keep_zeros</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="make_contiguous"><a class="viewcode-back" href="../../../modules/generated/porespy.tools.make_contiguous.html#porespy.filters.make_contiguous">[docs]</a><span class="k">def</span> <span class="nf">make_contiguous</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;keep_zeros&#39;</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Take an image with arbitrary greyscale values and adjust them to ensure</span>
 <span class="sd">    all values fall in a contiguous range starting at 0.</span>
-
-<span class="sd">    This function will handle negative numbers such that the most negative</span>
-<span class="sd">    number will become 0, *unless* ``keep_zeros`` is ``True`` in which case</span>
-<span class="sd">    it will become 1, and all 0&#39;s in the original image remain 0.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    im : array_like</span>
 <span class="sd">        An ND array containing greyscale values</span>
 
-<span class="sd">    keep_zeros : Boolean</span>
-<span class="sd">        If ``True`` (default) then 0 values remain 0, regardless of how the</span>
-<span class="sd">        other numbers are adjusted.  This is only relevant when the array</span>
-<span class="sd">        contains negative numbers, and means that -1 will become +1, while</span>
-<span class="sd">        0 values remain 0.</span>
+<span class="sd">    mode : string</span>
+<span class="sd">        Controls how the ranking is applied in the presence of numbers less</span>
+<span class="sd">        than or equal to 0.</span>
+
+<span class="sd">        &#39;keep_zeros&#39; : (default) Voxels equal to 0 remain 0, and all other</span>
+<span class="sd">        numbers are ranked starting at 1, include negative numbers,</span>
+<span class="sd">        so [-1, 0, 4] becomes [1, 0, 2]</span>
+
+<span class="sd">        &#39;symmetric&#39; : Negative and positive voxels are ranked based on their</span>
+<span class="sd">        respective distances to 0, so [-4, -1, 0, 5] becomes [-2, -1, 0, 1]</span>
+
+<span class="sd">        &#39;clipped&#39; : Voxels less than or equal to 0 are set to 0, while</span>
+<span class="sd">        all other numbers are ranked starting at 1, so [-3, 0, 2] becomes</span>
+<span class="sd">        [0, 0, 1].</span>
+
+<span class="sd">        &#39;none&#39; : Voxels are ranked such that the smallest or most</span>
+<span class="sd">        negative number becomes 1, so [-4, 2, 0] becomes [1, 3, 2].</span>
+<span class="sd">        This is equivalent to calling ``scipy.stats.rankdata`` directly,</span>
+<span class="sd">        and reshaping the result to match ``im``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    image : ND-array</span>
 <span class="sd">        An ND-array the same size as ``im`` but with all values in contiguous</span>
-<span class="sd">        orders.</span>
+<span class="sd">        order.</span>
 
 <span class="sd">    Example</span>
 <span class="sd">    -------</span>
@@ -810,15 +891,42 @@
 <span class="sd">    --------</span>
 <span class="sd">    `Click here &lt;https://porespy.org/examples/tools/make_contiguous.html&gt;`_ to view online example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">keep_zeros</span><span class="p">:</span>
-        <span class="n">mask</span> <span class="o">=</span> <span class="n">im</span> <span class="o">==</span> <span class="mi">0</span>
-        <span class="n">im</span> <span class="o">=</span> <span class="n">im</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">im</span><span class="p">))</span> <span class="o">+</span> <span class="mi">1</span>
-        <span class="n">im</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">im</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">im</span> <span class="o">=</span> <span class="n">im</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">im</span><span class="p">))</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+    <span class="n">im_flat</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
 
-    <span class="n">im_new</span> <span class="o">=</span> <span class="n">relabel_sequential</span><span class="p">(</span><span class="n">im</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">im_new</span></div>
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;none&#39;</span><span class="p">:</span>
+        <span class="n">im_new</span> <span class="o">=</span> <span class="n">rankdata</span><span class="p">(</span><span class="n">im_flat</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;dense&#39;</span><span class="p">)</span>
+        <span class="n">im_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">im_new</span><span class="p">,</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">im_new</span>
+
+    <span class="k">elif</span> <span class="n">mode</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;clip&#39;</span><span class="p">):</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">im_flat</span> <span class="o">&lt;=</span> <span class="mi">0</span>
+        <span class="n">im_flat</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">im_new</span> <span class="o">=</span> <span class="n">rankdata</span><span class="p">(</span><span class="n">im_flat</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;dense&#39;</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">im_new</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">im_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">im_new</span><span class="p">,</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">im_new</span>
+
+    <span class="k">elif</span> <span class="n">mode</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;keep_zero&#39;</span><span class="p">):</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">im_flat</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="n">im_flat</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">im_new</span> <span class="o">=</span> <span class="n">rankdata</span><span class="p">(</span><span class="n">im_flat</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;dense&#39;</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">im_new</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">im_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">im_new</span><span class="p">,</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">im_new</span>
+
+    <span class="k">elif</span> <span class="n">mode</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;sym&#39;</span><span class="p">):</span>
+        <span class="n">mask_neg</span> <span class="o">=</span> <span class="n">im_flat</span> <span class="o">&lt;</span> <span class="mi">0</span>
+        <span class="n">im_neg</span> <span class="o">=</span> <span class="o">-</span><span class="n">rankdata</span><span class="p">(</span><span class="o">-</span><span class="n">im_flat</span><span class="p">[</span><span class="n">mask_neg</span><span class="p">],</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;dense&#39;</span><span class="p">)</span>
+        <span class="n">mask_pos</span> <span class="o">=</span> <span class="n">im_flat</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="n">im_pos</span> <span class="o">=</span> <span class="n">rankdata</span><span class="p">(</span><span class="n">im_flat</span><span class="p">[</span><span class="n">mask_pos</span><span class="p">],</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;dense&#39;</span><span class="p">)</span>
+        <span class="n">im_flat</span><span class="p">[</span><span class="n">mask_pos</span><span class="p">]</span> <span class="o">=</span> <span class="n">im_pos</span>
+        <span class="n">im_flat</span><span class="p">[</span><span class="n">mask_neg</span><span class="p">]</span> <span class="o">=</span> <span class="n">im_neg</span>
+        <span class="n">im_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">im_flat</span><span class="p">,</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">im_new</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Unrecognized mode:&quot;</span> <span class="o">+</span> <span class="n">mode</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="get_border"><a class="viewcode-back" href="../../../modules/generated/porespy.tools.get_border.html#porespy.filters.get_border">[docs]</a><span class="k">def</span> <span class="nf">get_border</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">thickness</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;edges&#39;</span><span class="p">,</span> <span class="n">return_indices</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -1261,9 +1369,9 @@
     <span class="c1"># Obtain slices into image</span>
     <span class="n">s</span> <span class="o">=</span> <span class="n">bbox_to_slices</span><span class="p">(</span><span class="n">bbox</span><span class="p">)</span>
     <span class="c1"># Generate sphere template within image boundaries</span>
-    <span class="n">blank</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">im</span><span class="p">[</span><span class="n">s</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
-    <span class="n">blank</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">c</span> <span class="o">-</span> <span class="n">bbox</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">im</span><span class="o">.</span><span class="n">ndim</span><span class="p">])]</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">sph</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="n">blank</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">r</span>
+    <span class="n">blank</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">im</span><span class="p">[</span><span class="n">s</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">blank</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">c</span> <span class="o">-</span> <span class="n">bbox</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">im</span><span class="o">.</span><span class="n">ndim</span><span class="p">])]</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">sph</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">distance_transform_edt</span><span class="p">(</span><span class="n">blank</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">r</span>
     <span class="k">if</span> <span class="n">overwrite</span><span class="p">:</span>  <span class="c1"># Clear voxles under sphere to be zero</span>
         <span class="n">temp</span> <span class="o">=</span> <span class="n">im</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">*</span> <span class="n">sph</span> <span class="o">&gt;</span> <span class="mi">0</span>
         <span class="n">im</span><span class="p">[</span><span class="n">s</span><span class="p">][</span><span class="n">temp</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
@@ -1488,9 +1596,9 @@
     <span class="k">return</span> <span class="n">im_new</span></div>
 
 
-<div class="viewcode-block" id="size_to_seq"><a class="viewcode-back" href="../../../modules/generated/porespy.tools.size_to_seq.html#porespy.filters.size_to_seq">[docs]</a><span class="k">def</span> <span class="nf">size_to_seq</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="size_to_seq"><a class="viewcode-back" href="../../../modules/generated/porespy.tools.size_to_seq.html#porespy.filters.size_to_seq">[docs]</a><span class="k">def</span> <span class="nf">size_to_seq</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">im</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Converts an image of invasion size values into sequence values.</span>
+<span class="sd">    Converts an image of invasion size values into sequence values</span>
 
 <span class="sd">    This is meant to accept the output of the ``porosimetry`` function.</span>
 
@@ -1498,6 +1606,10 @@
 <span class="sd">    ----------</span>
 <span class="sd">    size : ND-image</span>
 <span class="sd">        The image containing invasion size values in each voxel.</span>
+<span class="sd">    im : ND-image, optional</span>
+<span class="sd">        A binary image of the porous media, with ``True`` indicating the</span>
+<span class="sd">        void space and ``False`` indicating the solid phase. If not given</span>
+<span class="sd">        then it is assumed that the solid is identified as ``size == 0``.</span>
 <span class="sd">    bins : array_like or int (optional)</span>
 <span class="sd">        The bins to use when converting sizes to sequence.  The default is</span>
 <span class="sd">        to create 1 bin for each unique value in ``size``.  If an **int**</span>
@@ -1526,47 +1638,95 @@
     <span class="c1"># Invert the vals so smallest size has largest sequence</span>
     <span class="n">vals</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">vals</span> <span class="o">-</span> <span class="n">vals</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="o">~</span><span class="n">solid</span>
     <span class="c1"># In case too many bins are given, remove empty ones</span>
-    <span class="n">vals</span> <span class="o">=</span> <span class="n">make_contiguous</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span>
-    <span class="c1"># Possibly simpler way?</span>
-    <span class="c1">#    vals = (-(size - size.max())).astype(int) + 1</span>
-    <span class="c1">#    vals[vals &gt; size.max()] = 0</span>
+    <span class="n">vals</span> <span class="o">=</span> <span class="n">make_contiguous</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;keep_zeros&#39;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">vals</span></div>
 
 
-<div class="viewcode-block" id="seq_to_satn"><a class="viewcode-back" href="../../../modules/generated/porespy.tools.seq_to_satn.html#porespy.filters.seq_to_satn">[docs]</a><span class="k">def</span> <span class="nf">seq_to_satn</span><span class="p">(</span><span class="n">seq</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">size_to_satn</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">im</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Converts an image of invasion size values into saturations</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    size : ND-image</span>
+<span class="sd">        The image containing invasion size values in each voxel.</span>
+<span class="sd">    im : ND-image, optional</span>
+<span class="sd">        A binary image of the porous media, with ``True`` indicating the</span>
+<span class="sd">        void space and ``False`` indicating the solid phase. If not given</span>
+<span class="sd">        then it is assumed that the solid is identified as ``size == 0``.</span>
+<span class="sd">    bins : array_like or int (optional)</span>
+<span class="sd">        The bins to use when converting sizes to saturation.  The default is</span>
+<span class="sd">        to create 1 bin for each unique value in ``size``.  If an **int**</span>
+<span class="sd">        is supplied it is interpreted as the number of bins between 0 and the</span>
+<span class="sd">        maximum value in ``size``.  If an array is supplied it is used as</span>
+<span class="sd">        the bins directly.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    satn : ND-image</span>
+<span class="sd">        An ND-image the same size as ``seq`` but with sequence values replaced</span>
+<span class="sd">        by the fraction of void space invaded at or below the sequence number.</span>
+<span class="sd">        Solid voxels and uninvaded voxels are represented by 0 and -1,</span>
+<span class="sd">        respectively.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">bins</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">size</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">bins</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">im</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="p">(</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">void_vol</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">satn</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">bins</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="n">hits</span> <span class="o">=</span> <span class="p">(</span><span class="n">size</span> <span class="o">&gt;=</span> <span class="n">r</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">hits</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">/</span><span class="n">void_vol</span>
+        <span class="n">satn</span><span class="p">[</span><span class="n">hits</span> <span class="o">*</span> <span class="p">(</span><span class="n">satn</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)]</span> <span class="o">=</span> <span class="n">temp</span>
+    <span class="n">satn</span> <span class="o">*=</span> <span class="p">(</span><span class="n">im</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">satn</span>
+
+
+<div class="viewcode-block" id="seq_to_satn"><a class="viewcode-back" href="../../../modules/generated/porespy.tools.seq_to_satn.html#porespy.filters.seq_to_satn">[docs]</a><span class="k">def</span> <span class="nf">seq_to_satn</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span> <span class="n">im</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts an image of invasion sequence values to saturation values.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    seq : ND-image</span>
-<span class="sd">        The image containing invasion sequence values in each voxel.</span>
-<span class="sd">        Note that the invasion steps must be positive integers, solid</span>
-<span class="sd">        voxels indicated by 0, and uninvaded voxels indicated by -1.</span>
+<span class="sd">        The image containing invasion sequence values in each voxel.  Solid</span>
+<span class="sd">        should be indicated as 0&#39;s and uninvaded voxels as -1.</span>
+<span class="sd">    im : ND-image, optional</span>
+<span class="sd">        A binary image of the porous media, with ``True`` indicating the</span>
+<span class="sd">        void space and ``False`` indicating the solid phase. If not given</span>
+<span class="sd">        then it is assumed that the solid is identified as ``seq == 0``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    satn : ND-image</span>
-<span class="sd">        An ND-iamge the same size as ``seq`` but with sequnece values</span>
-<span class="sd">        replaced by the fraction of pores invaded at or below the sequence</span>
-<span class="sd">        number. Solid voxels and uninvaded voxels are represented by 0 and</span>
-<span class="sd">        -1, respectively.</span>
+<span class="sd">        An ND-image the same size as ``seq`` but with sequence values replaced</span>
+<span class="sd">        by the fraction of void space invaded at or below the sequence number.</span>
+<span class="sd">        Solid voxels and uninvaded voxels are represented by 0 and -1,</span>
+<span class="sd">        respectively.</span>
 <span class="sd">                </span>
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    `Click here &lt;https://porespy.org/examples/tools/seq_to_satn.html&gt;`_ to view online example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">seq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
-    <span class="n">solid</span> <span class="o">=</span> <span class="n">seq</span> <span class="o">==</span> <span class="mi">0</span>
-    <span class="n">uninvaded</span> <span class="o">=</span> <span class="n">seq</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span>
-    <span class="n">seq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span> <span class="n">a_min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">a_max</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-    <span class="n">seq</span> <span class="o">=</span> <span class="n">make_contiguous</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span>
-    <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span><span class="n">seq</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span>
-    <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
-    <span class="n">satn</span> <span class="o">=</span> <span class="n">c</span><span class="p">[</span><span class="n">seq</span><span class="p">]</span> <span class="o">/</span> <span class="p">((</span><span class="n">seq</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">+</span> <span class="n">uninvaded</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
-    <span class="n">satn</span><span class="p">[</span><span class="n">solid</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
-    <span class="n">satn</span><span class="p">[</span><span class="n">uninvaded</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span>
+    <span class="n">seq</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">im</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">solid_mask</span> <span class="o">=</span> <span class="n">seq</span> <span class="o">==</span> <span class="mi">0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">solid_mask</span> <span class="o">=</span> <span class="n">im</span> <span class="o">==</span> <span class="mi">0</span>
+    <span class="n">uninvaded_mask</span> <span class="o">=</span> <span class="n">seq</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="n">seq</span><span class="p">[</span><span class="n">seq</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">seq</span> <span class="o">=</span> <span class="n">rankdata</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;dense&#39;</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">solid_mask</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">uninvaded_mask</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+    <span class="n">seq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span> <span class="n">solid_mask</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">satn</span> <span class="o">=</span> <span class="n">c</span><span class="p">[</span><span class="n">seq</span><span class="p">]</span><span class="o">/</span><span class="p">(</span><span class="n">seq</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="n">solid_mask</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+    <span class="n">satn</span><span class="p">[</span><span class="n">solid_mask</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">satn</span><span class="p">[</span><span class="n">uninvaded_mask</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
     <span class="k">return</span> <span class="n">satn</span></div>
 
 
@@ -1730,7 +1890,7 @@
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
 </p>
     </div>
     

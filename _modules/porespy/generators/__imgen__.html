@@ -281,7 +281,7 @@
 
 
 <div class="viewcode-block" id="RSA"><a class="viewcode-back" href="../../../modules/generated/porespy.generators.RSA.html#porespy.generators.RSA">[docs]</a><span class="k">def</span> <span class="nf">RSA</span><span class="p">(</span><span class="n">im_or_shape</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span>
-        <span class="n">radius</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">r</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">volume_fraction</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="n">clearance</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
         <span class="n">n_max</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -300,7 +300,7 @@
 <span class="sd">        empty image.  In both cases the spheres are added as ``True`` values</span>
 <span class="sd">        to the background.  Since ``True`` is considered the pore space, then</span>
 <span class="sd">        the added spheres represent holes.</span>
-<span class="sd">    radius : int</span>
+<span class="sd">    r : int</span>
 <span class="sd">        The radius of the disk or sphere to insert.</span>
 <span class="sd">    volume_fraction : scalar (default is 1.0)</span>
 <span class="sd">        The fraction of the image that should be filled with spheres.  The</span>
@@ -353,7 +353,7 @@
 <span class="sd">    `Click here &lt;https://porespy.org/examples/generators/RSA.html&gt;`_ to view online example.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;RSA: Adding spheres of size </span><span class="si">{</span><span class="n">radius</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;RSA: Adding spheres of size </span><span class="si">{</span><span class="n">r</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">im_or_shape</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">3</span><span class="p">:</span>
         <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">im_or_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
@@ -367,19 +367,19 @@
     <span class="n">vf_start</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">im</span><span class="o">.</span><span class="n">size</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Initial volume fraction: </span><span class="si">{</span><span class="n">vf_start</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="n">template_lg</span> <span class="o">=</span> <span class="n">ps_disk</span><span class="p">((</span><span class="n">radius</span> <span class="o">+</span> <span class="n">clearance</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
-        <span class="n">template_sm</span> <span class="o">=</span> <span class="n">ps_disk</span><span class="p">(</span><span class="n">radius</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="n">smooth</span><span class="p">)</span>
+        <span class="n">template_lg</span> <span class="o">=</span> <span class="n">ps_disk</span><span class="p">((</span><span class="n">r</span> <span class="o">+</span> <span class="n">clearance</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">template_sm</span> <span class="o">=</span> <span class="n">ps_disk</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="n">smooth</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">template_lg</span> <span class="o">=</span> <span class="n">ps_ball</span><span class="p">((</span><span class="n">radius</span> <span class="o">+</span> <span class="n">clearance</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
-        <span class="n">template_sm</span> <span class="o">=</span> <span class="n">ps_ball</span><span class="p">(</span><span class="n">radius</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="n">smooth</span><span class="p">)</span>
+        <span class="n">template_lg</span> <span class="o">=</span> <span class="n">ps_ball</span><span class="p">((</span><span class="n">r</span> <span class="o">+</span> <span class="n">clearance</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">template_sm</span> <span class="o">=</span> <span class="n">ps_ball</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="n">smooth</span><span class="p">)</span>
     <span class="n">vf_template</span> <span class="o">=</span> <span class="n">template_sm</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">im</span><span class="o">.</span><span class="n">size</span>
     <span class="c1"># Pad image by the radius of large template to enable insertion near edges</span>
-    <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">pad_width</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="n">radius</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;edge&quot;</span><span class="p">)</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">pad_width</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="n">r</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;edge&quot;</span><span class="p">)</span>
     <span class="c1"># Depending on mode, adjust mask to remove options around edge</span>
     <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;contained&quot;</span><span class="p">:</span>
-        <span class="n">border</span> <span class="o">=</span> <span class="n">get_border</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">thickness</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="n">radius</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;faces&quot;</span><span class="p">)</span>
+        <span class="n">border</span> <span class="o">=</span> <span class="n">get_border</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">thickness</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="n">r</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;faces&quot;</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;extended&quot;</span><span class="p">:</span>
-        <span class="n">border</span> <span class="o">=</span> <span class="n">get_border</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">thickness</span><span class="o">=</span><span class="n">radius</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;faces&quot;</span><span class="p">)</span>
+        <span class="n">border</span> <span class="o">=</span> <span class="n">get_border</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">thickness</span><span class="o">=</span><span class="n">r</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;faces&quot;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Unrecognized mode: &quot;</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
     <span class="c1"># Remove border pixels</span>
@@ -388,7 +388,7 @@
     <span class="c1"># from consideration for sphere placement</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="s2">&quot;Dilating foreground features by sphere radius&quot;</span><span class="p">)</span>
     <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="n">im</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
-    <span class="n">options_im</span> <span class="o">=</span> <span class="n">dt</span> <span class="o">&gt;=</span> <span class="n">radius</span>
+    <span class="n">options_im</span> <span class="o">=</span> <span class="n">dt</span> <span class="o">&gt;=</span> <span class="n">r</span>
     <span class="c1"># ------------------------------------------------------------------------</span>
     <span class="c1"># Begin inserting the spheres</span>
     <span class="n">vf</span> <span class="o">=</span> <span class="n">vf_start</span>
@@ -403,9 +403,9 @@
             <span class="n">free_sites</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">options_im</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
             <span class="k">break</span>
-        <span class="n">s_sm</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="nb">slice</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">radius</span><span class="p">,</span> <span class="n">x</span> <span class="o">+</span> <span class="n">radius</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">c</span><span class="p">])</span>
-        <span class="n">s_lg</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="nb">slice</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">radius</span> <span class="o">+</span> <span class="n">clearance</span><span class="p">),</span>
-                            <span class="n">x</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">radius</span> <span class="o">+</span> <span class="n">clearance</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">c</span><span class="p">])</span>
+        <span class="n">s_sm</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="nb">slice</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">r</span><span class="p">,</span> <span class="n">x</span> <span class="o">+</span> <span class="n">r</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">c</span><span class="p">])</span>
+        <span class="n">s_lg</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="nb">slice</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">r</span> <span class="o">+</span> <span class="n">clearance</span><span class="p">),</span>
+                            <span class="n">x</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">r</span> <span class="o">+</span> <span class="n">clearance</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">c</span><span class="p">])</span>
         <span class="n">im</span><span class="p">[</span><span class="n">s_sm</span><span class="p">]</span> <span class="o">+=</span> <span class="n">template_sm</span>  <span class="c1"># Add ball to image</span>
         <span class="n">options_im</span><span class="p">[</span><span class="n">s_lg</span><span class="p">][</span><span class="n">template_lg</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># Update extended region</span>
         <span class="n">vf</span> <span class="o">+=</span> <span class="n">vf_template</span>
@@ -413,7 +413,7 @@
     <span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of spheres inserted: </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="c1"># ------------------------------------------------------------------------</span>
     <span class="c1"># Get slice into returned image to retain original size</span>
-    <span class="n">s</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="nb">slice</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">radius</span><span class="p">,</span> <span class="n">d</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">radius</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">])</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="nb">slice</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">r</span><span class="p">,</span> <span class="n">d</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">r</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">])</span>
     <span class="n">im</span> <span class="o">=</span> <span class="n">im</span><span class="p">[</span><span class="n">s</span><span class="p">]</span>
     <span class="n">vf</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">im</span><span class="o">.</span><span class="n">size</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Final volume fraction:&quot;</span><span class="p">,</span> <span class="n">vf</span><span class="p">)</span>
@@ -594,12 +594,12 @@
     <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">Rs</span><span class="p">:</span>
         <span class="n">phi_im</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
         <span class="n">phi_corrected</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">phi_desired</span><span class="p">)</span> <span class="o">/</span> <span class="n">phi_im</span>
-        <span class="n">temp</span> <span class="o">=</span> <span class="n">overlapping_spheres</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="n">r</span><span class="p">,</span> <span class="n">porosity</span><span class="o">=</span><span class="n">phi_corrected</span><span class="p">)</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">overlapping_spheres</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="n">r</span><span class="p">,</span> <span class="n">porosity</span><span class="o">=</span><span class="n">phi_corrected</span><span class="p">)</span>
         <span class="n">im</span> <span class="o">=</span> <span class="n">im</span> <span class="o">*</span> <span class="n">temp</span>
     <span class="k">return</span> <span class="n">im</span></div>
 
 
-<div class="viewcode-block" id="voronoi_edges"><a class="viewcode-back" href="../../../modules/generated/porespy.generators.voronoi_edges.html#porespy.generators.voronoi_edges">[docs]</a><span class="k">def</span> <span class="nf">voronoi_edges</span><span class="p">(</span><span class="n">shape</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">radius</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">ncells</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">flat_faces</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="voronoi_edges"><a class="viewcode-back" href="../../../modules/generated/porespy.generators.voronoi_edges.html#porespy.generators.voronoi_edges">[docs]</a><span class="k">def</span> <span class="nf">voronoi_edges</span><span class="p">(</span><span class="n">shape</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">r</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">ncells</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">flat_faces</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create an image of the edges in a Voronoi tessellation</span>
 
@@ -609,7 +609,7 @@
 <span class="sd">        The size of the image to generate in [Nx, Ny, Nz] where Ni is the</span>
 <span class="sd">        number of voxels in each direction.</span>
 
-<span class="sd">    radius : scalar</span>
+<span class="sd">    r : scalar</span>
 <span class="sd">        The radius to which Voronoi edges should be dilated in the final image.</span>
 
 <span class="sd">    ncells : scalar</span>
@@ -654,7 +654,7 @@
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">pts</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">pts</span> <span class="o">&lt;</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">):</span>
             <span class="n">line_pts</span> <span class="o">=</span> <span class="n">line_segment</span><span class="p">(</span><span class="n">pts</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pts</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
             <span class="n">im</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">line_pts</span><span class="p">)]</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">im</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="o">~</span><span class="n">im</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">radius</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="o">~</span><span class="n">im</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">r</span>
     <span class="k">return</span> <span class="n">im</span></div>
 
 
@@ -693,7 +693,7 @@
 
 
 <div class="viewcode-block" id="lattice_spheres"><a class="viewcode-back" href="../../../modules/generated/porespy.generators.lattice_spheres.html#porespy.generators.lattice_spheres">[docs]</a><span class="k">def</span> <span class="nf">lattice_spheres</span><span class="p">(</span><span class="n">shape</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
-                    <span class="n">radius</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                    <span class="n">r</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
                     <span class="n">spacing</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                     <span class="n">offset</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                     <span class="n">smooth</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -742,7 +742,6 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Generating </span><span class="si">{</span><span class="n">lattice</span><span class="si">}</span><span class="s2"> lattice&quot;</span><span class="p">)</span>
-    <span class="n">r</span> <span class="o">=</span> <span class="n">radius</span>
     <span class="n">shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
     <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
 
@@ -767,11 +766,11 @@
 
     <span class="c1"># Parse offset and spacing args</span>
     <span class="k">if</span> <span class="n">spacing</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">spacing</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">radius</span>
+        <span class="n">spacing</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">r</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">spacing</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
         <span class="n">spacing</span> <span class="o">=</span> <span class="p">[</span><span class="n">spacing</span><span class="p">]</span><span class="o">*</span><span class="n">im</span><span class="o">.</span><span class="n">ndim</span>
     <span class="k">if</span> <span class="n">offset</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">offset</span> <span class="o">=</span> <span class="n">radius</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="n">r</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">offset</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
         <span class="n">offset</span> <span class="o">=</span> <span class="p">[</span><span class="n">offset</span><span class="p">]</span><span class="o">*</span><span class="n">im</span><span class="o">.</span><span class="n">ndim</span>
 
@@ -821,7 +820,7 @@
 
 
 <div class="viewcode-block" id="overlapping_spheres"><a class="viewcode-back" href="../../../modules/generated/porespy.generators.overlapping_spheres.html#porespy.generators.overlapping_spheres">[docs]</a><span class="k">def</span> <span class="nf">overlapping_spheres</span><span class="p">(</span><span class="n">shape</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
-                        <span class="n">radius</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                        <span class="n">r</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
                         <span class="n">porosity</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
                         <span class="n">iter_max</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
                         <span class="n">tol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">):</span>
@@ -833,17 +832,13 @@
 <span class="sd">    shape : list</span>
 <span class="sd">        The size of the image to generate in [Nx, Ny, Nz] where Ni is the</span>
 <span class="sd">        number of voxels in the i-th direction.</span>
-
-<span class="sd">    radius : scalar</span>
+<span class="sd">    r : scalar</span>
 <span class="sd">        The radius of spheres in the packing.</span>
-
 <span class="sd">    porosity : scalar</span>
 <span class="sd">        The porosity of the final image, accurate to the given tolerance.</span>
-
 <span class="sd">    iter_max : int</span>
 <span class="sd">        Maximum number of iterations for the iterative algorithm that improves</span>
 <span class="sd">        the porosity of the final image to match the given value.</span>
-
 <span class="sd">    tol : float</span>
 <span class="sd">        Tolerance for porosity of the final image compared to the given value.</span>
 
@@ -866,7 +861,7 @@
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">shape</span><span class="p">))</span>
     <span class="n">ndim</span> <span class="o">=</span> <span class="p">(</span><span class="n">shape</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-    <span class="n">s_vol</span> <span class="o">=</span> <span class="n">ps_disk</span><span class="p">(</span><span class="n">radius</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="k">if</span> <span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">ps_ball</span><span class="p">(</span><span class="n">radius</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">s_vol</span> <span class="o">=</span> <span class="n">ps_disk</span><span class="p">(</span><span class="n">r</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="k">if</span> <span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">ps_ball</span><span class="p">(</span><span class="n">r</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
 
     <span class="n">bulk_vol</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
     <span class="n">N</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">porosity</span><span class="p">)</span> <span class="o">*</span> <span class="n">bulk_vol</span> <span class="o">/</span> <span class="n">s_vol</span><span class="p">))</span>
@@ -874,7 +869,7 @@
 
     <span class="c1"># Helper functions for calculating porosity: phi = g(f(N))</span>
     <span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">edt</span><span class="p">(</span><span class="n">im</span> <span class="o">&gt;</span> <span class="n">N</span> <span class="o">/</span> <span class="n">bulk_vol</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">radius</span>
+        <span class="k">return</span> <span class="n">edt</span><span class="p">(</span><span class="n">im</span> <span class="o">&gt;</span> <span class="n">N</span> <span class="o">/</span> <span class="n">bulk_vol</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">r</span>
 
     <span class="k">def</span> <span class="nf">g</span><span class="p">(</span><span class="n">im</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns fraction of 0s, given a binary image&quot;&quot;&quot;</span>
@@ -967,7 +962,7 @@
 
 
 <span class="k">def</span> <span class="nf">_cylinders</span><span class="p">(</span><span class="n">shape</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
-               <span class="n">radius</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+               <span class="n">r</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
                <span class="n">ncylinders</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
                <span class="n">phi_max</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
                <span class="n">theta_max</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">90</span><span class="p">,</span>
@@ -983,7 +978,7 @@
 <span class="sd">    shape : list</span>
 <span class="sd">        The size of the image to generate in [Nx, Ny, Nz] where N is the</span>
 <span class="sd">        number of voxels. 2D images are not permitted.</span>
-<span class="sd">    radius : scalar</span>
+<span class="sd">    r : scalar</span>
 <span class="sd">        The radius of the cylinders in voxels</span>
 <span class="sd">    ncylinders : scalar</span>
 <span class="sd">        The number of cylinders to add to the domain. Adjust this value to</span>
@@ -1059,12 +1054,12 @@
                 <span class="n">n</span> <span class="o">+=</span> <span class="mi">1</span>
                 <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
     <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
-    <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="o">~</span><span class="n">im</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">radius</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="o">~</span><span class="n">im</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">r</span>
     <span class="k">return</span> <span class="o">~</span><span class="n">dt</span>
 
 
 <div class="viewcode-block" id="cylinders"><a class="viewcode-back" href="../../../modules/generated/porespy.generators.cylinders.html#porespy.generators.cylinders">[docs]</a><span class="k">def</span> <span class="nf">cylinders</span><span class="p">(</span><span class="n">shape</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
-              <span class="n">radius</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+              <span class="n">r</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
               <span class="n">ncylinders</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
               <span class="n">porosity</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
               <span class="n">phi_max</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
@@ -1082,7 +1077,7 @@
 <span class="sd">    shape : list</span>
 <span class="sd">        The size of the image to generate in [Nx, Ny, Nz] where N is the</span>
 <span class="sd">        number of voxels. 2D images are not permitted.</span>
-<span class="sd">    radius : scalar</span>
+<span class="sd">    r : scalar</span>
 <span class="sd">        The radius of the cylinders in voxels</span>
 <span class="sd">    ncylinders : scalar</span>
 <span class="sd">        The number of cylinders to add to the domain. Adjust this value to</span>
@@ -1147,7 +1142,7 @@
     <span class="k">if</span> <span class="n">ncylinders</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">im</span> <span class="o">=</span> <span class="n">_cylinders</span><span class="p">(</span>
             <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span>
-            <span class="n">radius</span><span class="o">=</span><span class="n">radius</span><span class="p">,</span>
+            <span class="n">r</span><span class="o">=</span><span class="n">r</span><span class="p">,</span>
             <span class="n">ncylinders</span><span class="o">=</span><span class="n">ncylinders</span><span class="p">,</span>
             <span class="n">phi_max</span><span class="o">=</span><span class="n">phi_max</span><span class="p">,</span>
             <span class="n">theta_max</span><span class="o">=</span><span class="n">theta_max</span><span class="p">,</span>
@@ -1173,7 +1168,7 @@
     <span class="n">length_estimate</span> <span class="o">=</span> <span class="n">vol_total</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">3</span><span class="p">)</span> <span class="k">if</span> <span class="n">length</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">length</span>
 
     <span class="c1"># Rough fiber volume estimate</span>
-    <span class="n">vol_fiber</span> <span class="o">=</span> <span class="n">length_estimate</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">radius</span> <span class="o">*</span> <span class="n">radius</span>
+    <span class="n">vol_fiber</span> <span class="o">=</span> <span class="n">length_estimate</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">r</span> <span class="o">*</span> <span class="n">r</span>
     <span class="n">n_pixels_to_add</span> <span class="o">=</span> <span class="n">get_num_pixels</span><span class="p">(</span><span class="n">porosity</span><span class="p">)</span>
 
     <span class="c1"># Rough estimate of n_fibers</span>
@@ -1189,7 +1184,7 @@
         <span class="n">n_fibers_total</span> <span class="o">=</span> <span class="n">n_pixels_to_add</span> <span class="o">/</span> <span class="n">vol_fiber</span>
         <span class="n">n_fibers</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">frac</span> <span class="o">*</span> <span class="n">n_fibers_total</span><span class="p">)</span> <span class="o">-</span> <span class="n">n_fibers_added</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">n_fibers</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">im</span> <span class="o">=</span> <span class="n">im</span> <span class="o">&amp;</span> <span class="n">_cylinders</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">n_fibers</span><span class="p">,</span>
+            <span class="n">im</span> <span class="o">=</span> <span class="n">im</span> <span class="o">&amp;</span> <span class="n">_cylinders</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">n_fibers</span><span class="p">,</span>
                                  <span class="n">phi_max</span><span class="p">,</span> <span class="n">theta_max</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span>
                                  <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">n_fibers_added</span> <span class="o">+=</span> <span class="n">n_fibers</span>
@@ -1263,7 +1258,7 @@
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
 </p>
     </div>
     

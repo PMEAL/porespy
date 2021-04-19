@@ -186,6 +186,10 @@
   <h1>Source code for porespy.visualization.__funcs__</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">porespy</span> <span class="k">as</span> <span class="nn">ps</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">animation</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span>
 
 
 <div class="viewcode-block" id="set_mpl_style"><a class="viewcode-back" href="../../../modules/generated/porespy.visualization.set_mpl_style.html#porespy.visualization.set_mpl_style">[docs]</a><span class="k">def</span> <span class="nf">set_mpl_style</span><span class="p">():</span>  <span class="c1"># pragma: no cover</span>
@@ -233,6 +237,42 @@
     <span class="k">if</span> <span class="n">ps</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">notebook</span><span class="p">:</span>
         <span class="kn">import</span> <span class="nn">IPython</span>
         <span class="n">IPython</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">set_matplotlib_formats</span><span class="p">(</span><span class="s1">&#39;svg&#39;</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">satn_to_movie</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">satn</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">,</span>
+                  <span class="n">c_under</span><span class="o">=</span><span class="s1">&#39;grey&#39;</span><span class="p">,</span> <span class="n">c_over</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">,</span>
+                  <span class="n">v_under</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">v_over</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    To save animation as a file use:</span>
+<span class="sd">    ``ani.save(&#39;image_based_ip.gif&#39;, writer=&#39;imagemagick&#39;, fps=3)``</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Define nice color map</span>
+    <span class="n">cmap</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">cmap</span><span class="p">))</span>
+    <span class="n">cmap</span><span class="o">.</span><span class="n">set_over</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">c_over</span><span class="p">)</span>
+    <span class="n">cmap</span><span class="o">.</span><span class="n">set_under</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">c_under</span><span class="p">)</span>
+
+    <span class="c1"># Reduce inv_satn image to limited number of values to speed-up movie</span>
+    <span class="n">target</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">around</span><span class="p">(</span><span class="n">satn</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">seq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>  <span class="c1"># Empty image to place frame</span>
+    <span class="n">movie</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># List to append each frame</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">steps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">target</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span>
+    <span class="k">with</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">steps</span><span class="p">)</span> <span class="k">as</span> <span class="n">pbar</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">steps</span><span class="p">:</span>
+            <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+            <span class="n">seq</span> <span class="o">+=</span> <span class="n">v</span><span class="o">*</span><span class="p">(</span><span class="n">target</span> <span class="o">==</span> <span class="n">v</span><span class="p">)</span>
+            <span class="n">seq</span><span class="p">[</span><span class="o">~</span><span class="n">im</span><span class="p">]</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="mi">10</span>
+            <span class="n">frame1</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="n">v_under</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">v_over</span><span class="p">,</span>
+                               <span class="n">animated</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">,</span>
+                               <span class="n">interpolation</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">)</span>
+            <span class="n">movie</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">frame1</span><span class="p">])</span>
+    <span class="n">ani</span> <span class="o">=</span> <span class="n">animation</span><span class="o">.</span><span class="n">ArtistAnimation</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">movie</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="mi">1000</span><span class="o">/</span><span class="n">fps</span><span class="p">),</span>
+                                    <span class="n">blit</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="n">repeat</span><span class="p">,</span>
+                                    <span class="n">repeat_delay</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ani</span>
 </pre></div>
 
               </div>
@@ -258,7 +298,7 @@
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
 </p>
     </div>
     

@@ -4,8 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Applying chords to 2D and 3D images &#8212; PoreSpy  documentation</title>
     
   <link href="../../../_static/css/theme.css" rel="stylesheet" />
@@ -890,9 +889,9 @@ div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
 </style>
-<section id="Applying-chords-to-2D-and-3D-images">
+<div class="section" id="Applying-chords-to-2D-and-3D-images">
 <h1>Applying chords to 2D and 3D images<a class="headerlink" href="#Applying-chords-to-2D-and-3D-images" title="Permalink to this headline">¶</a></h1>
-<section id="Importing-packages">
+<div class="section" id="Importing-packages">
 <h2>Importing packages<a class="headerlink" href="#Importing-packages" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
@@ -917,8 +916,8 @@ import matplotlib.pyplot as plt
 </pre></div>
 </div>
 </div>
-</section>
-<section id="Demonstration-on-2D-Image">
+</div>
+<div class="section" id="Demonstration-on-2D-Image">
 <h2>Demonstration on 2D Image<a class="headerlink" href="#Demonstration-on-2D-Image" title="Permalink to this headline">¶</a></h2>
 <p>Start by creating an image using the <code class="docutils literal notranslate"><span class="pre">blobs</span></code> function in <code class="docutils literal notranslate"><span class="pre">generators</span></code>. The useful thing about this function is that images can be created with anisotropy. These are exactly the sort of images where chord length distributions are useful, since chords can be drawn in different directions, to probe the anisotropic pore sizes.</p>
 <div class="nbinput nblast docutils container">
@@ -1038,8 +1037,8 @@ ax.set_ylabel(&quot;Frequency&quot;);
 <img alt="../../../_images/examples_filters_tutorials_adding_chords_19_0.svg" src="../../../_images/examples_filters_tutorials_adding_chords_19_0.svg" /></div>
 </div>
 <p>The key point to see here is that the blue bars are for the y-direction, which was the elongated direction, and as expected they show a tendency toward longer chords.</p>
-</section>
-<section id="Application-to-3D-images">
+</div>
+<div class="section" id="Application-to-3D-images">
 <h2>Application to 3D images<a class="headerlink" href="#Application-to-3D-images" title="Permalink to this headline">¶</a></h2>
 <p>Chords can just as easily be applied to 3D images. Let’s create an artificial image of fibers, aligned in the YZ plane, but oriented randomly in the X direction</p>
 <div class="nbinput docutils container">
@@ -1047,7 +1046,7 @@ ax.set_ylabel(&quot;Frequency&quot;);
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>im = ps.generators.cylinders(shape=[200, 400, 400], radius=8, ncylinders=200)
+<span></span>im = ps.generators.cylinders(shape=[200, 400, 400], r=8, ncylinders=200)
 fig, ax = plt.subplots()
 ax.imshow(im[:, :, 100]);
 </pre></div>
@@ -1083,8 +1082,8 @@ ax.imshow(crds[:, :, 100]);
 <div class="output_area docutils container">
 <img alt="../../../_images/examples_filters_tutorials_adding_chords_25_0.svg" src="../../../_images/examples_filters_tutorials_adding_chords_25_0.svg" /></div>
 </div>
-</section>
-</section>
+</div>
+</div>
 
 
               </div>
@@ -1110,7 +1109,7 @@ ax.imshow(crds[:, :, 100]);
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
 </p>
     </div>
     

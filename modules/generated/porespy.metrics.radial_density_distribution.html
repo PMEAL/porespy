@@ -4,8 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>radial_density_distribution &#8212; PoreSpy  documentation</title>
     
   <link href="../../_static/css/theme.css" rel="stylesheet" />
@@ -851,11 +850,11 @@
               
               <div>
                 
-  <section id="radial-density-distribution">
+  <div class="section" id="radial-density-distribution">
 <h1>radial_density_distribution<a class="headerlink" href="#radial-density-distribution" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="porespy.metrics.radial_density_distribution">
-<code class="sig-name descname"><span class="pre">radial_density_distribution</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voxel_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/metrics/__funcs__.html#radial_density_distribution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.metrics.radial_density_distribution" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">radial_density_distribution</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voxel_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/metrics/__funcs__.html#radial_density_distribution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.metrics.radial_density_distribution" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes radial density function by analyzing the histogram of voxel
 values in the distance transform.  This function is defined by
 Torquato [1] as:</p>
@@ -876,9 +875,11 @@ is equivalent to the cumulative distribution function (<em>cdf</em>).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>im</strong> (<em>ND-array</em>) – Either a binary image of the pore space with <code class="docutils literal notranslate"><span class="pre">True</span></code> indicating the
-pore phase (or phase of interest), or a pre-calculated distance
-transform which can save time.</p></li>
+<li><p><strong>dt</strong> (<em>ND-array</em>) – A distance transform of the pore space (the <code class="docutils literal notranslate"><span class="pre">edt</span></code> package is
+recommended).  Note that it is recommended to apply
+<code class="docutils literal notranslate"><span class="pre">find_dt_artifacts</span></code> to this image first, and set potentially
+erroneous values to 0 with <code class="docutils literal notranslate"><span class="pre">dt[mask]</span> <span class="pre">=</span> <span class="pre">0</span></code> where
+<code class="docutils literal notranslate"><span class="pre">mask</span> <span class="pre">=</span> <span class="pre">porespy.filters.find_dt_artifaces(dt)</span></code>.</p></li>
 <li><p><strong>bins</strong> (<em>int</em><em> or </em><em>array_like</em>) – This number of bins (if int) or the location of the bins (if array).
 This argument is passed directly to Scipy’s <code class="docutils literal notranslate"><span class="pre">histogram</span></code> function so
 see that docstring for more information.  The default is 10 bins, which
@@ -894,14 +895,22 @@ user can apply the scaling to the returned results after the fact.</p></li>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><p><strong>result</strong> – A named-tuple containing several 1D arrays:</p>
-<p><em>R</em> or <em>LogR</em> - radius, equivalent to <code class="docutils literal notranslate"><span class="pre">bin_centers</span></code></p>
-<p><em>pdf</em> - probability density function</p>
-<p><em>cdf</em> - cumulative density function</p>
-<p><em>bin_centers</em> - the center point of each bin</p>
-<p><em>bin_edges</em> - locations of bin divisions, including 1 more value than
+<dl class="simple">
+<dt><em>R</em> or <em>LogR</em></dt><dd><p>Radius, equivalent to <code class="docutils literal notranslate"><span class="pre">bin_centers</span></code></p>
+</dd>
+<dt><em>pdf</em></dt><dd><p>Probability density function</p>
+</dd>
+<dt><em>cdf</em></dt><dd><p>Cumulative density function</p>
+</dd>
+<dt><em>bin_centers</em></dt><dd><p>The center point of each bin</p>
+</dd>
+<dt><em>bin_edges</em></dt><dd><p>Locations of bin divisions, including 1 more value than
 the number of bins</p>
-<p><em>bin_widths</em> - useful for passing to the <code class="docutils literal notranslate"><span class="pre">width</span></code> argument of
+</dd>
+<dt><em>bin_widths</em></dt><dd><p>Useful for passing to the <code class="docutils literal notranslate"><span class="pre">width</span></code> argument of
 <code class="docutils literal notranslate"><span class="pre">matplotlib.pyplot.bar</span></code></p>
+</dd>
+</dl>
 </p>
 </dd>
 <dt class="field-odd">Return type</dt>
@@ -909,11 +918,6 @@ the number of bins</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>This function should not be taken as a pore size distribution in the
-explict sense, but rather an indicator of the sizes in the image.  The
-distance transform contains a very skewed number of voxels with small
-values near the solid walls.  Nonetheless, it does provide a useful
-indicator and it’s mathematical formalism is handy.</p>
 <p>Torquato refers to this as the <em>pore-size density function</em>, and mentions
 that it is also known as the <em>pore-size distribution function</em>.  These
 terms are avoided here since they have specific connotations in porous
@@ -925,7 +929,7 @@ Macroscopic Properties. Springer, New York (2002) - See page 48 &amp; 292</p>
 <p><a class="reference external" href="https://porespy.org/examples/metrics/radial_density.html">Click here</a> to view online example.</p>
 </dd></dl>
 
-</section>
+</div>
 
 
               </div>
@@ -951,7 +955,7 @@ Macroscopic Properties. Springer, New York (2002) - See page 48 &amp; 292</p>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
 </p>
     </div>
     
