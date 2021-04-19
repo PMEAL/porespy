@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>region_interface_areas &#8212; PoreSpy  documentation</title>
+    <title>snow2 &#8212; PoreSpy  documentation</title>
     
   <link href="../../_static/css/theme.css" rel="stylesheet" />
   <link href="../../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
@@ -42,8 +42,8 @@
     <script src="../../_static/js/custom.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="region_surface_areas" href="porespy.metrics.region_surface_areas.html" />
-    <link rel="prev" title="radial_density_distribution" href="porespy.metrics.radial_density_distribution.html" />
+    <link rel="next" title="map_to_regions" href="porespy.networks.map_to_regions.html" />
+    <link rel="prev" title="Networks" href="../networks.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
     
@@ -395,16 +395,16 @@
    </li>
   </ul>
  </li>
- <li class="toctree-l1 current active has-children">
+ <li class="toctree-l1 has-children">
   <a class="reference internal" href="../metrics.html">
    Metrics
   </a>
-  <input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+  <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
   <label for="toctree-checkbox-3">
    <i class="fas fa-chevron-down">
    </i>
   </label>
-  <ul class="current">
+  <ul>
    <li class="toctree-l2">
     <a class="reference internal" href="porespy.metrics.chord_counts.html">
      chord_counts
@@ -465,8 +465,8 @@
      radial_density_distribution
     </a>
    </li>
-   <li class="toctree-l2 current active">
-    <a class="current reference internal" href="#">
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.metrics.region_interface_areas.html">
      region_interface_areas
     </a>
    </li>
@@ -497,18 +497,18 @@
    </li>
   </ul>
  </li>
- <li class="toctree-l1 has-children">
+ <li class="toctree-l1 current active has-children">
   <a class="reference internal" href="../networks.html">
    Networks
   </a>
-  <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
   <label for="toctree-checkbox-4">
    <i class="fas fa-chevron-down">
    </i>
   </label>
-  <ul>
-   <li class="toctree-l2">
-    <a class="reference internal" href="porespy.networks.snow2.html">
+  <ul class="current">
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
      snow2
     </a>
    </li>
@@ -853,45 +853,98 @@
               
               <div>
                 
-  <div class="section" id="region-interface-areas">
-<h1>region_interface_areas<a class="headerlink" href="#region-interface-areas" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="snow2">
+<h1>snow2<a class="headerlink" href="#snow2" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="porespy.metrics.region_interface_areas">
-<code class="sig-name descname"><span class="pre">region_interface_areas</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">regions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">areas</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voxel_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/metrics/__funcs__.html#region_interface_areas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.metrics.region_interface_areas" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates the interfacial area between all pairs of adjecent regions</p>
+<dt id="porespy.networks.snow2">
+<code class="sig-name descname"><span class="pre">snow2</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phases</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase_alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accuracy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'standard'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voxel_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parallelization</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/networks/_snow2.html#snow2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.networks.snow2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Applies the SNOW algorithm to each phase indicated in <code class="docutils literal notranslate"><span class="pre">phases</span></code>.</p>
+<p>This function is a combination of <code class="docutils literal notranslate"><span class="pre">snow</span></code> <a class="footnote-reference brackets" href="#id5" id="id1">1</a>, <code class="docutils literal notranslate"><span class="pre">snow_dual</span></code> <a class="footnote-reference brackets" href="#id6" id="id2">2</a>,
+<code class="docutils literal notranslate"><span class="pre">snow_n</span></code> <a class="footnote-reference brackets" href="#id7" id="id3">3</a>, and <code class="docutils literal notranslate"><span class="pre">snow_parallel</span></code> <a class="footnote-reference brackets" href="#id8" id="id4">4</a> from previous versions.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>regions</strong> (<em>ND-array</em>) – An image of the pore space partitioned into individual pore regions.
-Note that zeros in the image will not be considered for area
-calculation.</p></li>
-<li><p><strong>areas</strong> (<em>array_like</em>) – A list containing the areas of each regions, as determined by
-<code class="docutils literal notranslate"><span class="pre">region_surface_area</span></code>.  Note that the region number and list index
-are offset by 1, such that the area for region 1 is stored in
-<code class="docutils literal notranslate"><span class="pre">areas[0]</span></code>.</p></li>
-<li><p><strong>voxel_size</strong> (<em>scalar</em>) – The resolution of the image, expressed as the length of one side of a
-voxel, so the volume of a voxel would be <strong>voxel_size</strong>-cubed.  The
-default is 1.</p></li>
-<li><p><strong>strel</strong> (<em>array_like</em>) – The structuring element used to blur the region.  If not provided,
-then a spherical element (or disk) with radius 1 is used.  See the
-docstring for <code class="docutils literal notranslate"><span class="pre">mesh_region</span></code> for more details, as this argument is
-passed to there.</p></li>
+<li><p><strong>phases</strong> (<em>ND-image</em>) – An image indicating the phase(s) of interest. A watershed is produced
+for each integer value in <code class="docutils literal notranslate"><span class="pre">phases</span></code> (except 0’s). These are then
+combined into a single image and one network is extracted using
+<code class="docutils literal notranslate"><span class="pre">regions_to_network</span></code>.</p></li>
+<li><p><strong>phase_alias</strong> (<em>dict</em>) – A mapping between integer values in <code class="docutils literal notranslate"><span class="pre">phases</span></code> and phase name, used
+to add labels to the network. For instance, asssuming a two-phase
+image, <code class="docutils literal notranslate"><span class="pre">{1:</span> <span class="pre">'void',</span> <span class="pre">2:</span> <span class="pre">'solid'}</span></code> will result in the labels
+<code class="docutils literal notranslate"><span class="pre">'pore.void'</span></code> and <code class="docutils literal notranslate"><span class="pre">'pore.solid'</span></code>, as well as
+<code class="docutils literal notranslate"><span class="pre">'throat.solid_void'</span></code>, <code class="docutils literal notranslate"><span class="pre">'throat.solid_solid'</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">'throat.void_void'</span></code>. If not provided, aliases are assumed to be
+<code class="docutils literal notranslate"><span class="pre">{1:</span> <span class="pre">'phase1',</span> <span class="pre">2:</span> <span class="pre">'phase2,</span> <span class="pre">...}</span></code>.  Phase labels can also be applied
+afterward using <code class="docutils literal notranslate"><span class="pre">label_phases</span></code>.</p></li>
+<li><p><strong>boundary_width</strong> (<em>depends</em>) – Number of voxels to add to the beginning and end of each axis. This
+argument is handled the same as <code class="docutils literal notranslate"><span class="pre">pad_width</span></code> in the <code class="docutils literal notranslate"><span class="pre">np.pad</span></code>
+function. A scalar adds the same amount to the beginning and end of
+each axis. <code class="docutils literal notranslate"><span class="pre">[A,</span> <span class="pre">B]</span></code> adds A to the beginning of each axis and B to the
+ends.  <code class="docutils literal notranslate"><span class="pre">[[A,</span> <span class="pre">B],</span> <span class="pre">...,</span> <span class="pre">[C,</span> <span class="pre">D]]</span></code> adds A to the beginning and B to the
+end of the first axis, and so on. The default is to add 3 voxels on
+both ends of all axes.  For each boundary width that is not 0, a label
+will automatically be applied indicating which end of which axis (i.e.
+<code class="docutils literal notranslate"><span class="pre">'xmin'</span></code> and <code class="docutils literal notranslate"><span class="pre">'xmax'</span></code>).</p></li>
+<li><p><strong>accuracy</strong> (<em>string</em>) – <p>Controls how accurately certain properties are calculated during the
+analysis of regions in the <code class="docutils literal notranslate"><span class="pre">regions_to_network</span></code> function.
+Options are:</p>
+<dl class="simple">
+<dt>’standard’ (default)</dt><dd><p>Computes the surface areas and perimeters by simply counting
+voxels. This is <em>much</em> faster but does not properly account
+for the rough voxelated nature of the surfaces.</p>
+</dd>
+<dt>’high’</dt><dd><p>Computes surface areas using the marching cube method, and
+perimeters using the fast marching method. These are substantially
+slower but better account for the voxelated nature of the images.</p>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>voxel_size</strong> (<em>scalar</em><em> (</em><em>default = 1</em><em>)</em>) – The resolution of the image, expressed as the length of one side of a
+voxel, so the volume of a voxel would be <strong>voxel_size</strong>-cubed.</p></li>
+<li><p><strong>parallelization</strong> (<em>dict</em>) – The arguments for controlling the parallization of the watershed
+function are rolled into this dictionary, otherwise the function
+signature would become too complex. Refer to the docstring of
+<code class="docutils literal notranslate"><span class="pre">snow_partitioning_parallel</span></code> for complete details. If no values
+are provided then the defaults for that function are used.
+To disable parallelization pass <code class="docutils literal notranslate"><span class="pre">parallel=None</span></code>, which will invoke
+the standard <code class="docutils literal notranslate"><span class="pre">snow_partitioning</span></code>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>result</strong> – A named-tuple containing 2 arrays. <code class="docutils literal notranslate"><span class="pre">conns</span></code> holds the connectivity
-information and <code class="docutils literal notranslate"><span class="pre">area</span></code> holds the result for each pair.  <code class="docutils literal notranslate"><span class="pre">conns</span></code> is
-a N-regions by 2 array with each row containing the region number of an
-adjacent pair of regions.  For instance, if <code class="docutils literal notranslate"><span class="pre">conns[0,</span> <span class="pre">0]</span></code> is 0 and
-<code class="docutils literal notranslate"><span class="pre">conns[0,</span> <span class="pre">1]</span></code> is 5, then row 0 of <code class="docutils literal notranslate"><span class="pre">area</span></code> contains the interfacial
-area shared by regions 0 and 5.</p>
+<dd class="field-even"><p><strong>network</strong> – A <em>named-tuple</em> is returned with the padded <code class="docutils literal notranslate"><span class="pre">phases</span></code> image, the
+watershed segmentated <code class="docutils literal notranslate"><span class="pre">regions</span></code>, and the <code class="docutils literal notranslate"><span class="pre">network</span></code> dictionary.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>named_tuple</p>
+<dd class="field-odd"><p>dict or named-tuple</p>
 </dd>
 </dl>
-<p class="rubric">Examples</p>
-<p><a class="reference external" href="https://porespy.org/examples/metrics/region_interface_areas.html">Click here</a> to view online example.</p>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id5"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dd><p>Gostick JT. Versatile and efficient pore network extraction
+method using marker-based watershed segmentation. Phys. Rev. E. 96,
+023307 (2017)</p>
+</dd>
+<dt class="label" id="id6"><span class="brackets"><a class="fn-backref" href="#id2">2</a></span></dt>
+<dd><p>Khan ZA, Tranter TG, Agnaou M, Elkamel A, and Gostick JT, Dual
+network extraction algorithm to investigate multiple transport
+processes in porous materials: Image-based modeling of pore and grain-
+scale processes. Computers and Chemical Engineering. 123(6), 64-77
+(2019)</p>
+</dd>
+<dt class="label" id="id7"><span class="brackets"><a class="fn-backref" href="#id3">3</a></span></dt>
+<dd><p>Khan ZA, García-Salaberri PA, Heenan T, Jervis R, Shearing P,
+Brett D, Elkamel A, Gostick JT, Probing the structure-performance
+relationship of lithium-ion battery cathodes using pore-networks
+extracted from three-phase tomograms. Journal of the Electrochemical
+Society. 167(4), 040528 (2020)</p>
+</dd>
+<dt class="label" id="id8"><span class="brackets"><a class="fn-backref" href="#id4">4</a></span></dt>
+<dd><p>Khan ZA, Elkamel A, Gostick JT, Efficient extraction of pore
+networks from massive tomograms via geometric domain decomposition.
+Advances in Water Resources. 145(Nov), 103734 (2020)</p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
