@@ -23,8 +23,10 @@ def show_3D(im):  # pragma: no cover
 
     Notes
     -----
-    This function assumes that the image contains ``True`` for void space and
-    so inverts the image to show the solid material.
+    Although this is meant to be *quick* it can still take on the order of
+    minutes to render very large images.  It uses ``scipy.ndimage.rotate``
+    with no interpolation to view the 3D image from an angle, then casts the
+    result into a 2D projection.
 
     """
     im = ~np.copy(im)

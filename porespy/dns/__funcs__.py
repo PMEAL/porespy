@@ -74,6 +74,7 @@ def tortuosity(im, axis, return_im=False, **kwargs):
             fd.run()
         # TODO: change Exception to ModuleNotFoundError (fix OpenPNM first)
         except Exception:  # pragma: no cover
+            logger.warning('pypardiso not found, using cg from scipy')
             fd.settings['solver_family'] = 'scipy'
             fd.settings['solver_type'] = 'cg'
             fd.run()
@@ -85,7 +86,7 @@ def tortuosity(im, axis, return_im=False, **kwargs):
     delta_C = C_in - C_out
     L = im.shape[axis]
     A = np.prod(im.shape) / L
-    N_A = A / L * delta_C
+    N_A = A / (L-1) * delta_C  # -1 because BCs are put inside domain, see #495
     Deff = rate_in / N_A
     tau = eps / Deff
     result = collections.namedtuple(

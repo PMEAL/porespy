@@ -95,7 +95,7 @@ class ExportTest():
 
     def test_spheres_to_comsol_im(self):
         im = ps.generators.overlapping_spheres(shape=[100, 100, 100],
-                                               radius=10, porosity=0.6)
+                                               r=10, porosity=0.6)
         ps.io.spheres_to_comsol(filename='sphere_pack', im=im)
         os.remove("sphere_pack.mphtxt")
 

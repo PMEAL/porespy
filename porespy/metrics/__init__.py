@@ -17,6 +17,7 @@ but a few functions can be applied directly to the binary image.
 
     metrics.chord_counts
     metrics.chord_length_distribution
+    metrics.geometrical_tortuosity
     metrics.lineal_path_distribution
     metrics.mesh_surface_area
     metrics.phase_fraction
@@ -52,4 +53,7 @@ from .__funcs__ import region_surface_areas
 from .__funcs__ import region_interface_areas
 from .__funcs__ import mesh_surface_area
 from .__funcs__ import phase_fraction
+from ._geometrical_tortuosity import geometrical_tortuosity
+from .__funcs__ import pc_curve_from_ibip
+from .__funcs__ import pc_curve_from_mio
 from ._fractal_dims import boxcount

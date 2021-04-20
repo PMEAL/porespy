@@ -93,6 +93,8 @@ from .__funcs__ import get_planes
 from .__funcs__ import insert_cylinder
 from .__funcs__ import insert_sphere
 from .__funcs__ import in_hull
+from .__funcs__ import isolate_object
+from .__funcs__ import marching_map
 from .__funcs__ import make_contiguous
 from .__funcs__ import mesh_region
 from .__funcs__ import norm_to_uniform
@@ -104,6 +106,7 @@ from .__funcs__ import ps_rect
 from .__funcs__ import ps_round
 from .__funcs__ import pad_faces
 from .__funcs__ import seq_to_satn
+from .__funcs__ import size_to_satn
 from .__funcs__ import size_to_seq
 from .__funcs__ import subdivide
 from .__funcs__ import zero_corners
