@@ -1,6 +1,8 @@
-from porespy.tools import norm_to_uniform
 import multiprocessing
+
 import numpy as np
+
+from porespy.tools import norm_to_uniform
 
 
 def fractal_noise(shape, frequency=0.05, octaves=4, gain=0.5, mode='simplex',

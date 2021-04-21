@@ -1,8 +1,9 @@
-import pytest
 import numpy as np
-from numpy.testing import assert_allclose
+import pytest
 import scipy.ndimage as spim
 import scipy.stats as spst
+from numpy.testing import assert_allclose
+
 import porespy as ps
 
 

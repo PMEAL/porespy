@@ -1,15 +1,17 @@
+from collections import namedtuple
+
 import numpy as np
 import scipy.ndimage as spim
 import scipy.spatial as sptl
-from scipy import fftpack as sp_ft
-from skimage.measure import regionprops
-from collections import namedtuple
-from skimage import measure
 from loguru import logger
-from porespy.tools import extend_slice, mesh_region, ps_round
-from porespy.tools import _check_for_singleton_axes
+from scipy import fftpack as sp_ft
+from skimage import measure
+from skimage.measure import regionprops
+
 from porespy import settings
-from porespy.tools import get_tqdm
+from porespy.tools import (_check_for_singleton_axes, extend_slice, get_tqdm,
+                           mesh_region, ps_round)
+
 tqdm = get_tqdm()
 
 

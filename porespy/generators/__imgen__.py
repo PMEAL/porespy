@@ -1,13 +1,16 @@
-import numpy as np
-from edt import edt
-import porespy as ps
-from numba import njit
-import scipy.spatial as sptl
-import scipy.ndimage as spim
-from porespy.tools import norm_to_uniform, ps_ball, ps_disk, get_border
-from porespy import settings
 from typing import List
+
+import numpy as np
+import scipy.ndimage as spim
+import scipy.spatial as sptl
+from edt import edt
 from loguru import logger
+from numba import njit
+
+import porespy as ps
+from porespy import settings
+from porespy.tools import get_border, norm_to_uniform, ps_ball, ps_disk
+
 tqdm = ps.tools.get_tqdm()
 
 

@@ -1,9 +1,10 @@
 # %% Import necessary packages and functions
-import porespy as ps
-import numpy as np
-import matplotlib.pyplot as plt
 from copy import copy
 
+import matplotlib.pyplot as plt
+import numpy as np
+
+import porespy as ps
 
 # %%  Generate or load a test image
 im = ps.generators.blobs(shape=[400, 600], porosity=0.6, blobiness=2)

@@ -1,16 +1,18 @@
 import os
-import imageio
 import subprocess
+
+import imageio
 import numpy as np
-from stl import mesh
 import scipy.ndimage as nd
 import skimage.measure as ms
-from porespy.tools import sanitize_filename
-from porespy.networks import generate_voxel_image
-from porespy.filters import reduce_peaks
+from edt import edt
 from pyevtk.hl import imageToVTK
 from skimage.morphology import ball
-from edt import edt
+from stl import mesh
+
+from porespy.filters import reduce_peaks
+from porespy.networks import generate_voxel_image
+from porespy.tools import sanitize_filename
 
 
 def dict_to_vtk(data, filename, voxel_size=1, origin=(0, 0, 0)):

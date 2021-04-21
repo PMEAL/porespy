@@ -1,12 +1,11 @@
-import numpy as np
-from edt import edt
-from tqdm import tqdm
-import scipy.ndimage as spim
-from skimage.morphology import ball, disk
-from porespy.tools import get_border
-from porespy.tools import make_contiguous
-from porespy.tools import fftmorphology
 import numba
+import numpy as np
+import scipy.ndimage as spim
+from edt import edt
+from skimage.morphology import ball, disk
+from tqdm import tqdm
+
+from porespy.tools import fftmorphology, get_border, make_contiguous
 
 
 def ibip(im, inlets=None, dt=None, inv=None, mode='morph', return_sizes=False,

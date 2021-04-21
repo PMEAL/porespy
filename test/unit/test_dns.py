@@ -1,6 +1,7 @@
-import porespy as ps
 import numpy as np
 import pytest
+
+import porespy as ps
 
 
 class DNSTest():

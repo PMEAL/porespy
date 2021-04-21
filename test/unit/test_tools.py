@@ -1,10 +1,11 @@
-import porespy as ps
-import numpy as np
-import scipy.spatial as sptl
-import scipy.ndimage as spim
 import matplotlib.pyplot as plt
+import numpy as np
 import pytest
+import scipy.ndimage as spim
+import scipy.spatial as sptl
 from edt import edt
+
+import porespy as ps
 
 
 class ToolsTest():

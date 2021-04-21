@@ -1,15 +1,14 @@
 import numpy as np
 import openpnm as op
 import scipy.ndimage as spim
-from skimage.segmentation import find_boundaries
-from skimage.morphology import ball, cube, disk, square
-from porespy.tools import make_contiguous
-from porespy.tools import overlay
-from porespy.tools import insert_cylinder
-from porespy.generators import borders
-from porespy import settings
-from porespy.tools import get_tqdm
 from loguru import logger
+from skimage.morphology import ball, cube, disk, square
+from skimage.segmentation import find_boundaries
+
+from porespy import settings
+from porespy.generators import borders
+from porespy.tools import get_tqdm, insert_cylinder, make_contiguous, overlay
+
 tqdm = get_tqdm()
 
 

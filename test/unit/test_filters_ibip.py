@@ -1,9 +1,10 @@
-import pytest
 import numpy as np
-from edt import edt
-import porespy as ps
+import pytest
 import scipy.ndimage as spim
-from skimage.morphology import disk, ball, skeletonize_3d, square
+from edt import edt
+from skimage.morphology import ball, disk, skeletonize_3d, square
+
+import porespy as ps
 
 
 class IBIPTest():

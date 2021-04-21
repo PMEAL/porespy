@@ -1,16 +1,17 @@
+from collections import namedtuple
+
 import dask.array as da
 import numpy as np
-from numba import njit, prange
-from edt import edt
 import scipy.ndimage as spim
 import scipy.spatial as sptl
-from collections import namedtuple
-from skimage.segmentation import watershed
-from skimage.morphology import ball, disk, square, cube
-from porespy.tools import _check_for_singleton_axes
-from porespy.tools import extend_slice
-from porespy.filters import chunked_func
+from edt import edt
 from loguru import logger
+from numba import njit, prange
+from skimage.morphology import ball, cube, disk, square
+from skimage.segmentation import watershed
+
+from porespy.filters import chunked_func
+from porespy.tools import _check_for_singleton_axes, extend_slice
 
 
 def snow_partitioning(im, dt=None, r_max=4, sigma=0.4):

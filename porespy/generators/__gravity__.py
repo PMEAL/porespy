@@ -1,10 +1,12 @@
 import numba
 import numpy as np
-from skimage.morphology import disk, ball
-from porespy import settings
-from porespy.tools import get_tqdm
-from porespy.filters import trim_disconnected_blobs, fftmorphology
 from loguru import logger
+from skimage.morphology import ball, disk
+
+from porespy import settings
+from porespy.filters import fftmorphology, trim_disconnected_blobs
+from porespy.tools import get_tqdm
+
 tqdm = get_tqdm()
 
 

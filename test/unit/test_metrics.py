@@ -1,12 +1,14 @@
 import os
-import pytest
-import numpy as np
-import porespy as ps
-from skimage import io
-from edt import edt
 from pathlib import Path
+
+import numpy as np
+import pytest
 import scipy.ndimage as spim
+from edt import edt
 from numpy.testing import assert_allclose
+from skimage import io
+
+import porespy as ps
 
 
 class MetricsTest():

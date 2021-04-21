@@ -1,10 +1,11 @@
 import os
-import time
-import psutil
 import subprocess
-import numpy as np
-from loguru import logger
+import time
+
 import imageio
+import numpy as np
+import psutil
+from loguru import logger
 
 
 def maximal_ball(im, prefix, path_to_exe, voxel_size=1e-6):

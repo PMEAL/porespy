@@ -1,9 +1,11 @@
+import numba
 import numpy as np
+import scipy.ndimage as spim
 from edt import edt
+
 import porespy as ps
 from porespy import settings
-import scipy.ndimage as spim
-import numba
+
 tqdm = ps.tools.get_tqdm()
 
 

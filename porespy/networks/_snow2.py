@@ -1,10 +1,11 @@
+from collections import Iterable, namedtuple
+
 import numpy as np
-from porespy.networks import regions_to_network
-from porespy.networks import add_boundary_regions
-from porespy.networks import label_phases, label_boundaries
-from porespy.filters import snow_partitioning, snow_partitioning_parallel
-from collections import namedtuple, Iterable
 from loguru import logger
+
+from porespy.filters import snow_partitioning, snow_partitioning_parallel
+from porespy.networks import (add_boundary_regions, label_boundaries,
+                              label_phases, regions_to_network)
 
 
 def snow2(phases,

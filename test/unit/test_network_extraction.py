@@ -1,10 +1,12 @@
 import os
+from os.path import realpath
 from pathlib import Path
 from platform import system
-from os.path import realpath
-import pytest
+
 import numpy as np
+import pytest
 from numpy.testing import assert_allclose
+
 import porespy as ps
 
 

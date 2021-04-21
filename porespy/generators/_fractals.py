@@ -1,6 +1,8 @@
 import numpy as np
 import scipy.ndimage as spim
+
 from porespy.tools import get_tqdm
+
 tqdm = get_tqdm()
 
 

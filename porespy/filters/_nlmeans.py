@@ -1,7 +1,8 @@
-import numpy as np
-from skimage.restoration import denoise_nl_means, estimate_sigma
-from skimage.exposure import rescale_intensity, match_histograms
 import dask
+import numpy as np
+from skimage.exposure import match_histograms, rescale_intensity
+from skimage.restoration import denoise_nl_means, estimate_sigma
+
 dask.config.set(scheduler="threads")
 # from dask.diagnostics import ProgressBar
 

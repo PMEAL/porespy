@@ -1,10 +1,12 @@
 import numpy as np
-import porespy as ps
 import scipy.ndimage as spim
-import skimage
 import skfmm
-from skimage.morphology import disk, square, ball, cube
-from porespy.tools import get_tqdm, fftmorphology
+import skimage
+from skimage.morphology import ball, cube, disk, square
+
+import porespy as ps
+from porespy.tools import fftmorphology, get_tqdm
+
 tqdm = get_tqdm()
 
 

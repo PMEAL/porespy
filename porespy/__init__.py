@@ -62,16 +62,10 @@ from .tools.__utils__ import Settings as _Settings
 
 settings = _Settings()
 
-from . import tools
-from . import filters
-from . import metrics
-from . import networks
-from . import generators
-from . import dns
-from . import visualization
-from . import io
+import numpy as _np
 
+from . import (dns, filters, generators, io, metrics, networks, tools,
+               visualization)
 from .visualization import imshow
 
-import numpy as _np
 _np.seterr(divide='ignore', invalid='ignore')

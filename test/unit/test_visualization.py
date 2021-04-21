@@ -1,5 +1,6 @@
-import porespy as ps
 import numpy as np
+
+import porespy as ps
 
 
 class VisualizationTest():

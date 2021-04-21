@@ -1,10 +1,11 @@
+import importlib
 import os
 import sys
-import importlib
 from dataclasses import dataclass
+
+import psutil
 from loguru import logger
 from tqdm import tqdm
-import psutil
 
 
 def _is_ipython_notebook():  # pragma: no cover

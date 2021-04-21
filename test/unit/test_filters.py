@@ -1,11 +1,12 @@
-import pytest
 import numpy as np
-from edt import edt
-import porespy as ps
+import pytest
 import scipy.ndimage as spim
-from skimage.morphology import disk, ball, skeletonize_3d
-from skimage.util import random_noise
+from edt import edt
 from scipy.stats import norm
+from skimage.morphology import ball, disk, skeletonize_3d
+from skimage.util import random_noise
+
+import porespy as ps
 
 
 class FilterTest():

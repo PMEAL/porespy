@@ -1,19 +1,19 @@
+import operator as op
+
 import dask
 import numpy as np
-from edt import edt
-import operator as op
 import scipy.ndimage as spim
-from skimage.morphology import reconstruction
-from skimage.segmentation import clear_border
-from skimage.morphology import ball, disk, square, cube, diamond, octahedron
-from porespy.tools import _check_for_singleton_axes
-from porespy.tools import fftmorphology
-from porespy.tools import get_border, subdivide
-from porespy.tools import unpad, extract_subsection
-from porespy.tools import ps_disk, ps_ball
-from porespy import settings
-from porespy.tools import get_tqdm
+from edt import edt
 from loguru import logger
+from skimage.morphology import (ball, cube, diamond, disk, octahedron,
+                                reconstruction, square)
+from skimage.segmentation import clear_border
+
+from porespy import settings
+from porespy.tools import (_check_for_singleton_axes, extract_subsection,
+                           fftmorphology, get_border, get_tqdm, ps_ball,
+                           ps_disk, subdivide, unpad)
+
 tqdm = get_tqdm()
 
 

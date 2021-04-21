@@ -16,5 +16,4 @@ ImageJ
 
 """
 
-from .__funcs__ import imagej_wrapper
-from .__funcs__ import imagej_plugin
+from .__funcs__ import imagej_plugin, imagej_wrapper

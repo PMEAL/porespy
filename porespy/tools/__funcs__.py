@@ -1,15 +1,16 @@
-import scipy as sp
-import numpy as np
-import scipy.ndimage as spim
-from scipy.stats import rankdata
 import warnings
-from edt import edt
-import scipy.ndimage as spim
-from loguru import logger
 from collections import namedtuple
+
+import numpy as np
+import scipy as sp
+import scipy.ndimage as spim
+from edt import edt
+from loguru import logger
+from scipy.signal import fftconvolve
+from scipy.stats import rankdata
 from skimage.morphology import ball, disk
 from skimage.segmentation import relabel_sequential
-from scipy.signal import fftconvolve
+
 try:
     from skimage.measure import marching_cubes
 except ImportError:
@@ -812,7 +813,7 @@ def in_hull(points, hull):
         given points in ``points`` lies within the provided ``hull``.
 
     """
-    from scipy.spatial import Delaunay, ConvexHull
+    from scipy.spatial import ConvexHull, Delaunay
     if isinstance(hull, ConvexHull):
         hull = hull.points
     hull = Delaunay(hull)

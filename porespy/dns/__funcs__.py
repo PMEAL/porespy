@@ -1,8 +1,10 @@
 import collections
+
 import numpy as np
 import openpnm as op
-from porespy.filters import trim_nonpercolating_paths
 from loguru import logger
+
+from porespy.filters import trim_nonpercolating_paths
 from porespy.generators import faces
 
 

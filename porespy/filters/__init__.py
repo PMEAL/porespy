@@ -48,36 +48,17 @@ image, but with altered values.
 
 """
 
-from .__funcs__ import apply_chords
-from .__funcs__ import apply_chords_3D
-from .__funcs__ import apply_padded
-from .__funcs__ import chunked_func
-from .__funcs__ import distance_transform_lin
-from .__funcs__ import fftmorphology
-from .__funcs__ import fill_blind_pores
-from .__funcs__ import find_disconnected_voxels
-from .__funcs__ import find_dt_artifacts
-from .__funcs__ import flood
-from .__funcs__ import flood_func
-from .__funcs__ import hold_peaks
-from .__funcs__ import local_thickness
-from .__funcs__ import nphase_border
-from .__funcs__ import porosimetry
-from .__funcs__ import prune_branches
-from .__funcs__ import region_size
-from .__funcs__ import trim_disconnected_blobs
-from .__funcs__ import trim_extrema
-from .__funcs__ import trim_floating_solid
-from .__funcs__ import trim_nonpercolating_paths
-from .__funcs__ import trim_small_clusters
-from ._snows import snow_partitioning
-from ._snows import snow_partitioning_n
-from ._snows import snow_partitioning_parallel
-from ._snows import find_peaks
-from ._snows import reduce_peaks
-from ._snows import trim_nearby_peaks
-from ._snows import trim_saddle_points
-from ._nlmeans import nl_means_layered
 from . import imagej
-from .__ibip__ import ibip
-from .__ibip__ import find_trapped_regions
+from .__funcs__ import (apply_chords, apply_chords_3D, apply_padded,
+                        chunked_func, distance_transform_lin, fftmorphology,
+                        fill_blind_pores, find_disconnected_voxels,
+                        find_dt_artifacts, flood, flood_func, hold_peaks,
+                        local_thickness, nphase_border, porosimetry,
+                        prune_branches, region_size, trim_disconnected_blobs,
+                        trim_extrema, trim_floating_solid,
+                        trim_nonpercolating_paths, trim_small_clusters)
+from .__ibip__ import find_trapped_regions, ibip
+from ._nlmeans import nl_means_layered
+from ._snows import (find_peaks, reduce_peaks, snow_partitioning,
+                     snow_partitioning_n, snow_partitioning_parallel,
+                     trim_nearby_peaks, trim_saddle_points)

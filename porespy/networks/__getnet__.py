@@ -1,12 +1,13 @@
 import numpy as np
 import scipy.ndimage as spim
-from skimage.morphology import disk, ball
 from edt import edt
-from porespy.tools import extend_slice
-from porespy import settings
-from porespy.tools import get_tqdm, make_contiguous
-from porespy.metrics import region_surface_areas, region_interface_areas
 from loguru import logger
+from skimage.morphology import ball, disk
+
+from porespy import settings
+from porespy.metrics import region_interface_areas, region_surface_areas
+from porespy.tools import extend_slice, get_tqdm, make_contiguous
+
 tqdm = get_tqdm()
 
 

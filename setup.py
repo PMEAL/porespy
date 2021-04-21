@@ -1,6 +1,7 @@
 import os
 import sys
 from distutils.util import convert_path
+
 try:
     from setuptools import setup
 except ImportError:

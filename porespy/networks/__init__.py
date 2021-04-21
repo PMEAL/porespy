@@ -35,17 +35,12 @@ __all__ = [
     "snow_n",
     "maximal_ball"]
 
-from .__funcs__ import add_boundary_regions
-from .__funcs__ import map_to_regions
-from .__funcs__ import generate_voxel_image
-from .__funcs__ import label_phases
-from .__funcs__ import label_boundaries
+from .__funcs__ import (add_boundary_regions, generate_voxel_image,
+                        label_boundaries, label_phases, map_to_regions)
 from .__getnet__ import regions_to_network
-from .__utils__ import _net_dict
-from ._snow2 import snow2
-from ._snow2 import _parse_pad_width
 from .__maximal_ball__ import maximal_ball
-
+from .__utils__ import _net_dict
+from ._snow2 import _parse_pad_width, snow2
 
 # .. autofunction:: add_boundary_regions
 # .. autofunction:: connect_network_phases

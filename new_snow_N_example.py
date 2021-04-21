@@ -1,6 +1,7 @@
-import porespy as ps
 import matplotlib.pyplot as plt
 import openpnm as op
+
+import porespy as ps
 
 # np.random.seed(3)
 im1 = ps.generators.blobs(shape=[401, 201], porosity=None, blobiness=2) < 0.4
