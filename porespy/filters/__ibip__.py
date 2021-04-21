@@ -1,12 +1,13 @@
 import numpy as np
 from edt import edt
-from tqdm import tqdm
+from porespy.tools import get_tqdm
 import scipy.ndimage as spim
 from skimage.morphology import ball, disk
 from porespy.tools import get_border
 from porespy.tools import make_contiguous
 from porespy.tools import fftmorphology
 import numba
+from porespy import settings
 
 
 def ibip(im, inlets=None, dt=None, inv=None, mode='morph', return_sizes=False,
@@ -84,7 +85,7 @@ def ibip(im, inlets=None, dt=None, inv=None, mode='morph', return_sizes=False,
     # Intialize scratch array so it can be cleared and refilled inside loop
     if mode == 'insert':
         scratch = np.zeros_like(bd)
-    with tqdm(range(1, max_iters)) as pbar:
+    with tqdm(range(1, max_iters), **settings.tqdm) as pbar:
         for step in range(1, max_iters):
             pbar.update()
             # Dilate the boundary by given 'thickness'
@@ -319,7 +320,7 @@ def find_trapped_regions(seq, outlets=None, bins=25, return_mask=True):
         bins = bins[bins > 0]
     else:
         bins = np.linspace(seq.max(), 1, bins)
-    with tqdm(bins) as pbar:
+    with tqdm(bins, **settings.tqdm) as pbar:
         for i in bins:
             pbar.update()
             temp = seq > i

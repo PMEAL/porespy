@@ -4,6 +4,7 @@ import numpy as np
 from tqdm import tqdm
 from matplotlib import animation
 from copy import copy
+from porespy import settings
 
 
 def set_mpl_style():  # pragma: no cover
@@ -74,7 +75,7 @@ def satn_to_movie(im, satn, cmap='viridis',
     movie = []  # List to append each frame
     fig, ax = plt.subplots(1, 1)
     steps = np.unique(target)[1:]
-    with tqdm(steps) as pbar:
+    with tqdm(steps, **settings.tqdm) as pbar:
         for v in steps:
             pbar.update()
             seq += v*(target == v)

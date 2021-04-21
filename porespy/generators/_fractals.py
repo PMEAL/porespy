@@ -1,6 +1,7 @@
 import numpy as np
 import scipy.ndimage as spim
 from porespy.tools import get_tqdm
+from porespy import settings
 tqdm = get_tqdm()
 
 
@@ -40,7 +41,7 @@ def random_cantor_dust(shape, n, p=2, f=0.8):
     else:
         for i in n:
             divs.append(p**i)
-    for i in tqdm(divs):
+    for i in tqdm(divs, **settings.tqdm):
         sh = (np.array(im.shape)/i).astype(int)
         mask = np.random.rand(*sh) < f
         mask = spim.zoom(mask, zoom=i, order=0)
