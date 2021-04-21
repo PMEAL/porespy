@@ -1,14 +1,7 @@
 import numpy as np
-import scipy.ndimage as spim
-import scipy.signal as spsig
-from tqdm import tqdm
-import skimage
-from skimage.morphology import square
-import imageio
-from porespy.filters import fftmorphology
-import matplotlib.pyplot as plt
-import math
 from porespy import settings
+from porespy.tools import get_tqdm
+tqdm = get_tqdm()
 
 
 def boxcount(im, bins=10, d_min=1, d_max=None):

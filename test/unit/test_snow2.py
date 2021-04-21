@@ -1,10 +1,5 @@
-import os
-from pathlib import Path
-from platform import system
-from os.path import realpath
 import pytest
 import numpy as np
-from numpy.testing import assert_allclose
 import porespy as ps
 import openpnm as op
 ws = op.Workspace()
