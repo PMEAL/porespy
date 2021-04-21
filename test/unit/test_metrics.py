@@ -151,16 +151,23 @@ class MetricsTest():
         im = np.reshape(np.random.randint(0, 10, 1000), [10, 10, 10])
         labels = np.unique(im, return_counts=True)[1]
         counts = ps.metrics.phase_fraction(im, normed=False)
+        counts = np.fromiter(counts.values(), int)
         assert np.all(labels == counts)
         fractions = ps.metrics.phase_fraction(im, normed=True)
+        fractions = np.fromiter(fractions.values(), float)
         assert np.isclose(fractions.sum(), 1)
         assert np.allclose(fractions, counts / counts.sum())
-        with pytest.raises(Exception):
-            ps.metrics.phase_fraction(np.random.rand(10, 10, 10), normed=True)
         # The method must also work on boolean images
         counts = ps.metrics.phase_fraction(im.astype(bool))
         assert counts[0] == (im == 0).sum() / im.size
         assert counts[1] == (im != 0).sum() / im.size
+        # The method should also work on float images
+        im = np.array([0.5, 0.5, 1.5, 1.5, 12, 1.5, 12, 12, 12, 12])
+        fractions = ps.metrics.phase_fraction(im, normed=True)
+        k = np.fromiter(fractions.keys(), float)
+        v = np.fromiter(fractions.values(), float)
+        assert np.allclose(k, [0.5, 1.5, 12])
+        assert np.allclose(v, [0.2, 0.3, 0.5])
 
     def test_representative_elementary_volume(self):
         im = ps.generators.lattice_spheres(shape=[999, 999],
