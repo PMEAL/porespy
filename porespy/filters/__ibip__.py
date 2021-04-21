@@ -8,6 +8,7 @@ from porespy.tools import make_contiguous
 from porespy.tools import fftmorphology
 import numba
 from porespy import settings
+tqdm = get_tqdm()
 
 
 def ibip(im, inlets=None, dt=None, inv=None, mode='morph', return_sizes=False,
