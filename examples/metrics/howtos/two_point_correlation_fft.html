@@ -556,21 +556,6 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/sanitize_filename.html">
-   sanitize_filename
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/seq_to_satn.html">
-   seq_to_satn
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/size_to_seq.html">
-   size_to_seq
-  </a>
- </li>
- <li class="toctree-l1">
   <a class="reference internal" href="../../tools/howtos/subdivide.html">
    subdivide
   </a>
@@ -611,8 +596,8 @@
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Create-image">
-   Create image
+  <a class="reference internal nav-link" href="#Genearate-image-for-testing">
+   Genearate image for testing
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
@@ -898,16 +883,18 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>import porespy as ps
-import matplotlib.pyplot as plt
+<span></span>import matplotlib.pyplot as plt
+import numpy as np
+import porespy as ps
 
 ps.visualization.set_mpl_style()
+np.random.seed(10)
 </pre></div>
 </div>
 </div>
 </div>
-<div class="section" id="Create-image">
-<h2>Create image<a class="headerlink" href="#Create-image" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="Genearate-image-for-testing">
+<h2>Genearate image for testing<a class="headerlink" href="#Genearate-image-for-testing" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
@@ -915,28 +902,16 @@ ps.visualization.set_mpl_style()
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span>skel = ps.generators.blobs(shape=[500, 500])
 im = ps.filters.prune_branches(skel)
-
-plt.figure(figsize=[7,7])
-plt.axis(False)
-plt.imshow(im);
+fig, ax = plt.subplots()
+ax.imshow(im, origin=&quot;lower&quot;);
 </pre></div>
 </div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-&lt;matplotlib.image.AxesImage at 0x7f5376fc5160&gt;
-</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_metrics_howtos_two_point_correlation_fft_4_1.png" src="../../../_images/examples_metrics_howtos_two_point_correlation_fft_4_1.png" />
-</div>
+<img alt="../../../_images/examples_metrics_howtos_two_point_correlation_fft_4_0.svg" src="../../../_images/examples_metrics_howtos_two_point_correlation_fft_4_0.svg" /></div>
 </div>
 </div>
 <div class="section" id="Apply-metric-function">
@@ -956,7 +931,7 @@ plt.imshow(im);
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>plt.figure(figsize=[7,7])
+<span></span>plt.figure()
 plt.title(&quot;Probability vs. Distance&quot;)
 plt.plot(x.distance, x.probability)
 plt.show();
@@ -967,8 +942,7 @@ plt.show();
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_metrics_howtos_two_point_correlation_fft_8_0.png" src="../../../_images/examples_metrics_howtos_two_point_correlation_fft_8_0.png" />
-</div>
+<img alt="../../../_images/examples_metrics_howtos_two_point_correlation_fft_8_0.svg" src="../../../_images/examples_metrics_howtos_two_point_correlation_fft_8_0.svg" /></div>
 </div>
 </div>
 </div>

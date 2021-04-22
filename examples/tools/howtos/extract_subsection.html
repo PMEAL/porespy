@@ -556,21 +556,6 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="sanitize_filename.html">
-   sanitize_filename
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="seq_to_satn.html">
-   seq_to_satn
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="size_to_seq.html">
-   size_to_seq
-  </a>
- </li>
- <li class="toctree-l1">
   <a class="reference internal" href="subdivide.html">
    subdivide
   </a>
@@ -611,13 +596,13 @@
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Create-image-and-variables">
-   Create image and variables
+  <a class="reference internal nav-link" href="#Generate-image-for-testing">
+   Generate image for testing
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Apply-tool">
-   Apply tool
+  <a class="reference internal nav-link" href="#Demonstration">
+   Demonstration
   </a>
  </li>
 </ul>
@@ -908,61 +893,59 @@ ps.visualization.set_mpl_style()
 </div>
 </div>
 </div>
-<div class="section" id="Create-image-and-variables">
-<h2>Create image and variables<a class="headerlink" href="#Create-image-and-variables" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="Generate-image-for-testing">
+<h2>Generate image for testing<a class="headerlink" href="#Generate-image-for-testing" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>im = np.zeros([500, 500])
-im = ps.generators.RSA(im, radius=25, volume_fraction=0.5)
-plt.figure(figsize=[7, 7])
-plt.axis(False)
-plt.imshow(im)
-
-#default values:
-shape = [50,100]
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../_images/examples_tools_howtos_extract_subsection_4_0.png" src="../../../_images/examples_tools_howtos_extract_subsection_4_0.png" />
-</div>
-</div>
-</div>
-<div class="section" id="Apply-tool">
-<h2>Apply tool<a class="headerlink" href="#Apply-tool" title="Permalink to this headline">¶</a></h2>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>im = ps.tools.extract_subsection(im = im, shape = shape)
-plt.figure(figsize=[7, 7])
-plt.axis(False)
-plt.imshow(im);
+<span></span>im = np.random.rand(100, 100)
+fig, ax = plt.subplots(figsize=[4, 4])
+ax.axis(False)
+ax.imshow(im)
 </pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;matplotlib.image.AxesImage at 0x7ff8f33891f0&gt;
+&lt;matplotlib.image.AxesImage at 0x7f361a742100&gt;
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_tools_howtos_extract_subsection_6_1.png" src="../../../_images/examples_tools_howtos_extract_subsection_6_1.png" />
+<img alt="../../../_images/examples_tools_howtos_extract_subsection_4_1.svg" src="../../../_images/examples_tools_howtos_extract_subsection_4_1.svg" /></div>
 </div>
+</div>
+<div class="section" id="Demonstration">
+<h2>Demonstration<a class="headerlink" href="#Demonstration" title="Permalink to this headline">¶</a></h2>
+<p>This tool was designed to ‘uppad’ an image that has had an equal amount of padding applied to all sides. The arguments assume that you know the original size of the image and wish to retrieve it back:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>im2 = np.pad(im, pad_width=20, constant_values=0)
+im = ps.tools.extract_subsection(im=im2, shape=im.shape)
+fig, ax = plt.subplots(1, 2, figsize=[8, 4])
+ax[0].axis(False)
+ax[0].imshow(im2);
+ax[1].axis(False)
+ax[1].imshow(im);
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/examples_tools_howtos_extract_subsection_6_0.svg" src="../../../_images/examples_tools_howtos_extract_subsection_6_0.svg" /></div>
 </div>
 </div>
 </div>

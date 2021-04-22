@@ -556,21 +556,6 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/sanitize_filename.html">
-   sanitize_filename
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/seq_to_satn.html">
-   seq_to_satn
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/size_to_seq.html">
-   size_to_seq
-  </a>
- </li>
- <li class="toctree-l1">
   <a class="reference internal" href="../../tools/howtos/subdivide.html">
    subdivide
   </a>
@@ -611,33 +596,18 @@
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Create-variables">
-   Create variables
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#Apply-generator-function">
    Apply generator function
   </a>
   <ul class="nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#Porosity">
-     Porosity
-    </a>
-   </li>
    <li class="toc-h3 nav-item toc-entry">
     <a class="reference internal nav-link" href="#Octaves">
      Octaves
     </a>
    </li>
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#Frequency">
-     Frequency
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#Persistence">
-     Persistence
+    <a class="reference internal nav-link" href="#Gain">
+     Gain
     </a>
    </li>
   </ul>
@@ -920,28 +890,13 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>import numpy as np
+<span></span>import matplotlib.pyplot as plt
+import numpy as np
 import porespy as ps
 import scipy
-import matplotlib.pyplot as plt
+
 ps.visualization.set_mpl_style()
 np.random.seed(10)
-</pre></div>
-</div>
-</div>
-</div>
-<div class="section" id="Create-variables">
-<h2>Create variables<a class="headerlink" href="#Create-variables" title="Permalink to this headline">¶</a></h2>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>shape = [1000,1000]
-porosity = None
-octaves = 3
-frequency = 2
-persistence = 0.5
 </pre></div>
 </div>
 </div>
@@ -949,59 +904,23 @@ persistence = 0.5
 <div class="section" id="Apply-generator-function">
 <h2>Apply generator function<a class="headerlink" href="#Apply-generator-function" title="Permalink to this headline">¶</a></h2>
 <p>While adding inputs to the function, the frequency must be a factor of shape, that when put to the power of octave is less than or equal to shape. If not, exceptions will be raised:</p>
-<div class="section" id="Porosity">
-<h3>Porosity<a class="headerlink" href="#Porosity" title="Permalink to this headline">¶</a></h3>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>x = ps.generators.fractal_noise(shape, porosity, octaves, frequency, persistence)
-xx = ps.generators.fractal_noise(shape, .25, octaves, frequency, persistence)
-
-fig, ax = plt.subplots(1, 2, figsize=[15, 15]);
-ax[0].imshow(x);
-ax[1].imshow(xx);
-ax[0].axis(False)
-ax[1].axis(False)
-ax[0].set_title(&#39;Porosity = None&#39;)
-ax[1].set_title(&#39;Porosity = .25&#39;);
+<span></span>x = ps.generators.fractal_noise(shape=[200, 200],
+                                frequency=0.05,
+                                octaves=4,
+                                gain=0.5,
+                                mode=&#39;simplex&#39;,
+                                seed=None,
+                                cores=None,
+                                uniform=True)
+plt.figure(figsize=[4, 4])
+plt.axis(False)
+plt.imshow(x);
 </pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">ModuleNotFoundError</span>                       Traceback (most recent call last)
-<span class="ansi-green-fg">~/Code/porespy/porespy/generators/_noise.py</span> in <span class="ansi-cyan-fg">fractal_noise</span><span class="ansi-blue-fg">(shape, frequency, octaves, gain, mode, seed, cores, uniform)</span>
-<span class="ansi-green-intense-fg ansi-bold">     75</span>     <span class="ansi-green-fg">try</span><span class="ansi-blue-fg">:</span>
-<span class="ansi-green-fg">---&gt; 76</span><span class="ansi-red-fg">         </span><span class="ansi-green-fg">import</span> pyfastnoisesimd <span class="ansi-green-fg">as</span> fns
-<span class="ansi-green-intense-fg ansi-bold">     77</span>     <span class="ansi-green-fg">except</span> ModuleNotFoundError<span class="ansi-blue-fg">:</span>
-
-<span class="ansi-red-fg">ModuleNotFoundError</span>: No module named &#39;pyfastnoisesimd&#39;
-
-During handling of the above exception, another exception occurred:
-
-<span class="ansi-red-fg">Exception</span>                                 Traceback (most recent call last)
-<span class="ansi-green-fg">&lt;ipython-input-3-71e9e41c6ee7&gt;</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
-<span class="ansi-green-fg">----&gt; 1</span><span class="ansi-red-fg"> </span>x <span class="ansi-blue-fg">=</span> ps<span class="ansi-blue-fg">.</span>generators<span class="ansi-blue-fg">.</span>fractal_noise<span class="ansi-blue-fg">(</span>shape<span class="ansi-blue-fg">,</span> porosity<span class="ansi-blue-fg">,</span> octaves<span class="ansi-blue-fg">,</span> frequency<span class="ansi-blue-fg">,</span> persistence<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">      2</span> xx <span class="ansi-blue-fg">=</span> ps<span class="ansi-blue-fg">.</span>generators<span class="ansi-blue-fg">.</span>fractal_noise<span class="ansi-blue-fg">(</span>shape<span class="ansi-blue-fg">,</span> <span class="ansi-cyan-fg">.25</span><span class="ansi-blue-fg">,</span> octaves<span class="ansi-blue-fg">,</span> frequency<span class="ansi-blue-fg">,</span> persistence<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">      3</span>
-<span class="ansi-green-intense-fg ansi-bold">      4</span> fig<span class="ansi-blue-fg">,</span> ax <span class="ansi-blue-fg">=</span> plt<span class="ansi-blue-fg">.</span>subplots<span class="ansi-blue-fg">(</span><span class="ansi-cyan-fg">1</span><span class="ansi-blue-fg">,</span> <span class="ansi-cyan-fg">2</span><span class="ansi-blue-fg">,</span> figsize<span class="ansi-blue-fg">=</span><span class="ansi-blue-fg">[</span><span class="ansi-cyan-fg">15</span><span class="ansi-blue-fg">,</span> <span class="ansi-cyan-fg">15</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">;</span>
-<span class="ansi-green-intense-fg ansi-bold">      5</span> ax<span class="ansi-blue-fg">[</span><span class="ansi-cyan-fg">0</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">.</span>imshow<span class="ansi-blue-fg">(</span>x<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">;</span>
-
-<span class="ansi-green-fg">~/Code/porespy/porespy/generators/_noise.py</span> in <span class="ansi-cyan-fg">fractal_noise</span><span class="ansi-blue-fg">(shape, frequency, octaves, gain, mode, seed, cores, uniform)</span>
-<span class="ansi-green-intense-fg ansi-bold">     76</span>         <span class="ansi-green-fg">import</span> pyfastnoisesimd <span class="ansi-green-fg">as</span> fns
-<span class="ansi-green-intense-fg ansi-bold">     77</span>     <span class="ansi-green-fg">except</span> ModuleNotFoundError<span class="ansi-blue-fg">:</span>
-<span class="ansi-green-fg">---&gt; 78</span><span class="ansi-red-fg">         raise Exception(&#39;fractal_noise requires pyfastnoisesimd, which can be &#39; +
-</span><span class="ansi-green-intense-fg ansi-bold">     79</span>                         &#39;install using pip&#39;)
-<span class="ansi-green-intense-fg ansi-bold">     80</span>     <span class="ansi-green-fg">if</span> cores <span class="ansi-green-fg">is</span> <span class="ansi-green-fg">None</span><span class="ansi-blue-fg">:</span>
-
-<span class="ansi-red-fg">Exception</span>: fractal_noise requires pyfastnoisesimd, which can be install using pip
-</pre></div></div>
 </div>
 </div>
 <div class="section" id="Octaves">
@@ -1011,55 +930,49 @@ During handling of the above exception, another exception occurred:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>xx = ps.generators.perlin_noise(shape, porosity, 2, frequency, persistence)
+<span></span>xx = ps.generators.fractal_noise(shape=[200, 200],
+                                 frequency=0.05,
+                                 octaves=10,
+                                 gain=0.5,
+                                 mode=&#39;simplex&#39;,
+                                 seed=None,
+                                 cores=None,
+                                 uniform=True)
 
-fig, ax = plt.subplots(1, 2, figsize=[15, 15]);
-ax[0].imshow(x);
-ax[1].imshow(xx);
+fig, ax = plt.subplots(1, 2, figsize=[8, 4])
+ax[0].imshow(x)
+ax[1].imshow(xx)
 ax[0].axis(False)
 ax[1].axis(False)
-ax[0].set_title(&#39;Octaves = 3&#39;)
-ax[1].set_title(&#39;Octaves = 2&#39;);
+ax[0].set_title(&#39;Octaves = 4&#39;)
+ax[1].set_title(&#39;Octaves = 10&#39;);
 </pre></div>
 </div>
 </div>
 </div>
-<div class="section" id="Frequency">
-<h3>Frequency<a class="headerlink" href="#Frequency" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="Gain">
+<h3>Gain<a class="headerlink" href="#Gain" title="Permalink to this headline">¶</a></h3>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>xx = ps.generators.perlin_noise(shape, porosity, octaves, [10, 5], persistence)
+<span></span>xx = ps.generators.fractal_noise(shape=[200, 200],
+                                 frequency=0.05,
+                                 octaves=10,
+                                 gain=0.9,
+                                 mode=&#39;simplex&#39;,
+                                 seed=None,
+                                 cores=None,
+                                 uniform=True)
 
-fig, ax = plt.subplots(1, 2, figsize=[15, 15]);
-ax[0].imshow(x);
-ax[1].imshow(xx);
+fig, ax = plt.subplots(1, 2, figsize=[8, 4])
+ax[0].imshow(x)
+ax[1].imshow(xx)
 ax[0].axis(False)
 ax[1].axis(False)
-ax[0].set_title(&#39;Frequency = 2&#39;)
-ax[1].set_title(&#39;Frequency = [10, 5]&#39;);
-</pre></div>
-</div>
-</div>
-</div>
-<div class="section" id="Persistence">
-<h3>Persistence<a class="headerlink" href="#Persistence" title="Permalink to this headline">¶</a></h3>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>xx = ps.generators.perlin_noise(shape, porosity, octaves, frequency, 0.9)
-
-fig, ax = plt.subplots(1, 2, figsize=[15, 15]);
-ax[0].imshow(x);
-ax[1].imshow(xx);
-ax[0].axis(False)
-ax[1].axis(False)
-ax[0].set_title(&#39;Persistence = 0.5&#39;)
-ax[1].set_title(&#39;Persistence = 0.9&#39;);
+ax[0].set_title(&#39;Gain = 0.5&#39;)
+ax[1].set_title(&#39;Gain = 0.9&#39;);
 </pre></div>
 </div>
 </div>

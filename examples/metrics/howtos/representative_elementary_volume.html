@@ -556,21 +556,6 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/sanitize_filename.html">
-   sanitize_filename
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/seq_to_satn.html">
-   seq_to_satn
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/size_to_seq.html">
-   size_to_seq
-  </a>
- </li>
- <li class="toctree-l1">
   <a class="reference internal" href="../../tools/howtos/subdivide.html">
    subdivide
   </a>
@@ -611,8 +596,8 @@
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Create-image">
-   Create image
+  <a class="reference internal nav-link" href="#Genearate-image-for-testing">
+   Genearate image for testing
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
@@ -910,16 +895,18 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>import porespy as ps
-import matplotlib.pyplot as plt
+<span></span>import matplotlib.pyplot as plt
+import numpy as np
+import porespy as ps
 
 ps.visualization.set_mpl_style()
+np.random.seed(10)
 </pre></div>
 </div>
 </div>
 </div>
-<div class="section" id="Create-image">
-<h2>Create image<a class="headerlink" href="#Create-image" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="Genearate-image-for-testing">
+<h2>Genearate image for testing<a class="headerlink" href="#Genearate-image-for-testing" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
@@ -927,13 +914,8 @@ ps.visualization.set_mpl_style()
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span>skel = ps.generators.blobs(shape=[500, 500])
 im = ps.filters.prune_branches(skel)
-
-plt.figure(figsize=[7,7])
-plt.axis(False)
-plt.imshow(im)
-
-#default values:
-npoints = 1000
+fig, ax = plt.subplots()
+ax.imshow(im, origin=&quot;lower&quot;);
 </pre></div>
 </div>
 </div>
@@ -941,8 +923,7 @@ npoints = 1000
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_metrics_howtos_representative_elementary_volume_4_0.png" src="../../../_images/examples_metrics_howtos_representative_elementary_volume_4_0.png" />
-</div>
+<img alt="../../../_images/examples_metrics_howtos_representative_elementary_volume_4_0.svg" src="../../../_images/examples_metrics_howtos_representative_elementary_volume_4_0.svg" /></div>
 </div>
 </div>
 <div class="section" id="Apply-metric-function">
@@ -955,7 +936,8 @@ npoints = 1000
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>profile = ps.metrics.representative_elementary_volume(im =  im, npoints= npoints)
+<span></span>npoints = 1000
+profile = ps.metrics.representative_elementary_volume(im=im)
 </pre></div>
 </div>
 </div>
@@ -965,41 +947,30 @@ npoints = 1000
 <div class="output_area docutils container">
 <script type="application/vnd.jupyter.widget-view+json">{"model_id": "", "version_major": 2, "version_minor": 0}</script></div>
 </div>
-<p>Plot results:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>fig, ax = plt.subplots(1, 2, figsize=[15, 7]);
-ax[0].plot(profile.volume, &quot;b.&quot;)
-ax[1].plot(profile.porosity, &quot;b.&quot;)
-ax[0].set_title(&quot;Volume&quot;)
-ax[1].set_title(&quot;Porosity&quot;);
+<span></span>fig, ax = plt.subplots()
+ax.plot(profile.volume, profile.porosity, &#39;r.&#39;)
+ax.set_xlabel(&quot;volume&quot;)
+ax.set_ylabel(&quot;porosity&quot;);
 </pre></div>
 </div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Text(0.5, 1.0, &#39;Porosity&#39;)
-</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_metrics_howtos_representative_elementary_volume_10_1.png" src="../../../_images/examples_metrics_howtos_representative_elementary_volume_10_1.png" />
+<img alt="../../../_images/examples_metrics_howtos_representative_elementary_volume_9_0.svg" src="../../../_images/examples_metrics_howtos_representative_elementary_volume_9_0.svg" /></div>
 </div>
-</div>
+<p>Plot results:</p>
 </div>
 <div class="section" id="npoints">
 <h3>npoints<a class="headerlink" href="#npoints" title="Permalink to this headline">¶</a></h3>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -1015,33 +986,22 @@ Text(0.5, 1.0, &#39;Porosity&#39;)
 </div>
 <p>Plot results:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>fig, ax = plt.subplots(1, 2, figsize=[15, 7]);
-ax[0].plot(profile.volume, &quot;b.&quot;)
-ax[1].plot(profile.porosity, &quot;b.&quot;)
-ax[0].set_title(&quot;Volume&quot;)
-ax[1].set_title(&quot;Porosity&quot;);
+<span></span>fig, ax = plt.subplots()
+ax.plot(profile.volume, profile.porosity, &#39;r.&#39;)
+ax.set_xlabel(&quot;volume&quot;)
+ax.set_ylabel(&quot;porosity&quot;);
 </pre></div>
 </div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Text(0.5, 1.0, &#39;Porosity&#39;)
-</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_metrics_howtos_representative_elementary_volume_14_1.png" src="../../../_images/examples_metrics_howtos_representative_elementary_volume_14_1.png" />
-</div>
+<img alt="../../../_images/examples_metrics_howtos_representative_elementary_volume_14_0.svg" src="../../../_images/examples_metrics_howtos_representative_elementary_volume_14_0.svg" /></div>
 </div>
 </div>
 </div>

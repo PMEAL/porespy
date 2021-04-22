@@ -556,21 +556,6 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/sanitize_filename.html">
-   sanitize_filename
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/seq_to_satn.html">
-   seq_to_satn
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/size_to_seq.html">
-   size_to_seq
-  </a>
- </li>
- <li class="toctree-l1">
   <a class="reference internal" href="../../tools/howtos/subdivide.html">
    subdivide
   </a>
@@ -606,19 +591,21 @@
 <nav id="bd-toc-nav">
     <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Import-packages">
-   Import packages
+  <a class="reference internal nav-link" href="#Create-a-3D-image-of-a-bundle-of-tubes,-in-the-form-of-a-rectangular-plate-with-randomly-sized-holes-through-it.">
+   Create a 3D image of a bundle of tubes, in the form of a rectangular plate with randomly sized holes through it.
   </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Create-variables:">
-   Create variables:
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Apply-generator-function:">
-   Apply generator function:
-  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#Import-packages">
+     Import packages
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#Generate-image-for-testing">
+     Generate image for testing
+    </a>
+   </li>
+  </ul>
  </li>
 </ul>
 
@@ -891,142 +878,44 @@ div.rendered_html tbody tr:hover {
 </style>
 <div class="section" id="bundle_of_tubes">
 <h1>bundle_of_tubes<a class="headerlink" href="#bundle_of_tubes" title="Permalink to this headline">¶</a></h1>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>import porespy as ps
-from IPython.display import Markdown as show
-show(ps.tools.show_docstring(ps.generators.bundle_of_tubes))
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<table class="table">
-<colgroup>
-<col style="width: 100%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>## Documentation for
-<code class="docutils literal notranslate"><span class="pre">bundle_of_tubes</span></code></p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>*b
-undle_of_tubes<em>(shape:
-List[int], spacing:
-int)</em>**</p></td>
-</tr>
-<tr class="row-odd"><td><p>reate a 3D image of a
-bundle of tubes, in the
-form of a rectangular
-late with randomly sized
-holes through it.</p></td>
-</tr>
-<tr class="row-even"><td><p>### Parameters shape :
-list The size the image,
-with the 3rd dimension
-indicating the plate
-thickness. If the 3rd
-dimension is not given
-then a thickness of 1
-voxel is assumed.
-spacing : scalar The
-center to center
-distance of the holes.
-The hole sizes will be
-randomly distributed
-between this values down
-to 3 voxels.</p></td>
-</tr>
-<tr class="row-odd"><td><p>### Returns image :
-ND-array A boolean array
-with <code class="docutils literal notranslate"><span class="pre">True</span></code> values
-denoting the pore space</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<div class="section" id="Create-a-3D-image-of-a-bundle-of-tubes,-in-the-form-of-a-rectangular-plate-with-randomly-sized-holes-through-it.">
+<h2>Create a 3D image of a bundle of tubes, in the form of a rectangular plate with randomly sized holes through it.<a class="headerlink" href="#Create-a-3D-image-of-a-bundle-of-tubes,-in-the-form-of-a-rectangular-plate-with-randomly-sized-holes-through-it." title="Permalink to this headline">¶</a></h2>
 <div class="section" id="Import-packages">
-<h2>Import packages<a class="headerlink" href="#Import-packages" title="Permalink to this headline">¶</a></h2>
+<h3>Import packages<a class="headerlink" href="#Import-packages" title="Permalink to this headline">¶</a></h3>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>import numpy as np
+<span></span>import matplotlib.pyplot as plt
+import numpy as np
 import porespy as ps
-import matplotlib.pyplot as plt
+
 ps.visualization.set_mpl_style()
 np.random.seed(10)
 </pre></div>
 </div>
 </div>
 </div>
-<div class="section" id="Create-variables:">
-<h2>Create variables:<a class="headerlink" href="#Create-variables:" title="Permalink to this headline">¶</a></h2>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>shape  = [50,50]
-spacing = 4
-</pre></div>
-</div>
-</div>
-</div>
-<div class="section" id="Apply-generator-function:">
-<h2>Apply generator function:<a class="headerlink" href="#Apply-generator-function:" title="Permalink to this headline">¶</a></h2>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>x = ps.generators.bundle_of_tubes(shape=shape, spacing=spacing)
-</pre></div>
-</div>
-</div>
+<div class="section" id="Generate-image-for-testing">
+<h3>Generate image for testing<a class="headerlink" href="#Generate-image-for-testing" title="Permalink to this headline">¶</a></h3>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>fig = plt.figure(figsize=[6, 6])
-plt.figure(figsize=[10, 10])
+<span></span>im = ps.generators.bundle_of_tubes(shape=[500, 500], spacing=12)
+plt.figure(figsize=[4, 4])
 plt.axis(False)
-plt.imshow(x)
+plt.imshow(im);
 </pre></div>
 </div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-&lt;matplotlib.image.AxesImage at 0x7fbaf6818d30&gt;
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-&lt;Figure size 432x432 with 0 Axes&gt;
-</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_generators_howtos_bundle_of_tubes_8_2.png" src="../../../_images/examples_generators_howtos_bundle_of_tubes_8_2.png" />
+<img alt="../../../_images/examples_generators_howtos_bundle_of_tubes_5_0.svg" src="../../../_images/examples_generators_howtos_bundle_of_tubes_5_0.svg" /></div>
 </div>
 </div>
 </div>

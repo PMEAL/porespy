@@ -556,21 +556,6 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="sanitize_filename.html">
-   sanitize_filename
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="seq_to_satn.html">
-   seq_to_satn
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="size_to_seq.html">
-   size_to_seq
-  </a>
- </li>
- <li class="toctree-l1">
   <a class="reference internal" href="subdivide.html">
    subdivide
   </a>
@@ -611,8 +596,8 @@
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Create-variable">
-   Create variable
+  <a class="reference internal nav-link" href="#Generate-image-for-testing">
+   Generate image for testing
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
@@ -891,68 +876,10 @@ div.rendered_html tbody tr:hover {
 </style>
 <div class="section" id="unpad">
 <h1>unpad<a class="headerlink" href="#unpad" title="Permalink to this headline">¶</a></h1>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>import porespy as ps
-import numpy as np
-import matplotlib.pyplot as plt
-from porespy.tools import get_border, extend_slice, extract_subsection
-
-
-def unpad(im, pad_width):
-    r&quot;&quot;&quot;
-    removes padding from an image then extracts the result corresponding to the original image shape.
-    Parameters
-    ----------
-    im : ND-image
-        The image to which ``func`` should be applied
-    pad_width : int or list of ints
-        The amount of padding on each axis.  Refer to ``numpy.pad``
-        documentation for more details.
-    Notes
-    -----
-    A use case for this is when using ``skimage.morphology.skeletonize_3d``
-    to ensure that the skeleton extends beyond the edges of the image.
-    &quot;&quot;&quot;
-    padded = np.pad(im, pad_width=pad_width,
-                    mode=&#39;constant&#39;, constant_values=1)
-
-    if type(pad_width) == int:
-        new_pad_width = []
-        for r in range (0,len(im.shape)):
-            new_pad_width.append(pad_width)
-        pad_width = new_pad_width
-
-    if type(pad_width) == list:
-        pad_width = np.asarray(pad_width)
-        shape = im.shape - pad_width[0] - pad_width[1]
-
-
-    difference = (pad_width[0]-pad_width[1])
-    if shape[0] &lt; 1:
-        shape = np.array(im.shape) * shape
-    center = np.array(im.shape)
-    center[0] = shape[0]/2 -difference
-    center[1] = shape[1]/2 -difference
-    s_im = []
-    for dim in range(im.ndim):
-        r = shape[dim] / 2
-        lower_im = pad_width[0]
-        upper_im = shape[dim] + pad_width[0]
-        s_im.append(slice(int(lower_im), int(upper_im)))
-
-
-    return im[tuple(s_im)]
-</pre></div>
-</div>
-</div>
 <div class="section" id="Import-packages">
 <h2>Import packages<a class="headerlink" href="#Import-packages" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -965,34 +892,43 @@ ps.visualization.set_mpl_style()
 </div>
 </div>
 </div>
-<div class="section" id="Create-variable">
-<h2>Create variable<a class="headerlink" href="#Create-variable" title="Permalink to this headline">¶</a></h2>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="section" id="Generate-image-for-testing">
+<h2>Generate image for testing<a class="headerlink" href="#Generate-image-for-testing" title="Permalink to this headline">¶</a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span>im = ps.generators.blobs([100,150], porosity = 0.3)
-pad_width = [10,50]
+fig, ax = plt.subplots(figsize=[4, 4])
+ax.imshow(im)
+ax.axis(False);
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/examples_tools_howtos_unpad_4_0.svg" src="../../../_images/examples_tools_howtos_unpad_4_0.svg" /></div>
 </div>
 </div>
 <div class="section" id="Apply-tool">
 <h2>Apply tool<a class="headerlink" href="#Apply-tool" title="Permalink to this headline">¶</a></h2>
+<p>This should be a standard part of <code class="docutils literal notranslate"><span class="pre">numpy</span></code>, perhaps <code class="docutils literal notranslate"><span class="pre">numpy.pad(pad_width,</span> <span class="pre">mode='remove')</span></code>, but it’s not:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>print(&quot;shape original:&quot;, im.shape)
+<span></span>pad_width = [10, 30]
+print(&quot;shape original:&quot;, im.shape)
 im1 = np.pad(im, pad_width, mode = &quot;constant&quot;, constant_values = 1)
 print(&quot;shape padded:&quot;, im1.shape)
-im3 = unpad(im1, pad_width)
+im3 = ps.tools.unpad(im1, pad_width)
 print(&quot;shape new unpad:&quot;, im3.shape)
 
-
-fig, ax = plt.subplots(1, 3, figsize=[20,20]);
+fig, ax = plt.subplots(1, 3, figsize=[8, 4]);
 ax[0].imshow(im);
 ax[1].imshow(im1);
 ax[2].imshow(im3);
@@ -1008,25 +944,15 @@ ax[2].set_title(&#39;pad removed&#39;);
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 shape original: (100, 150)
-shape padded: (160, 210)
+shape padded: (140, 190)
 shape new unpad: (100, 150)
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Text(0.5, 1.0, &#39;pad removed&#39;)
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_tools_howtos_unpad_7_2.png" src="../../../_images/examples_tools_howtos_unpad_7_2.png" />
-</div>
+<img alt="../../../_images/examples_tools_howtos_unpad_6_1.svg" src="../../../_images/examples_tools_howtos_unpad_6_1.svg" /></div>
 </div>
 </div>
 </div>

@@ -556,21 +556,6 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/sanitize_filename.html">
-   sanitize_filename
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/seq_to_satn.html">
-   seq_to_satn
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/size_to_seq.html">
-   size_to_seq
-  </a>
- </li>
- <li class="toctree-l1">
   <a class="reference internal" href="../../tools/howtos/subdivide.html">
    subdivide
   </a>
@@ -611,8 +596,8 @@
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Create-image-and-variables">
-   Create image and variables
+  <a class="reference internal nav-link" href="#Genearate-image-for-testing">
+   Genearate image for testing
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
@@ -921,34 +906,28 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>import porespy as ps
-import matplotlib.pyplot as plt
+<span></span>import matplotlib.pyplot as plt
+import numpy as np
+import porespy as ps
 
 ps.visualization.set_mpl_style()
+np.random.seed(10)
+ps.settings.loglevel = 50
 </pre></div>
 </div>
 </div>
 </div>
-<div class="section" id="Create-image-and-variables">
-<h2>Create image and variables<a class="headerlink" href="#Create-image-and-variables" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="Genearate-image-for-testing">
+<h2>Genearate image for testing<a class="headerlink" href="#Genearate-image-for-testing" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span>skel = ps.generators.blobs(shape=[500, 500])
-branch_points = None
-iterations = 10
-im = ps.filters.prune_branches(skel, branch_points, iterations)
-
-plt.figure(figsize=[7,7])
-plt.axis(False)
-plt.imshow(im)
-
-#default values:
-bins = 25
-voxel_size = 1
-log = False
+im = ps.filters.prune_branches(skel)
+fig, ax = plt.subplots()
+ax.imshow(im, origin=&quot;lower&quot;);
 </pre></div>
 </div>
 </div>
@@ -956,8 +935,7 @@ log = False
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_metrics_howtos_linear_density_5_0.png" src="../../../_images/examples_metrics_howtos_linear_density_5_0.png" />
-</div>
+<img alt="../../../_images/examples_metrics_howtos_linear_density_5_0.svg" src="../../../_images/examples_metrics_howtos_linear_density_5_0.svg" /></div>
 </div>
 </div>
 <div class="section" id="Apply-metric-function">
@@ -970,7 +948,7 @@ log = False
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>x = ps.metrics.lineal_path_distribution(im, bins, voxel_size, log)
+<span></span>x = ps.metrics.lineal_path_distribution(im)
 </pre></div>
 </div>
 </div>
@@ -988,7 +966,7 @@ log = False
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>fig, ax = plt.subplots(1, 3, figsize=[20, 15]);
+<span></span>fig, ax = plt.subplots(1, 3, figsize=[10, 4])
 ax[0].plot(x.pdf)
 ax[1].plot(x.cdf)
 ax[2].bar(x.pdf, x.L, x.bin_widths)
@@ -998,21 +976,11 @@ ax[2].set_title(&#39;Bar Plot&#39;);
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Text(0.5, 1.0, &#39;Bar Plot&#39;)
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_metrics_howtos_linear_density_11_1.png" src="../../../_images/examples_metrics_howtos_linear_density_11_1.png" />
-</div>
+<img alt="../../../_images/examples_metrics_howtos_linear_density_11_0.svg" src="../../../_images/examples_metrics_howtos_linear_density_11_0.svg" /></div>
 </div>
 </div>
 <div class="section" id="bins">
@@ -1022,7 +990,7 @@ Text(0.5, 1.0, &#39;Bar Plot&#39;)
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>x = ps.metrics.lineal_path_distribution(im, 5, voxel_size, log)
+<span></span>x = ps.metrics.lineal_path_distribution(im, bins=5)
 </pre></div>
 </div>
 </div>
@@ -1040,7 +1008,7 @@ Text(0.5, 1.0, &#39;Bar Plot&#39;)
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>fig, ax = plt.subplots(1, 3, figsize=[20, 15]);
+<span></span>fig, ax = plt.subplots(1, 3, figsize=[10, 4])
 ax[0].plot(x.pdf)
 ax[1].plot(x.cdf)
 ax[2].bar(x.pdf, x.L, x.bin_widths)
@@ -1050,21 +1018,11 @@ ax[2].set_title(&#39;Bar Plot&#39;);
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Text(0.5, 1.0, &#39;Bar Plot&#39;)
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_metrics_howtos_linear_density_15_1.png" src="../../../_images/examples_metrics_howtos_linear_density_15_1.png" />
-</div>
+<img alt="../../../_images/examples_metrics_howtos_linear_density_15_0.svg" src="../../../_images/examples_metrics_howtos_linear_density_15_0.svg" /></div>
 </div>
 </div>
 <div class="section" id="voxel_size">
@@ -1074,7 +1032,7 @@ Text(0.5, 1.0, &#39;Bar Plot&#39;)
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>x = ps.metrics.lineal_path_distribution(im, bins, 5, log)
+<span></span>x = ps.metrics.lineal_path_distribution(im, voxel_size=5)
 </pre></div>
 </div>
 </div>
@@ -1092,7 +1050,7 @@ Text(0.5, 1.0, &#39;Bar Plot&#39;)
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>fig, ax = plt.subplots(1, 3, figsize=[20, 15]);
+<span></span>fig, ax = plt.subplots(1, 3, figsize=[10, 4])
 ax[0].plot(x.pdf)
 ax[1].plot(x.cdf)
 ax[2].bar(x.pdf, x.L, x.bin_widths)
@@ -1102,21 +1060,11 @@ ax[2].set_title(&#39;Bar Plot&#39;);
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Text(0.5, 1.0, &#39;Bar Plot&#39;)
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_metrics_howtos_linear_density_19_1.png" src="../../../_images/examples_metrics_howtos_linear_density_19_1.png" />
-</div>
+<img alt="../../../_images/examples_metrics_howtos_linear_density_19_0.svg" src="../../../_images/examples_metrics_howtos_linear_density_19_0.svg" /></div>
 </div>
 </div>
 <div class="section" id="log">
@@ -1126,7 +1074,7 @@ Text(0.5, 1.0, &#39;Bar Plot&#39;)
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>x = ps.metrics.lineal_path_distribution(im, bins, voxel_size, True)
+<span></span>x = ps.metrics.lineal_path_distribution(im, log=True)
 </pre></div>
 </div>
 </div>
@@ -1136,7 +1084,7 @@ Text(0.5, 1.0, &#39;Bar Plot&#39;)
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>fig, ax = plt.subplots(1, 3, figsize=[20, 15]);
+<span></span>fig, ax = plt.subplots(1, 3, figsize=[10, 4])
 ax[0].plot(x.pdf)
 ax[1].plot(x.cdf)
 ax[2].bar(x.pdf, x.LogL, x.bin_widths)
@@ -1146,21 +1094,11 @@ ax[2].set_title(&#39;Bar Plot&#39;);
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Text(0.5, 1.0, &#39;Bar Plot&#39;)
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_metrics_howtos_linear_density_23_1.png" src="../../../_images/examples_metrics_howtos_linear_density_23_1.png" />
-</div>
+<img alt="../../../_images/examples_metrics_howtos_linear_density_23_0.svg" src="../../../_images/examples_metrics_howtos_linear_density_23_0.svg" /></div>
 </div>
 </div>
 </div>

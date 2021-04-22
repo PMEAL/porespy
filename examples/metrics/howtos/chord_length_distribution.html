@@ -556,21 +556,6 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/sanitize_filename.html">
-   sanitize_filename
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/seq_to_satn.html">
-   seq_to_satn
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/size_to_seq.html">
-   size_to_seq
-  </a>
- </li>
- <li class="toctree-l1">
   <a class="reference internal" href="../../tools/howtos/subdivide.html">
    subdivide
   </a>
@@ -611,38 +596,38 @@
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Create-image-and-variables">
-   Create image and variables
+  <a class="reference internal nav-link" href="#Genearate-image-for-testing">
+   Genearate image for testing
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Apply-metric-function">
-   Apply metric function
+  <a class="reference internal nav-link" href="#Implement-chord_length_distribution">
+   Implement chord_length_distribution
   </a>
   <ul class="nav section-nav flex-column">
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#default">
-     default
+    <a class="reference internal nav-link" href="#Using-default-input-arguments">
+     Using default input arguments
     </a>
    </li>
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#bins">
-     bins
+    <a class="reference internal nav-link" href="#bins:-defined-by-user">
+     bins: defined by user
     </a>
    </li>
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#log">
-     log
+    <a class="reference internal nav-link" href="#log:-defined-by-user">
+     log: defined by user
     </a>
    </li>
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#voxel_size">
-     voxel_size
+    <a class="reference internal nav-link" href="#voxel_size:-defined-by-user">
+     voxel_size: defined by user
     </a>
    </li>
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#normalization">
-     normalization
+    <a class="reference internal nav-link" href="#normalization:-defined-by-user">
+     normalization: defined by user
     </a>
    </li>
   </ul>
@@ -925,33 +910,26 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>import porespy as ps
-import matplotlib.pyplot as plt
+<span></span>import matplotlib.pyplot as plt
+import porespy as ps
+
 ps.visualization.set_mpl_style()
 </pre></div>
 </div>
 </div>
 </div>
-<div class="section" id="Create-image-and-variables">
-<h2>Create image and variables<a class="headerlink" href="#Create-image-and-variables" title="Permalink to this headline">¶</a></h2>
-<p>Variables created are bins, log, voxel_size, and normalization. The image is created using the blobs generator function, then the prune_branches filter is applied. The image plotted is below:</p>
+<div class="section" id="Genearate-image-for-testing">
+<h2>Genearate image for testing<a class="headerlink" href="#Genearate-image-for-testing" title="Permalink to this headline">¶</a></h2>
+<p>Porespy’s <code class="docutils literal notranslate"><span class="pre">apply_chords</span></code> is used to demonstrate the chords’ distributions on the phase of interest (void space) on a synthetic image. In this example chords are found along x_direction <code class="docutils literal notranslate"><span class="pre">axis=0</span></code>.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span>im = ps.generators.blobs(shape=[500, 500])
-im = ps.filters.apply_chords(im, spacing=1, axis=0, trim_edges=True, label=False)
-
-plt.figure()
-plt.axis(False)
-plt.imshow(im)
-
-# Default values
-bins = None
-log = False
-voxel_size = 1
-normalization = &quot;count&quot;
+im = ps.filters.apply_chords(im)
+fig, ax = plt.subplots()
+ax.imshow(im, origin=&quot;lower&quot;);
 </pre></div>
 </div>
 </div>
@@ -962,17 +940,17 @@ normalization = &quot;count&quot;
 <img alt="../../../_images/examples_metrics_howtos_chord_length_distribution_5_0.svg" src="../../../_images/examples_metrics_howtos_chord_length_distribution_5_0.svg" /></div>
 </div>
 </div>
-<div class="section" id="Apply-metric-function">
-<h2>Apply metric function<a class="headerlink" href="#Apply-metric-function" title="Permalink to this headline">¶</a></h2>
-<p>Output is a tuple with elements L, pdf, cdf, relfreq, bin_centers, bin_edges, and bin_widths.</p>
-<div class="section" id="default">
-<h3>default<a class="headerlink" href="#default" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="Implement-chord_length_distribution">
+<h2>Implement chord_length_distribution<a class="headerlink" href="#Implement-chord_length_distribution" title="Permalink to this headline">¶</a></h2>
+<p>This method has default input arguments that can be changed depending on the user’s input values and preference.</p>
+<div class="section" id="Using-default-input-arguments">
+<h3>Using default input arguments<a class="headerlink" href="#Using-default-input-arguments" title="Permalink to this headline">¶</a></h3>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>x = ps.metrics.chord_length_distribution(im=im, bins= bins, log=log, voxel_size=voxel_size, normalization=normalization)
+<span></span>x = ps.metrics.chord_length_distribution(im=im)
 </pre></div>
 </div>
 </div>
@@ -982,12 +960,12 @@ normalization = &quot;count&quot;
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>fig, ax = plt.subplots(1, 3, figsize=[10, 4]);
+<span></span>fig, ax = plt.subplots(1, 3, figsize=[10, 4])
 ax[0].plot(x.pdf)
 ax[1].plot(x.cdf)
 ax[2].bar(x.L, x.cdf, x.bin_widths, edgecolor=&#39;k&#39;)
-ax[0].set_title(&quot;Probability Density Function&quot;);
-ax[1].set_title(&quot;Cumulative Density Function&quot;);
+ax[0].set_title(&quot;Probability Density Function&quot;)
+ax[1].set_title(&quot;Cumulative Density Function&quot;)
 ax[2].set_title(&#39;Bar Plot&#39;);
 </pre></div>
 </div>
@@ -999,14 +977,14 @@ ax[2].set_title(&#39;Bar Plot&#39;);
 <img alt="../../../_images/examples_metrics_howtos_chord_length_distribution_11_0.svg" src="../../../_images/examples_metrics_howtos_chord_length_distribution_11_0.svg" /></div>
 </div>
 </div>
-<div class="section" id="bins">
-<h3>bins<a class="headerlink" href="#bins" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="bins:-defined-by-user">
+<h3>bins: defined by user<a class="headerlink" href="#bins:-defined-by-user" title="Permalink to this headline">¶</a></h3>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>x = ps.metrics.chord_length_distribution(im=im, bins= 5, log=log, voxel_size=voxel_size, normalization=normalization)
+<span></span>x = ps.metrics.chord_length_distribution(im=im, bins=5)
 </pre></div>
 </div>
 </div>
@@ -1016,10 +994,10 @@ ax[2].set_title(&#39;Bar Plot&#39;);
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>fig, ax = plt.subplots(1, 3, figsize=[10, 4]);
+<span></span>fig, ax = plt.subplots(1, 3, figsize=[10, 4])
 ax[0].plot(x.pdf)
 ax[1].plot(x.cdf)
-ax[2].bar(x.L,x.cdf,  x.bin_widths, edgecolor=&#39;k&#39;)
+ax[2].bar(x.L, x.cdf, x.bin_widths, edgecolor=&#39;k&#39;)
 ax[0].set_title(&quot;Probability Density Function&quot;)
 ax[1].set_title(&quot;Cumulative Density Function&quot;)
 ax[2].set_title(&#39;Bar Plot&#39;);
@@ -1033,14 +1011,14 @@ ax[2].set_title(&#39;Bar Plot&#39;);
 <img alt="../../../_images/examples_metrics_howtos_chord_length_distribution_15_0.svg" src="../../../_images/examples_metrics_howtos_chord_length_distribution_15_0.svg" /></div>
 </div>
 </div>
-<div class="section" id="log">
-<h3>log<a class="headerlink" href="#log" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="log:-defined-by-user">
+<h3>log: defined by user<a class="headerlink" href="#log:-defined-by-user" title="Permalink to this headline">¶</a></h3>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>x = ps.metrics.chord_length_distribution(im=im, bins= bins, log=True, voxel_size=voxel_size, normalization=normalization)
+<span></span>x = ps.metrics.chord_length_distribution(im=im, log=True)
 </pre></div>
 </div>
 </div>
@@ -1050,7 +1028,7 @@ ax[2].set_title(&#39;Bar Plot&#39;);
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>fig, ax = plt.subplots(1, 3, figsize=[10, 4]);
+<span></span>fig, ax = plt.subplots(1, 3, figsize=[10, 4])
 ax[0].plot(x.pdf)
 ax[1].plot(x.cdf)
 ax[2].bar(x.LogL, x.cdf, x.bin_widths, edgecolor=&#39;k&#39;)
@@ -1067,14 +1045,14 @@ ax[2].set_title(&#39;Bar Plot&#39;);
 <img alt="../../../_images/examples_metrics_howtos_chord_length_distribution_19_0.svg" src="../../../_images/examples_metrics_howtos_chord_length_distribution_19_0.svg" /></div>
 </div>
 </div>
-<div class="section" id="voxel_size">
-<h3>voxel_size<a class="headerlink" href="#voxel_size" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="voxel_size:-defined-by-user">
+<h3>voxel_size: defined by user<a class="headerlink" href="#voxel_size:-defined-by-user" title="Permalink to this headline">¶</a></h3>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>x = ps.metrics.chord_length_distribution(im=im, bins= bins, log=log, voxel_size=5, normalization=normalization)
+<span></span>x = ps.metrics.chord_length_distribution(im=im, voxel_size=5)
 </pre></div>
 </div>
 </div>
@@ -1084,7 +1062,7 @@ ax[2].set_title(&#39;Bar Plot&#39;);
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>fig, ax = plt.subplots(1, 3, figsize=[10, 4]);
+<span></span>fig, ax = plt.subplots(1, 3, figsize=[10, 4])
 ax[0].plot(x.pdf)
 ax[1].plot(x.cdf)
 ax[2].bar(x.L, x.cdf, x.bin_widths, edgecolor=&#39;k&#39;)
@@ -1101,15 +1079,15 @@ ax[2].set_title(&#39;Bar Plot&#39;);
 <img alt="../../../_images/examples_metrics_howtos_chord_length_distribution_23_0.svg" src="../../../_images/examples_metrics_howtos_chord_length_distribution_23_0.svg" /></div>
 </div>
 </div>
-<div class="section" id="normalization">
-<h3>normalization<a class="headerlink" href="#normalization" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="normalization:-defined-by-user">
+<h3>normalization: defined by user<a class="headerlink" href="#normalization:-defined-by-user" title="Permalink to this headline">¶</a></h3>
 <p>options are count or length</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>x = ps.metrics.chord_length_distribution(im=im, bins= bins, log=log, voxel_size=voxel_size, normalization=&#39;length&#39;)
+<span></span>x = ps.metrics.chord_length_distribution(im=im, normalization=&#39;length&#39;)
 </pre></div>
 </div>
 </div>
@@ -1119,7 +1097,7 @@ ax[2].set_title(&#39;Bar Plot&#39;);
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>fig, ax = plt.subplots(1, 3, figsize=[10, 4]);
+<span></span>fig, ax = plt.subplots(1, 3, figsize=[10, 4])
 ax[0].plot(x.pdf)
 ax[1].plot(x.cdf)
 ax[2].bar(x.L, x.cdf, x.bin_widths, edgecolor=&#39;k&#39;)

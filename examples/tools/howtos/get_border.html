@@ -556,21 +556,6 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="sanitize_filename.html">
-   sanitize_filename
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="seq_to_satn.html">
-   seq_to_satn
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="size_to_seq.html">
-   size_to_seq
-  </a>
- </li>
- <li class="toctree-l1">
   <a class="reference internal" href="subdivide.html">
    subdivide
   </a>
@@ -611,13 +596,13 @@
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Create-variables">
-   Create variables
+  <a class="reference internal nav-link" href="#Generate-image-for-testing">
+   Generate image for testing
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Apply-tool">
-   Apply tool
+  <a class="reference internal nav-link" href="#Demonstrate-function">
+   Demonstrate function
   </a>
   <ul class="nav section-nav flex-column">
    <li class="toc-h3 nav-item toc-entry">
@@ -915,35 +900,32 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>import numpy as np
+<span></span>import matplotlib.pyplot as plt
+import numpy as np
 import porespy as ps
 import scipy.ndimage as spim
-import matplotlib.pyplot as plt
 import skimage
+
 ps.visualization.set_mpl_style()
 </pre></div>
 </div>
 </div>
 </div>
-<div class="section" id="Create-variables">
-<h2>Create variables<a class="headerlink" href="#Create-variables" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="Generate-image-for-testing">
+<h2>Generate image for testing<a class="headerlink" href="#Generate-image-for-testing" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>shape = [500, 500]
-
-#default values:
-thickness = 1
-mode = &#39;edges&#39;
-return_indices = False
+<span></span>im2d = np.random.rand(60, 60)
+im3d = np.random.rand(60, 60, 60)
 </pre></div>
 </div>
 </div>
 </div>
-<div class="section" id="Apply-tool">
-<h2>Apply tool<a class="headerlink" href="#Apply-tool" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="Demonstrate-function">
+<h2>Demonstrate function<a class="headerlink" href="#Demonstrate-function" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="thickness">
 <h3>thickness<a class="headerlink" href="#thickness" title="Permalink to this headline">¶</a></h3>
 <div class="nbinput docutils container">
@@ -951,16 +933,19 @@ return_indices = False
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>im = ps.tools.get_border(shape = shape, thickness = thickness, mode = mode, return_indices = return_indices )
-im2 =ps.tools.get_border(shape = shape, thickness = 10, mode = mode, return_indices = return_indices )
+<span></span>im1 = ps.tools.get_border(shape=im2d.shape)
+im2 = ps.tools.get_border(shape=im2d.shape,
+                                          thickness=4,
+                                          mode=&#39;edges&#39;,
+                                          return_indices=False)
 
-fig, ax = plt.subplots(1, 2, figsize=[15, 15]);
+fig, ax = plt.subplots(1, 2, figsize=[8, 4])
 ax[0].axis(False)
-ax[0].imshow(im)
+ax[0].imshow(im1)
 ax[0].set_title(&#39;default&#39;)
 ax[1].axis(False)
 ax[1].imshow(im2)
-ax[1].set_title(&#39;thickness = 10&#39;);
+ax[1].set_title(&#39;thickness = 20&#39;);
 </pre></div>
 </div>
 </div>
@@ -968,55 +953,48 @@ ax[1].set_title(&#39;thickness = 10&#39;);
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_tools_howtos_get_border_7_0.png" src="../../../_images/examples_tools_howtos_get_border_7_0.png" />
-</div>
+<img alt="../../../_images/examples_tools_howtos_get_border_7_0.svg" src="../../../_images/examples_tools_howtos_get_border_7_0.svg" /></div>
 </div>
 </div>
 <div class="section" id="mode">
 <h3>mode<a class="headerlink" href="#mode" title="Permalink to this headline">¶</a></h3>
-<div class="nbinput docutils container">
+<p>The options are ‘faces’, ‘edges’, and ‘corners’.</p>
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>im = ps.tools.get_border(shape = shape, thickness = thickness, mode = mode, return_indices = return_indices )
-im2 =ps.tools.get_border(shape = shape, thickness = thickness, mode = &#39;corners&#39;, return_indices = return_indices )
-
-fig, ax = plt.subplots(1, 2, figsize=[15, 15]);
-ax[0].axis(False)
-ax[0].imshow(im)
-ax[0].set_title(&#39;default&#39;)
-ax[1].axis(False)
-ax[1].imshow(im2)
-ax[1].set_title(&quot;mode = &#39;corners&#39;&quot;);
+<span></span>im1 = ps.tools.get_border(shape=im3d.shape,
+                                          thickness=5,
+                                          mode=&#39;faces&#39;,
+                                          return_indices=False)
+im2 = ps.tools.get_border(shape=im3d.shape,
+                                          thickness=5,
+                                          mode=&#39;edges&#39;,
+                                          return_indices=False)
+im3 = ps.tools.get_border(shape=im3d.shape,
+                                          thickness=5,
+                                          mode=&#39;corners&#39;,
+                                          return_indices=False)
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../_images/examples_tools_howtos_get_border_9_0.png" src="../../../_images/examples_tools_howtos_get_border_9_0.png" />
-</div>
-</div>
-</div>
-<div class="section" id="return_indices">
-<h3>return_indices<a class="headerlink" href="#return_indices" title="Permalink to this headline">¶</a></h3>
+<p>The visualization below using the <code class="docutils literal notranslate"><span class="pre">show_3D</span></code> function which gives a very rough idea of how things look in 3D. It rotates the image using <code class="docutils literal notranslate"><span class="pre">scipy.ndimage.rotate</span></code>, then does a projection along the z-axis. The results are a bit fuzzy do to the interpolation when rotating, but you can see how the borders look:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>im = ps.tools.get_border(shape = shape, thickness = thickness, mode = mode, return_indices = return_indices )
-im2 =ps.tools.get_border(shape = shape, thickness = thickness, mode = mode, return_indices =True)
-
-fig, ax = plt.subplots(1, 2, figsize=[15, 15]);
+<span></span>fig, ax = plt.subplots(1, 3, figsize=[8, 4])
+ax[0].imshow(ps.visualization.show_3D(~im1[..., 20:]))
 ax[0].axis(False)
-ax[0].imshow(im)
-ax[0].set_title(&#39;default&#39;)
+ax[0].set_title(&#39;faces&#39;)
+ax[1].imshow(ps.visualization.show_3D(~im2[..., 20:]))
 ax[1].axis(False)
-ax[1].imshow(im2)
-ax[1].set_title(&#39;return_indices =True&#39;);
+ax[1].set_title(&#39;edges&#39;)
+ax[2].imshow(ps.visualization.show_3D(~im3[..., 20:]))
+ax[2].axis(False)
+ax[2].set_title(&#39;corners&#39;);
 </pre></div>
 </div>
 </div>
@@ -1024,8 +1002,96 @@ ax[1].set_title(&#39;return_indices =True&#39;);
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_tools_howtos_get_border_11_0.png" src="../../../_images/examples_tools_howtos_get_border_11_0.png" />
+<img alt="../../../_images/examples_tools_howtos_get_border_11_0.svg" src="../../../_images/examples_tools_howtos_get_border_11_0.svg" /></div>
 </div>
+<p>For 2D images, the mode of ‘faces’ and ‘edges’ both return the same thing.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>im1 = ps.tools.get_border(shape=im2d.shape,
+                                          thickness=10,
+                                          mode=&#39;faces&#39;,
+                                          return_indices=False)
+im2 = ps.tools.get_border(shape=im2d.shape,
+                                          thickness=10,
+                                          mode=&#39;edges&#39;,
+                                          return_indices=False)
+im3 = ps.tools.get_border(shape=im2d.shape,
+                                          thickness=10,
+                                          mode=&#39;corners&#39;,
+                                          return_indices=False)
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>fig, ax = plt.subplots(1, 3, figsize=[8, 4])
+ax[0].axis(False)
+ax[0].imshow(im1)
+ax[0].set_title(&#39;faces&#39;)
+ax[1].axis(False)
+ax[1].imshow(im2)
+ax[1].set_title(&#39;edges&#39;)
+ax[2].axis(False)
+ax[2].imshow(im3)
+ax[2].set_title(&#39;corners&#39;);
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/examples_tools_howtos_get_border_14_0.svg" src="../../../_images/examples_tools_howtos_get_border_14_0.svg" /></div>
+</div>
+</div>
+<div class="section" id="return_indices">
+<h3>return_indices<a class="headerlink" href="#return_indices" title="Permalink to this headline">¶</a></h3>
+<p>Instead of returning a boolean array, the fuction can optionally return indices into <code class="docutils literal notranslate"><span class="pre">im</span></code> where the border would be:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>inds = ps.tools.get_border(shape=im2d.shape,
+                                           thickness=5,
+                                           mode=&#39;corners&#39;,
+                                           return_indices=True)
+im2d[inds] = 0
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>fig, ax = plt.subplots(1, 1, figsize=[4, 4])
+ax.axis(False)
+ax.imshow(im2d)
+ax.set_title(&#39;image with zeroed borders&#39;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Text(0.5, 1.0, &#39;image with zeroed borders&#39;)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/examples_tools_howtos_get_border_17_1.svg" src="../../../_images/examples_tools_howtos_get_border_17_1.svg" /></div>
 </div>
 </div>
 </div>

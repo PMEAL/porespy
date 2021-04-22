@@ -556,21 +556,6 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="sanitize_filename.html">
-   sanitize_filename
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="seq_to_satn.html">
-   seq_to_satn
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="size_to_seq.html">
-   size_to_seq
-  </a>
- </li>
- <li class="toctree-l1">
   <a class="reference internal" href="subdivide.html">
    subdivide
   </a>
@@ -611,13 +596,13 @@
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Create-image-and-variables">
-   Create image and variables
+  <a class="reference internal nav-link" href="#Generate-image-for-testing">
+   Generate image for testing
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Apply-tool">
-   Apply tool
+  <a class="reference internal nav-link" href="#Demonstrate-function">
+   Demonstrate function
   </a>
  </li>
 </ul>
@@ -903,26 +888,24 @@ import porespy as ps
 import scipy.ndimage as spim
 import matplotlib.pyplot as plt
 import skimage
+
 ps.visualization.set_mpl_style()
 </pre></div>
 </div>
 </div>
 </div>
-<div class="section" id="Create-image-and-variables">
-<h2>Create image and variables<a class="headerlink" href="#Create-image-and-variables" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="Generate-image-for-testing">
+<h2>Generate image for testing<a class="headerlink" href="#Generate-image-for-testing" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>im = ps.generators.blobs([100, 100, 100])
+<span></span>im = ps.generators.blobs([100, 100, 100], blobiness=[1, 2, 3])
 
-fig, ax = plt.subplots(figsize=[7, 7]);
-ps.visualization.imshow(im);
-plt.axis(False)
-
-#default values:
-squeeze = True
+fig, ax = plt.subplots(figsize=[4, 4]);
+ax.imshow(im[50, ...])
+ax.axis(False);
 </pre></div>
 </div>
 </div>
@@ -930,19 +913,18 @@ squeeze = True
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_tools_howtos_get_planes_4_0.png" src="../../../_images/examples_tools_howtos_get_planes_4_0.png" />
+<img alt="../../../_images/examples_tools_howtos_get_planes_4_0.svg" src="../../../_images/examples_tools_howtos_get_planes_4_0.svg" /></div>
 </div>
 </div>
-</div>
-<div class="section" id="Apply-tool">
-<h2>Apply tool<a class="headerlink" href="#Apply-tool" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="Demonstrate-function">
+<h2>Demonstrate function<a class="headerlink" href="#Demonstrate-function" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>im1,im2,im3 = ps.tools.get_planes(im=im, squeeze = squeeze)
-fig, ax = plt.subplots(1, 3, figsize=[15, 15]);
+<span></span>im1,im2,im3 = ps.tools.get_planes(im=im, squeeze=True)
+fig, ax = plt.subplots(1, 3, figsize=[8, 4]);
 ax[0].axis(False)
 ax[0].imshow(im1)
 ax[1].axis(False)
@@ -952,21 +934,11 @@ ax[2].imshow(im3);
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-&lt;matplotlib.image.AxesImage at 0x7f5047d9a6a0&gt;
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_tools_howtos_get_planes_6_1.png" src="../../../_images/examples_tools_howtos_get_planes_6_1.png" />
-</div>
+<img alt="../../../_images/examples_tools_howtos_get_planes_6_0.svg" src="../../../_images/examples_tools_howtos_get_planes_6_0.svg" /></div>
 </div>
 </div>
 </div>

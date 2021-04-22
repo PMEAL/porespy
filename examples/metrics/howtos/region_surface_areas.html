@@ -556,21 +556,6 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/sanitize_filename.html">
-   sanitize_filename
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/seq_to_satn.html">
-   seq_to_satn
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/size_to_seq.html">
-   size_to_seq
-  </a>
- </li>
- <li class="toctree-l1">
   <a class="reference internal" href="../../tools/howtos/subdivide.html">
    subdivide
   </a>
@@ -611,14 +596,21 @@
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Create-image-and-variables">
-   Create image and variables
+  <a class="reference internal nav-link" href="#Genearate-image-for-testing">
+   Genearate image for testing
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#Apply-metric-function">
    Apply metric function
   </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#voxel-size">
+     voxel size
+    </a>
+   </li>
+  </ul>
  </li>
 </ul>
 
@@ -898,55 +890,37 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>import porespy as ps
-import matplotlib.pyplot as plt
+<span></span>import matplotlib.pyplot as plt
+import numpy as np
+import porespy as ps
 
 ps.visualization.set_mpl_style()
+np.random.seed(10)
 </pre></div>
 </div>
 </div>
 </div>
-<div class="section" id="Create-image-and-variables">
-<h2>Create image and variables<a class="headerlink" href="#Create-image-and-variables" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="Genearate-image-for-testing">
+<h2>Genearate image for testing<a class="headerlink" href="#Genearate-image-for-testing" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span>skel = ps.generators.blobs(shape=[500, 500])
-branch_points = None
-iterations = 10
-im = ps.filters.prune_branches(skel, branch_points, iterations)
-r = ps.filters.snow_partitioning(
-    im, dt=None, r_max=4, sigma=0.4, return_all=True, mask=True, randomize=True
-)
+im = ps.filters.prune_branches(skel)
+r = ps.filters.snow_partitioning(im)
 regions = r.regions
-
-#default values:
-voxel_size = 1
-strel = None
-
-plt.figure(figsize=[7,7])
-plt.axis(False)
-plt.imshow(im);
+fig, ax = plt.subplots()
+ax.imshow(regions, origin=&quot;lower&quot;);
 </pre></div>
 </div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-&lt;matplotlib.image.AxesImage at 0x7f5a550bfeb0&gt;
-</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_metrics_howtos_region_surface_areas_4_1.png" src="../../../_images/examples_metrics_howtos_region_surface_areas_4_1.png" />
-</div>
+<img alt="../../../_images/examples_metrics_howtos_region_surface_areas_4_0.svg" src="../../../_images/examples_metrics_howtos_region_surface_areas_4_0.svg" /></div>
 </div>
 </div>
 <div class="section" id="Apply-metric-function">
@@ -957,8 +931,7 @@ plt.imshow(im);
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>x = ps.metrics.region_surface_areas(regions = regions, voxel_size=voxel_size,strel= strel)
-xx = ps.metrics.region_surface_areas(regions=regions, voxel_size = 10, strel=strel)
+<span></span>x = ps.metrics.region_surface_areas(regions=regions)
 </pre></div>
 </div>
 </div>
@@ -968,39 +941,82 @@ xx = ps.metrics.region_surface_areas(regions=regions, voxel_size = 10, strel=str
 <div class="output_area docutils container">
 <script type="application/vnd.jupyter.widget-view+json">{"model_id": "", "version_major": 2, "version_minor": 0}</script></div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "", "version_major": 2, "version_minor": 0}</script></div>
-</div>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>fig, ax = plt.subplots(1, 2, figsize=[15, 7]);
-ax[0].plot(x)
-ax[1].plot(xx)
-ax[0].set_title(&quot;voxel_size = 1&quot;)
-ax[1].set_title(&quot;voxel_size = 10&quot;);
+<span></span>regions_sur = np.copy(regions)
+for i in range(0, len(x)):
+    mask = np.array(np.where(regions_sur == i, regions_sur, 0), dtype=bool)
+    regions_sur[mask] = x[i]
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Text(0.5, 1.0, &#39;voxel_size = 10&#39;)
-</pre></div></div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>fig = plt.subplots()
+plt.imshow(regions_sur, origin=&quot;lower&quot;)
+plt.colorbar()
+plt.title(&#39;pore regions colored by their surface area&#39;);
+</pre></div>
+</div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_metrics_howtos_region_surface_areas_8_1.png" src="../../../_images/examples_metrics_howtos_region_surface_areas_8_1.png" />
+<img alt="../../../_images/examples_metrics_howtos_region_surface_areas_9_0.svg" src="../../../_images/examples_metrics_howtos_region_surface_areas_9_0.svg" /></div>
+</div>
+<div class="section" id="voxel-size">
+<h3>voxel size<a class="headerlink" href="#voxel-size" title="Permalink to this headline">¶</a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>xx = ps.metrics.region_surface_areas(regions=regions, voxel_size=10)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>regions_sur = np.copy(regions)
+for i in range(0, len(xx)):
+    mask = np.array(np.where(regions_sur == i, regions_sur, 0), dtype=bool)
+    regions_sur[mask] = xx[i]
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>fig = plt.subplots()
+plt.imshow(regions_sur, origin=&quot;lower&quot;)
+plt.colorbar()
+plt.title(&#39;pore regions colored by their surface area&#39;);
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/examples_metrics_howtos_region_surface_areas_13_0.svg" src="../../../_images/examples_metrics_howtos_region_surface_areas_13_0.svg" /></div>
 </div>
 </div>
 </div>

@@ -556,21 +556,6 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="sanitize_filename.html">
-   sanitize_filename
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="seq_to_satn.html">
-   seq_to_satn
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="size_to_seq.html">
-   size_to_seq
-  </a>
- </li>
- <li class="toctree-l1">
   <a class="reference internal" href="subdivide.html">
    subdivide
   </a>
@@ -611,8 +596,8 @@
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Create-image-and-variables">
-   Create image and variables
+  <a class="reference internal nav-link" href="#Generate-image-for-testing">
+   Generate image for testing
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
@@ -894,7 +879,7 @@ div.rendered_html tbody tr:hover {
 <div class="section" id="Import-packages">
 <h2>Import packages<a class="headerlink" href="#Import-packages" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -908,23 +893,48 @@ ps.visualization.set_mpl_style()
 </div>
 </div>
 </div>
-<div class="section" id="Create-image-and-variables">
-<h2>Create image and variables<a class="headerlink" href="#Create-image-and-variables" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="Generate-image-for-testing">
+<h2>Generate image for testing<a class="headerlink" href="#Generate-image-for-testing" title="Permalink to this headline">¶</a></h2>
+<p>To illustrate this function, we need an image containing many labelled regions. This can obtained by generating some <code class="docutils literal notranslate"><span class="pre">blobs</span></code>, then using <code class="docutils literal notranslate"><span class="pre">scipy.label</span></code>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>np.random.seed(0)
+im = ps.generators.blobs([500, 500], blobiness=2, porosity=0.4)
+regions = spim.label(im)[0]
+fig, ax = plt.subplots(1, 1, figsize=[4, 4])
+ax.axis(False)
+ax.imshow(regions);
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/examples_tools_howtos_extract_regions_5_0.svg" src="../../../_images/examples_tools_howtos_extract_regions_5_0.svg" /></div>
+</div>
+</div>
+<div class="section" id="Apply-tool">
+<h2>Apply tool<a class="headerlink" href="#Apply-tool" title="Permalink to this headline">¶</a></h2>
+<p>In it’s basic form, this function is equivalent to just obtaining a boolean mask like <code class="docutils literal notranslate"><span class="pre">regions</span> <span class="pre">==</span> <span class="pre">22</span></code>, but it has a few more features including extracting a sub-image that just contains the regions, and also finding multiple regions at once.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>im = ps.generators.blobs([500, 500])
-plt.figure(figsize=[7, 7])
-plt.axis(False)
-plt.imshow(im)
-
-im = im.astype(int)
-
-#default values:
-labels= [1,3,5]
-trim = True
+<span></span>reg1 = ps.tools.extract_regions(regions=regions, labels=[22], trim=False)
+reg2 = ps.tools.extract_regions(regions=regions, labels=[22], trim=True)
+reg3 = ps.tools.extract_regions(regions=regions, labels=[22, 23], trim=True)
+fig, ax = plt.subplots(1, 3, figsize=[8, 4])
+ax[0].axis(False)
+ax[0].imshow(reg1)
+ax[1].axis(False)
+ax[1].imshow(reg2);
+ax[2].axis(False)
+ax[2].imshow(reg3);
 </pre></div>
 </div>
 </div>
@@ -932,83 +942,7 @@ trim = True
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_tools_howtos_extract_regions_4_0.png" src="../../../_images/examples_tools_howtos_extract_regions_4_0.png" />
-</div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>regions = spim.label(im)[0]
-print(regions)
-
-plt.figure(figsize=[7, 7])
-plt.axis(False)
-plt.imshow(regions);
-</pre></div>
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-[[ 0  0  0 ...  0  0  0]
- [ 0  0  0 ...  0  0  0]
- [ 0  0  0 ...  0  0  0]
- ...
- [ 0 13 13 ... 17  0  0]
- [ 0 13 13 ... 17  0  0]
- [13 13 13 ...  0  0  0]]
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-&lt;matplotlib.image.AxesImage at 0x7fe0b93f57c0&gt;
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../_images/examples_tools_howtos_extract_regions_5_2.png" src="../../../_images/examples_tools_howtos_extract_regions_5_2.png" />
-</div>
-</div>
-</div>
-<div class="section" id="Apply-tool">
-<h2>Apply tool<a class="headerlink" href="#Apply-tool" title="Permalink to this headline">¶</a></h2>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>im = ps.tools.extract_regions(regions = regions, labels = labels, trim = trim)
-plt.figure(figsize=[7, 7])
-plt.axis(False)
-plt.imshow(im;
-</pre></div>
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-&lt;matplotlib.image.AxesImage at 0x7fe0b93b6df0&gt;
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../_images/examples_tools_howtos_extract_regions_7_1.png" src="../../../_images/examples_tools_howtos_extract_regions_7_1.png" />
-</div>
+<img alt="../../../_images/examples_tools_howtos_extract_regions_8_0.svg" src="../../../_images/examples_tools_howtos_extract_regions_8_0.svg" /></div>
 </div>
 </div>
 </div>

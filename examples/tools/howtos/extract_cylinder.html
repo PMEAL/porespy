@@ -556,21 +556,6 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="sanitize_filename.html">
-   sanitize_filename
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="seq_to_satn.html">
-   seq_to_satn
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="size_to_seq.html">
-   size_to_seq
-  </a>
- </li>
- <li class="toctree-l1">
   <a class="reference internal" href="subdivide.html">
    subdivide
   </a>
@@ -606,18 +591,18 @@
 <nav id="bd-toc-nav">
     <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Import-packages">
-   Import packages
+  <a class="reference internal nav-link" href="#Import-Packages">
+   Import Packages
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Create-image-and-variables">
-   Create image and variables
+  <a class="reference internal nav-link" href="#Generate-Image-for-Testing">
+   Generate Image for Testing
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Apply-tool">
-   Apply tool
+  <a class="reference internal nav-link" href="#Apply-tool-and-visualize">
+   Apply tool and visualize
   </a>
  </li>
 </ul>
@@ -891,8 +876,8 @@ div.rendered_html tbody tr:hover {
 </style>
 <div class="section" id="extract_cylinder">
 <h1>extract_cylinder<a class="headerlink" href="#extract_cylinder" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="Import-packages">
-<h2>Import packages<a class="headerlink" href="#Import-packages" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="Import-Packages">
+<h2>Import Packages<a class="headerlink" href="#Import-Packages" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
@@ -908,45 +893,33 @@ ps.visualization.set_mpl_style()
 </div>
 </div>
 </div>
-<div class="section" id="Create-image-and-variables">
-<h2>Create image and variables<a class="headerlink" href="#Create-image-and-variables" title="Permalink to this headline">¶</a></h2>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="section" id="Generate-Image-for-Testing">
+<h2>Generate Image for Testing<a class="headerlink" href="#Generate-Image-for-Testing" title="Permalink to this headline">¶</a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span>im = ps.generators.blobs([100, 100, 100])
-
-fig, ax = plt.subplots(figsize=[7, 7]);
-ps.visualization.imshow(im);
-plt.axis(False)
-
-#default values:
-r = 50
-axis = 0
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
 </div>
-<div class="output_area docutils container">
-<img alt="../../../_images/examples_tools_howtos_extract_cylinder_4_0.png" src="../../../_images/examples_tools_howtos_extract_cylinder_4_0.png" />
-</div>
-</div>
-</div>
-<div class="section" id="Apply-tool">
-<h2>Apply tool<a class="headerlink" href="#Apply-tool" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="Apply-tool-and-visualize">
+<h2>Apply tool and visualize<a class="headerlink" href="#Apply-tool-and-visualize" title="Permalink to this headline">¶</a></h2>
+<p>This tool is useful for extracting a cylindrical core from an otherwise cubic image. This might be helpful if a cylindrical domain is needed, or to test a workflow on a tomogram that has has not been cropped yet.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>im = ps.tools.extract_cylinder(im = im, r = r, axis = axis)
+<span></span>cyl = ps.tools.extract_cylinder(im=im, r=40, axis=2)
 
-fig, ax = plt.subplots(figsize=[7, 7]);
-ps.visualization.imshow(im);
-plt.axis(False);
+fig, ax = plt.subplots(1, 2, figsize=[8, 4]);
+ax[0].imshow(im[..., 50]);
+ax[0].axis(False)
+ax[1].imshow(cyl[..., 50]);
+ax[1].axis(False);
 </pre></div>
 </div>
 </div>
@@ -954,8 +927,7 @@ plt.axis(False);
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_tools_howtos_extract_cylinder_6_0.png" src="../../../_images/examples_tools_howtos_extract_cylinder_6_0.png" />
-</div>
+<img alt="../../../_images/examples_tools_howtos_extract_cylinder_6_0.svg" src="../../../_images/examples_tools_howtos_extract_cylinder_6_0.svg" /></div>
 </div>
 </div>
 </div>

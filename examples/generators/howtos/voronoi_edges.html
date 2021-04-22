@@ -556,21 +556,6 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/sanitize_filename.html">
-   sanitize_filename
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/seq_to_satn.html">
-   seq_to_satn
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/size_to_seq.html">
-   size_to_seq
-  </a>
- </li>
- <li class="toctree-l1">
   <a class="reference internal" href="../../tools/howtos/subdivide.html">
    subdivide
   </a>
@@ -876,10 +861,11 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>import numpy as np
+<span></span>import matplotlib.pyplot as plt
+import numpy as np
 import porespy as ps
 import scipy
-import matplotlib.pyplot as plt
+
 ps.visualization.set_mpl_style()
 np.random.seed(10)
 </pre></div>
@@ -891,7 +877,7 @@ np.random.seed(10)
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>shape = [200,300,400]
+<span></span>shape = [200, 300, 400]
 radius = 1
 ncells = 200
 flat_faces = True
@@ -905,27 +891,17 @@ flat_faces = True
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span>x = ps.generators.voronoi_edges(shape, radius, ncells, flat_faces)
 gr = ps.visualization.show_3D(x)
-plt.figure(figsize=[15, 15])
+plt.figure(figsize=[4, 4])
 plt.axis(False)
 fig = plt.imshow(gr);
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-voronoi_edges: Generating 200 cells
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_generators_howtos_voronoi_edges_4_1.png" src="../../../_images/examples_generators_howtos_voronoi_edges_4_1.png" />
-</div>
+<img alt="../../../_images/examples_generators_howtos_voronoi_edges_4_0.svg" src="../../../_images/examples_generators_howtos_voronoi_edges_4_0.svg" /></div>
 </div>
 <p>The image produced with flat_faces = True</p>
 <div class="nbinput nblast docutils container">
@@ -933,7 +909,7 @@ voronoi_edges: Generating 200 cells
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>shape = [200,300,400]
+<span></span>shape = [200, 300, 400]
 radius = 1
 ncells = 200
 flat_faces = False
@@ -947,27 +923,17 @@ flat_faces = False
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span>x = ps.generators.voronoi_edges(shape, radius, ncells, flat_faces)
 gr = ps.visualization.show_3D(x)
-plt.figure(figsize=[15, 15])
+plt.figure(figsize=[4, 4])
 plt.axis(False)
 fig = plt.imshow(gr);
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-voronoi_edges: Generating 200 cells
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_generators_howtos_voronoi_edges_7_1.png" src="../../../_images/examples_generators_howtos_voronoi_edges_7_1.png" />
-</div>
+<img alt="../../../_images/examples_generators_howtos_voronoi_edges_7_0.svg" src="../../../_images/examples_generators_howtos_voronoi_edges_7_0.svg" /></div>
 </div>
 <p>The image produced with flat_faces = False</p>
 </div>

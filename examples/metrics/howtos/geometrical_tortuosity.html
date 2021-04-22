@@ -556,21 +556,6 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/sanitize_filename.html">
-   sanitize_filename
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/seq_to_satn.html">
-   seq_to_satn
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/size_to_seq.html">
-   size_to_seq
-  </a>
- </li>
- <li class="toctree-l1">
   <a class="reference internal" href="../../tools/howtos/subdivide.html">
    subdivide
   </a>
@@ -611,8 +596,8 @@
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Create-input-image-and-variables">
-   Create input image and variables
+  <a class="reference internal nav-link" href="#Genearate-image-for-testing">
+   Genearate image for testing
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
@@ -624,18 +609,6 @@
     <a class="reference internal nav-link" href="#id1">
      geometrical_tortuosity
     </a>
-    <ul class="nav section-nav flex-column">
-     <li class="toc-h4 nav-item toc-entry">
-      <a class="reference internal nav-link" href="#2D">
-       2D
-      </a>
-     </li>
-     <li class="toc-h4 nav-item toc-entry">
-      <a class="reference internal nav-link" href="#3D">
-       3D
-      </a>
-     </li>
-    </ul>
    </li>
    <li class="toc-h3 nav-item toc-entry">
     <a class="reference internal nav-link" href="#geometrical_tortuosity_points">
@@ -643,13 +616,8 @@
     </a>
     <ul class="nav section-nav flex-column">
      <li class="toc-h4 nav-item toc-entry">
-      <a class="reference internal nav-link" href="#id3">
-       2D
-      </a>
-     </li>
-     <li class="toc-h4 nav-item toc-entry">
-      <a class="reference internal nav-link" href="#id4">
-       3D
+      <a class="reference internal nav-link" href="#2D-image">
+       2D image
       </a>
      </li>
     </ul>
@@ -934,34 +902,54 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>import porespy as ps
-import matplotlib.pyplot as plt
+<span></span>import matplotlib.pyplot as plt
 import numpy as np
+import porespy as ps
+
 ps.visualization.set_mpl_style()
-np.random.seed(10);
+np.random.seed(50);
 </pre></div>
 </div>
 </div>
 </div>
-<div class="section" id="Create-input-image-and-variables">
-<h2>Create input image and variables<a class="headerlink" href="#Create-input-image-and-variables" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="Genearate-image-for-testing">
+<h2>Genearate image for testing<a class="headerlink" href="#Genearate-image-for-testing" title="Permalink to this headline">¶</a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>im2d = ps.generators.blobs(shape=[300, 300], porosity=0.6, blobiness=2)
+im3d = ps.generators.blobs(shape=[100, 100, 60], porosity=0.6, blobiness=0.8)
+
+fig, ax = plt.subplots(1, 2, figsize=[8, 4])
+ax[0].imshow(im2d)
+ax[1].imshow(im3d[:, :, 5])
+ax[0].set_title(&#39;2D image&#39;)
+ax[1].set_title(&#39;A slice of 3D image&#39;);
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/examples_metrics_howtos_geometrical_tortuosity_4_0.svg" src="../../../_images/examples_metrics_howtos_geometrical_tortuosity_4_0.svg" /></div>
+</div>
+</div>
+<div class="section" id="Apply-metric-functions">
+<h2>Apply metric functions<a class="headerlink" href="#Apply-metric-functions" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id1">
+<h3>geometrical_tortuosity<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>im2d = ps.generators.blobs(shape=[300, 300], porosity=0.6, blobiness=2)
-im3d = ps.generators.blobs(shape=[50, 50, 50], porosity=0.6, blobiness=2)
-
-plt.subplots(figsize=[7,7])
-plt.axis(False)
-plt.title(&#39;2D Image&#39;)
-plt.imshow(im2d)
-
-plt.subplots(figsize=[7,7])
-ps.visualization.imshow(im3d)
-plt.axis(False)
-plt.title(&#39;3D Image&#39;);
+<span></span>result2d = ps.metrics.geometrical_tortuosity(im=im2d)
+print(&#39;geometrical tortuosity for 2D image=&#39;, result2d)
+result3d = ps.metrics.geometrical_tortuosity(im=im3d)
+print(&#39;geometrical tortuosity for 3D image=&#39;, result3d)
 </pre></div>
 </div>
 </div>
@@ -969,29 +957,47 @@ plt.title(&#39;3D Image&#39;);
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_metrics_howtos_geometrical_tortuosity_4_0.svg" src="../../../_images/examples_metrics_howtos_geometrical_tortuosity_4_0.svg" /></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "52e31f15b8f44dccbfd015f175132bb4", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+geometrical tortuosity for 2D image= 1.3045150669510481
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "b273f3ddd0374ab6b20b47a5948e3968", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_metrics_howtos_geometrical_tortuosity_4_1.svg" src="../../../_images/examples_metrics_howtos_geometrical_tortuosity_4_1.svg" /></div>
+<div class="highlight"><pre>
+geometrical tortuosity for 3D image= 1.471115613445628
+</pre></div></div>
 </div>
 </div>
-<div class="section" id="Apply-metric-functions">
-<h2>Apply metric functions<a class="headerlink" href="#Apply-metric-functions" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id1">
-<h3>geometrical_tortuosity<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="2D">
-<h4>2D<a class="headerlink" href="#2D" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="geometrical_tortuosity_points">
+<h3>geometrical_tortuosity_points<a class="headerlink" href="#geometrical_tortuosity_points" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="2D-image">
+<h4>2D image<a class="headerlink" href="#2D-image" title="Permalink to this headline">¶</a></h4>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>result2d = ps.metrics.geometrical_tortuosity(im=im2d)
-
-print(result2d)
+<span></span>tortuosities_2d, avg_tortuosity_2d = ps.metrics._geometrical_tortuosity.geometrical_tortuosity_points(
+    im=im2d)
+fig, ax = plt.subplots()
+plt.hist(tortuosities_2d, bins=10)
+plt.title(&#39;average tortuosity is %.4f&#39; % avg_tortuosity_2d)
+plt.xlabel(&#39;tortuosity&#39;)
+plt.ylabel(&#39;frequency&#39;);
 </pre></div>
 </div>
 </div>
@@ -999,98 +1005,7 @@ print(result2d)
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-1.6048588006267654
-</pre></div></div>
-</div>
-</div>
-<div class="section" id="3D">
-<h4>3D<a class="headerlink" href="#3D" title="Permalink to this headline">¶</a></h4>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>result3d = ps.metrics.geometrical_tortuosity(im=im3d)
-
-print(result3d)
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-1.0789887852617022
-</pre></div></div>
-</div>
-</div>
-</div>
-<div class="section" id="geometrical_tortuosity_points">
-<h3>geometrical_tortuosity_points<a class="headerlink" href="#geometrical_tortuosity_points" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="id3">
-<h4>2D<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>tortuosities, avg_tortuosity = ps.metrics.geometrical_tortuosity_points(im=im2d)
-
-print(tortuosities)
-print(avg_tortuosity)
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-[[0.         1.02989565 1.07824783 ... 1.7598189  1.72928735 1.71523414]
- [1.03204011 0.         1.00714679 ... 1.63815685 1.61276906 1.60127823]
- [1.08034506 1.00703475 0.         ... 1.73993148 1.71136038 1.69826022]
- ...
- [1.76086528 1.63874859 1.74057645 ... 0.         1.11590397 1.07863616]
- [1.73223032 1.61520202 1.71389772 ... 1.11532777 0.         1.        ]
- [1.71804672 1.60358358 1.70066403 ... 1.07842046 1.         0.        ]]
-1.6190744161032533
-</pre></div></div>
-</div>
-</div>
-<div class="section" id="id4">
-<h4>3D<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>tortuosities, avg_tortuosity  = ps.metrics.geometrical_tortuosity_points(im=im3d)
-
-print(tortuosities)
-print(avg_tortuosity)
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-[[[0.         0.         0.        ]
-  [1.19296455 1.19296455 1.19296455]
-  [1.16227672 1.16227672 1.16227672]]
-
- [[1.19788839 1.19788839 1.19788839]
-  [0.         0.         0.        ]
-  [1.16928711 1.16928711 1.16928711]]
-
- [[1.14846691 1.14846691 1.14846691]
-  [1.16530429 1.16530429 1.16530429]
-  [0.         0.         0.        ]]]
-1.1726979949651575
-</pre></div></div>
+<img alt="../../../_images/examples_metrics_howtos_geometrical_tortuosity_10_0.svg" src="../../../_images/examples_metrics_howtos_geometrical_tortuosity_10_0.svg" /></div>
 </div>
 </div>
 </div>

@@ -556,21 +556,6 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/sanitize_filename.html">
-   sanitize_filename
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/seq_to_satn.html">
-   seq_to_satn
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/size_to_seq.html">
-   size_to_seq
-  </a>
- </li>
- <li class="toctree-l1">
   <a class="reference internal" href="../../tools/howtos/subdivide.html">
    subdivide
   </a>
@@ -611,13 +596,13 @@
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Create-image">
-   Create image
+  <a class="reference internal nav-link" href="#Genearate-image-for-testing">
+   Genearate image for testing
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Apply-metric-function">
-   Apply metric function
+  <a class="reference internal nav-link" href="#Implement-chord_counts">
+   Implement chord_counts
   </a>
  </li>
 </ul>
@@ -898,69 +883,51 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>import porespy as ps
-import matplotlib.pyplot as plt
+<span></span>import matplotlib.pyplot as plt
+import numpy as np
+import porespy as ps
 
 ps.visualization.set_mpl_style()
+np.random.seed(10)
 </pre></div>
 </div>
 </div>
 </div>
-<div class="section" id="Create-image">
-<h2>Create image<a class="headerlink" href="#Create-image" title="Permalink to this headline">¶</a></h2>
-<p>The image was created with the blobs generator function and then applying the prune_branches filter, and plotted.</p>
+<div class="section" id="Genearate-image-for-testing">
+<h2>Genearate image for testing<a class="headerlink" href="#Genearate-image-for-testing" title="Permalink to this headline">¶</a></h2>
+<p>Porespy’s <code class="docutils literal notranslate"><span class="pre">apply_chords</span></code> is used to demonstrate the chords’ distributions on the phase of interest (void space) on a synthetic image. In this example chords are found along x_direction <code class="docutils literal notranslate"><span class="pre">axis=0</span></code>.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>im = ps.generators.blobs(shape=[500,500])
-im = ps.filters.apply_chords(im, spacing=1, axis=0, trim_edges=True, label=False)
-
-plt.figure(figsize=[7,7])
-plt.axis(False)
-plt.imshow(im);
+<span></span>im = ps.generators.blobs(shape=[500, 500])
+im = ps.filters.apply_chords(im)
+fig, ax = plt.subplots()
+ax.imshow(im, origin=&quot;lower&quot;);
 </pre></div>
 </div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-&lt;matplotlib.image.AxesImage at 0x7f264ebe7c10&gt;
-</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_metrics_howtos_chord_counts_5_1.png" src="../../../_images/examples_metrics_howtos_chord_counts_5_1.png" />
+<img alt="../../../_images/examples_metrics_howtos_chord_counts_5_0.svg" src="../../../_images/examples_metrics_howtos_chord_counts_5_0.svg" /></div>
 </div>
 </div>
-</div>
-<div class="section" id="Apply-metric-function">
-<h2>Apply metric function<a class="headerlink" href="#Apply-metric-function" title="Permalink to this headline">¶</a></h2>
-<p>Output is an array of the chord lenghts.</p>
-<div class="nbinput nblast docutils container">
+<div class="section" id="Implement-chord_counts">
+<h2>Implement chord_counts<a class="headerlink" href="#Implement-chord_counts" title="Permalink to this headline">¶</a></h2>
+<p>The generated image containing the chords is passed to <code class="docutils literal notranslate"><span class="pre">chord_counts</span></code>. The method returns an array of the chords lengths. A histogram of the chord lengths is illustrated below.</p>
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>x = ps.metrics.chord_counts(im=im)
-</pre></div>
-</div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>plt.figure(figsize=[7,7])
-plt.title(&quot;Histogram of Chord Lenghts&quot;)
-plt.hist(x, edgecolor=&#39;k&#39;)
-plt.show();
+<span></span>chord_length = ps.metrics.chord_counts(im=im)
+fig, ax = plt.subplots()
+plt.hist(chord_length, bins=100)
+plt.xlabel(&#39;chord length along x_axis&#39;)
+plt.ylabel(&#39;frequency&#39;);
 </pre></div>
 </div>
 </div>
@@ -968,8 +935,7 @@ plt.show();
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_metrics_howtos_chord_counts_9_0.png" src="../../../_images/examples_metrics_howtos_chord_counts_9_0.png" />
-</div>
+<img alt="../../../_images/examples_metrics_howtos_chord_counts_8_0.svg" src="../../../_images/examples_metrics_howtos_chord_counts_8_0.svg" /></div>
 </div>
 </div>
 </div>

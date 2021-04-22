@@ -556,21 +556,6 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="sanitize_filename.html">
-   sanitize_filename
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="seq_to_satn.html">
-   seq_to_satn
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="size_to_seq.html">
-   size_to_seq
-  </a>
- </li>
- <li class="toctree-l1">
   <a class="reference internal" href="subdivide.html">
    subdivide
   </a>
@@ -611,13 +596,13 @@
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Create-image-and-variables">
-   Create image and variables
+  <a class="reference internal nav-link" href="#Generate-image-for-testing">
+   Generate image for testing
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Apply-tool">
-   Apply tool
+  <a class="reference internal nav-link" href="#Demonstration-of-function">
+   Demonstration of function
   </a>
  </li>
 </ul>
@@ -908,85 +893,84 @@ ps.visualization.set_mpl_style()
 </div>
 </div>
 </div>
-<div class="section" id="Create-image-and-variables">
-<h2>Create image and variables<a class="headerlink" href="#Create-image-and-variables" title="Permalink to this headline">¶</a></h2>
-<div class="nbinput docutils container">
+<div class="section" id="Generate-image-for-testing">
+<h2>Generate image for testing<a class="headerlink" href="#Generate-image-for-testing" title="Permalink to this headline">¶</a></h2>
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>xmin=1
-ymin=1
-zmin=1
-xmax=30
-ymax=40
-zmax=50
-
-bbox3d = [xmin,ymin,zmin,xmax,ymax,zmax]
-bbox2d = [xmin,ymin,xmax,ymax]
-
+<span></span>np.random.seed(0)
 im = ps.generators.blobs([500, 500])
 im3d = ps.generators.blobs([100, 100,100])
-
-fig, ax = plt.subplots(figsize=[7, 7]);
-ps.visualization.imshow(im);
-plt.axis(False)
-plt.title(&#39;2D image&#39;)
-fig, ax = plt.subplots(figsize=[7, 7]);
-ps.visualization.imshow(im3d);
-plt.axis(False)
-plt.title(&#39;3D image&#39;);
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<p>Visualize the images</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Text(0.5, 1.0, &#39;3D image&#39;)
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../_images/examples_tools_howtos_bbox_to_slices_4_1.png" src="../../../_images/examples_tools_howtos_bbox_to_slices_4_1.png" />
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>fig, ax = plt.subplots(1, 2, figsize=[8, 4]);
+ax[0].imshow(im);
+ax[0].axis(False)
+ax[0].set_title(&#39;2D image&#39;)
+ax[1].imshow(im3d[25,...]);
+ax[1].axis(False)
+ax[1].set_title(&#39;3D image&#39;);
+</pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_tools_howtos_bbox_to_slices_4_2.png" src="../../../_images/examples_tools_howtos_bbox_to_slices_4_2.png" />
+<img alt="../../../_images/examples_tools_howtos_bbox_to_slices_6_0.svg" src="../../../_images/examples_tools_howtos_bbox_to_slices_6_0.svg" /></div>
 </div>
 </div>
+<div class="section" id="Demonstration-of-function">
+<h2>Demonstration of function<a class="headerlink" href="#Demonstration-of-function" title="Permalink to this headline">¶</a></h2>
+<p>Define some bounding boxes in 2D and 3D:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
 </div>
-<div class="section" id="Apply-tool">
-<h2>Apply tool<a class="headerlink" href="#Apply-tool" title="Permalink to this headline">¶</a></h2>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>bbox3d = [0, 0, 0, 50, 50, 50]
+bbox2d = [0, 0, 50, 50]
+</pre></div>
+</div>
+</div>
+<p>The bounding box as defined by most packages are given as lists without much context as to how the values should be used. The <code class="docutils literal notranslate"><span class="pre">bbox_to_slices</span></code> function returns a tuple of slice objects than can be used to directly index into a ND-array to retrieve the area defined by the bounding box:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span>box2d = ps.tools.bbox_to_slices(bbox = bbox2d)
 box3d = ps.tools.bbox_to_slices(bbox = bbox3d)
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>fig, ax = plt.subplots(1, 2, figsize=[7, 7])
+ax[0].imshow(im[box2d])
+ax[0].axis(False)
+ax[0].set_title(&#39;2D&#39;)
 
-fig, ax = plt.subplots(figsize=[7, 7]);
-ps.visualization.imshow(im[box2d]);
-plt.axis(False)
-plt.title(&#39;2D&#39;)
-
-fig, ax = plt.subplots(figsize=[7, 7]);
-ps.visualization.imshow(im3d[box3d]);
-plt.axis(False)
-plt.title(&#39;3D&#39;);
+ax[1].imshow(im3d[box3d][25, ...])
+ax[1].axis(False)
+ax[1].set_title(&#39;3D&#39;)
 </pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -994,19 +978,11 @@ plt.title(&#39;3D&#39;);
 Text(0.5, 1.0, &#39;3D&#39;)
 </pre></div></div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../_images/examples_tools_howtos_bbox_to_slices_6_1.png" src="../../../_images/examples_tools_howtos_bbox_to_slices_6_1.png" />
-</div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_tools_howtos_bbox_to_slices_6_2.png" src="../../../_images/examples_tools_howtos_bbox_to_slices_6_2.png" />
-</div>
+<img alt="../../../_images/examples_tools_howtos_bbox_to_slices_12_1.svg" src="../../../_images/examples_tools_howtos_bbox_to_slices_12_1.svg" /></div>
 </div>
 </div>
 </div>

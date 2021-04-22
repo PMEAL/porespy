@@ -556,21 +556,6 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/sanitize_filename.html">
-   sanitize_filename
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/seq_to_satn.html">
-   seq_to_satn
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/size_to_seq.html">
-   size_to_seq
-  </a>
- </li>
- <li class="toctree-l1">
   <a class="reference internal" href="../../tools/howtos/subdivide.html">
    subdivide
   </a>
@@ -611,8 +596,8 @@
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Create-image-and-variables">
-   Create image and variables
+  <a class="reference internal nav-link" href="#Genearate-image-for-testing">
+   Genearate image for testing
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
@@ -898,66 +883,54 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>import porespy as ps
-import matplotlib.pyplot as plt
+<span></span>import matplotlib.pyplot as plt
+import numpy as np
+import porespy as ps
 
 ps.visualization.set_mpl_style()
+np.random.seed(10)
 </pre></div>
 </div>
 </div>
 </div>
-<div class="section" id="Create-image-and-variables">
-<h2>Create image and variables<a class="headerlink" href="#Create-image-and-variables" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="Genearate-image-for-testing">
+<h2>Genearate image for testing<a class="headerlink" href="#Genearate-image-for-testing" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>im = ps.generators.blobs(shape=[500, 500],frequency=1, octaves=3, gain = 0.5)
-im = ps.filters.snow_partitioning(
-    im, dt=None, r_max=4, sigma=0.4, return_all=False, mask=True, randomize=True
-)
-plt.figure(figsize=[7,7])
-plt.axis(False)
-plt.imshow(im)
-
-#default values:
-normed = True
+<span></span>im_binary = ps.generators.blobs(shape=[500, 500],
+                                frequency=1,
+                                octaves=3,
+                                gain=0.5)
+im = ps.filters.snow_partitioning(im_binary)
+regions = im.regions * im_binary
+fig, ax = plt.subplots(1, 2, figsize=[8, 4])
+ax[0].imshow(im_binary)
+ax[1].imshow(regions)
+ax[0].set_title(&#39;binary image&#39;)
+ax[1].set_title(&#39;segmented image&#39;);
 </pre></div>
 </div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-green-fg">2021-04-08 15:17:23</span> | <span class="ansi-yellow-intense-fg ansi-bold">WARNING </span> | <span class="ansi-cyan-fg">porespy.filters.__funcs__</span>:<span class="ansi-cyan-fg">trim_saddle_points</span>:<span class="ansi-cyan-fg">585</span>
---&gt; <span class="ansi-yellow-intense-fg ansi-bold">Maximum number of iterations reached, consider running again with a larger value of max_iters</span>
-<span class="ansi-green-fg">2021-04-08 15:17:23</span> | <span class="ansi-yellow-intense-fg ansi-bold">WARNING </span> | <span class="ansi-cyan-fg">porespy.filters.__funcs__</span>:<span class="ansi-cyan-fg">trim_saddle_points</span>:<span class="ansi-cyan-fg">585</span>
---&gt; <span class="ansi-yellow-intense-fg ansi-bold">Maximum number of iterations reached, consider running again with a larger value of max_iters</span>
-</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_metrics_howtos_phase_fraction_4_1.png" src="../../../_images/examples_metrics_howtos_phase_fraction_4_1.png" />
-</div>
+<img alt="../../../_images/examples_metrics_howtos_phase_fraction_4_0.svg" src="../../../_images/examples_metrics_howtos_phase_fraction_4_0.svg" /></div>
 </div>
 </div>
 <div class="section" id="Apply-metric-function">
 <h2>Apply metric function<a class="headerlink" href="#Apply-metric-function" title="Permalink to this headline">¶</a></h2>
-<p>Output is an array of the amount of voxels with the specified label.</p>
+<p>Output is an array of the amount of voxels with the specified label. <code class="docutils literal notranslate"><span class="pre">phase_fraction</span></code> normalizes the number of voxels in each phase by the total number of voxels by default. Note: phase_fraction of void phase in this case indicates porosity of the image.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>x = ps.metrics.phase_fraction(im, normed)
-xx = ps.metrics.phase_fraction(im, False)
-
-print(&#39;normed = True&#39;, x)
-print(&#39;normed = False&#39;,xx)
+<span></span>x = ps.metrics.phase_fraction(im_binary)
+print(&#39;fractions of void space and solids are &#39;, x[1], &#39;and&#39;, x[0])
 </pre></div>
 </div>
 </div>
@@ -966,27 +939,7 @@ print(&#39;normed = False&#39;,xx)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-normed = True [5.12408e-01 7.64000e-04 1.98280e-02 2.92000e-04 1.90000e-03 3.53600e-03
- 1.70400e-03 3.51200e-03 2.56000e-03 7.17600e-03 6.36000e-04 4.04400e-03
- 3.15200e-03 1.39600e-03 8.16800e-03 2.55600e-03 3.35440e-02 1.44000e-02
- 1.10960e-02 2.27600e-03 2.10400e-03 8.70000e-03 1.45920e-02 5.81600e-03
- 9.28000e-04 4.97200e-03 7.44000e-04 4.14800e-03 1.98000e-03 2.54400e-03
- 3.46800e-03 5.07600e-03 2.21200e-03 8.62800e-03 5.72000e-03 1.39360e-02
- 4.43200e-03 6.78800e-03 2.61200e-03 2.04000e-03 1.23800e-02 1.05480e-02
- 8.97600e-03 1.03920e-02 9.08000e-03 1.14600e-02 2.54400e-03 5.38800e-03
- 6.46400e-03 1.21560e-02 3.52000e-04 5.52400e-03 1.28120e-02 8.42400e-03
- 2.86000e-03 3.31600e-03 3.21600e-03 1.56000e-04 2.46800e-03 5.61600e-03
- 8.12000e-03 1.23960e-02 5.95600e-03 3.23200e-03 2.24840e-02 2.28400e-03
- 6.60000e-04 1.05640e-02 1.44200e-02 8.76000e-04 1.13200e-03 2.15280e-02
- 2.41200e-03 1.53880e-02 8.02800e-03]
-normed = False [128102    191   4957     73    475    884    426    878    640   1794
-    159   1011    788    349   2042    639   8386   3600   2774    569
-    526   2175   3648   1454    232   1243    186   1037    495    636
-    867   1269    553   2157   1430   3484   1108   1697    653    510
-   3095   2637   2244   2598   2270   2865    636   1347   1616   3039
-     88   1381   3203   2106    715    829    804     39    617   1404
-   2030   3099   1489    808   5621    571    165   2641   3605    219
-    283   5382    603   3847   2007]
+fractions of void space and solids are  0.487568 and 0.512432
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -994,20 +947,9 @@ normed = False [128102    191   4957     73    475    884    426    878    640  
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>fig, ax = plt.subplots(1, 2, figsize=[20, 15]);
-plt.figure(figsize=[10, 10])
-ax[0].set_title(&quot;normed = True&quot;)
-ax[1].set_title(&quot;normed = False&quot;)
-ax[0].plot(x)
-ax[1].plot(xx);
+<span></span>x = ps.metrics.phase_fraction(im_binary, normed=False)
+print(&#39;number of voxels of void space and solids are &#39;, x[0], &#39;and&#39;, x[1])
 </pre></div>
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../_images/examples_metrics_howtos_phase_fraction_8_0.png" src="../../../_images/examples_metrics_howtos_phase_fraction_8_0.png" />
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -1015,8 +957,40 @@ ax[1].plot(xx);
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;Figure size 720x720 with 0 Axes&gt;
+number of voxels of void space and solids are  128108 and 121892
 </pre></div></div>
+</div>
+<p>Although <code class="docutils literal notranslate"><span class="pre">phase_fraction</span></code> is mostly used for phases of interests (void, solid, fluid, etc), one can also find voxels fractions of each pore region.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>x = ps.metrics.phase_fraction(regions.astype(&#39;int&#39;))
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>regions_frac = np.array(np.copy(regions), dtype=&#39;float&#39;)
+for i in range(1, len(x)):
+    mask = np.array(np.where(regions_frac == i, regions_frac, 0), dtype=bool)
+    regions_frac[mask] = x[i]
+fig = plt.subplots()
+plt.imshow(regions_frac, origin=&quot;lower&quot;)
+plt.colorbar()
+plt.title(&#39;pore regions colored by their voxel fraction&#39;);
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/examples_metrics_howtos_phase_fraction_11_0.svg" src="../../../_images/examples_metrics_howtos_phase_fraction_11_0.svg" /></div>
 </div>
 </div>
 </div>

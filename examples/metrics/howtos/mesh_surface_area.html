@@ -556,21 +556,6 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/sanitize_filename.html">
-   sanitize_filename
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/seq_to_satn.html">
-   seq_to_satn
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/size_to_seq.html">
-   size_to_seq
-  </a>
- </li>
- <li class="toctree-l1">
   <a class="reference internal" href="../../tools/howtos/subdivide.html">
    subdivide
   </a>
@@ -611,8 +596,8 @@
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Create-input-image-and-variables">
-   Create input image and variables
+  <a class="reference internal nav-link" href="#Genearate-image-for-testing">
+   Genearate image for testing
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
@@ -910,28 +895,35 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>import porespy as ps
+<span></span>import matplotlib.pyplot as plt
+import numpy as np
+import porespy as ps
 import skimage
-import matplotlib.pyplot as plt
 
 ps.visualization.set_mpl_style()
+np.random.seed(10)
 </pre></div>
 </div>
 </div>
 </div>
-<div class="section" id="Create-input-image-and-variables">
-<h2>Create input image and variables<a class="headerlink" href="#Create-input-image-and-variables" title="Permalink to this headline">¶</a></h2>
-<div class="nbinput nblast docutils container">
+<div class="section" id="Genearate-image-for-testing">
+<h2>Genearate image for testing<a class="headerlink" href="#Genearate-image-for-testing" title="Permalink to this headline">¶</a></h2>
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>#default values:
-verts = None
-faces = None
-mesh = None
+<span></span>im = ps.generators.blobs(shape=[80, 80, 50])
+fig, ax = plt.subplots()
+ax.imshow(im[:, :, 40], origin=&quot;lower&quot;);
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/examples_metrics_howtos_mesh_surface_area_4_0.svg" src="../../../_images/examples_metrics_howtos_mesh_surface_area_4_0.svg" /></div>
 </div>
 </div>
 <div class="section" id="Apply-metric-function">
@@ -944,31 +936,19 @@ mesh = None
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>im = ps.generators.blobs(shape=[500, 500])
-mesh1 = ps.tools.mesh_region(region=im, strel=None)
-plt.figure(figsize=[7,7])
-plt.axis(False)
-plt.imshow(im)
-
-ps.metrics.mesh_surface_area(mesh = mesh1, verts = verts, faces=faces)
+<span></span>mesh1 = ps.tools.mesh_region(region=im)
+ps.metrics.mesh_surface_area(mesh=mesh1)
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
+<div class="nboutput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-252994.09375
+90134.1015625
 </pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../_images/examples_metrics_howtos_mesh_surface_area_8_1.png" src="../../../_images/examples_metrics_howtos_mesh_surface_area_8_1.png" />
-</div>
 </div>
 </div>
 <div class="section" id="verts-and-faces">
@@ -978,12 +958,9 @@ ps.metrics.mesh_surface_area(mesh = mesh1, verts = verts, faces=faces)
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>#volume = [15,10,30]
-skel = ps.generators.blobs(shape=[30, 30, 30])
-im = ps.filters.prune_branches(skel)
+<span></span>mesh1 = ps.tools.mesh_region(region=im)
 verts, faces, normals, values = skimage.measure.marching_cubes(im)
-
-ps.metrics.mesh_surface_area(mesh = mesh, verts=verts, faces= faces)
+ps.metrics.mesh_surface_area(mesh=mesh1, verts=verts, faces=faces)
 </pre></div>
 </div>
 </div>
@@ -993,7 +970,7 @@ ps.metrics.mesh_surface_area(mesh = mesh, verts=verts, faces= faces)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-16254.955078125
+90134.1015625
 </pre></div></div>
 </div>
 </div>

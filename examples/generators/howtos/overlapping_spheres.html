@@ -556,21 +556,6 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/sanitize_filename.html">
-   sanitize_filename
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/seq_to_satn.html">
-   seq_to_satn
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/size_to_seq.html">
-   size_to_seq
-  </a>
- </li>
- <li class="toctree-l1">
   <a class="reference internal" href="../../tools/howtos/subdivide.html">
    subdivide
   </a>
@@ -921,10 +906,11 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>import numpy as np
+<span></span>import matplotlib.pyplot as plt
+import numpy as np
 import porespy as ps
 import scipy
-import matplotlib.pyplot as plt
+
 ps.visualization.set_mpl_style()
 np.random.seed(10)
 </pre></div>
@@ -938,7 +924,7 @@ np.random.seed(10)
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>shape = [250,250,250]
+<span></span>shape = [250, 250, 250]
 radius = 15
 porosity = 0.5
 
@@ -964,31 +950,21 @@ xx = ps.generators.overlapping_spheres(shape, 20, porosity, iter_max, tol)
 
 graphx = ps.visualization.show_3D(x)
 graphxx = ps.visualization.show_3D(xx)
-fig, ax = plt.subplots(1, 2, figsize=[15, 15]);
-ax[0].imshow(graphx);
-ax[1].imshow(graphxx);
+fig, ax = plt.subplots(1, 2, figsize=[8, 4])
+ax[0].imshow(graphx)
+ax[1].imshow(graphxx)
 ax[0].axis(False)
 ax[1].axis(False)
 ax[0].set_title(&#39;radius = 15&#39;)
-ax[1].set_title(&#39;radius = 20&#39;)
+ax[1].set_title(&#39;radius = 20&#39;);
 </pre></div>
 </div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Text(0.5, 1.0, &#39;radius = 20&#39;)
-</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_generators_howtos_overlapping_spheres_8_1.png" src="../../../_images/examples_generators_howtos_overlapping_spheres_8_1.png" />
-</div>
+<img alt="../../../_images/examples_generators_howtos_overlapping_spheres_8_0.svg" src="../../../_images/examples_generators_howtos_overlapping_spheres_8_0.svg" /></div>
 </div>
 </div>
 <div class="section" id="porosity">
@@ -1001,31 +977,21 @@ Text(0.5, 1.0, &#39;radius = 20&#39;)
 <span></span>xx = ps.generators.overlapping_spheres(shape, radius, 0.25, iter_max, tol)
 
 graphxx = ps.visualization.show_3D(xx)
-fig, ax = plt.subplots(1, 2, figsize=[15, 15]);
-ax[0].imshow(graphx);
-ax[1].imshow(graphxx);
+fig, ax = plt.subplots(1, 2, figsize=[8, 4])
+ax[0].imshow(graphx)
+ax[1].imshow(graphxx)
 ax[0].axis(False)
 ax[1].axis(False)
 ax[0].set_title(&#39;porosity = 0.5&#39;)
-ax[1].set_title(&#39;porosity = .25&#39;)
+ax[1].set_title(&#39;porosity = .25&#39;);
 </pre></div>
 </div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Text(0.5, 1.0, &#39;porosity = .25&#39;)
-</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_generators_howtos_overlapping_spheres_10_1.png" src="../../../_images/examples_generators_howtos_overlapping_spheres_10_1.png" />
-</div>
+<img alt="../../../_images/examples_generators_howtos_overlapping_spheres_10_0.svg" src="../../../_images/examples_generators_howtos_overlapping_spheres_10_0.svg" /></div>
 </div>
 </div>
 <div class="section" id="iter_max">
@@ -1039,31 +1005,21 @@ Text(0.5, 1.0, &#39;porosity = .25&#39;)
 <span></span>xx = ps.generators.overlapping_spheres(shape, radius, porosity, 2, tol)
 
 graphxx = ps.visualization.show_3D(xx)
-fig, ax = plt.subplots(1, 2, figsize=[15, 15]);
-ax[0].imshow(graphx);
-ax[1].imshow(graphxx);
+fig, ax = plt.subplots(1, 2, figsize=[8, 4])
+ax[0].imshow(graphx)
+ax[1].imshow(graphxx)
 ax[0].axis(False)
 ax[1].axis(False)
 ax[0].set_title(&#39;iter_max = 10&#39;)
-ax[1].set_title(&#39;iter_max = 2&#39;)
+ax[1].set_title(&#39;iter_max = 2&#39;);
 </pre></div>
 </div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Text(0.5, 1.0, &#39;iter_max = 2&#39;)
-</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_generators_howtos_overlapping_spheres_12_1.png" src="../../../_images/examples_generators_howtos_overlapping_spheres_12_1.png" />
-</div>
+<img alt="../../../_images/examples_generators_howtos_overlapping_spheres_12_0.svg" src="../../../_images/examples_generators_howtos_overlapping_spheres_12_0.svg" /></div>
 </div>
 </div>
 <div class="section" id="tol">
@@ -1077,40 +1033,21 @@ Text(0.5, 1.0, &#39;iter_max = 2&#39;)
 <span></span>xx = ps.generators.overlapping_spheres(shape, radius, porosity, iter_max, 0.25)
 
 graphxx = ps.visualization.show_3D(xx)
-fig, ax = plt.subplots(1, 2, figsize=[15, 15]);
-ax[0].imshow(graphx);
-ax[1].imshow(graphxx);
+fig, ax = plt.subplots(1, 2, figsize=[8, 4])
+ax[0].imshow(graphx)
+ax[1].imshow(graphxx)
 ax[0].axis(False)
 ax[1].axis(False)
 ax[0].set_title(&#39;tol = 0.01&#39;)
-ax[1].set_title(&#39;tol = .25&#39;)
+ax[1].set_title(&#39;tol = .25&#39;);
 </pre></div>
 </div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Text(0.5, 1.0, &#39;tol = .25&#39;)
-</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_generators_howtos_overlapping_spheres_14_1.png" src="../../../_images/examples_generators_howtos_overlapping_spheres_14_1.png" />
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>
-</pre></div>
-</div>
+<img alt="../../../_images/examples_generators_howtos_overlapping_spheres_14_0.svg" src="../../../_images/examples_generators_howtos_overlapping_spheres_14_0.svg" /></div>
 </div>
 </div>
 </div>

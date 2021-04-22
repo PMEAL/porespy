@@ -556,21 +556,6 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="sanitize_filename.html">
-   sanitize_filename
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="seq_to_satn.html">
-   seq_to_satn
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="size_to_seq.html">
-   size_to_seq
-  </a>
- </li>
- <li class="toctree-l1">
   <a class="reference internal" href="subdivide.html">
    subdivide
   </a>
@@ -611,14 +596,21 @@
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Create-image-and-variables">
-   Create image and variables
+  <a class="reference internal nav-link" href="#Generate-image-for-testing">
+   Generate image for testing
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Apply-tool">
-   Apply tool
+  <a class="reference internal nav-link" href="#Demonstrate-function">
+   Demonstrate function
   </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#scale">
+     scale
+    </a>
+   </li>
+  </ul>
  </li>
 </ul>
 
@@ -894,7 +886,7 @@ div.rendered_html tbody tr:hover {
 <div class="section" id="Import-packages">
 <h2>Import packages<a class="headerlink" href="#Import-packages" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -908,20 +900,47 @@ ps.visualization.set_mpl_style()
 </div>
 </div>
 </div>
-<div class="section" id="Create-image-and-variables">
-<h2>Create image and variables<a class="headerlink" href="#Create-image-and-variables" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="Generate-image-for-testing">
+<h2>Generate image for testing<a class="headerlink" href="#Generate-image-for-testing" title="Permalink to this headline">¶</a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>im = np.random.rand(200, 200)
+strel = ps.tools.ps_disk(20, smooth=False)
+im = spim.convolve(im, weights=strel)
+fig, ax = plt.subplots(1, 2, figsize=[8, 4])
+ax[0].axis(False)
+ax[0].imshow(im)
+ax[1].hist(im.flatten(), edgecolor=&#39;k&#39;, bins=25)
+ax[1].set_xlabel(&#39;Value&#39;)
+ax[1].set_ylabel(&#39;Counts&#39;);
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/examples_tools_howtos_norm_to_uniform_4_0.svg" src="../../../_images/examples_tools_howtos_norm_to_uniform_4_0.svg" /></div>
+</div>
+</div>
+<div class="section" id="Demonstrate-function">
+<h2>Demonstrate function<a class="headerlink" href="#Demonstrate-function" title="Permalink to this headline">¶</a></h2>
+<p>The correlated noise field generated above has approximatetly normally distributed values. It’s not perfectly normal, but it’s pretty close. This can be converted to uniformly distributed values as follows:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>im = ps.generators.blobs(shape=[500, 500], porosity=None, blobiness=[1, 1])
-plt.figure(figsize=[7, 7])
-plt.axis(False)
-plt.imshow(im);
-
-#default values:
-scale = None
+<span></span>im1 = ps.tools.norm_to_uniform(im=im)
+fig, ax = plt.subplots(1, 2, figsize=[8, 4])
+ax[0].axis(False)
+ax[0].imshow(im1)
+ax[1].hist(im1.flatten(), edgecolor=&#39;k&#39;, bins=25)
+ax[1].set_xlabel(&#39;Value&#39;)
+ax[1].set_ylabel(&#39;Counts&#39;);
 </pre></div>
 </div>
 </div>
@@ -929,38 +948,31 @@ scale = None
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_tools_howtos_norm_to_uniform_4_0.png" src="../../../_images/examples_tools_howtos_norm_to_uniform_4_0.png" />
+<img alt="../../../_images/examples_tools_howtos_norm_to_uniform_6_0.svg" src="../../../_images/examples_tools_howtos_norm_to_uniform_6_0.svg" /></div>
 </div>
-</div>
-</div>
-<div class="section" id="Apply-tool">
-<h2>Apply tool<a class="headerlink" href="#Apply-tool" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="scale">
+<h3>scale<a class="headerlink" href="#scale" title="Permalink to this headline">¶</a></h3>
+<p>The output can be scale to a specific range:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>im = ps.tools.norm_to_uniform(im = im, scale = scale)
-plt.figure(figsize=[7, 7])
-plt.axis(False)
-plt.imshow(im);
+<span></span>im2 = ps.tools.norm_to_uniform(im=im, scale=[0, 1])
+fig, ax = plt.subplots(1, 2, figsize=[8, 4])
+ax[0].axis(False)
+ax[0].imshow(im2)
+ax[1].hist(im2.flatten(), edgecolor=&#39;k&#39;, bins=25)
+ax[1].set_xlabel(&#39;Value&#39;)
+ax[1].set_ylabel(&#39;Counts&#39;);
 </pre></div>
 </div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-&lt;matplotlib.image.AxesImage at 0x7f11203e0880&gt;
-</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_tools_howtos_norm_to_uniform_6_1.png" src="../../../_images/examples_tools_howtos_norm_to_uniform_6_1.png" />
+<img alt="../../../_images/examples_tools_howtos_norm_to_uniform_8_0.svg" src="../../../_images/examples_tools_howtos_norm_to_uniform_8_0.svg" /></div>
 </div>
 </div>
 </div>

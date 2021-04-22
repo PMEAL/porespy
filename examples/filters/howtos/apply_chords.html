@@ -556,21 +556,6 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/sanitize_filename.html">
-   sanitize_filename
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/seq_to_satn.html">
-   seq_to_satn
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/size_to_seq.html">
-   size_to_seq
-  </a>
- </li>
- <li class="toctree-l1">
   <a class="reference internal" href="../../tools/howtos/subdivide.html">
    subdivide
   </a>
@@ -611,8 +596,8 @@
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Create-image-and-variables">
-   Create image and variables
+  <a class="reference internal nav-link" href="#Generate-image-for-testing">
+   Generate image for testing
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
@@ -920,33 +905,33 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>import numpy as np
+<span></span>import matplotlib.pyplot as plt
+import numpy as np
 import porespy as ps
 import scipy.ndimage as spim
-import matplotlib.pyplot as plt
 import skimage
+
 ps.visualization.set_mpl_style()
 </pre></div>
 </div>
 </div>
 </div>
-<div class="section" id="Create-image-and-variables">
-<h2>Create image and variables<a class="headerlink" href="#Create-image-and-variables" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="Generate-image-for-testing">
+<h2>Generate image for testing<a class="headerlink" href="#Generate-image-for-testing" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span>im = ps.generators.blobs(shape=[500, 500])
-plt.figure(figsize=[7, 7])
+plt.figure(figsize=[4, 4])
 plt.axis(False)
-plt.imshow(im);
+plt.imshow(im)
 
-#default values:
-spacing=1
-axis=0
-trim_edges=True
-label=False
+spacing = 1
+axis = 0
+trim_edges = True
+label = False
 </pre></div>
 </div>
 </div>
@@ -954,8 +939,7 @@ label=False
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_filters_howtos_apply_chords_4_0.png" src="../../../_images/examples_filters_howtos_apply_chords_4_0.png" />
-</div>
+<img alt="../../../_images/examples_filters_howtos_apply_chords_4_0.svg" src="../../../_images/examples_filters_howtos_apply_chords_4_0.svg" /></div>
 </div>
 </div>
 <div class="section" id="Apply-filter-function">
@@ -967,12 +951,20 @@ label=False
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>x = ps.filters.apply_chords(im =im, spacing=spacing, axis=axis, trim_edges=trim_edges, label=label)
-xx = ps.filters.apply_chords(im=im, spacing=3, axis=axis, trim_edges=trim_edges, label=label)
+<span></span>x = ps.filters.apply_chords(im=im,
+                            spacing=spacing,
+                            axis=axis,
+                            trim_edges=trim_edges,
+                            label=label)
+xx = ps.filters.apply_chords(im=im,
+                             spacing=3,
+                             axis=axis,
+                             trim_edges=trim_edges,
+                             label=label)
 
-fig, ax = plt.subplots(1, 2, figsize=[20, 20]);
-ax[0].imshow(x);
-ax[1].imshow(xx);
+fig, ax = plt.subplots(1, 2, figsize=[8, 4])
+ax[0].imshow(x)
+ax[1].imshow(xx)
 ax[0].axis(False)
 ax[1].axis(False)
 ax[0].set_title(&#39;spacing = 1&#39;)
@@ -984,8 +976,7 @@ ax[1].set_title(&#39;spacing = 3&#39;);
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_filters_howtos_apply_chords_7_0.png" src="../../../_images/examples_filters_howtos_apply_chords_7_0.png" />
-</div>
+<img alt="../../../_images/examples_filters_howtos_apply_chords_7_0.svg" src="../../../_images/examples_filters_howtos_apply_chords_7_0.svg" /></div>
 </div>
 </div>
 <div class="section" id="axis">
@@ -995,11 +986,15 @@ ax[1].set_title(&#39;spacing = 3&#39;);
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>xx = ps.filters.apply_chords(im=im, spacing=spacing, axis=1, trim_edges=trim_edges, label=label)
+<span></span>xx = ps.filters.apply_chords(im=im,
+                             spacing=spacing,
+                             axis=1,
+                             trim_edges=trim_edges,
+                             label=label)
 
-fig, ax = plt.subplots(1, 2, figsize=[20, 20]);
-ax[0].imshow(x);
-ax[1].imshow(xx);
+fig, ax = plt.subplots(1, 2, figsize=[8, 4])
+ax[0].imshow(x)
+ax[1].imshow(xx)
 ax[0].axis(False)
 ax[1].axis(False)
 ax[0].set_title(&#39;axis = 0&#39;)
@@ -1011,8 +1006,7 @@ ax[1].set_title(&#39;axis = 1&#39;);
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_filters_howtos_apply_chords_9_0.png" src="../../../_images/examples_filters_howtos_apply_chords_9_0.png" />
-</div>
+<img alt="../../../_images/examples_filters_howtos_apply_chords_9_0.svg" src="../../../_images/examples_filters_howtos_apply_chords_9_0.svg" /></div>
 </div>
 </div>
 <div class="section" id="trim_edges">
@@ -1022,11 +1016,15 @@ ax[1].set_title(&#39;axis = 1&#39;);
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>xx = ps.filters.apply_chords(im=im, spacing=spacing, axis=axis, trim_edges=False, label= label)
+<span></span>xx = ps.filters.apply_chords(im=im,
+                             spacing=spacing,
+                             axis=axis,
+                             trim_edges=False,
+                             label=label)
 
-fig, ax = plt.subplots(1, 2, figsize=[20, 20]);
-ax[0].imshow(x);
-ax[1].imshow(xx);
+fig, ax = plt.subplots(1, 2, figsize=[8, 4])
+ax[0].imshow(x)
+ax[1].imshow(xx)
 ax[0].axis(False)
 ax[1].axis(False)
 ax[0].set_title(&#39;trim_edges = True&#39;)
@@ -1038,8 +1036,7 @@ ax[1].set_title(&#39;trim_edges = False&#39;);
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_filters_howtos_apply_chords_11_0.png" src="../../../_images/examples_filters_howtos_apply_chords_11_0.png" />
-</div>
+<img alt="../../../_images/examples_filters_howtos_apply_chords_11_0.svg" src="../../../_images/examples_filters_howtos_apply_chords_11_0.svg" /></div>
 </div>
 </div>
 <div class="section" id="label">
@@ -1049,11 +1046,15 @@ ax[1].set_title(&#39;trim_edges = False&#39;);
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>xx = ps.filters.apply_chords(im=im, spacing=spacing, axis=axis, trim_edges=trim_edges, label=True)
+<span></span>xx = ps.filters.apply_chords(im=im,
+                             spacing=spacing,
+                             axis=axis,
+                             trim_edges=trim_edges,
+                             label=True)
 
-fig, ax = plt.subplots(1, 2, figsize=[20, 20]);
-ax[0].imshow(x);
-ax[1].imshow(xx);
+fig, ax = plt.subplots(1, 2, figsize=[8, 4])
+ax[0].imshow(x)
+ax[1].imshow(xx)
 ax[0].axis(False)
 ax[1].axis(False)
 ax[0].set_title(&#39;label = False&#39;)
@@ -1065,8 +1066,7 @@ ax[1].set_title(&#39;label = True&#39;);
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_filters_howtos_apply_chords_13_0.png" src="../../../_images/examples_filters_howtos_apply_chords_13_0.png" />
-</div>
+<img alt="../../../_images/examples_filters_howtos_apply_chords_13_0.svg" src="../../../_images/examples_filters_howtos_apply_chords_13_0.svg" /></div>
 </div>
 </div>
 </div>

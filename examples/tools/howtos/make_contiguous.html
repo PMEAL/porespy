@@ -556,21 +556,6 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="sanitize_filename.html">
-   sanitize_filename
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="seq_to_satn.html">
-   seq_to_satn
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="size_to_seq.html">
-   size_to_seq
-  </a>
- </li>
- <li class="toctree-l1">
   <a class="reference internal" href="subdivide.html">
    subdivide
   </a>
@@ -611,13 +596,13 @@
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Create-image-and-variables">
-   Create image and variables
+  <a class="reference internal nav-link" href="#Generate-image-for-testing">
+   Generate image for testing
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Apply-tool">
-   Apply tool
+  <a class="reference internal nav-link" href="#Demonstrate-function">
+   Demonstrate function
   </a>
  </li>
 </ul>
@@ -894,7 +879,7 @@ div.rendered_html tbody tr:hover {
 <div class="section" id="Import-packages">
 <h2>Import packages<a class="headerlink" href="#Import-packages" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -908,116 +893,82 @@ ps.visualization.set_mpl_style()
 </div>
 </div>
 </div>
-<div class="section" id="Create-image-and-variables">
-<h2>Create image and variables<a class="headerlink" href="#Create-image-and-variables" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="Generate-image-for-testing">
+<h2>Generate image for testing<a class="headerlink" href="#Generate-image-for-testing" title="Permalink to this headline">¶</a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>im = np.random.randint(-10,10, [10,10], int)
+print(im)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[[ -1  -5   4   1  -2  -6   8   7   6  -6]
+ [ -2   4   6  -5 -10  -4  -6 -10  -9 -10]
+ [ -9  -1  -3  -1  -3   8  -9 -10   6   0]
+ [  7   2   1   9  -4   0  -9  -3  -9  -6]
+ [  8   3  -7  -9   5  -2  -6  -2   3  -7]
+ [  7  -5  -2 -10   9  -1   2  -3 -10   6]
+ [ -8   9   9  -3  -2   0  -2   0 -10   7]
+ [  1  -9   6  -8  -2  -4  -8   7   9  -6]
+ [  0  -7  -3   2   5  -6   3  -6  -4  -4]
+ [  7   1   3  -2  -2   4   1  -7   0   5]]
+</pre></div></div>
+</div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>im = np.random.randint(-10,10, [10,10], int)
-#im = ps.generators.blobs([200, 200])
-print(im)
-#im = im*(im &gt;0.5)
-
-plt.figure(figsize=[7, 7])
-plt.axis(False)
-plt.imshow(im);
-
-#default values:
-keep_zeros = True
+<span></span>fig, ax = plt.subplots(1, 1, figsize=[4, 4])
+ax.imshow(im)
+ax.axis(False)
+ax.set_title(f&quot;Minimum = {im.min()}&quot;);
 </pre></div>
 </div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-[[  8   9  -1  -7   0  -6  -6   9  -3 -10]
- [  4  -9   5  -1  -8   7  -4   8  -2   6]
- [  9   3   7   5   2  -1   0   2   2 -10]
- [ -5  -1   6   2  -5   8   6   2   0  -3]
- [ -2  -2   6  -9   1  -3 -10   4   2  -8]
- [ -4   7   3   0   7  -3   1   5   7   8]
- [  7   2   9   2   9   2   9   8   5   3]
- [ -7  -1   2  -7  -4 -10  -9   6   5  -6]
- [  9   0 -10   7   8   1   7   9  -1  -7]
- [ -2   8  -9  -5   0  -1   7  -6  -5  -1]]
-</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_tools_howtos_make_contiguous_4_1.png" src="../../../_images/examples_tools_howtos_make_contiguous_4_1.png" />
+<img alt="../../../_images/examples_tools_howtos_make_contiguous_5_0.svg" src="../../../_images/examples_tools_howtos_make_contiguous_5_0.svg" /></div>
 </div>
 </div>
-</div>
-<div class="section" id="Apply-tool">
-<h2>Apply tool<a class="headerlink" href="#Apply-tool" title="Permalink to this headline">¶</a></h2>
-<div class="nbinput docutils container">
+<div class="section" id="Demonstrate-function">
+<h2>Demonstrate function<a class="headerlink" href="#Demonstrate-function" title="Permalink to this headline">¶</a></h2>
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>im1 = ps.tools.make_contiguous(im = im, keep_zeros=keep_zeros)
-im2 = ps.tools.make_contiguous(im = im, keep_zeros=False)
-print (&#39;keep_zeros = True: &#39;, im1)
-print (&#39;keep_zeros = False:&#39;, im2)
-
-fig, ax = plt.subplots(1, 2, figsize=[15, 15]);
-ax[0].axis(False)
-ax[0].imshow(im1)
-ax[0].set_title(&#39;keep_zeros = True&#39;)
-ax[1].axis(False)
-ax[1].imshow(im2)
-ax[1].set_title(&#39;keep_zeros = False&#39;);
+<span></span>im1 = ps.tools.make_contiguous(im=im, mode=&#39;keep_zeros&#39;)
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-keep_zeros = True:  [[18 19 10  4  0  5  5 19  8  1]
- [14  2 15 10  3 17  7 18  9 16]
- [19 13 17 15 12 10  0 12 12  1]
- [ 6 10 16 12  6 18 16 12  0  8]
- [ 9  9 16  2 11  8  1 14 12  3]
- [ 7 17 13  0 17  8 11 15 17 18]
- [17 12 19 12 19 12 19 18 15 13]
- [ 4 10 12  4  7  1  2 16 15  5]
- [19  0  1 17 18 11 17 19 10  4]
- [ 9 18  2  6  0 10 17  5  6 10]]
-keep_zeros = False: [[18 19  9  3 10  4  4 19  7  0]
- [14  1 15  9  2 17  6 18  8 16]
- [19 13 17 15 12  9 10 12 12  0]
- [ 5  9 16 12  5 18 16 12 10  7]
- [ 8  8 16  1 11  7  0 14 12  2]
- [ 6 17 13 10 17  7 11 15 17 18]
- [17 12 19 12 19 12 19 18 15 13]
- [ 3  9 12  3  6  0  1 16 15  4]
- [19 10  0 17 18 11 17 19  9  3]
- [ 8 18  1  5 10  9 17  4  5  9]]
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Text(0.5, 1.0, &#39;keep_zeros = False&#39;)
-</pre></div></div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>fig, ax = plt.subplots(1, 1, figsize=[4, 4]);
+ax.imshow(im1)
+ax.axis(False)
+ax.set_title(f&quot;Minimum = {im1.min()}&quot;);
+</pre></div>
+</div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_tools_howtos_make_contiguous_6_2.png" src="../../../_images/examples_tools_howtos_make_contiguous_6_2.png" />
-</div>
+<img alt="../../../_images/examples_tools_howtos_make_contiguous_8_0.svg" src="../../../_images/examples_tools_howtos_make_contiguous_8_0.svg" /></div>
 </div>
 </div>
 </div>

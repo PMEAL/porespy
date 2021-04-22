@@ -556,21 +556,6 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/sanitize_filename.html">
-   sanitize_filename
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/seq_to_satn.html">
-   seq_to_satn
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/size_to_seq.html">
-   size_to_seq
-  </a>
- </li>
- <li class="toctree-l1">
   <a class="reference internal" href="../../tools/howtos/subdivide.html">
    subdivide
   </a>
@@ -611,8 +596,8 @@
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Create-image-and-variables">
-   Create image and variables
+  <a class="reference internal nav-link" href="#Genearate-image-for-testing">
+   Genearate image for testing
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
@@ -920,30 +905,33 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>import porespy as ps
-import matplotlib.pyplot as plt
+<span></span>import warnings
 
+import matplotlib.pyplot as plt
+import numpy as np
+import porespy as ps
+from edt import edt
+
+warnings.filterwarnings(&#39;ignore&#39;)
 ps.visualization.set_mpl_style()
+np.random.seed(10)
 </pre></div>
 </div>
 </div>
 </div>
-<div class="section" id="Create-image-and-variables">
-<h2>Create image and variables<a class="headerlink" href="#Create-image-and-variables" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="Genearate-image-for-testing">
+<h2>Genearate image for testing<a class="headerlink" href="#Genearate-image-for-testing" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span>skel = ps.generators.blobs(shape=[500, 500])
-branch_points = None
-iterations = 10
-im = ps.filters.prune_branches(skel, branch_points, iterations)
-plt.figure(figsize=[7,7])
-plt.axis(False)
-plt.imshow(im)
+im = ps.filters.prune_branches(skel)
+dt = edt(im)
+fig, ax = plt.subplots()
+ax.imshow(dt, origin=&quot;lower&quot;)
 
-#default values
 log = False
 bins = 10
 voxel_size = 1
@@ -954,8 +942,7 @@ voxel_size = 1
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_metrics_howtos_radial_density_4_0.png" src="../../../_images/examples_metrics_howtos_radial_density_4_0.png" />
-</div>
+<img alt="../../../_images/examples_metrics_howtos_radial_density_4_0.svg" src="../../../_images/examples_metrics_howtos_radial_density_4_0.svg" /></div>
 </div>
 </div>
 <div class="section" id="Apply-metric-function">
@@ -968,7 +955,7 @@ voxel_size = 1
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>x = ps.metrics.radial_density_distribution(im=im, bins=bins, log = log, voxel_size=voxel_size)
+<span></span>x = ps.metrics.radial_density_distribution(dt)
 </pre></div>
 </div>
 </div>
@@ -978,13 +965,13 @@ voxel_size = 1
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>fig, ax = plt.subplots(1, 2, figsize=[15, 7]);
+<span></span>fig, ax = plt.subplots(1, 2, figsize=[8, 4])
 ax[0].plot(x.pdf)
 ax[1].plot(x.cdf)
 ax[0].set_title(&quot;Probability Density Function&quot;)
 ax[1].set_title(&quot;Cumulative Density Function&quot;)
 
-fig, ax = plt.subplots(1, 2, figsize=[15, 5]);
+fig, ax = plt.subplots(1, 2, figsize=[8, 4])
 ax[0].bar(x.R, x.pdf, x.bin_widths, edgecolor=&#39;k&#39;)
 ax[1].bar(x.R, x.cdf, x.bin_widths, edgecolor=&#39;k&#39;)
 ax[0].set_title(&#39;Bar Plot - Probability Density&#39;)
@@ -993,27 +980,16 @@ ax[1].set_title(&#39;Bar Plot - Cumulative Density&#39;);
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Text(0.5, 1.0, &#39;Bar Plot - Cumulative Density&#39;)
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_metrics_howtos_radial_density_10_1.png" src="../../../_images/examples_metrics_howtos_radial_density_10_1.png" />
-</div>
+<img alt="../../../_images/examples_metrics_howtos_radial_density_10_0.svg" src="../../../_images/examples_metrics_howtos_radial_density_10_0.svg" /></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_metrics_howtos_radial_density_10_2.png" src="../../../_images/examples_metrics_howtos_radial_density_10_2.png" />
-</div>
+<img alt="../../../_images/examples_metrics_howtos_radial_density_10_1.svg" src="../../../_images/examples_metrics_howtos_radial_density_10_1.svg" /></div>
 </div>
 </div>
 <div class="section" id="bins">
@@ -1023,7 +999,10 @@ Text(0.5, 1.0, &#39;Bar Plot - Cumulative Density&#39;)
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>x = ps.metrics.radial_density_distribution(im=im, bins=5, log=log, voxel_size= voxel_size)
+<span></span>x = ps.metrics.radial_density_distribution(dt,
+                                           bins=5,
+                                           log=log,
+                                           voxel_size=voxel_size)
 </pre></div>
 </div>
 </div>
@@ -1033,13 +1012,13 @@ Text(0.5, 1.0, &#39;Bar Plot - Cumulative Density&#39;)
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>fig, ax = plt.subplots(1, 2, figsize=[15, 7]);
+<span></span>fig, ax = plt.subplots(1, 2, figsize=[8, 4])
 ax[0].plot(x.pdf)
 ax[1].plot(x.cdf)
 ax[0].set_title(&quot;Probability Density Function&quot;)
 ax[1].set_title(&quot;Cumulative Density Function&quot;)
 
-fig, ax = plt.subplots(1, 2, figsize=[15, 5]);
+fig, ax = plt.subplots(1, 2, figsize=[8, 4])
 ax[0].bar(x.R, x.pdf, x.bin_widths, edgecolor=&#39;k&#39;)
 ax[1].bar(x.R, x.cdf, x.bin_widths, edgecolor=&#39;k&#39;)
 ax[0].set_title(&#39;Bar Plot - Probability Density&#39;)
@@ -1048,27 +1027,16 @@ ax[1].set_title(&#39;Bar Plot - Cumulative Density&#39;);
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Text(0.5, 1.0, &#39;Bar Plot - Cumulative Density&#39;)
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_metrics_howtos_radial_density_14_1.png" src="../../../_images/examples_metrics_howtos_radial_density_14_1.png" />
-</div>
+<img alt="../../../_images/examples_metrics_howtos_radial_density_14_0.svg" src="../../../_images/examples_metrics_howtos_radial_density_14_0.svg" /></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_metrics_howtos_radial_density_14_2.png" src="../../../_images/examples_metrics_howtos_radial_density_14_2.png" />
-</div>
+<img alt="../../../_images/examples_metrics_howtos_radial_density_14_1.svg" src="../../../_images/examples_metrics_howtos_radial_density_14_1.svg" /></div>
 </div>
 </div>
 <div class="section" id="log">
@@ -1078,7 +1046,10 @@ Text(0.5, 1.0, &#39;Bar Plot - Cumulative Density&#39;)
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>x = ps.metrics.radial_density_distribution(im=im, bins=bins, log=True, voxel_size= voxel_size)
+<span></span>x = ps.metrics.radial_density_distribution(dt,
+                                           bins=bins,
+                                           log=True,
+                                           voxel_size=voxel_size)
 </pre></div>
 </div>
 </div>
@@ -1088,13 +1059,13 @@ Text(0.5, 1.0, &#39;Bar Plot - Cumulative Density&#39;)
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>fig, ax = plt.subplots(1, 2, figsize=[15, 7]);
+<span></span>fig, ax = plt.subplots(1, 2, figsize=[8, 4])
 ax[0].plot(x.pdf)
 ax[1].plot(x.cdf)
 ax[0].set_title(&quot;Probability Density Function&quot;)
 ax[1].set_title(&quot;Cumulative Density Function&quot;)
 
-fig, ax = plt.subplots(1, 2, figsize=[15, 5]);
+fig, ax = plt.subplots(1, 2, figsize=[8, 4])
 ax[0].bar(x.LogR, x.pdf, x.bin_widths, edgecolor=&#39;k&#39;)
 ax[1].bar(x.LogR, x.cdf, x.bin_widths, edgecolor=&#39;k&#39;)
 ax[0].set_title(&#39;Bar Plot - Probability Density&#39;)
@@ -1103,27 +1074,16 @@ ax[1].set_title(&#39;Bar Plot - Cumulative Density&#39;);
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Text(0.5, 1.0, &#39;Bar Plot - Cumulative Density&#39;)
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_metrics_howtos_radial_density_18_1.png" src="../../../_images/examples_metrics_howtos_radial_density_18_1.png" />
-</div>
+<img alt="../../../_images/examples_metrics_howtos_radial_density_18_0.svg" src="../../../_images/examples_metrics_howtos_radial_density_18_0.svg" /></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_metrics_howtos_radial_density_18_2.png" src="../../../_images/examples_metrics_howtos_radial_density_18_2.png" />
-</div>
+<img alt="../../../_images/examples_metrics_howtos_radial_density_18_1.svg" src="../../../_images/examples_metrics_howtos_radial_density_18_1.svg" /></div>
 </div>
 </div>
 <div class="section" id="voxel_size">
@@ -1133,7 +1093,10 @@ Text(0.5, 1.0, &#39;Bar Plot - Cumulative Density&#39;)
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>x = ps.metrics.radial_density_distribution(im=im, bins=bins, log=log, voxel_size= 10)
+<span></span>x = ps.metrics.radial_density_distribution(dt,
+                                           bins=bins,
+                                           log=log,
+                                           voxel_size=10)
 </pre></div>
 </div>
 </div>
@@ -1143,13 +1106,13 @@ Text(0.5, 1.0, &#39;Bar Plot - Cumulative Density&#39;)
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>fig, ax = plt.subplots(1, 2, figsize=[15, 7]);
+<span></span>fig, ax = plt.subplots(1, 2, figsize=[8, 4])
 ax[0].plot(x.pdf)
 ax[1].plot(x.cdf)
 ax[0].set_title(&quot;Probability Density Function&quot;)
 ax[1].set_title(&quot;Cumulative Density Function&quot;)
 
-fig, ax = plt.subplots(1, 2, figsize=[15, 5]);
+fig, ax = plt.subplots(1, 2, figsize=[10, 4])
 ax[0].bar(x.R, x.pdf, x.bin_widths, edgecolor=&#39;k&#39;)
 ax[1].bar(x.R, x.cdf, x.bin_widths, edgecolor=&#39;k&#39;)
 ax[0].set_title(&#39;Bar Plot - Probability Density&#39;)
@@ -1158,27 +1121,16 @@ ax[1].set_title(&#39;Bar Plot - Cumulative Density&#39;);
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Text(0.5, 1.0, &#39;Bar Plot - Cumulative Density&#39;)
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_metrics_howtos_radial_density_22_1.png" src="../../../_images/examples_metrics_howtos_radial_density_22_1.png" />
-</div>
+<img alt="../../../_images/examples_metrics_howtos_radial_density_22_0.svg" src="../../../_images/examples_metrics_howtos_radial_density_22_0.svg" /></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_metrics_howtos_radial_density_22_2.png" src="../../../_images/examples_metrics_howtos_radial_density_22_2.png" />
-</div>
+<img alt="../../../_images/examples_metrics_howtos_radial_density_22_1.svg" src="../../../_images/examples_metrics_howtos_radial_density_22_1.svg" /></div>
 </div>
 </div>
 </div>

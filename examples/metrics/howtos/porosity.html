@@ -556,21 +556,6 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/sanitize_filename.html">
-   sanitize_filename
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/seq_to_satn.html">
-   seq_to_satn
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/size_to_seq.html">
-   size_to_seq
-  </a>
- </li>
- <li class="toctree-l1">
   <a class="reference internal" href="../../tools/howtos/subdivide.html">
    subdivide
   </a>
@@ -609,11 +594,13 @@
   <a class="reference internal nav-link" href="#Import-packages">
    Import packages
   </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Create-input-image-and-variables">
-   Create input image and variables
-  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#Genearate-image-for-testing">
+     Genearate image for testing
+    </a>
+   </li>
+  </ul>
  </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#Apply-metric-function">
@@ -898,46 +885,34 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>import porespy as ps
-import matplotlib.pyplot as plt
+<span></span>import matplotlib.pyplot as plt
+import numpy as np
+import porespy as ps
 
 ps.visualization.set_mpl_style()
+np.random.seed(10)
 </pre></div>
 </div>
 </div>
-</div>
-<div class="section" id="Create-input-image-and-variables">
-<h2>Create input image and variables<a class="headerlink" href="#Create-input-image-and-variables" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="Genearate-image-for-testing">
+<h3>Genearate image for testing<a class="headerlink" href="#Genearate-image-for-testing" title="Permalink to this headline">¶</a></h3>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span>skel = ps.generators.blobs(shape=[500, 500])
-branch_points = None
-iterations = 10
-im = ps.filters.prune_branches(skel, branch_points, iterations)
-
-plt.figure(figsize=[7,7])
-plt.axis(False)
-plt.imshow(im);
+im = ps.filters.prune_branches(skel)
+fig, ax = plt.subplots()
+ax.imshow(im, origin=&quot;lower&quot;);
 </pre></div>
 </div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-&lt;matplotlib.image.AxesImage at 0x7fb694c482e0&gt;
-</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_metrics_howtos_porosity_4_1.png" src="../../../_images/examples_metrics_howtos_porosity_4_1.png" />
+<img alt="../../../_images/examples_metrics_howtos_porosity_4_0.svg" src="../../../_images/examples_metrics_howtos_porosity_4_0.svg" /></div>
 </div>
 </div>
 </div>
@@ -949,7 +924,7 @@ plt.imshow(im);
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>ps.metrics.porosity(im = im)
+<span></span>ps.metrics.porosity(im=im)
 </pre></div>
 </div>
 </div>
@@ -959,7 +934,7 @@ plt.imshow(im);
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-0.512052
+0.487568
 </pre></div></div>
 </div>
 </div>
