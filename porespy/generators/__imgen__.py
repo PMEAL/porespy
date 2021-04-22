@@ -92,7 +92,7 @@ def insert_shape(im, element, center=None, corner=None, value=1, mode="overwrite
 
 
 def RSA(im_or_shape: np.array,
-        radius: int,
+        r: int,
         volume_fraction: int = 1,
         clearance: int = 0,
         n_max: int = None,
@@ -111,7 +111,7 @@ def RSA(im_or_shape: np.array,
         empty image.  In both cases the spheres are added as ``True`` values
         to the background.  Since ``True`` is considered the pore space, then
         the added spheres represent holes.
-    radius : int
+    r : int
         The radius of the disk or sphere to insert.
     volume_fraction : scalar (default is 1.0)
         The fraction of the image that should be filled with spheres.  The
@@ -162,7 +162,7 @@ def RSA(im_or_shape: np.array,
     [1] Random Heterogeneous Materials, S. Torquato (2001)
 
     """
-    logger.debug(f"RSA: Adding spheres of size {radius}")
+    logger.debug(f"RSA: Adding spheres of size {r}")
     if len(im_or_shape) <= 3:
         im = np.zeros(shape=im_or_shape, dtype=bool)
     else:
@@ -176,19 +176,19 @@ def RSA(im_or_shape: np.array,
     vf_start = im.sum() / im.size
     logger.debug(f"Initial volume fraction: {vf_start}")
     if im.ndim == 2:
-        template_lg = ps_disk((radius + clearance) * 2)
-        template_sm = ps_disk(radius, smooth=smooth)
+        template_lg = ps_disk((r + clearance) * 2)
+        template_sm = ps_disk(r, smooth=smooth)
     else:
-        template_lg = ps_ball((radius + clearance) * 2)
-        template_sm = ps_ball(radius, smooth=smooth)
+        template_lg = ps_ball((r + clearance) * 2)
+        template_sm = ps_ball(r, smooth=smooth)
     vf_template = template_sm.sum() / im.size
     # Pad image by the radius of large template to enable insertion near edges
-    im = np.pad(im, pad_width=2 * radius, mode="edge")
+    im = np.pad(im, pad_width=2 * r, mode="edge")
     # Depending on mode, adjust mask to remove options around edge
     if mode == "contained":
-        border = get_border(im.shape, thickness=2 * radius, mode="faces")
+        border = get_border(im.shape, thickness=2 * r, mode="faces")
     elif mode == "extended":
-        border = get_border(im.shape, thickness=radius + 1, mode="faces")
+        border = get_border(im.shape, thickness=r + 1, mode="faces")
     else:
         raise Exception("Unrecognized mode: ", mode)
     # Remove border pixels
@@ -197,7 +197,7 @@ def RSA(im_or_shape: np.array,
     # from consideration for sphere placement
     logger.trace("Dilating foreground features by sphere radius")
     dt = edt(im == 0)
-    options_im = dt >= radius
+    options_im = dt >= r
     # ------------------------------------------------------------------------
     # Begin inserting the spheres
     vf = vf_start
@@ -212,9 +212,9 @@ def RSA(im_or_shape: np.array,
             free_sites = np.flatnonzero(options_im)
         if all(np.array(c) == -1):
             break
-        s_sm = tuple([slice(x - radius, x + radius + 1, None) for x in c])
-        s_lg = tuple([slice(x - 2 * (radius + clearance),
-                            x + 2 * (radius + clearance) + 1, None) for x in c])
+        s_sm = tuple([slice(x - r, x + r + 1, None) for x in c])
+        s_lg = tuple([slice(x - 2 * (r + clearance),
+                            x + 2 * (r + clearance) + 1, None) for x in c])
         im[s_sm] += template_sm  # Add ball to image
         options_im[s_lg][template_lg] = False  # Update extended region
         vf += vf_template
@@ -222,7 +222,7 @@ def RSA(im_or_shape: np.array,
     logger.trace(f"Number of spheres inserted: {i}")
     # ------------------------------------------------------------------------
     # Get slice into returned image to retain original size
-    s = tuple([slice(2 * radius, d - 2 * radius, None) for d in im.shape])
+    s = tuple([slice(2 * r, d - 2 * r, None) for d in im.shape])
     im = im[s]
     vf = im.sum() / im.size
     logger.debug("Final volume fraction:", vf)
@@ -391,12 +391,12 @@ def polydisperse_spheres(
     for r in Rs:
         phi_im = im.sum() / np.prod(shape)
         phi_corrected = 1 - (1 - phi_desired) / phi_im
-        temp = overlapping_spheres(shape=shape, radius=r, porosity=phi_corrected)
+        temp = overlapping_spheres(shape=shape, r=r, porosity=phi_corrected)
         im = im * temp
     return im
 
 
-def voronoi_edges(shape: List[int], radius: int, ncells: int, flat_faces: bool = True):
+def voronoi_edges(shape: List[int], r: int, ncells: int, flat_faces: bool = True):
     r"""
     Create an image of the edges in a Voronoi tessellation
 
@@ -444,7 +444,7 @@ def voronoi_edges(shape: List[int], radius: int, ncells: int, flat_faces: bool =
         if np.all(pts >= 0) and np.all(pts < im.shape):
             line_pts = line_segment(pts[0], pts[1])
             im[tuple(line_pts)] = True
-    im = edt(~im) > radius
+    im = edt(~im) > r
     return im
 
 
@@ -483,7 +483,7 @@ def _get_Voronoi_edges(vor):
 
 
 def lattice_spheres(shape: List[int],
-                    radius: int,
+                    r: int,
                     spacing: int = None,
                     offset: int = None,
                     smooth: bool = True,
@@ -535,7 +535,6 @@ def lattice_spheres(shape: List[int],
 
     """
     logger.debug(f"Generating {lattice} lattice")
-    r = radius
     shape = np.array(shape)
     im = np.zeros(shape, dtype=bool)
 
@@ -560,11 +559,11 @@ def lattice_spheres(shape: List[int],
 
     # Parse offset and spacing args
     if spacing is None:
-        spacing = 2*radius
+        spacing = 2*r
     if isinstance(spacing, int):
         spacing = [spacing]*im.ndim
     if offset is None:
-        offset = radius
+        offset = r
     if isinstance(offset, int):
         offset = [offset]*im.ndim
 
@@ -614,7 +613,7 @@ def lattice_spheres(shape: List[int],
 
 
 def overlapping_spheres(shape: List[int],
-                        radius: int,
+                        r: int,
                         porosity: float,
                         iter_max: int = 10,
                         tol: float = 0.01):
@@ -626,7 +625,7 @@ def overlapping_spheres(shape: List[int],
     shape : list
         The size of the image to generate in [Nx, Ny, Nz] where Ni is the
         number of voxels in the i-th direction.
-    radius : scalar
+    r : scalar
         The radius of spheres in the packing.
     porosity : scalar
         The porosity of the final image, accurate to the given tolerance.
@@ -652,7 +651,7 @@ def overlapping_spheres(shape: List[int],
     if np.size(shape) == 1:
         shape = np.full((3, ), int(shape))
     ndim = (shape != 1).sum()
-    s_vol = ps_disk(radius).sum() if ndim == 2 else ps_ball(radius).sum()
+    s_vol = ps_disk(r).sum() if ndim == 2 else ps_ball(r).sum()
 
     bulk_vol = np.prod(shape)
     N = int(np.ceil((1 - porosity) * bulk_vol / s_vol))
@@ -660,7 +659,7 @@ def overlapping_spheres(shape: List[int],
 
     # Helper functions for calculating porosity: phi = g(f(N))
     def f(N):
-        return edt(im > N / bulk_vol) < radius
+        return edt(im > N / bulk_vol) < r
 
     def g(im):
         r"""Returns fraction of 0s, given a binary image"""
@@ -762,7 +761,7 @@ def blobs(shape: List[int], porosity: float = 0.5, blobiness: int = 1,
 
 
 def _cylinders(shape: List[int],
-               radius: int,
+               r: int,
                ncylinders: int,
                phi_max: float = 0,
                theta_max: float = 90,
@@ -778,7 +777,7 @@ def _cylinders(shape: List[int],
     shape : list
         The size of the image to generate in [Nx, Ny, Nz] where N is the
         number of voxels. 2D images are not permitted.
-    radius : scalar
+    r : scalar
         The radius of the cylinders in voxels
     ncylinders : scalar
         The number of cylinders to add to the domain. Adjust this value to
@@ -850,12 +849,12 @@ def _cylinders(shape: List[int],
                 n += 1
                 pbar.update()
     im = np.array(im, dtype=bool)
-    dt = edt(~im) < radius
+    dt = edt(~im) < r
     return ~dt
 
 
 def cylinders(shape: List[int],
-              radius: int,
+              r: int,
               ncylinders: int = None,
               porosity: float = None,
               phi_max: float = 0,
@@ -873,7 +872,7 @@ def cylinders(shape: List[int],
     shape : list
         The size of the image to generate in [Nx, Ny, Nz] where N is the
         number of voxels. 2D images are not permitted.
-    radius : scalar
+    r : scalar
         The radius of the cylinders in voxels
     ncylinders : scalar
         The number of cylinders to add to the domain. Adjust this value to
@@ -938,7 +937,7 @@ def cylinders(shape: List[int],
     if ncylinders is not None:
         im = _cylinders(
             shape=shape,
-            radius=radius,
+            r=r,
             ncylinders=ncylinders,
             phi_max=phi_max,
             theta_max=theta_max,
@@ -964,7 +963,7 @@ def cylinders(shape: List[int],
     length_estimate = vol_total ** (1 / 3) if length is None else length
 
     # Rough fiber volume estimate
-    vol_fiber = length_estimate * np.pi * radius * radius
+    vol_fiber = length_estimate * np.pi * r * r
     n_pixels_to_add = get_num_pixels(porosity)
 
     # Rough estimate of n_fibers
@@ -980,7 +979,7 @@ def cylinders(shape: List[int],
         n_fibers_total = n_pixels_to_add / vol_fiber
         n_fibers = int(np.ceil(frac * n_fibers_total) - n_fibers_added)
         if n_fibers > 0:
-            im = im & _cylinders(shape, radius, n_fibers,
+            im = im & _cylinders(shape, r, n_fibers,
                                  phi_max, theta_max, length,
                                  verbose=False)
         n_fibers_added += n_fibers

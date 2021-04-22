@@ -61,7 +61,7 @@ class VisualizationTest():
 
     def test_satn_to_movie(self):
         im = ps.generators.lattice_spheres(shape=[107, 107],
-                                           radius=5, spacing=25,
+                                           r=5, spacing=25,
                                            lattice='tri')
         bd = np.zeros_like(im)
         bd[:, 0] = True
