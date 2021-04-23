@@ -14,8 +14,15 @@ class ParallelTest():
         assert ps.metrics.porosity(self.im) == 0.499829
         self.im_dt = edt(self.im)
 
-    def test_find_peaks_2D_with_args(self):
+    def test_find_peaks_2D(self):
         im = ps.generators.blobs(shape=[200, 200], blobiness=2)
+        dt = edt(im)
+        mx_serial = ps.filters.find_peaks(dt=dt)
+        mx_parallel_1 = ps.filters.find_peaks(dt=dt, divs=2)
+        assert np.all(mx_serial == mx_parallel_1)
+
+    def test_find_peaks_3D(self):
+        im = ps.generators.blobs(shape=[100, 100, 100], blobiness=2)
         dt = edt(im)
         mx_serial = ps.filters.find_peaks(dt=dt)
         mx_parallel_1 = ps.filters.find_peaks(dt=dt, divs=2)

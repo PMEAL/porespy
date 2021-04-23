@@ -245,7 +245,7 @@ def find_peaks(dt, r_max=4, strel=None, divs=1):
     parallel = False
     if isinstance(divs, int):
         divs = [divs]*len(im.shape)
-    if np.any(divs):
+    if np.any(np.array(divs) > 1):
         parallel = True
         logger.info(f'Performing {insp.currentframe().f_code.co_name} in parallel')
     if parallel:
