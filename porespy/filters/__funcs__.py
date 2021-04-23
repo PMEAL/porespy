@@ -827,7 +827,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
     else:
         strel = ps_ball
         strel_2 = ball
-        
+
     parallel = False
     if isinstance(divs, int):
         divs = [divs]*im.ndim
@@ -1242,7 +1242,7 @@ def chunked_func(func,
                 strel = kwargs[item]
                 break
         halo = np.array(strel.shape) * (divs > 1)
-    slices = subdivide(im=im, divs=divs, overlap=halo, flatten=True)
+    slices = subdivide(im=im, divs=divs, overlap=halo)
     # Apply func to each subsection of the image
     res = []
     for s in slices:

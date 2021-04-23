@@ -211,7 +211,7 @@ def fftmorphology(im, strel, mode='opening'):
     return result
 
 
-def subdivide(im, divs=2, overlap=0, flatten=False):
+def subdivide(im, divs=2, overlap=0):
     r"""
     Returns slices into an image describing the specified number of sub-arrays.
 
@@ -223,19 +223,12 @@ def subdivide(im, divs=2, overlap=0, flatten=False):
     ----------
     im : ND-array
         The image of the porous media
-
     divs : scalar or array_like
         The number of sub-divisions to create in each axis of the image.  If a
         scalar is given it is assumed this value applies in all dimensions.
-
     overlap : scalar or array_like
         The amount of overlap to use when dividing along each axis.  If a
         scalar is given it is assumed this value applies in all dimensions.
-
-    flatten : boolean
-        If set to ``True`` then the slice objects are returned as a flat
-        list, while if ``False`` they are returned in a ND-array where each
-        subdivision is accessed using row-col or row-col-layer indexing.
 
     Returns
     -------
@@ -250,7 +243,6 @@ def subdivide(im, divs=2, overlap=0, flatten=False):
     See Also
     --------
     chunked_func
-
 
     """
     divs = np.ones((im.ndim,), dtype=int) * np.array(divs)
@@ -280,11 +272,9 @@ def subdivide(im, divs=2, overlap=0, flatten=False):
                     stemp = extend_slice([xtemp, ytemp, ztemp], im.shape, pad=size)
                     s[i][j].append(stemp)
 
-    slices = s
-    if flatten is True:
+    slices = [item for sublist in s for item in sublist]
+    if im.ndim == 3:
         slices = [item for sublist in slices for item in sublist]
-        if im.ndim == 3:
-            slices = [item for sublist in slices for item in sublist]
     return slices
 
 
@@ -313,10 +303,6 @@ def recombine(ims, slices, overlap):
         for dim in range(len(slices[0])):
             shape[dim] = max(shape[dim], s[dim].stop)
 
-    # temp = np.zeros(shape=shape)
-    # for s in slices:
-    #     temp[s] = temp[s] + 1
-
     if isinstance(overlap, int):
         overlap = [overlap]*len(shape)
 
@@ -327,15 +313,17 @@ def recombine(ims, slices, overlap):
         b = []  # Slices into chunked image
         for dim in range(im.ndim):
             if s[dim].start == 0:
-                ax = bx = 0
+                ax = 0
+                bx = 0
             else:
                 ax = s[dim].start + overlap[dim]
                 bx = overlap[dim]
             if s[dim].stop == im.shape[dim]:
-                ay = by = im.shape[dim]
+                ay = im.shape[dim]
+                by = im.shape[dim]
             else:
-                ay = s[dim].stop - overlap[dim] + 1
-                by = s[dim].stop - s[dim].start - overlap[dim] + 1
+                ay = s[dim].stop - overlap[dim]
+                by = s[dim].stop - s[dim].start - overlap[dim]
             a.append(slice(ax, ay, None))
             b.append(slice(bx, by, None))
         # Convert lists of slices to tuples
