@@ -247,35 +247,26 @@ def subdivide(im, divs=2, overlap=0):
     """
     divs = np.ones((im.ndim,), dtype=int) * np.array(divs)
     overlap = overlap * (divs > 1)
-    size = (np.array(im.shape)/divs/2 + overlap).astype(int)
 
-    # Find center points of each subsection
-    cens = []
-    for ax in range(im.ndim):
-        steps = np.linspace(0, im.shape[ax], divs[ax]+1).astype(int)[:-1]
-        steps += int(im.shape[ax]/divs[ax]/2)
-        cens.append(steps)
-    # Get slices into im for each subsection
-    s = []
-    for i in range(len(cens[0])):
-        s.append([])
-        xtemp = slice(cens[0][i], cens[0][i], None)
-        for j in range(len(cens[1])):
-            ytemp = slice(cens[1][j], cens[1][j], None)
-            if im.ndim == 2:
-                stemp = extend_slice([xtemp, ytemp], im.shape, pad=size)
-                s[i].append(stemp)
+    s = np.zeros(shape=divs, dtype=object)
+    spacing = np.round(np.array(im.shape)/divs, decimals=0).astype(int)
+    for i in range(s.shape[0]):
+        x = spacing[0]
+        sx = slice(x*i, min(im.shape[0], x*(i+1)), None)
+        for j in range(s.shape[1]):
+            y = spacing[1]
+            sy = slice(y*j, min(im.shape[1], y*(j+1)), None)
+            if im.ndim == 3:
+                for k in range(s.shape[2]):
+                    z = spacing[2]
+                    sz = slice(z*k, min(im.shape[2], z*(k+1)), None)
+                    s[i, j, k] = tuple([sx, sy, sz])
             else:
-                s[i].append([])
-                for k in range(len(cens[2])):
-                    ztemp = slice(cens[2][k], cens[2][k], None)
-                    stemp = extend_slice([xtemp, ytemp, ztemp], im.shape, pad=size)
-                    s[i][j].append(stemp)
-
-    slices = [item for sublist in s for item in sublist]
-    if im.ndim == 3:
-        slices = [item for sublist in slices for item in sublist]
-    return slices
+                s[i, j] = tuple([sx, sy])
+    s = s.flatten().tolist()
+    for i, item in enumerate(s):
+        s[i] = extend_slice(slices=item, shape=im.shape, pad=overlap)
+    return s
 
 
 def recombine(ims, slices, overlap):

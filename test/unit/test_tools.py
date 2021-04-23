@@ -259,11 +259,29 @@ class ToolsTest():
 
     def test_recombine_2d_odd_shape(self):
         im = np.random.rand(143, 152)
-        s = ps.tools.subdivide(im, divs=2, overlap=0)
+        s = ps.tools.subdivide(im, divs=2, overlap=10)
         ims = []
         for i in range(len(s)):
             ims.append(im[s[i]])
-        im2 = ps.tools.recombine(ims=ims, slices=s, overlap=0)
+        im2 = ps.tools.recombine(ims=ims, slices=s, overlap=10)
+        assert np.all(im == im2)
+
+    def test_recombine_2d_odd_shape_vector_overlap(self):
+        im = np.random.rand(143, 177)
+        s = ps.tools.subdivide(im, divs=2, overlap=[10, 20])
+        ims = []
+        for i in range(len(s)):
+            ims.append(im[s[i]])
+        im2 = ps.tools.recombine(ims=ims, slices=s, overlap=[10, 20])
+        assert np.all(im == im2)
+
+    def test_recombine_3d_odd_shape_vector_overlap(self):
+        im = np.random.rand(143, 177, 111)
+        s = ps.tools.subdivide(im, divs=3, overlap=[10, 20, 25])
+        ims = []
+        for i in range(len(s)):
+            ims.append(im[s[i]])
+        im2 = ps.tools.recombine(ims=ims, slices=s, overlap=[10, 20, 25])
         assert np.all(im == im2)
 
     def test_size_to_seq(self):
