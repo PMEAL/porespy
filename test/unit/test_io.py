@@ -71,7 +71,7 @@ class ExportTest():
         assert_allclose(actual=porosity_actual, desired=porosity_desired, rtol=0.1)
 
     def test_to_stl(self):
-        im = ps.generators.blobs(shape=[50, 50, 50], spacing=0.1)
+        im = ps.generators.blobs(shape=[50, 50, 50])
         ps.io.to_stl(im, filename="im2stl")
         os.remove("im2stl.stl")
 
