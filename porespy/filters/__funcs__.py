@@ -1147,7 +1147,7 @@ def chunked_func(func,
         ``spipy.ndimage.binary_dilation``.
     overlap : scalar or list of scalars, optional
         The amount of overlap to include when dividing up the image. This
-        value will almost always be the size (i.e. diameter) of the
+        value will almost always be the size (i.e. raduis) of the
         structuring element. If not specified then the amount of overlap
         is inferred from the size of the structuring element, in which
         case the ``strel_arg`` must be specified.
@@ -1233,7 +1233,7 @@ def chunked_func(func,
         cores = settings.ncores
     # If overlap given then use it, otherwise search for strel in kwargs
     if overlap is not None:
-        halo = overlap * (divs > 1)
+        overlap = overlap * (divs > 1)
     else:
         if type(strel_arg) == str:
             strel_arg = [strel_arg]
@@ -1241,8 +1241,8 @@ def chunked_func(func,
             if item in kwargs.keys():
                 strel = kwargs[item]
                 break
-        halo = np.array(strel.shape) * (divs > 1)
-    slices = subdivide(im=im, divs=divs, overlap=halo)
+        overlap = np.array(strel.shape) * (divs > 1)
+    slices = subdivide(im=im, divs=divs, overlap=overlap)
     # Apply func to each subsection of the image
     res = []
     for s in slices:
