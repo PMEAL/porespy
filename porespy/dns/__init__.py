@@ -20,4 +20,4 @@ simulations.
 
 __all__ = ["tortuosity"]
 
-from .__funcs__ import tortuosity
+from ._funcs import tortuosity

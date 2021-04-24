@@ -21,7 +21,7 @@ temp = bd*-0.25 + im*1.0
 cmap = copy(plt.cm.viridis)
 cmap.set_under(color='black')
 inv_seq = ps.filters.ibip(im=im, inlets=bd)
-inv_satn = ps.tools.seq_to_satn(inv_seq)
+inv_satn = ps.filters.seq_to_satn(inv_seq)
 plt.imshow(inv_seq, cmap=cmap, vmin=1e-3, interpolation='none', origin='lower')
 
 # %%

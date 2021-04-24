@@ -58,7 +58,7 @@ Use some filters from PoreSpy:
 """
 
 from .__version__ import __version__
-from .tools.__utils__ import Settings as _Settings
+from .tools._utils import Settings as _Settings
 
 settings = _Settings()
 

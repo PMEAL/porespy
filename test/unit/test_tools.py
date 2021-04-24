@@ -5,6 +5,7 @@ import scipy.ndimage as spim
 import matplotlib.pyplot as plt
 import pytest
 from edt import edt
+ps.settings.tqdm['disable'] = True
 
 
 class ToolsTest():
@@ -168,153 +169,121 @@ class ToolsTest():
         assert np.all(np.unique(im) == vals)
         assert counts[1] < counts[2]
 
-    def test_subdivide_2D_with_scalar_overlap(self):
-        im = np.ones([150, 150])
-        s = ps.tools.subdivide(im, divs=3, overlap=10)
-        assert np.all(im[s[0][0]].shape == (60, 60))
-        assert np.all(im[s[0][1]].shape == (60, 70))
-        assert np.all(im[s[1][1]].shape == (70, 70))
-
     def test_subdivide_2D_with_vector_overlap(self):
         im = np.ones([150, 150])
         s = ps.tools.subdivide(im, divs=3, overlap=[10, 20])
-        assert np.all(im[s[0][0]].shape == (60, 70))
-        assert np.all(im[s[0][1]].shape == (60, 90))
-        assert np.all(im[s[1][1]].shape == (70, 90))
+        assert np.all(im[s[0]].shape == (60, 70))
+        assert np.all(im[s[1]].shape == (60, 90))
+        assert np.all(im[s[4]].shape == (70, 90))
 
-    def test_subdivide_2D_with_scalar_overlap_flattened(self):
+    def test_subdivide_2D_with_scalar_overlap(self):
         im = np.ones([150, 150])
-        s = ps.tools.subdivide(im, divs=3, overlap=10, flatten=True)
+        s = ps.tools.subdivide(im, divs=3, overlap=10)
         assert np.all(im[s[0]].shape == (60, 60))
         assert np.all(im[s[1]].shape == (60, 70))
         assert np.all(im[s[4]].shape == (70, 70))
 
     def test_subdivide_2D_with_vector_overlap_flattened(self):
         im = np.ones([150, 150])
-        s = ps.tools.subdivide(im, divs=3, overlap=[10, 20], flatten=True)
+        s = ps.tools.subdivide(im, divs=3, overlap=[10, 20])
         assert np.all(im[s[0]].shape == (60, 70))
         assert np.all(im[s[1]].shape == (60, 90))
         assert np.all(im[s[4]].shape == (70, 90))
 
-    def test_subdivide_3D_with_scalar_overlap(self):
-        im = np.ones([150, 150, 150])
-        s = ps.tools.subdivide(im, divs=3, overlap=10)
-        assert np.all(im[s[0][0][0]].shape == (60, 60, 60))
-        assert np.all(im[s[0][0][1]].shape == (60, 60, 70))
-        assert np.all(im[s[1][1][1]].shape == (70, 70, 70))
-
     def test_subdivide_3D_with_vector_overlap(self):
         im = np.ones([150, 150, 150])
         s = ps.tools.subdivide(im, divs=3, overlap=[10, 20, 30])
-        assert np.all(im[s[0][0][0]].shape == (60, 70, 80))
-        assert np.all(im[s[0][0][1]].shape == (60, 70, 110))
-        assert np.all(im[s[1][1][1]].shape == (70, 90, 110))
-
-    def test_subdivide_3D_with_scalar_overlap_flattened(self):
-        im = np.ones([150, 150, 150])
-        s = ps.tools.subdivide(im, divs=3, overlap=10, flatten=True)
-        assert np.all(im[s[0]].shape == (60, 60, 60))
-        assert np.all(im[s[1]].shape == (60, 60, 70))
-        assert np.all(im[s[13]].shape == (70, 70, 70))
-
-    def test_subdivide_3D_with_vector_overlap_flattened(self):
-        im = np.ones([150, 150, 150])
-        s = ps.tools.subdivide(im, divs=3, overlap=[10, 20, 30], flatten=True)
         assert np.all(im[s[0]].shape == (60, 70, 80))
         assert np.all(im[s[1]].shape == (60, 70, 110))
         assert np.all(im[s[13]].shape == (70, 90, 110))
 
-    def test_subdivided_shape_flattened(self):
+    def test_subdivide_3D_with_scalar_overlap(self):
         im = np.ones([150, 150, 150])
-        s = ps.tools.subdivide(im, divs=3, overlap=[10, 20, 30], flatten=True)
+        s = ps.tools.subdivide(im, divs=3, overlap=10)
+        assert np.all(im[s[0]].shape == (60, 60, 60))
+        assert np.all(im[s[1]].shape == (60, 60, 70))
+        assert np.all(im[s[13]].shape == (70, 70, 70))
+
+    def test_subdivided_shape(self):
+        im = np.ones([150, 150, 150])
+        s = ps.tools.subdivide(im, divs=3, overlap=[10, 20, 30])
         assert np.all(len(s) == 27)
 
-    def test_subdivided_shape_not_flattened(self):
-        im = np.ones([160, 160, 160])
-        s = ps.tools.subdivide(im, divs=4, overlap=[10, 20, 30], flatten=False)
-        assert len(s[0]) == 4
-        assert len(s[0][0]) == 4
-        assert len(s[0][0][0]) == 3
+    def test_recombine_2d_zero_overlap(self):
+        im = np.random.rand(160, 160)
+        s = ps.tools.subdivide(im, divs=2, overlap=[0, 0])
+        ims = []
+        for i in range(len(s)):
+            ims.append(im[s[i]])
+        im2 = ps.tools.recombine(ims=ims, slices=s, overlap=[0, 0])
+        assert np.all(im == im2)
 
-    def test_size_to_seq(self):
-        im = self.im2D
-        sz = ps.filters.porosimetry(im)
-        nsizes = np.size(np.unique(sz))
-        sq = ps.tools.size_to_seq(sz)
-        nsteps = np.size(np.unique(sq))
-        assert nsteps == nsizes
+    def test_recombine_2d_with_vector_overlap(self):
+        im = np.random.rand(160, 160)
+        s = ps.tools.subdivide(im, divs=2, overlap=[10, 10])
+        ims = []
+        for i in range(len(s)):
+            ims.append(im[s[i]])
+        im2 = ps.tools.recombine(ims=ims, slices=s, overlap=10)
+        assert np.all(im == im2)
+        im2 = ps.tools.recombine(ims=ims, slices=s, overlap=[10, 10])
+        assert np.all(im == im2)
 
-    def test_size_to_seq_int_bins(self):
-        im = self.im2D
-        sz = ps.filters.porosimetry(im)
-        sq = ps.tools.size_to_seq(sz, bins=5)
-        nsteps = np.size(np.unique(sq))
-        assert nsteps == 5
+    def test_recombine_2d_with_scalar_overlap(self):
+        im = np.random.rand(160, 160)
+        s = ps.tools.subdivide(im, divs=2, overlap=10)
+        ims = []
+        for i in range(len(s)):
+            ims.append(im[s[i]])
+        im2 = ps.tools.recombine(ims=ims, slices=s, overlap=10)
+        assert np.all(im == im2)
 
-    def test_size_to_seq_too_many_bins(self):
-        im = self.im2D
-        sz = ps.filters.porosimetry(im)
-        sq = ps.tools.size_to_seq(sz, bins=20)
-        nsteps = np.size(np.unique(sq))
-        assert nsteps < 20
+    def test_recombine_3d_zero_overlap(self):
+        im = np.random.rand(160, 160, 160)
+        s = ps.tools.subdivide(im, divs=2, overlap=[0, 0, 0])
+        ims = []
+        for i in range(len(s)):
+            ims.append(im[s[i]])
+        im2 = ps.tools.recombine(ims=ims, slices=s, overlap=[0, 0, 0])
+        assert np.all(im == im2)
 
-    def test_seq_to_satn_fully_filled(self):
-        im = self.im2D
-        sz = ps.filters.porosimetry(im)
-        sq = ps.tools.size_to_seq(sz)
-        sat = ps.tools.seq_to_satn(sq)
-        assert sat.max() == 1
+    def test_recombine_3d_with_vector_overlap(self):
+        im = np.random.rand(160, 160, 160)
+        s = ps.tools.subdivide(im, divs=2, overlap=[10, 10, 10])
+        ims = []
+        for i in range(len(s)):
+            ims.append(im[s[i]])
+        im2 = ps.tools.recombine(ims=ims, slices=s, overlap=10)
+        assert np.all(im == im2)
+        im2 = ps.tools.recombine(ims=ims, slices=s, overlap=[10, 10, 10])
+        assert np.all(im == im2)
 
-    def test_seq_to_satn_partially_filled(self):
-        im = self.im2D
-        sz = ps.filters.porosimetry(im)
-        sq = ps.tools.size_to_seq(sz)
-        sq[sq == sq.max()] = -1
-        sat = ps.tools.seq_to_satn(sq)
-        assert sat.max() < 1
+    def test_recombine_2d_odd_shape(self):
+        im = np.random.rand(143, 152)
+        s = ps.tools.subdivide(im, divs=2, overlap=10)
+        ims = []
+        for i in range(len(s)):
+            ims.append(im[s[i]])
+        im2 = ps.tools.recombine(ims=ims, slices=s, overlap=10)
+        assert np.all(im == im2)
 
-    def test_size_to_satn(self):
-        im = self.im2D
-        sz = ps.filters.porosimetry(im)
-        satn = ps.tools.size_to_satn(sz)
-        assert satn.max() == 1.0
-        satn = ps.tools.size_to_satn(sz, bins=4)
-        assert satn.max() == 1.0
+    def test_recombine_2d_odd_shape_vector_overlap(self):
+        im = np.random.rand(143, 177)
+        s = ps.tools.subdivide(im, divs=2, overlap=[10, 20])
+        ims = []
+        for i in range(len(s)):
+            ims.append(im[s[i]])
+        im2 = ps.tools.recombine(ims=ims, slices=s, overlap=[10, 20])
+        assert np.all(im == im2)
 
-    def test_compare_size_and_seq_to_satn(self):
-        im = ps.generators.blobs(shape=[250, 250])
-        dt = edt(im)
-        sizes = np.arange(int(dt.max())+1, 0, -1)
-        mio = ps.filters.porosimetry(im, sizes=sizes)
-        mio_satn = ps.tools.size_to_satn(size=mio, im=im)
-        mio_seq = ps.tools.size_to_seq(mio)
-        mio_seq[im*(mio_seq == 0)] = -1  # Adjust to set uninvaded to -1
-        mio_satn_2 = ps.tools.seq_to_satn(mio_seq)
-        assert np.all(mio_satn == mio_satn_2)
-
-    def test_zero_coners(self):
-        im = np.arange(1, 16).reshape(3, 5)
-        desired = np.array([[1, 2, 3, 4, 5],
-                            [0, 7, 0, 0, 0],
-                            [0, 12, 0, 0, 0]])
-        im1 = im.copy()
-        ps.tools.zero_corners(im1, [[0, 2], [1, 3]])
-        np.testing.assert_allclose(im1, desired)
-
-        with pytest.raises(Exception):
-            im2 = im.copy()
-            ps.tools.zero_corners(im2, [[0, 2], [1, 3], [0, 0]])
-
-        with pytest.raises(Exception):
-            im2 = im.copy()
-            ps.tools.zero_corners(im2, [[0, 2], [1, 3, 3]])
-
-        desired = np.array([[0, 2, 3, 4, 0],
-                            [6, 7, 8, 9, 10],
-                            [0, 12, 13, 14, 0]])
-        im3 = im.copy()
-        ps.tools.zero_corners(im3, 1)
-        np.testing.assert_allclose(im3, desired)
+    def test_recombine_3d_odd_shape_vector_overlap(self):
+        im = np.random.rand(143, 177, 111)
+        s = ps.tools.subdivide(im, divs=3, overlap=[10, 20, 25])
+        ims = []
+        for i in range(len(s)):
+            ims.append(im[s[i]])
+        im2 = ps.tools.recombine(ims=ims, slices=s, overlap=[10, 20, 25])
+        assert np.all(im == im2)
 
     def test_sanitize_filename(self):
         fname = "test.stl.stl"

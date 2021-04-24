@@ -264,7 +264,8 @@ def label_phases(
         The default is ``{1: 'void', 2: 'solid'}`` which will result in the
         labels ``'pore.void'`` and ``'pore.solid'``, as well as
         ``'throat.solid_void'``, ``'throat.solid_solid'``, and
-        ``'throat.void_void'``.
+        ``'throat.void_void'``.  The reverse labels are also added for
+        convenience like ``throat.void_solid``.
 
     Returns
     -------
@@ -277,11 +278,11 @@ def label_phases(
         pore_i_hits = network['pore.phase'] == i
         network['pore.' + alias[i]] = pore_i_hits
         for j in alias.keys():
-            name = 'throat.' + '_'.join(sorted([alias[i], alias[j]]))
             pore_j_hits = network['pore.phase'] == j
             throat_hits = pore_i_hits[conns[:, 0]] * pore_j_hits[conns[:, 1]]
             throat_hits += pore_i_hits[conns[:, 1]] * pore_j_hits[conns[:, 0]]
             if np.any(throat_hits):
+                name = 'throat.' + '_'.join([alias[i], alias[j]])
                 if name not in network.keys():
                     network[name] = np.zeros_like(conns[:, 0], dtype=bool)
                 network[name] += throat_hits

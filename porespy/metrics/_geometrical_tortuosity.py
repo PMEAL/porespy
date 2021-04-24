@@ -4,7 +4,10 @@ import scipy.ndimage as spim
 import skimage
 import skfmm
 from skimage.morphology import disk, square, ball, cube
-from porespy.tools import get_tqdm, fftmorphology
+from porespy.tools import get_tqdm
+from porespy.filters import fftmorphology
+from porespy import settings
+
 tqdm = get_tqdm()
 
 
@@ -40,7 +43,7 @@ def geometrical_tortuosity(im, axis=0):
     labels, n = spim.label(inlets)
     mins = []
     inl = spim.find_objects(labels)
-    for i in tqdm(range(n)):
+    for i in tqdm(range(n), **settings.tqdm):
 
         phi = np.ones_like(sk)
         phi[inl[i]] = 0
