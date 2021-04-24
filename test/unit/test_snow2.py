@@ -106,6 +106,20 @@ class Snow2Test:
         with pytest.raises(Exception):
             pw = ps.networks._parse_pad_width([], s)
 
+    def test_label_phases(self):
+        im = self.spheres2D
+        phases = im.astype(int) + 1
+        alias = {1: 'void', 2: 'solid'}
+        snow = ps.networks.snow2(phases=phases,
+                                 phase_alias=alias,
+                                 parallelization=None)
+        assert 'throat.solid_void' in snow.network.keys()
+        assert 'throat.void_solid' in snow.network.keys()
+        assert 'throat.solid_solid' in snow.network.keys()
+        assert 'throat.void_void' in snow.network.keys()
+        assert 'pore.void' in snow.network.keys()
+        assert 'pore.solid' in snow.network.keys()
+
     def test_ensure_correct_sizes_are_returned_single_phase_2D(self):
         im = self.spheres2D
         snow = ps.networks.snow2(phases=im, parallelization=None)
