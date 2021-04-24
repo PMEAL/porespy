@@ -36,8 +36,8 @@ ways do NOT return a modified version of the original image.
    tools.ps_disk
    tools.ps_rect
    tools.ps_round
-   tools.pad_faces
    tools.randomize_colors
+   tools.recombine
    tools.seq_to_satn
    tools.size_to_seq
    tools.subdivide
@@ -68,8 +68,8 @@ __all__ = [
     "ps_disk",
     "ps_rect",
     "ps_round",
-    "pad_faces",
     "randomize_colors",
+    "recombine",
     "seq_to_satn",
     "size_to_seq",
     "subdivide",
@@ -93,17 +93,20 @@ from .__funcs__ import get_planes
 from .__funcs__ import insert_cylinder
 from .__funcs__ import insert_sphere
 from .__funcs__ import in_hull
+from .__funcs__ import isolate_object
+from .__funcs__ import marching_map
 from .__funcs__ import make_contiguous
 from .__funcs__ import mesh_region
 from .__funcs__ import norm_to_uniform
 from .__funcs__ import overlay
 from .__funcs__ import randomize_colors
+from .__funcs__ import recombine
 from .__funcs__ import ps_ball
 from .__funcs__ import ps_disk
 from .__funcs__ import ps_rect
 from .__funcs__ import ps_round
-from .__funcs__ import pad_faces
 from .__funcs__ import seq_to_satn
+from .__funcs__ import size_to_satn
 from .__funcs__ import size_to_seq
 from .__funcs__ import subdivide
 from .__funcs__ import zero_corners

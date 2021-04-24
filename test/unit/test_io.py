@@ -1,12 +1,9 @@
 import os
 import sys
-import pytest
-import importlib
 import numpy as np
 from numpy.testing import assert_allclose
 import porespy as ps
 import openpnm as op
-import psutil
 
 
 class ExportTest():
@@ -71,7 +68,7 @@ class ExportTest():
         assert_allclose(actual=porosity_actual, desired=porosity_desired, rtol=0.1)
 
     def test_to_stl(self):
-        im = ps.generators.blobs(shape=[50, 50, 50], spacing=0.1)
+        im = ps.generators.blobs(shape=[50, 50, 50])
         ps.io.to_stl(im, filename="im2stl")
         os.remove("im2stl.stl")
 
@@ -95,7 +92,7 @@ class ExportTest():
 
     def test_spheres_to_comsol_im(self):
         im = ps.generators.overlapping_spheres(shape=[100, 100, 100],
-                                               radius=10, porosity=0.6)
+                                               r=10, porosity=0.6)
         ps.io.spheres_to_comsol(filename='sphere_pack', im=im)
         os.remove("sphere_pack.mphtxt")
 

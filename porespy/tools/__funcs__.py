@@ -1,11 +1,11 @@
 import scipy as sp
 import numpy as np
-from edt import edt
 import scipy.ndimage as spim
+from scipy.stats import rankdata
+from edt import edt
 from loguru import logger
 from collections import namedtuple
 from skimage.morphology import ball, disk
-from skimage.segmentation import relabel_sequential
 from scipy.signal import fftconvolve
 try:
     from skimage.measure import marching_cubes
@@ -13,17 +13,86 @@ except ImportError:
     from skimage.measure import marching_cubes_lewiner as marching_cubes
 
 
+def isolate_object(region, i, s=None):
+    r"""
+    Given an image containing labels, removes all labels except the specified
+    one.
+
+    Parameters
+    ----------
+    region : ND-array
+        An image containing labelled regions, as returned by
+        ``scipy.ndimage.label``.
+    i : int
+        The integer value
+    s : tuple of slice objects, optional
+        If provided, then a subsection of ``region`` will be extracted and the
+        function will be applied to this subsection only.
+
+    Returns
+    -------
+    label : ND-array
+        An ND-array the same size as ``region`` containing *only* the objects
+        with the given value ``i``.  If ``s`` is provided, the returned image
+        will be a subsection of ``region``.
+    """
+    if s is not None:
+        region = region[s]
+    im = (region == i)*i
+    return im
+
+
+def marching_map(path, start):
+    r"""
+    Use the fast marching method to find distance of each voxel from a starting
+    point
+
+    Parameters
+    ----------
+    path : ND-image
+        A boolean image with ``True`` values demarcating the path along which
+        the march will occur
+    start : ND-image
+        A boolean image with ``True`` values indicating where the march should
+        start.
+
+    Returns
+    -------
+    distance : ND-image
+        An array the same size as ``path`` with numerical values in each voxel
+        indicating it's distance from the start point(s) along the given path.
+
+    Notes
+    -----
+    This function assumes scikit-fmm is installed on your machine. This
+    package requires downloading and installing the binaries specific for your
+    platform.  Mac and Linux builds are available fron conda, while windows
+    builds can be downloaded from Christoph Gohlke website.
+
+    """
+    try:
+        import skfmm
+    except ModuleNotFoundError:
+        raise ModuleNotFoundError('scikit-fmm must be install to use this ' +
+                                  'function')
+    phi = start*2.0 - 1.0
+    speed = path*1.0
+    t = skfmm.travel_time(phi, speed)
+    return t.data
+
+
 def align_image_with_openpnm(im):
     r"""
-    Rotates an image to agree with the coordinates used in OpenPNM.  It is
-    unclear why they are not in agreement to start with.  This is necessary
-    for overlaying the image and the network in Paraview.
+    Rotates an image to agree with the coordinates used in OpenPNM.
+
+    It is unclear why they are not in agreement to start with.  This is
+    necessary for overlaying the image and the network in Paraview.
 
     Parameters
     ----------
     im : ND-array
-        The image to be rotated.  Can be the Boolean image of the pore space or
-        any other image of interest.
+        The image to be rotated.  Can be the Boolean image of the pore space
+        or any other image of interest.
 
     Returns
     -------
@@ -50,10 +119,8 @@ def fftmorphology(im, strel, mode='opening'):
     ----------
     im : nd-array
         The binary image on which to perform the morphological operation
-
     strel : nd-array
         The structuring element to use.  Must have the same dims as ``im``.
-
     mode : string
         The type of operation to perform.  Options are 'dilation', 'erosion',
         'opening' and 'closing'.
@@ -139,7 +206,7 @@ def fftmorphology(im, strel, mode='opening'):
     return result
 
 
-def subdivide(im, divs=2, overlap=0, flatten=False):
+def subdivide(im, divs=2, overlap=0):
     r"""
     Returns slices into an image describing the specified number of sub-arrays.
 
@@ -151,19 +218,12 @@ def subdivide(im, divs=2, overlap=0, flatten=False):
     ----------
     im : ND-array
         The image of the porous media
-
     divs : scalar or array_like
         The number of sub-divisions to create in each axis of the image.  If a
         scalar is given it is assumed this value applies in all dimensions.
-
     overlap : scalar or array_like
         The amount of overlap to use when dividing along each axis.  If a
         scalar is given it is assumed this value applies in all dimensions.
-
-    flatten : boolean
-        If set to ``True`` then the slice objects are returned as a flat
-        list, while if ``False`` they are returned in a ND-array where each
-        subdivision is accessed using row-col or row-col-layer indexing.
 
     Returns
     -------
@@ -179,41 +239,89 @@ def subdivide(im, divs=2, overlap=0, flatten=False):
     --------
     chunked_func
 
-
     """
     divs = np.ones((im.ndim,), dtype=int) * np.array(divs)
     overlap = overlap * (divs > 1)
-    size = (np.array(im.shape)/divs/2 + overlap).astype(int)
 
-    # Find center points of each subsection
-    cens = []
-    for ax in range(im.ndim):
-        steps = np.linspace(0, im.shape[ax], divs[ax]+1).astype(int)[:-1]
-        steps += int(im.shape[ax]/divs[ax]/2)
-        cens.append(steps)
-    # Get slices into im for each subsection
-    s = []
-    for i in range(len(cens[0])):
-        s.append([])
-        xtemp = slice(cens[0][i], cens[0][i], None)
-        for j in range(len(cens[1])):
-            ytemp = slice(cens[1][j], cens[1][j], None)
-            if im.ndim == 2:
-                stemp = extend_slice([xtemp, ytemp], im.shape, pad=size)
-                s[i].append(stemp)
+    s = np.zeros(shape=divs, dtype=object)
+    spacing = np.round(np.array(im.shape)/divs, decimals=0).astype(int)
+    for i in range(s.shape[0]):
+        x = spacing[0]
+        sx = slice(x*i, min(im.shape[0], x*(i+1)), None)
+        for j in range(s.shape[1]):
+            y = spacing[1]
+            sy = slice(y*j, min(im.shape[1], y*(j+1)), None)
+            if im.ndim == 3:
+                for k in range(s.shape[2]):
+                    z = spacing[2]
+                    sz = slice(z*k, min(im.shape[2], z*(k+1)), None)
+                    s[i, j, k] = tuple([sx, sy, sz])
             else:
-                s[i].append([])
-                for k in range(len(cens[2])):
-                    ztemp = slice(cens[2][k], cens[2][k], None)
-                    stemp = extend_slice([xtemp, ytemp, ztemp], im.shape, pad=size)
-                    s[i][j].append(stemp)
+                s[i, j] = tuple([sx, sy])
+    s = s.flatten().tolist()
+    for i, item in enumerate(s):
+        s[i] = extend_slice(slices=item, shape=im.shape, pad=overlap)
+    return s
 
-    slices = s
-    if flatten is True:
-        slices = [item for sublist in slices for item in sublist]
-        if im.ndim == 3:
-            slices = [item for sublist in slices for item in sublist]
-    return slices
+
+def recombine(ims, slices, overlap):
+    r"""
+    Recombines image chunks back into full image of original shape
+
+    Parameters
+    ----------
+    ims : list of ND-arrays
+        The chunks of the original image, which may or may not have been
+        processed.
+    slices : list of slice objects
+        The slice objects which were used to obtain the chunks in ``ims``
+    overlap : int of list ints
+        The amount of overlap used when creating chunks
+
+    Returns
+    -------
+    im : ND-array
+        An image constituted from the chunks in ``ims`` of the same shape
+        as the original image.
+    """
+    shape = [0]*ims[0].ndim
+    for s in slices:
+        for dim in range(len(slices[0])):
+            shape[dim] = max(shape[dim], s[dim].stop)
+
+    if isinstance(overlap, int):
+        overlap = [overlap]*len(shape)
+
+    im = np.zeros(shape, dtype=ims[0].dtype)
+    for i, s in enumerate(slices):
+        # Prepare new slice objects into main and sub-sliced image
+        a = []  # Slices into original image
+        b = []  # Slices into chunked image
+        for dim in range(im.ndim):
+            if s[dim].start == 0:
+                ax = 0
+                bx = 0
+            else:
+                ax = s[dim].start + overlap[dim]
+                bx = overlap[dim]
+            if s[dim].stop == im.shape[dim]:
+                ay = im.shape[dim]
+                by = im.shape[dim]
+            else:
+                ay = s[dim].stop - overlap[dim]
+                by = s[dim].stop - s[dim].start - overlap[dim]
+            a.append(slice(ax, ay, None))
+            b.append(slice(bx, by, None))
+        # Convert lists of slices to tuples
+        a = tuple(a)
+        b = tuple(b)
+        # Insert image chunk into main image
+        try:
+            im[a] = ims[i][b]
+        except ValueError:
+            raise IndexError('The applied filter seems to have returned a '
+                             + 'larger image that it was sent.')
+    return im
 
 
 def bbox_to_slices(bbox):
@@ -249,7 +357,7 @@ def bbox_to_slices(bbox):
     return ret
 
 
-def find_outer_region(im, r=0):
+def find_outer_region(im, r=None):
     r"""
     Finds regions of the image that are outside of the solid matrix.
 
@@ -264,10 +372,9 @@ def find_outer_region(im, r=0):
     ----------
     im : ND-array
         Image of the porous material with 1's for void and 0's for solid
-
     r : scalar
         The radius of the rolling ball to use.  If not specified then a value
-        is calculated as twice maximum of the distance transform.  The image
+        is calculated as twice maximum of the distance transform. The image
         size is padded by this amount in all directions, so the image can
         become quite large and unwieldy if too large a value is given.
 
@@ -278,7 +385,7 @@ def find_outer_region(im, r=0):
         identified as *outside* the sample.
 
     """
-    if r == 0:
+    if r is None:
         dt = edt(im)
         r = int(np.amax(dt)) * 2
     im_padded = np.pad(array=im, pad_width=r, mode='constant',
@@ -305,12 +412,10 @@ def extract_cylinder(im, r=None, axis=0):
     ----------
     im : ND-array
         The image of the porous material.  Can be any data type.
-
     r : scalr
         The radius of the cylinder to extract.  If ``None`` is given then the
         default is the largest cylinder that can fit inside the specified
         plane.
-
     axis : scalar
         The axis along with the cylinder will be oriented.
 
@@ -343,7 +448,6 @@ def extract_subsection(im, shape):
     ----------
     im : ND-array
         Image from which to extract the subsection
-
     shape : array_like
         Can either specify the size of the extracted section or the fractional
         size of the image to extact.
@@ -353,6 +457,10 @@ def extract_subsection(im, shape):
     image : ND-array
         An ND-array of size given by the ``shape`` argument, taken from the
         center of the image.
+
+    See Also
+    --------
+    unpad
 
     Examples
     --------
@@ -393,7 +501,6 @@ def get_planes(im, squeeze=True):
     ----------
     im : ND-array
         The volumetric image from which the 3 planar images are to be obtained
-
     squeeze : boolean, optional
         If True (default) the returned images are 2D (i.e. squeezed).  If
         False, the images are 1 element deep along the axis where the slice
@@ -428,11 +535,9 @@ def extend_slice(slices, shape, pad=1):
     slices : list of slice objects
          A list (or tuple) of N slice objects, where N is the number of
          dimensions in the image.
-
     shape : array_like
         The shape of the image into which the slice objects apply.  This is
         used to check the bounds to prevent indexing beyond the image.
-
     pad : int or list of ints
         The number of voxels to expand in each direction.
 
@@ -498,7 +603,6 @@ def randomize_colors(im, keep_vals=[0]):
     ----------
     im : array_like
         An ND image of greyscale values.
-
     keep_vals : array_like
         Indicate which voxel values should NOT be altered.  The default is
         `[0]` which is useful for leaving the background of the image
@@ -551,31 +655,45 @@ def randomize_colors(im, keep_vals=[0]):
     return im_new
 
 
-def make_contiguous(im, keep_zeros=True):
+def make_contiguous(im, mode='keep_zeros'):
     r"""
     Take an image with arbitrary greyscale values and adjust them to ensure
     all values fall in a contiguous range starting at 0.
-
-    This function will handle negative numbers such that the most negative
-    number will become 0, *unless* ``keep_zeros`` is ``True`` in which case
-    it will become 1, and all 0's in the original image remain 0.
 
     Parameters
     ----------
     im : array_like
         An ND array containing greyscale values
+    mode : string
+        Controls how the ranking is applied in the presence of numbers less
+        than or equal to 0.
 
-    keep_zeros : Boolean
-        If ``True`` (default) then 0 values remain 0, regardless of how the
-        other numbers are adjusted.  This is only relevant when the array
-        contains negative numbers, and means that -1 will become +1, while
-        0 values remain 0.
+        'keep_zeros'
+            (default) Voxels equal to 0 remain 0, and all other
+            numbers are ranked starting at 1, include negative numbers,
+            so [-1, 0, 4] becomes [1, 0, 2]
+
+        'symmetric'
+            Negative and positive voxels are ranked based on their
+            respective distances to 0, so [-4, -1, 0, 5] becomes
+            [-2, -1, 0, 1]
+
+        'clipped'
+            Voxels less than or equal to 0 are set to 0, while
+            all other numbers are ranked starting at 1, so [-3, 0, 2]
+            becomes [0, 0, 1].
+
+        'none'
+            Voxels are ranked such that the smallest or most
+            negative number becomes 1, so [-4, 2, 0] becomes [1, 3, 2].
+            This is equivalent to calling ``scipy.stats.rankdata`` directly,
+            and reshaping the result to match ``im``.
 
     Returns
     -------
     image : ND-array
         An ND-array the same size as ``im`` but with all values in contiguous
-        orders.
+        order.
 
     Example
     -------
@@ -588,15 +706,52 @@ def make_contiguous(im, keep_zeros=True):
      [3 4 2]]
 
     """
-    if keep_zeros:
-        mask = im == 0
-        im = im + np.abs(np.min(im)) + 1
-        im[mask] = 0
-    elif np.min(im) < 0:
-        im = im + np.abs(np.min(im))
+    # This is a very simple version using relabel_sequential
+    # if keep_zeros:
+    #     mask = im == 0
+    #     im = im + np.abs(np.min(im)) + 1
+    #     im[mask] = 0
+    # elif np.min(im) < 0:
+    #     im = im + np.abs(np.min(im))
+    # im_new = relabel_sequential(im)[0]
+    # return im_new
 
-    im_new = relabel_sequential(im)[0]
-    return im_new
+    shape = im.shape
+    im_flat = im.flatten()
+
+    if mode == 'none':
+        im_new = rankdata(im_flat, method='dense')
+        im_new = np.reshape(im_new, shape)
+        return im_new
+
+    elif mode.startswith('clip'):
+        mask = im_flat <= 0
+        im_flat[mask] = 0
+        im_new = rankdata(im_flat, method='dense') - 1
+        im_new[mask] = 0
+        im_new = np.reshape(im_new, shape)
+        return im_new
+
+    elif mode.startswith('keep_zero'):
+        mask = im_flat == 0
+        im_flat[mask] = im.min() - 1
+        im_new = rankdata(im_flat, method='dense') - 1
+        im_new[mask] = 0
+        im_new = np.reshape(im_new, shape)
+        return im_new
+
+    elif mode.startswith('sym'):
+        mask_neg = im_flat < 0
+        im_neg = -rankdata(-im_flat[mask_neg], method='dense')
+        mask_pos = im_flat > 0
+        im_pos = rankdata(im_flat[mask_pos], method='dense')
+        im_flat[mask_pos] = im_pos
+        im_flat[mask_neg] = im_neg
+        im_new = np.reshape(im_flat, shape)
+        return im_new
+
+    else:
+        raise Exception("Unrecognized mode:" + mode)
 
 
 def get_border(shape, thickness=1, mode='edges', return_indices=False):
@@ -619,7 +774,6 @@ def get_border(shape, thickness=1, mode='edges', return_indices=False):
         to ``True``.  If ``True``, then a tuple with the x, y, z (if ``im`` is
         3D) indices is returned.  This tuple can be used directly to index into
         the image, such as ``im[tup] = 2``.
-
     asmask : Boolean
         If ``True`` (default) then an image of the specified ``shape`` is
         returned, otherwise indices of the border voxels are returned.
@@ -629,15 +783,6 @@ def get_border(shape, thickness=1, mode='edges', return_indices=False):
     image : ND-array
         An ND-array of specified shape with ``True`` values at the perimeter
         and ``False`` elsewhere
-
-    Notes
-    -----
-    TODO: This function uses brute force to create an image then fill the
-    edges using location-based logic, and if the user requests
-    ``return_indices`` it finds them using ``np.where``.  Since these arrays
-    are cubic it should be possible to use more elegant and efficient
-    index-based logic to find the indices, then use them to fill an empty
-    image with ``True`` using these indices.
 
     Examples
     --------
@@ -655,6 +800,13 @@ def get_border(shape, thickness=1, mode='edges', return_indices=False):
      [ True  True  True]]
 
     """
+    # TODO: This function uses brute force to create an image then fills the
+    # edges using location-based logic, and if the user requests
+    # ``return_indices`` it finds them using ``np.where``.  Since these arrays
+    # are cubic it should be possible to use more elegant and efficient
+    # index-based logic to find the indices, then use them to fill an empty
+    # image with ``True`` using these indices.
+
     ndims = len(shape)
     t = thickness
     border = np.ones(shape, dtype=bool)
@@ -691,7 +843,6 @@ def in_hull(points, hull):
     ----------
     points : array_like (N x ndims)
         The spatial coordinates of the points to check
-
     hull : scipy.spatial.ConvexHull object **OR** array_like
         Can be either a convex hull object as returned by
         ``scipy.spatial.ConvexHull`` or simply the coordinates of the points
@@ -720,7 +871,6 @@ def norm_to_uniform(im, scale=None):
     ----------
     im : ND-image
         The image containing the normally distributed scalar field
-
     scale : [low, high]
         A list or array indicating the lower and upper bounds for the new
         randomly distributed data.  The default is ``None``, which uses the
@@ -1008,9 +1158,9 @@ def insert_sphere(im, c, r, v=True, overwrite=True):
     # Obtain slices into image
     s = bbox_to_slices(bbox)
     # Generate sphere template within image boundaries
-    blank = np.ones_like(im[s], dtype=int)
-    blank[tuple(c - bbox[0:im.ndim])] = 0
-    sph = edt(blank) < r
+    blank = np.ones_like(im[s], dtype=float)
+    blank[tuple(c - bbox[0:im.ndim])] = 0.0
+    sph = spim.distance_transform_edt(blank) < r
     if overwrite:  # Clear voxles under sphere to be zero
         temp = im[s] * sph > 0
         im[s][temp] = 0
@@ -1069,58 +1219,10 @@ def insert_cylinder(im, xyz0, xyz1, r):
         template[tuple(xyz_line_in_template_coords)] = 1
         template = edt(template == 0) <= r
 
-    im[xyz_min[0] : xyz_max[0] + 1,
-       xyz_min[1] : xyz_max[1] + 1,
-       xyz_min[2] : xyz_max[2] + 1] += template
+    im[xyz_min[0]: xyz_max[0] + 1,
+       xyz_min[1]: xyz_max[1] + 1,
+       xyz_min[2]: xyz_max[2] + 1] += template
 
-    return im
-
-
-def pad_faces(im, faces):
-    r"""
-    Pads the input image at specified faces. This shape of image is
-    same as the output image of add_boundary_regions function.
-
-    Parameters
-    ----------
-    im : ND_array
-        The image that needs to be padded
-
-    faces : list of strings
-        Labels indicating where image needs to be padded. Given a 3D image
-        of shape ``[x, y, z] = [i, j, k]``, the following conventions are used
-        to indicate along which axis the padding should be applied:
-
-        * 'left' -> ``x = 0``
-        * 'right' -> ``x = i``
-        * 'front' -> ``y = 0``
-        * 'back' -> ``y = j``
-        * 'bottom' -> ``z = 0``
-        * 'top' -> ``z = k``
-
-    Returns
-    -------
-    A image padded at specified face(s)
-
-    See also
-    --------
-    add_boundary_regions
-    """
-    _check_for_singleton_axes(im)
-    f = faces
-    if f is not None:
-        if im.ndim == 2:
-            faces = [(int('left' in f) * 3, int('right' in f) * 3),
-                     (int(('front') in f) * 3 or int(('bottom') in f) * 3,
-                      int(('back') in f) * 3 or int(('top') in f) * 3)]
-
-        if im.ndim == 3:
-            faces = [(int('left' in f) * 3, int('right' in f) * 3),
-                     (int('front' in f) * 3, int('back' in f) * 3),
-                     (int('top' in f) * 3, int('bottom' in f) * 3)]
-        im = np.pad(im, pad_width=faces, mode='edge')
-    else:
-        im = im
     return im
 
 
@@ -1225,9 +1327,9 @@ def extract_regions(regions, labels: list, trim=True):
     return im_new
 
 
-def size_to_seq(size, bins=None):
+def size_to_seq(size, im=None, bins=None):
     r"""
-    Converts an image of invasion size values into sequence values.
+    Converts an image of invasion size values into sequence values
 
     This is meant to accept the output of the ``porosimetry`` function.
 
@@ -1235,6 +1337,10 @@ def size_to_seq(size, bins=None):
     ----------
     size : ND-image
         The image containing invasion size values in each voxel.
+    im : ND-image, optional
+        A binary image of the porous media, with ``True`` indicating the
+        void space and ``False`` indicating the solid phase. If not given
+        then it is assumed that the solid is identified as ``size == 0``.
     bins : array_like or int (optional)
         The bins to use when converting sizes to sequence.  The default is
         to create 1 bin for each unique value in ``size``.  If an **int**
@@ -1260,44 +1366,92 @@ def size_to_seq(size, bins=None):
     # Invert the vals so smallest size has largest sequence
     vals = -(vals - vals.max() - 1) * ~solid
     # In case too many bins are given, remove empty ones
-    vals = make_contiguous(vals)
-    # Possibly simpler way?
-    #    vals = (-(size - size.max())).astype(int) + 1
-    #    vals[vals > size.max()] = 0
+    vals = make_contiguous(vals, mode='keep_zeros')
     return vals
 
 
-def seq_to_satn(seq):
+def size_to_satn(size, im=None, bins=None):
+    r"""
+    Converts an image of invasion size values into saturations
+
+    Parameters
+    ----------
+    size : ND-image
+        The image containing invasion size values in each voxel.
+    im : ND-image, optional
+        A binary image of the porous media, with ``True`` indicating the
+        void space and ``False`` indicating the solid phase. If not given
+        then it is assumed that the solid is identified as ``size == 0``.
+    bins : array_like or int (optional)
+        The bins to use when converting sizes to saturation.  The default is
+        to create 1 bin for each unique value in ``size``.  If an **int**
+        is supplied it is interpreted as the number of bins between 0 and the
+        maximum value in ``size``.  If an array is supplied it is used as
+        the bins directly.
+
+    Returns
+    -------
+    satn : ND-image
+        An ND-image the same size as ``seq`` but with sequence values replaced
+        by the fraction of void space invaded at or below the sequence number.
+        Solid voxels and uninvaded voxels are represented by 0 and -1,
+        respectively.
+    """
+    if bins is None:
+        bins = np.unique(size)
+    elif isinstance(bins, int):
+        bins = np.linspace(0, size.max(), bins)
+    if im is None:
+        im = (size != 0)
+    void_vol = im.sum()
+    satn = -np.ones_like(size, dtype=float)
+    for r in bins[-1::-1]:
+        hits = (size >= r) * (size > 0)
+        temp = hits.sum()/void_vol
+        satn[hits * (satn == -1)] = temp
+    satn *= (im > 0)
+    return satn
+
+
+def seq_to_satn(seq, im=None):
     r"""
     Converts an image of invasion sequence values to saturation values.
 
     Parameters
     ----------
     seq : ND-image
-        The image containing invasion sequence values in each voxel.
-        Note that the invasion steps must be positive integers, solid
-        voxels indicated by 0, and uninvaded voxels indicated by -1.
+        The image containing invasion sequence values in each voxel.  Solid
+        should be indicated as 0's and uninvaded voxels as -1.
+    im : ND-image, optional
+        A binary image of the porous media, with ``True`` indicating the
+        void space and ``False`` indicating the solid phase. If not given
+        then it is assumed that the solid is identified as ``seq == 0``.
 
     Returns
     -------
     satn : ND-image
-        An ND-iamge the same size as ``seq`` but with sequnece values
-        replaced by the fraction of pores invaded at or below the sequence
-        number. Solid voxels and uninvaded voxels are represented by 0 and
-        -1, respectively.
+        An ND-image the same size as ``seq`` but with sequence values replaced
+        by the fraction of void space invaded at or below the sequence number.
+        Solid voxels and uninvaded voxels are represented by 0 and -1,
+        respectively.
 
     """
-    seq = np.copy(seq).astype(int)
-    solid = seq == 0
-    uninvaded = seq == -1
-    seq = np.clip(seq, a_min=0, a_max=None)
-    seq = make_contiguous(seq)
-    b = np.bincount(seq.flatten())
-    b[0] = 0
-    c = np.cumsum(b)
-    satn = c[seq] / ((seq > 0).sum() + uninvaded.sum())
-    satn[solid] = 0.0
-    satn[uninvaded] = -1.0
+    seq = sp.copy(seq).astype(int)
+    if im is None:
+        solid_mask = seq == 0
+    else:
+        solid_mask = im == 0
+    uninvaded_mask = seq == -1
+    seq[seq <= 0] = 0
+    seq = rankdata(seq, method='dense') - 1
+    b = sp.bincount(seq)
+    if (solid_mask.sum() > 0) or (uninvaded_mask.sum() > 0):
+        b[0] = 0
+    c = sp.cumsum(b)
+    seq = np.reshape(seq, solid_mask.shape)
+    satn = c[seq]/(seq.size - solid_mask.sum())
+    satn[solid_mask] = 0
+    satn[uninvaded_mask] = -1
     return satn
 
 

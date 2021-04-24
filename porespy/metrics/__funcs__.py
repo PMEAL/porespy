@@ -1,18 +1,15 @@
-import warnings
 import numpy as np
-from edt import edt
 import scipy.ndimage as spim
 import scipy.spatial as sptl
 from scipy import fftpack as sp_ft
 from skimage.measure import regionprops
-from porespy.tools import extend_slice, mesh_region, ps_round
-from porespy.filters import find_dt_artifacts
-from porespy import settings
-from porespy.tools import _check_for_singleton_axes
 from collections import namedtuple
 from skimage import measure
-from porespy.tools import get_tqdm
 from loguru import logger
+from porespy.tools import extend_slice, mesh_region, ps_round
+from porespy.tools import _check_for_singleton_axes
+from porespy import settings
+from porespy.tools import get_tqdm
 tqdm = get_tqdm()
 
 
@@ -106,7 +103,7 @@ def porosity_profile(im, axis=0):
     return prof
 
 
-def radial_density_distribution(im, bins=10, log=False, voxel_size=1):
+def radial_density_distribution(dt, bins=10, log=False, voxel_size=1):
     r"""
     Computes radial density function by analyzing the histogram of voxel
     values in the distance transform.  This function is defined by
@@ -131,10 +128,12 @@ def radial_density_distribution(im, bins=10, log=False, voxel_size=1):
 
     Parameters
     ----------
-    im : ND-array
-        Either a binary image of the pore space with ``True`` indicating the
-        pore phase (or phase of interest), or a pre-calculated distance
-        transform which can save time.
+    dt : ND-array
+        A distance transform of the pore space (the ``edt`` package is
+        recommended).  Note that it is recommended to apply
+        ``find_dt_artifacts`` to this image first, and set potentially
+        erroneous values to 0 with ``dt[mask] = 0`` where
+        ``mask = porespy.filters.find_dt_artifaces(dt)``.
     bins : int or array_like
         This number of bins (if int) or the location of the bins (if array).
         This argument is passed directly to Scipy's ``histogram`` function so
@@ -155,28 +154,23 @@ def radial_density_distribution(im, bins=10, log=False, voxel_size=1):
     result : named_tuple
         A named-tuple containing several 1D arrays:
 
-        *R* or *LogR* - radius, equivalent to ``bin_centers``
-
-        *pdf* - probability density function
-
-        *cdf* - cumulative density function
-
-        *bin_centers* - the center point of each bin
-
-        *bin_edges* - locations of bin divisions, including 1 more value than
-        the number of bins
-
-        *bin_widths* - useful for passing to the ``width`` argument of
-        ``matplotlib.pyplot.bar``
+        *R* or *LogR*
+            Radius, equivalent to ``bin_centers``
+        *pdf*
+            Probability density function
+        *cdf*
+            Cumulative density function
+        *bin_centers*
+            The center point of each bin
+        *bin_edges*
+            Locations of bin divisions, including 1 more value than
+            the number of bins
+        *bin_widths*
+            Useful for passing to the ``width`` argument of
+            ``matplotlib.pyplot.bar``
 
     Notes
     -----
-    This function should not be taken as a pore size distribution in the
-    explict sense, but rather an indicator of the sizes in the image.  The
-    distance transform contains a very skewed number of voxels with small
-    values near the solid walls.  Nonetheless, it does provide a useful
-    indicator and it's mathematical formalism is handy.
-
     Torquato refers to this as the *pore-size density function*, and mentions
     that it is also known as the *pore-size distribution function*.  These
     terms are avoided here since they have specific connotations in porous
@@ -187,10 +181,7 @@ def radial_density_distribution(im, bins=10, log=False, voxel_size=1):
     [1] Torquato, S. Random Heterogeneous Materials: Mircostructure and
     Macroscopic Properties. Springer, New York (2002) - See page 48 & 292
     """
-    if im.dtype == bool:
-        im = edt(im)
-    mask = find_dt_artifacts(im) == 0
-    im[mask] = 0
+    im = np.copy(dt)
     x = im[im > 0].flatten()
     if log:
         x = np.log10(x)
@@ -236,6 +227,24 @@ def lineal_path_distribution(im, bins=25, voxel_size=1, log=False):
     Returns
     -------
     result : named_tuple
+        *L* or *LogL*
+            Length, equivalent to ``bin_centers``
+        *pdf*
+            Probability density function
+        *cdf*
+            Cumulative density function
+        *relfreq*
+            Relative frequency chords in each bin.  The sum of all bin
+            heights is 1.0.  For the cumulative relativce, use *cdf* which is
+            already normalized to 1.
+        *bin_centers*
+            The center point of each bin
+        *bin_edges*
+            Locations of bin divisions, including 1 more value than
+            the number of bins
+        *bin_widths*
+            Useful for passing to the ``width`` argument of
+            ``matplotlib.pyplot.bar``
 
     References
     ----------
@@ -264,13 +273,11 @@ def chord_length_distribution(im, bins=None, log=False, voxel_size=1,
     ----------
     im : ND-image
         An image with chords drawn in the pore space, as produced by
-        ``apply_chords`` or ``apply_chords_3d``.
-
-        ``im`` can be either boolean, in which case each chord will be
-        identified using ``scipy.ndimage.label``, or numerical values in which
-        case it is assumed that chords have already been identifed and labeled.
-        In both cases, the size of each chord will be computed as the number
-        of voxels belonging to each labelled region.
+        ``apply_chords`` or ``apply_chords_3d``.  ``im`` can be either boolean,
+        in which case each chord will be identified using ``scipy.ndimage.label``,
+        or numerical values in case it is assumed that chords have already been
+        identifed and labeled. In both cases, the size of each chord will be
+        computed as the number of voxels belonging to each labelled region.
     bins : scalar or array_like
         If a scalar is given it is interpreted as the number of bins to use,
         and if an array is given they are used as the bins directly.
@@ -283,14 +290,16 @@ def chord_length_distribution(im, bins=None, log=False, voxel_size=1,
     normalization : string
         Indicates how to normalize the bin heights.  Options are:
 
-        *'count' or 'number'* - (default) This simply counts the number of
-        chords in each bin in the normal sense of a histogram.  This is the
-        rigorous definition according to Torquato [1].
+        *'count' or 'number'*
+            (default) This simply counts the number of chords in each bin in
+            the normal sense of a histogram.  This is the rigorous definition
+            according to Torquato [1].
+        *'length'*
+            This multiplies the number of chords in each bin by the
+            chord length (i.e. bin size).  The normalization scheme accounts for
+            the fact that long chords are less frequent than shorert chords,
+            thus giving a more balanced distribution.
 
-        *'length'* - This multiplies the number of chords in each bin by the
-        chord length (i.e. bin size).  The normalization scheme accounts for
-        the fact that long chords are less frequent than shorert chords,
-        thus giving a more balanced distribution.
     voxel_size : scalar
         The size of a voxel side in preferred units.  The default is 1, so the
         user can apply the scaling to the returned results after the fact.
@@ -301,23 +310,24 @@ def chord_length_distribution(im, bins=None, log=False, voxel_size=1,
         A tuple containing the following elements, which can be retrieved by
         attribute name:
 
-        *L* or *LogL* - chord length, equivalent to ``bin_centers``
-
-        *pdf* - probability density function
-
-        *cdf* - cumulative density function
-
-        *relfreq* - relative frequency chords in each bin.  The sum of all bin
-        heights is 1.0.  For the cumulative relativce, use *cdf* which is
-        already normalized to 1.
-
-        *bin_centers* - the center point of each bin
-
-        *bin_edges* - locations of bin divisions, including 1 more value than
-        the number of bins
-
-        *bin_widths* - useful for passing to the ``width`` argument of
-        ``matplotlib.pyplot.bar``
+        *L* or *LogL*
+            Chord length, equivalent to ``bin_centers``
+        *pdf*
+            Probability density function
+        *cdf*
+            Cumulative density function
+        *relfreq*
+            Relative frequency chords in each bin.  The sum of all bin
+            heights is 1.0.  For the cumulative relativce, use *cdf* which is
+            already normalized to 1.
+        *bin_centers*
+            The center point of each bin
+        *bin_edges*
+            Locations of bin divisions, including 1 more value than
+            the number of bins
+        *bin_widths*
+            Useful for passing to the ``width`` argument of
+            ``matplotlib.pyplot.bar``
 
     References
     ----------
@@ -373,24 +383,26 @@ def pore_size_distribution(im, bins=10, log=True, voxel_size=1):
     Returns
     -------
     result : named_tuple
-        A named-tuple containing several values:
+        A named-tuple containing the following attributes which can be accessed
+        by name:
 
-        *R* or *logR* - radius, equivalent to ``bin_centers``
-
-        *pdf* - probability density function
-
-        *cdf* - cumulative density function
-
-        *satn* - phase saturation in differential form.  For the cumulative
-        saturation, just use *cfd* which is already normalized to 1.
-
-        *bin_centers* - the center point of each bin
-
-        *bin_edges* - locations of bin divisions, including 1 more value than
-        the number of bins
-
-        *bin_widths* - useful for passing to the ``width`` argument of
-        ``matplotlib.pyplot.bar``
+        *R* or *logR*
+            Radius, equivalent to ``bin_centers``
+        *pdf*
+            Probability density function
+        *cdf*
+            Cumulative density function
+        *satn*
+            Phase saturation in differential form.  For the cumulative
+            saturation, just use *cfd* which is already normalized to 1.
+        *bin_centers*
+            The center point of each bin
+        *bin_edges*
+            Locations of bin divisions, including 1 more value than
+            the number of bins
+        *bin_widths*
+            Useful for passing to the ``width`` argument of
+            ``matplotlib.pyplot.bar``
 
     Notes
     -----
@@ -472,6 +484,7 @@ def two_point_correlation_bf(im, spacing=10):
 def _radial_profile(autocorr, r_max, nbins=100):
     r"""
     Helper functions to calculate the radial profile of the autocorrelation
+
     Masks the image in radial segments from the center and averages the values
     The distance values are normalized and 100 bins are used as default.
 
@@ -537,8 +550,8 @@ def two_point_correlation_fft(im):
     The fourier transform approach utilizes the fact that the
     autocorrelation function is the inverse FT of the power spectrum
     density. For background read the Scipy fftpack docs and for a good
-    explanation see:
-    http://www.ucl.ac.uk/~ucapikr/projects/KamilaSuankulova_BSc_Project.pdf
+    explanation `see this thesis <
+    http://www.ucl.ac.uk/~ucapikr/projects/KamilaSuankulova_BSc_Project.pdf>`_
 
     """
     # Calculate half lengths of the image
@@ -795,15 +808,135 @@ def phase_fraction(im, normed=True):
     """
     if im.dtype == bool:
         im = im.astype(int)
-    elif im.dtype != int:
-        raise Exception('Image must contain integer values for each phase')
-    labels = np.arange(0, np.amax(im) + 1)
-    results = np.zeros_like(labels)
-    for i in labels:
-        results[i] = np.sum(im == i)
-    if normed:
-        results = results / im.size
+    labels = np.unique(im)
+    results = {}
+    for label in labels:
+        results[label] = np.sum(im == label) * (1 / im.size if normed else 1)
     return results
+
+
+def pc_curve_from_ibip(seq, sizes, im=None, sigma=0.072, theta=180, voxel_size=1,
+                       stepped=True):
+    r"""
+    Produces a Pc-Snwp curve from the output of ``ibip``
+
+    Parameters
+    ----------
+    seq : ND-array
+        The image containing the invasion sequence values returned from the
+        ``ibip`` function.
+    sizes : ND-array
+        This image is returned from ``ibip`` when ``return_sizes``
+        is set to ``True``.
+    im : ND-array
+        The voxel image of the porous media.  It not provided then the void
+        space is assumed to be ``im = !(seq == 0)``.
+    sigma : float
+        The surface tension of the fluid-fluid system of interest
+    theta : float
+        The contact angle through the invading phase in degrees
+    voxel_size : float
+        The voxel resolution of the image
+    stepped : boolean
+        If ``True`` (default) the returned data has steps between each point
+        instead of connecting points directly with sloped lines.
+
+    Returns
+    -------
+    pc_curve : namedtuple
+        A namedtuple containing the capillary pressure (``pc``) and
+        non-wetting phase saturation (``snwp``). If ``stepped`` was set to
+        ``True`` then the values in this tuple include the corners of the
+        steps.
+
+    """
+    if im is None:
+        im = ~(seq == 0)
+    seqs = np.unique(seq)[1:]
+    x = []
+    y = []
+    with tqdm(seqs, **settings.tqdm) as pbar:
+        for n in seqs:
+            pbar.update()
+            mask = seq == n
+            # The following assumes only one size found, which was confirmed
+            r = sizes[mask][0]*voxel_size
+            pc = -2*sigma*np.cos(np.deg2rad(theta))/r
+            x.append(pc)
+            snwp = ((seq <= n)*(seq > 0)*(im == 1)).sum()/im.sum()
+            y.append(snwp)
+    if stepped:
+        pc = x.copy()
+        snwp = y.copy()
+        for i in range(0, len(x)-1):
+            j = 2*i + 1
+            pc.insert(j, x[i+1])
+            snwp.insert(j, y[i])
+        x = pc
+        y = snwp
+    pc_curve = namedtuple('data', field_names=['pc', 'snwp'])
+    pc_curve.pc = x
+    pc_curve.snwp = y
+    return pc_curve
+
+
+def pc_curve_from_mio(sizes, im=None, sigma=0.072, theta=180, voxel_size=1,
+                      stepped=True):
+    r"""
+    Produces a Pc-Snwp curve from the output of ``porosimetry``
+
+    Parameters
+    ----------
+    sizes : ND-array
+        This image is returned from ``porosimetry``
+    im : ND-array
+        The voxel image of the porous media.  It not provided then the void
+        space is assumed to be ``im = ~(sizes == 0)``.
+    sigma : float
+        The surface tension of the fluid-fluid system of interest
+    theta : float
+        The contact angle through the invading phase in degrees
+    voxel_size : float
+        The voxel resolution of the image
+    stepped : boolean
+        If ``True`` (default) the returned data has steps between each point
+        instead of connecting points directly with sloped lines.
+
+    Returns
+    -------
+    pc_curve : namedtuple
+        A namedtuple containing the capillary pressure (``pc``) and
+        non-wetting phase saturation (``snwp``).  If ``stepped`` was set to
+        ``True`` then the values in this tuple include the corners of the
+        steps.
+
+    """
+    if im is None:
+        im = ~(sizes == 0)
+    sz = np.unique(sizes)[:0:-1]
+    x = []
+    y = []
+    with tqdm(sz, **settings.tqdm) as pbar:
+        for n in sz:
+            pbar.update()
+            r = n*voxel_size
+            pc = -2*sigma*np.cos(np.deg2rad(theta))/r
+            x.append(pc)
+            snwp = ((sizes >= n)*(im == 1)).sum()/im.sum()
+            y.append(snwp)
+    if stepped:
+        pc = x.copy()
+        snwp = y.copy()
+        for i in range(0, len(x)-1):
+            j = 2*i + 1
+            pc.insert(j, x[i+1])
+            snwp.insert(j, y[i])
+        x = pc
+        y = snwp
+    pc_curve = namedtuple('data', field_names=['pc', 'snwp'])
+    pc_curve.pc = x
+    pc_curve.snwp = y
+    return pc_curve
 
 
 def porosity(im):

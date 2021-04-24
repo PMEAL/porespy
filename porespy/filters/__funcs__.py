@@ -1,3 +1,4 @@
+import inspect as insp
 import dask
 import numpy as np
 from edt import edt
@@ -8,7 +9,7 @@ from skimage.segmentation import clear_border
 from skimage.morphology import ball, disk, square, cube, diamond, octahedron
 from porespy.tools import _check_for_singleton_axes
 from porespy.tools import fftmorphology
-from porespy.tools import get_border, subdivide
+from porespy.tools import get_border, subdivide, recombine
 from porespy.tools import unpad, extract_subsection
 from porespy.tools import ps_disk, ps_ball
 from porespy import settings
@@ -141,16 +142,16 @@ def distance_transform_lin(im, axis=0, mode="both"):
     mode : str
         Controls how the distance is measured. Options are:
 
-            'forward'
-                Distances are measured in the increasing direction
-                along the specified axis
-            'reverse'
-                Distances are measured in the reverse direction.
-                'backward' is also accepted.
-            'both'
-                Distances are calculated in both directions (by
-                recursively calling itself), then reporting the minimum value
-                of the two results.
+        'forward'
+            Distances are measured in the increasing direction
+            along the specified axis
+        'reverse'
+            Distances are measured in the reverse direction.
+            'backward' is also accepted.
+        'both'
+            Distances are calculated in both directions (by
+            recursively calling itself), then reporting the minimum value
+            of the two results.
 
     Returns
     -------
@@ -187,9 +188,6 @@ def distance_transform_lin(im, axis=0, mode="both"):
         e = np.pad(d, pad_width=ax[axis], mode="constant", constant_values=0)
     f = im * (b + e)
     return f
-
-
-
 
 
 def find_disconnected_voxels(im, conn=None):
@@ -366,14 +364,21 @@ def trim_extrema(im, h, mode="maxima"):
 
     Notes
     -----
-    This function is referred to as **imhmax** or **imhmin** in Matlab.
+    (1) This function is referred to as **imhmax** or **imhmin** in Matlab.
+
+    (2) If the provided ``h`` is larger than ALL peaks in the array, then the
+    baseline values of the array are changed as well.
 
     """
-    result = im
-    if mode in ["maxima", "extrema"]:
-        result = reconstruction(seed=im - h, mask=im, method="dilation")
-    elif mode in ["minima", "extrema"]:
-        result = reconstruction(seed=im + h, mask=im, method="erosion")
+    mask = np.copy(im)
+    im = np.copy(im)
+    if mode == 'maxima':
+        result = reconstruction(seed=im - h, mask=mask, method='dilation')
+    elif mode == 'minima':
+        result = reconstruction(seed=im + h, mask=mask, method='erosion')
+    elif mode == 'extrema':
+        result = reconstruction(seed=im - h, mask=mask, method='dilation')
+        result = reconstruction(seed=result + h, mask=result, method='erosion')
     return result
 
 
@@ -436,6 +441,43 @@ def flood(im, regions=None, mode="max"):
     else:
         raise Exception(mode + " is not a recognized mode")
     return im_flooded
+
+
+def flood_func(im, func, labels=None):
+    r"""
+    Flood each isolated region in an image with a constant value calculated by
+    the given function.
+
+    Parameters
+    ----------
+    im : ND-array
+        The image containing distinct regions which should each be flooded
+    func : Numpy function handle
+        The function to be applied to each region in the image.  Any Numpy
+        function that returns a scalar value can be passed, such as ``amin``,
+        ``amax``, ``sum``, ``mean``, ``median``, etc.
+    labels : ND-image, optional
+        An array containing labels identify each individual region to be
+        flooded. If not provided then ``scipy.ndimage.label`` is applied to
+        ``im > 0``.
+
+    Returns
+    -------
+    flooded : ND-array
+        An image the same size as ``im`` with each isolated region flooded
+        with a constant value based on the given ``func`` and the values
+        in ``im``.
+
+    """
+    if labels is None:
+        labels, N = spim.label(im > 0)
+    slices = spim.find_objects(labels)
+    new_im = np.zeros_like(im, dtype=float)
+    for i, s in enumerate(slices):
+        sub_im = labels[s] == (i + 1)
+        val = func(im[s][sub_im])
+        new_im[s] += sub_im*val
+    return new_im
 
 
 def find_dt_artifacts(dt):
@@ -615,7 +657,7 @@ def apply_chords_3D(im, spacing=0, trim_edges=True):
     return chords
 
 
-def local_thickness(im, sizes=25, mode="hybrid", **kwargs):
+def local_thickness(im, sizes=25, mode="hybrid", divs=1):
     r"""
     For each voxel, this function calculates the radius of the largest
     sphere that both engulfs the voxel and fits entirely within the
@@ -635,22 +677,28 @@ def local_thickness(im, sizes=25, mode="hybrid", **kwargs):
     mode : str
         Controls with method is used to compute the result. Options are:
 
-            'hybrid'
-                (default) Performs a distance tranform of the void
-                space, thresholds to find voxels larger than ``sizes[i]``, trims
-                the resulting mask if ``access_limitations`` is ``True``, then
-                dilates it using the efficient fft-method to obtain the
-                non-wetting fluid configuration.
-            'dt'
-                Same as 'hybrid', except uses a second distance transform,
-                relative to the thresholded mask, to find the invading fluid
-                configuration. The choice of 'dt' or 'hybrid' depends on speed,
-                which is system and installation specific.
-            'mio'
-                Using a single morphological image opening step to obtain
-                the invading fluid confirguration directly, *then* trims if
-                ``access_limitations`` is ``True``. This method is not ideal and
-                is included for comparison purposes.
+        'hybrid'
+            (default) Performs a distance tranform of the void
+            space, thresholds to find voxels larger than ``sizes[i]``, trims
+            the resulting mask if ``access_limitations`` is ``True``, then
+            dilates it using the efficient fft-method to obtain the
+            non-wetting fluid configuration.
+        'dt'
+            Same as 'hybrid', except uses a second distance transform,
+            relative to the thresholded mask, to find the invading fluid
+            configuration. The choice of 'dt' or 'hybrid' depends on speed,
+            which is system and installation specific.
+        'mio'
+            Using a single morphological image opening step to obtain
+            the invading fluid confirguration directly, *then* trims if
+            ``access_limitations`` is ``True``. This method is not ideal and
+            is included for comparison purposes.
+
+    divs : int or array_like
+        The number of times to divide the image for parallel processing.  If ``1``
+        then parallel processing does not occur.  ``2`` is equivalent to
+        ``[2, 2, 2]`` for a 3D image.  The number of cores used is specified in
+        ``porespy.settings.ncores`` and defaults to all cores.
 
     Returns
     -------
@@ -678,12 +726,13 @@ def local_thickness(im, sizes=25, mode="hybrid", **kwargs):
     function. This is not needed in ``local_thickness`` however.
 
     """
-    im_new = porosimetry(im=im, sizes=sizes, access_limited=False, mode=mode, **kwargs)
+    im_new = porosimetry(im=im, sizes=sizes, access_limited=False, mode=mode,
+                         divs=divs)
     return im_new
 
 
 def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
-                fft=True, **kwargs):
+                divs=1):
     r"""
     Performs a porosimetry simulution on an image.
 
@@ -713,30 +762,29 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
     mode : str
         Controls with method is used to compute the result. Options are:
 
-            'hybrid'
-                (default) Performs a distance tranform of the void
-                space, thresholds to find voxels larger than ``sizes[i]``,
-                trims the resulting mask if ``access_limitations`` is ``True``,
-                then dilates it using the efficient fft-method to obtain the
-                non-wetting fluid configuration.
-            'dt'
-                Same as 'hybrid', except uses a second distance
-                transform, relative to the thresholded mask, to find the
-                invading fluid configuration. The choice of 'dt' or 'hybrid'
-                depends on speed, which is system and installation specific.
-            'mio'
-                Using a single morphological image opening step to
-                obtain the invading fluid confirguration directly, *then* trims
-                if ``access_limitations`` is ``True``.  This method is not
-                ideal and is included for comparison purposes. The
-                morphological operations are done using fft-based method
-                implementations.
+        'hybrid'
+            (default) Performs a distance tranform of the void
+            space, thresholds to find voxels larger than ``sizes[i]``,
+            trims the resulting mask if ``access_limitations`` is ``True``,
+            then dilates it using the efficient fft-method to obtain the
+            non-wetting fluid configuration.
+        'dt'
+            Same as 'hybrid', except uses a second distance
+            transform, relative to the thresholded mask, to find the
+            invading fluid configuration. The choice of 'dt' or 'hybrid'
+            depends on speed, which is system and installation specific.
+        'mio'
+            Uses bindary erosion followed by dilation to obtain the invading
+            fluid confirguration directly. If ``access_limitations`` is
+            ``True`` then disconnected blobs are trimmmed before the dilation.
+            This is the only method that can be parallelized by chunking (see
+            ``divs`` and ``cores``).
 
-    fft : boolean (default is ``True``)
-        Indicates whether to use the ``fftmorphology`` function in
-        ``porespy.filters`` or to use the standard morphology functions in
-        ``scipy.ndimage``.  Always use ``fft=True`` unless you have a good
-        reason not to.
+    divs : int or array_like
+        The number of times to divide the image for parallel processing.  If ``1``
+        then parallel processing does not occur.  ``2`` is equivalent to
+        ``[2, 2, 2]`` for a 3D image.  The number of cores used is specified in
+        ``porespy.settings.ncores`` and defaults to all cores.
 
     Returns
     -------
@@ -775,13 +823,17 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
 
     if im.ndim == 2:
         strel = ps_disk
+        strel_2 = disk
     else:
         strel = ps_ball
+        strel_2 = ball
 
-    # Parse kwargs for any parallelization arguments
-    parallel = kwargs.pop('parallel', False)
-    cores = kwargs.pop('cores', None)
-    divs = kwargs.pop('divs', 2)
+    parallel = False
+    if isinstance(divs, int):
+        divs = [divs]*im.ndim
+    if max(divs) > 1:
+        logger.info(f'Performing {insp.currentframe().f_code.co_name} in parallel')
+        parallel = True
 
     if mode == "mio":
         pw = int(np.floor(dt.max()))
@@ -791,27 +843,22 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
         imresults = np.zeros(np.shape(impad))
         for r in tqdm(sizes, **settings.tqdm):
             if parallel:
-                imtemp = chunked_func(func=spim.binary_erosion,
-                                      input=impad, structure=strel(r),
-                                      overlap=int(2*r) + 1,
-                                      cores=cores, divs=divs)
-            elif fft:
-                imtemp = fftmorphology(impad, strel(r), mode="erosion")
+                imtemp = chunked_func(func= fftmorphology,
+                                      im=impad, strel=strel(r),
+                                      overlap=int(r) + 1, mode='erosion',
+                                      cores=settings.ncores, divs=divs)
             else:
-                imtemp = spim.binary_erosion(input=impad,
-                                             structure=strel(r))
+                imtemp = fftmorphology(im=impad, strel=strel(r), mode='erosion')
             if access_limited:
-                imtemp = trim_disconnected_blobs(imtemp, inlets)
+                imtemp = trim_disconnected_blobs(imtemp, inlets,
+                                                 strel=strel_2(1))
             if parallel:
-                imtemp = chunked_func(func=spim.binary_dilation,
-                                      input=imtemp, structure=strel(r),
-                                      overlap=int(2*r) + 1,
-                                      cores=cores, divs=divs)
-            elif fft:
-                imtemp = fftmorphology(imtemp, strel(r), mode="dilation")
+                imtemp = chunked_func(func=fftmorphology,
+                                      im=imtemp, strel=strel(r),
+                                      overlap=int(r) + 1, mode='dilation',
+                                      cores=settings.ncores, divs=divs)
             else:
-                imtemp = spim.binary_dilation(input=imtemp,
-                                              structure=strel(r))
+                imtemp = fftmorphology(im=imtemp, strel=strel(r), mode='dilation')
             if np.any(imtemp):
                 imresults[(imresults == 0) * imtemp] = r
         imresults = extract_subsection(imresults, shape=im.shape)
@@ -820,28 +867,33 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
         for r in tqdm(sizes, **settings.tqdm):
             imtemp = dt >= r
             if access_limited:
-                imtemp = trim_disconnected_blobs(imtemp, inlets)
+                imtemp = trim_disconnected_blobs(imtemp, inlets,
+                                                 strel=strel_2(1))
             if np.any(imtemp):
-                imtemp = edt(~imtemp) < r
+                if parallel:
+                    imtemp = chunked_func(func=edt,
+                                          data=~imtemp, im_arg='data',
+                                          overlap=int(r) + 1, parallel=0,
+                                          cores=settings.ncores, divs=divs) < r
+                else:
+                    imtemp = edt(~imtemp) < r
                 imresults[(imresults == 0) * imtemp] = r
     elif mode == "hybrid":
         imresults = np.zeros(np.shape(im))
         for r in tqdm(sizes, **settings.tqdm):
             imtemp = dt >= r
             if access_limited:
-                imtemp = trim_disconnected_blobs(imtemp, inlets)
+                imtemp = trim_disconnected_blobs(imtemp, inlets,
+                                                 strel=strel_2(1))
             if np.any(imtemp):
                 if parallel:
-                    imtemp = chunked_func(func=spim.binary_dilation,
-                                          input=imtemp, structure=strel(r),
-                                          overlap=int(2*r) + 1,
-                                          cores=cores, divs=divs)
-                elif fft:
+                    imtemp = chunked_func(func=fftmorphology, mode='dilation',
+                                          im=imtemp, strel=strel(r),
+                                          overlap=int(r) + 1,
+                                          cores=settings.ncores, divs=divs)
+                else:
                     imtemp = fftmorphology(imtemp, strel(r),
                                            mode="dilation")
-                else:
-                    imtemp = spim.binary_dilation(input=imtemp,
-                                                  structure=strel(r))
                 imresults[(imresults == 0) * imtemp] = r
     else:
         raise Exception("Unrecognized mode " + mode)
@@ -883,17 +935,15 @@ def trim_disconnected_blobs(im, inlets, strel=None):
         inlets = inlets.astype(bool)
     else:
         raise Exception("inlets not valid, refer to docstring for info")
-    if im.ndim == 3:
-        strel = cube
-    else:
-        strel = square
-    labels = spim.label(inlets + (im > 0), structure=strel(3))[0]
+    if strel is None:
+        if im.ndim == 3:
+            strel = cube(3)
+        else:
+            strel = square(3)
+    labels = spim.label(inlets + (im > 0), structure=strel)[0]
     keep = np.unique(labels[inlets])
     keep = keep[keep > 0]
-    if len(keep) > 0:
-        im2 = np.reshape(np.in1d(labels, keep), newshape=im.shape)
-    else:
-        im2 = np.zeros_like(im)
+    im2 = np.isin(labels, keep)
     im2 = im2 * im
     return im2
 
@@ -1009,7 +1059,7 @@ def nphase_border(im, include_diagonals=False):
         return out[1:-1, 1:-1, 1:-1].copy()
 
 
-def prune_branches(skel, branch_points=None, iterations=1, **kwargs):
+def prune_branches(skel, branch_points=None, iterations=1):
     r"""
     Removes all dangling ends or tails of a skeleton.
 
@@ -1018,7 +1068,6 @@ def prune_branches(skel, branch_points=None, iterations=1, **kwargs):
     skel : ND-array
         A image of a full or partial skeleton from which the tails should
         be trimmed.
-
     branch_points : ND-array, optional
         An image the same size ``skel`` with True values indicating the
         branch points of the skeleton.  If this is not provided it is
@@ -1035,9 +1084,6 @@ def prune_branches(skel, branch_points=None, iterations=1, **kwargs):
         from skimage.morphology import square as cube
     else:
         from skimage.morphology import cube
-    parallel = kwargs.pop('parallel', False)
-    divs = kwargs.pop('divs', 2)
-    cores = kwargs.pop('cores', None)
     # Create empty image to house results
     im_result = np.zeros_like(skel)
     # If branch points are not supplied, attempt to find them
@@ -1051,12 +1097,7 @@ def prune_branches(skel, branch_points=None, iterations=1, **kwargs):
     # Label arcs
     arc_labels = spim.label(arcs, structure=cube(3))[0]
     # Dilate branch points so they overlap with the arcs
-    if parallel:
-        branch_points = chunked_func(func=spim.binary_dilation,
-                                     input=branch_points, structure=cube(3),
-                                     overlap=3, divs=divs, cores=cores)
-    else:
-        branch_points = spim.binary_dilation(branch_points, structure=cube(3))
+    branch_points = spim.binary_dilation(branch_points, structure=cube(3))
     pts_labels = spim.label(branch_points, structure=cube(3))[0]
     # Now scan through each arc to see if it's connected to two branch points
     slices = spim.find_objects(arc_labels)
@@ -1075,9 +1116,7 @@ def prune_branches(skel, branch_points=None, iterations=1, **kwargs):
         im_temp = np.copy(im_result)
         im_result = prune_branches(skel=im_result,
                                    branch_points=None,
-                                   iterations=iterations,
-                                   parallel=parallel,
-                                   divs=divs, cores=cores)
+                                   iterations=iterations)
         if np.all(im_temp == im_result):
             iterations = 0
     return im_result
@@ -1108,7 +1147,7 @@ def chunked_func(func,
         ``spipy.ndimage.binary_dilation``.
     overlap : scalar or list of scalars, optional
         The amount of overlap to include when dividing up the image. This
-        value will almost always be the size (i.e. diameter) of the
+        value will almost always be the size (i.e. raduis) of the
         structuring element. If not specified then the amount of overlap
         is inferred from the size of the structuring element, in which
         case the ``strel_arg`` must be specified.
@@ -1190,9 +1229,11 @@ def chunked_func(func,
     im = kwargs[im_arg]
     # Determine the number of divisions to create
     divs = np.ones((im.ndim,), dtype=int) * np.array(divs)
+    if cores is None:
+        cores = settings.ncores
     # If overlap given then use it, otherwise search for strel in kwargs
     if overlap is not None:
-        halo = overlap * (divs > 1)
+        overlap = overlap * (divs > 1)
     else:
         if type(strel_arg) == str:
             strel_arg = [strel_arg]
@@ -1200,46 +1241,18 @@ def chunked_func(func,
             if item in kwargs.keys():
                 strel = kwargs[item]
                 break
-        halo = np.array(strel.shape) * (divs > 1)
-    slices = subdivide(im=im, divs=divs, overlap=halo, flatten=True)
+        overlap = np.array(strel.shape) * (divs > 1)
+    slices = subdivide(im=im, divs=divs, overlap=overlap)
     # Apply func to each subsection of the image
     res = []
     for s in slices:
         # Extract subsection from image and input into kwargs
-        kwargs[im_arg] = im[tuple(s)]
+        kwargs[im_arg] = dask.delayed(np.ascontiguousarray(im[tuple(s)]))
         res.append(apply_func(func=func, **kwargs))
     # Have dask actually compute the function on each subsection in parallel
     # with ProgressBar():
         # ims = dask.compute(res, num_workers=cores)[0]
     ims = dask.compute(res, num_workers=cores)[0]
     # Finally, put the pieces back together into a single master image, im2
-    im2 = np.zeros_like(im, dtype=im.dtype)
-    for i, s in enumerate(slices):
-        # Prepare new slice objects into main and sub-sliced image
-        a = []  # Slices into main image
-        b = []  # Slices into chunked image
-        for dim in range(im.ndim):
-            if s[dim].start == 0:
-                ax = bx = 0
-            else:
-                ax = s[dim].start + halo[dim]
-                bx = halo[dim]
-            if s[dim].stop == im.shape[dim]:
-                ay = by = im.shape[dim]
-            else:
-                ay = s[dim].stop - halo[dim]
-                by = s[dim].stop - s[dim].start - halo[dim]
-            a.append(slice(ax, ay, None))
-            b.append(slice(bx, by, None))
-        # Convert lists of slices to tuples
-        a = tuple(a)
-        b = tuple(b)
-        # Insert image chunk into main image
-        try:
-            im2[a] = ims[i][b]
-        except ValueError:
-            raise IndexError('The applied filter seems to have returned a '
-                             + 'larger image that it was sent.')
+    im2 = recombine(ims=ims, slices=slices, overlap=overlap)
     return im2
-
-
