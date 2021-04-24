@@ -587,7 +587,6 @@ def relabel_chunks(im, chunk_shape):
     ----------
     im: ND-array
         Actual image that contains repeating labels in chunks/sub-domains.
-
     chunk_shape: tuple
         The shape of chunk that will be relabeled in actual image. Note
         the chunk shape should be a multiple of actual image shape
@@ -641,7 +640,6 @@ def _trim_internal_slice(im, chunk_shape):
     -----------
     im :  ND-array
         image that contains extra slices in x, y, z direction.
-
     chunk_shape : tuple
         The shape of the chunk from which image is subdivided.
 
@@ -693,7 +691,6 @@ def _watershed_stitching(im, chunk_shape):
     im : ND-array
         A worked image with watershed segmentation performed on all
         sub-domains individually.
-
     chunk_shape: tuple
         The shape of the sub-domain in which segmentation is performed.
 
