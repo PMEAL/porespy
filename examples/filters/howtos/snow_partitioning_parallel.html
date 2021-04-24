@@ -464,11 +464,6 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../../networks/tutorials/map_to_regions.html">
-   map_to_regions maps
-  </a>
- </li>
- <li class="toctree-l1">
   <a class="reference internal" href="../../networks/tutorials/snow_advanced.html">
    SNOW network extraction (advanced)
   </a>
@@ -476,6 +471,13 @@
  <li class="toctree-l1">
   <a class="reference internal" href="../../networks/tutorials/snow_basic.html">
    SNOW network extraction
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../networks/howtos/map_to_regions.html">
+   map_to_regions maps
   </a>
  </li>
 </ul>
@@ -503,11 +505,6 @@
  <li class="toctree-l1">
   <a class="reference internal" href="../../tools/howtos/extract_subsection.html">
    extract_subsection
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/fftmorphology.html">
-   fftmorphology
   </a>
  </li>
  <li class="toctree-l1">
@@ -551,26 +548,6 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/ps_ball.html">
-   ps_ball
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/ps_disk.html">
-   ps_disk
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/ps_rect.html">
-   ps_rect
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/ps_round.html">
-   ps_round
-  </a>
- </li>
- <li class="toctree-l1">
   <a class="reference internal" href="../../tools/howtos/subdivide.html">
    subdivide
   </a>
@@ -578,11 +555,6 @@
  <li class="toctree-l1">
   <a class="reference internal" href="../../tools/howtos/unpad.html">
    unpad
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/zero_corners.html">
-   zero_corners
   </a>
  </li>
 </ul>
@@ -619,13 +591,6 @@
   <a class="reference internal nav-link" href="#id1">
    Apply filter function
   </a>
-  <ul class="nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#Plot-output-results">
-     Plot output results
-    </a>
-   </li>
-  </ul>
  </li>
 </ul>
 
@@ -907,16 +872,13 @@ core to save memory requirements.</p>
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>import warnings
-import numpy as np
+<span></span>import numpy as np
 import porespy as ps
 from porespy.tools import randomize_colors
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
-gs = gridspec.GridSpec(2, 4)
-gs.update(wspace=0.5)
+
 np.random.seed(10)
-warnings.filterwarnings(&quot;ignore&quot;)
 ps.visualization.set_mpl_style()
 </pre></div>
 </div>
@@ -930,10 +892,9 @@ ps.visualization.set_mpl_style()
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span>np.random.seed(1)
-im = ps.generators.blobs(shape=[500, 500])
-plt.figure()
+im = ps.generators.blobs(shape=[800, 800])
 plt.imshow(im, origin=&#39;lower&#39;)
-plt.show();
+plt.axis(False);
 </pre></div>
 </div>
 </div>
@@ -951,36 +912,21 @@ plt.show();
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>snow_out = ps.filters.snow_partitioning_parallel(im,
-                                                 overlap=&#39;dt&#39;,
-                                                 divs=2,
-                                                 num_workers=None,
-                                                 mode=&#39;parallel&#39;,
-                                                 zoom_factor=0.5,
-                                                 r_max=5,
-                                                 sigma=0.4,
-                                                 return_all=True)
+<span></span>snow_para = ps.filters.snow_partitioning_parallel(im, overlap=None, divs=2, r_max=5, sigma=0.4,)
+snow = ps.filters.snow_partitioning(im, r_max=5, sigma=0.4)
 </pre></div>
 </div>
 </div>
-<div class="section" id="Plot-output-results">
-<h3>Plot output results<a class="headerlink" href="#Plot-output-results" title="Permalink to this headline">¶</a></h3>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>fig, (ax1, ax2) = plt.subplots(1, 2, figsize=[10, 10])
-ax1 = plt.subplot(gs[0, :2])
-ax2 = plt.subplot(gs[0, 2:])
-ax3 = plt.subplot(gs[1, 1:3])
-ax1.imshow(snow_out.im)
-ax2.imshow(snow_out.dt)
-ax3.imshow(randomize_colors(snow_out.regions))
-ax1.set_title(&#39;Binary Image&#39;)
-ax2.set_title(&#39;Euclidean Distance Transform&#39;)
-ax3.set_title(&#39;Segmented Image&#39;)
-plt.show();
+<span></span>fig, ax = plt.subplots(1, 2, figsize=[8, 4])
+ax[0].imshow(snow_para.regions)
+ax[1].imshow(snow.regions)
+ax[0].set_title(&#39;regions from parallel snow&#39;)
+ax[1].set_title(&#39;regions from standard snow&#39;);
 </pre></div>
 </div>
 </div>
@@ -988,25 +934,7 @@ plt.show();
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_filters_howtos_snow_partitioning_parallel_8_0.svg" src="../../../_images/examples_filters_howtos_snow_partitioning_parallel_8_0.svg" /></div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>print(f&quot;Number of regions: {np.unique(snow_out.regions).size}&quot;)
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Number of regions: 70
-</pre></div></div>
-</div>
+<img alt="../../../_images/examples_filters_howtos_snow_partitioning_parallel_7_0.svg" src="../../../_images/examples_filters_howtos_snow_partitioning_parallel_7_0.svg" /></div>
 </div>
 </div>
 </div>

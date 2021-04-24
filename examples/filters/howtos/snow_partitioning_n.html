@@ -464,11 +464,6 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../../networks/tutorials/map_to_regions.html">
-   map_to_regions maps
-  </a>
- </li>
- <li class="toctree-l1">
   <a class="reference internal" href="../../networks/tutorials/snow_advanced.html">
    SNOW network extraction (advanced)
   </a>
@@ -476,6 +471,13 @@
  <li class="toctree-l1">
   <a class="reference internal" href="../../networks/tutorials/snow_basic.html">
    SNOW network extraction
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../networks/howtos/map_to_regions.html">
+   map_to_regions maps
   </a>
  </li>
 </ul>
@@ -503,11 +505,6 @@
  <li class="toctree-l1">
   <a class="reference internal" href="../../tools/howtos/extract_subsection.html">
    extract_subsection
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/fftmorphology.html">
-   fftmorphology
   </a>
  </li>
  <li class="toctree-l1">
@@ -551,26 +548,6 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/ps_ball.html">
-   ps_ball
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/ps_disk.html">
-   ps_disk
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/ps_rect.html">
-   ps_rect
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/ps_round.html">
-   ps_round
-  </a>
- </li>
- <li class="toctree-l1">
   <a class="reference internal" href="../../tools/howtos/subdivide.html">
    subdivide
   </a>
@@ -578,11 +555,6 @@
  <li class="toctree-l1">
   <a class="reference internal" href="../../tools/howtos/unpad.html">
    unpad
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/zero_corners.html">
-   zero_corners
   </a>
  </li>
 </ul>
@@ -611,8 +583,8 @@
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Create-image-and-variables">
-   Create image and variables
+  <a class="reference internal nav-link" href="#Generate-image">
+   Generate image
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
@@ -904,109 +876,70 @@ import porespy as ps
 import scipy.ndimage as spim
 import matplotlib.pyplot as plt
 import skimage
+
+np.random.rand(0)
 ps.visualization.set_mpl_style()
 </pre></div>
 </div>
 </div>
 <p>Partitions an all phases of an image into regions with marker-based watershed segmentation.</p>
 </div>
-<div class="section" id="Create-image-and-variables">
-<h2>Create image and variables<a class="headerlink" href="#Create-image-and-variables" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="Generate-image">
+<h2>Generate image<a class="headerlink" href="#Generate-image" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span>im = ps.generators.blobs(shape=[500, 500])
-r_max=4
-sigma=0.4
-return_all=True
-mask=True
-randomize=False
-alias=None
 
-plt.figure(figsize=[7,7])
+plt.figure(figsize=[4, 4])
 plt.axis(False)
 plt.imshow(im);
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-&lt;matplotlib.image.AxesImage at 0x7f9441697d00&gt;
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_filters_howtos_snow_partitioning_n_5_1.png" src="../../../_images/examples_filters_howtos_snow_partitioning_n_5_1.png" />
-</div>
+<img alt="../../../_images/examples_filters_howtos_snow_partitioning_n_5_0.svg" src="../../../_images/examples_filters_howtos_snow_partitioning_n_5_0.svg" /></div>
 </div>
 </div>
 <div class="section" id="Apply-filter-function">
 <h2>Apply filter function<a class="headerlink" href="#Apply-filter-function" title="Permalink to this headline">¶</a></h2>
-<div class="nbinput docutils container">
+<p>This function will partition each phase into regions, where a phase is indicated by values of 1 or greater, and 0’s are ignore. We can create an image of 1’s and 2:</p>
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>x = ps.filters.snow_partitioning_n(im, r_max=4, sigma=0.4, return_all=True, mask=True, randomize=False, alias=None)
-im = x.im
-dt = x.dt
-phase_max_label = x.phase_max_label
-regions = x.regions
+<span></span>reg0 = ps.filters.snow_partitioning_n(im==0, r_max=4, sigma=0.4)
+reg1 = ps.filters.snow_partitioning_n(im==1, r_max=4, sigma=0.4)
+reg2 = ps.filters.snow_partitioning_n(im = im.astype(int) + 1, r_max=4, sigma=0.4)
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-green-fg">2021-04-08 14:00:11</span> | <span class="ansi-yellow-intense-fg ansi-bold">WARNING </span> | <span class="ansi-cyan-fg">porespy.filters.__funcs__</span>:<span class="ansi-cyan-fg">trim_saddle_points</span>:<span class="ansi-cyan-fg">585</span>
---&gt; <span class="ansi-yellow-intense-fg ansi-bold">Maximum number of iterations reached, consider running again with a larger value of max_iters</span>
-<span class="ansi-green-fg">2021-04-08 14:00:11</span> | <span class="ansi-yellow-intense-fg ansi-bold">WARNING </span> | <span class="ansi-cyan-fg">porespy.filters.__funcs__</span>:<span class="ansi-cyan-fg">trim_saddle_points</span>:<span class="ansi-cyan-fg">585</span>
---&gt; <span class="ansi-yellow-intense-fg ansi-bold">Maximum number of iterations reached, consider running again with a larger value of max_iters</span>
-</pre></div></div>
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>fig, ax = plt.subplots(1, 3, figsize=[30, 30]);
-ax[0].imshow(im)
+<span></span>fig, ax = plt.subplots(1, 3, figsize=[8, 4])
+ax[0].imshow(reg0.regions)
 ax[0].axis(False)
-ax[0].set_title(&quot;im&quot;, fontsize = 50)
-ax[1].imshow(dt);
+ax[1].imshow(reg1.regions)
 ax[1].axis(False)
-ax[1].set_title(&quot;dt&quot;, fontsize = 50)
-ax[2].imshow(regions)
-ax[2].axis(False)
-ax[2].set_title(&quot;regions&quot;, fontsize = 50);
+ax[2].imshow(reg2.regions)
+ax[2].axis(False);
 </pre></div>
 </div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Text(0.5, 1.0, &#39;regions&#39;)
-</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_filters_howtos_snow_partitioning_n_8_1.png" src="../../../_images/examples_filters_howtos_snow_partitioning_n_8_1.png" />
-</div>
+<img alt="../../../_images/examples_filters_howtos_snow_partitioning_n_8_0.svg" src="../../../_images/examples_filters_howtos_snow_partitioning_n_8_0.svg" /></div>
 </div>
 </div>
 </div>

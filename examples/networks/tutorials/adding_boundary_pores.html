@@ -42,7 +42,7 @@
     <script src="../../../_static/js/custom.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="map_to_regions maps" href="map_to_regions.html" />
+    <link rel="next" title="SNOW network extraction (advanced)" href="snow_advanced.html" />
     <link rel="prev" title="two_point_correlation_fft" href="../../metrics/howtos/two_point_correlation_fft.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
@@ -464,11 +464,6 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="map_to_regions.html">
-   map_to_regions maps
-  </a>
- </li>
- <li class="toctree-l1">
   <a class="reference internal" href="snow_advanced.html">
    SNOW network extraction (advanced)
   </a>
@@ -476,6 +471,13 @@
  <li class="toctree-l1">
   <a class="reference internal" href="snow_basic.html">
    SNOW network extraction
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../howtos/map_to_regions.html">
+   map_to_regions maps
   </a>
  </li>
 </ul>
@@ -503,11 +505,6 @@
  <li class="toctree-l1">
   <a class="reference internal" href="../../tools/howtos/extract_subsection.html">
    extract_subsection
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/fftmorphology.html">
-   fftmorphology
   </a>
  </li>
  <li class="toctree-l1">
@@ -551,26 +548,6 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/ps_ball.html">
-   ps_ball
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/ps_disk.html">
-   ps_disk
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/ps_rect.html">
-   ps_rect
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/ps_round.html">
-   ps_round
-  </a>
- </li>
- <li class="toctree-l1">
   <a class="reference internal" href="../../tools/howtos/subdivide.html">
    subdivide
   </a>
@@ -578,11 +555,6 @@
  <li class="toctree-l1">
   <a class="reference internal" href="../../tools/howtos/unpad.html">
    unpad
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/zero_corners.html">
-   zero_corners
   </a>
  </li>
 </ul>
@@ -900,6 +872,9 @@ import numpy as np
 import openpnm as op
 from edt import edt
 from copy import copy
+
+ws = op.Workspace()
+ws.settings[&#39;loglevel&#39;] = 50
 ps.visualization.set_mpl_style()
 </pre></div>
 </div>
@@ -912,84 +887,53 @@ ps.visualization.set_mpl_style()
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>im = ps.generators.lattice_spheres(shape=[51, 51], radius=10, offset=5)
-im = np.pad(im, [[0, 5], [5, 5]], constant_values=1)[3:, ...]
+<span></span>im = ps.generators.lattice_spheres(shape=[52, 52], r=10, offset=13, spacing=25)
 ps.imshow(im);
 </pre></div>
 </div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-&lt;AxesSubplot:&gt;
-</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_networks_tutorials_adding_boundary_pores_4_1.png" src="../../../_images/examples_networks_tutorials_adding_boundary_pores_4_1.png" />
-</div>
+<img alt="../../../_images/examples_networks_tutorials_adding_boundary_pores_4_0.svg" src="../../../_images/examples_networks_tutorials_adding_boundary_pores_4_0.svg" /></div>
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>snow = ps.filters.snow_partitioning(im, return_all=True)
-fig, ax = plt.subplots(1, 3, figsize=[20, 30])
+<span></span>snow = ps.filters.snow_partitioning(im)
+fig, ax = plt.subplots(1, 3, figsize=[8, 4])
 ax[0].imshow(snow.dt, origin=&#39;lower&#39;, interpolation=&#39;none&#39;)
 ax[1].imshow(snow.peaks &gt; 0, origin=&#39;lower&#39;, interpolation=&#39;none&#39;)
 ax[2].imshow(snow.regions, origin=&#39;lower&#39;, interpolation=&#39;none&#39;);
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-&lt;matplotlib.image.AxesImage at 0x7f37dfc1b7f0&gt;
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_networks_tutorials_adding_boundary_pores_5_1.png" src="../../../_images/examples_networks_tutorials_adding_boundary_pores_5_1.png" />
-</div>
+<img alt="../../../_images/examples_networks_tutorials_adding_boundary_pores_5_0.svg" src="../../../_images/examples_networks_tutorials_adding_boundary_pores_5_0.svg" /></div>
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>bds = ps.networks.add_boundary_regions(regions=snow.regions, faces=[&#39;front&#39;, &#39;back&#39;, &#39;left&#39;, &#39;right&#39;])
+<span></span>bds = ps.networks.add_boundary_regions(regions=snow.regions, pad_width=[5, 5])
 cm = copy(plt.cm.nipy_spectral)
-plt.figure(figsize=[8, 8])
+plt.figure(figsize=[4, 4])
 plt.imshow(bds, origin=&#39;lower&#39;, interpolation=&#39;none&#39;, cmap=cm);
 </pre></div>
 </div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-&lt;matplotlib.image.AxesImage at 0x7f37dfb8aa30&gt;
-</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_networks_tutorials_adding_boundary_pores_6_1.png" src="../../../_images/examples_networks_tutorials_adding_boundary_pores_6_1.png" />
-</div>
+<img alt="../../../_images/examples_networks_tutorials_adding_boundary_pores_6_0.svg" src="../../../_images/examples_networks_tutorials_adding_boundary_pores_6_0.svg" /></div>
 </div>
 <p>The image above shows how boundary regions appear. They are 3-voxel thick slices that are padded onto each face and given a unique label to differentiate them from the internal pores to which they connect. There are a few key things to note:</p>
 <ul class="simple">
@@ -1020,7 +964,7 @@ apply boundary conditions on real pores lying on the domain surface.</p></li>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span>pn, geo = op.io.PoreSpy.import_data(net)
-fig = plt.figure(figsize=[10, 10])
+fig = plt.figure(figsize=[8, 8])
 fig = op.topotools.plot_connections(pn, c=&#39;w&#39;, linewidth=2, fig=fig)
 fig = op.topotools.plot_coordinates(pn, c=&#39;w&#39;, s=200, fig=fig)
 plt.imshow(bds.T, cmap=cm, origin=&#39;lower&#39;)
@@ -1028,21 +972,11 @@ plt.axis(&#39;off&#39;);
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-(-0.5, 58.5, -0.5, 66.5)
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_networks_tutorials_adding_boundary_pores_10_1.png" src="../../../_images/examples_networks_tutorials_adding_boundary_pores_10_1.png" />
-</div>
+<img alt="../../../_images/examples_networks_tutorials_adding_boundary_pores_10_0.svg" src="../../../_images/examples_networks_tutorials_adding_boundary_pores_10_0.svg" /></div>
 </div>
 <p>The approach outlined above is missing one important feature. The boundary pores are not labelled. When the process is performed internally by the <code class="docutils literal notranslate"><span class="pre">regions_to_network</span></code> function this is taken care of.</p>
 <div class="nbinput docutils container">
@@ -1064,15 +998,15 @@ openpnm.network.GenericNetwork : net_01
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 #     Properties                                    Valid Values
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-1     pore.coords                                      14 / 14
-2     throat.conns                                     17 / 17
+1     pore.coords                                      21 / 21
+2     throat.conns                                     24 / 24
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 #     Labels                                        Assigned Locations
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-1     pore.all                                      14
-2     pore.geo_01                                   14
-3     throat.all                                    17
-4     throat.geo_01                                 17
+1     pore.all                                      21
+2     pore.geo_01                                   21
+3     throat.all                                    24
+4     throat.geo_01                                 24
 ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div></div>
 </div>

@@ -464,11 +464,6 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../../networks/tutorials/map_to_regions.html">
-   map_to_regions maps
-  </a>
- </li>
- <li class="toctree-l1">
   <a class="reference internal" href="../../networks/tutorials/snow_advanced.html">
    SNOW network extraction (advanced)
   </a>
@@ -476,6 +471,13 @@
  <li class="toctree-l1">
   <a class="reference internal" href="../../networks/tutorials/snow_basic.html">
    SNOW network extraction
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../networks/howtos/map_to_regions.html">
+   map_to_regions maps
   </a>
  </li>
 </ul>
@@ -503,11 +505,6 @@
  <li class="toctree-l1">
   <a class="reference internal" href="../../tools/howtos/extract_subsection.html">
    extract_subsection
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/fftmorphology.html">
-   fftmorphology
   </a>
  </li>
  <li class="toctree-l1">
@@ -551,26 +548,6 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/ps_ball.html">
-   ps_ball
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/ps_disk.html">
-   ps_disk
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/ps_rect.html">
-   ps_rect
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/ps_round.html">
-   ps_round
-  </a>
- </li>
- <li class="toctree-l1">
   <a class="reference internal" href="../../tools/howtos/subdivide.html">
    subdivide
   </a>
@@ -578,11 +555,6 @@
  <li class="toctree-l1">
   <a class="reference internal" href="../../tools/howtos/unpad.html">
    unpad
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/zero_corners.html">
-   zero_corners
   </a>
  </li>
 </ul>
@@ -611,8 +583,8 @@
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Create-image-and-variables">
-   Create image and variables
+  <a class="reference internal nav-link" href="#Generate-image-for-testing">
+   Generate image for testing
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
@@ -903,44 +875,34 @@ import porespy as ps
 import scipy.ndimage as spim
 import matplotlib.pyplot as plt
 import skimage
+from edt import edt
+
+np.random.seed(0)
 ps.visualization.set_mpl_style()
 </pre></div>
 </div>
 </div>
 </div>
-<div class="section" id="Create-image-and-variables">
-<h2>Create image and variables<a class="headerlink" href="#Create-image-and-variables" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="Generate-image-for-testing">
+<h2>Generate image for testing<a class="headerlink" href="#Generate-image-for-testing" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>im = ps.generators.blobs(shape=[500, 500])
-dt = ps.filters.distance_transform_lin(im, axis = 1, mode = &quot;both&quot;)
-r_max = 4
-footprint = None
-peaks = ps.filters.find_peaks(dt, r_max=4, footprint=None)
-plt.figure(figsize=[7,7])
+<span></span>im = ps.generators.blobs(shape=[200, 200])
+
+plt.figure(figsize=[4, 4])
 plt.axis(False)
-plt.imshow(peaks);
+plt.imshow(im);
 </pre></div>
 </div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-&lt;matplotlib.image.AxesImage at 0x7f7c38c2bfa0&gt;
-</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_filters_howtos_trim_nearby_peaks_4_1.png" src="../../../_images/examples_filters_howtos_trim_nearby_peaks_4_1.png" />
-</div>
+<img alt="../../../_images/examples_filters_howtos_trim_nearby_peaks_4_0.svg" src="../../../_images/examples_filters_howtos_trim_nearby_peaks_4_0.svg" /></div>
 </div>
 </div>
 <div class="section" id="Apply-filter-function">
@@ -950,28 +912,24 @@ plt.imshow(peaks);
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>x = ps.filters.trim_nearby_peaks(peaks=peaks, dt=dt)
-plt.figure(figsize=[7,7])
-plt.axis(False)
-plt.imshow(x);
+<span></span>dt = edt(im)
+peaks = ps.filters.find_peaks(dt, r_max=4)
+
+x = ps.filters.trim_nearby_peaks(peaks=peaks, dt=dt)
+
+fix, ax = plt.subplots(1, 2, figsize=[8, 4])
+ax[0].axis(False)
+ax[0].imshow(peaks/im)
+ax[1].axis(False)
+ax[1].imshow(x/im);
 </pre></div>
 </div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-&lt;matplotlib.image.AxesImage at 0x7f7c38b212b0&gt;
-</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_filters_howtos_trim_nearby_peaks_6_1.png" src="../../../_images/examples_filters_howtos_trim_nearby_peaks_6_1.png" />
-</div>
+<img alt="../../../_images/examples_filters_howtos_trim_nearby_peaks_6_0.svg" src="../../../_images/examples_filters_howtos_trim_nearby_peaks_6_0.svg" /></div>
 </div>
 </div>
 </div>

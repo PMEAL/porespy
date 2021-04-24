@@ -461,8 +461,10 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span>import porespy as ps
+import numpy as np
 import matplotlib.pyplot as plt
-import skimage as sk
+
+np.random.seed(0)
 ps.visualization.set_mpl_style()
 </pre></div>
 </div>
@@ -475,7 +477,7 @@ ps.visualization.set_mpl_style()
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>im = ps.generators.blobs([100, 100, 100])
+<span></span>im = ps.generators.blobs([50, 50, 20], blobiness=0.5)
 mesh = ps.tools.mesh_region(im)
 </pre></div>
 </div>
@@ -483,14 +485,20 @@ mesh = ps.tools.mesh_region(im)
 </div>
 <div class="section" id="Display-image:">
 <h2>Display image:<a class="headerlink" href="#Display-image:" title="Permalink to this headline">¶</a></h2>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>ps.visualization.show_mesh(mesh = mesh);
+<span></span>ps.visualization.show_mesh(mesh=mesh);
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/examples_visualization_howtos_show_mesh_6_0.svg" src="../../../_images/examples_visualization_howtos_show_mesh_6_0.svg" /></div>
 </div>
 </div>
 </div>

@@ -464,11 +464,6 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../../networks/tutorials/map_to_regions.html">
-   map_to_regions maps
-  </a>
- </li>
- <li class="toctree-l1">
   <a class="reference internal" href="../../networks/tutorials/snow_advanced.html">
    SNOW network extraction (advanced)
   </a>
@@ -476,6 +471,13 @@
  <li class="toctree-l1">
   <a class="reference internal" href="../../networks/tutorials/snow_basic.html">
    SNOW network extraction
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../networks/howtos/map_to_regions.html">
+   map_to_regions maps
   </a>
  </li>
 </ul>
@@ -503,11 +505,6 @@
  <li class="toctree-l1">
   <a class="reference internal" href="../../tools/howtos/extract_subsection.html">
    extract_subsection
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/fftmorphology.html">
-   fftmorphology
   </a>
  </li>
  <li class="toctree-l1">
@@ -551,26 +548,6 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/ps_ball.html">
-   ps_ball
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/ps_disk.html">
-   ps_disk
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/ps_rect.html">
-   ps_rect
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/ps_round.html">
-   ps_round
-  </a>
- </li>
- <li class="toctree-l1">
   <a class="reference internal" href="../../tools/howtos/subdivide.html">
    subdivide
   </a>
@@ -578,11 +555,6 @@
  <li class="toctree-l1">
   <a class="reference internal" href="../../tools/howtos/unpad.html">
    unpad
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/zero_corners.html">
-   zero_corners
   </a>
  </li>
 </ul>
@@ -616,31 +588,9 @@
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Apply-filter-function">
-   Apply filter function
+  <a class="reference internal nav-link" href="#Apply-filter">
+   Apply filter
   </a>
-  <ul class="nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#inlet_axis">
-     inlet_axis
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#outlet_axis">
-     outlet_axis
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#inlet">
-     inlet
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#outlets">
-     outlets
-    </a>
-   </li>
-  </ul>
  </li>
 </ul>
 
@@ -925,6 +875,8 @@ import porespy as ps
 import scipy.ndimage as spim
 import matplotlib.pyplot as plt
 import skimage
+
+np.random.seed(0)
 ps.visualization.set_mpl_style()
 </pre></div>
 </div>
@@ -937,46 +889,51 @@ ps.visualization.set_mpl_style()
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>im = ps.generators.blobs(shape=[500, 500])
-plt.figure(figsize=[7,7])
+<span></span>im = ps.generators.blobs(shape=[500, 500], porosity=0.55, blobiness=1.5)
+plt.figure(figsize=[4, 4])
 plt.axis(False)
 plt.imshow(im)
-
-#default values:
-inlet_axis=0
-outlet_axis=0
-inlets=None
-outlets=None
 </pre></div>
 </div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;matplotlib.image.AxesImage at 0x1c028759760&gt;
+</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_filters_howtos_trim_nonpercolating_paths_4_0.png" src="../../../_images/examples_filters_howtos_trim_nonpercolating_paths_4_0.png" />
+<img alt="../../../_images/examples_filters_howtos_trim_nonpercolating_paths_4_1.svg" src="../../../_images/examples_filters_howtos_trim_nonpercolating_paths_4_1.svg" /></div>
 </div>
 </div>
-</div>
-<div class="section" id="Apply-filter-function">
-<h2>Apply filter function<a class="headerlink" href="#Apply-filter-function" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="inlet_axis">
-<h3>inlet_axis<a class="headerlink" href="#inlet_axis" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="Apply-filter">
+<h2>Apply filter<a class="headerlink" href="#Apply-filter" title="Permalink to this headline">¶</a></h2>
+<p>This trims no only isolated blobs in the middle but also those touching edges but not spanning the domain:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>x = ps.filters.trim_nonpercolating_paths(im=im, inlet_axis=inlet_axis, outlet_axis=outlet_axis, inlets=inlets, outlets= outlets)
-xx = ps.filters.trim_nonpercolating_paths(im=im, inlet_axis=1, outlet_axis=outlet_axis, inlets=inlets, outlets=outlets)
+<span></span>inlets = np.zeros_like(im)
+inlets[0, :] = True
+outlets = np.zeros_like(im)
+outlets[-1, :] = True
 
-fig, ax = plt.subplots(1, 2, figsize=[15, 15]);
-ax[0].imshow(x);
-ax[1].imshow(xx);
+x = ps.filters.trim_nonpercolating_paths(im=im, inlets=inlets, outlets= outlets)
+
+fig, ax = plt.subplots(1, 2, figsize=[8, 4]);
+ax[0].imshow(im);
+ax[1].imshow(x + (im != x)*0.5);
 ax[0].axis(False)
 ax[1].axis(False)
-ax[0].set_title(&#39;inlet_axis = 0&#39;)
-ax[1].set_title(&#39;inlet_axis = 1&#39;);
+ax[0].set_title(&#39;before&#39;)
+ax[1].set_title(&#39;after&#39;);
 </pre></div>
 </div>
 </div>
@@ -984,92 +941,7 @@ ax[1].set_title(&#39;inlet_axis = 1&#39;);
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_filters_howtos_trim_nonpercolating_paths_7_0.png" src="../../../_images/examples_filters_howtos_trim_nonpercolating_paths_7_0.png" />
-</div>
-</div>
-</div>
-<div class="section" id="outlet_axis">
-<h3>outlet_axis<a class="headerlink" href="#outlet_axis" title="Permalink to this headline">¶</a></h3>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>xx = ps.filters.trim_nonpercolating_paths(im=im, inlet_axis=inlet_axis, outlet_axis=1, inlets=inlets, outlets= outlets)
-
-fig, ax = plt.subplots(1, 2, figsize=[15, 15]);
-ax[0].imshow(x);
-ax[1].imshow(xx);
-ax[0].axis(False)
-ax[1].axis(False)
-ax[0].set_title(&#39;outlet_axis = 0&#39;)
-ax[1].set_title(&#39;outlet_axis = 1&#39;);
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../_images/examples_filters_howtos_trim_nonpercolating_paths_9_0.png" src="../../../_images/examples_filters_howtos_trim_nonpercolating_paths_9_0.png" />
-</div>
-</div>
-</div>
-<div class="section" id="inlet">
-<h3>inlet<a class="headerlink" href="#inlet" title="Permalink to this headline">¶</a></h3>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>in2 = ps.generators.blobs([500,500])
-xx = ps.filters.trim_nonpercolating_paths(im=im, inlet_axis=inlet_axis, outlet_axis=outlet_axis, inlets=in2, outlets= outlets)
-
-fig, ax = plt.subplots(1, 2, figsize=[15, 15]);
-ax[0].imshow(x);
-ax[1].imshow(xx);
-ax[0].axis(False)
-ax[1].axis(False)
-ax[0].set_title(&#39;inlets = None&#39;)
-ax[1].set_title(&#39;inlets = Generated Blobs&#39;);
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../_images/examples_filters_howtos_trim_nonpercolating_paths_11_0.png" src="../../../_images/examples_filters_howtos_trim_nonpercolating_paths_11_0.png" />
-</div>
-</div>
-</div>
-<div class="section" id="outlets">
-<h3>outlets<a class="headerlink" href="#outlets" title="Permalink to this headline">¶</a></h3>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>out2 = ps.generators.blobs([500,500])
-xx = ps.filters.trim_nonpercolating_paths(im=im, inlet_axis=inlet_axis, outlet_axis=outlet_axis, inlets=inlets, outlets=out2)
-
-fig, ax = plt.subplots(1, 2, figsize=[15, 15]);
-ax[0].imshow(x);
-ax[1].imshow(xx);
-ax[0].axis(False)
-ax[1].axis(False)
-ax[0].set_title(&#39;outlets = None&#39;)
-ax[1].set_title(&#39;outlets = Generated Blobs&#39;);
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../_images/examples_filters_howtos_trim_nonpercolating_paths_13_0.png" src="../../../_images/examples_filters_howtos_trim_nonpercolating_paths_13_0.png" />
-</div>
-</div>
+<img alt="../../../_images/examples_filters_howtos_trim_nonpercolating_paths_6_0.svg" src="../../../_images/examples_filters_howtos_trim_nonpercolating_paths_6_0.svg" /></div>
 </div>
 </div>
 </div>

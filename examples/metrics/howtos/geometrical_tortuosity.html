@@ -464,11 +464,6 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../../networks/tutorials/map_to_regions.html">
-   map_to_regions maps
-  </a>
- </li>
- <li class="toctree-l1">
   <a class="reference internal" href="../../networks/tutorials/snow_advanced.html">
    SNOW network extraction (advanced)
   </a>
@@ -476,6 +471,13 @@
  <li class="toctree-l1">
   <a class="reference internal" href="../../networks/tutorials/snow_basic.html">
    SNOW network extraction
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../networks/howtos/map_to_regions.html">
+   map_to_regions maps
   </a>
  </li>
 </ul>
@@ -503,11 +505,6 @@
  <li class="toctree-l1">
   <a class="reference internal" href="../../tools/howtos/extract_subsection.html">
    extract_subsection
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/fftmorphology.html">
-   fftmorphology
   </a>
  </li>
  <li class="toctree-l1">
@@ -551,26 +548,6 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/ps_ball.html">
-   ps_ball
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/ps_disk.html">
-   ps_disk
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/ps_rect.html">
-   ps_rect
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/ps_round.html">
-   ps_round
-  </a>
- </li>
- <li class="toctree-l1">
   <a class="reference internal" href="../../tools/howtos/subdivide.html">
    subdivide
   </a>
@@ -578,11 +555,6 @@
  <li class="toctree-l1">
   <a class="reference internal" href="../../tools/howtos/unpad.html">
    unpad
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/zero_corners.html">
-   zero_corners
   </a>
  </li>
 </ul>
@@ -624,18 +596,6 @@
     <a class="reference internal nav-link" href="#id1">
      geometrical_tortuosity
     </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#geometrical_tortuosity_points">
-     geometrical_tortuosity_points
-    </a>
-    <ul class="nav section-nav flex-column">
-     <li class="toc-h4 nav-item toc-entry">
-      <a class="reference internal nav-link" href="#2D-image">
-       2D image
-      </a>
-     </li>
-    </ul>
    </li>
   </ul>
  </li>
@@ -972,7 +932,7 @@ print(&#39;geometrical tortuosity for 3D image=&#39;, result3d)
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "52e31f15b8f44dccbfd015f175132bb4", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
@@ -986,7 +946,7 @@ geometrical tortuosity for 2D image= 1.3045150669510481
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "b273f3ddd0374ab6b20b47a5948e3968", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
@@ -995,33 +955,6 @@ geometrical tortuosity for 2D image= 1.3045150669510481
 <div class="highlight"><pre>
 geometrical tortuosity for 3D image= 1.471115613445628
 </pre></div></div>
-</div>
-</div>
-<div class="section" id="geometrical_tortuosity_points">
-<h3>geometrical_tortuosity_points<a class="headerlink" href="#geometrical_tortuosity_points" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="2D-image">
-<h4>2D image<a class="headerlink" href="#2D-image" title="Permalink to this headline">¶</a></h4>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>tortuosities_2d, avg_tortuosity_2d = ps.metrics._geometrical_tortuosity.geometrical_tortuosity_points(
-    im=im2d)
-fig, ax = plt.subplots()
-plt.hist(tortuosities_2d, bins=10)
-plt.title(&#39;average tortuosity is %.4f&#39; % avg_tortuosity_2d)
-plt.xlabel(&#39;tortuosity&#39;)
-plt.ylabel(&#39;frequency&#39;);
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../_images/examples_metrics_howtos_geometrical_tortuosity_10_0.svg" src="../../../_images/examples_metrics_howtos_geometrical_tortuosity_10_0.svg" /></div>
-</div>
 </div>
 </div>
 </div>

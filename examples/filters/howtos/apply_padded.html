@@ -464,11 +464,6 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../../networks/tutorials/map_to_regions.html">
-   map_to_regions maps
-  </a>
- </li>
- <li class="toctree-l1">
   <a class="reference internal" href="../../networks/tutorials/snow_advanced.html">
    SNOW network extraction (advanced)
   </a>
@@ -476,6 +471,13 @@
  <li class="toctree-l1">
   <a class="reference internal" href="../../networks/tutorials/snow_basic.html">
    SNOW network extraction
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../networks/howtos/map_to_regions.html">
+   map_to_regions maps
   </a>
  </li>
 </ul>
@@ -503,11 +505,6 @@
  <li class="toctree-l1">
   <a class="reference internal" href="../../tools/howtos/extract_subsection.html">
    extract_subsection
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/fftmorphology.html">
-   fftmorphology
   </a>
  </li>
  <li class="toctree-l1">
@@ -551,26 +548,6 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/ps_ball.html">
-   ps_ball
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/ps_disk.html">
-   ps_disk
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/ps_rect.html">
-   ps_rect
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/ps_round.html">
-   ps_round
-  </a>
- </li>
- <li class="toctree-l1">
   <a class="reference internal" href="../../tools/howtos/subdivide.html">
    subdivide
   </a>
@@ -578,11 +555,6 @@
  <li class="toctree-l1">
   <a class="reference internal" href="../../tools/howtos/unpad.html">
    unpad
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/zero_corners.html">
-   zero_corners
   </a>
  </li>
 </ul>
@@ -620,11 +592,6 @@
    Apply filter function
   </a>
   <ul class="nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#pad_width">
-     pad_width
-    </a>
-   </li>
    <li class="toc-h3 nav-item toc-entry">
     <a class="reference internal nav-link" href="#func">
      func
@@ -920,6 +887,8 @@ import porespy as ps
 import scipy.ndimage as spim
 import matplotlib.pyplot as plt
 import skimage
+from edt import edt
+
 ps.visualization.set_mpl_style()
 </pre></div>
 </div>
@@ -933,16 +902,9 @@ ps.visualization.set_mpl_style()
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span>im = np.zeros([300, 300])
-im = ps.generators.RSA(im, radius=20, volume_fraction=0.2)
-im = ps.generators.RSA(im, radius=10, volume_fraction=0.4)
-im = im == 0
-pad_width = 1
-func = skimage.morphology.skeletonize_3d
+im = ps.generators.RSA(im, r=20, volume_fraction=0.4) == 0
 
-#default values
-pad_val=1
-
-plt.figure(figsize=[10, 10])
+plt.figure(figsize=[4, 4])
 plt.axis(False)
 plt.imshow(im);
 </pre></div>
@@ -952,23 +914,30 @@ plt.imshow(im);
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_filters_howtos_apply_padded_4_0.png" src="../../../_images/examples_filters_howtos_apply_padded_4_0.png" />
-</div>
+<img alt="../../../_images/examples_filters_howtos_apply_padded_4_0.svg" src="../../../_images/examples_filters_howtos_apply_padded_4_0.svg" /></div>
 </div>
 </div>
 <div class="section" id="Apply-filter-function">
 <h2>Apply filter function<a class="headerlink" href="#Apply-filter-function" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="pad_width">
-<h3>pad_width<a class="headerlink" href="#pad_width" title="Permalink to this headline">¶</a></h3>
-<div class="nbinput docutils container">
+<p>A good use case if the application of the skeletonize_3d, which has edge artifacts that can be reduced if the image is pre-padded. ### pad_width</p>
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>x = ps.filters.apply_padded(im=im, pad_width=pad_width, func=func, pad_val=pad_val)
-xx = ps.filters.apply_padded(im=im, pad_width=100, func=func, pad_val=pad_val)
+<span></span>func = skimage.morphology.skeletonize_3d
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>x = ps.filters.apply_padded(im=im, pad_width=1, func=func, pad_val=1)
+xx = ps.filters.apply_padded(im=im, pad_width=100, func=func, pad_val=1)
 
-fig, ax = plt.subplots(1, 2, figsize=[20, 20]);
+fig, ax = plt.subplots(1, 2, figsize=[8, 4]);
 ax[0].imshow(x);
 ax[1].imshow(xx);
 ax[0].axis(False)
@@ -982,27 +951,35 @@ ax[1].set_title(&#39;pad_width = 100&#39;);
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_filters_howtos_apply_padded_7_0.png" src="../../../_images/examples_filters_howtos_apply_padded_7_0.png" />
-</div>
-</div>
+<img alt="../../../_images/examples_filters_howtos_apply_padded_7_0.svg" src="../../../_images/examples_filters_howtos_apply_padded_7_0.svg" /></div>
 </div>
 <div class="section" id="func">
 <h3>func<a class="headerlink" href="#func" title="Permalink to this headline">¶</a></h3>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<p>It’s also useful for morphological operations. Note that additional keyword arguments are passed to the function.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>f2 = skimage.morphology.binary_dilation
-xx = ps.filters.apply_padded(im=im, pad_width=pad_width, func=f2, pad_val=pad_val)
+<span></span>func = skimage.morphology.binary_opening
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>x = ps.filters.apply_padded(im=im, pad_width=0, func=func, pad_val=1, selem=ps.tools.ps_disk(15))
+xx = ps.filters.apply_padded(im=im, pad_width=50, func=func, pad_val=1, selem=ps.tools.ps_disk(15))
 
-fig, ax = plt.subplots(1, 2, figsize=[20, 20]);
-ax[0].imshow(x);
-ax[1].imshow(xx);
+fig, ax = plt.subplots(1, 2, figsize=[8, 4]);
+ax[0].imshow(x)
+ax[1].imshow(xx)
 ax[0].axis(False)
 ax[1].axis(False)
-ax[0].set_title(&#39;func = skeletonize_3d&#39;)
-ax[1].set_title(&#39;func = binary_dilation&#39;);
+ax[0].set_title(&#39;With no padding&#39;)
+ax[1].set_title(&#39;With padding&#39;);
 </pre></div>
 </div>
 </div>
@@ -1010,26 +987,36 @@ ax[1].set_title(&#39;func = binary_dilation&#39;);
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_filters_howtos_apply_padded_9_0.png" src="../../../_images/examples_filters_howtos_apply_padded_9_0.png" />
-</div>
+<img alt="../../../_images/examples_filters_howtos_apply_padded_10_0.svg" src="../../../_images/examples_filters_howtos_apply_padded_10_0.svg" /></div>
 </div>
 </div>
 <div class="section" id="pad_val">
 <h3>pad_val<a class="headerlink" href="#pad_val" title="Permalink to this headline">¶</a></h3>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<p>The value used to pad can be specified. It is almost always desired to be 1. Setting to 0 may be useful for applying distance transforms:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>xx = ps.filters.apply_padded(im=im, pad_width=pad_width, func=func, pad_val=10)
+<span></span>func = edt
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>x = ps.filters.apply_padded(im=im, pad_width=10, func=func, pad_val=1)
+xx = ps.filters.apply_padded(im=im, pad_width=10, func=func, pad_val=0)
 
-fig, ax = plt.subplots(1, 2, figsize=[20, 20]);
+fig, ax = plt.subplots(1, 2, figsize=[8, 4]);
 ax[0].imshow(x);
 ax[1].imshow(xx);
 ax[0].axis(False)
 ax[1].axis(False)
 ax[0].set_title(&#39;pad_val = 1&#39;)
-ax[1].set_title(&#39;pad_val = 10&#39;);
+ax[1].set_title(&#39;pad_val = 0&#39;);
 </pre></div>
 </div>
 </div>
@@ -1037,8 +1024,7 @@ ax[1].set_title(&#39;pad_val = 10&#39;);
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_filters_howtos_apply_padded_11_0.png" src="../../../_images/examples_filters_howtos_apply_padded_11_0.png" />
-</div>
+<img alt="../../../_images/examples_filters_howtos_apply_padded_13_0.svg" src="../../../_images/examples_filters_howtos_apply_padded_13_0.svg" /></div>
 </div>
 </div>
 </div>

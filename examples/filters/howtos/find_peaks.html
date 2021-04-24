@@ -464,11 +464,6 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../../networks/tutorials/map_to_regions.html">
-   map_to_regions maps
-  </a>
- </li>
- <li class="toctree-l1">
   <a class="reference internal" href="../../networks/tutorials/snow_advanced.html">
    SNOW network extraction (advanced)
   </a>
@@ -476,6 +471,13 @@
  <li class="toctree-l1">
   <a class="reference internal" href="../../networks/tutorials/snow_basic.html">
    SNOW network extraction
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../networks/howtos/map_to_regions.html">
+   map_to_regions maps
   </a>
  </li>
 </ul>
@@ -503,11 +505,6 @@
  <li class="toctree-l1">
   <a class="reference internal" href="../../tools/howtos/extract_subsection.html">
    extract_subsection
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/fftmorphology.html">
-   fftmorphology
   </a>
  </li>
  <li class="toctree-l1">
@@ -551,26 +548,6 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/ps_ball.html">
-   ps_ball
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/ps_disk.html">
-   ps_disk
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/ps_rect.html">
-   ps_rect
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/ps_round.html">
-   ps_round
-  </a>
- </li>
- <li class="toctree-l1">
   <a class="reference internal" href="../../tools/howtos/subdivide.html">
    subdivide
   </a>
@@ -578,11 +555,6 @@
  <li class="toctree-l1">
   <a class="reference internal" href="../../tools/howtos/unpad.html">
    unpad
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../tools/howtos/zero_corners.html">
-   zero_corners
   </a>
  </li>
 </ul>
@@ -910,6 +882,8 @@ import porespy as ps
 import scipy.ndimage as spim
 import matplotlib.pyplot as plt
 import skimage
+from edt import edt
+
 ps.visualization.set_mpl_style()
 </pre></div>
 </div>
@@ -922,63 +896,60 @@ ps.visualization.set_mpl_style()
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>im = ps.generators.blobs(shape=[500, 500])
-dt = ps.filters.distance_transform_lin(im, axis = 1, mode = &quot;both&quot;)
-plt.figure(figsize=[7,7])
+<span></span>im = ps.generators.blobs(shape=[100, 100], blobiness=0.5, porosity=0.7)
+
+plt.figure(figsize=[4, 4])
 plt.axis(False)
 plt.imshow(im)
-
-#default values:
-r_max = 4
-footprint = None
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../_images/examples_filters_howtos_find_peaks_4_0.png" src="../../../_images/examples_filters_howtos_find_peaks_4_0.png" />
-</div>
-</div>
-</div>
-<div class="section" id="Apply-filter-function">
-<h2>Apply filter function<a class="headerlink" href="#Apply-filter-function" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="r_max">
-<h3>r_max<a class="headerlink" href="#r_max" title="Permalink to this headline">¶</a></h3>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>x = ps.filters.find_peaks(dt=dt, r_max=r_max, footprint=footprint)
-xx = ps.filters.find_peaks(dt=dt, r_max=25, footprint=footprint)
-
-fig, ax = plt.subplots(1, 2, figsize=[15, 15]);
-ax[0].imshow(x);
-ax[1].imshow(xx);
-ax[0].axis(False)
-ax[1].axis(False)
-ax[0].set_title(&#39;r_max = 4&#39;)
-ax[1].set_title(&#39;r_max = 25&#39;);
 </pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Text(0.5, 1.0, &#39;r_max = 25&#39;)
+&lt;matplotlib.image.AxesImage at 0x275a525d250&gt;
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_filters_howtos_find_peaks_7_1.png" src="../../../_images/examples_filters_howtos_find_peaks_7_1.png" />
+<img alt="../../../_images/examples_filters_howtos_find_peaks_4_1.svg" src="../../../_images/examples_filters_howtos_find_peaks_4_1.svg" /></div>
 </div>
+</div>
+<div class="section" id="Apply-filter-function">
+<h2>Apply filter function<a class="headerlink" href="#Apply-filter-function" title="Permalink to this headline">¶</a></h2>
+<p>This function is used to find peaks in the distance transform.</p>
+<div class="section" id="r_max">
+<h3>r_max<a class="headerlink" href="#r_max" title="Permalink to this headline">¶</a></h3>
+<p>You can vary the size of the the area that is searched by adjusting r_max:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>dt = edt(im)
+x = ps.filters.find_peaks(dt=dt, r_max=4)
+xx = ps.filters.find_peaks(dt=dt, r_max=10)
+
+fig, ax = plt.subplots(1, 2, figsize=[8, 4]);
+ax[0].imshow(x/im)
+ax[1].imshow(xx/im)
+ax[0].axis(False)
+ax[1].axis(False)
+ax[0].set_title(&#39;r_max = 4&#39;)
+ax[1].set_title(&#39;r_max = 10&#39;);
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/examples_filters_howtos_find_peaks_6_0.svg" src="../../../_images/examples_filters_howtos_find_peaks_6_0.svg" /></div>
 </div>
 </div>
 </div>
