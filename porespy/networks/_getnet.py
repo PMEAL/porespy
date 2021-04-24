@@ -182,7 +182,7 @@ def regions_to_network(regions, phases=None, voxel_size=1, accuracy='standard'):
     net = {}
     # Define all the fundamental stuff
     net['throat.conns'] = np.array(t_conns)
-    net['pore.coords'] = np.array(p_coords)
+    net['pore.coords'] = np.array(p_coords)*voxel_size
     net['pore.all'] = np.ones_like(net['pore.coords'][:, 0], dtype=bool)
     net['throat.all'] = np.ones_like(net['throat.conns'][:, 0], dtype=bool)
     net['pore.region_label'] = np.array(p_label)
