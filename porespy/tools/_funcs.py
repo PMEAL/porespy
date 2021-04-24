@@ -97,10 +97,12 @@ def align_image_with_openpnm(im):
     -------
     image : ND-array
         Returns a copy of ``im`` rotated accordingly.
-    
+
     Examples
     --------
-    `Click here <https://porespy.org/examples/tools/align_image_with_openpnm.html>`_ to view online example.
+    `Click here
+    <https://porespy.org/examples/tools/howtos/align_image_with_openpnm.html>`_
+    to view online example.
     """
     _check_for_singleton_axes(im)
     im = np.copy(im)
@@ -154,10 +156,12 @@ def subdivide(im, divs=2, overlap=0):
     >>> s = ps.tools.subdivide(im, divs=[2, 2], flatten=True)
     >>> print(len(s))
     4
-                
+
     Examples
     --------
-    `Click here <https://porespy.org/examples/tools/subdivide.html>`_ to view online example.
+    `Click here
+    <https://porespy.org/examples/tools/howtos/subdivide.html>`_
+    to view online example.
     """
     divs = np.ones((im.ndim,), dtype=int) * np.array(divs)
     overlap = overlap * (divs > 1)
@@ -264,11 +268,13 @@ def bbox_to_slices(bbox):
     -------
     slices : tuple
         A tuple of slice objects that can be used to directly index into a
-        larger image. 
-        
+        larger image.
+
     Examples
     --------
-    `Click here <https://porespy.org/examples/tools/bbox_to_slices.html>`_ to view online example.
+    `Click here
+    <https://porespy.org/examples/tools/howtos/bbox_to_slices.html>`_
+    to view online example.
     """
     if len(bbox) == 4:
         ret = (slice(bbox[0], bbox[2]),
@@ -347,10 +353,12 @@ def extract_cylinder(im, r=None, axis=0):
     image : ND-array
         A copy of ``im`` with values outside the cylindrical area set to 0 or
         ``False``.
-                
+
     Examples
     --------
-    `Click here <https://porespy.org/examples/tools/extract_cylinder.html>`_ to view online example.
+    `Click here
+    <https://porespy.org/examples/tools/howtos/extract_cylinder.html>`_
+    to view online example.
 
     """
     # This needs to be imported here since the tools module is imported
@@ -403,10 +411,12 @@ def extract_subsection(im, shape):
     >>> print(im)
     [[2 2]
      [2 3]]
-     
+
     Examples
     --------
-    `Click here <https://porespy.org/examples/tools/extract_subsection.html>`_ to view online example.
+    `Click here
+    <https://porespy.org/examples/tools/howtos/extract_subsection.html>`_
+    to view online example.
     """
     # Check if shape was given as a fraction
     shape = np.array(shape)
@@ -440,10 +450,12 @@ def get_planes(im, squeeze=True):
     -------
     planes : list
         A list of 2D-images
-                                
+
     Examples
     --------
-    `Click here <https://porespy.org/examples/tools/get_planes.html>`_ to view online example.
+    `Click here
+    <https://porespy.org/examples/tools/get_planes.html>`_
+    to view online example.
     """
     x, y, z = (np.array(im.shape) / 2).astype(int)
     planes = [im[x, :, :], im[:, y, :], im[:, :, z]]
@@ -638,10 +650,12 @@ def make_contiguous(im, mode='keep_zeros'):
     >>> print(im)
     [[0 1 5]
      [3 4 2]]
-                
+
     Examples
     --------
-    `Click here <https://porespy.org/examples/tools/make_contiguous.html>`_ to view online example.
+    `Click here
+    <https://porespy.org/examples/tools/howtos/make_contiguous.html>`_
+    to view online example.
     """
     # This is a very simple version using relabel_sequential
     # if keep_zeros:
@@ -735,10 +749,12 @@ def get_border(shape, thickness=1, mode='edges', return_indices=False):
     [[ True  True  True]
      [ True False  True]
      [ True  True  True]]
-                
+
     Examples
     --------
-    `Click here <https://porespy.org/examples/tools/get_border.html>`_ to view online example.
+    `Click here
+    <https://porespy.org/examples/tools/howtos/get_border.html>`_
+    to view online example.
     """
     # TODO: This function uses brute force to create an image then fills the
     # edges using location-based logic, and if the user requests
@@ -822,10 +838,12 @@ def norm_to_uniform(im, scale=None):
     image : ND-array
         A copy of ``im`` with uniformly distributed greyscale values spanning
         the specified range, if given.
-                        
+
     Examples
     --------
-    `Click here <https://porespy.org/examples/tools/norm_to_uniform.html>`_ to view online example.
+    `Click here
+    <https://porespy.org/examples/tools/howtos/norm_to_uniform.html>`_
+    to view online example.
     """
     if scale is None:
         scale = [im.min(), im.max()]
@@ -942,10 +960,12 @@ def ps_disk(r, smooth=True):
     -------
     disk : 2D-array
         A 2D numpy bool array of the structring element
-                        
+
     Examples
     --------
-    `Click here <https://porespy.org/examples/tools/ps_disk.html>`_ to view online example.
+    `Click here
+    <https://porespy.org/examples/tools/howtos/ps_disk.html>`_
+    to view online example.
     """
     disk = ps_round(r=r, ndim=2, smooth=smooth)
     return disk
@@ -967,10 +987,12 @@ def ps_ball(r, smooth=True):
     -------
     ball : 3D-array
         A 3D numpy array of the structuring element
-                        
+
     Examples
     --------
-    `Click here <https://porespy.org/examples/tools/ps_ball.html>`_ to view online example.
+    `Click here
+    <https://porespy.org/examples/tools/howtos/ps_ball.html>`_
+    to view online example.
     """
     ball = ps_round(r=r, ndim=3, smooth=smooth)
     return ball
@@ -994,10 +1016,12 @@ def ps_round(r, ndim, smooth=True):
     -------
     strel : 3D-array
         A 3D numpy array of the structuring element
-                        
+
     Examples
     --------
-    `Click here <https://porespy.org/examples/tools/ps_round.html>`_ to view online example.
+    `Click here
+    <https://porespy.org/examples/tools/howtos/ps_round.html>`_
+    to view online example.
     """
     rad = int(np.ceil(r))
     other = np.ones([2*rad + 1 for i in range(ndim)], dtype=bool)
@@ -1025,10 +1049,12 @@ def ps_rect(w, ndim):
     -------
     strel : D-aNrray
         A numpy array of the structuring element
-                        
+
     Examples
     --------
-    `Click here <https://porespy.org/examples/tools/ps_rect.html>`_ to view online example.
+    `Click here
+    <https://porespy.org/examples/tools/howtos/ps_rect.html>`_
+    to view online example.
     """
     if ndim == 2:
         from skimage.morphology import square
@@ -1058,10 +1084,12 @@ def overlay(im1, im2, c):
     image : ND-array
         A modified version of ``im1``, with ``im2`` overlaid at the specified
         location
-                        
+
     Examples
     --------
-    `Click here <https://porespy.org/examples/tools/overlay.html>`_ to view online example.
+    `Click here
+    <https://porespy.org/examples/tools/howtos/overlay.html>`_
+    to view online example.
 
     """
     shape = im2.shape
@@ -1102,11 +1130,13 @@ def insert_sphere(im, c, r, v=True, overwrite=True):
     Returns
     -------
     image : ND-array
-        The original image with a sphere inerted at the specified location    
-        
+        The original image with a sphere inerted at the specified location
+
     Examples
     --------
-    `Click here <https://porespy.org/examples/tools/insert_sphere.html>`_ to view online example.
+    `Click here
+    <https://porespy.org/examples/tools/howtos/insert_sphere.html>`_
+    to view online example.
     """
     # Convert image to same type os v for eventual insertion
     if im.dtype != type(v):
@@ -1162,7 +1192,9 @@ def insert_cylinder(im, xyz0, xyz1, r):
 
     Examples
     --------
-    `Click here <https://porespy.org/examples/tools/insert_cylinder.html>`_ to view online example.
+    `Click here
+    <https://porespy.org/examples/tools/howtos/insert_cylinder.html>`_
+    to view online example.
     """
     if im.ndim != 3:
         raise Exception('This function is only implemented for 3D images')
@@ -1219,7 +1251,9 @@ def extract_regions(regions, labels: list, trim=True):
 
     Examples
     --------
-    `Click here <https://porespy.org/examples/tools/extract_regions.html>`_ to view online example.
+    `Click here
+    <https://porespy.org/examples/tools/howtos/extract_regions.html>`_
+    to view online example.
     """
     if type(labels) is int:
         labels = [labels]
