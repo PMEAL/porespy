@@ -219,7 +219,7 @@ def regions_to_network(regions, phases=None, voxel_size=1, accuracy='standard'):
         net['throat.perimeter'] = np.array(t_perimeter)*voxel_size
     else:
         net['pore.surface_area'] = np.copy(p_area_surf)*(voxel_size)**2
-        net['throat.cross_sectional_area'] = np.array(t_area)
+        net['throat.cross_sectional_area'] = np.array(t_area) * voxel_size**2
         net['pore.volume'] = np.copy(p_volume)*(voxel_size**3)
         net['throat.perimeter'] = np.array(t_perimeter)*voxel_size
 
