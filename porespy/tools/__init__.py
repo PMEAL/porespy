@@ -79,7 +79,6 @@ __all__ = [
 
 from .__funcs__ import align_image_with_openpnm
 from .__funcs__ import bbox_to_slices
-from .__funcs__ import _create_alias_map
 from .__funcs__ import extend_slice
 from .__funcs__ import extract_cylinder
 from .__funcs__ import extract_subsection

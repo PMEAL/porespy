@@ -1226,65 +1226,6 @@ def insert_cylinder(im, xyz0, xyz1, r):
     return im
 
 
-def _create_alias_map(im, alias=None):
-    r"""
-    Creates an alias mapping between phases in original image and identifyable
-    names. This mapping is used during network extraction to label
-    interconnection between and properties of each phase.
-
-    Parameters
-    ----------
-    im : ND-array
-        Image of porous material where each phase is represented by unique
-        integer. Phase integer should start from 1. Boolean image will extract
-        only one network labeled with True's only.
-
-    alias : dict (Optional)
-        A dictionary that assigns unique image label to specific phase.
-        For example {1: 'Solid'} will show all structural properties associated
-        with label 1 as Solid phase properties.
-        If ``None`` then default labelling will be used i.e {1: 'Phase1',..}.
-
-    Returns
-    -------
-    A dictionary with numerical phase labels as key, and readable phase names
-    as valuies. If no alias is provided then default labelling is used
-    i.e {1: 'Phase1',..}
-    """
-    # Get alias if provided by user
-    phases_num = np.unique(im).astype(int)
-    phases_num = np.trim_zeros(phases_num)
-    al = {}
-    wrong_labels = []
-    for values in phases_num:
-        al[values] = 'phase{}'.format(values)
-    if alias is not None:
-        alias_sort = dict(sorted(alias.items()))
-        phase_labels = np.array([*alias_sort])
-        al = alias
-        for i in phase_labels:
-            if i == 0:
-                raise Exception("Label 0 is not allowed in alias. "
-                                + "Please specify alias with a positive "
-                                  "integer")
-            elif i not in phases_num:
-                wrong_labels.append(i)
-        if wrong_labels:
-            raise Exception("Alias label(s) {} does not "
-                            "match with image "
-                            "label(s).".format(wrong_labels)
-                            + "Please provide correct labels from image.")
-        if phase_labels.size < phases_num.size:
-            missed_labels = np.setdiff1d(phases_num, phase_labels)
-            for i in missed_labels:
-                logger.warning(
-                    f"label_{i} alias is not provided although it exists in the"
-                    f" input image. The default label alias phase{i} is assigned"
-                    f" to label_{i}")
-                al[i] = f'phase{i}'
-    return al
-
-
 def extract_regions(regions, labels: list, trim=True):
     r"""
     Combine given regions into a single boolean mask
