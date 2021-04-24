@@ -858,7 +858,7 @@ def phase_fraction(im, normed=True):
     ----------
     im : ND-array
         An ND-array containing integer values
-    normed : Boolean
+    normed : boolean
         If ``True`` (default) the returned values are normalized by the total
         number of voxels in image, otherwise the voxel count of each phase is
         returned.
