@@ -8,7 +8,6 @@ from skimage.morphology import reconstruction
 from skimage.segmentation import clear_border
 from skimage.morphology import ball, disk, square, cube, diamond, octahedron
 from porespy.tools import _check_for_singleton_axes
-from porespy.tools import fftmorphology
 from porespy.tools import get_border, subdivide, recombine
 from porespy.tools import unpad, extract_subsection
 from porespy.tools import ps_disk, ps_ball
@@ -810,7 +809,8 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
     local_thickness
 
     """
-    _check_for_singleton_axes(im)
+    from porespy.filters import fftmorphology
+    im = np.squeeze(im)
     dt = edt(im > 0)
 
     if inlets is None:
@@ -843,7 +843,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
         imresults = np.zeros(np.shape(impad))
         for r in tqdm(sizes, **settings.tqdm):
             if parallel:
-                imtemp = chunked_func(func= fftmorphology,
+                imtemp = chunked_func(func=fftmorphology,
                                       im=impad, strel=strel(r),
                                       overlap=int(r) + 1, mode='erosion',
                                       cores=settings.ncores, divs=divs)

@@ -253,49 +253,49 @@ class FilterTest():
     def test_morphology_fft_dilate_2d(self):
         im = self.im[:, :, 50]
         truth = spim.binary_dilation(im, structure=disk(3))
-        test = ps.tools.fftmorphology(im, strel=disk(3), mode='dilation')
+        test = ps.filters.fftmorphology(im, strel=disk(3), mode='dilation')
         assert np.all(truth == test)
 
     def test_morphology_fft_erode_2d(self):
         im = self.im[:, :, 50]
         truth = spim.binary_erosion(im, structure=disk(3))
-        test = ps.tools.fftmorphology(im, strel=disk(3), mode='erosion')
+        test = ps.filters.fftmorphology(im, strel=disk(3), mode='erosion')
         assert np.all(truth == test)
 
     def test_morphology_fft_opening_2d(self):
         im = self.im[:, :, 50]
         truth = spim.binary_opening(im, structure=disk(3))
-        test = ps.tools.fftmorphology(im, strel=disk(3), mode='opening')
+        test = ps.filters.fftmorphology(im, strel=disk(3), mode='opening')
         assert np.all(truth == test)
 
     def test_morphology_fft_closing_2d(self):
         im = self.im[:, :, 50]
         truth = spim.binary_closing(im, structure=disk(3))
-        test = ps.tools.fftmorphology(im, strel=disk(3), mode='closing')
+        test = ps.filters.fftmorphology(im, strel=disk(3), mode='closing')
         assert np.all(truth == test)
 
     def test_morphology_fft_dilate_3d(self):
         im = self.im
         truth = spim.binary_dilation(im, structure=ball(3))
-        test = ps.tools.fftmorphology(im, strel=ball(3), mode='dilation')
+        test = ps.filters.fftmorphology(im, strel=ball(3), mode='dilation')
         assert np.all(truth == test)
 
     def test_morphology_fft_erode_3d(self):
         im = self.im
         truth = spim.binary_erosion(im, structure=ball(3))
-        test = ps.tools.fftmorphology(im, strel=ball(3), mode='erosion')
+        test = ps.filters.fftmorphology(im, strel=ball(3), mode='erosion')
         assert np.all(truth == test)
 
     def test_morphology_fft_opening_3d(self):
         im = self.im
         truth = spim.binary_opening(im, structure=ball(3))
-        test = ps.tools.fftmorphology(im, strel=ball(3), mode='opening')
+        test = ps.filters.fftmorphology(im, strel=ball(3), mode='opening')
         assert np.all(truth == test)
 
     def test_morphology_fft_closing_3d(self):
         im = self.im
         truth = spim.binary_closing(im, structure=ball(3))
-        test = ps.tools.fftmorphology(im, strel=ball(3), mode='closing')
+        test = ps.filters.fftmorphology(im, strel=ball(3), mode='closing')
         assert np.all(truth == test)
 
     def test_reduce_peaks(self):

@@ -5,7 +5,7 @@ import scipy.ndimage as spim
 from skimage.morphology import ball, disk
 from porespy.tools import get_border
 from porespy.tools import make_contiguous
-from porespy.tools import fftmorphology
+from porespy.filters import fftmorphology
 import numba
 from porespy import settings
 tqdm = get_tqdm()

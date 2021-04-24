@@ -216,3 +216,33 @@ def show_docstring(func):  # pragma: no cover
     except ModuleNotFoundError:
         txt = func.__doc__
     return title + txt + '\n---'
+
+
+def sanitize_filename(filename, ext, exclude_ext=False):
+    r"""
+    Returns a sanitized string in the form of name.extension
+
+    Parameters
+    ----------
+    filename : str
+        Unsanitized filename, could be 'test.vtk' or just 'test'
+
+    ext : str
+        Extension of the file, could be 'vtk'
+
+    exclude_ext : bool
+        If True, the returned string doesn't have the extension
+
+    Returns
+    -------
+    sanitized : str
+        Sanitized filename in form of name.extension
+
+    """
+    ext.strip(".")
+    if filename.endswith(f".{ext}"):
+        name = ".".join(filename.split(".")[:-1])
+    else:
+        name = filename
+    filename_formatted = f"{name}" if exclude_ext else f"{name}.{ext}"
+    return filename_formatted

@@ -4,7 +4,8 @@ import scipy.ndimage as spim
 import skimage
 import skfmm
 from skimage.morphology import disk, square, ball, cube
-from porespy.tools import get_tqdm, fftmorphology
+from porespy.tools import get_tqdm
+from porespy.filters import fftmorphology
 from porespy import settings
 
 tqdm = get_tqdm()
