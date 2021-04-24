@@ -1,11 +1,10 @@
 import os
 import sys
-import pytest
 import numpy as np
+from numpy.testing import assert_allclose
 import porespy as ps
 import openpnm as op
 from pathlib import Path
-from numpy.testing import assert_allclose
 
 
 class ExportTest():
@@ -26,21 +25,6 @@ class ExportTest():
         assert np.size(val) == S
         assert np.sum(val == 0) + np.sum(val == 1) + np.sum(val == 2) == S
         os.remove(tmp)
-
-    def test_to_openpnm_writing(self):
-        im = ps.generators.blobs(shape=[100, 100])
-        net = ps.networks.snow(im, boundary_faces=None)
-        ps.io.to_openpnm(net, 'test.pnm')
-        # Now open it in openpnm
-        import openpnm as op
-        ws = op.Workspace()
-        len_ws = len(ws)
-        ws.load_project('test.pnm')
-        assert len(ws) == len_ws + 1
-        # Now remove file
-        os.remove('test.pnm')
-        with pytest.raises(FileNotFoundError):
-            os.remove('test.pnm')
 
     def test_to_vtk_2d(self):
         im = ps.generators.blobs(shape=[20, 20])
@@ -82,12 +66,21 @@ class ExportTest():
         volume_total = np.prod(net.spacing * net.shape)
         porosity_desired = volume_void / volume_total
 
-        assert_allclose(actual=porosity_actual, desired=porosity_desired, rtol=0.05)
+        assert_allclose(actual=porosity_actual, desired=porosity_desired, rtol=0.1)
 
     def test_to_stl(self):
-        im = ps.generators.blobs(shape=[50, 50, 50], spacing=0.1)
+        im = ps.generators.blobs(shape=[50, 50, 50])
         ps.io.to_stl(im, filename="im2stl")
         os.remove("im2stl.stl")
+
+    # def test_to_paraview(self):
+    #     im = ps.generators.blobs(shape=[50, 50, 50], spacing=0.1)
+    #     ps.io.to_paraview(im=im, filename='test_to_paraview.pvsm')
+    #     os.remove('test_to_paraview.pvsm')
+
+    # def test_open_paraview(self):
+    #     ps.io.open_paraview(filename='../fixtures/image.pvsm')
+    #     assert "paraview" in (p.name().split('.')[0] for p in psutil.process_iter())
 
     def test_spheres_to_comsol_radii_centers(self):
         radii = np.array([10, 20, 25, 5])
@@ -95,16 +88,13 @@ class ExportTest():
                             [20, 20, 13],
                             [40, 25, 55],
                             [60, 0, 89]])
-        ps.io.spheres_to_comsol(filename='sphere_pack',
-                                centers=centers,
-                                radii=radii)
+        ps.io.spheres_to_comsol(filename='sphere_pack', centers=centers, radii=radii)
         os.remove("sphere_pack.mphtxt")
 
     def test_spheres_to_comsol_im(self):
         im = ps.generators.overlapping_spheres(shape=[100, 100, 100],
-                                               radius=10, porosity=0.6)
-        ps.io.spheres_to_comsol(filename='sphere_pack',
-                                im=im)
+                                               r=10, porosity=0.6)
+        ps.io.spheres_to_comsol(filename='sphere_pack', im=im)
         os.remove("sphere_pack.mphtxt")
 
     def test_openfoam_export_3D(self):

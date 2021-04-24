@@ -1,11 +1,23 @@
 r"""
 
-===============================================================================
-dns - direct numerical simulation
-===============================================================================
+DNS
+###
 
+**Direct Numerical Simulation**
 
+This module contains routines for performing direct numerical
+simulations.
+
+.. currentmodule:: porespy
+
+.. autosummary::
+   :template: mybase.rst
+   :toctree: generated/
+
+   dns.tortuosity
 
 """
 
-from .__funcs__ import tortuosity
+__all__ = ["tortuosity"]
+
+from ._funcs import tortuosity

@@ -3,23 +3,25 @@ import pytest
 import numpy as np
 import porespy as ps
 from skimage import io
+from edt import edt
 from pathlib import Path
 import scipy.ndimage as spim
 from numpy.testing import assert_allclose
+ps.settings.tqdm['disable'] = True
 
 
 class MetricsTest():
 
     def setup_class(self):
         np.random.seed(0)
-        self.im2D = ps.generators.lattice_spheres(shape=[100, 100],
-                                                  radius=5, offset=2,
+        self.im2D = ps.generators.lattice_spheres(shape=[101, 101],
+                                                  r=5, spacing=15,
                                                   lattice='square')
         self.im2D_big = ps.generators.lattice_spheres(shape=[500, 500],
-                                                      radius=10, offset=10,
+                                                      r=10, spacing=25,
                                                       lattice='square')
         self.im3D = ps.generators.lattice_spheres(shape=[51, 51, 51],
-                                                  radius=4, offset=2,
+                                                  r=4, spacing=14,
                                                   lattice='cubic')
         self.blobs = ps.generators.blobs(shape=[101, 101, 101], porosity=0.5,
                                          blobiness=[1, 2, 3])
@@ -29,7 +31,7 @@ class MetricsTest():
 
     def test_porosity(self):
         phi = ps.metrics.porosity(im=self.im2D)
-        assert phi == 0.6619
+        assert np.allclose(phi, 0.66856)
 
     def test_tpcf_fft_2d(self):
         tpcf_fft_1 = ps.metrics.two_point_correlation_fft(self.im2D)
@@ -56,21 +58,19 @@ class MetricsTest():
         assert np.sum(psd.satn) == 1.0
 
     def test_two_point_correlation_bf(self):
-        tpcf_bf = ps.metrics.two_point_correlation_bf(self.im2D)
+        tpcf_bf = ps.metrics.two_point_correlation_bf(self.im2D, spacing=4)
         # autocorrelation fn should level off at around the porosity
-        t = 0.2
+        tol = 0.05
         phi1 = ps.metrics.porosity(im=self.im2D)
-        assert np.sqrt((np.mean(tpcf_bf.probability[-5:]) - phi1)**2) < t
-        # Throw warning if image contains a singleton axis
-        with pytest.warns(UserWarning):
-            _ = ps.metrics.two_point_correlation_bf(np.atleast_3d(self.im2D))
+        assert np.sqrt((np.mean(tpcf_bf.probability[-5:]) - phi1)**2) < tol
 
     def test_rev(self):
         rev = ps.metrics.representative_elementary_volume(self.blobs)
         assert (np.mean(rev.porosity) - 0.5)**2 < 0.05
 
     def test_radial_density(self):
-        den = ps.metrics.radial_density(self.blobs)
+        dt = edt(self.blobs)
+        den = ps.metrics.radial_density_distribution(dt)
         assert den.cdf.max() == 1
 
     def test_props_to_DataFrame(self):
@@ -85,7 +85,7 @@ class MetricsTest():
 
     def test_porosity_profile(self):
         im = ps.generators.lattice_spheres(shape=[999, 999],
-                                           radius=15, offset=4)
+                                           r=15, spacing=38)
         p = ps.metrics.porosity_profile(im, axis=0)
         assert p.max() == 1.0
         assert_allclose(p.min(), 0.24524524524524523)
@@ -98,14 +98,17 @@ class MetricsTest():
 
     def test_linear_density(self):
         im = ps.filters.distance_transform_lin(self.im2D, axis=0, mode='both')
-        ps.metrics.linear_density(im)
+        ps.metrics.lineal_path_distribution(im)
 
     def test_chord_length_distribution_2D(self):
         chords = ps.filters.apply_chords(self.im2D)
-        cld = ps.metrics.chord_length_distribution(chords, normalization='length')
-        assert not hasattr(cld, "logL")
-        cld = ps.metrics.chord_length_distribution(chords, normalization='length', log=1)
-        assert hasattr(cld, "logL")
+        cld = ps.metrics.chord_length_distribution(chords,
+                                                   normalization='length')
+        assert not hasattr(cld, "LogL")
+        cld = ps.metrics.chord_length_distribution(chords,
+                                                   normalization='length',
+                                                   log=1)
+        assert hasattr(cld, "LogL")
         with pytest.raises(Exception):
             cld = ps.metrics.chord_length_distribution(chords,
                                                        normalization='unsupported_norm')
@@ -144,35 +147,84 @@ class MetricsTest():
         ia = ps.metrics.region_interface_areas(regions, areas)
         assert np.all(ia.conns[0] == [2, 19])
         assert np.around(ia.area[0], decimals=2) == 3.59
-        with pytest.warns(UserWarning):
-            im2D = (np.random.rand(5, 5) * 10).astype(int)
-            _ = ps.metrics.region_interface_areas(np.atleast_3d(im2D), areas)
 
     def test_phase_fraction(self):
         im = np.reshape(np.random.randint(0, 10, 1000), [10, 10, 10])
         labels = np.unique(im, return_counts=True)[1]
         counts = ps.metrics.phase_fraction(im, normed=False)
+        counts = np.fromiter(counts.values(), int)
         assert np.all(labels == counts)
         fractions = ps.metrics.phase_fraction(im, normed=True)
+        fractions = np.fromiter(fractions.values(), float)
         assert np.isclose(fractions.sum(), 1)
         assert np.allclose(fractions, counts / counts.sum())
-        with pytest.raises(Exception):
-            ps.metrics.phase_fraction(np.random.rand(10, 10, 10), normed=True)
         # The method must also work on boolean images
         counts = ps.metrics.phase_fraction(im.astype(bool))
         assert counts[0] == (im == 0).sum() / im.size
         assert counts[1] == (im != 0).sum() / im.size
+        # The method should also work on float images
+        im = np.array([0.5, 0.5, 1.5, 1.5, 12, 1.5, 12, 12, 12, 12])
+        fractions = ps.metrics.phase_fraction(im, normed=True)
+        k = np.fromiter(fractions.keys(), float)
+        v = np.fromiter(fractions.values(), float)
+        assert np.allclose(k, [0.5, 1.5, 12])
+        assert np.allclose(v, [0.2, 0.3, 0.5])
 
     def test_representative_elementary_volume(self):
         im = ps.generators.lattice_spheres(shape=[999, 999],
-                                           radius=15, offset=4)
+                                           r=15, offset=4)
         rev = ps.metrics.representative_elementary_volume(im)
         assert_allclose(np.average(rev.porosity), im.sum() / im.size, rtol=1e-1)
 
         im = ps.generators.lattice_spheres(shape=[151, 151, 151],
-                                           radius=9, offset=4)
+                                           r=9, offset=4)
         rev = ps.metrics.representative_elementary_volume(im)
         assert_allclose(np.average(rev.porosity), im.sum() / im.size, rtol=1e-1)
+
+    def test_geometric_tortuosity_2d(self):
+        np.random.seed(0)
+        im = ps.generators.blobs(shape=[300, 300], porosity=0.6, blobiness=2)
+        out = ps.metrics.geometrical_tortuosity(im)
+        assert np.size(out) == 1
+        assert out >= 1
+
+    def test_geometric_tortuosity_3d(self):
+        np.random.seed(0)
+        im = ps.generators.blobs(shape=[100, 100, 100], porosity=0.6, blobiness=2)
+        out = ps.metrics.geometrical_tortuosity(im)
+        assert np.size(out) == 1
+        assert out >= 1
+
+    def test_geometric_tortuosity_points_2d(self):
+        pass
+        # This function is not quite ready yet
+        # np.random.seed(0)
+        # im = ps.generators.blobs(shape=[300, 300], porosity=0.6, blobiness=2)
+        # out = ps.metrics.geometrical_tortuosity_points(im)
+        # assert np.shape(out[0])[0] ==np.shape(out[0])[1]
+        # assert np.size(out[1]) ==1
+        # assert out[1] >= 1
+
+    def test_geometric_tortuosity_points_3d(self):
+        pass
+        # This function is not quite ready yet
+        # np.random.seed(0)
+        # im = ps.generators.blobs(shape=[50, 50, 50], porosity=0.6, blobiness=2)
+        # out = ps.metrics.geometrical_tortuosity_points(im)
+        # assert np.shape(out[0])[0] ==np.shape(out[0])[1]
+        # assert np.size(out[1]) ==1
+        # assert out[1] >= 1
+
+    def test_pc_curve_from_ibip_and_mio(self):
+        im = ps.generators.blobs(shape=[100, 100], porosity=0.7)
+        sizes = ps.filters.porosimetry(im=im)
+        pc1 = ps.metrics.pc_curve_from_mio(sizes=sizes)
+        seq, sizes = ps.filters.ibip(im=im, return_sizes=True)
+        pc2 = ps.metrics.pc_curve_from_ibip(sizes=sizes, seq=seq)
+        assert hasattr(pc1, 'pc')
+        assert hasattr(pc1, 'snwp')
+        assert hasattr(pc2, 'pc')
+        assert hasattr(pc2, 'snwp')
 
 
 if __name__ == '__main__':
