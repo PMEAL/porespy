@@ -153,7 +153,7 @@ class Snow2Test:
         mode = spst.mode(snow.network['pore.extended_diameter'])
         assert mode[0] == 60
         D = np.unique(snow.network['pore.extended_diameter'].astype(int))
-        assert np.all(D == np.array([31, 32, 33, 34, 35, 36, 38, 60]))
+        assert np.all(D == np.array([30, 33, 34, 35, 36, 38, 39, 60]))
 
 
 if __name__ == '__main__':
