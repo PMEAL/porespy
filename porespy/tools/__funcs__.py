@@ -1268,38 +1268,6 @@ def extract_regions(regions, labels: list, trim=True):
     return im_new
 
 
-def _parse_pad_width(pad_width, ndim):
-    r"""
-    """
-    # Example: pad_width = 3
-    try:
-        len(pad_width)
-    except TypeError:
-        return [[pad_width, pad_width] for i in range(ndim)]
-
-    # Example: pad_width = [3]
-    if len(pad_width) == 1:
-        return [[pad_width[0], pad_width[0]] for i in range(ndim)]
-
-    # Example: pad_width = [3, 1, 3, 0] and ndim = 3
-    if len(pad_width) != ndim:
-        raise Exception("Length of 'pad_width' must match the number of dimensions")
-
-    out = []
-    for elem in pad_width:
-        # Example: pad_width = [3, 1, 0]
-        if np.size(elem) == 1:
-            out.append(np.squeeze([elem, elem]))
-        # Example: pad_width = [[3, 1], 1, 0]
-        elif np.size(elem) == 2:
-            out.append(np.squeeze(elem))
-        # Example: pad_width = [[3, 1, 2], 1, 0]
-        else:
-            raise Exception("Each element inside 'pad_width' can only be scalar"
-                            " or a list of length 2")
-    return out
-
-
 def sanitize_filename(filename, ext, exclude_ext=False):
     r"""
     Returns a sanitized string in the form of name.extension
