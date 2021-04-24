@@ -34,16 +34,19 @@ def map_to_regions(regions, values):
     This function assumes that the array of pore values are indexed starting
     at location 0, while in the region image 0's indicate background phase and
     the region indexing starts at 1.  That is, region 1 corresponds to pore 0.
-        
+
     Examples
     --------
-    `Click here <https://porespy.org/examples/networks/map_to_regions.html>`_ to view online example.
+    `Click here
+    <https://porespy.org/examples/networks/howtos/map_to_regions.html>`_
+    to view online example.
     """
     values = np.array(values).flatten()
-    if np.size(values) != regions.max() + 1:
+    if np.size(values) != regions.max():
         raise Exception('Number of values does not match number of regions')
     im = np.zeros_like(regions)
-    im = values[regions]
+    im = values[regions-1]
+    im = im*(regions > 0)
     return im
 
 
