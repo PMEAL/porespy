@@ -5,6 +5,7 @@ import scipy.ndimage as spim
 import matplotlib.pyplot as plt
 import pytest
 from edt import edt
+ps.settings.tqdm['disable'] = True
 
 
 class ToolsTest():

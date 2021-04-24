@@ -2,13 +2,10 @@ import scipy as sp
 import numpy as np
 import scipy.ndimage as spim
 from scipy.stats import rankdata
-import warnings
 from edt import edt
-import scipy.ndimage as spim
 from loguru import logger
 from collections import namedtuple
 from skimage.morphology import ball, disk
-from skimage.segmentation import relabel_sequential
 from scipy.signal import fftconvolve
 try:
     from skimage.measure import marching_cubes
@@ -122,10 +119,8 @@ def fftmorphology(im, strel, mode='opening'):
     ----------
     im : nd-array
         The binary image on which to perform the morphological operation
-
     strel : nd-array
         The structuring element to use.  Must have the same dims as ``im``.
-
     mode : string
         The type of operation to perform.  Options are 'dilation', 'erosion',
         'opening' and 'closing'.
@@ -417,12 +412,10 @@ def extract_cylinder(im, r=None, axis=0):
     ----------
     im : ND-array
         The image of the porous material.  Can be any data type.
-
     r : scalr
         The radius of the cylinder to extract.  If ``None`` is given then the
         default is the largest cylinder that can fit inside the specified
         plane.
-
     axis : scalar
         The axis along with the cylinder will be oriented.
 
@@ -455,7 +448,6 @@ def extract_subsection(im, shape):
     ----------
     im : ND-array
         Image from which to extract the subsection
-
     shape : array_like
         Can either specify the size of the extracted section or the fractional
         size of the image to extact.
@@ -465,6 +457,10 @@ def extract_subsection(im, shape):
     image : ND-array
         An ND-array of size given by the ``shape`` argument, taken from the
         center of the image.
+
+    See Also
+    --------
+    unpad
 
     Examples
     --------
@@ -505,7 +501,6 @@ def get_planes(im, squeeze=True):
     ----------
     im : ND-array
         The volumetric image from which the 3 planar images are to be obtained
-
     squeeze : boolean, optional
         If True (default) the returned images are 2D (i.e. squeezed).  If
         False, the images are 1 element deep along the axis where the slice
@@ -540,11 +535,9 @@ def extend_slice(slices, shape, pad=1):
     slices : list of slice objects
          A list (or tuple) of N slice objects, where N is the number of
          dimensions in the image.
-
     shape : array_like
         The shape of the image into which the slice objects apply.  This is
         used to check the bounds to prevent indexing beyond the image.
-
     pad : int or list of ints
         The number of voxels to expand in each direction.
 
@@ -610,7 +603,6 @@ def randomize_colors(im, keep_vals=[0]):
     ----------
     im : array_like
         An ND image of greyscale values.
-
     keep_vals : array_like
         Indicate which voxel values should NOT be altered.  The default is
         `[0]` which is useful for leaving the background of the image
@@ -672,26 +664,30 @@ def make_contiguous(im, mode='keep_zeros'):
     ----------
     im : array_like
         An ND array containing greyscale values
-
     mode : string
         Controls how the ranking is applied in the presence of numbers less
         than or equal to 0.
 
-        'keep_zeros' : (default) Voxels equal to 0 remain 0, and all other
-        numbers are ranked starting at 1, include negative numbers,
-        so [-1, 0, 4] becomes [1, 0, 2]
+        'keep_zeros'
+            (default) Voxels equal to 0 remain 0, and all other
+            numbers are ranked starting at 1, include negative numbers,
+            so [-1, 0, 4] becomes [1, 0, 2]
 
-        'symmetric' : Negative and positive voxels are ranked based on their
-        respective distances to 0, so [-4, -1, 0, 5] becomes [-2, -1, 0, 1]
+        'symmetric'
+            Negative and positive voxels are ranked based on their
+            respective distances to 0, so [-4, -1, 0, 5] becomes
+            [-2, -1, 0, 1]
 
-        'clipped' : Voxels less than or equal to 0 are set to 0, while
-        all other numbers are ranked starting at 1, so [-3, 0, 2] becomes
-        [0, 0, 1].
+        'clipped'
+            Voxels less than or equal to 0 are set to 0, while
+            all other numbers are ranked starting at 1, so [-3, 0, 2]
+            becomes [0, 0, 1].
 
-        'none' : Voxels are ranked such that the smallest or most
-        negative number becomes 1, so [-4, 2, 0] becomes [1, 3, 2].
-        This is equivalent to calling ``scipy.stats.rankdata`` directly,
-        and reshaping the result to match ``im``.
+        'none'
+            Voxels are ranked such that the smallest or most
+            negative number becomes 1, so [-4, 2, 0] becomes [1, 3, 2].
+            This is equivalent to calling ``scipy.stats.rankdata`` directly,
+            and reshaping the result to match ``im``.
 
     Returns
     -------
@@ -710,12 +706,22 @@ def make_contiguous(im, mode='keep_zeros'):
      [3 4 2]]
 
     """
-    im = np.copy(im)
+    # This is a very simple version using relabel_sequential
+    # if keep_zeros:
+    #     mask = im == 0
+    #     im = im + np.abs(np.min(im)) + 1
+    #     im[mask] = 0
+    # elif np.min(im) < 0:
+    #     im = im + np.abs(np.min(im))
+    # im_new = relabel_sequential(im)[0]
+    # return im_new
+
+    shape = im.shape
     im_flat = im.flatten()
 
     if mode == 'none':
         im_new = rankdata(im_flat, method='dense')
-        im_new = np.reshape(im_new, im.shape)
+        im_new = np.reshape(im_new, shape)
         return im_new
 
     elif mode.startswith('clip'):
@@ -723,7 +729,7 @@ def make_contiguous(im, mode='keep_zeros'):
         im_flat[mask] = 0
         im_new = rankdata(im_flat, method='dense') - 1
         im_new[mask] = 0
-        im_new = np.reshape(im_new, im.shape)
+        im_new = np.reshape(im_new, shape)
         return im_new
 
     elif mode.startswith('keep_zero'):
@@ -731,7 +737,7 @@ def make_contiguous(im, mode='keep_zeros'):
         im_flat[mask] = im.min() - 1
         im_new = rankdata(im_flat, method='dense') - 1
         im_new[mask] = 0
-        im_new = np.reshape(im_new, im.shape)
+        im_new = np.reshape(im_new, shape)
         return im_new
 
     elif mode.startswith('sym'):
@@ -741,7 +747,7 @@ def make_contiguous(im, mode='keep_zeros'):
         im_pos = rankdata(im_flat[mask_pos], method='dense')
         im_flat[mask_pos] = im_pos
         im_flat[mask_neg] = im_neg
-        im_new = np.reshape(im_flat, im.shape)
+        im_new = np.reshape(im_flat, shape)
         return im_new
 
     else:
@@ -768,7 +774,6 @@ def get_border(shape, thickness=1, mode='edges', return_indices=False):
         to ``True``.  If ``True``, then a tuple with the x, y, z (if ``im`` is
         3D) indices is returned.  This tuple can be used directly to index into
         the image, such as ``im[tup] = 2``.
-
     asmask : Boolean
         If ``True`` (default) then an image of the specified ``shape`` is
         returned, otherwise indices of the border voxels are returned.
@@ -778,15 +783,6 @@ def get_border(shape, thickness=1, mode='edges', return_indices=False):
     image : ND-array
         An ND-array of specified shape with ``True`` values at the perimeter
         and ``False`` elsewhere
-
-    Notes
-    -----
-    TODO: This function uses brute force to create an image then fill the
-    edges using location-based logic, and if the user requests
-    ``return_indices`` it finds them using ``np.where``.  Since these arrays
-    are cubic it should be possible to use more elegant and efficient
-    index-based logic to find the indices, then use them to fill an empty
-    image with ``True`` using these indices.
 
     Examples
     --------
@@ -804,6 +800,13 @@ def get_border(shape, thickness=1, mode='edges', return_indices=False):
      [ True  True  True]]
 
     """
+    # TODO: This function uses brute force to create an image then fills the
+    # edges using location-based logic, and if the user requests
+    # ``return_indices`` it finds them using ``np.where``.  Since these arrays
+    # are cubic it should be possible to use more elegant and efficient
+    # index-based logic to find the indices, then use them to fill an empty
+    # image with ``True`` using these indices.
+
     ndims = len(shape)
     t = thickness
     border = np.ones(shape, dtype=bool)
@@ -840,7 +843,6 @@ def in_hull(points, hull):
     ----------
     points : array_like (N x ndims)
         The spatial coordinates of the points to check
-
     hull : scipy.spatial.ConvexHull object **OR** array_like
         Can be either a convex hull object as returned by
         ``scipy.spatial.ConvexHull`` or simply the coordinates of the points
@@ -869,7 +871,6 @@ def norm_to_uniform(im, scale=None):
     ----------
     im : ND-image
         The image containing the normally distributed scalar field
-
     scale : [low, high]
         A list or array indicating the lower and upper bounds for the new
         randomly distributed data.  The default is ``None``, which uses the
@@ -1218,9 +1219,9 @@ def insert_cylinder(im, xyz0, xyz1, r):
         template[tuple(xyz_line_in_template_coords)] = 1
         template = edt(template == 0) <= r
 
-    im[xyz_min[0] : xyz_max[0] + 1,
-       xyz_min[1] : xyz_max[1] + 1,
-       xyz_min[2] : xyz_max[2] + 1] += template
+    im[xyz_min[0]: xyz_max[0] + 1,
+       xyz_min[1]: xyz_max[1] + 1,
+       xyz_min[2]: xyz_max[2] + 1] += template
 
     return im
 

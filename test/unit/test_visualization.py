@@ -1,5 +1,6 @@
 import porespy as ps
 import numpy as np
+ps.settings.tqdm['disable'] = True
 
 
 class VisualizationTest():

@@ -1,7 +1,3 @@
-import os
-from pathlib import Path
-from platform import system
-from os.path import realpath
 import pytest
 import numpy as np
 from scipy import stats as spst
@@ -10,6 +6,7 @@ import porespy as ps
 import openpnm as op
 ws = op.Workspace()
 ws.settings['loglevel'] = 50
+ps.settings.tqdm['disable'] = True
 
 
 class Snow2Test:

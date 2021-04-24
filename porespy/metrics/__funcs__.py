@@ -808,14 +808,10 @@ def phase_fraction(im, normed=True):
     """
     if im.dtype == bool:
         im = im.astype(int)
-    elif im.dtype != int:
-        raise Exception('Image must contain integer values for each phase')
-    labels = np.arange(0, np.amax(im) + 1)
-    results = np.zeros_like(labels)
-    for i in labels:
-        results[i] = np.sum(im == i)
-    if normed:
-        results = results / im.size
+    labels = np.unique(im)
+    results = {}
+    for label in labels:
+        results[label] = np.sum(im == label) * (1 / im.size if normed else 1)
     return results
 
 
@@ -859,7 +855,7 @@ def pc_curve_from_ibip(seq, sizes, im=None, sigma=0.072, theta=180, voxel_size=1
     seqs = np.unique(seq)[1:]
     x = []
     y = []
-    with tqdm(seqs) as pbar:
+    with tqdm(seqs, **settings.tqdm) as pbar:
         for n in seqs:
             pbar.update()
             mask = seq == n
@@ -920,7 +916,7 @@ def pc_curve_from_mio(sizes, im=None, sigma=0.072, theta=180, voxel_size=1,
     sz = np.unique(sizes)[:0:-1]
     x = []
     y = []
-    with tqdm(sz) as pbar:
+    with tqdm(sz, **settings.tqdm) as pbar:
         for n in sz:
             pbar.update()
             r = n*voxel_size
@@ -941,8 +937,8 @@ def pc_curve_from_mio(sizes, im=None, sigma=0.072, theta=180, voxel_size=1,
     pc_curve.pc = x
     pc_curve.snwp = y
     return pc_curve
-    
-    
+
+
 def porosity(im):
     r"""
     Calculates the porosity of an image assuming 1's are void space and 0's are

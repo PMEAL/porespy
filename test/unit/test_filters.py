@@ -6,6 +6,7 @@ import scipy.ndimage as spim
 from skimage.morphology import disk, ball, skeletonize_3d
 from skimage.util import random_noise
 from scipy.stats import norm
+ps.settings.tqdm['disable'] = True
 
 
 class FilterTest():
