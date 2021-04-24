@@ -42,7 +42,6 @@ ways do NOT return a modified version of the original image.
    tools.size_to_seq
    tools.subdivide
    tools.unpad
-   tools.zero_corners
 
 """
 
@@ -74,7 +73,6 @@ __all__ = [
     "size_to_seq",
     "subdivide",
     "unpad",
-    "zero_corners",
     "sanitize_filename",
     "get_tqdm",
     "show_docstring"]
@@ -109,7 +107,6 @@ from .__funcs__ import seq_to_satn
 from .__funcs__ import size_to_satn
 from .__funcs__ import size_to_seq
 from .__funcs__ import subdivide
-from .__funcs__ import zero_corners
 from .__funcs__ import sanitize_filename
 from .__utils__ import get_tqdm
 from .__utils__ import show_docstring
