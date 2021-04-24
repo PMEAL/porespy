@@ -10,16 +10,16 @@ class Snow2Test:
     def setup_class(self):
         pass
 
-    def test_single_phase_2D(self):
+    def test_single_phase_2D_serial(self):
         im = ps.generators.blobs(shape=[200, 200])
-        snow2 = ps.networks.snow2(im, phase_alias={1: 'phase1'})
+        snow2 = ps.networks.snow2(im, phase_alias={1: 'phase1'}, parallelization=None)
         pn, geo = op.io.PoreSpy.import_data(snow2.network)
         # Ensure phase_alias was ignored since only single phase
         assert 'pore.phase1' not in pn.keys()
 
-    def test_return_all(self):
+    def test_return_all_serial(self):
         im = ps.generators.blobs(shape=[200, 200])
-        snow2 = ps.networks.snow2(im)
+        snow2 = ps.networks.snow2(im, parallelization=None)
         pn, geo = op.io.PoreSpy.import_data(snow2.network)
         assert hasattr(snow2, 'regions')
         assert hasattr(snow2, 'phases')

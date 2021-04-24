@@ -211,7 +211,7 @@ def fftmorphology(im, strel, mode='opening'):
     return result
 
 
-def subdivide(im, divs=2, overlap=0, flatten=False):
+def subdivide(im, divs=2, overlap=0):
     r"""
     Returns slices into an image describing the specified number of sub-arrays.
 
@@ -223,19 +223,12 @@ def subdivide(im, divs=2, overlap=0, flatten=False):
     ----------
     im : ND-array
         The image of the porous media
-
     divs : scalar or array_like
         The number of sub-divisions to create in each axis of the image.  If a
         scalar is given it is assumed this value applies in all dimensions.
-
     overlap : scalar or array_like
         The amount of overlap to use when dividing along each axis.  If a
         scalar is given it is assumed this value applies in all dimensions.
-
-    flatten : boolean
-        If set to ``True`` then the slice objects are returned as a flat
-        list, while if ``False`` they are returned in a ND-array where each
-        subdivision is accessed using row-col or row-col-layer indexing.
 
     Returns
     -------
@@ -251,41 +244,89 @@ def subdivide(im, divs=2, overlap=0, flatten=False):
     --------
     chunked_func
 
-
     """
     divs = np.ones((im.ndim,), dtype=int) * np.array(divs)
     overlap = overlap * (divs > 1)
-    size = (np.array(im.shape)/divs/2 + overlap).astype(int)
 
-    # Find center points of each subsection
-    cens = []
-    for ax in range(im.ndim):
-        steps = np.linspace(0, im.shape[ax], divs[ax]+1).astype(int)[:-1]
-        steps += int(im.shape[ax]/divs[ax]/2)
-        cens.append(steps)
-    # Get slices into im for each subsection
-    s = []
-    for i in range(len(cens[0])):
-        s.append([])
-        xtemp = slice(cens[0][i], cens[0][i], None)
-        for j in range(len(cens[1])):
-            ytemp = slice(cens[1][j], cens[1][j], None)
-            if im.ndim == 2:
-                stemp = extend_slice([xtemp, ytemp], im.shape, pad=size)
-                s[i].append(stemp)
+    s = np.zeros(shape=divs, dtype=object)
+    spacing = np.round(np.array(im.shape)/divs, decimals=0).astype(int)
+    for i in range(s.shape[0]):
+        x = spacing[0]
+        sx = slice(x*i, min(im.shape[0], x*(i+1)), None)
+        for j in range(s.shape[1]):
+            y = spacing[1]
+            sy = slice(y*j, min(im.shape[1], y*(j+1)), None)
+            if im.ndim == 3:
+                for k in range(s.shape[2]):
+                    z = spacing[2]
+                    sz = slice(z*k, min(im.shape[2], z*(k+1)), None)
+                    s[i, j, k] = tuple([sx, sy, sz])
             else:
-                s[i].append([])
-                for k in range(len(cens[2])):
-                    ztemp = slice(cens[2][k], cens[2][k], None)
-                    stemp = extend_slice([xtemp, ytemp, ztemp], im.shape, pad=size)
-                    s[i][j].append(stemp)
+                s[i, j] = tuple([sx, sy])
+    s = s.flatten().tolist()
+    for i, item in enumerate(s):
+        s[i] = extend_slice(slices=item, shape=im.shape, pad=overlap)
+    return s
 
-    slices = s
-    if flatten is True:
-        slices = [item for sublist in slices for item in sublist]
-        if im.ndim == 3:
-            slices = [item for sublist in slices for item in sublist]
-    return slices
+
+def recombine(ims, slices, overlap):
+    r"""
+    Recombines image chunks back into full image of original shape
+
+    Parameters
+    ----------
+    ims : list of ND-arrays
+        The chunks of the original image, which may or may not have been
+        processed.
+    slices : list of slice objects
+        The slice objects which were used to obtain the chunks in ``ims``
+    overlap : int of list ints
+        The amount of overlap used when creating chunks
+
+    Returns
+    -------
+    im : ND-array
+        An image constituted from the chunks in ``ims`` of the same shape
+        as the original image.
+    """
+    shape = [0]*ims[0].ndim
+    for s in slices:
+        for dim in range(len(slices[0])):
+            shape[dim] = max(shape[dim], s[dim].stop)
+
+    if isinstance(overlap, int):
+        overlap = [overlap]*len(shape)
+
+    im = np.zeros(shape, dtype=ims[0].dtype)
+    for i, s in enumerate(slices):
+        # Prepare new slice objects into main and sub-sliced image
+        a = []  # Slices into original image
+        b = []  # Slices into chunked image
+        for dim in range(im.ndim):
+            if s[dim].start == 0:
+                ax = 0
+                bx = 0
+            else:
+                ax = s[dim].start + overlap[dim]
+                bx = overlap[dim]
+            if s[dim].stop == im.shape[dim]:
+                ay = im.shape[dim]
+                by = im.shape[dim]
+            else:
+                ay = s[dim].stop - overlap[dim]
+                by = s[dim].stop - s[dim].start - overlap[dim]
+            a.append(slice(ax, ay, None))
+            b.append(slice(bx, by, None))
+        # Convert lists of slices to tuples
+        a = tuple(a)
+        b = tuple(b)
+        # Insert image chunk into main image
+        try:
+            im[a] = ims[i][b]
+        except ValueError:
+            raise IndexError('The applied filter seems to have returned a '
+                             + 'larger image that it was sent.')
+    return im
 
 
 def bbox_to_slices(bbox):
