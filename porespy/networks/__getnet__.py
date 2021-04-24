@@ -104,7 +104,9 @@ def regions_to_network(regions, phases=None, voxel_size=1, accuracy='standard'):
     if im.size != phases.size:
         raise Exception('regions and phase are different sizes, probably ' +
                         'because boundary regions were not added to phases')
-    dt = edt(im > 0)
+    dt = edt(phases == 1)
+    for i in range(2, phases.max()+1):
+        dt += edt(phases == i)
 
     # Get 'slices' into im for each pore region
     slices = spim.find_objects(im)
