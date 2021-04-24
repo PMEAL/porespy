@@ -21,7 +21,6 @@ ways do NOT return a modified version of the original image.
    tools.extract_regions
    tools.extract_cylinder
    tools.extract_subsection
-   tools.fftmorphology
    tools.find_outer_region
    tools.get_border
    tools.get_planes
@@ -50,7 +49,6 @@ __all__ = [
     "extract_cylinder",
     "extract_subsection",
     "extract_regions",
-    "fftmorphology",
     "find_outer_region",
     "get_border",
     "get_planes",
@@ -79,7 +77,6 @@ from .__funcs__ import extend_slice
 from .__funcs__ import extract_cylinder
 from .__funcs__ import extract_subsection
 from .__funcs__ import extract_regions
-from .__funcs__ import fftmorphology
 from .__funcs__ import find_outer_region
 from .__funcs__ import get_border
 from .__funcs__ import get_planes

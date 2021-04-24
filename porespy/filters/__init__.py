@@ -56,7 +56,6 @@ from .__funcs__ import apply_chords_3D
 from .__funcs__ import apply_padded
 from .__funcs__ import chunked_func
 from .__funcs__ import distance_transform_lin
-from .__funcs__ import fftmorphology
 from .__funcs__ import fill_blind_pores
 from .__funcs__ import find_disconnected_voxels
 from .__funcs__ import find_dt_artifacts
@@ -84,6 +83,7 @@ from ._size_seq_satn import size_to_seq
 from ._size_seq_satn import size_to_satn
 from ._size_seq_satn import seq_to_satn
 from ._nlmeans import nl_means_layered
+from ._fftmorphology import fftmorphology
 from . import imagej
 from .__ibip__ import ibip
 from .__ibip__ import find_trapped_regions
