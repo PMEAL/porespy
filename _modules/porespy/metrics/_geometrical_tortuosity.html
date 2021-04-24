@@ -25,8 +25,8 @@
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/basic.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
     
@@ -190,13 +190,16 @@
 <span class="kn">import</span> <span class="nn">skimage</span>
 <span class="kn">import</span> <span class="nn">skfmm</span>
 <span class="kn">from</span> <span class="nn">skimage.morphology</span> <span class="kn">import</span> <span class="n">disk</span><span class="p">,</span> <span class="n">square</span><span class="p">,</span> <span class="n">ball</span><span class="p">,</span> <span class="n">cube</span>
-<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">get_tqdm</span><span class="p">,</span> <span class="n">fftmorphology</span>
+<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">get_tqdm</span>
+<span class="kn">from</span> <span class="nn">porespy.filters</span> <span class="kn">import</span> <span class="n">fftmorphology</span>
+<span class="kn">from</span> <span class="nn">porespy</span> <span class="kn">import</span> <span class="n">settings</span>
+
 <span class="n">tqdm</span> <span class="o">=</span> <span class="n">get_tqdm</span><span class="p">()</span>
 
 
 <div class="viewcode-block" id="geometrical_tortuosity"><a class="viewcode-back" href="../../../modules/generated/porespy.metrics.geometrical_tortuosity.html#porespy.metrics.geometrical_tortuosity">[docs]</a><span class="k">def</span> <span class="nf">geometrical_tortuosity</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculate geometrical tortuosity of an image.</span>
+<span class="sd">    Calculate geometrical tortuosity across an image</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -204,6 +207,11 @@
 <span class="sd">        The image for which geometrical tortuosity is found</span>
 <span class="sd">    axis: int</span>
 <span class="sd">        The axis across which to find the geometrical tortuosity</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tau : float</span>
+<span class="sd">        The computed tortuosity of the image along the given axis</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
@@ -226,7 +234,7 @@
     <span class="n">labels</span><span class="p">,</span> <span class="n">n</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">inlets</span><span class="p">)</span>
     <span class="n">mins</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">inl</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">find_objects</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)):</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="o">**</span><span class="n">settings</span><span class="o">.</span><span class="n">tqdm</span><span class="p">):</span>
 
         <span class="n">phi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">sk</span><span class="p">)</span>
         <span class="n">phi</span><span class="p">[</span><span class="n">inl</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">0</span>
@@ -246,22 +254,18 @@
                 <span class="k">for</span> <span class="n">iii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">out2</span><span class="p">)[</span><span class="mi">1</span><span class="p">]):</span>
                     <span class="k">if</span> <span class="n">out2</span><span class="p">[</span><span class="n">ii</span><span class="p">,</span> <span class="n">iii</span><span class="p">]</span> <span class="o">!=</span> <span class="mf">0.0</span> <span class="ow">and</span> <span class="n">out2</span><span class="p">[</span><span class="n">ii</span><span class="p">,</span> <span class="n">iii</span><span class="p">]</span> <span class="o">!=</span> <span class="mf">1.0</span><span class="p">:</span>
                         <span class="n">out3</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">out2</span><span class="p">[</span><span class="n">ii</span><span class="p">,</span> <span class="n">iii</span><span class="p">])</span>
-
         <span class="k">if</span> <span class="n">out3</span> <span class="o">!=</span> <span class="p">[]:</span>
             <span class="n">mins</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">out3</span><span class="p">))</span>
 
-<span class="c1">#    print(mins)</span>
     <span class="n">avgmin</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">mins</span><span class="p">)</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">mins</span><span class="p">)</span>
     <span class="n">tortuosity</span> <span class="o">=</span> <span class="n">avgmin</span><span class="o">/</span><span class="n">imlen</span>
     <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
-<span class="c1">#    print(avgmin)</span>
-<span class="c1">#    print(tortuosity)</span>
     <span class="k">return</span> <span class="n">tortuosity</span></div>
 
 
 <span class="k">def</span> <span class="nf">geometrical_tortuosity_points</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculate geometrical tortuosity of an image.</span>
+<span class="sd">    Calculate geometrical tortuosity of an image within</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -337,7 +341,7 @@
                     <span class="n">tort</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">ii</span><span class="p">]</span> <span class="o">=</span> <span class="n">out2</span><span class="o">/</span><span class="n">dist</span>
         <span class="n">tortavg</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">tort</span><span class="p">)))</span><span class="o">/</span><span class="p">(</span><span class="n">num</span><span class="o">*</span><span class="n">num</span><span class="o">*</span><span class="p">(</span><span class="n">num</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
     <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
-    <span class="k">return</span><span class="p">(</span><span class="n">tort</span><span class="p">,</span> <span class="n">tortavg</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">tort</span><span class="p">,</span> <span class="n">tortavg</span>
 </pre></div>
 
               </div>

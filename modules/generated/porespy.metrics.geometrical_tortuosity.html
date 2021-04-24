@@ -25,8 +25,8 @@
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
     
@@ -344,6 +344,21 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.size_to_seq.html">
+     size_to_seq
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.size_to_satn.html">
+     size_to_satn
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.seq_to_satn.html">
+     seq_to_satn
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="porespy.filters.snow_partitioning.html">
      snow_partitioning
     </a>
@@ -602,11 +617,6 @@
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="porespy.tools.fftmorphology.html">
-     fftmorphology
-    </a>
-   </li>
-   <li class="toctree-l2">
     <a class="reference internal" href="porespy.tools.find_outer_region.html">
      find_outer_region
     </a>
@@ -637,8 +647,18 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="porespy.tools.isolate_object.html">
+     isolate_object
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="porespy.tools.make_contiguous.html">
      make_contiguous
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.tools.marching_map.html">
+     marching_map
     </a>
    </li>
    <li class="toctree-l2">
@@ -677,23 +697,13 @@
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="porespy.tools.pad_faces.html">
-     pad_faces
-    </a>
-   </li>
-   <li class="toctree-l2">
     <a class="reference internal" href="porespy.tools.randomize_colors.html">
      randomize_colors
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="porespy.tools.seq_to_satn.html">
-     seq_to_satn
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="porespy.tools.size_to_seq.html">
-     size_to_seq
+    <a class="reference internal" href="porespy.tools.recombine.html">
+     recombine
     </a>
    </li>
    <li class="toctree-l2">
@@ -704,11 +714,6 @@
    <li class="toctree-l2">
     <a class="reference internal" href="porespy.tools.unpad.html">
      unpad
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="porespy.tools.zero_corners.html">
-     zero_corners
     </a>
    </li>
   </ul>
@@ -858,13 +863,19 @@
 <dl class="py function">
 <dt id="porespy.metrics.geometrical_tortuosity">
 <code class="sig-name descname"><span class="pre">geometrical_tortuosity</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/metrics/_geometrical_tortuosity.html#geometrical_tortuosity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.metrics.geometrical_tortuosity" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate geometrical tortuosity of an image.</p>
+<dd><p>Calculate geometrical tortuosity across an image</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>im</strong> (<em>ND-image</em>) – The image for which geometrical tortuosity is found</p></li>
 <li><p><strong>axis</strong> (<em>int</em>) – The axis across which to find the geometrical tortuosity</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>tau</strong> – The computed tortuosity of the image along the given axis</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
 </dd></dl>

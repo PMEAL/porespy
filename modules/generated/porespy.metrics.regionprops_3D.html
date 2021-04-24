@@ -25,8 +25,8 @@
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
     
@@ -344,6 +344,21 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.size_to_seq.html">
+     size_to_seq
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.size_to_satn.html">
+     size_to_satn
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.seq_to_satn.html">
+     seq_to_satn
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="porespy.filters.snow_partitioning.html">
      snow_partitioning
     </a>
@@ -602,11 +617,6 @@
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="porespy.tools.fftmorphology.html">
-     fftmorphology
-    </a>
-   </li>
-   <li class="toctree-l2">
     <a class="reference internal" href="porespy.tools.find_outer_region.html">
      find_outer_region
     </a>
@@ -637,8 +647,18 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="porespy.tools.isolate_object.html">
+     isolate_object
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="porespy.tools.make_contiguous.html">
      make_contiguous
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.tools.marching_map.html">
+     marching_map
     </a>
    </li>
    <li class="toctree-l2">
@@ -677,23 +697,13 @@
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="porespy.tools.pad_faces.html">
-     pad_faces
-    </a>
-   </li>
-   <li class="toctree-l2">
     <a class="reference internal" href="porespy.tools.randomize_colors.html">
      randomize_colors
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="porespy.tools.seq_to_satn.html">
-     seq_to_satn
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="porespy.tools.size_to_seq.html">
-     size_to_seq
+    <a class="reference internal" href="porespy.tools.recombine.html">
+     recombine
     </a>
    </li>
    <li class="toctree-l2">
@@ -704,11 +714,6 @@
    <li class="toctree-l2">
     <a class="reference internal" href="porespy.tools.unpad.html">
      unpad
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="porespy.tools.zero_corners.html">
-     zero_corners
     </a>
    </li>
   </ul>
@@ -857,7 +862,7 @@
 <h1>regionprops_3D<a class="headerlink" href="#regionprops-3d" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="porespy.metrics.regionprops_3D">
-<code class="sig-name descname"><span class="pre">regionprops_3D</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/metrics/__regionprops__.html#regionprops_3D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.metrics.regionprops_3D" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">regionprops_3D</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/metrics/_regionprops.html#regionprops_3D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.metrics.regionprops_3D" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates various metrics for each labeled region in a 3D image.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">regionsprops</span></code> method in <strong>skimage</strong> is very thorough for 2D images,
 but is a bit limited when it comes to 3D images, so this function aims
@@ -874,28 +879,40 @@ Information, such as <code class="docutils literal notranslate"><span class="pre
 following syntax: <code class="docutils literal notranslate"><span class="pre">result[A-1].volume</span></code>.</p>
 <p>The returned list contains all the metrics normally returned by
 <strong>skimage.measure.regionprops</strong> plus the following:</p>
-<p>’slices’: Slice indices into the image that can be used to extract the
+<dl class="simple">
+<dt>’slices’</dt><dd><p>Slice indices into the image that can be used to extract the
 region</p>
-<p>’volume’: Volume of the region in number of voxels.</p>
-<p>’bbox_volume’: Volume of the bounding box that contains the region.</p>
-<p>’border’: The edges of the region, found as the locations where
-the distance transform is 1.</p>
-<p>’inscribed_sphere’: An image containing the largest sphere can can
-fit entirely inside the region.</p>
-<p>’surface_mesh_vertices’: Obtained by applying the marching cubes
-algorithm on the region, AFTER first blurring the voxel image.  This
-allows marching cubes more freedom to fit the surface contours. See
-also <code class="docutils literal notranslate"><span class="pre">surface_mesh_simplices</span></code></p>
-<p>’surface_mesh_simplices’: This accompanies <code class="docutils literal notranslate"><span class="pre">surface_mesh_vertices</span></code>
-and together they can be used to define the region as a mesh.</p>
-<p>’surface_area’: Calculated using the mesh obtained as described above,
-using the <code class="docutils literal notranslate"><span class="pre">porespy.metrics.mesh_surface_area</span></code> method.</p>
-<p>’sphericity’: Defined as the ratio of the area of a sphere with the
-same volume as the region to the actual surface area of the region.</p>
-<p>’skeleton’: The medial axis of the region obtained using the
-<code class="docutils literal notranslate"><span class="pre">skeletonize_3D</span></code> method from <strong>skimage</strong>.</p>
-<p>’convex_volume’: Same as convex_area, but translated to a more
-meaningful name.</p>
+</dd>
+<dt>’volume’</dt><dd><p>Volume of the region in number of voxels.</p>
+</dd>
+<dt>’bbox_volume’</dt><dd><p>Volume of the bounding box that contains the region.</p>
+</dd>
+<dt>’border’</dt><dd><p>The edges of the region, found as the locations where the distance
+transform is 1.</p>
+</dd>
+<dt>’inscribed_sphere’</dt><dd><p>An image containing the largest sphere can can fit entirely inside
+the region.</p>
+</dd>
+<dt>’surface_mesh_vertices’</dt><dd><p>Obtained by applying the marching cubes algorithm on the region,
+AFTER first blurring the voxel image. This allows marching cubes
+more freedom to fit the surface contours.
+See also <code class="docutils literal notranslate"><span class="pre">surface_mesh_simplices</span></code></p>
+</dd>
+<dt>’surface_mesh_simplices’</dt><dd><p>This accompanies <code class="docutils literal notranslate"><span class="pre">surface_mesh_vertices</span></code> and together they can
+be used to define the region as a mesh.</p>
+</dd>
+<dt>’surface_area’</dt><dd><p>Calculated using the mesh obtained as described above, using the
+<code class="docutils literal notranslate"><span class="pre">porespy.metrics.mesh_surface_area</span></code> method.</p>
+</dd>
+<dt>’sphericity’</dt><dd><p>Defined as the ratio of the area of a sphere with the same volume
+as the region to the actual surface area of the region.</p>
+</dd>
+<dt>’skeleton’</dt><dd><p>The medial axis of the region obtained using the <code class="docutils literal notranslate"><span class="pre">skeletonize_3D</span></code>
+method from <strong>skimage</strong>.</p>
+</dd>
+<dt>’convex_volume’</dt><dd><p>Same as convex_area, but translated to a more meaningful name.</p>
+</dd>
+</dl>
 </p>
 </dd>
 <dt class="field-odd">Return type</dt>

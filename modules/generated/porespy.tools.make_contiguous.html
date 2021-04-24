@@ -25,8 +25,8 @@
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
     
@@ -42,8 +42,8 @@
     <script src="../../_static/js/custom.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="mesh_region" href="porespy.tools.mesh_region.html" />
-    <link rel="prev" title="in_hull" href="porespy.tools.in_hull.html" />
+    <link rel="next" title="marching_map" href="porespy.tools.marching_map.html" />
+    <link rel="prev" title="isolate_object" href="porespy.tools.isolate_object.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
     
@@ -344,6 +344,21 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.size_to_seq.html">
+     size_to_seq
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.size_to_satn.html">
+     size_to_satn
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.seq_to_satn.html">
+     seq_to_satn
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="porespy.filters.snow_partitioning.html">
      snow_partitioning
     </a>
@@ -602,11 +617,6 @@
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="porespy.tools.fftmorphology.html">
-     fftmorphology
-    </a>
-   </li>
-   <li class="toctree-l2">
     <a class="reference internal" href="porespy.tools.find_outer_region.html">
      find_outer_region
     </a>
@@ -636,9 +646,19 @@
      in_hull
     </a>
    </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.tools.isolate_object.html">
+     isolate_object
+    </a>
+   </li>
    <li class="toctree-l2 current active">
     <a class="current reference internal" href="#">
      make_contiguous
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.tools.marching_map.html">
+     marching_map
     </a>
    </li>
    <li class="toctree-l2">
@@ -677,23 +697,13 @@
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="porespy.tools.pad_faces.html">
-     pad_faces
-    </a>
-   </li>
-   <li class="toctree-l2">
     <a class="reference internal" href="porespy.tools.randomize_colors.html">
      randomize_colors
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="porespy.tools.seq_to_satn.html">
-     seq_to_satn
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="porespy.tools.size_to_seq.html">
-     size_to_seq
+    <a class="reference internal" href="porespy.tools.recombine.html">
+     recombine
     </a>
    </li>
    <li class="toctree-l2">
@@ -704,11 +714,6 @@
    <li class="toctree-l2">
     <a class="reference internal" href="porespy.tools.unpad.html">
      unpad
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="porespy.tools.zero_corners.html">
-     zero_corners
     </a>
    </li>
   </ul>
@@ -857,7 +862,7 @@
 <h1>make_contiguous<a class="headerlink" href="#make-contiguous" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="porespy.tools.make_contiguous">
-<code class="sig-name descname"><span class="pre">make_contiguous</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'keep_zeros'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/tools/__funcs__.html#make_contiguous"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.tools.make_contiguous" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">make_contiguous</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'keep_zeros'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/tools/_funcs.html#make_contiguous"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.tools.make_contiguous" title="Permalink to this definition">¶</a></dt>
 <dd><p>Take an image with arbitrary greyscale values and adjust them to ensure
 all values fall in a contiguous range starting at 0.</p>
 <dl class="field-list simple">
@@ -866,18 +871,25 @@ all values fall in a contiguous range starting at 0.</p>
 <li><p><strong>im</strong> (<em>array_like</em>) – An ND array containing greyscale values</p></li>
 <li><p><strong>mode</strong> (<em>string</em>) – <p>Controls how the ranking is applied in the presence of numbers less
 than or equal to 0.</p>
-<p>’keep_zeros’ : (default) Voxels equal to 0 remain 0, and all other
+<dl class="simple">
+<dt>’keep_zeros’</dt><dd><p>(default) Voxels equal to 0 remain 0, and all other
 numbers are ranked starting at 1, include negative numbers,
 so [-1, 0, 4] becomes [1, 0, 2]</p>
-<p>’symmetric’ : Negative and positive voxels are ranked based on their
-respective distances to 0, so [-4, -1, 0, 5] becomes [-2, -1, 0, 1]</p>
-<p>’clipped’ : Voxels less than or equal to 0 are set to 0, while
-all other numbers are ranked starting at 1, so [-3, 0, 2] becomes
-[0, 0, 1].</p>
-<p>’none’ : Voxels are ranked such that the smallest or most
+</dd>
+<dt>’symmetric’</dt><dd><p>Negative and positive voxels are ranked based on their
+respective distances to 0, so [-4, -1, 0, 5] becomes
+[-2, -1, 0, 1]</p>
+</dd>
+<dt>’clipped’</dt><dd><p>Voxels less than or equal to 0 are set to 0, while
+all other numbers are ranked starting at 1, so [-3, 0, 2]
+becomes [0, 0, 1].</p>
+</dd>
+<dt>’none’</dt><dd><p>Voxels are ranked such that the smallest or most
 negative number becomes 1, so [-4, 2, 0] becomes [1, 3, 2].
 This is equivalent to calling <code class="docutils literal notranslate"><span class="pre">scipy.stats.rankdata</span></code> directly,
 and reshaping the result to match <code class="docutils literal notranslate"><span class="pre">im</span></code>.</p>
+</dd>
+</dl>
 </p></li>
 </ul>
 </dd>
@@ -900,7 +912,8 @@ order.</p>
 </pre></div>
 </div>
 <p class="rubric">Examples</p>
-<p><a class="reference external" href="https://porespy.org/examples/tools/make_contiguous.html">Click here</a> to view online example.</p>
+<p><a class="reference external" href="https://porespy.org/examples/tools/howtos/make_contiguous.html">Click here</a>
+to view online example.</p>
 </dd></dl>
 
 </div>

@@ -25,8 +25,8 @@
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
     
@@ -344,6 +344,21 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.size_to_seq.html">
+     size_to_seq
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.size_to_satn.html">
+     size_to_satn
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.seq_to_satn.html">
+     seq_to_satn
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="porespy.filters.snow_partitioning.html">
      snow_partitioning
     </a>
@@ -602,11 +617,6 @@
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="porespy.tools.fftmorphology.html">
-     fftmorphology
-    </a>
-   </li>
-   <li class="toctree-l2">
     <a class="reference internal" href="porespy.tools.find_outer_region.html">
      find_outer_region
     </a>
@@ -637,8 +647,18 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="porespy.tools.isolate_object.html">
+     isolate_object
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="porespy.tools.make_contiguous.html">
      make_contiguous
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.tools.marching_map.html">
+     marching_map
     </a>
    </li>
    <li class="toctree-l2">
@@ -677,23 +697,13 @@
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="porespy.tools.pad_faces.html">
-     pad_faces
-    </a>
-   </li>
-   <li class="toctree-l2">
     <a class="reference internal" href="porespy.tools.randomize_colors.html">
      randomize_colors
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="porespy.tools.seq_to_satn.html">
-     seq_to_satn
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="porespy.tools.size_to_seq.html">
-     size_to_seq
+    <a class="reference internal" href="porespy.tools.recombine.html">
+     recombine
     </a>
    </li>
    <li class="toctree-l2">
@@ -704,11 +714,6 @@
    <li class="toctree-l2">
     <a class="reference internal" href="porespy.tools.unpad.html">
      unpad
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="porespy.tools.zero_corners.html">
-     zero_corners
     </a>
    </li>
   </ul>
@@ -857,7 +862,7 @@
 <h1>lattice_spheres<a class="headerlink" href="#lattice-spheres" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="porespy.generators.lattice_spheres">
-<code class="sig-name descname"><span class="pre">lattice_spheres</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spacing</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smooth</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lattice</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'sc'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/generators/__imgen__.html#lattice_spheres"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.generators.lattice_spheres" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">lattice_spheres</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spacing</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smooth</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lattice</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'sc'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/generators/_imgen.html#lattice_spheres"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.generators.lattice_spheres" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generates a cubic packing of spheres in a specified lattice
 arrangement.</p>
 <dl class="field-list simple">
@@ -877,12 +882,16 @@ while a list of <code class="docutils literal notranslate"><span class="pre">int
 axis.</p></li>
 <li><p><strong>smooth</strong> (<em>bool</em><em>, </em><em>default=True</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> (default) the outer extremities of the sphere will
 not have the little bumps on each face.</p></li>
-<li><p><strong>lattice</strong> (<em>str</em>) – Specifies the type of lattice to create. Options are:
-- ‘sc’: Simple Cubic (default)
-- ‘fcc’: Face Centered Cubic
-- ‘bcc’: Body Centered Cubic
-For 2D images, ‘sc’ gives a square lattice and both ‘fcc’ and
-‘bcc’ give a triangular lattice.</p></li>
+<li><p><strong>lattice</strong> (<em>str</em>) – <p>Specifies the type of lattice to create. Options are:</p>
+<dl class="simple">
+<dt>’sc’</dt><dd><p>Simple Cubic (default)</p>
+</dd>
+<dt>’fcc’</dt><dd><p>Face Centered Cubic</p>
+</dd>
+<dt>’bcc’</dt><dd><p>Body Centered Cubic</p>
+</dd>
+</dl>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -892,8 +901,12 @@ For 2D images, ‘sc’ gives a square lattice and both ‘fcc’ and
 <dd class="field-odd"><p>ndarray</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>For 2D images, ‘sc’ gives a square lattice and both ‘fcc’ and
+‘bcc’ give a triangular lattice.</p>
 <p class="rubric">Examples</p>
-<p><a class="reference external" href="https://porespy.org/examples/generators/lattice_spheres.html">Click here</a> to view online example.</p>
+<p><a class="reference external" href="https://porespy.org/examples/generators/howtos/lattice_spheres.html">Click here</a>
+to view online example.</p>
 </dd></dl>
 
 </div>

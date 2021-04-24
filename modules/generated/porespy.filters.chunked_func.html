@@ -25,8 +25,8 @@
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
     
@@ -344,6 +344,21 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.size_to_seq.html">
+     size_to_seq
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.size_to_satn.html">
+     size_to_satn
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.seq_to_satn.html">
+     seq_to_satn
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="porespy.filters.snow_partitioning.html">
      snow_partitioning
     </a>
@@ -602,11 +617,6 @@
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="porespy.tools.fftmorphology.html">
-     fftmorphology
-    </a>
-   </li>
-   <li class="toctree-l2">
     <a class="reference internal" href="porespy.tools.find_outer_region.html">
      find_outer_region
     </a>
@@ -637,8 +647,18 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="porespy.tools.isolate_object.html">
+     isolate_object
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="porespy.tools.make_contiguous.html">
      make_contiguous
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.tools.marching_map.html">
+     marching_map
     </a>
    </li>
    <li class="toctree-l2">
@@ -677,23 +697,13 @@
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="porespy.tools.pad_faces.html">
-     pad_faces
-    </a>
-   </li>
-   <li class="toctree-l2">
     <a class="reference internal" href="porespy.tools.randomize_colors.html">
      randomize_colors
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="porespy.tools.seq_to_satn.html">
-     seq_to_satn
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="porespy.tools.size_to_seq.html">
-     size_to_seq
+    <a class="reference internal" href="porespy.tools.recombine.html">
+     recombine
     </a>
    </li>
    <li class="toctree-l2">
@@ -704,11 +714,6 @@
    <li class="toctree-l2">
     <a class="reference internal" href="porespy.tools.unpad.html">
      unpad
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="porespy.tools.zero_corners.html">
-     zero_corners
     </a>
    </li>
   </ul>
@@ -857,7 +862,7 @@
 <h1>chunked_func<a class="headerlink" href="#chunked-func" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="porespy.filters.chunked_func">
-<code class="sig-name descname"><span class="pre">chunked_func</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overlap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">divs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">im_arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['input',</span> <span class="pre">'image',</span> <span class="pre">'im']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strel_arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['strel',</span> <span class="pre">'structure',</span> <span class="pre">'footprint']</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/filters/__funcs__.html#chunked_func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.chunked_func" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">chunked_func</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overlap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">divs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">im_arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['input',</span> <span class="pre">'image',</span> <span class="pre">'im']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strel_arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['strel',</span> <span class="pre">'structure',</span> <span class="pre">'footprint']</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/filters/_funcs.html#chunked_func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.chunked_func" title="Permalink to this definition">¶</a></dt>
 <dd><p>Performs the specfied operation “chunk-wise” in parallel using dask.</p>
 <p>This can be used to save memory by doing one chunk at a time
 (<code class="docutils literal notranslate"><span class="pre">cores=1</span></code>) or to increase computation speed by spreading the work
@@ -871,7 +876,7 @@ operation is local and can be chunked.</p>
 <li><p><strong>func</strong> (<em>function handle</em>) – The function which should be applied to each chunk, such as
 <code class="docutils literal notranslate"><span class="pre">spipy.ndimage.binary_dilation</span></code>.</p></li>
 <li><p><strong>overlap</strong> (<em>scalar</em><em> or </em><em>list of scalars</em><em>, </em><em>optional</em>) – The amount of overlap to include when dividing up the image. This
-value will almost always be the size (i.e. diameter) of the
+value will almost always be the size (i.e. raduis) of the
 structuring element. If not specified then the amount of overlap
 is inferred from the size of the structuring element, in which
 case the <code class="docutils literal notranslate"><span class="pre">strel_arg</span></code> must be specified.</p></li>
@@ -918,20 +923,8 @@ specify <code class="docutils literal notranslate"><span class="pre">overlap</sp
 <p><code class="xref py py-obj docutils literal notranslate"><span class="pre">skikit-image.util.apply_parallel</span></code></p>
 </div>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">scipy.ndimage</span> <span class="k">as</span> <span class="nn">spim</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">porespy</span> <span class="k">as</span> <span class="nn">ps</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">skimage.morphology</span> <span class="kn">import</span> <span class="n">ball</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">blobs</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">binary_dilation</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">im2</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">chunked_func</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">im_arg</span><span class="o">=</span><span class="s1">&#39;input&#39;</span><span class="p">,</span>
-<span class="gp">... </span>                              <span class="nb">input</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">structure</span><span class="o">=</span><span class="n">ball</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">cores</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">im3</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">binary_dilation</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">structure</span><span class="o">=</span><span class="n">ball</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">im2</span> <span class="o">==</span> <span class="n">im3</span><span class="p">)</span>
-<span class="go">True</span>
-</pre></div>
-</div>
-<p class="rubric">Examples</p>
-<p><a class="reference external" href="https://porespy.org/examples/filters/chunked_func.html">Click here</a> to view online example.</p>
+<p><a class="reference external" href="https://porespy.org/examples/filters/howtos/chunked_func.html">Click here</a>
+to view online example.</p>
 </dd></dl>
 
 </div>

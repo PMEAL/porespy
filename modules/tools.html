@@ -25,8 +25,8 @@
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
     <link rel="stylesheet" type="text/css" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
     <link rel="stylesheet" type="text/css" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css" />
     
@@ -344,6 +344,21 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="generated/porespy.filters.size_to_seq.html">
+     size_to_seq
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="generated/porespy.filters.size_to_satn.html">
+     size_to_satn
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="generated/porespy.filters.seq_to_satn.html">
+     seq_to_satn
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="generated/porespy.filters.snow_partitioning.html">
      snow_partitioning
     </a>
@@ -602,11 +617,6 @@
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="generated/porespy.tools.fftmorphology.html">
-     fftmorphology
-    </a>
-   </li>
-   <li class="toctree-l2">
     <a class="reference internal" href="generated/porespy.tools.find_outer_region.html">
      find_outer_region
     </a>
@@ -637,8 +647,18 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="generated/porespy.tools.isolate_object.html">
+     isolate_object
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="generated/porespy.tools.make_contiguous.html">
      make_contiguous
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="generated/porespy.tools.marching_map.html">
+     marching_map
     </a>
    </li>
    <li class="toctree-l2">
@@ -677,23 +697,13 @@
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="generated/porespy.tools.pad_faces.html">
-     pad_faces
-    </a>
-   </li>
-   <li class="toctree-l2">
     <a class="reference internal" href="generated/porespy.tools.randomize_colors.html">
      randomize_colors
     </a>
    </li>
    <li class="toctree-l2">
-    <a class="reference internal" href="generated/porespy.tools.seq_to_satn.html">
-     seq_to_satn
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="generated/porespy.tools.size_to_seq.html">
-     size_to_seq
+    <a class="reference internal" href="generated/porespy.tools.recombine.html">
+     recombine
     </a>
    </li>
    <li class="toctree-l2">
@@ -704,11 +714,6 @@
    <li class="toctree-l2">
     <a class="reference internal" href="generated/porespy.tools.unpad.html">
      unpad
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="generated/porespy.tools.zero_corners.html">
-     zero_corners
     </a>
    </li>
   </ul>
@@ -885,71 +890,65 @@ ways do NOT return a modified version of the original image.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.tools.extract_subsection.html#porespy.tools.extract_subsection" title="porespy.tools.extract_subsection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tools.extract_subsection</span></code></a>(im, shape)</p></td>
 <td><p>Extracts the middle section of a image</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.tools.fftmorphology.html#porespy.tools.fftmorphology" title="porespy.tools.fftmorphology"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tools.fftmorphology</span></code></a>(im, strel[, mode])</p></td>
-<td><p>Perform morphological operations on binary images using fft approach for improved performance</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.tools.find_outer_region.html#porespy.tools.find_outer_region" title="porespy.tools.find_outer_region"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tools.find_outer_region</span></code></a>(im[, r])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.tools.find_outer_region.html#porespy.tools.find_outer_region" title="porespy.tools.find_outer_region"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tools.find_outer_region</span></code></a>(im[, r])</p></td>
 <td><p>Finds regions of the image that are outside of the solid matrix.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.tools.get_border.html#porespy.tools.get_border" title="porespy.tools.get_border"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tools.get_border</span></code></a>(shape[, thickness, mode, …])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.tools.get_border.html#porespy.tools.get_border" title="porespy.tools.get_border"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tools.get_border</span></code></a>(shape[, thickness, mode, …])</p></td>
 <td><p>Creates an array of specified size with corners, edges or faces labelled as True.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.tools.get_planes.html#porespy.tools.get_planes" title="porespy.tools.get_planes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tools.get_planes</span></code></a>(im[, squeeze])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.tools.get_planes.html#porespy.tools.get_planes" title="porespy.tools.get_planes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tools.get_planes</span></code></a>(im[, squeeze])</p></td>
 <td><p>Extracts three planar images from the volumetric image, one for each principle axis.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.tools.insert_cylinder.html#porespy.tools.insert_cylinder" title="porespy.tools.insert_cylinder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tools.insert_cylinder</span></code></a>(im, xyz0, xyz1, r)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.tools.insert_cylinder.html#porespy.tools.insert_cylinder" title="porespy.tools.insert_cylinder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tools.insert_cylinder</span></code></a>(im, xyz0, xyz1, r)</p></td>
 <td><p>Inserts a cylinder of given radius onto a given image</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.tools.insert_sphere.html#porespy.tools.insert_sphere" title="porespy.tools.insert_sphere"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tools.insert_sphere</span></code></a>(im, c, r[, v, overwrite])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.tools.insert_sphere.html#porespy.tools.insert_sphere" title="porespy.tools.insert_sphere"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tools.insert_sphere</span></code></a>(im, c, r[, v, overwrite])</p></td>
 <td><p>Inserts a sphere of a specified radius into a given image</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.tools.in_hull.html#porespy.tools.in_hull" title="porespy.tools.in_hull"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tools.in_hull</span></code></a>(points, hull)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.tools.in_hull.html#porespy.tools.in_hull" title="porespy.tools.in_hull"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tools.in_hull</span></code></a>(points, hull)</p></td>
 <td><p>Test if a list of coordinates are inside a given convex hull</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.tools.isolate_object.html#porespy.tools.isolate_object" title="porespy.tools.isolate_object"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tools.isolate_object</span></code></a>(region, i[, s])</p></td>
+<td><p>Given an image containing labels, removes all labels except the specified one.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.tools.make_contiguous.html#porespy.tools.make_contiguous" title="porespy.tools.make_contiguous"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tools.make_contiguous</span></code></a>(im[, mode])</p></td>
 <td><p>Take an image with arbitrary greyscale values and adjust them to ensure all values fall in a contiguous range starting at 0.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.tools.mesh_region.html#porespy.tools.mesh_region" title="porespy.tools.mesh_region"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tools.mesh_region</span></code></a>(region[, strel])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.tools.marching_map.html#porespy.tools.marching_map" title="porespy.tools.marching_map"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tools.marching_map</span></code></a>(path, start)</p></td>
+<td><p>Use the fast marching method to find distance of each voxel from a starting point</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.tools.mesh_region.html#porespy.tools.mesh_region" title="porespy.tools.mesh_region"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tools.mesh_region</span></code></a>(region[, strel])</p></td>
 <td><p>Creates a tri-mesh of the provided region using the marching cubes algorithm</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.tools.norm_to_uniform.html#porespy.tools.norm_to_uniform" title="porespy.tools.norm_to_uniform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tools.norm_to_uniform</span></code></a>(im[, scale])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.tools.norm_to_uniform.html#porespy.tools.norm_to_uniform" title="porespy.tools.norm_to_uniform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tools.norm_to_uniform</span></code></a>(im[, scale])</p></td>
 <td><p>Take an image with normally distributed greyscale values and convert it to a uniform (i.e.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.tools.overlay.html#porespy.tools.overlay" title="porespy.tools.overlay"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tools.overlay</span></code></a>(im1, im2, c)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.tools.overlay.html#porespy.tools.overlay" title="porespy.tools.overlay"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tools.overlay</span></code></a>(im1, im2, c)</p></td>
 <td><p>Overlays <code class="docutils literal notranslate"><span class="pre">im2</span></code> onto <code class="docutils literal notranslate"><span class="pre">im1</span></code>, given voxel coords of center of <code class="docutils literal notranslate"><span class="pre">im2</span></code> in <code class="docutils literal notranslate"><span class="pre">im1</span></code>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.tools.ps_ball.html#porespy.tools.ps_ball" title="porespy.tools.ps_ball"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tools.ps_ball</span></code></a>(r[, smooth])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.tools.ps_ball.html#porespy.tools.ps_ball" title="porespy.tools.ps_ball"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tools.ps_ball</span></code></a>(r[, smooth])</p></td>
 <td><p>Creates spherical ball structuring element for morphological operations</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.tools.ps_disk.html#porespy.tools.ps_disk" title="porespy.tools.ps_disk"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tools.ps_disk</span></code></a>(r[, smooth])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.tools.ps_disk.html#porespy.tools.ps_disk" title="porespy.tools.ps_disk"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tools.ps_disk</span></code></a>(r[, smooth])</p></td>
 <td><p>Creates circular disk structuring element for morphological operations</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.tools.ps_rect.html#porespy.tools.ps_rect" title="porespy.tools.ps_rect"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tools.ps_rect</span></code></a>(w, ndim)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.tools.ps_rect.html#porespy.tools.ps_rect" title="porespy.tools.ps_rect"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tools.ps_rect</span></code></a>(w, ndim)</p></td>
 <td><p>Creates rectilinear structuring element with the given size and dimensionality</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.tools.ps_round.html#porespy.tools.ps_round" title="porespy.tools.ps_round"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tools.ps_round</span></code></a>(r, ndim[, smooth])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.tools.ps_round.html#porespy.tools.ps_round" title="porespy.tools.ps_round"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tools.ps_round</span></code></a>(r, ndim[, smooth])</p></td>
 <td><p>Creates round structuring element with the given radius and dimensionality</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.tools.pad_faces.html#porespy.tools.pad_faces" title="porespy.tools.pad_faces"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tools.pad_faces</span></code></a>(im, faces)</p></td>
-<td><p>Pads the input image at specified faces.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.tools.randomize_colors.html#porespy.tools.randomize_colors" title="porespy.tools.randomize_colors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tools.randomize_colors</span></code></a>(im[, keep_vals])</p></td>
 <td><p>Takes a greyscale image and randomly shuffles the greyscale values, so that all voxels labeled X will be labelled Y, and all voxels labeled Y will be labeled Z, where X, Y, Z and so on are randomly selected from the values in the input image.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.tools.seq_to_satn.html#porespy.tools.seq_to_satn" title="porespy.tools.seq_to_satn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tools.seq_to_satn</span></code></a>(seq[, im])</p></td>
-<td><p>Converts an image of invasion sequence values to saturation values.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.tools.recombine.html#porespy.tools.recombine" title="porespy.tools.recombine"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tools.recombine</span></code></a>(ims, slices, overlap)</p></td>
+<td><p>Recombines image chunks back into full image of original shape</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.tools.size_to_seq.html#porespy.tools.size_to_seq" title="porespy.tools.size_to_seq"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tools.size_to_seq</span></code></a>(size[, im, bins])</p></td>
-<td><p>Converts an image of invasion size values into sequence values</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.tools.subdivide.html#porespy.tools.subdivide" title="porespy.tools.subdivide"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tools.subdivide</span></code></a>(im[, divs, overlap, flatten])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.tools.subdivide.html#porespy.tools.subdivide" title="porespy.tools.subdivide"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tools.subdivide</span></code></a>(im[, divs, overlap])</p></td>
 <td><p>Returns slices into an image describing the specified number of sub-arrays.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.tools.unpad.html#porespy.tools.unpad" title="porespy.tools.unpad"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tools.unpad</span></code></a>(im, pad_width)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.tools.unpad.html#porespy.tools.unpad" title="porespy.tools.unpad"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tools.unpad</span></code></a>(im, pad_width)</p></td>
 <td><p>Remove padding from a previously padded image given original pad widths</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.tools.zero_corners.html#porespy.tools.zero_corners" title="porespy.tools.zero_corners"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tools.zero_corners</span></code></a>(im, pad_width)</p></td>
-<td><p>Fills corners of a padded-image with 0, given a pad width and list of faces such as [“left”, “front”] at which the image has been padded.</p></td>
 </tr>
 </tbody>
 </table>
