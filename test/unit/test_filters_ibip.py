@@ -2,6 +2,7 @@ import numpy as np
 import porespy as ps
 import scipy.ndimage as spim
 from skimage.morphology import square
+ps.settings.tqdm['disable'] = True
 
 
 class IBIPTest():

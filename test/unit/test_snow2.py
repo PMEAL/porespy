@@ -6,6 +6,7 @@ import porespy as ps
 import openpnm as op
 ws = op.Workspace()
 ws.settings['loglevel'] = 50
+ps.settings.tqdm['disable'] = True
 
 
 class Snow2Test:

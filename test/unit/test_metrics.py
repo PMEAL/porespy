@@ -7,6 +7,7 @@ from edt import edt
 from pathlib import Path
 import scipy.ndimage as spim
 from numpy.testing import assert_allclose
+ps.settings.tqdm['disable'] = True
 
 
 class MetricsTest():

@@ -2,8 +2,9 @@ import numpy as np
 from edt import edt
 import porespy as ps
 import scipy.ndimage as spim
-ps.settings.loglevel = "CRITICAL"
 from skimage.morphology import skeletonize_3d
+ps.settings.loglevel = "CRITICAL"
+ps.settings.tqdm['disable'] = True
 
 
 class ParallelTest():

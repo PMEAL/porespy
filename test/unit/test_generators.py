@@ -4,6 +4,7 @@ from numpy.testing import assert_allclose
 import scipy.ndimage as spim
 import scipy.stats as spst
 import porespy as ps
+ps.settings.tqdm['disable'] = True
 
 
 class GeneratorTest():

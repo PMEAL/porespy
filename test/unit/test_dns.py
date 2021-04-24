@@ -1,6 +1,7 @@
 import porespy as ps
 import numpy as np
 import pytest
+ps.settings.tqdm['disable'] = True
 
 
 class DNSTest():

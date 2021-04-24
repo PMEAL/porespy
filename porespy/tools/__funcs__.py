@@ -2,13 +2,10 @@ import scipy as sp
 import numpy as np
 import scipy.ndimage as spim
 from scipy.stats import rankdata
-import warnings
 from edt import edt
-import scipy.ndimage as spim
 from loguru import logger
 from collections import namedtuple
 from skimage.morphology import ball, disk
-from skimage.segmentation import relabel_sequential
 from scipy.signal import fftconvolve
 try:
     from skimage.measure import marching_cubes
