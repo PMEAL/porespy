@@ -96,15 +96,20 @@ def show_mesh(mesh):  # pragma: no cover
     fig : Matplotlib figure
         A handle to a matplotlib 3D axis
     """
-    lim_max = np.amax(mesh.vertices, axis=0)
-    lim_min = np.amin(mesh.vertices, axis=0)
+    try:
+        verts = mesh.vertices
+    except AttributeError:
+        verts = mesh.verts
+
+    lim_max = np.amax(verts, axis=0)
+    lim_min = np.amin(verts, axis=0)
 
     # Display resulting triangular mesh using Matplotlib.
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
 
     # Fancy indexing: `verts[faces]` to generate a collection of triangles
-    mesh = Poly3DCollection(mesh.vertices[mesh.faces])
+    mesh = Poly3DCollection(verts[mesh.faces])
     mesh.set_edgecolor('k')
 
     ax.add_collection3d(mesh)
