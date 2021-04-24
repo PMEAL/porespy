@@ -27,7 +27,9 @@ ways do NOT return a modified version of the original image.
    tools.insert_cylinder
    tools.insert_sphere
    tools.in_hull
+   tools.isolate_object
    tools.make_contiguous
+   tools.marching_map
    tools.mesh_region
    tools.norm_to_uniform
    tools.overlay
@@ -55,7 +57,9 @@ __all__ = [
     "insert_cylinder",
     "insert_sphere",
     "in_hull",
+    "isolate_object",
     "make_contiguous",
+    "marching_map",
     "mesh_region",
     "norm_to_uniform",
     "overlay",
@@ -96,7 +100,7 @@ from ._funcs import ps_disk
 from ._funcs import ps_rect
 from ._funcs import ps_round
 from ._funcs import subdivide
-from ._funcs import sanitize_filename
+from ._utils import sanitize_filename
 from ._utils import get_tqdm
 from ._utils import show_docstring
 from ._funcs import _check_for_singleton_axes
