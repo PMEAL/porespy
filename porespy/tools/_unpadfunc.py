@@ -22,8 +22,9 @@ def unpad(im, pad_width):
 
     Examples
     --------
-    `Click here <https://porespy.org/examples/tools/unpad.html>`_ to view
-    online example.
+    `Click here
+    <https://porespy.org/examples/tools/howtos/unpad.html>`_
+    to view online example.
 
     """
     pad_width = np.asarray(pad_width).squeeze()

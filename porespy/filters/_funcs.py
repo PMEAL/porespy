@@ -42,6 +42,12 @@ def apply_padded(im, pad_width, func, pad_val=1, **kwargs):
     A use case for this is when using ``skimage.morphology.skeletonize_3d``
     to ensure that the skeleton extends beyond the edges of the image.
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/filters/howtos/apply_padded.html>`_
+    to view online example.
+
     """
     padded = np.pad(im, pad_width=pad_width,
                     mode='constant', constant_values=pad_val)
@@ -68,6 +74,12 @@ def trim_small_clusters(im, size=1):
     im : ND-array
         A copy of ``im`` with clusters of voxels smaller than the given
         ``size`` removed.
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/filters/howtos/trim_small_clusters.html>`_
+    to view online example.
 
     """
     if im.ndim == 2:
@@ -105,6 +117,12 @@ def hold_peaks(im, axis=-1):
     -----
     "im" must be a greyscale image. In case a Boolean image is fed into this
     method, it will be first converted to float values [0.0,1.0] before proceeding.
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/filters/howtos/hold_peaks.html>`_
+    to view online example.
 
     """
 
@@ -157,6 +175,12 @@ def distance_transform_lin(im, axis=0, mode="both"):
     image : ND-array
         A copy of ``im`` with each foreground voxel containing the
         distance to the nearest background along the specified axis.
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/filters/howtos/distance_transform_lin.html>`_
+    to view online example.
 
     """
     _check_for_singleton_axes(im)
@@ -218,6 +242,12 @@ def find_disconnected_voxels(im, conn=None):
         The returned array (e.g. ``holes``) be used to trim blind pores
         from ``im`` using: ``im[holes] = False``
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/filters/howtos/find_disconnected_voxels.html>`_
+    to view online example.
+
     """
     _check_for_singleton_axes(im)
 
@@ -262,6 +292,12 @@ def fill_blind_pores(im, conn=None):
     --------
     find_disconnected_voxels
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/filters/howtos/fill_blind_pores.html>`_
+    to view online example.
+
     """
     im = np.copy(im)
     holes = find_disconnected_voxels(im, conn=conn)
@@ -290,6 +326,12 @@ def trim_floating_solid(im, conn=None):
     See Also
     --------
     find_disconnected_voxels
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/filters/howtos/trim_floating_solid.html>`_
+    to view online example.
 
     """
     im = np.copy(im)
@@ -331,6 +373,12 @@ def trim_nonpercolating_paths(im, inlets, outlets):
     trim_floating_solid
     trim_blind_pores
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/filters/howtos/trim_nonpercolating_paths.html>`_
+    to view online example.
+
     """
     labels = spim.label(im)[0]
     IN = np.unique(labels * inlets)
@@ -367,6 +415,12 @@ def trim_extrema(im, h, mode="maxima"):
 
     (2) If the provided ``h`` is larger than ALL peaks in the array, then the
     baseline values of the array are changed as well.
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/filters/howtos/trim_extrema.html>`_
+    to view online example.
 
     """
     mask = np.copy(im)
@@ -422,6 +476,12 @@ def flood(im, regions=None, mode="max"):
     --------
     prop_to_image
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/filters/howtos/flood.html>`_
+    to view online example.
+
     """
     mask = im > 0
     if regions is None:
@@ -467,6 +527,12 @@ def flood_func(im, func, labels=None):
         with a constant value based on the given ``func`` and the values
         in ``im``.
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/filters/howtos/flood_func.html>`_
+    to view online example.
+
     """
     if labels is None:
         labels, N = spim.label(im > 0)
@@ -504,6 +570,12 @@ def find_dt_artifacts(dt):
         beyond the nearest edge of the image.  Obviously, voxels with a
         value of zero have no error.
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/filters/howtos/find_dt_artifacts.html>`_
+    to view online example.
+
     """
     temp = np.ones(shape=dt.shape) * np.inf
     for ax in range(dt.ndim):
@@ -516,7 +588,7 @@ def find_dt_artifacts(dt):
 
 def region_size(im):
     r"""
-    Replace each voxel with size of region to which it belongs
+    Replace each voxel with the size of the region to which it belongs
 
     Parameters
     ----------
@@ -536,6 +608,12 @@ def region_size(im):
     See Also
     --------
     flood
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/filters/howtos/region_size.html>`_
+    to view online example.
 
     """
     if im.dtype == bool:
@@ -579,6 +657,12 @@ def apply_chords(im, spacing=1, axis=0, trim_edges=True, label=False):
     See Also
     --------
     apply_chords_3D
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/filters/howtos/apply_chords.html>`_
+    to view online example.
 
     """
     _check_for_singleton_axes(im)
@@ -638,6 +722,12 @@ def apply_chords_3D(im, spacing=0, trim_edges=True):
     See Also
     --------
     apply_chords
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/filters/howtos/apply_chords_3D.html>`_
+    to view online example.
 
     """
     _check_for_singleton_axes(im)
@@ -724,6 +814,12 @@ def local_thickness(im, sizes=25, mode="hybrid", divs=1):
     regions that are not connected to the inlets in the ``porosimetry``
     function. This is not needed in ``local_thickness`` however.
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/filters/howtos/local_thickness.html>`_
+    to view online example.
+
     """
     im_new = porosimetry(im=im, sizes=sizes, access_limited=False, mode=mode,
                          divs=divs)
@@ -807,6 +903,12 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
     See Also
     --------
     local_thickness
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/filters/howtos/porosimetry.html>`_
+    to view online example.
 
     """
     from porespy.filters import fftmorphology
@@ -925,6 +1027,12 @@ def trim_disconnected_blobs(im, inlets, strel=None):
     image : ND-array
         An array of the same shape as ``im``, but with all foreground
         voxels not connected to the ``inlets`` removed.
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/filters/howtos/trim_disconnected_blobs.html>`_
+        to view online example.
 
     """
     if type(inlets) == tuple:
@@ -1078,6 +1186,12 @@ def prune_branches(skel, branch_points=None, iterations=1):
     array
         An ND-array containing the skeleton with tails removed.
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/filters/howtos/prune_branches.html>`_
+    to view online example.
+
     """
     skel = skel > 0
     if skel.ndim == 2:
@@ -1199,16 +1313,9 @@ def chunked_func(func,
 
     Examples
     --------
-    >>> import scipy.ndimage as spim
-    >>> import porespy as ps
-    >>> from skimage.morphology import ball
-    >>> im = ps.generators.blobs(shape=[100, 100, 100])
-    >>> f = spim.binary_dilation
-    >>> im2 = ps.filters.chunked_func(func=f, overlap=7, im_arg='input',
-    ...                               input=im, structure=ball(3), cores=1)
-    >>> im3 = spim.binary_dilation(input=im, structure=ball(3))
-    >>> np.all(im2 == im3)
-    True
+    `Click here
+    <https://porespy.org/examples/filters/howtos/chunked_func.html>`_
+    to view online example.
 
     """
 

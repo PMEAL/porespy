@@ -132,38 +132,48 @@ def regionprops_3D(im):
         The returned list contains all the metrics normally returned by
         **skimage.measure.regionprops** plus the following:
 
-        'slices': Slice indices into the image that can be used to extract the
-        region
+        'slices'
+            Slice indices into the image that can be used to extract the
+            region
 
-        'volume': Volume of the region in number of voxels.
+        'volume'
+            Volume of the region in number of voxels.
 
-        'bbox_volume': Volume of the bounding box that contains the region.
+        'bbox_volume'
+            Volume of the bounding box that contains the region.
 
-        'border': The edges of the region, found as the locations where
-        the distance transform is 1.
+        'border'
+            The edges of the region, found as the locations where the distance
+            transform is 1.
 
-        'inscribed_sphere': An image containing the largest sphere can can
-        fit entirely inside the region.
+        'inscribed_sphere'
+            An image containing the largest sphere can can fit entirely inside
+            the region.
 
-        'surface_mesh_vertices': Obtained by applying the marching cubes
-        algorithm on the region, AFTER first blurring the voxel image.  This
-        allows marching cubes more freedom to fit the surface contours. See
-        also ``surface_mesh_simplices``
+        'surface_mesh_vertices'
+            Obtained by applying the marching cubes algorithm on the region,
+            AFTER first blurring the voxel image. This allows marching cubes
+            more freedom to fit the surface contours.
+            See also ``surface_mesh_simplices``
 
-        'surface_mesh_simplices': This accompanies ``surface_mesh_vertices``
-        and together they can be used to define the region as a mesh.
+        'surface_mesh_simplices'
+            This accompanies ``surface_mesh_vertices`` and together they can
+            be used to define the region as a mesh.
 
-        'surface_area': Calculated using the mesh obtained as described above,
-        using the ``porespy.metrics.mesh_surface_area`` method.
+        'surface_area'
+            Calculated using the mesh obtained as described above, using the
+            ``porespy.metrics.mesh_surface_area`` method.
 
-        'sphericity': Defined as the ratio of the area of a sphere with the
-        same volume as the region to the actual surface area of the region.
+        'sphericity'
+            Defined as the ratio of the area of a sphere with the same volume
+            as the region to the actual surface area of the region.
 
-        'skeleton': The medial axis of the region obtained using the
-        ``skeletonize_3D`` method from **skimage**.
+        'skeleton'
+            The medial axis of the region obtained using the ``skeletonize_3D``
+            method from **skimage**.
 
-        'convex_volume': Same as convex_area, but translated to a more
-        meaningful name.
+        'convex_volume'
+            Same as convex_area, but translated to a more meaningful name.
 
     See Also
     --------

@@ -48,6 +48,12 @@ def insert_shape(im, element, center=None, corner=None, value=1, mode="overwrite
     im : ND-array
         A copy of ``im`` with the supplied element inserted.
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/generators/howtos/insert_shape.html>`_
+    to view online example.
+
     """
     im = im.copy()
     if im.ndim != element.ndim:
@@ -160,6 +166,12 @@ def RSA(im_or_shape: np.array,
     References
     ----------
     [1] Random Heterogeneous Materials, S. Torquato (2001)
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/generators/howtos/RSA.html>`_
+    to view online example.
 
     """
     logger.debug(f"RSA: Adding spheres of size {r}")
@@ -315,6 +327,12 @@ def bundle_of_tubes(shape: List[int], spacing: int):
     -------
     image : ND-array
         A boolean array with ``True`` values denoting the pore space
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/generators/howtos/bundle_of_tubes.html>`_
+    to view online example.
     """
     shape = np.array(shape)
     if np.size(shape) == 1:
@@ -378,6 +396,12 @@ def polydisperse_spheres(
     -------
     image : ND-array
         A boolean array with ``True`` values denoting the pore space
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/generators/howtos/polydisperse_spheres.html>`_
+    to view online example.
     """
     shape = np.array(shape)
     if np.size(shape) == 1:
@@ -417,6 +441,12 @@ def voronoi_edges(shape: List[int], r: int, ncells: int, flat_faces: bool = True
     -------
     image : ND-array
         A boolean array with ``True`` values denoting the pore space
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/generators/howtos/voronoi_edges.html>`_
+    to view online example.
 
     """
     logger.trace(f"Generating {ncells} cells")
@@ -533,6 +563,12 @@ def lattice_spheres(shape: List[int],
     For 2D images, 'sc' gives a square lattice and both 'fcc' and
     'bcc' give a triangular lattice.
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/generators/howtos/lattice_spheres.html>`_
+    to view online example.
+
     """
     logger.debug(f"Generating {lattice} lattice")
     shape = np.array(shape)
@@ -602,9 +638,6 @@ def lattice_spheres(shape: List[int],
         im[offset[0]::spacing[0],
            offset[1]+int(spacing[1]/2)::spacing[1],
            offset[2]+int(spacing[2]/2)::spacing[2]] = True
-    # TODO: The following might be faster to use np.where to find points
-    #  then directly insert spheres at each location using the numba jit
-    #  versions of insert_spheres
     if smooth:
         im = ~(edt(~im) < r)
     else:
@@ -646,6 +679,11 @@ def overlapping_spheres(shape: List[int],
     treating ``porosity`` as solid volume fraction and inverting the
     returned image.
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/generators/howtos/overlapping_spheres.html>`_
+    to view online example.
     """
     shape = np.array(shape)
     if np.size(shape) == 1:
@@ -727,6 +765,12 @@ def blobs(shape: List[int], porosity: float = 0.5, blobiness: int = 1,
     --------
     norm_to_uniform
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/generators/howtos/blobs.html>`_
+    to view online example.
+
     """
     if isinstance(shape, int):
         shape = [shape]*3
@@ -805,6 +849,12 @@ def _cylinders(shape: List[int],
     -------
     image : ND-array
         A boolean array with ``True`` values denoting the pore space
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/generators/cylinders.html>`_
+    to view online example.
     """
     shape = np.array(shape)
     if np.size(shape) == 1:
@@ -933,6 +983,12 @@ def cylinders(shape: List[int],
     'max_iter' argument, yielding an image with a porosity close to
     the goal.
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/generators/howtos/cylinders.html>`_
+    to view online example.
+
     """
     if ncylinders is not None:
         im = _cylinders(
@@ -1010,6 +1066,12 @@ def line_segment(X0, X1):
         A list of lists containing the X, Y, and Z coordinates of all voxels
         that should be drawn between the start and end points to create a solid
         line.
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/generators/howtos/line_segment.html>`_
+    to view online example.
     """
     X0 = np.around(X0).astype(int)
     X1 = np.around(X1).astype(int)
