@@ -47,7 +47,7 @@ class IBIPTest():
         bd = np.zeros_like(im)
         bd[:, 0] = True
         inv = ps.filters.porosimetry(im, inlets=bd)
-        seq = ps.tools.size_to_seq(inv)
+        seq = ps.filters.size_to_seq(inv)
         inv_w_trapping = ps.filters.find_trapped_regions(seq=seq,
                                                          return_mask=False)
         assert (inv_w_trapping == -1).sum() == 236
