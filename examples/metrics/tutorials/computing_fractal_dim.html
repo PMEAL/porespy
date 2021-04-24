@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Theory &#8212; PoreSpy  documentation</title>
+    <title>Measuring Fractal Dimension by Box-Counting &#8212; PoreSpy  documentation</title>
     
   <link href="../../../_static/css/theme.css" rel="stylesheet" />
   <link href="../../../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
@@ -295,11 +295,6 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../../filters/howtos/porosimetry.html">
-   Import packages
-  </a>
- </li>
- <li class="toctree-l1">
   <a class="reference internal" href="../../filters/howtos/prune_branches.html">
    prune_branches
   </a>
@@ -321,7 +316,7 @@
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="../../filters/howtos/snow_partitioning_parallel.html">
-   SNOW Partitioning Parallel
+   snow_partitioning_parallel
   </a>
  </li>
  <li class="toctree-l1">
@@ -363,7 +358,7 @@
 <ul class="current nav bd-sidenav">
  <li class="toctree-l1 current active">
   <a class="current reference internal" href="#">
-   Theory
+   Measuring Fractal Dimension by Box-Counting
   </a>
  </li>
  <li class="toctree-l1">
@@ -574,24 +569,24 @@
 
 <nav id="bd-toc-nav">
     <ul class="visible nav section-nav flex-column">
- <li class="toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#Theory">
    Theory
   </a>
-  <ul class="visible nav section-nav flex-column">
-   <li class="toc-h2 nav-item toc-entry">
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
     <a class="reference internal nav-link" href="#Box-Counting-Method">
      Box Counting Method
     </a>
    </li>
   </ul>
  </li>
- <li class="toc-h1 nav-item toc-entry">
+ <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#Mathematical-Definition">
    Mathematical Definition
   </a>
  </li>
- <li class="toc-h1 nav-item toc-entry">
+ <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#Example">
    Example
   </a>
@@ -865,18 +860,20 @@ div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
 </style>
+<div class="section" id="Measuring-Fractal-Dimension-by-Box-Counting">
+<h1>Measuring Fractal Dimension by Box-Counting<a class="headerlink" href="#Measuring-Fractal-Dimension-by-Box-Counting" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="Theory">
-<h1>Theory<a class="headerlink" href="#Theory" title="Permalink to this headline">¶</a></h1>
+<h2>Theory<a class="headerlink" href="#Theory" title="Permalink to this headline">¶</a></h2>
 <p>The term ‘fractal dimension’ was introduced by by Benoit Mandelbrot in 1967 to explain self-similarity of a pattern. A fractal dimension is defined as a ratio of the change in detail to the change in scale. It is used as an index that quantifies the complexity of a fractal pattern (<a class="reference external" href="https://en.wikipedia.org/wiki/Fractal_dimension">https://en.wikipedia.org/wiki/Fractal_dimension</a>).</p>
 <p>Famously, fractal dimension has been described in the context of the British coastline. A coastline’s measured length was observed to change depending on the length of the measuring stick used. In 2-D and 3-D, this notion can be extended to the length of a measuring pixel or voxel, respectively.</p>
 <p><img alt="image.png" src="examples/metrics/tutorials/attachment:image.png" /> <a class="reference external" href="http://en.wikipedia.org/wiki/Image:Britain-fractal-coastline-combined.jpg">http://en.wikipedia.org/wiki/Image:Britain-fractal-coastline-combined.jpg</a></p>
 <div class="section" id="Box-Counting-Method">
-<h2>Box Counting Method<a class="headerlink" href="#Box-Counting-Method" title="Permalink to this headline">¶</a></h2>
+<h3>Box Counting Method<a class="headerlink" href="#Box-Counting-Method" title="Permalink to this headline">¶</a></h3>
 <p>One way to determine fractal dimension of an image is through the box counting method. Measuring elements are laid over the image in a fixed grid pattern. As it scans over the grid, information is collected as to whether or not the measuring element is at the edge of the pattern. The number of measuring elements that are at the edge is then used to calculate the fractal dimension (<a class="reference external" href="https://en.wikipedia.org/wiki/Box_counting">https://en.wikipedia.org/wiki/Box_counting</a>).</p>
 </div>
 </div>
 <div class="section" id="Mathematical-Definition">
-<h1>Mathematical Definition<a class="headerlink" href="#Mathematical-Definition" title="Permalink to this headline">¶</a></h1>
+<h2>Mathematical Definition<a class="headerlink" href="#Mathematical-Definition" title="Permalink to this headline">¶</a></h2>
 <p>The relationship of a pattern’s fractal dimension and its measuring element can be expressed as:</p>
 <p><span class="math notranslate nohighlight">\(N \propto \frac{1}{D^F}\)</span></p>
 <p><span class="math notranslate nohighlight">\(F = \lim_{D \to 0} \frac{-log N(D)}{log(D)}\)</span></p>
@@ -887,7 +884,7 @@ div.rendered_html tbody tr:hover {
 </ul>
 </div>
 <div class="section" id="Example">
-<h1>Example<a class="headerlink" href="#Example" title="Permalink to this headline">¶</a></h1>
+<h2>Example<a class="headerlink" href="#Example" title="Permalink to this headline">¶</a></h2>
 <p>A Sierpinski carpet has a known fractal dimension of 1.8928. Performing the box counting method found its fractal dimension as approximately 1.8 ~ 1.9.</p>
 <p>First, import the needed packages.</p>
 <div class="nbinput nblast docutils container">
@@ -911,23 +908,25 @@ plt.imshow(im)
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;matplotlib.image.AxesImage at 0x18f6fa7f370&gt;
+</pre></div></div>
+</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-intense-fg ansi-bold">---------------------------------------------------------------------------</span>
-<span class="ansi-red-intense-fg ansi-bold">AttributeError</span>                            Traceback (most recent call last)
-<span class="ansi-green-intense-fg ansi-bold">&lt;ipython-input-2-ac3929e15669&gt;</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
-<span class="ansi-green-intense-fg ansi-bold">----&gt; 1</span><span class="ansi-yellow-intense-fg ansi-bold"> </span>im <span class="ansi-yellow-intense-fg ansi-bold">=</span> ps<span class="ansi-yellow-intense-fg ansi-bold">.</span>generators<span class="ansi-yellow-intense-fg ansi-bold">.</span>sierpinski_foam<span class="ansi-yellow-intense-fg ansi-bold">(</span><span class="ansi-cyan-intense-fg ansi-bold">4</span><span class="ansi-yellow-intense-fg ansi-bold">,</span> <span class="ansi-cyan-intense-fg ansi-bold">5</span><span class="ansi-yellow-intense-fg ansi-bold">)</span>
-<span class="ansi-green-fg">      2</span> plt<span class="ansi-yellow-intense-fg ansi-bold">.</span>imshow<span class="ansi-yellow-intense-fg ansi-bold">(</span>im<span class="ansi-yellow-intense-fg ansi-bold">)</span>
-
-<span class="ansi-red-intense-fg ansi-bold">AttributeError</span>: module &#39;porespy.generators&#39; has no attribute &#39;sierpinski_foam&#39;
-</pre></div></div>
+<img alt="../../../_images/examples_metrics_tutorials_computing_fractal_dim_6_1.png" src="../../../_images/examples_metrics_tutorials_computing_fractal_dim_6_1.png" />
+</div>
 </div>
 <p>Finally, apply the box count function and visualize.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -935,8 +934,14 @@ plt.imshow(im)
 </pre></div>
 </div>
 </div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "36c4bcc25ccf4beab348b4eeed1020dc", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -955,6 +960,23 @@ ax2.plot(data.size,data.slope,&#39;-o&#39;)
 plt.ylim([0, 3])
 plt.show
 </pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;function matplotlib.pyplot.show(close=None, block=None)&gt;
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/examples_metrics_tutorials_computing_fractal_dim_9_1.png" src="../../../_images/examples_metrics_tutorials_computing_fractal_dim_9_1.png" />
+</div>
 </div>
 </div>
 </div>
