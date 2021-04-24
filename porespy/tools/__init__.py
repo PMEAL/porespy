@@ -38,8 +38,6 @@ ways do NOT return a modified version of the original image.
    tools.ps_round
    tools.randomize_colors
    tools.recombine
-   tools.seq_to_satn
-   tools.size_to_seq
    tools.subdivide
    tools.unpad
 
@@ -69,8 +67,6 @@ __all__ = [
     "ps_round",
     "randomize_colors",
     "recombine",
-    "seq_to_satn",
-    "size_to_seq",
     "subdivide",
     "unpad",
     "sanitize_filename",
@@ -102,9 +98,6 @@ from .__funcs__ import ps_ball
 from .__funcs__ import ps_disk
 from .__funcs__ import ps_rect
 from .__funcs__ import ps_round
-from .__funcs__ import seq_to_satn
-from .__funcs__ import size_to_satn
-from .__funcs__ import size_to_seq
 from .__funcs__ import subdivide
 from .__funcs__ import sanitize_filename
 from .__utils__ import get_tqdm

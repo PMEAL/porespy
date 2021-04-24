@@ -34,6 +34,9 @@ image, but with altered values.
     filters.prune_branches
     filters.reduce_peaks
     filters.region_size
+    filters.size_to_seq
+    filters.size_to_satn
+    filters.seq_to_satn
     filters.snow_partitioning
     filters.snow_partitioning_n
     filters.snow_partitioning_parallel
@@ -77,6 +80,9 @@ from ._snows import find_peaks
 from ._snows import reduce_peaks
 from ._snows import trim_nearby_peaks
 from ._snows import trim_saddle_points
+from ._size_seq_satn import size_to_seq
+from ._size_seq_satn import size_to_satn
+from ._size_seq_satn import seq_to_satn
 from ._nlmeans import nl_means_layered
 from . import imagej
 from .__ibip__ import ibip
