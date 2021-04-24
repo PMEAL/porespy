@@ -1225,54 +1225,6 @@ def insert_cylinder(im, xyz0, xyz1, r):
     return im
 
 
-def pad_faces(im, faces):
-    r"""
-    Pads the input image at specified faces. This shape of image is
-    same as the output image of add_boundary_regions function.
-
-    Parameters
-    ----------
-    im : ND_array
-        The image that needs to be padded
-
-    faces : list of strings
-        Labels indicating where image needs to be padded. Given a 3D image
-        of shape ``[x, y, z] = [i, j, k]``, the following conventions are used
-        to indicate along which axis the padding should be applied:
-
-        * 'left' -> ``x = 0``
-        * 'right' -> ``x = i``
-        * 'front' -> ``y = 0``
-        * 'back' -> ``y = j``
-        * 'bottom' -> ``z = 0``
-        * 'top' -> ``z = k``
-
-    Returns
-    -------
-    A image padded at specified face(s)
-
-    See also
-    --------
-    add_boundary_regions
-    """
-    _check_for_singleton_axes(im)
-    f = faces
-    if f is not None:
-        if im.ndim == 2:
-            faces = [(int('left' in f) * 3, int('right' in f) * 3),
-                     (int(('front') in f) * 3 or int(('bottom') in f) * 3,
-                      int(('back') in f) * 3 or int(('top') in f) * 3)]
-
-        if im.ndim == 3:
-            faces = [(int('left' in f) * 3, int('right' in f) * 3),
-                     (int('front' in f) * 3, int('back' in f) * 3),
-                     (int('top' in f) * 3, int('bottom' in f) * 3)]
-        im = np.pad(im, pad_width=faces, mode='edge')
-    else:
-        im = im
-    return im
-
-
 def _create_alias_map(im, alias=None):
     r"""
     Creates an alias mapping between phases in original image and identifyable

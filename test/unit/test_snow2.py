@@ -4,6 +4,7 @@ from platform import system
 from os.path import realpath
 import pytest
 import numpy as np
+from scipy import stats as spst
 from numpy.testing import assert_allclose
 import porespy as ps
 import openpnm as op
@@ -13,7 +14,11 @@ ws.settings['loglevel'] = 50
 
 class Snow2Test:
     def setup_class(self):
-        pass
+        self.spheres3D = ~ps.generators.lattice_spheres(shape=[220, 220, 220],
+                                                        r=30, spacing=56,
+                                                        offset=25)
+        self.spheres2D = ~ps.generators.lattice_spheres(shape=[500, 500], r=30,
+                                                        spacing=56, offset=25)
 
     def test_single_phase_2D_serial(self):
         im = ps.generators.blobs(shape=[200, 200])
@@ -100,6 +105,55 @@ class Snow2Test:
             pw = ps.networks._parse_pad_width([0, 1, 2], s)
         with pytest.raises(Exception):
             pw = ps.networks._parse_pad_width([], s)
+
+    def test_label_phases(self):
+        im = self.spheres2D
+        phases = im.astype(int) + 1
+        alias = {1: 'void', 2: 'solid'}
+        snow = ps.networks.snow2(phases=phases,
+                                 phase_alias=alias,
+                                 parallelization=None)
+        assert 'throat.solid_void' in snow.network.keys()
+        assert 'throat.void_solid' in snow.network.keys()
+        assert 'throat.solid_solid' in snow.network.keys()
+        assert 'throat.void_void' in snow.network.keys()
+        assert 'pore.void' in snow.network.keys()
+        assert 'pore.solid' in snow.network.keys()
+
+    def test_ensure_correct_sizes_are_returned_single_phase_2D(self):
+        im = self.spheres2D
+        snow = ps.networks.snow2(phases=im, parallelization=None)
+        mode = spst.mode(snow.network['pore.extended_diameter'])
+        assert mode[0] == 60
+        D = np.unique(snow.network['pore.extended_diameter'].astype(int))
+        assert np.all(D == np.array([30, 34, 60]))
+
+    def test_ensure_correct_sizes_are_returned_dual_phase_2D(self):
+        im = self.spheres2D
+        phases = im.astype(int) + 1
+        snow = ps.networks.snow2(phases=phases, parallelization=None)
+        mode = spst.mode(snow.network['pore.extended_diameter'])
+        assert mode[0] == 60
+        D = np.unique(snow.network['pore.extended_diameter'].astype(int))
+        assert np.all(D == np.array([15, 16, 17, 18, 19, 21,
+                                     22, 25, 30, 32, 34, 60]))
+
+    def test_ensure_correct_sizes_are_returned_single_phase_3D(self):
+        im = self.spheres3D
+        snow = ps.networks.snow2(phases=im, parallelization=None)
+        mode = spst.mode(snow.network['pore.extended_diameter'])
+        assert mode[0] == 60
+        D = np.unique(snow.network['pore.extended_diameter'].astype(int))
+        assert np.all(D == np.array([30, 33, 60]))
+
+    def test_ensure_correct_sizes_are_returned_dual_phase_3D(self):
+        im = self.spheres3D
+        phases = im.astype(int) + 1
+        snow = ps.networks.snow2(phases=phases, parallelization=None)
+        mode = spst.mode(snow.network['pore.extended_diameter'])
+        assert mode[0] == 60
+        D = np.unique(snow.network['pore.extended_diameter'].astype(int))
+        assert np.all(D == np.array([30, 33, 34, 35, 36, 38, 39, 60]))
 
 
 if __name__ == '__main__':
