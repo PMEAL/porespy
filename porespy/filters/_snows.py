@@ -170,7 +170,7 @@ def snow_partitioning_n(im, r_max=4, sigma=0.4):
     phases_num = np.trim_zeros(phases_num)
     combined_dt = 0
     combined_region = 0
-    peaks = np.zeros_like(im)
+    peaks = np.zeros_like(im, dtype=int)
     num = [0]
     for i, j in enumerate(phases_num):
         logger.trace(f"Processing Phase {j}")
@@ -181,7 +181,7 @@ def snow_partitioning_n(im, r_max=4, sigma=0.4):
         phase_ws = phase_snow.regions * phase_snow.im
         phase_ws[phase_ws == num[i]] = 0
         combined_region += phase_ws
-        peaks += phase_snow.peaks + (phase_snow.peaks > 0)*num[i]
+        peaks = peaks + phase_snow.peaks + (phase_snow.peaks > 0)*num[i]
         num.append(np.amax(combined_region))
 
     tup = namedtuple("results",
