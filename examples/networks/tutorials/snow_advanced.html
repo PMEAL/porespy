@@ -865,6 +865,8 @@ import matplotlib.pyplot as plt
 from porespy.filters import find_peaks, trim_saddle_points, trim_nearby_peaks
 from porespy.tools import randomize_colors
 from skimage.segmentation import watershed
+
+ps.settings.tqdm[&#39;disable&#39;] = True
 ps.visualization.set_mpl_style()
 np.random.seed(10)
 </pre></div>
@@ -884,17 +886,11 @@ ax.imshow(ps.visualization.show_planes(im), cmap=plt.cm.bone);
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "", "version_major": 2, "version_minor": 0}</script></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_networks_tutorials_snow_advanced_6_1.svg" src="../../../_images/examples_networks_tutorials_snow_advanced_6_1.svg" /></div>
+<img alt="../../../_images/examples_networks_tutorials_snow_advanced_6_0.svg" src="../../../_images/examples_networks_tutorials_snow_advanced_6_0.svg" /></div>
 </div>
 </div>
 <div class="section" id="Step-by-step-application-of-the-SNOW-algorithm">
@@ -919,7 +915,7 @@ peaks = find_peaks(dt=dt)
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span>print(&#39;Initial number of peaks: &#39;, spim.label(peaks)[1])
-peaks = trim_saddle_points(peaks=peaks, dt=dt, max_iters=500)
+peaks = trim_saddle_points(peaks=peaks, dt=dt)
 print(&#39;Peaks after trimming saddle points: &#39;, spim.label(peaks)[1])
 peaks = trim_nearby_peaks(peaks=peaks, dt=dt)
 peaks, N = spim.label(peaks)
@@ -933,8 +929,8 @@ print(&#39;Peaks after trimming nearby peaks: &#39;, N)
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 Initial number of peaks:  743
-Peaks after trimming saddle points:  597
-Peaks after trimming nearby peaks:  495
+Peaks after trimming saddle points:  732
+Peaks after trimming nearby peaks:  532
 </pre></div></div>
 </div>
 <p>The final image processing step is to apply the marker-based <code class="docutils literal notranslate"><span class="pre">watershed</span></code> function that is available in <strong>scikit-image</strong> to partition the image into pores. This function is wrapped by the PoreSpy function <code class="docutils literal notranslate"><span class="pre">partition_pore_space</span></code>. <code class="docutils literal notranslate"><span class="pre">watershed</span></code> can be called directly, but remember to invert the distance transform so that peaks become valleys (just multiply by -1). This step is the slowest part of the process by far, but could be sped up if a faster implementation of <code class="docutils literal notranslate"><span class="pre">watershed</span></code> is used. The
@@ -967,8 +963,8 @@ ax.imshow((regions*im)[:, :, 100], cmap=plt.cm.nipy_spectral);
 <img alt="../../../_images/examples_networks_tutorials_snow_advanced_15_0.svg" src="../../../_images/examples_networks_tutorials_snow_advanced_15_0.svg" /></div>
 </div>
 <p>Finally, this partitioned image can be passed to the network extraction function which analyzes the image and returns a Python <em>dict</em> containing the numerical properties of the network.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -976,15 +972,9 @@ ax.imshow((regions*im)[:, :, 100], cmap=plt.cm.nipy_spectral);
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "", "version_major": 2, "version_minor": 0}</script></div>
-</div>
 <p>This network can be opened in OpenPNM with ease, and then exported as a VTK file for viewing in ParaView.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -997,16 +987,15 @@ prj.export_data(filename=&#39;extracted_network&#39;, filetype=&#39;vtk&#39;)
 </div>
 <p>In order to overlay both the network and the image in ParaView it is necessary to adjust the image and save it as a vtk image file.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>im = ps.tools.align_image_with_openpnm(im).astype(int)
-ps.io.to_vtk(im, filename=&#39;extracted_network&#39;)
+<span></span>ps.io.to_vtk(im, filename=&#39;extracted_network&#39;)
 </pre></div>
 </div>
 </div>
-<p><img alt="469f7f1ea93240c099f11b27ebc37258" class="no-scaled-link" src="https://user-images.githubusercontent.com/14086031/113048590-b68d2480-9170-11eb-9c10-06e6d53ee95d.png" style="width: 350px;" /></p>
+<p><img alt="26d4915f625149a5a8b883b4cf5653b2" class="no-scaled-link" src="https://user-images.githubusercontent.com/14086031/113048590-b68d2480-9170-11eb-9c10-06e6d53ee95d.png" style="width: 350px;" /></p>
 </div>
 </div>
 

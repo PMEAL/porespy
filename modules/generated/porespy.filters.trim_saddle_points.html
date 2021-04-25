@@ -862,21 +862,19 @@
 <h1>trim_saddle_points<a class="headerlink" href="#trim-saddle-points" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="porespy.filters.trim_saddle_points">
-<code class="sig-name descname"><span class="pre">trim_saddle_points</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">peaks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/filters/_snows.html#trim_saddle_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.trim_saddle_points" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">trim_saddle_points</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">peaks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/filters/_snows.html#trim_saddle_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.trim_saddle_points" title="Permalink to this definition">¶</a></dt>
 <dd><p>Removes peaks that were mistakenly identified because they lied on a
 saddle or ridge in the distance transform that was not actually a true
 local peak.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>peaks</strong> (<em>ND-array</em>) – A boolean image containing True values to mark peaks in the
+<li><p><strong>peaks</strong> (<em>ND-array</em>) – A boolean image containing <code class="docutils literal notranslate"><span class="pre">True</span></code> values to mark peaks in the
 distance transform (<code class="docutils literal notranslate"><span class="pre">dt</span></code>)</p></li>
-<li><p><strong>dt</strong> (<em>ND-array</em>) – The distance transform of the pore space for which the true peaks
+<li><p><strong>dt</strong> (<em>ND-array</em>) – The distance transform of the pore space for which the peaks
 are sought.</p></li>
-<li><p><strong>max_iters</strong> (<em>int</em>) – The maximum number of iterations to run while eroding the saddle
-points.  The default is 10, which is usually not reached; however,
-a warning is issued if the loop ends prior to removing all saddle
-points.</p></li>
+<li><p><strong>max_iters</strong> (<em>int</em>) – The number of iteration to use when finding saddle points.  The default
+is 20.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -888,7 +886,7 @@ points.</p></li>
 </dl>
 <p class="rubric">References</p>
 <p>[1] Gostick, J. “A versatile and efficient network extraction algorithm
-using marker-based watershed segmenation”.  Physical Review E. (2017)</p>
+using marker-based watershed segmentation”.  Physical Review E. (2017)</p>
 </dd></dl>
 
 </div>
