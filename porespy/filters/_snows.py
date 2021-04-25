@@ -303,7 +303,7 @@ def reduce_peaks(peaks):
     return peaks_new
 
 
-def trim_saddle_points(peaks, dt):
+def trim_saddle_points(peaks, dt, max_iters=20):
     r"""
     Removes peaks that were mistakenly identified because they lied on a
     saddle or ridge in the distance transform that was not actually a true
@@ -317,6 +317,9 @@ def trim_saddle_points(peaks, dt):
     dt : ND-array
         The distance transform of the pore space for which the peaks
         are sought.
+    max_iters : int
+        The number of iteration to use when finding saddle points.  The default
+        is 20.
 
     Returns
     -------
@@ -345,7 +348,7 @@ def trim_saddle_points(peaks, dt):
         dt_i = dt[sx]
         peak_dil = np.copy(peak_i)
         iters = 0
-        while iters < max(10, int(R)):
+        while iters < max_iters:
             iters += 1
             peak_orig = np.copy(peak_dil)
             peak_dil = spim.binary_dilation(peak_orig, structure=cube(3))
@@ -364,7 +367,9 @@ def trim_saddle_points(peaks, dt):
                 # hits += 1
                 # peaks[sx] = peaks[sx]*(~peak_i)
                 # logger.debug("Ridge point found")
-                break  # Ridge point found
+                break  # Ridge point
+        if iters >= max_iters:
+            logger.warning(f"{iters} iterations reached on point {i+1}")
     logger.info(f"Found {hits} saddle points")
     return peaks
 
