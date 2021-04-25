@@ -12,7 +12,8 @@ ps.settings.tqdm['disable'] = True
 class FilterTest():
     def setup_class(self):
         np.random.seed(0)
-        self.im = ps.generators.blobs(shape=[100, 100, 100], blobiness=2)
+        self.im = ps.generators.blobs(shape=[100, 100, 100], blobiness=1)
+        self.im2D = ps.generators.blobs(shape=[400, 400], blobiness=2)
         # Ensure that im was generated as expeccted
         assert ps.metrics.porosity(self.im) == 0.499829
         self.im_dt = edt(self.im)
@@ -356,18 +357,26 @@ class FilterTest():
         inds = np.where(ar == ar.max())
         assert np.all(dt[inds] - ar[inds] == 1)
 
-    def test_snow_partitioning_n(self):
+    def test_snow_partitioning_n_2D(self):
+        im = self.im2D
+        snow = ps.filters.snow_partitioning_n(im + 1, r_max=4, sigma=0.4)
+        assert np.amax(snow.regions) == 481
+        assert not np.any(np.isnan(snow.regions))
+        assert not np.any(np.isnan(snow.dt))
+        assert not np.any(np.isnan(snow.im))
+
+    def test_snow_partitioning_n_3D(self):
         im = self.im
         snow = ps.filters.snow_partitioning_n(im + 1, r_max=4, sigma=0.4)
-        assert np.amax(snow.regions) == 44
+        assert np.amax(snow.regions) == 1145
         assert not np.any(np.isnan(snow.regions))
         assert not np.any(np.isnan(snow.dt))
         assert not np.any(np.isnan(snow.im))
 
     def test_snow_partitioning_parallel(self):
         np.random.seed(1)
-        im = ps.generators.overlapping_spheres([1000, 1000], r=10,
-                                                porosity=0.5)
+        im = ps.generators.overlapping_spheres(shape=[1000, 1000],
+                                               r=10, porosity=0.5)
         snow = ps.filters.snow_partitioning_parallel(im,
                                                      divs=[2, 2],
                                                      cores=None,
