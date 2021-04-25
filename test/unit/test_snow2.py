@@ -4,6 +4,7 @@ from scipy import stats as spst
 from numpy.testing import assert_allclose
 import porespy as ps
 import openpnm as op
+from edt import edt
 ws = op.Workspace()
 ws.settings['loglevel'] = 50
 ps.settings.tqdm['disable'] = True
@@ -151,6 +152,18 @@ class Snow2Test:
         assert mode[0] == 60
         D = np.unique(snow.network['pore.extended_diameter'].astype(int))
         assert np.all(D == np.array([30, 33, 34, 35, 36, 38, 39, 60]))
+
+    def test_trim_saddle_points(self):
+        np.random.seed(0)
+        ps.settings.loglevel = 20
+        im = ps.generators.blobs(shape=[400, 400],
+                                 blobiness=[2, 1],
+                                 porosity=0.6)
+        dt = edt(im)
+        peaks1 = ps.filters.find_peaks(dt=dt, r_max=4)
+        peaks2 = ps.filters.trim_saddle_points(peaks=peaks1, dt=dt)
+        assert (peaks1 > 0).sum() > (peaks2 > 0).sum()
+        assert (peaks2 > 0).sum() == 339
 
 
 if __name__ == '__main__':

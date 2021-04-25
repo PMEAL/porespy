@@ -86,7 +86,7 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4):
 
     peaks = find_peaks(dt=dt, r_max=r_max, divs=1)
     logger.debug(f"Initial number of peaks: {spim.label(peaks)[1]}")
-    peaks = trim_saddle_points(peaks=peaks, dt=dt, max_iters=500)
+    peaks = trim_saddle_points(peaks=peaks, dt=dt)
     logger.debug(f"Peaks after trimming saddle points: {spim.label(peaks)[1]}")
     peaks = trim_nearby_peaks(peaks=peaks, dt=dt)
     peaks, N = spim.label(peaks)
@@ -170,6 +170,7 @@ def snow_partitioning_n(im, r_max=4, sigma=0.4):
     phases_num = np.trim_zeros(phases_num)
     combined_dt = 0
     combined_region = 0
+    peaks = np.zeros_like(im, dtype=int)
     num = [0]
     for i, j in enumerate(phases_num):
         logger.trace(f"Processing Phase {j}")
@@ -180,14 +181,17 @@ def snow_partitioning_n(im, r_max=4, sigma=0.4):
         phase_ws = phase_snow.regions * phase_snow.im
         phase_ws[phase_ws == num[i]] = 0
         combined_region += phase_ws
+        peaks = peaks + phase_snow.peaks + (phase_snow.peaks > 0)*num[i]
         num.append(np.amax(combined_region))
 
     tup = namedtuple("results",
-                     field_names=["im", "dt", "phase_max_label", "regions"])
+                     field_names=["im", "dt", "phase_max_label",
+                                  "regions", "peaks"])
     tup.im = im
     tup.dt = combined_dt
     tup.phase_max_label = num[1:]
     tup.regions = combined_region
+    tup.peaks = peaks
     return tup
 
 
@@ -299,7 +303,7 @@ def reduce_peaks(peaks):
     return peaks_new
 
 
-def trim_saddle_points(peaks, dt, max_iters=10):
+def trim_saddle_points(peaks, dt, max_iters=20):
     r"""
     Removes peaks that were mistakenly identified because they lied on a
     saddle or ridge in the distance transform that was not actually a true
@@ -308,16 +312,14 @@ def trim_saddle_points(peaks, dt, max_iters=10):
     Parameters
     ----------
     peaks : ND-array
-        A boolean image containing True values to mark peaks in the
+        A boolean image containing ``True`` values to mark peaks in the
         distance transform (``dt``)
     dt : ND-array
-        The distance transform of the pore space for which the true peaks
+        The distance transform of the pore space for which the peaks
         are sought.
     max_iters : int
-        The maximum number of iterations to run while eroding the saddle
-        points.  The default is 10, which is usually not reached; however,
-        a warning is issued if the loop ends prior to removing all saddle
-        points.
+        The number of iteration to use when finding saddle points.  The default
+        is 20.
 
     Returns
     -------
@@ -327,37 +329,48 @@ def trim_saddle_points(peaks, dt, max_iters=10):
     References
     ----------
     [1] Gostick, J. "A versatile and efficient network extraction algorithm
-    using marker-based watershed segmenation".  Physical Review E. (2017)
+    using marker-based watershed segmentation".  Physical Review E. (2017)
 
     """
-    peaks = np.copy(peaks)
+    peaks = np.copy(peaks).astype(int)
     if dt.ndim == 2:
         from skimage.morphology import square as cube
     else:
         from skimage.morphology import cube
-    labels, N = spim.label(peaks)
+    labels, N = spim.label(peaks > 0)
     slices = spim.find_objects(labels)
-    for i in range(N):
-        s = extend_slice(slices[i], shape=peaks.shape, pad=10)
-        peaks_i = labels[s] == i + 1
-        dt_i = dt[s]
-        im_i = dt_i > 0
+    hits = 0
+    for i, s in enumerate(slices):
+        peak_i = labels[s] == (i + 1)
+        R = (dt[s] * peak_i).max()
+        sx = extend_slice(slices[i], shape=peaks.shape, pad=max(10, int(R)))
+        peak_i = labels[sx] == (i + 1)
+        dt_i = dt[sx]
+        peak_dil = np.copy(peak_i)
         iters = 0
-        peaks_dil = np.copy(peaks_i)
         while iters < max_iters:
             iters += 1
-            peaks_dil = spim.binary_dilation(input=peaks_dil, structure=cube(3))
-            peaks_max = peaks_dil * np.amax(dt_i * peaks_dil)
-            peaks_extended = (peaks_max == dt_i) * im_i
-            if np.all(peaks_extended == peaks_i):
-                break  # Found a true peak
-            elif np.sum(peaks_extended * peaks_i) == 0:
-                peaks_i = False
-                break  # Found a saddle point
-        peaks[s] = peaks_i
-        if iters >= max_iters:  # pragma: no cover
-            logger.warning("Maximum number of iterations reached, consider"
-                           " running again with a larger value of max_iters")
+            peak_orig = np.copy(peak_dil)
+            peak_dil = spim.binary_dilation(peak_orig, structure=cube(3))
+            rim = peak_dil * dt_i * (~peak_orig)
+            check_1 = rim >= R
+            if check_1.sum() == 0:
+                break  # True peak
+            L, check_2 = spim.label(check_1, structure=cube(3))
+            if check_2 >= 2:
+                hits += 1
+                peaks[sx] = peaks[sx]*(~peak_i)
+                logger.debug("Saddle point found")
+                break  # Saddle point
+            peak_dil = (peak_dil*dt_i) == R
+            if peak_dil.sum() == peak_orig.sum():
+                # hits += 1
+                # peaks[sx] = peaks[sx]*(~peak_i)
+                # logger.debug("Ridge point found")
+                break  # Ridge point
+        if iters >= max_iters:
+            logger.warning(f"{iters} iterations reached on point {i+1}")
+    logger.info(f"Found {hits} saddle points")
     return peaks
 
 
@@ -917,7 +930,7 @@ def _snow_chunked(dt, r_max=5, sigma=0.4):
     """
     dt2 = spim.gaussian_filter(input=dt, sigma=sigma)
     peaks = find_peaks(dt=dt2, r_max=r_max)
-    peaks = trim_saddle_points(peaks=peaks, dt=dt2, max_iters=99)
+    peaks = trim_saddle_points(peaks=peaks, dt=dt2)
     peaks = trim_nearby_peaks(peaks=peaks, dt=dt2)
     peaks, N = spim.label(peaks)
     regions = watershed(image=-dt2, markers=peaks)
