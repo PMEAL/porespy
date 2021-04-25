@@ -358,17 +358,19 @@ class FilterTest():
         assert np.all(dt[inds] - ar[inds] == 1)
 
     def test_snow_partitioning_n_2D(self):
-        im = self.im2D
+        np.random.seed(0)
+        im = ps.generators.blobs([500, 500], blobiness=1)
         snow = ps.filters.snow_partitioning_n(im + 1, r_max=4, sigma=0.4)
-        assert np.amax(snow.regions) == 481
+        assert np.amax(snow.regions) == 139
         assert not np.any(np.isnan(snow.regions))
         assert not np.any(np.isnan(snow.dt))
         assert not np.any(np.isnan(snow.im))
 
     def test_snow_partitioning_n_3D(self):
-        im = self.im
+        np.random.seed(0)
+        im = ps.generators.blobs([100, 100, 100], blobiness=0.75)
         snow = ps.filters.snow_partitioning_n(im + 1, r_max=4, sigma=0.4)
-        assert np.amax(snow.regions) == 1145
+        assert np.amax(snow.regions) == 626
         assert not np.any(np.isnan(snow.regions))
         assert not np.any(np.isnan(snow.dt))
         assert not np.any(np.isnan(snow.im))
