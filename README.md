@@ -116,6 +116,10 @@ guide](https://github.com/PMEAL/porespy/blob/dev/CONTRIBUTING.md)
 
 It's surprizingly hard to communicate with our users, since Github doesn't allow sending out email newsletters or announcements.  To address this gap, we have created a [Substack channel](https://porespy.substack.com/p/coming-soon?r=e02s8&utm_campaign=post&utm_medium=web&utm_source=copy), where you can subscribe to our feed to receive periodic news about important events and updates.
 
+# Acknowledgements
+
+PoreSpy is grateful to [CANARIE](https://canarie.ca) for their generous funding over the past few years.  We would also like to acknowledge the support of [NSERC of Canada](https://www.nserc-crsng.gc.ca/) for funding many of the student that have contributed to PoreSpy since it's inception in 2014.
+
 # Examples
 
 The following code snippets illustrate generating a 2D image, applying
