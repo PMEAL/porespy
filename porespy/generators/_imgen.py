@@ -1004,8 +1004,8 @@ def cylinders(shape: List[int],
     if porosity is None:
         raise Exception("'ncylinders' and 'porosity' can't be both None")
 
-    if max_iter < 3:
-        raise Exception("Iterations must be greater than or equal to 3")
+    # if max_iter < 3:
+    #     raise Exception("Iterations must be greater than or equal to 3")
 
     vol_total = float(np.prod(shape))
 
