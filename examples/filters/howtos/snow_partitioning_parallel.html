@@ -231,7 +231,7 @@
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="../tutorials/using_ibip.html">
-   Image-Based Invasion Percoalation
+   Image-based invasion percoalation
   </a>
  </li>
 </ul>
@@ -355,12 +355,12 @@
 <ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="../../metrics/tutorials/computing_fractal_dim.html">
-   Measuring Fractal Dimension by Box-Counting
+   Measuring fractal dimension by box-counting
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="../../metrics/tutorials/lineal_path_function.html">
-   The Lineal Path Function
+   The lineal path function
   </a>
  </li>
  <li class="toctree-l1">
@@ -454,7 +454,7 @@
 <ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="../../networks/tutorials/adding_boundary_pores.html">
-   Adding Boundary Pores
+   Adding boundary pores
   </a>
  </li>
  <li class="toctree-l1">
@@ -861,14 +861,14 @@ core to save memory requirements.</p>
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>import numpy as np
-import porespy as ps
-from porespy.tools import randomize_colors
-import matplotlib.pyplot as plt
-import matplotlib.gridspec as gridspec
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">porespy</span> <span class="k">as</span> <span class="nn">ps</span>
+<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">randomize_colors</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">matplotlib.gridspec</span> <span class="k">as</span> <span class="nn">gridspec</span>
 
-np.random.seed(10)
-ps.visualization.set_mpl_style()
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">ps</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">set_mpl_style</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -880,10 +880,10 @@ ps.visualization.set_mpl_style()
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>np.random.seed(1)
-im = ps.generators.blobs(shape=[800, 800])
-plt.imshow(im, origin=&#39;lower&#39;)
-plt.axis(False);
+<span></span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">blobs</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">800</span><span class="p">,</span> <span class="mi">800</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="kc">False</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -901,8 +901,8 @@ plt.axis(False);
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>snow_para = ps.filters.snow_partitioning_parallel(im, overlap=None, divs=2, r_max=5, sigma=0.4,)
-snow = ps.filters.snow_partitioning(im, r_max=5, sigma=0.4)
+<span></span><span class="n">snow_para</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">snow_partitioning_parallel</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">divs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">r_max</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,)</span>
+<span class="n">snow</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">snow_partitioning</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">r_max</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">0.4</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -911,11 +911,11 @@ snow = ps.filters.snow_partitioning(im, r_max=5, sigma=0.4)
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>fig, ax = plt.subplots(1, 2, figsize=[8, 4])
-ax[0].imshow(snow_para.regions)
-ax[1].imshow(snow.regions)
-ax[0].set_title(&#39;regions from parallel snow&#39;)
-ax[1].set_title(&#39;regions from standard snow&#39;);
+<span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">snow_para</span><span class="o">.</span><span class="n">regions</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">snow</span><span class="o">.</span><span class="n">regions</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;regions from parallel snow&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;regions from standard snow&#39;</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>

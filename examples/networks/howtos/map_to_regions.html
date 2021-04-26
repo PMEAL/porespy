@@ -231,7 +231,7 @@
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="../../filters/tutorials/using_ibip.html">
-   Image-Based Invasion Percoalation
+   Image-based invasion percoalation
   </a>
  </li>
 </ul>
@@ -355,12 +355,12 @@
 <ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="../../metrics/tutorials/computing_fractal_dim.html">
-   Measuring Fractal Dimension by Box-Counting
+   Measuring fractal dimension by box-counting
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="../../metrics/tutorials/lineal_path_function.html">
-   The Lineal Path Function
+   The lineal path function
   </a>
  </li>
  <li class="toctree-l1">
@@ -454,7 +454,7 @@
 <ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="../tutorials/adding_boundary_pores.html">
-   Adding Boundary Pores
+   Adding boundary pores
   </a>
  </li>
  <li class="toctree-l1">
@@ -859,15 +859,15 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>import numpy as np
-import porespy as ps
-import openpnm as op
-import matplotlib.pyplot as plt
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">porespy</span> <span class="k">as</span> <span class="nn">ps</span>
+<span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 
-ws = op.Workspace()
-ws.settings[&#39;loglevel&#39;] = 50
-np.random.seed(10)
-ps.visualization.set_mpl_style()
+<span class="n">ws</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">Workspace</span><span class="p">()</span>
+<span class="n">ws</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;loglevel&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">ps</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">set_mpl_style</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -879,8 +879,8 @@ ps.visualization.set_mpl_style()
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>im = ps.generators.blobs(shape=[400, 400], porosity=0.6)
-snow_output = ps.networks.snow2(im, boundary_width=10)
+<span></span><span class="n">im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">blobs</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">400</span><span class="p">,</span> <span class="mi">400</span><span class="p">],</span> <span class="n">porosity</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)</span>
+<span class="n">snow_output</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">networks</span><span class="o">.</span><span class="n">snow2</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">boundary_width</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -898,12 +898,12 @@ snow_output = ps.networks.snow2(im, boundary_width=10)
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>pn, geo = op.io.PoreSpy.import_data(snow_output.network)
-fig = plt.figure(figsize=[4, 4])
-fig = op.topotools.plot_connections(pn, c=&#39;w&#39;, linewidth=2, fig=fig)
-fig = op.topotools.plot_coordinates(pn, c=&#39;w&#39;, s=100, fig=fig)
-plt.imshow(snow_output.regions.T, origin=&#39;lower&#39;)
-plt.axis(&#39;off&#39;);
+<span></span><span class="n">pn</span><span class="p">,</span> <span class="n">geo</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">PoreSpy</span><span class="o">.</span><span class="n">import_data</span><span class="p">(</span><span class="n">snow_output</span><span class="o">.</span><span class="n">network</span><span class="p">)</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">plot_connections</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">fig</span><span class="o">=</span><span class="n">fig</span><span class="p">)</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">pn</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">fig</span><span class="o">=</span><span class="n">fig</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">snow_output</span><span class="o">.</span><span class="n">regions</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -919,7 +919,7 @@ plt.axis(&#39;off&#39;);
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>pn[&#39;pore.values&#39;] = np.random.rand(pn.Np)
+<span></span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.values&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">pn</span><span class="o">.</span><span class="n">Np</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -929,8 +929,8 @@ plt.axis(&#39;off&#39;);
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>reg = ps.networks.map_to_regions(regions=snow_output.regions, values=pn[&#39;pore.values&#39;])
-plt.imshow(reg)
+<span></span><span class="n">reg</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">networks</span><span class="o">.</span><span class="n">map_to_regions</span><span class="p">(</span><span class="n">regions</span><span class="o">=</span><span class="n">snow_output</span><span class="o">.</span><span class="n">regions</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">pn</span><span class="p">[</span><span class="s1">&#39;pore.values&#39;</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">reg</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>

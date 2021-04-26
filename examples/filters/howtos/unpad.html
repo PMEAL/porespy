@@ -41,7 +41,7 @@
     <script src="../../../_static/js/custom.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="Measuring Fractal Dimension by Box-Counting" href="../../metrics/tutorials/computing_fractal_dim.html" />
+    <link rel="next" title="Measuring fractal dimension by box-counting" href="../../metrics/tutorials/computing_fractal_dim.html" />
     <link rel="prev" title="trim_small_clusters" href="trim_small_clusters.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
@@ -231,7 +231,7 @@
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="../tutorials/using_ibip.html">
-   Image-Based Invasion Percoalation
+   Image-based invasion percoalation
   </a>
  </li>
 </ul>
@@ -355,12 +355,12 @@
 <ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="../../metrics/tutorials/computing_fractal_dim.html">
-   Measuring Fractal Dimension by Box-Counting
+   Measuring fractal dimension by box-counting
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="../../metrics/tutorials/lineal_path_function.html">
-   The Lineal Path Function
+   The lineal path function
   </a>
  </li>
  <li class="toctree-l1">
@@ -454,7 +454,7 @@
 <ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="../../networks/tutorials/adding_boundary_pores.html">
-   Adding Boundary Pores
+   Adding boundary pores
   </a>
  </li>
  <li class="toctree-l1">
@@ -840,330 +840,330 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>import numpy as np
-from numpy.core.overrides import array_function_dispatch
-from numpy.lib.index_tricks import ndindex
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">numpy.core.overrides</span> <span class="kn">import</span> <span class="n">array_function_dispatch</span>
+<span class="kn">from</span> <span class="nn">numpy.lib.index_tricks</span> <span class="kn">import</span> <span class="n">ndindex</span>
 
-def _as_pairs(x, ndim, as_index=False):
-    &quot;&quot;&quot;
-    Broadcast `x` to an array with the shape (`ndim`, 2).
-    A helper function for `pad` that prepares and validates arguments like
-    `pad_width` for iteration in pairs.
-    Parameters
-    ----------
-    x : {None, scalar, array-like}
-        The object to broadcast to the shape (`ndim`, 2).
-    ndim : int
-        Number of pairs the broadcasted `x` will have.
-    as_index : bool, optional
-        If `x` is not None, try to round each element of `x` to an integer
-        (dtype `np.intp`) and ensure every element is positive.
-    Returns
-    -------
-    pairs : nested iterables, shape (`ndim`, 2)
-        The broadcasted version of `x`.
-    Raises
-    ------
-    ValueError
-        If `as_index` is True and `x` contains negative elements.
-        Or if `x` is not broadcastable to the shape (`ndim`, 2).
-    &quot;&quot;&quot;
-    if x is None:
-        # Pass through None as a special case, otherwise np.round(x) fails
-        # with an AttributeError
-        return ((None, None),) * ndim
+<span class="k">def</span> <span class="nf">_as_pairs</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ndim</span><span class="p">,</span> <span class="n">as_index</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Broadcast `x` to an array with the shape (`ndim`, 2).</span>
+<span class="sd">    A helper function for `pad` that prepares and validates arguments like</span>
+<span class="sd">    `pad_width` for iteration in pairs.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : {None, scalar, array-like}</span>
+<span class="sd">        The object to broadcast to the shape (`ndim`, 2).</span>
+<span class="sd">    ndim : int</span>
+<span class="sd">        Number of pairs the broadcasted `x` will have.</span>
+<span class="sd">    as_index : bool, optional</span>
+<span class="sd">        If `x` is not None, try to round each element of `x` to an integer</span>
+<span class="sd">        (dtype `np.intp`) and ensure every element is positive.</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pairs : nested iterables, shape (`ndim`, 2)</span>
+<span class="sd">        The broadcasted version of `x`.</span>
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If `as_index` is True and `x` contains negative elements.</span>
+<span class="sd">        Or if `x` is not broadcastable to the shape (`ndim`, 2).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Pass through None as a special case, otherwise np.round(x) fails</span>
+        <span class="c1"># with an AttributeError</span>
+        <span class="k">return</span> <span class="p">((</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">),)</span> <span class="o">*</span> <span class="n">ndim</span>
 
-    x = np.array(x)
-    if as_index:
-        x = np.round(x).astype(np.intp, copy=False)
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">as_index</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">intp</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-    if x.ndim &lt; 3:
-        # Optimization: Possibly use faster paths for cases where `x` has
-        # only 1 or 2 elements. `np.broadcast_to` could handle these as well
-        # but is currently slower
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="c1"># Optimization: Possibly use faster paths for cases where `x` has</span>
+        <span class="c1"># only 1 or 2 elements. `np.broadcast_to` could handle these as well</span>
+        <span class="c1"># but is currently slower</span>
 
-        if x.size == 1:
-            # x was supplied as a single value
-            x = x.ravel()  # Ensure x[0] works for x.ndim == 0, 1, 2
-            if as_index and x &lt; 0:
-                raise ValueError(&quot;index can&#39;t contain negative values&quot;)
-            return ((x[0], x[0]),) * ndim
+        <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># x was supplied as a single value</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>  <span class="c1"># Ensure x[0] works for x.ndim == 0, 1, 2</span>
+            <span class="k">if</span> <span class="n">as_index</span> <span class="ow">and</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;index can&#39;t contain negative values&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">((</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]),)</span> <span class="o">*</span> <span class="n">ndim</span>
 
-        if x.size == 2 and x.shape != (2, 1):
-            # x was supplied with a single value for each side
-            # but except case when each dimension has a single value
-            # which should be broadcasted to a pair,
-            # e.g. [[1], [2]] -&gt; [[1, 1], [2, 2]] not [[1, 2], [1, 2]]
-            x = x.ravel()  # Ensure x[0], x[1] works
-            if as_index and (x[0] &lt; 0 or x[1] &lt; 0):
-                raise ValueError(&quot;index can&#39;t contain negative values&quot;)
-            return ((x[0], x[1]),) * ndim
+        <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="c1"># x was supplied with a single value for each side</span>
+            <span class="c1"># but except case when each dimension has a single value</span>
+            <span class="c1"># which should be broadcasted to a pair,</span>
+            <span class="c1"># e.g. [[1], [2]] -&gt; [[1, 1], [2, 2]] not [[1, 2], [1, 2]]</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>  <span class="c1"># Ensure x[0], x[1] works</span>
+            <span class="k">if</span> <span class="n">as_index</span> <span class="ow">and</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;index can&#39;t contain negative values&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">((</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]),)</span> <span class="o">*</span> <span class="n">ndim</span>
 
-    if as_index and x.min() &lt; 0:
-        raise ValueError(&quot;index can&#39;t contain negative values&quot;)
+    <span class="k">if</span> <span class="n">as_index</span> <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;index can&#39;t contain negative values&quot;</span><span class="p">)</span>
 
-    # Converting the array with `tolist` seems to improve performance
-    # when iterating and indexing the result (see usage in `pad`)
-    return np.broadcast_to(x, (ndim, 2)).tolist()
+    <span class="c1"># Converting the array with `tolist` seems to improve performance</span>
+    <span class="c1"># when iterating and indexing the result (see usage in `pad`)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="n">ndim</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
 
 
-def pad(array, pad_width, mode=&#39;constant&#39;, **kwargs):
-    &quot;&quot;&quot;
-    Pad an array.
-    Parameters
-    ----------
-    array : array_like of rank N
-        The array to pad.
-    pad_width : {sequence, array_like, int}
-        Number of values padded to the edges of each axis.
-        ((before_1, after_1), ... (before_N, after_N)) unique pad widths
-        for each axis.
-        ((before, after),) yields same before and after pad for each axis.
-        (pad,) or int is a shortcut for before = after = pad width for all
-        axes.
-    mode : str or function, optional
-        One of the following string values or a user supplied function.
-        &#39;constant&#39; (default)
-            Pads with a constant value.
-        &#39;edge&#39;
-            Pads with the edge values of array.
-        &#39;linear_ramp&#39;
-            Pads with the linear ramp between end_value and the
-            array edge value.
-        &#39;maximum&#39;
-            Pads with the maximum value of all or part of the
-            vector along each axis.
-        &#39;mean&#39;
-            Pads with the mean value of all or part of the
-            vector along each axis.
-        &#39;median&#39;
-            Pads with the median value of all or part of the
-            vector along each axis.
-        &#39;minimum&#39;
-            Pads with the minimum value of all or part of the
-            vector along each axis.
-        &#39;reflect&#39;
-            Pads with the reflection of the vector mirrored on
-            the first and last values of the vector along each
-            axis.
-        &#39;symmetric&#39;
-            Pads with the reflection of the vector mirrored
-            along the edge of the array.
-        &#39;wrap&#39;
-            Pads with the wrap of the vector along the axis.
-            The first values are used to pad the end and the
-            end values are used to pad the beginning.
-        &#39;empty&#39;
-            Pads with undefined values.
-            .. versionadded:: 1.17
-        &lt;function&gt;
-            Padding function, see Notes.
-    stat_length : sequence or int, optional
-        Used in &#39;maximum&#39;, &#39;mean&#39;, &#39;median&#39;, and &#39;minimum&#39;.  Number of
-        values at edge of each axis used to calculate the statistic value.
-        ((before_1, after_1), ... (before_N, after_N)) unique statistic
-        lengths for each axis.
-        ((before, after),) yields same before and after statistic lengths
-        for each axis.
-        (stat_length,) or int is a shortcut for before = after = statistic
-        length for all axes.
-        Default is ``None``, to use the entire axis.
-    constant_values : sequence or scalar, optional
-        Used in &#39;constant&#39;.  The values to set the padded values for each
-        axis.
-        ``((before_1, after_1), ... (before_N, after_N))`` unique pad constants
-        for each axis.
-        ``((before, after),)`` yields same before and after constants for each
-        axis.
-        ``(constant,)`` or ``constant`` is a shortcut for ``before = after = constant`` for
-        all axes.
-        Default is 0.
-    end_values : sequence or scalar, optional
-        Used in &#39;linear_ramp&#39;.  The values used for the ending value of the
-        linear_ramp and that will form the edge of the padded array.
-        ``((before_1, after_1), ... (before_N, after_N))`` unique end values
-        for each axis.
-        ``((before, after),)`` yields same before and after end values for each
-        axis.
-        ``(constant,)`` or ``constant`` is a shortcut for ``before = after = constant`` for
-        all axes.
-        Default is 0.
-    reflect_type : {&#39;even&#39;, &#39;odd&#39;}, optional
-        Used in &#39;reflect&#39;, and &#39;symmetric&#39;.  The &#39;even&#39; style is the
-        default with an unaltered reflection around the edge value.  For
-        the &#39;odd&#39; style, the extended part of the array is created by
-        subtracting the reflected values from two times the edge value.
-    Returns
-    -------
-    pad : ndarray
-        Padded array of rank equal to `array` with shape increased
-        according to `pad_width`.
-    Notes
-    -----
-    .. versionadded:: 1.7.0
-    For an array with rank greater than 1, some of the padding of later
-    axes is calculated from padding of previous axes.  This is easiest to
-    think about with a rank 2 array where the corners of the padded array
-    are calculated by using padded values from the first axis.
-    The padding function, if used, should modify a rank 1 array in-place. It
-    has the following signature::
-        padding_func(vector, iaxis_pad_width, iaxis, kwargs)
-    where
-        vector : ndarray
-            A rank 1 array already padded with zeros.  Padded values are
-            vector[:iaxis_pad_width[0]] and vector[-iaxis_pad_width[1]:].
-        iaxis_pad_width : tuple
-            A 2-tuple of ints, iaxis_pad_width[0] represents the number of
-            values padded at the beginning of vector where
-            iaxis_pad_width[1] represents the number of values padded at
-            the end of vector.
-        iaxis : int
-            The axis currently being calculated.
-        kwargs : dict
-            Any keyword arguments the function requires.
+<span class="k">def</span> <span class="nf">pad</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">pad_width</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;constant&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Pad an array.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    array : array_like of rank N</span>
+<span class="sd">        The array to pad.</span>
+<span class="sd">    pad_width : {sequence, array_like, int}</span>
+<span class="sd">        Number of values padded to the edges of each axis.</span>
+<span class="sd">        ((before_1, after_1), ... (before_N, after_N)) unique pad widths</span>
+<span class="sd">        for each axis.</span>
+<span class="sd">        ((before, after),) yields same before and after pad for each axis.</span>
+<span class="sd">        (pad,) or int is a shortcut for before = after = pad width for all</span>
+<span class="sd">        axes.</span>
+<span class="sd">    mode : str or function, optional</span>
+<span class="sd">        One of the following string values or a user supplied function.</span>
+<span class="sd">        &#39;constant&#39; (default)</span>
+<span class="sd">            Pads with a constant value.</span>
+<span class="sd">        &#39;edge&#39;</span>
+<span class="sd">            Pads with the edge values of array.</span>
+<span class="sd">        &#39;linear_ramp&#39;</span>
+<span class="sd">            Pads with the linear ramp between end_value and the</span>
+<span class="sd">            array edge value.</span>
+<span class="sd">        &#39;maximum&#39;</span>
+<span class="sd">            Pads with the maximum value of all or part of the</span>
+<span class="sd">            vector along each axis.</span>
+<span class="sd">        &#39;mean&#39;</span>
+<span class="sd">            Pads with the mean value of all or part of the</span>
+<span class="sd">            vector along each axis.</span>
+<span class="sd">        &#39;median&#39;</span>
+<span class="sd">            Pads with the median value of all or part of the</span>
+<span class="sd">            vector along each axis.</span>
+<span class="sd">        &#39;minimum&#39;</span>
+<span class="sd">            Pads with the minimum value of all or part of the</span>
+<span class="sd">            vector along each axis.</span>
+<span class="sd">        &#39;reflect&#39;</span>
+<span class="sd">            Pads with the reflection of the vector mirrored on</span>
+<span class="sd">            the first and last values of the vector along each</span>
+<span class="sd">            axis.</span>
+<span class="sd">        &#39;symmetric&#39;</span>
+<span class="sd">            Pads with the reflection of the vector mirrored</span>
+<span class="sd">            along the edge of the array.</span>
+<span class="sd">        &#39;wrap&#39;</span>
+<span class="sd">            Pads with the wrap of the vector along the axis.</span>
+<span class="sd">            The first values are used to pad the end and the</span>
+<span class="sd">            end values are used to pad the beginning.</span>
+<span class="sd">        &#39;empty&#39;</span>
+<span class="sd">            Pads with undefined values.</span>
+<span class="sd">            .. versionadded:: 1.17</span>
+<span class="sd">        &lt;function&gt;</span>
+<span class="sd">            Padding function, see Notes.</span>
+<span class="sd">    stat_length : sequence or int, optional</span>
+<span class="sd">        Used in &#39;maximum&#39;, &#39;mean&#39;, &#39;median&#39;, and &#39;minimum&#39;.  Number of</span>
+<span class="sd">        values at edge of each axis used to calculate the statistic value.</span>
+<span class="sd">        ((before_1, after_1), ... (before_N, after_N)) unique statistic</span>
+<span class="sd">        lengths for each axis.</span>
+<span class="sd">        ((before, after),) yields same before and after statistic lengths</span>
+<span class="sd">        for each axis.</span>
+<span class="sd">        (stat_length,) or int is a shortcut for before = after = statistic</span>
+<span class="sd">        length for all axes.</span>
+<span class="sd">        Default is ``None``, to use the entire axis.</span>
+<span class="sd">    constant_values : sequence or scalar, optional</span>
+<span class="sd">        Used in &#39;constant&#39;.  The values to set the padded values for each</span>
+<span class="sd">        axis.</span>
+<span class="sd">        ``((before_1, after_1), ... (before_N, after_N))`` unique pad constants</span>
+<span class="sd">        for each axis.</span>
+<span class="sd">        ``((before, after),)`` yields same before and after constants for each</span>
+<span class="sd">        axis.</span>
+<span class="sd">        ``(constant,)`` or ``constant`` is a shortcut for ``before = after = constant`` for</span>
+<span class="sd">        all axes.</span>
+<span class="sd">        Default is 0.</span>
+<span class="sd">    end_values : sequence or scalar, optional</span>
+<span class="sd">        Used in &#39;linear_ramp&#39;.  The values used for the ending value of the</span>
+<span class="sd">        linear_ramp and that will form the edge of the padded array.</span>
+<span class="sd">        ``((before_1, after_1), ... (before_N, after_N))`` unique end values</span>
+<span class="sd">        for each axis.</span>
+<span class="sd">        ``((before, after),)`` yields same before and after end values for each</span>
+<span class="sd">        axis.</span>
+<span class="sd">        ``(constant,)`` or ``constant`` is a shortcut for ``before = after = constant`` for</span>
+<span class="sd">        all axes.</span>
+<span class="sd">        Default is 0.</span>
+<span class="sd">    reflect_type : {&#39;even&#39;, &#39;odd&#39;}, optional</span>
+<span class="sd">        Used in &#39;reflect&#39;, and &#39;symmetric&#39;.  The &#39;even&#39; style is the</span>
+<span class="sd">        default with an unaltered reflection around the edge value.  For</span>
+<span class="sd">        the &#39;odd&#39; style, the extended part of the array is created by</span>
+<span class="sd">        subtracting the reflected values from two times the edge value.</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pad : ndarray</span>
+<span class="sd">        Padded array of rank equal to `array` with shape increased</span>
+<span class="sd">        according to `pad_width`.</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    .. versionadded:: 1.7.0</span>
+<span class="sd">    For an array with rank greater than 1, some of the padding of later</span>
+<span class="sd">    axes is calculated from padding of previous axes.  This is easiest to</span>
+<span class="sd">    think about with a rank 2 array where the corners of the padded array</span>
+<span class="sd">    are calculated by using padded values from the first axis.</span>
+<span class="sd">    The padding function, if used, should modify a rank 1 array in-place. It</span>
+<span class="sd">    has the following signature::</span>
+<span class="sd">        padding_func(vector, iaxis_pad_width, iaxis, kwargs)</span>
+<span class="sd">    where</span>
+<span class="sd">        vector : ndarray</span>
+<span class="sd">            A rank 1 array already padded with zeros.  Padded values are</span>
+<span class="sd">            vector[:iaxis_pad_width[0]] and vector[-iaxis_pad_width[1]:].</span>
+<span class="sd">        iaxis_pad_width : tuple</span>
+<span class="sd">            A 2-tuple of ints, iaxis_pad_width[0] represents the number of</span>
+<span class="sd">            values padded at the beginning of vector where</span>
+<span class="sd">            iaxis_pad_width[1] represents the number of values padded at</span>
+<span class="sd">            the end of vector.</span>
+<span class="sd">        iaxis : int</span>
+<span class="sd">            The axis currently being calculated.</span>
+<span class="sd">        kwargs : dict</span>
+<span class="sd">            Any keyword arguments the function requires.</span>
 
-    &quot;&quot;&quot;
-    array = np.asarray(array)
-    pad_width = np.asarray(pad_width)
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+    <span class="n">pad_width</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">pad_width</span><span class="p">)</span>
 
-    if not pad_width.dtype.kind == &#39;i&#39;:
-        raise TypeError(&#39;`pad_width` must be of integral type.&#39;)
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">pad_width</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s1">&#39;i&#39;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;`pad_width` must be of integral type.&#39;</span><span class="p">)</span>
 
-    # Broadcast to shape (array.ndim, 2)
-    pad_width = _as_pairs(pad_width, array.ndim, as_index=True)
+    <span class="c1"># Broadcast to shape (array.ndim, 2)</span>
+    <span class="n">pad_width</span> <span class="o">=</span> <span class="n">_as_pairs</span><span class="p">(</span><span class="n">pad_width</span><span class="p">,</span> <span class="n">array</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="n">as_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    if callable(mode):
-        # Old behavior: Use user-supplied function with np.apply_along_axis
-        function = mode
-        # Create a new zero padded array
-        padded, _ = _pad_simple(array, pad_width, fill_value=0)
-        # And apply along each axis
+    <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">mode</span><span class="p">):</span>
+        <span class="c1"># Old behavior: Use user-supplied function with np.apply_along_axis</span>
+        <span class="n">function</span> <span class="o">=</span> <span class="n">mode</span>
+        <span class="c1"># Create a new zero padded array</span>
+        <span class="n">padded</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_pad_simple</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">pad_width</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="c1"># And apply along each axis</span>
 
-        for axis in range(padded.ndim):
-            # Iterate using ndindex as in apply_along_axis, but assuming that
-            # function operates inplace on the padded array.
+        <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">padded</span><span class="o">.</span><span class="n">ndim</span><span class="p">):</span>
+            <span class="c1"># Iterate using ndindex as in apply_along_axis, but assuming that</span>
+            <span class="c1"># function operates inplace on the padded array.</span>
 
-            # view with the iteration axis at the end
-            view = np.moveaxis(padded, axis, -1)
+            <span class="c1"># view with the iteration axis at the end</span>
+            <span class="n">view</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">padded</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
 
-            # compute indices for the iteration axes, and append a trailing
-            # ellipsis to prevent 0d arrays decaying to scalars (gh-8642)
-            inds = ndindex(view.shape[:-1])
-            inds = (ind + (Ellipsis,) for ind in inds)
-            for ind in inds:
-                function(view[ind], pad_width[axis], axis, kwargs)
+            <span class="c1"># compute indices for the iteration axes, and append a trailing</span>
+            <span class="c1"># ellipsis to prevent 0d arrays decaying to scalars (gh-8642)</span>
+            <span class="n">inds</span> <span class="o">=</span> <span class="n">ndindex</span><span class="p">(</span><span class="n">view</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">inds</span> <span class="o">=</span> <span class="p">(</span><span class="n">ind</span> <span class="o">+</span> <span class="p">(</span><span class="bp">Ellipsis</span><span class="p">,)</span> <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">inds</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">inds</span><span class="p">:</span>
+                <span class="n">function</span><span class="p">(</span><span class="n">view</span><span class="p">[</span><span class="n">ind</span><span class="p">],</span> <span class="n">pad_width</span><span class="p">[</span><span class="n">axis</span><span class="p">],</span> <span class="n">axis</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
 
-        return padded
+        <span class="k">return</span> <span class="n">padded</span>
 
-    # Make sure that no unsupported keywords were passed for the current mode
-    allowed_kwargs = {
-        &#39;empty&#39;: [], &#39;edge&#39;: [], &#39;wrap&#39;: [],
-        &#39;constant&#39;: [&#39;constant_values&#39;],
-        &#39;linear_ramp&#39;: [&#39;end_values&#39;],
-        &#39;maximum&#39;: [&#39;stat_length&#39;],
-        &#39;mean&#39;: [&#39;stat_length&#39;],
-        &#39;median&#39;: [&#39;stat_length&#39;],
-        &#39;minimum&#39;: [&#39;stat_length&#39;],
-        &#39;reflect&#39;: [&#39;reflect_type&#39;],
-        &#39;symmetric&#39;: [&#39;reflect_type&#39;],
-    }
-    try:
-        unsupported_kwargs = set(kwargs) - set(allowed_kwargs[mode])
-    except KeyError:
-        raise ValueError(&quot;mode &#39;{}&#39; is not supported&quot;.format(mode)) from None
-    if unsupported_kwargs:
-        raise ValueError(&quot;unsupported keyword arguments for mode &#39;{}&#39;: {}&quot;
-                         .format(mode, unsupported_kwargs))
+    <span class="c1"># Make sure that no unsupported keywords were passed for the current mode</span>
+    <span class="n">allowed_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;empty&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;edge&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;wrap&#39;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="s1">&#39;constant&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;constant_values&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;linear_ramp&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;end_values&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;maximum&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;stat_length&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;mean&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;stat_length&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;median&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;stat_length&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;minimum&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;stat_length&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;reflect&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;reflect_type&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;symmetric&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;reflect_type&#39;</span><span class="p">],</span>
+    <span class="p">}</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">unsupported_kwargs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">allowed_kwargs</span><span class="p">[</span><span class="n">mode</span><span class="p">])</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;mode &#39;</span><span class="si">{}</span><span class="s2">&#39; is not supported&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mode</span><span class="p">))</span> <span class="kn">from</span> <span class="bp">None</span>
+    <span class="k">if</span> <span class="n">unsupported_kwargs</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;unsupported keyword arguments for mode &#39;</span><span class="si">{}</span><span class="s2">&#39;: </span><span class="si">{}</span><span class="s2">&quot;</span>
+                         <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="n">unsupported_kwargs</span><span class="p">))</span>
 
-    stat_functions = {&quot;maximum&quot;: np.amax, &quot;minimum&quot;: np.amin,
-                      &quot;mean&quot;: np.mean, &quot;median&quot;: np.median}
+    <span class="n">stat_functions</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;maximum&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">,</span> <span class="s2">&quot;minimum&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">amin</span><span class="p">,</span>
+                      <span class="s2">&quot;mean&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">,</span> <span class="s2">&quot;median&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">}</span>
 
-    # Create array with final shape and original values
-    # (padded area is undefined)
-    padded, original_area_slice = _pad_simple(array, pad_width)
-    # And prepare iteration over all dimensions
-    # (zipping may be more readable than using enumerate)
-    axes = range(padded.ndim)
+    <span class="c1"># Create array with final shape and original values</span>
+    <span class="c1"># (padded area is undefined)</span>
+    <span class="n">padded</span><span class="p">,</span> <span class="n">original_area_slice</span> <span class="o">=</span> <span class="n">_pad_simple</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">pad_width</span><span class="p">)</span>
+    <span class="c1"># And prepare iteration over all dimensions</span>
+    <span class="c1"># (zipping may be more readable than using enumerate)</span>
+    <span class="n">axes</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">padded</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
 
-    if mode == &quot;constant&quot;:
-        values = kwargs.get(&quot;constant_values&quot;, 0)
-        values = _as_pairs(values, padded.ndim)
-        for axis, width_pair, value_pair in zip(axes, pad_width, values):
-            roi = _view_roi(padded, original_area_slice, axis)
-            _set_pad_area(roi, axis, width_pair, value_pair)
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;constant&quot;</span><span class="p">:</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;constant_values&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">_as_pairs</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">padded</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">axis</span><span class="p">,</span> <span class="n">width_pair</span><span class="p">,</span> <span class="n">value_pair</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="n">pad_width</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+            <span class="n">roi</span> <span class="o">=</span> <span class="n">_view_roi</span><span class="p">(</span><span class="n">padded</span><span class="p">,</span> <span class="n">original_area_slice</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
+            <span class="n">_set_pad_area</span><span class="p">(</span><span class="n">roi</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">width_pair</span><span class="p">,</span> <span class="n">value_pair</span><span class="p">)</span>
 
-    elif mode == &quot;empty&quot;:
-        pass  # Do nothing as _pad_simple already returned the correct result
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;empty&quot;</span><span class="p">:</span>
+        <span class="k">pass</span>  <span class="c1"># Do nothing as _pad_simple already returned the correct result</span>
 
-    elif array.size == 0:
-        # Only modes &quot;constant&quot; and &quot;empty&quot; can extend empty axes, all other
-        # modes depend on `array` not being empty
-        # -&gt; ensure every empty axis is only &quot;padded with 0&quot;
-        for axis, width_pair in zip(axes, pad_width):
-            if array.shape[axis] == 0 and any(width_pair):
-                raise ValueError(
-                    &quot;can&#39;t extend empty axis {} using modes other than &quot;
-                    &quot;&#39;constant&#39; or &#39;empty&#39;&quot;.format(axis)
-                )
-        # passed, don&#39;t need to do anything more as _pad_simple already
-        # returned the correct result
+    <span class="k">elif</span> <span class="n">array</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c1"># Only modes &quot;constant&quot; and &quot;empty&quot; can extend empty axes, all other</span>
+        <span class="c1"># modes depend on `array` not being empty</span>
+        <span class="c1"># -&gt; ensure every empty axis is only &quot;padded with 0&quot;</span>
+        <span class="k">for</span> <span class="n">axis</span><span class="p">,</span> <span class="n">width_pair</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="n">pad_width</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span><span class="n">width_pair</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;can&#39;t extend empty axis </span><span class="si">{}</span><span class="s2"> using modes other than &quot;</span>
+                    <span class="s2">&quot;&#39;constant&#39; or &#39;empty&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span>
+                <span class="p">)</span>
+        <span class="c1"># passed, don&#39;t need to do anything more as _pad_simple already</span>
+        <span class="c1"># returned the correct result</span>
 
-    elif mode == &quot;edge&quot;:
-        for axis, width_pair in zip(axes, pad_width):
-            roi = _view_roi(padded, original_area_slice, axis)
-            edge_pair = _get_edges(roi, axis, width_pair)
-            _set_pad_area(roi, axis, width_pair, edge_pair)
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;edge&quot;</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">axis</span><span class="p">,</span> <span class="n">width_pair</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="n">pad_width</span><span class="p">):</span>
+            <span class="n">roi</span> <span class="o">=</span> <span class="n">_view_roi</span><span class="p">(</span><span class="n">padded</span><span class="p">,</span> <span class="n">original_area_slice</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
+            <span class="n">edge_pair</span> <span class="o">=</span> <span class="n">_get_edges</span><span class="p">(</span><span class="n">roi</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">width_pair</span><span class="p">)</span>
+            <span class="n">_set_pad_area</span><span class="p">(</span><span class="n">roi</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">width_pair</span><span class="p">,</span> <span class="n">edge_pair</span><span class="p">)</span>
 
-    elif mode == &quot;linear_ramp&quot;:
-        end_values = kwargs.get(&quot;end_values&quot;, 0)
-        end_values = _as_pairs(end_values, padded.ndim)
-        for axis, width_pair, value_pair in zip(axes, pad_width, end_values):
-            roi = _view_roi(padded, original_area_slice, axis)
-            ramp_pair = _get_linear_ramps(roi, axis, width_pair, value_pair)
-            _set_pad_area(roi, axis, width_pair, ramp_pair)
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;linear_ramp&quot;</span><span class="p">:</span>
+        <span class="n">end_values</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;end_values&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">end_values</span> <span class="o">=</span> <span class="n">_as_pairs</span><span class="p">(</span><span class="n">end_values</span><span class="p">,</span> <span class="n">padded</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">axis</span><span class="p">,</span> <span class="n">width_pair</span><span class="p">,</span> <span class="n">value_pair</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="n">pad_width</span><span class="p">,</span> <span class="n">end_values</span><span class="p">):</span>
+            <span class="n">roi</span> <span class="o">=</span> <span class="n">_view_roi</span><span class="p">(</span><span class="n">padded</span><span class="p">,</span> <span class="n">original_area_slice</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
+            <span class="n">ramp_pair</span> <span class="o">=</span> <span class="n">_get_linear_ramps</span><span class="p">(</span><span class="n">roi</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">width_pair</span><span class="p">,</span> <span class="n">value_pair</span><span class="p">)</span>
+            <span class="n">_set_pad_area</span><span class="p">(</span><span class="n">roi</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">width_pair</span><span class="p">,</span> <span class="n">ramp_pair</span><span class="p">)</span>
 
-    elif mode in stat_functions:
-        func = stat_functions[mode]
-        length = kwargs.get(&quot;stat_length&quot;, None)
-        length = _as_pairs(length, padded.ndim, as_index=True)
-        for axis, width_pair, length_pair in zip(axes, pad_width, length):
-            roi = _view_roi(padded, original_area_slice, axis)
-            stat_pair = _get_stats(roi, axis, width_pair, length_pair, func)
-            _set_pad_area(roi, axis, width_pair, stat_pair)
+    <span class="k">elif</span> <span class="n">mode</span> <span class="ow">in</span> <span class="n">stat_functions</span><span class="p">:</span>
+        <span class="n">func</span> <span class="o">=</span> <span class="n">stat_functions</span><span class="p">[</span><span class="n">mode</span><span class="p">]</span>
+        <span class="n">length</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;stat_length&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">length</span> <span class="o">=</span> <span class="n">_as_pairs</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="n">padded</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="n">as_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">axis</span><span class="p">,</span> <span class="n">width_pair</span><span class="p">,</span> <span class="n">length_pair</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="n">pad_width</span><span class="p">,</span> <span class="n">length</span><span class="p">):</span>
+            <span class="n">roi</span> <span class="o">=</span> <span class="n">_view_roi</span><span class="p">(</span><span class="n">padded</span><span class="p">,</span> <span class="n">original_area_slice</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
+            <span class="n">stat_pair</span> <span class="o">=</span> <span class="n">_get_stats</span><span class="p">(</span><span class="n">roi</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">width_pair</span><span class="p">,</span> <span class="n">length_pair</span><span class="p">,</span> <span class="n">func</span><span class="p">)</span>
+            <span class="n">_set_pad_area</span><span class="p">(</span><span class="n">roi</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">width_pair</span><span class="p">,</span> <span class="n">stat_pair</span><span class="p">)</span>
 
-    elif mode in {&quot;reflect&quot;, &quot;symmetric&quot;}:
-        method = kwargs.get(&quot;reflect_type&quot;, &quot;even&quot;)
-        include_edge = True if mode == &quot;symmetric&quot; else False
-        for axis, (left_index, right_index) in zip(axes, pad_width):
-            if array.shape[axis] == 1 and (left_index &gt; 0 or right_index &gt; 0):
-                # Extending singleton dimension for &#39;reflect&#39; is legacy
-                # behavior; it really should raise an error.
-                edge_pair = _get_edges(padded, axis, (left_index, right_index))
-                _set_pad_area(
-                    padded, axis, (left_index, right_index), edge_pair)
-                continue
+    <span class="k">elif</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;reflect&quot;</span><span class="p">,</span> <span class="s2">&quot;symmetric&quot;</span><span class="p">}:</span>
+        <span class="n">method</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;reflect_type&quot;</span><span class="p">,</span> <span class="s2">&quot;even&quot;</span><span class="p">)</span>
+        <span class="n">include_edge</span> <span class="o">=</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;symmetric&quot;</span> <span class="k">else</span> <span class="kc">False</span>
+        <span class="k">for</span> <span class="n">axis</span><span class="p">,</span> <span class="p">(</span><span class="n">left_index</span><span class="p">,</span> <span class="n">right_index</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="n">pad_width</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="p">(</span><span class="n">left_index</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">right_index</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="c1"># Extending singleton dimension for &#39;reflect&#39; is legacy</span>
+                <span class="c1"># behavior; it really should raise an error.</span>
+                <span class="n">edge_pair</span> <span class="o">=</span> <span class="n">_get_edges</span><span class="p">(</span><span class="n">padded</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="p">(</span><span class="n">left_index</span><span class="p">,</span> <span class="n">right_index</span><span class="p">))</span>
+                <span class="n">_set_pad_area</span><span class="p">(</span>
+                    <span class="n">padded</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="p">(</span><span class="n">left_index</span><span class="p">,</span> <span class="n">right_index</span><span class="p">),</span> <span class="n">edge_pair</span><span class="p">)</span>
+                <span class="k">continue</span>
 
-            roi = _view_roi(padded, original_area_slice, axis)
-            while left_index &gt; 0 or right_index &gt; 0:
-                # Iteratively pad until dimension is filled with reflected
-                # values. This is necessary if the pad area is larger than
-                # the length of the original values in the current dimension.
-                left_index, right_index = _set_reflect_both(
-                    roi, axis, (left_index, right_index),
-                    method, include_edge
-                )
+            <span class="n">roi</span> <span class="o">=</span> <span class="n">_view_roi</span><span class="p">(</span><span class="n">padded</span><span class="p">,</span> <span class="n">original_area_slice</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
+            <span class="k">while</span> <span class="n">left_index</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">right_index</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># Iteratively pad until dimension is filled with reflected</span>
+                <span class="c1"># values. This is necessary if the pad area is larger than</span>
+                <span class="c1"># the length of the original values in the current dimension.</span>
+                <span class="n">left_index</span><span class="p">,</span> <span class="n">right_index</span> <span class="o">=</span> <span class="n">_set_reflect_both</span><span class="p">(</span>
+                    <span class="n">roi</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="p">(</span><span class="n">left_index</span><span class="p">,</span> <span class="n">right_index</span><span class="p">),</span>
+                    <span class="n">method</span><span class="p">,</span> <span class="n">include_edge</span>
+                <span class="p">)</span>
 
-    elif mode == &quot;wrap&quot;:
-        for axis, (left_index, right_index) in zip(axes, pad_width):
-            roi = _view_roi(padded, original_area_slice, axis)
-            while left_index &gt; 0 or right_index &gt; 0:
-                # Iteratively pad until dimension is filled with wrapped
-                # values. This is necessary if the pad area is larger than
-                # the length of the original values in the current dimension.
-                left_index, right_index = _set_wrap_both(
-                    roi, axis, (left_index, right_index))
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;wrap&quot;</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">axis</span><span class="p">,</span> <span class="p">(</span><span class="n">left_index</span><span class="p">,</span> <span class="n">right_index</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="n">pad_width</span><span class="p">):</span>
+            <span class="n">roi</span> <span class="o">=</span> <span class="n">_view_roi</span><span class="p">(</span><span class="n">padded</span><span class="p">,</span> <span class="n">original_area_slice</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
+            <span class="k">while</span> <span class="n">left_index</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">right_index</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># Iteratively pad until dimension is filled with wrapped</span>
+                <span class="c1"># values. This is necessary if the pad area is larger than</span>
+                <span class="c1"># the length of the original values in the current dimension.</span>
+                <span class="n">left_index</span><span class="p">,</span> <span class="n">right_index</span> <span class="o">=</span> <span class="n">_set_wrap_both</span><span class="p">(</span>
+                    <span class="n">roi</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="p">(</span><span class="n">left_index</span><span class="p">,</span> <span class="n">right_index</span><span class="p">))</span>
 
-    return padded
+    <span class="k">return</span> <span class="n">padded</span>
 </pre></div>
 </div>
 </div>
@@ -1172,56 +1172,56 @@ def pad(array, pad_width, mode=&#39;constant&#39;, **kwargs):
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>import porespy as ps
-import numpy as np
-import matplotlib.pyplot as plt
-from porespy.tools import get_border, extend_slice, extract_subsection
+<span></span><span class="kn">import</span> <span class="nn">porespy</span> <span class="k">as</span> <span class="nn">ps</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">get_border</span><span class="p">,</span> <span class="n">extend_slice</span><span class="p">,</span> <span class="n">extract_subsection</span>
 
 
-def unpad(im, pad_width):
-    r&quot;&quot;&quot;
-    removes padding from an image then extracts the result corresponding to the original image shape.
-    Parameters
-    ----------
-    im : ND-image
-        The image to which ``func`` should be applied
-    pad_width : int or list of ints
-        The amount of padding on each axis.  Refer to ``numpy.pad``
-        documentation for more details.
-    Notes
-    -----
-    A use case for this is when using ``skimage.morphology.skeletonize_3d``
-    to ensure that the skeleton extends beyond the edges of the image.
-    &quot;&quot;&quot;
-    padded = np.pad(im, pad_width=pad_width,
-                    mode=&#39;constant&#39;, constant_values=1)
+<span class="k">def</span> <span class="nf">unpad</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">pad_width</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    removes padding from an image then extracts the result corresponding to the original image shape.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    im : ND-image</span>
+<span class="sd">        The image to which ``func`` should be applied</span>
+<span class="sd">    pad_width : int or list of ints</span>
+<span class="sd">        The amount of padding on each axis.  Refer to ``numpy.pad``</span>
+<span class="sd">        documentation for more details.</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    A use case for this is when using ``skimage.morphology.skeletonize_3d``</span>
+<span class="sd">    to ensure that the skeleton extends beyond the edges of the image.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">padded</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">pad_width</span><span class="o">=</span><span class="n">pad_width</span><span class="p">,</span>
+                    <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;constant&#39;</span><span class="p">,</span> <span class="n">constant_values</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
-    if type(pad_width) == int:
-        new_pad_width = []
-        for r in range (0,len(im.shape)):
-            new_pad_width.append(pad_width)
-        pad_width = new_pad_width
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">pad_width</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="n">new_pad_width</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">range</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">)):</span>
+            <span class="n">new_pad_width</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pad_width</span><span class="p">)</span>
+        <span class="n">pad_width</span> <span class="o">=</span> <span class="n">new_pad_width</span>
 
-    if type(pad_width) == list:
-        pad_width = np.asarray(pad_width)
-        shape = im.shape - pad_width[0] - pad_width[1]
-
-
-    difference = (pad_width[0]-pad_width[1])
-    if shape[0] &lt; 1:
-        shape = np.array(im.shape) * shape
-    center = np.array(im.shape)
-    center[0] = shape[0]/2 -difference
-    center[1] = shape[1]/2 -difference
-    s_im = []
-    for dim in range(im.ndim):
-        r = shape[dim] / 2
-        lower_im = pad_width[0]
-        upper_im = shape[dim] + pad_width[0]
-        s_im.append(slice(int(lower_im), int(upper_im)))
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">pad_width</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="n">pad_width</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">pad_width</span><span class="p">)</span>
+        <span class="n">shape</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span> <span class="o">-</span> <span class="n">pad_width</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">pad_width</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
 
-    return im[tuple(s_im)]
+    <span class="n">difference</span> <span class="o">=</span> <span class="p">(</span><span class="n">pad_width</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">pad_width</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">*</span> <span class="n">shape</span>
+    <span class="n">center</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">center</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span> <span class="o">-</span><span class="n">difference</span>
+    <span class="n">center</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span> <span class="o">-</span><span class="n">difference</span>
+    <span class="n">s_im</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">dim</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">ndim</span><span class="p">):</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">shape</span><span class="p">[</span><span class="n">dim</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="n">lower_im</span> <span class="o">=</span> <span class="n">pad_width</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">upper_im</span> <span class="o">=</span> <span class="n">shape</span><span class="p">[</span><span class="n">dim</span><span class="p">]</span> <span class="o">+</span> <span class="n">pad_width</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">s_im</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">lower_im</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">upper_im</span><span class="p">)))</span>
+
+
+    <span class="k">return</span> <span class="n">im</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">s_im</span><span class="p">)]</span>
 </pre></div>
 </div>
 </div>
@@ -1230,28 +1230,28 @@ def unpad(im, pad_width):
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>r&quot;&quot;&quot;
-Example
-&quot;&quot;&quot;
+<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Example</span>
+<span class="sd">&quot;&quot;&quot;</span>
 
-pad_width = [10,50]
+<span class="n">pad_width</span> <span class="o">=</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="mi">50</span><span class="p">]</span>
 
-im = ps.generators.blobs([200,300], porosity = 0.3)
-print(&quot;shape original:&quot;, im.shape)
-im1 = np.pad(im, pad_width, mode = &quot;constant&quot;, constant_values = 1)
-print(&quot;shape padded:&quot;, im1.shape)
-im3 = unpad(im1, pad_width)
-print(&quot;shape new unpad:&quot;, im3.shape)
+<span class="n">im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">blobs</span><span class="p">([</span><span class="mi">200</span><span class="p">,</span><span class="mi">300</span><span class="p">],</span> <span class="n">porosity</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;shape original:&quot;</span><span class="p">,</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="n">im1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">pad_width</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;constant&quot;</span><span class="p">,</span> <span class="n">constant_values</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;shape padded:&quot;</span><span class="p">,</span> <span class="n">im1</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="n">im3</span> <span class="o">=</span> <span class="n">unpad</span><span class="p">(</span><span class="n">im1</span><span class="p">,</span> <span class="n">pad_width</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;shape new unpad:&quot;</span><span class="p">,</span> <span class="n">im3</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 
 
-fig, ax = plt.subplots(1, 3, figsize=[20,20]);
-ax[0].imshow(im);
-ax[1].imshow(im1);
-ax[2].imshow(im3);
-ax[0].set_title(&#39;image&#39;)
-ax[1].set_title(&#39;pad added&#39;)
-ax[2].set_title(&#39;pad removed&#39;)
-#&quot;&quot;&quot;
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">20</span><span class="p">,</span><span class="mi">20</span><span class="p">]);</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im</span><span class="p">);</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im1</span><span class="p">);</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im3</span><span class="p">);</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;image&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;pad added&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;pad removed&#39;</span><span class="p">)</span>
+<span class="c1">#&quot;&quot;&quot;</span>
 </pre></div>
 </div>
 </div>

@@ -231,7 +231,7 @@
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="../../filters/tutorials/using_ibip.html">
-   Image-Based Invasion Percoalation
+   Image-based invasion percoalation
   </a>
  </li>
 </ul>
@@ -355,12 +355,12 @@
 <ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="../../metrics/tutorials/computing_fractal_dim.html">
-   Measuring Fractal Dimension by Box-Counting
+   Measuring fractal dimension by box-counting
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="../../metrics/tutorials/lineal_path_function.html">
-   The Lineal Path Function
+   The lineal path function
   </a>
  </li>
  <li class="toctree-l1">
@@ -454,7 +454,7 @@
 <ul class="current nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="adding_boundary_pores.html">
-   Adding Boundary Pores
+   Adding boundary pores
   </a>
  </li>
  <li class="toctree-l1">
@@ -840,12 +840,12 @@ be segmented using the predefined <code class="docutils literal notranslate"><sp
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>import numpy as np
-import porespy as ps
-import openpnm as op
-import matplotlib.pyplot as plt
-ps.visualization.set_mpl_style()
-np.random.seed(10)
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">porespy</span> <span class="k">as</span> <span class="nn">ps</span>
+<span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="n">ps</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">set_mpl_style</span><span class="p">()</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -855,9 +855,9 @@ np.random.seed(10)
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>im = ps.generators.blobs(shape=[400, 400], porosity=0.6, blobiness=2)
-fig, ax = plt.subplots()
-ax.imshow(im);
+<span></span><span class="n">im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">blobs</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">400</span><span class="p">,</span> <span class="mi">400</span><span class="p">],</span> <span class="n">porosity</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">blobiness</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -873,7 +873,7 @@ ax.imshow(im);
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>snow_output = ps.networks.snow2(im, voxel_size=1)
+<span></span><span class="n">snow_output</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">networks</span><span class="o">.</span><span class="n">snow2</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">voxel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -881,7 +881,7 @@ ax.imshow(im);
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "ebff4da4767a4ea08d5e2207489f41ec", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">snow</span></code> function returns a python <em>dict</em> that is suitable for use in OpenPNM.</p>
 <div class="nbinput nblast docutils container">
@@ -889,9 +889,9 @@ ax.imshow(im);
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>pn = op.network.GenericNetwork()
-pn.update(snow_output.network)
-prj = pn.project
+<span></span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">GenericNetwork</span><span class="p">()</span>
+<span class="n">pn</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">snow_output</span><span class="o">.</span><span class="n">network</span><span class="p">)</span>
+<span class="n">prj</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">project</span>
 </pre></div>
 </div>
 </div>
@@ -901,7 +901,7 @@ prj = pn.project
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>prj.export_data(filename=&#39;extraction&#39;, filetype=&#39;vtk&#39;)
+<span></span><span class="n">prj</span><span class="o">.</span><span class="n">export_data</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s1">&#39;extraction&#39;</span><span class="p">,</span> <span class="n">filetype</span><span class="o">=</span><span class="s1">&#39;vtk&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -911,12 +911,36 @@ prj = pn.project
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>ps.io.to_vtk(np.array(im, dtype=int)[:, :, np.newaxis], &#39;im&#39;)
+<span></span><span class="n">ps</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">to_vtk</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)[:,</span> <span class="p">:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">],</span> <span class="s1">&#39;im&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <p>And the result after opening both files in ParaView is:</p>
-<p><img alt="d6d502d332c6438795143837d0fa6139" class="no-scaled-link" src="https://user-images.githubusercontent.com/14086031/113048593-b725bb00-9170-11eb-8f65-93de3278e229.png" style="width: 300px;" /></p>
+<p><img alt="bba8ca729257494f84fbfbe1f2ea4210" class="no-scaled-link" src="https://user-images.githubusercontent.com/14086031/113048593-b725bb00-9170-11eb-8f65-93de3278e229.png" style="width: 300px;" /></p>
+<p>You can also overlay the network on the image natively in <code class="docutils literal notranslate"><span class="pre">porespy</span></code>. Note that you need to transpose the image using <code class="docutils literal notranslate"><span class="pre">im.T</span></code>, since <code class="docutils literal notranslate"><span class="pre">imshow</span></code> uses matrix representation, e.g. a (10, 20)-shaped array is shown as 10 pixels in the y-axis, and 20 pixels in the x-axis.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">T</span><span class="p">);</span>
+<span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">plot_coordinates</span><span class="p">(</span><span class="n">fig</span><span class="o">=</span><span class="n">fig</span><span class="p">,</span>
+                              <span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span>
+                              <span class="n">size_by</span><span class="o">=</span><span class="n">pn</span><span class="p">[</span><span class="s2">&quot;pore.inscribed_diameter&quot;</span><span class="p">],</span>
+                              <span class="n">color_by</span><span class="o">=</span><span class="n">pn</span><span class="p">[</span><span class="s2">&quot;pore.inscribed_diameter&quot;</span><span class="p">],</span>
+                              <span class="n">markersize</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">plot_connections</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">pn</span><span class="p">,</span> <span class="n">fig</span><span class="o">=</span><span class="n">fig</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;off&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/examples_networks_tutorials_snow_basic_17_0.svg" src="../../../_images/examples_networks_tutorials_snow_basic_17_0.svg" /></div>
+</div>
 </div>
 
 

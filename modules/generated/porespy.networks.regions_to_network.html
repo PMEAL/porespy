@@ -899,12 +899,11 @@ OpenPNM convention (i.e. ‘pore.coords’, ‘throat.conns’).</p>
 </dl>
 <p class="rubric">Notes</p>
 <p>The meaning of each of the values returned in <code class="docutils literal notranslate"><span class="pre">net</span></code> are outlined below:</p>
-<ul class="simple">
-<li><p>‘pore.region_label’: The region labels corresponding to the watershed</p></li>
-</ul>
-<p>extraction. The pore indices and regions labels will be offset by 1, so
-pore 0 will be region 1.</p>
 <dl class="simple">
+<dt>‘pore.region_label’</dt><dd><p>The region labels corresponding to the watershed extraction. The
+pore indices and regions labels will be offset by 1, so pore 0
+will be region 1.</p>
+</dd>
 <dt>‘throat.conns’</dt><dd><p>An <em>Nt-by-2</em> array indicating which pores are connected to each other</p>
 </dd>
 <dt>‘pore.region_label’</dt><dd><p>Mapping of regions in the watershed segmentation to pores in the
@@ -927,21 +926,21 @@ performed on the full image</p>
 <dt>‘pore.volume’</dt><dd><p>The volume of the pore found by as volume of a mesh obtained from the
 marching cubes algorithm</p>
 </dd>
-<dt>‘pore.surface_area’</dt><dd><p>blah</p>
+<dt>‘pore.surface_area’</dt><dd><p>The surface area of the pore region as calculated by ?</p>
 </dd>
-<dt>‘throat.cross_sectional_area’</dt><dd><p>blah</p>
+<dt>‘throat.cross_sectional_area’</dt><dd><p>The cross-sectional area of the throat found by ?</p>
 </dd>
-<dt>‘throat.perimeter’</dt><dd><p>blah</p>
+<dt>‘throat.perimeter’</dt><dd><p>The perimeter of the throat found by ?</p>
 </dd>
-<dt>‘pore.inscribed_diameter’</dt><dd><p>blah</p>
+<dt>‘pore.inscribed_diameter’</dt><dd><p>The diameter of the largest sphere inscribed in the pore region</p>
 </dd>
-<dt>‘pore.extended_diameter’</dt><dd><p>blah</p>
+<dt>‘pore.extended_diameter’</dt><dd><p>?</p>
 </dd>
-<dt>‘throat.inscribed_diameter’</dt><dd><p>blah</p>
+<dt>‘throat.inscribed_diameter’</dt><dd><p>The diameter of the largest sphere inscribed the throat region</p>
 </dd>
-<dt>‘throat.total_length’</dt><dd><p>blah</p>
+<dt>‘throat.total_length’</dt><dd><p>?</p>
 </dd>
-<dt>‘throat.direct_length’</dt><dd><p>blah</p>
+<dt>‘throat.direct_length’</dt><dd><p>?</p>
 </dd>
 </dl>
 </dd></dl>

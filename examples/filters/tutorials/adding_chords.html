@@ -231,7 +231,7 @@
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="using_ibip.html">
-   Image-Based Invasion Percoalation
+   Image-based invasion percoalation
   </a>
  </li>
 </ul>
@@ -355,12 +355,12 @@
 <ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="../../metrics/tutorials/computing_fractal_dim.html">
-   Measuring Fractal Dimension by Box-Counting
+   Measuring fractal dimension by box-counting
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="../../metrics/tutorials/lineal_path_function.html">
-   The Lineal Path Function
+   The lineal path function
   </a>
  </li>
  <li class="toctree-l1">
@@ -454,7 +454,7 @@
 <ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="../../networks/tutorials/adding_boundary_pores.html">
-   Adding Boundary Pores
+   Adding boundary pores
   </a>
  </li>
  <li class="toctree-l1">
@@ -859,9 +859,9 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>import time
-import porespy as ps
-ps.visualization.set_mpl_style()
+<span></span><span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">porespy</span> <span class="k">as</span> <span class="nn">ps</span>
+<span class="n">ps</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">set_mpl_style</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -871,9 +871,9 @@ ps.visualization.set_mpl_style()
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>import scipy as sp
-import scipy.ndimage as spim
-import matplotlib.pyplot as plt
+<span></span><span class="kn">import</span> <span class="nn">scipy</span> <span class="k">as</span> <span class="nn">sp</span>
+<span class="kn">import</span> <span class="nn">scipy.ndimage</span> <span class="k">as</span> <span class="nn">spim</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 </pre></div>
 </div>
 </div>
@@ -886,7 +886,7 @@ import matplotlib.pyplot as plt
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>im = ps.generators.blobs(shape=[400, 400], blobiness=[2, 1])
+<span></span><span class="n">im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">blobs</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">400</span><span class="p">,</span> <span class="mi">400</span><span class="p">],</span> <span class="n">blobiness</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -896,8 +896,8 @@ import matplotlib.pyplot as plt
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>fig, ax = plt.subplots()
-ax.imshow(im);
+<span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -913,11 +913,11 @@ ax.imshow(im);
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>crds_x = ps.filters.apply_chords(im=im, spacing=4, axis=0)
-crds_y = ps.filters.apply_chords(im=im, spacing=4, axis=1)
-fig, ax = plt.subplots(1, 2, figsize=[8, 4])
-ax[0].imshow(crds_x);
-ax[1].imshow(crds_y);
+<span></span><span class="n">crds_x</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">apply_chords</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">spacing</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">crds_y</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">apply_chords</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">spacing</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">crds_x</span><span class="p">);</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">crds_y</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -934,11 +934,11 @@ ax[1].imshow(crds_y);
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>sz_x = ps.filters.region_size(crds_x)
-sz_y = ps.filters.region_size(crds_y)
-fig, ax = plt.subplots(1, 2, figsize=[8, 4])
-ax[0].imshow(sz_x);
-ax[1].imshow(sz_y);
+<span></span><span class="n">sz_x</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">region_size</span><span class="p">(</span><span class="n">crds_x</span><span class="p">)</span>
+<span class="n">sz_y</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">region_size</span><span class="p">(</span><span class="n">crds_y</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">sz_x</span><span class="p">);</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">sz_y</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -954,8 +954,8 @@ ax[1].imshow(sz_y);
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>data_x = ps.metrics.chord_length_distribution(crds_x, bins=25)
-data_y = ps.metrics.chord_length_distribution(crds_y, bins=25)
+<span></span><span class="n">data_x</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">chord_length_distribution</span><span class="p">(</span><span class="n">crds_x</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">25</span><span class="p">)</span>
+<span class="n">data_y</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">chord_length_distribution</span><span class="p">(</span><span class="n">crds_y</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">25</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -965,7 +965,7 @@ data_y = ps.metrics.chord_length_distribution(crds_y, bins=25)
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>print(data_x._fields)
+<span></span><span class="nb">print</span><span class="p">(</span><span class="n">data_x</span><span class="o">.</span><span class="n">_fields</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -983,11 +983,11 @@ data_y = ps.metrics.chord_length_distribution(crds_y, bins=25)
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>fig, ax = plt.subplots(figsize=(5, 4))
-ax.bar(x=data_y.L, height=data_y.cdf, width=data_y.bin_widths, color=&#39;b&#39;, edgecolor=&#39;k&#39;, alpha=0.5);
-ax.bar(x=data_x.L, height=data_x.cdf, width=data_x.bin_widths, color=&#39;r&#39;, edgecolor=&#39;k&#39;, alpha=0.5);
-ax.set_xlabel(&quot;Chord length&quot;)
-ax.set_ylabel(&quot;Frequency&quot;);
+<span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">data_y</span><span class="o">.</span><span class="n">L</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="n">data_y</span><span class="o">.</span><span class="n">cdf</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">data_y</span><span class="o">.</span><span class="n">bin_widths</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">);</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">data_x</span><span class="o">.</span><span class="n">L</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="n">data_x</span><span class="o">.</span><span class="n">cdf</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">data_x</span><span class="o">.</span><span class="n">bin_widths</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">);</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Chord length&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Frequency&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -1007,9 +1007,9 @@ ax.set_ylabel(&quot;Frequency&quot;);
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>im = ps.generators.cylinders(shape=[200, 400, 400], r=8, ncylinders=200)
-fig, ax = plt.subplots()
-ax.imshow(im[:, :, 100]);
+<span></span><span class="n">im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">cylinders</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">400</span><span class="p">,</span> <span class="mi">400</span><span class="p">],</span> <span class="n">r</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">ncylinders</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">100</span><span class="p">]);</span>
 </pre></div>
 </div>
 </div>
@@ -1031,9 +1031,9 @@ ax.imshow(im[:, :, 100]);
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>crds = ps.filters.apply_chords(im=im, axis=0)
-fig, ax = plt.subplots()
-ax.imshow(crds[:, :, 100]);
+<span></span><span class="n">crds</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">apply_chords</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">crds</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">100</span><span class="p">]);</span>
 </pre></div>
 </div>
 </div>

@@ -233,7 +233,7 @@
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="using_ibip.html">
-   Image-Based Invasion Percoalation
+   Image-based invasion percoalation
   </a>
  </li>
 </ul>
@@ -357,12 +357,12 @@
 <ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="../../metrics/tutorials/computing_fractal_dim.html">
-   Measuring Fractal Dimension by Box-Counting
+   Measuring fractal dimension by box-counting
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="../../metrics/tutorials/lineal_path_function.html">
-   The Lineal Path Function
+   The lineal path function
   </a>
  </li>
  <li class="toctree-l1">
@@ -456,7 +456,7 @@
 <ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="../../networks/tutorials/adding_boundary_pores.html">
-   Adding Boundary Pores
+   Adding boundary pores
   </a>
  </li>
  <li class="toctree-l1">
@@ -867,11 +867,11 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>import numpy as np
-import porespy as ps
-import scipy.ndimage as spim
-import matplotlib.pyplot as plt
-ps.visualization.set_mpl_style()
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">porespy</span> <span class="k">as</span> <span class="nn">ps</span>
+<span class="kn">import</span> <span class="nn">scipy.ndimage</span> <span class="k">as</span> <span class="nn">spim</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="n">ps</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">set_mpl_style</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -883,13 +883,13 @@ ps.visualization.set_mpl_style()
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>im = np.zeros([300, 300])
-im = ps.generators.RSA(im, r=20, volume_fraction=0.2)
-im = ps.generators.RSA(im, r=15, volume_fraction=0.4)
-im = ps.generators.RSA(im, r=10, volume_fraction=0.6)
-im = im == 0
-fig, ax = plt.subplots()
-ax.imshow(im);
+<span></span><span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="mi">300</span><span class="p">,</span> <span class="mi">300</span><span class="p">])</span>
+<span class="n">im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">RSA</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">volume_fraction</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+<span class="n">im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">RSA</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">volume_fraction</span><span class="o">=</span><span class="mf">0.4</span><span class="p">)</span>
+<span class="n">im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">RSA</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">volume_fraction</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)</span>
+<span class="n">im</span> <span class="o">=</span> <span class="n">im</span> <span class="o">==</span> <span class="mi">0</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -908,13 +908,13 @@ ax.imshow(im);
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>thk = ps.filters.local_thickness(im, mode=&#39;dt&#39;)
-fig, ax = plt.subplots()
-ax.imshow(thk, cmap=plt.cm.jet);
-import tqdm.notebook as tqdm
-from time import sleep
-for i in tqdm.tqdm(range(10)):
-    sleep(0.1)
+<span></span><span class="n">thk</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">local_thickness</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;dt&#39;</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">thk</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">jet</span><span class="p">);</span>
+<span class="kn">import</span> <span class="nn">tqdm.notebook</span> <span class="k">as</span> <span class="nn">tqdm</span>
+<span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">sleep</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="o">.</span><span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)):</span>
+    <span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -928,7 +928,7 @@ for i in tqdm.tqdm(range(10)):
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "7e1d061683c3430eaf4e17a423e0537b", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "ab77ec4e3cce433398252c40ad61405f", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
@@ -941,9 +941,9 @@ for i in tqdm.tqdm(range(10)):
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>from tqdm.notebook import tqdm, tqdm_notebook
-for i in tqdm_notebook(range(10)):
-    sleep(0.1)
+<span></span><span class="kn">from</span> <span class="nn">tqdm.notebook</span> <span class="kn">import</span> <span class="n">tqdm</span><span class="p">,</span> <span class="n">tqdm_notebook</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tqdm_notebook</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)):</span>
+    <span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -951,7 +951,7 @@ for i in tqdm_notebook(range(10)):
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "85aa5837630141e0a2aee14ded2f6ac1", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "63abf139bc3a4b67b8b4d56d0146e159", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 </div>
 <div class="section" id="Extracting-PSD-as-a-Histogram">
@@ -962,7 +962,7 @@ for i in tqdm_notebook(range(10)):
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>psd = ps.metrics.pore_size_distribution(im=thk)
+<span></span><span class="n">psd</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">pore_size_distribution</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">thk</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -972,7 +972,7 @@ for i in tqdm_notebook(range(10)):
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>print(psd._fields)
+<span></span><span class="nb">print</span><span class="p">(</span><span class="n">psd</span><span class="o">.</span><span class="n">_fields</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -990,10 +990,10 @@ for i in tqdm_notebook(range(10)):
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>fig, ax = plt.subplots(figsize=(5, 4))
-ax.set_xlabel(&#39;log(Pore Radius) [voxels]&#39;)
-ax.set_ylabel(&#39;Normalized Volume Fraction&#39;)
-ax.bar(x=psd.LogR, height=psd.pdf, width=psd.bin_widths, edgecolor=&#39;k&#39;);
+<span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;log(Pore Radius) [voxels]&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Normalized Volume Fraction&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">psd</span><span class="o">.</span><span class="n">LogR</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="n">psd</span><span class="o">.</span><span class="n">pdf</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">psd</span><span class="o">.</span><span class="n">bin_widths</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -1013,11 +1013,11 @@ ax.bar(x=psd.LogR, height=psd.pdf, width=psd.bin_widths, edgecolor=&#39;k&#39;);
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>R = 10
-strel = ps.tools.ps_disk(R)
-im_temp = spim.binary_opening(im, structure=strel)
-fig, ax = plt.subplots()
-ax.imshow(im_temp*2.0 + ~im);
+<span></span><span class="n">R</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">strel</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">ps_disk</span><span class="p">(</span><span class="n">R</span><span class="p">)</span>
+<span class="n">im_temp</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">binary_opening</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">structure</span><span class="o">=</span><span class="n">strel</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im_temp</span><span class="o">*</span><span class="mf">2.0</span> <span class="o">+</span> <span class="o">~</span><span class="n">im</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -1033,7 +1033,7 @@ ax.imshow(im_temp*2.0 + ~im);
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>im_result = im_temp*R
+<span></span><span class="n">im_result</span> <span class="o">=</span> <span class="n">im_temp</span><span class="o">*</span><span class="n">R</span>
 </pre></div>
 </div>
 </div>
@@ -1043,9 +1043,9 @@ ax.imshow(im_temp*2.0 + ~im);
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>R = 8
-strel = ps.tools.ps_disk(R)
-im_temp = spim.binary_opening(im, structure=strel)
+<span></span><span class="n">R</span> <span class="o">=</span> <span class="mi">8</span>
+<span class="n">strel</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">ps_disk</span><span class="p">(</span><span class="n">R</span><span class="p">)</span>
+<span class="n">im_temp</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">binary_opening</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">structure</span><span class="o">=</span><span class="n">strel</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1055,7 +1055,7 @@ im_temp = spim.binary_opening(im, structure=strel)
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>im_result[(im_result == 0)*im_temp] = R
+<span></span><span class="n">im_result</span><span class="p">[(</span><span class="n">im_result</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span><span class="o">*</span><span class="n">im_temp</span><span class="p">]</span> <span class="o">=</span> <span class="n">R</span>
 </pre></div>
 </div>
 </div>
@@ -1065,8 +1065,8 @@ im_temp = spim.binary_opening(im, structure=strel)
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>fig, ax = plt.subplots()
-ax.imshow(im_result + ~im);
+<span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im_result</span> <span class="o">+</span> <span class="o">~</span><span class="n">im</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -1082,8 +1082,8 @@ ax.imshow(im_result + ~im);
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>fig, ax = plt.subplots()
-ax.imshow(thk, cmap=plt.cm.jet);
+<span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">thk</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">jet</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>

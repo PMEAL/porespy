@@ -1175,8 +1175,8 @@
     <span class="k">if</span> <span class="n">porosity</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;&#39;ncylinders&#39; and &#39;porosity&#39; can&#39;t be both None&quot;</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">max_iter</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Iterations must be greater than or equal to 3&quot;</span><span class="p">)</span>
+    <span class="c1"># if max_iter &lt; 3:</span>
+    <span class="c1">#     raise Exception(&quot;Iterations must be greater than or equal to 3&quot;)</span>
 
     <span class="n">vol_total</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">shape</span><span class="p">))</span>
 

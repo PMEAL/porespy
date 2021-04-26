@@ -231,7 +231,7 @@
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="../../filters/tutorials/using_ibip.html">
-   Image-Based Invasion Percoalation
+   Image-based invasion percoalation
   </a>
  </li>
 </ul>
@@ -355,12 +355,12 @@
 <ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="../tutorials/computing_fractal_dim.html">
-   Measuring Fractal Dimension by Box-Counting
+   Measuring fractal dimension by box-counting
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="../tutorials/lineal_path_function.html">
-   The Lineal Path Function
+   The lineal path function
   </a>
  </li>
  <li class="toctree-l1">
@@ -454,7 +454,7 @@
 <ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="../../networks/tutorials/adding_boundary_pores.html">
-   Adding Boundary Pores
+   Adding boundary pores
   </a>
  </li>
  <li class="toctree-l1">
@@ -871,12 +871,12 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>import matplotlib.pyplot as plt
-import numpy as np
-import porespy as ps
+<span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">porespy</span> <span class="k">as</span> <span class="nn">ps</span>
 
-ps.visualization.set_mpl_style()
-np.random.seed(10)
+<span class="n">ps</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">set_mpl_style</span><span class="p">()</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -888,10 +888,10 @@ np.random.seed(10)
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>skel = ps.generators.blobs(shape=[500, 500])
-im = ps.filters.prune_branches(skel)
-fig, ax = plt.subplots()
-ax.imshow(im, origin=&quot;lower&quot;);
+<span></span><span class="n">skel</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">blobs</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">500</span><span class="p">,</span> <span class="mi">500</span><span class="p">])</span>
+<span class="n">im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">prune_branches</span><span class="p">(</span><span class="n">skel</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s2">&quot;lower&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -912,8 +912,8 @@ ax.imshow(im, origin=&quot;lower&quot;);
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>npoints = 1000
-profile = ps.metrics.representative_elementary_volume(im=im)
+<span></span><span class="n">npoints</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="n">profile</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">representative_elementary_volume</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -928,10 +928,10 @@ profile = ps.metrics.representative_elementary_volume(im=im)
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>fig, ax = plt.subplots()
-ax.plot(profile.volume, profile.porosity, &#39;r.&#39;)
-ax.set_xlabel(&quot;volume&quot;)
-ax.set_ylabel(&quot;porosity&quot;);
+<span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">profile</span><span class="o">.</span><span class="n">volume</span><span class="p">,</span> <span class="n">profile</span><span class="o">.</span><span class="n">porosity</span><span class="p">,</span> <span class="s1">&#39;r.&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;volume&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;porosity&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -950,7 +950,7 @@ ax.set_ylabel(&quot;porosity&quot;);
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>profile = ps.metrics.representative_elementary_volume(im=im, npoints=100)
+<span></span><span class="n">profile</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">representative_elementary_volume</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">npoints</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -966,10 +966,10 @@ ax.set_ylabel(&quot;porosity&quot;);
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>fig, ax = plt.subplots()
-ax.plot(profile.volume, profile.porosity, &#39;r.&#39;)
-ax.set_xlabel(&quot;volume&quot;)
-ax.set_ylabel(&quot;porosity&quot;);
+<span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">profile</span><span class="o">.</span><span class="n">volume</span><span class="p">,</span> <span class="n">profile</span><span class="o">.</span><span class="n">porosity</span><span class="p">,</span> <span class="s1">&#39;r.&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;volume&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;porosity&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>

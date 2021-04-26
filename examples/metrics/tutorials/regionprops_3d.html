@@ -231,7 +231,7 @@
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="../../filters/tutorials/using_ibip.html">
-   Image-Based Invasion Percoalation
+   Image-based invasion percoalation
   </a>
  </li>
 </ul>
@@ -355,12 +355,12 @@
 <ul class="current nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="computing_fractal_dim.html">
-   Measuring Fractal Dimension by Box-Counting
+   Measuring fractal dimension by box-counting
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="lineal_path_function.html">
-   The Lineal Path Function
+   The lineal path function
   </a>
  </li>
  <li class="toctree-l1">
@@ -454,7 +454,7 @@
 <ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="../../networks/tutorials/adding_boundary_pores.html">
-   Adding Boundary Pores
+   Adding boundary pores
   </a>
  </li>
  <li class="toctree-l1">
@@ -883,12 +883,12 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>import numpy as np
-import porespy as ps
-import scipy.ndimage as spim
-import matplotlib.pyplot as plt
-ps.visualization.set_mpl_style()
-np.random.seed(1)
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">porespy</span> <span class="k">as</span> <span class="nn">ps</span>
+<span class="kn">import</span> <span class="nn">scipy.ndimage</span> <span class="k">as</span> <span class="nn">spim</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="n">ps</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">set_mpl_style</span><span class="p">()</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -900,9 +900,9 @@ np.random.seed(1)
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>im = ps.generators.blobs(shape=[200, 200], porosity=0.6, blobiness=1)
-fig, ax = plt.subplots()
-ax.imshow(im, cmap=plt.cm.inferno);
+<span></span><span class="n">im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">blobs</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">200</span><span class="p">],</span> <span class="n">porosity</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">blobiness</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">inferno</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -921,8 +921,8 @@ ax.imshow(im, cmap=plt.cm.inferno);
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>snow = ps.filters.snow_partitioning(im=im)
-regions = snow.regions*snow.im
+<span></span><span class="n">snow</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">snow_partitioning</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">)</span>
+<span class="n">regions</span> <span class="o">=</span> <span class="n">snow</span><span class="o">.</span><span class="n">regions</span><span class="o">*</span><span class="n">snow</span><span class="o">.</span><span class="n">im</span>
 </pre></div>
 </div>
 </div>
@@ -931,8 +931,8 @@ regions = snow.regions*snow.im
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>fig, ax = plt.subplots()
-ax.imshow(regions, cmap=plt.cm.inferno);
+<span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">regions</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">inferno</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -954,7 +954,7 @@ ax.imshow(regions, cmap=plt.cm.inferno);
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>props = ps.metrics.regionprops_3D(regions)
+<span></span><span class="n">props</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">regionprops_3D</span><span class="p">(</span><span class="n">regions</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -971,9 +971,9 @@ another larger <em>gotcha</em>: Each of the region objects are collected in a li
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>r = props[3]
-attrs = [a for a in r.__dir__() if not a.startswith(&#39;_&#39;)]
-print(attrs)
+<span></span><span class="n">r</span> <span class="o">=</span> <span class="n">props</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+<span class="n">attrs</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">r</span><span class="o">.</span><span class="fm">__dir__</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">a</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">attrs</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -982,7 +982,7 @@ print(attrs)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-[&#39;label&#39;, &#39;slice&#39;, &#39;mask&#39;, &#39;slices&#39;, &#39;volume&#39;, &#39;bbox_volume&#39;, &#39;border&#39;, &#39;dt&#39;, &#39;inscribed_sphere&#39;, &#39;sphericity&#39;, &#39;skeleton&#39;, &#39;surface_area&#39;, &#39;surface_mesh_vertices&#39;, &#39;surface_mesh_simplices&#39;, &#39;convex_volume&#39;, &#39;area&#39;, &#39;bbox&#39;, &#39;bbox_area&#39;, &#39;centroid&#39;, &#39;convex_area&#39;, &#39;convex_image&#39;, &#39;coords&#39;, &#39;eccentricity&#39;, &#39;equivalent_diameter&#39;, &#39;euler_number&#39;, &#39;extent&#39;, &#39;filled_area&#39;, &#39;filled_image&#39;, &#39;image&#39;, &#39;inertia_tensor&#39;, &#39;inertia_tensor_eigvals&#39;, &#39;intensity_image&#39;, &#39;local_centroid&#39;, &#39;max_intensity&#39;, &#39;mean_intensity&#39;, &#39;min_intensity&#39;, &#39;major_axis_length&#39;, &#39;minor_axis_length&#39;, &#39;moments&#39;, &#39;moments_central&#39;, &#39;moments_hu&#39;, &#39;moments_normalized&#39;, &#39;orientation&#39;, &#39;perimeter&#39;, &#39;solidity&#39;, &#39;weighted_centroid&#39;, &#39;weighted_local_centroid&#39;, &#39;weighted_moments&#39;, &#39;weighted_moments_central&#39;, &#39;weighted_moments_hu&#39;, &#39;weighted_moments_normalized&#39;]
+[&#39;label&#39;, &#39;slice&#39;, &#39;mask&#39;, &#39;slices&#39;, &#39;volume&#39;, &#39;bbox_volume&#39;, &#39;border&#39;, &#39;dt&#39;, &#39;inscribed_sphere&#39;, &#39;sphericity&#39;, &#39;skeleton&#39;, &#39;surface_area&#39;, &#39;surface_mesh_vertices&#39;, &#39;surface_mesh_simplices&#39;, &#39;convex_volume&#39;, &#39;area&#39;, &#39;bbox&#39;, &#39;bbox_area&#39;, &#39;centroid&#39;, &#39;convex_area&#39;, &#39;convex_image&#39;, &#39;coords&#39;, &#39;eccentricity&#39;, &#39;equivalent_diameter&#39;, &#39;euler_number&#39;, &#39;extent&#39;, &#39;feret_diameter_max&#39;, &#39;filled_area&#39;, &#39;filled_image&#39;, &#39;image&#39;, &#39;inertia_tensor&#39;, &#39;inertia_tensor_eigvals&#39;, &#39;intensity_image&#39;, &#39;local_centroid&#39;, &#39;max_intensity&#39;, &#39;mean_intensity&#39;, &#39;min_intensity&#39;, &#39;major_axis_length&#39;, &#39;minor_axis_length&#39;, &#39;moments&#39;, &#39;moments_central&#39;, &#39;moments_hu&#39;, &#39;moments_normalized&#39;, &#39;orientation&#39;, &#39;perimeter&#39;, &#39;perimeter_crofton&#39;, &#39;solidity&#39;, &#39;weighted_centroid&#39;, &#39;weighted_local_centroid&#39;, &#39;weighted_moments&#39;, &#39;weighted_moments_central&#39;, &#39;weighted_moments_hu&#39;, &#39;weighted_moments_normalized&#39;]
 </pre></div></div>
 </div>
 </div>
@@ -994,8 +994,8 @@ print(attrs)
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>fig, ax = plt.subplots()
-ax.imshow(r.image);
+<span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">image</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -1011,8 +1011,8 @@ ax.imshow(r.image);
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>fig, ax = plt.subplots()
-ax.imshow(r.border + 0.5*r.inscribed_sphere);
+<span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">border</span> <span class="o">+</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">r</span><span class="o">.</span><span class="n">inscribed_sphere</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -1028,8 +1028,8 @@ ax.imshow(r.border + 0.5*r.inscribed_sphere);
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>fig, ax = plt.subplots()
-ax.imshow(r.image + 1.0*r.convex_image);
+<span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">image</span> <span class="o">+</span> <span class="mf">1.0</span><span class="o">*</span><span class="n">r</span><span class="o">.</span><span class="n">convex_image</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -1044,7 +1044,7 @@ ax.imshow(r.image + 1.0*r.convex_image);
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>print(f&quot;Solidity: {r.solidity:.3f}&quot;)
+<span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Solidity: </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">solidity</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1053,7 +1053,7 @@ ax.imshow(r.image + 1.0*r.convex_image);
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Solidity: 0.874
+Solidity: 0.943
 </pre></div></div>
 </div>
 </div>
@@ -1065,7 +1065,7 @@ Solidity: 0.874
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>df = ps.metrics.props_to_DataFrame(props)
+<span></span><span class="n">df</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">props_to_DataFrame</span><span class="p">(</span><span class="n">props</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1076,13 +1076,13 @@ Solidity: 0.874
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>fig, ax = plt.subplots(1, 3, figsize=(8, 3))
-ax[0].hist(df[&#39;volume&#39;], edgecolor=&quot;k&quot;)
-ax[1].hist(df[&#39;solidity&#39;], edgecolor=&quot;k&quot;)
-ax[2].hist(df[&#39;sphericity&#39;], edgecolor=&quot;k&quot;);
-ax[0].set_title(&quot;Volume&quot;)
-ax[1].set_title(&quot;Solidity&quot;)
-ax[2].set_title(&quot;Sphericity&quot;);
+<span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;volume&#39;</span><span class="p">],</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;solidity&#39;</span><span class="p">],</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;sphericity&#39;</span><span class="p">],</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">);</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Volume&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Solidity&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Sphericity&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -1098,7 +1098,7 @@ ax[2].set_title(&quot;Sphericity&quot;);
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>df.iloc[0]
+<span></span><span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
@@ -1121,11 +1121,13 @@ eccentricity            0.992984
 equivalent_diameter     8.291860
 euler_number            1.000000
 extent                  0.818182
+feret_diameter_max     22.022716
 filled_area            54.000000
 major_axis_length      24.417117
 minor_axis_length       2.887327
 orientation            -1.538946
 perimeter              43.414214
+perimeter_crofton      45.181531
 solidity                0.915254
 Name: 0, dtype: float64
 </pre></div></div>
@@ -1139,10 +1141,10 @@ Name: 0, dtype: float64
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span># Create an image of maximally inscribed spheres
-sph = ps.metrics.prop_to_image(regionprops=props, shape=im.shape, prop=&#39;inscribed_sphere&#39;)
-fig, ax = plt.subplots()
-ax.imshow(sph + 0.5*(~im) , cmap=plt.cm.inferno);
+<span></span><span class="c1"># Create an image of maximally inscribed spheres</span>
+<span class="n">sph</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">prop_to_image</span><span class="p">(</span><span class="n">regionprops</span><span class="o">=</span><span class="n">props</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">prop</span><span class="o">=</span><span class="s1">&#39;inscribed_sphere&#39;</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">sph</span> <span class="o">+</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="o">~</span><span class="n">im</span><span class="p">)</span> <span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">inferno</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -1161,10 +1163,10 @@ ax.imshow(sph + 0.5*(~im) , cmap=plt.cm.inferno);
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span># Create an image colorized by solidity
-sph = ps.metrics.prop_to_image(regionprops=props, shape=im.shape, prop=&#39;solidity&#39;)
-fig, ax = plt.subplots()
-ax.imshow(sph + 0.5*(~im) , cmap=plt.cm.jet);
+<span></span><span class="c1"># Create an image colorized by solidity</span>
+<span class="n">sph</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">prop_to_image</span><span class="p">(</span><span class="n">regionprops</span><span class="o">=</span><span class="n">props</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">prop</span><span class="o">=</span><span class="s1">&#39;solidity&#39;</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">sph</span> <span class="o">+</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="o">~</span><span class="n">im</span><span class="p">)</span> <span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">jet</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>

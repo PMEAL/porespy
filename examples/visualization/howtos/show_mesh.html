@@ -459,12 +459,12 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>import porespy as ps
-import numpy as np
-import matplotlib.pyplot as plt
+<span></span><span class="kn">import</span> <span class="nn">porespy</span> <span class="k">as</span> <span class="nn">ps</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 
-np.random.seed(0)
-ps.visualization.set_mpl_style()
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">ps</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">set_mpl_style</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -476,8 +476,8 @@ ps.visualization.set_mpl_style()
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>im = ps.generators.blobs([50, 50, 20], blobiness=0.5)
-mesh = ps.tools.mesh_region(im)
+<span></span><span class="n">im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">blobs</span><span class="p">([</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">20</span><span class="p">],</span> <span class="n">blobiness</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">mesh_region</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -489,7 +489,7 @@ mesh = ps.tools.mesh_region(im)
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>ps.visualization.show_mesh(mesh=mesh);
+<span></span><span class="n">ps</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">show_mesh</span><span class="p">(</span><span class="n">mesh</span><span class="o">=</span><span class="n">mesh</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>

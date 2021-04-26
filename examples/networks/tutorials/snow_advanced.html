@@ -42,7 +42,7 @@
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="SNOW network extraction" href="snow_basic.html" />
-    <link rel="prev" title="Adding Boundary Pores" href="adding_boundary_pores.html" />
+    <link rel="prev" title="Adding boundary pores" href="adding_boundary_pores.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
     
@@ -231,7 +231,7 @@
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="../../filters/tutorials/using_ibip.html">
-   Image-Based Invasion Percoalation
+   Image-based invasion percoalation
   </a>
  </li>
 </ul>
@@ -355,12 +355,12 @@
 <ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="../../metrics/tutorials/computing_fractal_dim.html">
-   Measuring Fractal Dimension by Box-Counting
+   Measuring fractal dimension by box-counting
   </a>
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="../../metrics/tutorials/lineal_path_function.html">
-   The Lineal Path Function
+   The lineal path function
   </a>
  </li>
  <li class="toctree-l1">
@@ -454,7 +454,7 @@
 <ul class="current nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="adding_boundary_pores.html">
-   Adding Boundary Pores
+   Adding boundary pores
   </a>
  </li>
  <li class="toctree-l1 current active">
@@ -855,19 +855,19 @@ the steps automatically, but this example will illustrate the individual steps e
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>import imageio
-import numpy as np
-import porespy as ps
-import openpnm as op
-import scipy.ndimage as spim
-import matplotlib.pyplot as plt
-from porespy.filters import find_peaks, trim_saddle_points, trim_nearby_peaks
-from porespy.tools import randomize_colors
-from skimage.segmentation import watershed
+<span></span><span class="kn">import</span> <span class="nn">imageio</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">porespy</span> <span class="k">as</span> <span class="nn">ps</span>
+<span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="kn">import</span> <span class="nn">scipy.ndimage</span> <span class="k">as</span> <span class="nn">spim</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">porespy.filters</span> <span class="kn">import</span> <span class="n">find_peaks</span><span class="p">,</span> <span class="n">trim_saddle_points</span><span class="p">,</span> <span class="n">trim_nearby_peaks</span>
+<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">randomize_colors</span>
+<span class="kn">from</span> <span class="nn">skimage.segmentation</span> <span class="kn">import</span> <span class="n">watershed</span>
 
-ps.settings.tqdm[&#39;disable&#39;] = True
-ps.visualization.set_mpl_style()
-np.random.seed(10)
+<span class="n">ps</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">tqdm</span><span class="p">[</span><span class="s1">&#39;disable&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">ps</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">set_mpl_style</span><span class="p">()</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -879,9 +879,9 @@ np.random.seed(10)
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>im = ps.generators.cylinders(shape=[300, 300, 300], r=5, ncylinders=200)
-fig, ax = plt.subplots()
-ax.imshow(ps.visualization.show_planes(im), cmap=plt.cm.bone);
+<span></span><span class="n">im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">cylinders</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">300</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="mi">300</span><span class="p">],</span> <span class="n">r</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">ncylinders</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">ps</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">show_planes</span><span class="p">(</span><span class="n">im</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">bone</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -900,10 +900,10 @@ ax.imshow(ps.visualization.show_planes(im), cmap=plt.cm.bone);
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>sigma = 0.4
-dt = spim.distance_transform_edt(input=im)
-dt = spim.gaussian_filter(input=dt, sigma=sigma)
-peaks = find_peaks(dt=dt)
+<span></span><span class="n">sigma</span> <span class="o">=</span> <span class="mf">0.4</span>
+<span class="n">dt</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">distance_transform_edt</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">im</span><span class="p">)</span>
+<span class="n">dt</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">gaussian_filter</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">)</span>
+<span class="n">peaks</span> <span class="o">=</span> <span class="n">find_peaks</span><span class="p">(</span><span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -913,12 +913,12 @@ peaks = find_peaks(dt=dt)
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>print(&#39;Initial number of peaks: &#39;, spim.label(peaks)[1])
-peaks = trim_saddle_points(peaks=peaks, dt=dt)
-print(&#39;Peaks after trimming saddle points: &#39;, spim.label(peaks)[1])
-peaks = trim_nearby_peaks(peaks=peaks, dt=dt)
-peaks, N = spim.label(peaks)
-print(&#39;Peaks after trimming nearby peaks: &#39;, N)
+<span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Initial number of peaks: &#39;</span><span class="p">,</span> <span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">peaks</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">peaks</span> <span class="o">=</span> <span class="n">trim_saddle_points</span><span class="p">(</span><span class="n">peaks</span><span class="o">=</span><span class="n">peaks</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Peaks after trimming saddle points: &#39;</span><span class="p">,</span> <span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">peaks</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">peaks</span> <span class="o">=</span> <span class="n">trim_nearby_peaks</span><span class="p">(</span><span class="n">peaks</span><span class="o">=</span><span class="n">peaks</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
+<span class="n">peaks</span><span class="p">,</span> <span class="n">N</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">peaks</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Peaks after trimming nearby peaks: &#39;</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -939,8 +939,8 @@ Peaks after trimming nearby peaks:  532
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>regions = watershed(image=-dt, markers=peaks, mask=dt &gt; 0)
-regions = randomize_colors(regions)
+<span></span><span class="n">regions</span> <span class="o">=</span> <span class="n">watershed</span><span class="p">(</span><span class="n">image</span><span class="o">=-</span><span class="n">dt</span><span class="p">,</span> <span class="n">markers</span><span class="o">=</span><span class="n">peaks</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">dt</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">regions</span> <span class="o">=</span> <span class="n">randomize_colors</span><span class="p">(</span><span class="n">regions</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -950,8 +950,8 @@ regions = randomize_colors(regions)
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>fig, ax = plt.subplots()
-ax.imshow((regions*im)[:, :, 100], cmap=plt.cm.nipy_spectral);
+<span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">((</span><span class="n">regions</span><span class="o">*</span><span class="n">im</span><span class="p">)[:,</span> <span class="p">:,</span> <span class="mi">100</span><span class="p">],</span> <span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">nipy_spectral</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -967,7 +967,7 @@ ax.imshow((regions*im)[:, :, 100], cmap=plt.cm.nipy_spectral);
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>net = ps.networks.regions_to_network(regions*im, voxel_size=1)
+<span></span><span class="n">net</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">networks</span><span class="o">.</span><span class="n">regions_to_network</span><span class="p">(</span><span class="n">regions</span><span class="o">*</span><span class="n">im</span><span class="p">,</span> <span class="n">voxel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -977,10 +977,10 @@ ax.imshow((regions*im)[:, :, 100], cmap=plt.cm.nipy_spectral);
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>pn = op.network.GenericNetwork()
-pn.update(net)
-prj = pn.project
-prj.export_data(filename=&#39;extracted_network&#39;, filetype=&#39;vtk&#39;)
+<span></span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">GenericNetwork</span><span class="p">()</span>
+<span class="n">pn</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">net</span><span class="p">)</span>
+<span class="n">prj</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">project</span>
+<span class="n">prj</span><span class="o">.</span><span class="n">export_data</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s1">&#39;extracted_network&#39;</span><span class="p">,</span> <span class="n">filetype</span><span class="o">=</span><span class="s1">&#39;vtk&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -990,11 +990,11 @@ prj.export_data(filename=&#39;extracted_network&#39;, filetype=&#39;vtk&#39;)
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>ps.io.to_vtk(im, filename=&#39;extracted_network&#39;)
+<span></span><span class="n">ps</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">to_vtk</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;extracted_network&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<p><img alt="bd6bbeb1ada84f6e8438c6bfff640d9b" class="no-scaled-link" src="https://user-images.githubusercontent.com/14086031/113048590-b68d2480-9170-11eb-9c10-06e6d53ee95d.png" style="width: 350px;" /></p>
+<p><img alt="387430860bee4283bb33f7a62ac941d5" class="no-scaled-link" src="https://user-images.githubusercontent.com/14086031/113048590-b68d2480-9170-11eb-9c10-06e6d53ee95d.png" style="width: 350px;" /></p>
 </div>
 </div>
 
