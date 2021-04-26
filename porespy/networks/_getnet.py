@@ -50,10 +50,10 @@ def regions_to_network(regions, phases=None, voxel_size=1, accuracy='standard'):
     -----
     The meaning of each of the values returned in ``net`` are outlined below:
 
-    - 'pore.region_label': The region labels corresponding to the watershed
-    extraction. The pore indices and regions labels will be offset by 1, so
-    pore 0 will be region 1.
-
+    'pore.region_label'
+        The region labels corresponding to the watershed extraction. The
+        pore indices and regions labels will be offset by 1, so pore 0
+        will be region 1.
     'throat.conns'
         An *Nt-by-2* array indicating which pores are connected to each other
     'pore.region_label'
@@ -77,21 +77,21 @@ def regions_to_network(regions, phases=None, voxel_size=1, accuracy='standard'):
         The volume of the pore found by as volume of a mesh obtained from the
         marching cubes algorithm
     'pore.surface_area'
-        blah
+        The surface area of the pore region as calculated by ?
     'throat.cross_sectional_area'
-        blah
+        The cross-sectional area of the throat found by ?
     'throat.perimeter'
-        blah
+        The perimeter of the throat found by ?
     'pore.inscribed_diameter'
-        blah
+        The diameter of the largest sphere inscribed in the pore region
     'pore.extended_diameter'
-        blah
+        ?
     'throat.inscribed_diameter'
-        blah
+        The diameter of the largest sphere inscribed the throat region
     'throat.total_length'
-        blah
+        ?
     'throat.direct_length'
-        blah
+        ?
 
     """
     logger.trace('Extracting pore/throat information')

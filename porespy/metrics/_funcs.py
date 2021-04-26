@@ -590,8 +590,8 @@ def two_point_correlation_fft(im):
     The fourier transform approach utilizes the fact that the
     autocorrelation function is the inverse FT of the power spectrum
     density. For background read the Scipy fftpack docs and for a good
-    explanation `see this thesis <
-    http://www.ucl.ac.uk/~ucapikr/projects/KamilaSuankulova_BSc_Project.pdf>`_
+    explanation `see this thesis
+    <https://www.ucl.ac.uk/~ucapikr/projects/KamilaSuankulova_BSc_Project.pdf>`_
 
     Examples
     --------
