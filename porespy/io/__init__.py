@@ -22,11 +22,11 @@ IO
 
 """
 
-from .__funcs__ import to_vtk
-from .__funcs__ import dict_to_vtk
-from .__funcs__ import to_palabos
-from .__funcs__ import openpnm_to_im
-from .__funcs__ import to_stl
-from .__funcs__ import to_paraview
-from .__funcs__ import open_paraview
-from .__funcs__ import spheres_to_comsol
+from ._funcs import to_vtk
+from ._funcs import dict_to_vtk
+from ._funcs import to_palabos
+from ._funcs import openpnm_to_im
+from ._funcs import to_stl
+from ._funcs import to_paraview
+from ._funcs import open_paraview
+from ._funcs import spheres_to_comsol

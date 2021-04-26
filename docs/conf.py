@@ -43,7 +43,8 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.mathjax',
               'sphinx_copybutton',
               'nbsphinx',
-              'nbsphinx_link']
+              'nbsphinx_link',
+              'sphinx_panels']
 
 html_theme_options = {
     "logo_link": "https://www.porespy.org",
@@ -92,9 +93,11 @@ html_css_files = ['css/custom.css']
 
 nbsphinx_prompt_width = "0"
 
+panels_add_bootstrap_css = False  # to fix narrow width
+
 exclude_patterns = ['_build', '_templates']
 
-add_module_names = False    # porespy.generators --> generators
+add_module_names = False  # porespy.generators --> generators
 
 autosummary_generate = True
 

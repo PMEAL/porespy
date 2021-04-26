@@ -6,6 +6,7 @@ import pytest
 import numpy as np
 from numpy.testing import assert_allclose
 import porespy as ps
+ps.settings.tqdm['disable'] = True
 
 
 class NetworkExtractionTest():
@@ -56,13 +57,10 @@ class NetworkExtractionTest():
         im = self.im
         snow = ps.filters.snow_partitioning(im)
         regions = snow.regions
-        values = np.random.rand(regions.max() + 1)
+        values = np.random.rand(regions.max())
         mapped = ps.networks.map_to_regions(regions, values)
         assert mapped.max() < 1
         # Some failures
-        values = np.random.rand(regions.max())
-        with pytest.raises(Exception):
-            mapped = ps.networks.map_to_regions(regions, values)
         values = np.random.rand(regions.max()+2)
         with pytest.raises(Exception):
             mapped = ps.networks.map_to_regions(regions, values)

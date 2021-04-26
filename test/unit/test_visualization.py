@@ -1,5 +1,6 @@
 import porespy as ps
 import numpy as np
+ps.settings.tqdm['disable'] = True
 
 
 class VisualizationTest():
@@ -66,7 +67,7 @@ class VisualizationTest():
         bd = np.zeros_like(im)
         bd[:, 0] = True
         inv = ps.filters.ibip(im=im, inlets=bd)
-        satn = ps.tools.seq_to_satn(seq=inv, im=im)
+        satn = ps.filters.seq_to_satn(seq=inv, im=im)
         mov = ps.visualization.satn_to_movie(im, satn, cmap='viridis',
                                              c_under='grey', c_over='white',
                                              v_under=1e-3, v_over=1.0, fps=10,

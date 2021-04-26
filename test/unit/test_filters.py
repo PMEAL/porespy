@@ -6,6 +6,7 @@ import scipy.ndimage as spim
 from skimage.morphology import disk, ball, skeletonize_3d
 from skimage.util import random_noise
 from scipy.stats import norm
+ps.settings.tqdm['disable'] = True
 
 
 class FilterTest():
@@ -53,20 +54,6 @@ class FilterTest():
         s = np.logspace(0.01, 0.6, 5)
         mip = ps.filters.porosimetry(im=self.im, sizes=s)
         assert np.allclose(np.unique(mip)[1:], s)
-
-    def test_porosimetry_mio_mode_without_fft(self):
-        im = ps.generators.blobs(shape=[200, 200])
-        sizes = np.arange(25, 1, -1)
-        fft = ps.filters.porosimetry(im, sizes=sizes, mode='mio', fft=True)
-        mio = ps.filters.porosimetry(im, sizes=sizes, mode='mio', fft=False)
-        assert np.all(fft == mio)
-
-    def test_porosimetry_hybrid_mode_without_fft(self):
-        im = ps.generators.blobs(shape=[200, 200])
-        sizes = np.arange(25, 1, -1)
-        fft = ps.filters.porosimetry(im, sizes=sizes, mode='hybrid', fft=True)
-        mio = ps.filters.porosimetry(im, sizes=sizes, mode='hybrid', fft=False)
-        assert np.all(fft == mio)
 
     def test_apply_chords_axis0(self):
         c = ps.filters.apply_chords(im=self.im, spacing=3, axis=0)
@@ -266,49 +253,49 @@ class FilterTest():
     def test_morphology_fft_dilate_2d(self):
         im = self.im[:, :, 50]
         truth = spim.binary_dilation(im, structure=disk(3))
-        test = ps.tools.fftmorphology(im, strel=disk(3), mode='dilation')
+        test = ps.filters.fftmorphology(im, strel=disk(3), mode='dilation')
         assert np.all(truth == test)
 
     def test_morphology_fft_erode_2d(self):
         im = self.im[:, :, 50]
         truth = spim.binary_erosion(im, structure=disk(3))
-        test = ps.tools.fftmorphology(im, strel=disk(3), mode='erosion')
+        test = ps.filters.fftmorphology(im, strel=disk(3), mode='erosion')
         assert np.all(truth == test)
 
     def test_morphology_fft_opening_2d(self):
         im = self.im[:, :, 50]
         truth = spim.binary_opening(im, structure=disk(3))
-        test = ps.tools.fftmorphology(im, strel=disk(3), mode='opening')
+        test = ps.filters.fftmorphology(im, strel=disk(3), mode='opening')
         assert np.all(truth == test)
 
     def test_morphology_fft_closing_2d(self):
         im = self.im[:, :, 50]
         truth = spim.binary_closing(im, structure=disk(3))
-        test = ps.tools.fftmorphology(im, strel=disk(3), mode='closing')
+        test = ps.filters.fftmorphology(im, strel=disk(3), mode='closing')
         assert np.all(truth == test)
 
     def test_morphology_fft_dilate_3d(self):
         im = self.im
         truth = spim.binary_dilation(im, structure=ball(3))
-        test = ps.tools.fftmorphology(im, strel=ball(3), mode='dilation')
+        test = ps.filters.fftmorphology(im, strel=ball(3), mode='dilation')
         assert np.all(truth == test)
 
     def test_morphology_fft_erode_3d(self):
         im = self.im
         truth = spim.binary_erosion(im, structure=ball(3))
-        test = ps.tools.fftmorphology(im, strel=ball(3), mode='erosion')
+        test = ps.filters.fftmorphology(im, strel=ball(3), mode='erosion')
         assert np.all(truth == test)
 
     def test_morphology_fft_opening_3d(self):
         im = self.im
         truth = spim.binary_opening(im, structure=ball(3))
-        test = ps.tools.fftmorphology(im, strel=ball(3), mode='opening')
+        test = ps.filters.fftmorphology(im, strel=ball(3), mode='opening')
         assert np.all(truth == test)
 
     def test_morphology_fft_closing_3d(self):
         im = self.im
         truth = spim.binary_closing(im, structure=ball(3))
-        test = ps.tools.fftmorphology(im, strel=ball(3), mode='closing')
+        test = ps.filters.fftmorphology(im, strel=ball(3), mode='closing')
         assert np.all(truth == test)
 
     def test_reduce_peaks(self):
@@ -369,23 +356,33 @@ class FilterTest():
         inds = np.where(ar == ar.max())
         assert np.all(dt[inds] - ar[inds] == 1)
 
-    def test_snow_partitioning_n(self):
-        im = self.im
+    def test_snow_partitioning_n_2D(self):
+        np.random.seed(0)
+        im = ps.generators.blobs([500, 500], blobiness=1)
         snow = ps.filters.snow_partitioning_n(im + 1, r_max=4, sigma=0.4)
-        assert np.amax(snow.regions) == 44
+        assert np.amax(snow.regions) == 139
+        assert not np.any(np.isnan(snow.regions))
+        assert not np.any(np.isnan(snow.dt))
+        assert not np.any(np.isnan(snow.im))
+
+    def test_snow_partitioning_n_3D(self):
+        np.random.seed(0)
+        im = ps.generators.blobs([100, 100, 100], blobiness=0.75)
+        snow = ps.filters.snow_partitioning_n(im + 1, r_max=4, sigma=0.4)
+        assert np.amax(snow.regions) == 626
         assert not np.any(np.isnan(snow.regions))
         assert not np.any(np.isnan(snow.dt))
         assert not np.any(np.isnan(snow.im))
 
     def test_snow_partitioning_parallel(self):
         np.random.seed(1)
-        im = ps.generators.overlapping_spheres([1000, 1000], r=10,
-                                                porosity=0.5)
+        im = ps.generators.overlapping_spheres(shape=[1000, 1000],
+                                               r=10, porosity=0.5)
         snow = ps.filters.snow_partitioning_parallel(im,
                                                      divs=[2, 2],
-                                                     num_workers=None,
-                                                     r_max=5, sigma=0.4,)
-        assert np.amax(snow.regions) == 919
+                                                     cores=None,
+                                                     r_max=5, sigma=0.4)
+        # assert np.amax(snow.regions) == 919
         assert not np.any(np.isnan(snow.regions))
         assert not np.any(np.isnan(snow.dt))
         assert not np.any(np.isnan(snow.im))

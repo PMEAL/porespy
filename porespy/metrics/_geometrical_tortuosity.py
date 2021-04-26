@@ -4,13 +4,16 @@ import scipy.ndimage as spim
 import skimage
 import skfmm
 from skimage.morphology import disk, square, ball, cube
-from porespy.tools import get_tqdm, fftmorphology
+from porespy.tools import get_tqdm
+from porespy.filters import fftmorphology
+from porespy import settings
+
 tqdm = get_tqdm()
 
 
 def geometrical_tortuosity(im, axis=0):
     r"""
-    Calculate geometrical tortuosity of an image.
+    Calculate geometrical tortuosity across an image
 
     Parameters
     ----------
@@ -18,6 +21,11 @@ def geometrical_tortuosity(im, axis=0):
         The image for which geometrical tortuosity is found
     axis: int
         The axis across which to find the geometrical tortuosity
+
+    Returns
+    -------
+    tau : float
+        The computed tortuosity of the image along the given axis
 
     """
     im = np.swapaxes(im, 0, axis)
@@ -40,7 +48,7 @@ def geometrical_tortuosity(im, axis=0):
     labels, n = spim.label(inlets)
     mins = []
     inl = spim.find_objects(labels)
-    for i in tqdm(range(n)):
+    for i in tqdm(range(n), **settings.tqdm):
 
         phi = np.ones_like(sk)
         phi[inl[i]] = 0
@@ -60,22 +68,18 @@ def geometrical_tortuosity(im, axis=0):
                 for iii in range(np.shape(out2)[1]):
                     if out2[ii, iii] != 0.0 and out2[ii, iii] != 1.0:
                         out3.append(out2[ii, iii])
-
         if out3 != []:
             mins.append(min(out3))
 
-#    print(mins)
     avgmin = sum(mins)/len(mins)
     tortuosity = avgmin/imlen
     im = np.swapaxes(im, 0, axis)
-#    print(avgmin)
-#    print(tortuosity)
     return tortuosity
 
 
 def geometrical_tortuosity_points(im, axis=0):
     r"""
-    Calculate geometrical tortuosity of an image.
+    Calculate geometrical tortuosity of an image within
 
     Parameters
     ----------
@@ -151,4 +155,4 @@ def geometrical_tortuosity_points(im, axis=0):
                     tort[i, ii] = out2/dist
         tortavg = sum(sum(sum(tort)))/(num*num*(num-1))
     im = np.swapaxes(im, 0, axis)
-    return(tort, tortavg)
+    return tort, tortavg

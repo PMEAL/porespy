@@ -1,6 +1,5 @@
 import os
 import sys
-import porespy as ps
 
 
 class ImageJTest:
