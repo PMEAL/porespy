@@ -156,32 +156,21 @@ def _parse_phase_alias(alias, phases):
 def _parse_pad_width(pad_width, shape):
     r"""
     """
-    shape = np.array(shape)
-    # Case: int
-    if isinstance(pad_width, int):
-        pw = [[pad_width, pad_width]]*len(shape)
+    ndim = len(shape)
+    pad_width = np.atleast_1d(np.array(pad_width, dtype=object))
 
-    elif np.all([isinstance(i, int) for i in pad_width]):
-        # Case: (before, )
-        if (len(pad_width) == 1):
-            pad_width.extend(pad_width)
-            pw = [pad_width]*len(shape)
-        # Case: (before, after)
-        elif (len(pad_width) == 2):
-            pw = [pad_width]*len(shape)
+    if np.size(pad_width) == 1:
+        pad_width = np.tile(pad_width.item(), ndim).astype(object)
+    if len(pad_width) != ndim:
+        raise Exception(f"pad_width must be scalar or {ndim}-element list")
+
+    tmp = []
+    for elem in pad_width:
+        if np.size(elem) == 1:
+            tmp.append(np.tile(np.array(elem).item(), 2))
+        elif np.size(elem) == 2 and np.ndim(elem) == 1:
+            tmp.append(elem)
         else:
-            raise Exception('Incorrect number of values given')
-    # Case: (before, (before, after), ...) or ((before, after), before, ...)
-    elif np.any([isinstance(i, int) for i in pad_width]):  # some ints
-        pw = [[i, i] if isinstance(i, int) else i for i in pad_width]
-        # Catch case of [2, [2, 2], [2]]
-        pw = [i if len(i) == 2 else i*2 for i in pw]
-    # Case: ((before, after), ..., (before, after))
-    elif np.all([isinstance(i, Iterable) for i in pad_width]):
-        pw = [i if len(i) == 2 else i*2 for i in pad_width]
-    else:
-        raise Exception(f'Not sure how to interpret {pad_width}')
-    pw = np.array(pw)
-    if pw.shape[0] > len(shape):
-        raise Exception('Too many values given')
-    return pw.squeeze()
+            raise Exception("pad_width components can't have 2+ elements")
+
+    return np.array(tmp)
