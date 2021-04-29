@@ -2,6 +2,7 @@ import numpy as np
 import scipy.ndimage as spim
 from porespy.tools import get_tqdm
 from porespy import settings
+import loguru as logger
 tqdm = get_tqdm()
 
 
@@ -32,7 +33,7 @@ def random_cantor_dust(shape, n, p=2, f=0.8):
     trim = np.mod(shape, (p**n))
     if np.any(trim > 0):
         shape = shape - trim + p**n
-        print(f"Warning: requested shape being changed to {shape}")
+        logger.warning(f"Requested shape being changed to {shape}")
     im = np.ones(shape, dtype=bool)
     divs = []
     if isinstance(n, int):
