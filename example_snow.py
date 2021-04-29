@@ -2,18 +2,16 @@ import numpy as np
 import porespy as ps
 import matplotlib.pyplot as plt
 import openpnm as op
-ps.settings.notebook = False
 
 # np.random.seed(3)
-im1 = ps.generators.blobs(shape=[100, 100, 100], porosity=None, blobiness=1) < 0.4
-im2 = ps.generators.blobs(shape=[100, 100, 100], porosity=None, blobiness=1) < 0.7
+im1 = ps.generators.blobs(shape=[600, 400], porosity=None, blobiness=1) < 0.4
+im2 = ps.generators.blobs(shape=[600, 400], porosity=None, blobiness=1) < 0.7
 phases = im1 + (im2 * ~im1)*2
 # phases = phases > 0
 
 snow_n = ps.networks.snow2(phases,
                            phase_alias={1: 'solid', 2: 'void'},
                            boundary_width=5,
-                           return_all=True,
                            accuracy='high',
                            parallelization=None)
 
