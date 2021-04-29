@@ -48,9 +48,6 @@ from ._funcs import porosity_profile
 from ._funcs import representative_elementary_volume
 from ._funcs import two_point_correlation_bf
 from ._funcs import two_point_correlation_fft
-from ._funcs import region_surface_areas
-from ._funcs import region_interface_areas
-from ._funcs import mesh_surface_area
 from ._funcs import phase_fraction
 from ._funcs import pc_curve_from_ibip
 from ._funcs import pc_curve_from_mio
