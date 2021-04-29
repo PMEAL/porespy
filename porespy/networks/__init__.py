@@ -13,8 +13,7 @@ Contains functions for analysing images as pore networks.
    :template: mybase.rst
    :toctree: generated/
 
-   networks.snow
-   networks.snow_dual
+   networks.snow2
    networks.map_to_regions
    networks.regions_to_network
    networks.add_boundary_regions
@@ -30,17 +29,16 @@ __all__ = [
     "label_boundary_cells",
     "add_phase_interconnections",
     "regions_to_network",
-    "snow",
-    "snow_dual",
-    "snow_n",
+    "snow2",
     "maximal_ball"]
 
-from .__funcs__ import add_boundary_regions
-from .__funcs__ import map_to_regions
-from .__funcs__ import generate_voxel_image
-from .__funcs__ import label_phases
-from .__funcs__ import label_boundaries
-from .__getnet__ import regions_to_network
-from .__utils__ import _net_dict
+from ._funcs import add_boundary_regions
+from ._funcs import map_to_regions
+from ._funcs import generate_voxel_image
+from ._funcs import label_phases
+from ._funcs import label_boundaries
+from ._getnet import regions_to_network
+from ._utils import _net_dict
 from ._snow2 import snow2
-from .__maximal_ball__ import maximal_ball
+from ._snow2 import _parse_pad_width
+from ._maximal_ball import maximal_ball
