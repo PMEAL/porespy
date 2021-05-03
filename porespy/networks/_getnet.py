@@ -186,17 +186,18 @@ def regions_to_network(regions, phases=None, voxel_size=1, accuracy='standard'):
         t_coords = np.vstack((np.array(t_coords).T, np.zeros((Nt, )))).T
 
     net = {}
+    ND = im.ndim
     # Define all the fundamental stuff
     net['throat.conns'] = np.array(t_conns)
     net['pore.coords'] = np.array(p_coords)*voxel_size
     net['pore.all'] = np.ones_like(net['pore.coords'][:, 0], dtype=bool)
     net['throat.all'] = np.ones_like(net['throat.conns'][:, 0], dtype=bool)
     net['pore.region_label'] = np.array(p_label)
-    net['pore.region_volume'] = np.copy(p_volume)*(voxel_size**3)
-    V = np.copy(p_volume)*(voxel_size**3)
-    net['pore.equivalent_diameter'] = np.cbrt(V)*3/4/np.pi
     net['pore.phase'] = np.array(p_phase, dtype=int)
     net['throat.phases'] = net['pore.phase'][net['throat.conns']]
+    net['pore.region_volume'] = np.copy(p_volume)*(voxel_size**ND)
+    V = np.copy(p_volume)*(voxel_size**ND)
+    net['pore.equivalent_diameter'] = (V**(1/ND))*((3 + ND - 2)/4)/np.pi
     # Extract the geometric stuff
     net['pore.local_peak'] = np.copy(p_coords_dt)*voxel_size
     net['pore.global_peak'] = np.copy(p_coords_dt_global)*voxel_size
