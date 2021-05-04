@@ -1032,7 +1032,7 @@ def trim_disconnected_blobs(im, inlets, strel=None):
     --------
     `Click here
     <https://porespy.org/examples/filters/howtos/trim_disconnected_blobs.html>`_
-        to view online example.
+    to view online example.
 
     """
     if type(inlets) == tuple:

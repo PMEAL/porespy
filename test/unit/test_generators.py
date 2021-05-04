@@ -25,10 +25,6 @@ class GeneratorTest():
         im = ps.generators.cylinders(shape=[50, 50, 50], r=1, ncylinders=20)
         assert np.shape(im.squeeze()) == (50, 50, 50)
         # Now, testing cylinders with porosity as input
-        # max_iter must at least be 3
-        with pytest.raises(Exception):
-            im = ps.generators.cylinders(
-                shape=[50, 50, 50], r=4, porosity=0.5, max_iter=2)
         im = ps.generators.cylinders(
             shape=[50, 50, 50], r=3, porosity=0.5, max_iter=10)
         assert im.dtype == bool

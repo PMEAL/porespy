@@ -104,3 +104,22 @@ Tools
       :glob:
 
       examples/tools/howtos/*
+
+Visualization
+-------------
+
+.. tabbed:: Tutorials
+
+   .. toctree::
+      :maxdepth: 1
+      :glob:
+
+      examples/visualization/tutorials/*
+
+.. tabbed:: How-to guides
+
+   .. toctree::
+      :maxdepth: 1
+      :glob:
+
+      examples/visualization/howtos/*
