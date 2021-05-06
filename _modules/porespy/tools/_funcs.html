@@ -177,6 +177,7 @@
 <span class="kn">from</span> <span class="nn">loguru</span> <span class="kn">import</span> <span class="n">logger</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
 <span class="kn">from</span> <span class="nn">skimage.morphology</span> <span class="kn">import</span> <span class="n">ball</span><span class="p">,</span> <span class="n">disk</span>
+<span class="kn">from</span> <span class="nn">._unpad</span> <span class="kn">import</span> <span class="n">unpad</span>
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">skimage.measure</span> <span class="kn">import</span> <span class="n">marching_cubes</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
@@ -1341,7 +1342,7 @@
 
 <div class="viewcode-block" id="insert_cylinder"><a class="viewcode-back" href="../../../modules/generated/porespy.tools.insert_cylinder.html#porespy.tools.insert_cylinder">[docs]</a><span class="k">def</span> <span class="nf">insert_cylinder</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">xyz0</span><span class="p">,</span> <span class="n">xyz1</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Inserts a cylinder of given radius onto a given image</span>
+<span class="sd">    Inserts a cylinder of given radius onto an image</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1375,6 +1376,14 @@
     <span class="n">L</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">absolute</span><span class="p">(</span><span class="n">xyz0</span> <span class="o">-</span> <span class="n">xyz1</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span>
     <span class="n">xyz_line</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">xyz0</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">xyz1</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">L</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
 
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">xyz_line</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Given endpoint coordinates lie outside image&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Given endpoint coordinates lie outside image&#39;</span><span class="p">)</span>
+        <span class="n">c</span> <span class="o">+=</span> <span class="n">r</span>
+
+    <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
     <span class="n">xyz_min</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amin</span><span class="p">(</span><span class="n">xyz_line</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">r</span>
     <span class="n">xyz_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">xyz_line</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">r</span>
     <span class="n">shape_template</span> <span class="o">=</span> <span class="n">xyz_max</span> <span class="o">-</span> <span class="n">xyz_min</span> <span class="o">+</span> <span class="mi">1</span>
@@ -1396,6 +1405,8 @@
     <span class="n">im</span><span class="p">[</span><span class="n">xyz_min</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="n">xyz_max</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
        <span class="n">xyz_min</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="n">xyz_max</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
        <span class="n">xyz_min</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span> <span class="n">xyz_max</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">template</span>
+
+    <span class="n">im</span> <span class="o">=</span> <span class="n">unpad</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">im</span></div>
 
@@ -1475,7 +1486,7 @@
   
   <script src="../../../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
 
-  None<footer class="footer mt-5 mt-md-0">
+  <footer class="footer mt-5 mt-md-0">
   <div class="container">
     
     <div class="footer-item">

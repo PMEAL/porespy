@@ -272,7 +272,7 @@
         <span class="n">r</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">volume_fraction</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="n">clearance</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-        <span class="n">n_max</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">n_max</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100000</span><span class="p">,</span>
         <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;contained&quot;</span><span class="p">,</span>
         <span class="n">return_spheres</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">smooth</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -297,10 +297,13 @@
 <span class="sd">        ``n_max`` is reached first, then ``volume_fraction`` will not be</span>
 <span class="sd">        acheived.  Also, ``volume_fraction`` is not counted correctly if the</span>
 <span class="sd">        ``mode`` is ``&#39;extended&#39;``.</span>
-<span class="sd">    n_max : int (default is 10,000)</span>
+<span class="sd">    clearance : int (optional, default = 0)</span>
+<span class="sd">        The amount of space to put between each sphere. Negative values are</span>
+<span class="sd">        acceptable to create overlaps, so long as ``abs(clearance) &lt; r``.</span>
+<span class="sd">    n_max : int (default is 100,000)</span>
 <span class="sd">        The maximum number of spheres to add.  Using a low value may halt</span>
 <span class="sd">        the addition process prior to reaching the specified</span>
-<span class="sd">        ``volume_fraction``.</span>
+<span class="sd">        ``volume_fraction``.  If ``None`` is given, then no limit is used.</span>
 <span class="sd">    mode : string (default is &#39;contained&#39;)</span>
 <span class="sd">        Controls how the edges of the image are handled.  Options are:</span>
 
@@ -324,6 +327,11 @@
 <span class="sd">    -------</span>
 <span class="sd">    image : ND-array</span>
 <span class="sd">        An image with spheres of specified radius *added* to the background.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    pseudo_gravity_packing</span>
+<span class="sd">    pseudo_electrostatic_packing</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -354,7 +362,7 @@
     <span class="k">if</span> <span class="n">return_spheres</span><span class="p">:</span>
         <span class="n">im_temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">n_max</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">n_max</span> <span class="o">=</span> <span class="mi">10000</span>
+        <span class="n">n_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
     <span class="n">vf_final</span> <span class="o">=</span> <span class="n">volume_fraction</span>
     <span class="n">vf_start</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">im</span><span class="o">.</span><span class="n">size</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Initial volume fraction: </span><span class="si">{</span><span class="n">vf_start</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -366,12 +374,14 @@
         <span class="n">template_sm</span> <span class="o">=</span> <span class="n">ps_ball</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="n">smooth</span><span class="p">)</span>
     <span class="n">vf_template</span> <span class="o">=</span> <span class="n">template_sm</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">im</span><span class="o">.</span><span class="n">size</span>
     <span class="c1"># Pad image by the radius of large template to enable insertion near edges</span>
-    <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">pad_width</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="n">r</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;edge&quot;</span><span class="p">)</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">pad_width</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">r</span> <span class="o">+</span> <span class="n">clearance</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;edge&quot;</span><span class="p">)</span>
     <span class="c1"># Depending on mode, adjust mask to remove options around edge</span>
     <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;contained&quot;</span><span class="p">:</span>
-        <span class="n">border</span> <span class="o">=</span> <span class="n">get_border</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">thickness</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="n">r</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;faces&quot;</span><span class="p">)</span>
+        <span class="n">border</span> <span class="o">=</span> <span class="n">get_border</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">thickness</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">r</span> <span class="o">+</span> <span class="n">clearance</span><span class="p">),</span>
+                            <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;faces&quot;</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;extended&quot;</span><span class="p">:</span>
-        <span class="n">border</span> <span class="o">=</span> <span class="n">get_border</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">thickness</span><span class="o">=</span><span class="n">r</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;faces&quot;</span><span class="p">)</span>
+        <span class="n">border</span> <span class="o">=</span> <span class="n">get_border</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">thickness</span><span class="o">=</span><span class="p">(</span><span class="n">r</span> <span class="o">+</span> <span class="n">clearance</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+                            <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;faces&quot;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Unrecognized mode: &quot;</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
     <span class="c1"># Remove border pixels</span>
@@ -405,7 +415,8 @@
     <span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of spheres inserted: </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="c1"># ------------------------------------------------------------------------</span>
     <span class="c1"># Get slice into returned image to retain original size</span>
-    <span class="n">s</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="nb">slice</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">r</span><span class="p">,</span> <span class="n">d</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">r</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">])</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="nb">slice</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">r</span> <span class="o">+</span> <span class="n">clearance</span><span class="p">),</span> <span class="n">d</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">r</span> <span class="o">+</span> <span class="n">clearance</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+               <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">])</span>
     <span class="n">im</span> <span class="o">=</span> <span class="n">im</span><span class="p">[</span><span class="n">s</span><span class="p">]</span>
     <span class="n">vf</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">im</span><span class="o">.</span><span class="n">size</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Final volume fraction:&quot;</span><span class="p">,</span> <span class="n">vf</span><span class="p">)</span>
@@ -1270,7 +1281,7 @@
   
   <script src="../../../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
 
-  None<footer class="footer mt-5 mt-md-0">
+  <footer class="footer mt-5 mt-md-0">
   <div class="container">
     
     <div class="footer-item">
