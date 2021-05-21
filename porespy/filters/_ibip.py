@@ -7,6 +7,7 @@ from porespy.tools import get_border
 from porespy.tools import make_contiguous
 from porespy.filters import fftmorphology
 import numba
+from loguru import logger
 from porespy import settings
 tqdm = get_tqdm()
 
@@ -106,7 +107,7 @@ def ibip(im, inlets=None, dt=None, inv=None, mode='morph', return_sizes=False,
             # Reduce to only the 'new' boundary
             edge = temp*(dt > 0)
             if ~np.any(edge):
-                print('\nNo more accessible invasion sites found...exiting')
+                logger.info('No more accessible invasion sites found')
                 break
             # Find the maximum value of the dt underlaying the new edge
             r_max = dt[edge].max()
@@ -122,7 +123,7 @@ def ibip(im, inlets=None, dt=None, inv=None, mode='morph', return_sizes=False,
             bd[pt] = True  # Update boundary image with newly invaded points
             dt[pt] = 0
             if step == (max_iters - 1):  # If max_iters reached, end loop
-                print('\nMaximum number of iterations reached...exiting')
+                logger.info('Maximum number of iterations reached')
                 break
     # Convert inv image so that uninvaded voxels are set to -1 and solid to 0
     temp = inv == 0
