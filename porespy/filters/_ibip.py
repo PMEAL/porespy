@@ -7,7 +7,7 @@ from porespy.tools import get_border
 from porespy.tools import make_contiguous
 from porespy.filters import fftmorphology
 import numba
-import loguru as logger
+from loguru import logger
 from porespy import settings
 tqdm = get_tqdm()
 

@@ -846,6 +846,7 @@ def porosity(im):
     See Also
     --------
     phase_fraction
+    find_outer_region
 
     Notes
     -----

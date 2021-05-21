@@ -2,7 +2,7 @@ import numpy as np
 import scipy.ndimage as spim
 from porespy.tools import get_tqdm
 from porespy import settings
-import loguru as logger
+from loguru import logger
 tqdm = get_tqdm()
 
 
