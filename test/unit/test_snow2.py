@@ -168,7 +168,8 @@ class Snow2Test:
         assert (peaks2 > 0).sum() == 339
 
     def test_single_and_dual_phase_on_berea(self):
-        with zipfile.ZipFile("test_berea.zip", "r") as z:
+        path = Path(os.path.realpath(__file__), '../../fixtures/test_berea.zip')
+        with zipfile.ZipFile(path, "r") as z:
             z.extract('Berea_center_cropped_200_200.raw')
         im = np.fromfile('Berea_center_cropped_200_200.raw',
                          dtype='uint8', sep="")
