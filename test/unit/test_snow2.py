@@ -168,12 +168,7 @@ class Snow2Test:
         assert (peaks2 > 0).sum() == 339
 
     def test_single_and_dual_phase_on_berea(self):
-        path = Path(os.path.realpath(__file__), '../../fixtures/test_berea.zip')
-        with zipfile.ZipFile(path, "r") as z:
-            z.extract('Berea_center_cropped_200_200.raw')
-        im = np.fromfile('Berea_center_cropped_200_200.raw',
-                         dtype='uint8', sep="")
-        im = im.reshape([200, 200, 200]) == 0
+        im = ps.generators.blobs([200, 200, 200], porosity=0.6, blobiness=1.5)
 
         snow_1 = ps.networks.snow2(im,
                                    accuracy='standard',
@@ -207,7 +202,6 @@ class Snow2Test:
         assert Ps3.sum() == Ps4.sum()
         assert pn3.num_pores('all') == pn2.num_pores('solid')
         assert pn3.num_throats('all') == pn2.num_throats('solid_solid')
-        os.remove('Berea_center_cropped_200_200.raw')
 
 
 if __name__ == '__main__':
