@@ -6,6 +6,7 @@ import porespy as ps
 import openpnm as op
 import zipfile
 from edt import edt
+from pathlib import Path
 ws = op.Workspace()
 ws.settings['loglevel'] = 50
 ps.settings.tqdm['disable'] = True
@@ -167,7 +168,8 @@ class Snow2Test:
         assert (peaks2 > 0).sum() == 339
 
     def test_single_and_dual_phase_on_berea(self):
-        with zipfile.ZipFile("../fixtures/test_berea.zip", "r") as z:
+        p = Path("../fixtures/test_berea.zip")
+        with zipfile.ZipFile(p, "r") as z:
             z.extract('Berea_center_cropped_200_200.raw')
         im = np.fromfile('Berea_center_cropped_200_200.raw',
                          dtype='uint8', sep="")
