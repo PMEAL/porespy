@@ -91,12 +91,9 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4):
     peaks = trim_nearby_peaks(peaks=peaks, dt=dt)
     peaks, N = spim.label(peaks)
     logger.debug(f"Peaks after trimming nearby peaks: {N}")
-    regions = watershed(image=-dt, markers=peaks, mask=im > 0)
-    # Catch any isolated regions that were missed
-    # TODO: I'm not sure if this approach is universal so I'm going to comment it
-    # out for now, and mark it as a todo
-    # labels = spim.label((regions == 0)*(im > 0))[0]
-    # regions += (labels + regions.max())*(labels > 0)
+    # Note that the mask argument results in some void voxels left unlabeled
+    regions = watershed(image=-dt, markers=peaks)
+    regions = regions * (im > 0)
     tup = namedtuple("results", field_names=["im", "dt", "peaks", "regions"])
     tup.im = im
     tup.dt = dt
