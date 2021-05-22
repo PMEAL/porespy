@@ -2,7 +2,6 @@ import os
 import pytest
 import numpy as np
 from scipy import stats as spst
-from numpy.testing import assert_allclose
 import porespy as ps
 import openpnm as op
 import zipfile

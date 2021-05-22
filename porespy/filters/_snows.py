@@ -370,7 +370,8 @@ def trim_saddle_points(peaks, dt, max_iters=20):
                 break  # Ridge point
         if iters >= max_iters:
             logger.warning(f"{iters} iterations reached on point {i+1}")
-    logger.info(f"Found {hits} saddle points")
+    if hits > 0:
+        logger.info(f"Found {hits} saddle points")
     return peaks
 
 
