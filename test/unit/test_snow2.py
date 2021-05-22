@@ -1,10 +1,12 @@
+import os
 import pytest
 import numpy as np
 from scipy import stats as spst
-from numpy.testing import assert_allclose
 import porespy as ps
 import openpnm as op
+import zipfile
 from edt import edt
+from pathlib import Path
 ws = op.Workspace()
 ws.settings['loglevel'] = 50
 ps.settings.tqdm['disable'] = True
@@ -109,8 +111,8 @@ class Snow2Test:
         phases = im.astype(int) + 1
         alias = {1: 'void', 2: 'solid'}
         snow = ps.networks.snow2(phases=phases,
-                                 phase_alias=alias,
-                                 parallelization=None)
+                                  phase_alias=alias,
+                                  parallelization=None)
         assert 'throat.solid_void' in snow.network.keys()
         assert 'throat.void_solid' in snow.network.keys()
         assert 'throat.solid_solid' in snow.network.keys()
@@ -134,7 +136,7 @@ class Snow2Test:
         assert mode[0] == 60
         D = np.unique(snow.network['pore.extended_diameter'].astype(int))
         assert np.all(D == np.array([15, 16, 17, 18, 19, 21,
-                                     22, 25, 30, 32, 34, 60]))
+                                      22, 25, 30, 32, 34, 60]))
 
     def test_ensure_correct_sizes_are_returned_single_phase_3D(self):
         im = self.spheres3D
@@ -157,13 +159,49 @@ class Snow2Test:
         np.random.seed(0)
         ps.settings.loglevel = 20
         im = ps.generators.blobs(shape=[400, 400],
-                                 blobiness=[2, 1],
-                                 porosity=0.6)
+                                  blobiness=[2, 1],
+                                  porosity=0.6)
         dt = edt(im)
         peaks1 = ps.filters.find_peaks(dt=dt, r_max=4)
         peaks2 = ps.filters.trim_saddle_points(peaks=peaks1, dt=dt)
         assert (peaks1 > 0).sum() > (peaks2 > 0).sum()
         assert (peaks2 > 0).sum() == 339
+
+    def test_single_and_dual_phase_on_berea(self):
+        im = ps.generators.blobs([200, 200, 200], porosity=0.6, blobiness=1.5)
+
+        snow_1 = ps.networks.snow2(im,
+                                   accuracy='standard',
+                                   parallelization=None)
+        pn1, geo1 = op.io.PoreSpy.import_data(snow_1.network)
+        Ps1 = pn1.find_neighbor_pores(pores=pn1.pores('boundary'))
+        Ps1 = pn1.tomask(pores=Ps1)
+
+        snow_2 = ps.networks.snow2(im.astype(int) + 1,
+                                   phase_alias={1: 'solid', 2: 'void'},
+                                   accuracy='standard',
+                                   parallelization=None)
+        pn2, geo2 = op.io.PoreSpy.import_data(snow_2.network)
+        Ps2 = pn2.find_neighbor_pores(pores=pn2.pores('boundary'))
+        Ps2 = pn2.tomask(pores=Ps2)*pn2['pore.void']
+
+        assert Ps1.sum() == Ps2.sum()
+        assert pn1.num_pores('all') == pn2.num_pores('void')
+        assert pn1.num_throats('all') == pn2.num_throats('void_void')
+
+        snow_3 = ps.networks.snow2(im==0,
+                                   accuracy='standard',
+                                   parallelization=None)
+        pn3, geo3 = op.io.PoreSpy.import_data(snow_3.network)
+        Ps3 = pn3.find_neighbor_pores(pores=pn3.pores('boundary'))
+        Ps3 = pn3.tomask(pores=Ps3)
+
+        Ps4 = pn2.find_neighbor_pores(pores=pn2.pores('boundary'))
+        Ps4 = pn2.tomask(pores=Ps4)*pn2['pore.solid']
+
+        assert Ps3.sum() == Ps4.sum()
+        assert pn3.num_pores('all') == pn2.num_pores('solid')
+        assert pn3.num_throats('all') == pn2.num_throats('solid_solid')
 
 
 if __name__ == '__main__':
