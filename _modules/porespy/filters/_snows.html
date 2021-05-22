@@ -262,12 +262,9 @@
     <span class="n">peaks</span> <span class="o">=</span> <span class="n">trim_nearby_peaks</span><span class="p">(</span><span class="n">peaks</span><span class="o">=</span><span class="n">peaks</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
     <span class="n">peaks</span><span class="p">,</span> <span class="n">N</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">peaks</span><span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Peaks after trimming nearby peaks: </span><span class="si">{</span><span class="n">N</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">regions</span> <span class="o">=</span> <span class="n">watershed</span><span class="p">(</span><span class="n">image</span><span class="o">=-</span><span class="n">dt</span><span class="p">,</span> <span class="n">markers</span><span class="o">=</span><span class="n">peaks</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">im</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
-    <span class="c1"># Catch any isolated regions that were missed</span>
-    <span class="c1"># TODO: I&#39;m not sure if this approach is universal so I&#39;m going to comment it</span>
-    <span class="c1"># out for now, and mark it as a todo</span>
-    <span class="c1"># labels = spim.label((regions == 0)*(im &gt; 0))[0]</span>
-    <span class="c1"># regions += (labels + regions.max())*(labels &gt; 0)</span>
+    <span class="c1"># Note that the mask argument results in some void voxels left unlabeled</span>
+    <span class="n">regions</span> <span class="o">=</span> <span class="n">watershed</span><span class="p">(</span><span class="n">image</span><span class="o">=-</span><span class="n">dt</span><span class="p">,</span> <span class="n">markers</span><span class="o">=</span><span class="n">peaks</span><span class="p">)</span>
+    <span class="n">regions</span> <span class="o">=</span> <span class="n">regions</span> <span class="o">*</span> <span class="p">(</span><span class="n">im</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
     <span class="n">tup</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;results&quot;</span><span class="p">,</span> <span class="n">field_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;im&quot;</span><span class="p">,</span> <span class="s2">&quot;dt&quot;</span><span class="p">,</span> <span class="s2">&quot;peaks&quot;</span><span class="p">,</span> <span class="s2">&quot;regions&quot;</span><span class="p">])</span>
     <span class="n">tup</span><span class="o">.</span><span class="n">im</span> <span class="o">=</span> <span class="n">im</span>
     <span class="n">tup</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="n">dt</span>
@@ -541,7 +538,8 @@
                 <span class="k">break</span>  <span class="c1"># Ridge point</span>
         <span class="k">if</span> <span class="n">iters</span> <span class="o">&gt;=</span> <span class="n">max_iters</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">iters</span><span class="si">}</span><span class="s2"> iterations reached on point </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="n">hits</span><span class="si">}</span><span class="s2"> saddle points&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">hits</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="n">hits</span><span class="si">}</span><span class="s2"> saddle points&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">peaks</span></div>
 
 
