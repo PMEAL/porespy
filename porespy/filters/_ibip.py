@@ -68,10 +68,12 @@ def ibip(im, inlets=None, dt=None, inv=None, mode='morph', return_sizes=False,
     # Process the boundary image
     if inlets is None:
         inlets = get_border(shape=im.shape, mode='faces')
+    inlets = get_border(shape=im.shape, mode='faces')
     bd = np.copy(inlets > 0)
     edge = np.copy(bd)
     if dt is None:  # Find dt if not given
         dt = edt(im)
+    dt = edt(im)
     # Conert the dt to nearest integer or more
     dt = dt.astype(int)
     # Fetch the correct strel for dilation
@@ -79,52 +81,58 @@ def ibip(im, inlets=None, dt=None, inv=None, mode='morph', return_sizes=False,
         strel = ball
     else:
         strel = disk
-    if 'thickness' in kwargs.keys():
-        t = kwargs['thickness']
-    else:
-        t = 1
-    if 'coarseness' in kwargs.keys():
-        c = kwargs['coarseness']
-        dt = (dt/c).astype(int)*c
-    # Intialize scratch array so it can be cleared and refilled inside loop
-    if mode == 'insert':
-        scratch = np.zeros_like(bd)
-    with tqdm(range(1, max_iters), **settings.tqdm) as pbar:
-        for step in range(1, max_iters):
-            pbar.update()
-            # Dilate the boundary by given 'thickness'
-            if mode == 'morph':
-                temp = spim.binary_dilation(input=bd, structure=strel(t))
-            elif mode == 'fft':  # Strangely slow!
-                temp = fftmorphology(im=bd, strel=strel(t), mode='dilation')
-            elif mode == 'insert':
-                pt = np.vstack(np.where(bd))
-                # scratch.fill(True)
-                # scratch *= bd
-                scratch = np.copy(bd)
-                temp = _insert_disks_at_points(im=scratch, coords=pt,
-                                               r=t, v=1, smooth=False)
-            # Reduce to only the 'new' boundary
-            edge = temp*(dt > 0)
-            if ~np.any(edge):
-                logger.info('No more accessible invasion sites found')
-                break
-            # Find the maximum value of the dt underlaying the new edge
-            r_max = dt[edge].max()
-            # Find all values of the dt with that size
-            dt_thresh = dt >= r_max
-            # Extract the actual coordinates of the insertion sites
-            pt = np.where(edge*dt_thresh)  # Keep as tuple for later use
-            inv = _insert_disks_at_points(im=inv, coords=np.vstack(pt),
-                                          r=r_max, v=step, smooth=True)
-            if return_sizes:
-                sizes = _insert_disks_at_points(im=sizes, coords=np.vstack(pt),
-                                                r=r_max, v=r_max, smooth=True)
-            bd[pt] = True  # Update boundary image with newly invaded points
-            dt[pt] = 0
-            if step == (max_iters - 1):  # If max_iters reached, end loop
-                logger.info('Maximum number of iterations reached')
-                break
+    print("modified ibip")
+    thresh = 0.05
+    void_vol = (im > 0).sum()
+    # with tqdm(range(1, max_iters), **settings.tqdm) as pbar:
+    for step in range(1, max_iters):
+        # pbar.update()
+        # Dilate the boundary by given 'thickness'
+        if mode == 'morph':
+            temp = spim.binary_dilation(input=bd, structure=strel(1))
+        elif mode == 'fft':  # Strangely slow!
+            temp = fftmorphology(im=bd, strel=strel(1), mode='dilation')
+        elif mode == 'insert':
+            pt = np.vstack(np.where(bd))
+            # scratch.fill(True)
+            # scratch *= bd
+            scratch = np.copy(bd)
+            temp = _insert_disks_at_points(im=scratch, coords=pt,
+                                           r=1, v=1, smooth=False)
+        # Reduce to only the 'new' boundary
+        edge = temp*(dt > 0)
+        if ~np.any(edge):
+            logger.info('No more accessible invasion sites found')
+            continue
+        satn = ((inv > 0).sum()/void_vol)
+        if satn > 0.999:
+            break
+        # Find the maximum value of the dt underlaying the new edge
+        r_max = dt[edge].max()
+        # Find all values of the dt with that size
+        dt_thresh = dt >= r_max
+        # Extract the actual coordinates of the insertion sites
+        pt = np.where(edge*dt_thresh)  # Keep as tuple for later use
+        # temp = spim.binary_dilation(edge*dt_thresh, structure=strel(r_max))
+        # inv += (inv == 0)*temp*step
+        inv = _insert_disks_at_points(im=inv, coords=np.vstack(pt),
+                                      r=r_max, v=step, smooth=True)
+        if return_sizes:
+            sizes = _insert_disks_at_points(im=sizes, coords=np.vstack(pt),
+                                            r=r_max, v=r_max, smooth=True)
+        bd[pt] = True  # Update boundary image with newly invaded points
+        dt[pt] = 0
+        if step == (max_iters - 1):  # If max_iters reached, end loop
+            logger.info('Maximum number of iterations reached')
+            break
+        if satn > thresh:
+            print('Recomputing border pixels')
+            new_dt = edt((inv > 0)).astype(int)
+            hits = (new_dt == dt)
+            bd[hits] = True
+            dt[hits] = 0
+            thresh += 0.05
+            print('done')
     # Convert inv image so that uninvaded voxels are set to -1 and solid to 0
     temp = inv == 0
     inv[~im] = 0
