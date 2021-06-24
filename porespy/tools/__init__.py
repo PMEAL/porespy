@@ -104,4 +104,4 @@ from ._utils import sanitize_filename
 from ._utils import get_tqdm
 from ._utils import show_docstring
 from ._funcs import _check_for_singleton_axes
-from ._unpadfunc import unpad
+from ._unpad import unpad

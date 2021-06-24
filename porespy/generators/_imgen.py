@@ -101,7 +101,7 @@ def RSA(im_or_shape: np.array,
         r: int,
         volume_fraction: int = 1,
         clearance: int = 0,
-        n_max: int = None,
+        n_max: int = 100000,
         mode: str = "contained",
         return_spheres: bool = False,
         smooth: bool = True,
@@ -126,10 +126,13 @@ def RSA(im_or_shape: np.array,
         ``n_max`` is reached first, then ``volume_fraction`` will not be
         acheived.  Also, ``volume_fraction`` is not counted correctly if the
         ``mode`` is ``'extended'``.
-    n_max : int (default is 10,000)
+    clearance : int (optional, default = 0)
+        The amount of space to put between each sphere. Negative values are
+        acceptable to create overlaps, so long as ``abs(clearance) < r``.
+    n_max : int (default is 100,000)
         The maximum number of spheres to add.  Using a low value may halt
         the addition process prior to reaching the specified
-        ``volume_fraction``.
+        ``volume_fraction``.  If ``None`` is given, then no limit is used.
     mode : string (default is 'contained')
         Controls how the edges of the image are handled.  Options are:
 
@@ -153,6 +156,11 @@ def RSA(im_or_shape: np.array,
     -------
     image : ND-array
         An image with spheres of specified radius *added* to the background.
+
+    See Also
+    --------
+    pseudo_gravity_packing
+    pseudo_electrostatic_packing
 
     Notes
     -----
@@ -183,7 +191,7 @@ def RSA(im_or_shape: np.array,
     if return_spheres:
         im_temp = np.copy(im)
     if n_max is None:
-        n_max = 10000
+        n_max = np.inf
     vf_final = volume_fraction
     vf_start = im.sum() / im.size
     logger.debug(f"Initial volume fraction: {vf_start}")
@@ -195,12 +203,14 @@ def RSA(im_or_shape: np.array,
         template_sm = ps_ball(r, smooth=smooth)
     vf_template = template_sm.sum() / im.size
     # Pad image by the radius of large template to enable insertion near edges
-    im = np.pad(im, pad_width=2 * r, mode="edge")
+    im = np.pad(im, pad_width=2 * (r + clearance), mode="edge")
     # Depending on mode, adjust mask to remove options around edge
     if mode == "contained":
-        border = get_border(im.shape, thickness=2 * r, mode="faces")
+        border = get_border(im.shape, thickness=2 * (r + clearance),
+                            mode="faces")
     elif mode == "extended":
-        border = get_border(im.shape, thickness=r + 1, mode="faces")
+        border = get_border(im.shape, thickness=(r + clearance) + 1,
+                            mode="faces")
     else:
         raise Exception("Unrecognized mode: ", mode)
     # Remove border pixels
@@ -234,7 +244,8 @@ def RSA(im_or_shape: np.array,
     logger.trace(f"Number of spheres inserted: {i}")
     # ------------------------------------------------------------------------
     # Get slice into returned image to retain original size
-    s = tuple([slice(2 * r, d - 2 * r, None) for d in im.shape])
+    s = tuple([slice(2 * (r + clearance), d - 2 * (r + clearance), None)
+               for d in im.shape])
     im = im[s]
     vf = im.sum() / im.size
     logger.debug("Final volume fraction:", vf)

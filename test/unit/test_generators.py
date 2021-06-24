@@ -251,7 +251,7 @@ class GeneratorTest():
         rsa = ps.generators.RSA(im_or_shape=[200, 200], r=10)
         assert np.all(rsa.shape == (200, 200))
 
-    def test_RSA_clearance(self):
+    def test_RSA_clearance_large_spheres(self):
         np.random.seed(0)
         rsa0 = ps.generators.RSA(im_or_shape=[200, 200], r=9, clearance=0)
         np.random.seed(0)
@@ -260,6 +260,13 @@ class GeneratorTest():
         np.random.seed(0)
         rsa1n = ps.generators.RSA(im_or_shape=[200, 200], r=9, clearance=-1)
         assert rsa0.sum() < rsa1n.sum()
+
+    def test_RSA_clearance_small_spheres(self):
+        np.random.seed(0)
+        rsa0 = ps.generators.RSA(im_or_shape=[200, 200], r=1, clearance=0)
+        np.random.seed(0)
+        rsa2p = ps.generators.RSA(im_or_shape=[200, 200], r=1, clearance=2)
+        assert rsa0.sum() > rsa2p.sum()
 
     def test_line_segment(self):
         X0 = [3, 4]

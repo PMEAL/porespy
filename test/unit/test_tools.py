@@ -169,6 +169,16 @@ class ToolsTest():
         assert np.all(np.unique(im) == vals)
         assert counts[1] < counts[2]
 
+    def test_insert_cylinder(self):
+        im = np.zeros([100, 100, 100], dtype=bool)
+        im = ps.tools.insert_cylinder(im, [20, 20, 20], [80, 80, 80], r=30)
+        assert im.sum() == 356924
+
+    def test_insert_cylinder_outside_image(self):
+        im = np.zeros([50, 50, 50], dtype=bool)
+        with pytest.raises(Exception):
+            im = ps.tools.insert_cylinder(im, [20, 20, 20], [80, 80, 80], r=30)
+
     def test_subdivide_2D_with_vector_overlap(self):
         im = np.ones([150, 150])
         s = ps.tools.subdivide(im, divs=3, overlap=[10, 20])
