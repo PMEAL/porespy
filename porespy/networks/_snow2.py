@@ -3,7 +3,7 @@ from porespy.networks import regions_to_network
 from porespy.networks import add_boundary_regions
 from porespy.networks import label_phases, label_boundaries
 from porespy.filters import snow_partitioning, snow_partitioning_parallel
-from collections import namedtuple, Iterable
+from collections import namedtuple
 from loguru import logger
 
 
@@ -22,54 +22,55 @@ def snow2(phases,
     Parameters
     ----------
     phases : ND-image
-        An image indicating the phase(s) of interest. A watershed is produced
-        for each integer value in ``phases`` (except 0's). These are then
-        combined into a single image and one network is extracted using
-        ``regions_to_network``.
+        An image indicating the phase(s) of interest. A watershed is
+        produced for each integer value in ``phases`` (except 0's). These
+        are then combined into a single image and one network is extracted
+        using ``regions_to_network``.
     phase_alias : dict
-        A mapping between integer values in ``phases`` and phase name, used
-        to add labels to the network. For instance, asssuming a two-phase
-        image, ``{1: 'void', 2: 'solid'}`` will result in the labels
-        ``'pore.void'`` and ``'pore.solid'``, as well as
+        A mapping between integer values in ``phases`` and phase name
+        used to add labels to the network. For instance, asssuming
+        two-phase image, ``{1: 'void', 2: 'solid'}`` will result in the
+        labels ``'pore.void'`` and ``'pore.solid'``, as well as
         ``'throat.solid_void'``, ``'throat.solid_solid'``, and
         ``'throat.void_void'``. If not provided, aliases are assumed to be
-        ``{1: 'phase1', 2: 'phase2, ...}``.  Phase labels can also be applied
-        afterward using ``label_phases``.
+        ``{1: 'phase1', 2: 'phase2, ...}``.  Phase labels can also be
+        applied afterward using ``label_phases``.
     boundary_width : depends
-        Number of voxels to add to the beginning and end of each axis. This
-        argument is handled the same as ``pad_width`` in the ``np.pad``
-        function. A scalar adds the same amount to the beginning and end of
-        each axis. ``[A, B]`` adds A to the beginning of each axis and B to the
-        ends.  ``[[A, B], ..., [C, D]]`` adds A to the beginning and B to the
-        end of the first axis, and so on. The default is to add 3 voxels on
-        both ends of all axes.  For each boundary width that is not 0, a label
-        will automatically be applied indicating which end of which axis (i.e.
-        ``'xmin'`` and ``'xmax'``).
+        Number of voxels to add to the beginning and end of each axis.
+        This argument can either be a scalar or a list. If a scalar is
+        passed, it will be applied to the begining and end of all axes.
+        In case of a list, you can specify the number of voxels for each
+        axis individually. Here are some examples:
+            - [0, 3, 0]: 3 voxels only applied to the y-axis.
+            - [0, [0, 3], 0]: 3 voxels only applied to the end of y-axis.
+            - [0, [3, 0], 0]: 3 voxels only applied to the beginning of y-axis.
+        The default is to add 3 voxels on both ends of all axes. For each
+        boundary width that is not 0, a label will automatically be
+        applied indicating which end of which axis (i.e. ``'xmin'`` and
+        ``'xmax'``).
     accuracy : string
-        Controls how accurately certain properties are calculated during the
-        analysis of regions in the ``regions_to_network`` function.
+        Controls how accurately certain properties are calculated during
+        the analysis of regions in the ``regions_to_network`` function.
         Options are:
-
-        'standard' (default)
-            Computes the surface areas and perimeters by simply counting
-            voxels. This is *much* faster but does not properly account
-            for the rough voxelated nature of the surfaces.
-        'high'
-            Computes surface areas using the marching cube method, and
-            perimeters using the fast marching method. These are substantially
-            slower but better account for the voxelated nature of the images.
-
+            - 'standard' (default): Computes the surface areas and
+              perimeters by simply counting voxels. This is *much* faster
+              but does not properly account for the rough voxelated nature
+              of the surfaces.
+            - 'high': Computes surface areas using the marching cube
+              method, and perimeters using the fast marching method. These
+              are substantially slower but better account for the
+              voxelated nature of the images.
     voxel_size : scalar (default = 1)
-        The resolution of the image, expressed as the length of one side of a
-        voxel, so the volume of a voxel would be **voxel_size**-cubed.
+        The resolution of the image, expressed as the length of one side
+        of a voxel, so the volume of a voxel would be **voxel_size**-cubed.
     parallelization : dict
         The arguments for controlling the parallization of the watershed
         function are rolled into this dictionary, otherwise the function
         signature would become too complex. Refer to the docstring of
         ``snow_partitioning_parallel`` for complete details. If no values
         are provided then the defaults for that function are used.
-        To disable parallelization pass ``parallel=None``, which will invoke
-        the standard ``snow_partitioning``.
+        To disable parallelization pass ``parallel=None``, which will
+        invoke the standard ``snow_partitioning``.
 
     Returns
     -------
@@ -84,17 +85,18 @@ def snow2(phases,
        023307 (2017)
     .. [2] Khan ZA, Tranter TG, Agnaou M, Elkamel A, and Gostick JT, Dual
        network extraction algorithm to investigate multiple transport
-       processes in porous materials: Image-based modeling of pore and grain-
-       scale processes. Computers and Chemical Engineering. 123(6), 64-77
-       (2019)
+       processes in porous materials: Image-based modeling of pore and
+       grain-scale processes. Computers and Chemical Engineering. 123(6),
+       64-77 (2019)
     .. [3] Khan ZA, García-Salaberri PA, Heenan T, Jervis R, Shearing P,
        Brett D, Elkamel A, Gostick JT, Probing the structure-performance
        relationship of lithium-ion battery cathodes using pore-networks
-       extracted from three-phase tomograms. Journal of the Electrochemical
-       Society. 167(4), 040528 (2020)
+       extracted from three-phase tomograms. Journal of the
+       Electrochemical Society. 167(4), 040528 (2020)
     .. [4] Khan ZA, Elkamel A, Gostick JT, Efficient extraction of pore
        networks from massive tomograms via geometric domain decomposition.
        Advances in Water Resources. 145(Nov), 103734 (2020)
+
     """
     regions = None
     for i in range(phases.max()):
