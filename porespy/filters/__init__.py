@@ -87,3 +87,4 @@ from ._fftmorphology import fftmorphology
 from . import imagej
 from ._ibip import ibip
 from ._ibip import find_trapped_regions
+from ._ibip_gpu import ibip_gpu
