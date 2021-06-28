@@ -12,8 +12,7 @@ from porespy import settings
 tqdm = get_tqdm()
 
 
-def ibip(im, inlets=None, dt=None, inv=None, mode='morph', return_sizes=False,
-         max_iters=10000, **kwargs):
+def ibip(im, inlets=None, dt=None, inv=None, mode='morph', max_iters=10000):
     r"""
     Performs invasion percolation on given image using iterative image dilation
 
@@ -31,22 +30,6 @@ def ibip(im, inlets=None, dt=None, inv=None, mode='morph', return_sizes=False,
         The number of steps to apply before stopping.  The default is to run
         for 10,000 steps which is almost certain to reach completion if the
         image is smaller than about 250-cubed.
-    return_sizes : boolean
-        If ``True`` a second image is returned containing the size of the
-        sphere inserted at each step, in addition to the image containing
-        the invasion sequence
-    mode : str
-        The method used to dilate the border on each iteration.  They all
-        give identical results, but may some may have better performance than
-        other depending on image size and dimensions.  Options are:
-
-        'morph'
-            Uses ``scipy.ndimage.binary_dilation`` with a
-            spherical or cirular structuring element of radius ``thickness``.
-
-        'insert'
-            Uses a ``numba`` jit for-loop to insert spheres or disks of
-            radius 1 at all border locations.
 
     Returns
     -------
@@ -54,96 +37,82 @@ def ibip(im, inlets=None, dt=None, inv=None, mode='morph', return_sizes=False,
         An array the same shape as ``im`` with each voxel labelled by the
         sequence at which it was invaded.
     inv_size : ND-array
-        If ``return_sizes`` is ``True``, then a tuple containing
-        ``inv_sequence`` and ``inv_size`` is returned
+        An array the same shape as ``im`` with each voxel labelled by the
+        ``inv_size`` at which was filled.
 
     See Also
     --------
     porosimetry
 
     """
-    # Initialize inv image with -1 in the solid, and 0's in the void
-    inv = -1*((~im).astype(int))
-    sizes = -1*((~im).astype(int))
     # Process the boundary image
     if inlets is None:
         inlets = get_border(shape=im.shape, mode='faces')
-    inlets = get_border(shape=im.shape, mode='faces')
     bd = np.copy(inlets > 0)
-    edge = np.copy(bd)
     if dt is None:  # Find dt if not given
         dt = edt(im)
-    dt = edt(im)
-    # Conert the dt to nearest integer or more
-    dt = dt.astype(int)
-    # Fetch the correct strel for dilation
-    if im.ndim == 3:
-        strel = ball
-    else:
-        strel = disk
-    print("modified ibip")
-    thresh = 0.05
-    void_vol = (im > 0).sum()
-    # with tqdm(range(1, max_iters), **settings.tqdm) as pbar:
-    for step in range(1, max_iters):
-        # pbar.update()
-        # Dilate the boundary by given 'thickness'
-        if mode == 'morph':
-            temp = spim.binary_dilation(input=bd, structure=strel(1))
-        elif mode == 'fft':  # Strangely slow!
-            temp = fftmorphology(im=bd, strel=strel(1), mode='dilation')
-        elif mode == 'insert':
-            pt = np.vstack(np.where(bd))
-            # scratch.fill(True)
-            # scratch *= bd
-            scratch = np.copy(bd)
-            temp = _insert_disks_at_points(im=scratch, coords=pt,
-                                           r=1, v=1, smooth=False)
-        # Reduce to only the 'new' boundary
-        edge = temp*(dt > 0)
-        if ~np.any(edge):
-            logger.info('No more accessible invasion sites found')
-            continue
-        satn = ((inv > 0).sum()/void_vol)
-        if satn > 0.999:
-            break
-        # Find the maximum value of the dt underlaying the new edge
-        r_max = dt[edge].max()
-        # Find all values of the dt with that size
-        dt_thresh = dt >= r_max
-        # Extract the actual coordinates of the insertion sites
-        pt = np.where(edge*dt_thresh)  # Keep as tuple for later use
-        # temp = spim.binary_dilation(edge*dt_thresh, structure=strel(r_max))
-        # inv += (inv == 0)*temp*step
-        inv = _insert_disks_at_points(im=inv, coords=np.vstack(pt),
-                                      r=r_max, v=step, smooth=True)
-        if return_sizes:
-            sizes = _insert_disks_at_points(im=sizes, coords=np.vstack(pt),
-                                            r=r_max, v=r_max, smooth=True)
-        bd[pt] = True  # Update boundary image with newly invaded points
-        dt[pt] = 0
-        if step == (max_iters - 1):  # If max_iters reached, end loop
-            logger.info('Maximum number of iterations reached')
-            break
-        if satn > thresh:
-            print('Recomputing border pixels')
-            new_dt = edt((inv > 0)).astype(int)
-            hits = (new_dt == dt)
-            bd[hits] = True
-            dt[hits] = 0
-            thresh += 0.05
-            print('done')
+    dt = dt.astype(int)  # Conert the dt to nearest integer
+    inv, sizes = _ibip(im=im, bd=bd, dt=dt, max_iters=max_iters)
     # Convert inv image so that uninvaded voxels are set to -1 and solid to 0
-    temp = inv == 0
+    temp = inv == 0  # Uninvaded voxels are set to -1 after _ibip
     inv[~im] = 0
     inv[temp] = -1
     inv = make_contiguous(im=inv, mode='symmetric')
-    if return_sizes:
-        temp = sizes == 0
-        sizes[~im] = 0
-        sizes[temp] = -1
-        inv = (inv, sizes)
+    # Deal with invasion sizes similarly
+    temp = sizes == 0
+    sizes[~im] = 0
+    sizes[temp] = -1
+    inv = (inv, sizes)
     return inv
+
+
+@numba.jit(nopython=True, parallel=False)
+def _where(arr):
+    inds = np.where(arr)
+    result = np.vstack(inds)
+    return result
+
+
+@numba.jit(nopython=True, parallel=False)
+def _ibip(im, bd, dt, max_iters):
+    # Initialize inv image with -1 in the solid, and 0's in the void
+    inv = -1*(~im)
+    sizes = -1*(~im)
+    scratch = np.copy(bd)
+    for step in range(1, max_iters):
+        pt = _where(bd)
+        scratch = np.copy(bd)
+        temp = _insert_disks_at_points(im=scratch, coords=pt,
+                                       r=1, v=1, smooth=False)
+        # Reduce to only the 'new' boundary
+        edge = temp*(dt > 0)
+        if ~edge.any():
+            break
+        # Find the maximum value of the dt underlaying the new edge
+        r_max = (dt*edge).max()
+        # Find all values of the dt with that size
+        dt_thresh = dt >= r_max
+        # Extract the actual coordinates of the insertion sites
+        pt = _where(edge*dt_thresh)
+        inv = _insert_disks_at_points(im=inv, coords=pt,
+                                      r=r_max, v=step, smooth=True)
+        sizes = _insert_disks_at_points(im=sizes, coords=pt,
+                                        r=r_max, v=r_max, smooth=True)
+        dt, bd = _update_dt_and_bd(dt, bd, pt)
+    return inv, sizes
+
+
+@numba.jit(nopython=True)
+def _update_dt_and_bd(dt, bd, pt):
+    if dt.ndim == 2:
+        for i in range(pt.shape[1]):
+            bd[pt[0, i], pt[1, i]] = True
+            dt[pt[0, i], pt[1, i]] = 0
+    else:
+        for i in range(pt.shape[1]):
+            bd[pt[0, i], pt[1, i], pt[2, i]] = True
+            dt[pt[0, i], pt[1, i], pt[2, i]] = 0
+    return dt, bd
 
 
 @numba.jit(nopython=True, parallel=False)

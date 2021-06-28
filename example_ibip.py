@@ -8,8 +8,8 @@ from openpnm.utils import tic, toc
 
 # %%  Generate or load a test image
 np.random.seed(0)
-im = ps.generators.blobs(shape=[400, 600], porosity=0.6, blobiness=2)
-plt.imshow(im, interpolation='none', origin='lower')
+im = ps.generators.blobs(shape=[150, 150, 150], porosity=0.6, blobiness=2)
+# plt.imshow(im, interpolation='none', origin='lower')
 
 
 # %%
@@ -20,12 +20,16 @@ temp = bd*-0.25 + im*1.0
 
 
 # %%
+
+tic()
+inv_seq, inv_size = ps.filters.ibip(im=im, inlets=bd, mode='morph')
+t = toc(quiet=True)
+print(t)
+
+# %%
+inv_satn = ps.filters.seq_to_satn(inv_seq)
 cmap = copy(plt.cm.viridis)
 cmap.set_under(color='black')
-tic()
-inv_seq = ps.filters.ibip(im=im, inlets=bd, mode='morph')
-toc()
-inv_satn = ps.filters.seq_to_satn(inv_seq)
 plt.imshow(inv_seq, cmap=cmap, vmin=1e-3, interpolation='none', origin='lower')
 
 # %%
