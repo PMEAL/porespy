@@ -160,9 +160,9 @@ def make_contiguous_g(im):
     shape = im.shape
     im_flat = im.flatten()
     mask_neg = im_flat < 0
-    im_neg = -rankdata_g(-im_flat[mask_neg], method='dense')
+    im_neg = -rankdata_g(-im_flat[mask_neg])
     mask_pos = im_flat > 0
-    im_pos = rankdata_g(im_flat[mask_pos], method='dense')
+    im_pos = rankdata_g(im_flat[mask_pos])
     im_flat[mask_pos] = im_pos
     im_flat[mask_neg] = im_neg
     im_new = np.reshape(im_flat, shape)
