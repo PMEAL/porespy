@@ -52,7 +52,7 @@ def ibip(im, inlets=None, dt=None, inv=None, mode='morph', max_iters=10000):
     if dt is None:  # Find dt if not given
         dt = edt(im)
     dt = dt.astype(int)  # Conert the dt to nearest integer
-    inv, sizes = _ibip(im=im, bd=bd, dt=dt, max_iters=max_iters)
+    inv, sizes, iters = _ibip(im=im, bd=bd, dt=dt, max_iters=max_iters)
     # Convert inv image so that uninvaded voxels are set to -1 and solid to 0
     temp = inv == 0  # Uninvaded voxels are set to -1 after _ibip
     inv[~im] = 0
@@ -62,7 +62,7 @@ def ibip(im, inlets=None, dt=None, inv=None, mode='morph', max_iters=10000):
     temp = sizes == 0
     sizes[~im] = 0
     sizes[temp] = -1
-    inv = (inv, sizes)
+    inv = (inv, sizes, iters)
     return inv
 
 
@@ -73,13 +73,13 @@ def _where(arr):
     return result
 
 
-@numba.jit(nopython=True, parallel=False)
+# @numba.jit(nopython=True, parallel=False)
 def _ibip(im, bd, dt, max_iters):
     # Initialize inv image with -1 in the solid, and 0's in the void
     inv = -1*(~im)
     sizes = -1*(~im)
     scratch = np.copy(bd)
-    for step in range(1, max_iters):
+    for step in tqdm(range(1, max_iters)):
         pt = _where(bd)
         scratch = np.copy(bd)
         temp = _insert_disks_at_points(im=scratch, coords=pt,
@@ -99,7 +99,7 @@ def _ibip(im, bd, dt, max_iters):
         sizes = _insert_disks_at_points(im=sizes, coords=pt,
                                         r=r_max, v=r_max, smooth=True)
         dt, bd = _update_dt_and_bd(dt, bd, pt)
-    return inv, sizes
+    return inv, sizes, step
 
 
 @numba.jit(nopython=True)

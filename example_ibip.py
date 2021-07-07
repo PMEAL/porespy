@@ -8,7 +8,7 @@ from openpnm.utils import tic, toc
 
 # %%  Generate or load a test image
 np.random.seed(0)
-im = ps.generators.blobs(shape=[150, 150, 150], porosity=0.6, blobiness=2)
+im = ps.generators.blobs(shape=[200, 200, 200], porosity=0.6, blobiness=2)
 # plt.imshow(im, interpolation='none', origin='lower')
 
 
@@ -22,9 +22,9 @@ temp = bd*-0.25 + im*1.0
 # %%
 
 tic()
-inv_seq, inv_size = ps.filters.ibip(im=im, inlets=bd, mode='morph')
+inv_seq, inv_size, iters = ps.filters.ibip(im=im, inlets=bd, max_iters=1000000)
 t = toc(quiet=True)
-print(t)
+print(t, iters)
 
 # %%
 inv_satn = ps.filters.seq_to_satn(inv_seq)
