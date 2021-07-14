@@ -5,12 +5,7 @@ on: [push]
 jobs:
   deploy:
     name: Verify pip-installability
-    runs-on: ${{ matrix.operating-system }}
-
-    strategy:
-      max-parallel: 4
-      matrix:
-        operating-system: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
@@ -19,11 +14,10 @@ jobs:
       with:
         python-version: 3.8
 
-    - name: Test
+    - name: Set branch name as env variable
       run: |
-        echo ${GITHUB_REF#refs/heads/}
+        echo Current branch: ${GITHUB_REF#refs/heads/}
         echo "BRANCH_NAME=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
-
 
     - name: Install only using pip
       run:
