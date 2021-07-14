@@ -21,11 +21,11 @@ jobs:
 
     - name: Test
       run:
-        echo $GITHUB_REF
+        echo ${GITHUB_REF#refs/heads/}
 
     - name: Install only using pip
       run:
-        git+https://github.com/PMEAL/porespy.git@dev
+        pip install git+https://github.com/PMEAL/porespy.git@dev
 
     - name: Test the installation
       run:
