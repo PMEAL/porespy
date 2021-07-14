@@ -23,7 +23,26 @@ Installing the dev version
 ##########################
 We frequently publish new releases every couple of months, but if you
 still want to use the latest features available on the `dev` branch,
-(but not yet officially released), you need to do the followings:
+(but not yet officially released), you have two options:
+
+The easy way
+------------
+If you're looking for an easy way to install the development version of
+``porespy`` and use the latest features, you can install it using::
+
+   $ pip install git+https://github.com/PMEAL/porespy.git@dev
+
+.. warning::
+   This approach is not recommended if you are a porespy contributor or
+   want to frequently get new updates as they roll in. If you insist on
+   using this approach, to get the latest version at any point, you
+   need to first uninstall your porespy and then rerun the command above.
+
+The hard (but correct) way
+--------------------------
+If you are a porespy contributor or want to easily get the new updates as
+they roll in, you need to properly clone our repo and install it locally.
+It's not as difficult as it sounds, just follow these steps:
 
 Open up the terminal/cmd and ``cd`` to the directory you want to clone ``porespy``.
 

@@ -46,6 +46,7 @@ setup(
         'porespy.generators',
         'porespy.metrics',
         'porespy.filters',
+        'porespy.filters.imagej'
         'porespy.networks',
         'porespy.dns',
         'porespy.visualization',

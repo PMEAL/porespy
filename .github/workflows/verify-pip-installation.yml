@@ -19,9 +19,13 @@ jobs:
       with:
         python-version: 3.8
 
+    - name: Test
+      run:
+        echo $GITHUB_REF
+
     - name: Install only using pip
       run:
-        pip install -e .
+        git+https://github.com/PMEAL/porespy.git@dev
 
     - name: Test the installation
       run:
