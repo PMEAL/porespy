@@ -181,13 +181,19 @@
 <nav id="bd-toc-nav">
     <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#windows">
-   Windows
+  <a class="reference internal nav-link" href="#installing-the-dev-version">
+   Installing the dev version
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#mac-and-linux">
-   Mac and Linux
+  <a class="reference internal nav-link" href="#where-s-my-conda-prompt">
+   Where’s my
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     conda
+    </span>
+   </code>
+   prompt?
   </a>
  </li>
 </ul>
@@ -220,26 +226,69 @@ distribution</a>. Be sure to get the
 <p>Once you’ve installed <em>Anaconda</em> you can then install <code class="docutils literal notranslate"><span class="pre">porespy</span></code>. It is
 available on <a class="reference external" href="https://anaconda.org/conda-forge/porespy">conda-forge</a>
 and can be installed by typing the following at the <em>conda</em> prompt:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">install</span> <span class="o">-</span><span class="n">c</span> <span class="n">conda</span><span class="o">-</span><span class="n">forge</span> <span class="n">porespy</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ conda install -c conda-forge porespy
 </pre></div>
 </div>
 <p>It’s possible to use <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">porespy</span></code>, but this will not result
 in a full installation and some features won’t work (i.e. outputing to
 paraview and calling imagej functions).</p>
-<div class="section" id="windows">
-<h2>Windows<a class="headerlink" href="#windows" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="installing-the-dev-version">
+<h2>Installing the dev version<a class="headerlink" href="#installing-the-dev-version" title="Permalink to this headline">¶</a></h2>
+<p>We frequently publish new releases every couple of months, but if you
+still want to use the latest features available on the <cite>dev</cite> branch,
+(but not yet officially released), you need to do the followings:</p>
+<p>Open up the terminal/cmd and <code class="docutils literal notranslate"><span class="pre">cd</span></code> to the directory you want to clone <code class="docutils literal notranslate"><span class="pre">porespy</span></code>.</p>
+<p>Clone the repo somewhere in your disk using:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git clone https://github.com/PMEAL/porespy
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">cd</span></code> to the root folder of <code class="docutils literal notranslate"><span class="pre">porespy</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cd porespy
+</pre></div>
+</div>
+<p>Install <code class="docutils literal notranslate"><span class="pre">porespy</span></code> dependencies:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ conda install --file=requirements/conda_requirements.txt
+$ pip install -r requirements/pip_requirements.txt
+</pre></div>
+</div>
+<p>Install <code class="docutils literal notranslate"><span class="pre">porespy</span></code> in “editable” mode:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install --no-deps -e .
+</pre></div>
+</div>
+<p>Voila! You can now use the latest features available on the <code class="docutils literal notranslate"><span class="pre">dev</span></code> branch. To
+keep your “local” <code class="docutils literal notranslate"><span class="pre">porespy</span></code> installation up to date, every now and then, <code class="docutils literal notranslate"><span class="pre">cd</span></code>
+to the root folder of <code class="docutils literal notranslate"><span class="pre">porespy</span></code> and pull the latest changes:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git pull
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>For the development version of <code class="docutils literal notranslate"><span class="pre">porespy</span></code> to work, you need to first remove
+the <code class="docutils literal notranslate"><span class="pre">porespy</span></code> that you’ve previously installed using <code class="docutils literal notranslate"><span class="pre">pip</span></code> or <code class="docutils literal notranslate"><span class="pre">conda</span></code>.</p>
+</div>
+</div>
+<div class="section" id="where-s-my-conda-prompt">
+<h2>Where’s my <code class="docutils literal notranslate"><span class="pre">conda</span></code> prompt?<a class="headerlink" href="#where-s-my-conda-prompt" title="Permalink to this headline">¶</a></h2>
+<p>All the commands in this page need to be typed in the <code class="docutils literal notranslate"><span class="pre">conda</span></code> prompt.</p>
+<div class="tabbed-set docutils">
+<input checked="checked" id="bb4426f5-aee2-4d4d-b6dc-7b29712cd9da" name="19cae8b3-6471-4706-8992-20bd5fbba2ea" type="radio">
+</input><label class="tabbed-label" for="bb4426f5-aee2-4d4d-b6dc-7b29712cd9da">
+Windows</label><div class="tabbed-content docutils">
 <p>On Windows you should have a shortcut to the “Anaconda prompt” in the
 Anaconda program group in the start menu. This will open a Windows
 command console with access to the Python features added by <em>conda</em>,
 such as installing things via <code class="docutils literal notranslate"><span class="pre">conda</span></code>.</p>
 </div>
-<div class="section" id="mac-and-linux">
-<h2>Mac and Linux<a class="headerlink" href="#mac-and-linux" title="Permalink to this headline">¶</a></h2>
+<input id="5791880b-e85a-42ee-a4e0-5c8a46e79483" name="19cae8b3-6471-4706-8992-20bd5fbba2ea" type="radio">
+</input><label class="tabbed-label" for="5791880b-e85a-42ee-a4e0-5c8a46e79483">
+Mac and Linux</label><div class="tabbed-content docutils">
 <p>On Mac or Linux, you need to open a normal terminal window, then type
 <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">activate</span> <span class="pre">env</span></code> where you replace <code class="docutils literal notranslate"><span class="pre">env</span></code> with the name of
 the environment you want to install PoreSpy. If you don’t know what this
 means, then use <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">activate</span> <span class="pre">base</span></code>, which will install PoreSpy in
 the base environment which is the default.</p>
+</div>
+</div>
 </div>
 </div>
 
