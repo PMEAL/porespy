@@ -25,7 +25,7 @@ jobs:
 
     - name: Install only using pip
       run:
-        pip install git+https://github.com/PMEAL/porespy.git@dev
+        pip install git+https://github.com/PMEAL/porespy.git@${GITHUB_REF#refs/heads/}
 
     - name: Test the installation
       run:
