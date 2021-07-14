@@ -20,12 +20,14 @@ jobs:
         python-version: 3.8
 
     - name: Test
-      run:
+      run: |
         echo ${GITHUB_REF#refs/heads/}
+        echo "BRANCH_NAME=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+
 
     - name: Install only using pip
       run:
-        pip install git+https://github.com/PMEAL/porespy.git@${GITHUB_REF#refs/heads/}
+        pip install git+https://github.com/PMEAL/porespy.git@$BRANCH_NAME
 
     - name: Test the installation
       run:
