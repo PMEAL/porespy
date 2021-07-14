@@ -184,6 +184,18 @@
   <a class="reference internal nav-link" href="#installing-the-dev-version">
    Installing the dev version
   </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#the-easy-way">
+     The easy way
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#the-hard-but-correct-way">
+     The hard (but correct) way
+    </a>
+   </li>
+  </ul>
  </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#where-s-my-conda-prompt">
@@ -236,7 +248,27 @@ paraview and calling imagej functions).</p>
 <h2>Installing the dev version<a class="headerlink" href="#installing-the-dev-version" title="Permalink to this headline">¶</a></h2>
 <p>We frequently publish new releases every couple of months, but if you
 still want to use the latest features available on the <cite>dev</cite> branch,
-(but not yet officially released), you need to do the followings:</p>
+(but not yet officially released), you have two options:</p>
+<div class="section" id="the-easy-way">
+<h3>The easy way<a class="headerlink" href="#the-easy-way" title="Permalink to this headline">¶</a></h3>
+<p>If you’re looking for an easy way to install the development version of
+<code class="docutils literal notranslate"><span class="pre">porespy</span></code> and use the latest features, you can install it using:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install git+https://github.com/PMEAL/porespy.git@dev
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This approach is not recommended if you are a porespy contributor or
+want to frequently get new updates as they roll in. If you insist on
+using this approach, to get the latest version at any point, you
+need to first uninstall your porespy and then rerun the command above.</p>
+</div>
+</div>
+<div class="section" id="the-hard-but-correct-way">
+<h3>The hard (but correct) way<a class="headerlink" href="#the-hard-but-correct-way" title="Permalink to this headline">¶</a></h3>
+<p>If you are a porespy contributor or want to easily get the new updates as
+they roll in, you need to properly clone our repo and install it locally.
+It’s not as difficult as it sounds, just follow these steps:</p>
 <p>Open up the terminal/cmd and <code class="docutils literal notranslate"><span class="pre">cd</span></code> to the directory you want to clone <code class="docutils literal notranslate"><span class="pre">porespy</span></code>.</p>
 <p>Clone the repo somewhere in your disk using:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git clone https://github.com/PMEAL/porespy
@@ -267,20 +299,21 @@ to the root folder of <code class="docutils literal notranslate"><span class="pr
 the <code class="docutils literal notranslate"><span class="pre">porespy</span></code> that you’ve previously installed using <code class="docutils literal notranslate"><span class="pre">pip</span></code> or <code class="docutils literal notranslate"><span class="pre">conda</span></code>.</p>
 </div>
 </div>
+</div>
 <div class="section" id="where-s-my-conda-prompt">
 <h2>Where’s my <code class="docutils literal notranslate"><span class="pre">conda</span></code> prompt?<a class="headerlink" href="#where-s-my-conda-prompt" title="Permalink to this headline">¶</a></h2>
 <p>All the commands in this page need to be typed in the <code class="docutils literal notranslate"><span class="pre">conda</span></code> prompt.</p>
 <div class="tabbed-set docutils">
-<input checked="checked" id="39977dd2-ab31-46fb-9698-a571e2a3ab27" name="973b1708-8ed0-4b2d-8a5c-d358b11c0a96" type="radio">
-</input><label class="tabbed-label" for="39977dd2-ab31-46fb-9698-a571e2a3ab27">
+<input checked="checked" id="0ceac49a-73b5-48ec-84ff-61539a906893" name="8be88fa9-6a8e-436a-84d9-15265e7e058b" type="radio">
+</input><label class="tabbed-label" for="0ceac49a-73b5-48ec-84ff-61539a906893">
 Windows</label><div class="tabbed-content docutils">
 <p>On Windows you should have a shortcut to the “Anaconda prompt” in the
 Anaconda program group in the start menu. This will open a Windows
 command console with access to the Python features added by <em>conda</em>,
 such as installing things via <code class="docutils literal notranslate"><span class="pre">conda</span></code>.</p>
 </div>
-<input id="cf9babfb-c48d-4001-8df6-30adf8f15f67" name="973b1708-8ed0-4b2d-8a5c-d358b11c0a96" type="radio">
-</input><label class="tabbed-label" for="cf9babfb-c48d-4001-8df6-30adf8f15f67">
+<input id="45dcc7c1-81cc-4105-b01d-63b7a4db10c4" name="8be88fa9-6a8e-436a-84d9-15265e7e058b" type="radio">
+</input><label class="tabbed-label" for="45dcc7c1-81cc-4105-b01d-63b7a4db10c4">
 Mac and Linux</label><div class="tabbed-content docutils">
 <p>On Mac or Linux, you need to open a normal terminal window, then type
 <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">activate</span> <span class="pre">env</span></code> where you replace <code class="docutils literal notranslate"><span class="pre">env</span></code> with the name of
