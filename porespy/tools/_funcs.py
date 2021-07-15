@@ -1,6 +1,7 @@
 import scipy as sp
 import numpy as np
 import scipy.ndimage as spim
+from numba import njit
 from scipy.stats import rankdata
 from edt import edt
 from loguru import logger
@@ -704,6 +705,69 @@ def make_contiguous(im, mode='keep_zeros'):
 
     else:
         raise Exception("Unrecognized mode:" + mode)
+
+
+@njit()
+def _sequence(array, count):
+    r"""
+    Internal function of resequnce_labels method. This function resquence
+    array elements in an ascending order using numba technique which is
+    many folds faster than make contigious function.
+
+    Parameters
+    ----------
+    array: ND-array
+        1d array that needs resquencing.
+    count: array_like
+        1d array of zeros having same size as array.
+
+    Returns
+    -------
+    array: 1d-array
+        The input array with elements resequenced in ascending order
+
+    Notes
+    -----
+    The output of this function is not same as make_contigous or
+    relabel_sequential function of scikit-image. This function resequence
+    and randomize the regions while other methods only do resequencing and
+    output sorted array.
+
+    """
+    a = 1
+    i = 0
+    while i < (len(array)):
+        data = array[i]
+        if data != 0:
+            if count[data] == 0:
+                count[data] = a
+                a += 1
+        array[i] = count[data]
+        i += 1
+
+
+def resequence_labels(array):
+    r"""
+    Resequence the lablels to make them contigious.
+
+    Parameters
+    ----------
+    array: ND-array
+        Array that requires resequencing.
+
+    Returns
+    -------
+    array : ND-array
+        Resequenced array with same shape as input array.
+
+    """
+    a_shape = array.shape
+    array = array.ravel()
+    max_num = np.amax(array) + 1
+    count = np.zeros(max_num, dtype=array.dtype)
+    _sequence(array, count)
+
+    return array.reshape(a_shape)
 
 
 def get_border(shape, thickness=1, mode='edges', return_indices=False):

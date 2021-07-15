@@ -39,6 +39,7 @@ ways do NOT return a modified version of the original image.
    tools.ps_round
    tools.randomize_colors
    tools.recombine
+   tools.resequence_labels
    tools.subdivide
    tools.unpad
 
@@ -69,6 +70,7 @@ __all__ = [
     "ps_round",
     "randomize_colors",
     "recombine",
+    "resequence_labels",
     "subdivide",
     "unpad",
     "sanitize_filename",
@@ -95,6 +97,7 @@ from ._funcs import norm_to_uniform
 from ._funcs import overlay
 from ._funcs import randomize_colors
 from ._funcs import recombine
+from ._funcs import resequence_labels
 from ._funcs import ps_ball
 from ._funcs import ps_disk
 from ._funcs import ps_rect

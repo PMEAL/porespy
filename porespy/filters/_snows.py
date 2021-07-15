@@ -10,7 +10,7 @@ from skimage.segmentation import watershed
 from skimage.morphology import ball, disk, square, cube
 from porespy.tools import _check_for_singleton_axes
 from porespy.tools import extend_slice
-from porespy.filters import chunked_func
+from porespy.filters import chunked_func, resequence_labels
 from porespy import settings
 from loguru import logger
 
@@ -737,7 +737,7 @@ def _watershed_stitching(im, chunk_shape):
             im = _replace_labels(array=im, keys=keys, values=values)
             im = im.swapaxes(axis, 0)
     im = _trim_internal_slice(im=im, chunk_shape=chunk_shape)
-    im = _resequence_labels(array=im)
+    im = resequence_labels(array=im)
 
     return im
 
@@ -835,88 +835,6 @@ def _replace_labels(array, keys, values):
     values = np.concatenate(values, axis=0)
     ind_sort = np.argsort(keys)
     _replace(array, keys, values, ind_sort)
-
-    return array.reshape(a_shape)
-
-
-@njit()
-def _sequence(array, count):
-    r"""
-    Internal function of resequnce_labels method. This function resquence
-    array elements in an ascending order using numba technique which is
-    many folds faster than make contigious funcition.
-
-    Parameters
-    ----------
-    array: ND-array
-        1d array that needs resquencing.
-    count: array_like
-        1d array of zeros having same size as array.
-
-    Returns
-    -------
-    array: 1d-array
-        The input array with elements resequenced in ascending order
-
-    Notes
-    -----
-    The output of this function is not same as make_contigous or
-    relabel_sequential function of scikit-image. This function resequence
-    and randomize the regions while other methods only do resequencing and
-    output sorted array.
-
-    """
-    a = 1
-    i = 0
-    while i < (len(array)):
-        data = array[i]
-        if data != 0:
-            if count[data] == 0:
-                count[data] = a
-                a += 1
-        array[i] = count[data]
-        i += 1
-
-
-@njit(parallel=True)
-def _amax(array):
-    r"""
-    Find largest element in an array using fast parallel numba technique.
-
-    Parameter:
-    ----------
-    array: ND-array
-        Array in which largest elements needs to be calcuted.
-
-    Returns
-    -------
-    scalar: float or int
-        The largest element value in the input array.
-
-    """
-    return np.max(array)
-
-
-def _resequence_labels(array):
-    r"""
-    Resequence the lablels to make them contigious.
-
-    Parameters
-    ----------
-    array: ND-array
-        Array that requires resequencing.
-
-    Returns
-    -------
-    array : ND-array
-        Resequenced array with same shape as input array.
-
-    """
-    a_shape = array.shape
-    array = array.ravel()
-    max_num = _amax(array) + 1
-    count = np.zeros(max_num, dtype=np.uint32)
-    _sequence(array, count)
 
     return array.reshape(a_shape)
 
