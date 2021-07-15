@@ -183,6 +183,8 @@
           <span class="n">boundary_width</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
           <span class="n">accuracy</span><span class="o">=</span><span class="s1">&#39;standard&#39;</span><span class="p">,</span>
           <span class="n">voxel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+          <span class="n">sigma</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span>
+          <span class="n">r_max</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
           <span class="n">parallelization</span><span class="o">=</span><span class="p">{},):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Applies the SNOW algorithm to each phase indicated in ``phases``.</span>
@@ -234,6 +236,14 @@
 <span class="sd">    voxel_size : scalar (default = 1)</span>
 <span class="sd">        The resolution of the image, expressed as the length of one side</span>
 <span class="sd">        of a voxel, so the volume of a voxel would be **voxel_size**-cubed.</span>
+<span class="sd">    r_max : int</span>
+<span class="sd">        The radius of the spherical structuring element to use in the</span>
+<span class="sd">        Maximum filter stage that is used to find peaks. The default is 4.</span>
+<span class="sd">    sigma : float</span>
+<span class="sd">        The standard deviation of the Gaussian filter used in step 1. The</span>
+<span class="sd">        default is 0.4.  If 0 is given then the filter is not applied,</span>
+<span class="sd">        which is useful if a distance transform is supplied as the ``im``</span>
+<span class="sd">        argument that has already been processed.</span>
 <span class="sd">    parallelization : dict</span>
 <span class="sd">        The arguments for controlling the parallization of the watershed</span>
 <span class="sd">        function are rolled into this dictionary, otherwise the function</span>
@@ -274,9 +284,9 @@
         <span class="n">phase</span> <span class="o">=</span> <span class="n">phases</span> <span class="o">==</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">parallelization</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">snow</span> <span class="o">=</span> <span class="n">snow_partitioning_parallel</span><span class="p">(</span>
-                <span class="n">im</span><span class="o">=</span><span class="n">phase</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">r_max</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="o">**</span><span class="n">parallelization</span><span class="p">)</span>
+                <span class="n">im</span><span class="o">=</span><span class="n">phase</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">,</span> <span class="n">r_max</span><span class="o">=</span><span class="n">r_max</span><span class="p">,</span> <span class="o">**</span><span class="n">parallelization</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">snow</span> <span class="o">=</span> <span class="n">snow_partitioning</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">phase</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">r_max</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+            <span class="n">snow</span> <span class="o">=</span> <span class="n">snow_partitioning</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">phase</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">,</span> <span class="n">r_max</span><span class="o">=</span><span class="n">r_max</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">regions</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">regions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">snow</span><span class="o">.</span><span class="n">regions</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
         <span class="c1"># Note: Using snow.regions &gt; 0 here instead of phase is needed to</span>
