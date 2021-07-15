@@ -4,7 +4,7 @@ from skimage.morphology import disk, ball
 from edt import edt
 from porespy.tools import extend_slice
 from porespy import settings
-from porespy.tools import get_tqdm, make_contiguous
+from porespy.tools import get_tqdm, resequence_labels
 from porespy.metrics import region_surface_areas, region_interface_areas
 from porespy.metrics import region_volumes, throat_perimeter
 from loguru import logger
@@ -97,7 +97,7 @@ def regions_to_network(regions, phases=None, voxel_size=1, accuracy='standard'):
     """
     logger.trace('Extracting pore/throat information')
 
-    im = make_contiguous(regions)
+    im = resequence_labels(regions)
     struc_elem = disk if im.ndim == 2 else ball
     voxel_size = float(voxel_size)
     if phases is None:

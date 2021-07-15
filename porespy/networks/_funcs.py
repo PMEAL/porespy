@@ -3,7 +3,7 @@ import openpnm as op
 import scipy.ndimage as spim
 from skimage.segmentation import find_boundaries
 from skimage.morphology import ball, cube, disk, square
-from porespy.tools import make_contiguous
+from porespy.tools import resequence_labels
 from porespy.tools import overlay
 from porespy.tools import insert_cylinder
 from porespy.generators import borders
@@ -99,7 +99,7 @@ def add_boundary_regions(regions, pad_width=3):
     # Trim image down to user specified size
     s = tuple([slice(t-ax[0], -(t-ax[1]) or None) for ax in faces])
     new_regions = new_regions[s]
-    new_regions = make_contiguous(new_regions)
+    new_regions = resequence_labels(new_regions)
     return new_regions
 
 
