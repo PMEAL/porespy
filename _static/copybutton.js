@@ -176,7 +176,7 @@ function formatCopyText(textContent, copybuttonPromptText, isRegexp = false, onl
 
 var copyTargetText = (trigger) => {
   var target = document.querySelector(trigger.attributes['data-clipboard-target'].value);
-  return formatCopyText(target.innerText, '', false, true, true, true, '', '')
+  return formatCopyText(target.innerText, '>>> |\\.\\.\\. |\\$ |In \\[\\d*\\]: | {2,5}\\.\\.\\.: | {5,8}: ', true, true, true, true, '', '')
 }
 
   // Initialize with a callback so we can modify the text before copy
