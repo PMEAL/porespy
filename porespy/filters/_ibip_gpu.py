@@ -2,6 +2,8 @@ import numpy as np
 import cupy as cp
 from cupyx.scipy import ndimage as cndi
 from loguru import logger
+from porespy.tools import get_tqdm
+tqdm = get_tqdm()
 
 
 def ibip_gpu(im_g, dt_g, inlets_g=None, max_iters=10000):
@@ -42,7 +44,7 @@ def ibip_gpu(im_g, dt_g, inlets_g=None, max_iters=10000):
         strel_g = ball_g
     else:
         strel_g = disk_g
-    for step in range(1, max_iters):
+    for step in tqdm(range(1, max_iters)):
         temp_g = cndi.binary_dilation(input=bd_g, structure=strel_g(1, smooth=False))
         edge_g = temp_g*(dt_g > 0)
         if ~cp.any(edge_g):
@@ -83,7 +85,7 @@ def ibip_gpu(im_g, dt_g, inlets_g=None, max_iters=10000):
     temp_g = sizes_g == 0
     sizes_g[~im_g] = 0
     sizes_g[temp_g] = -1
-    inv_result_g = (inv_seq_g, sizes_g)
+    inv_result_g = (inv_seq_g, sizes_g, step)
     return inv_result_g
 
 
