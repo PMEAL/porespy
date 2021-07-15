@@ -6,6 +6,7 @@ from edt import edt
 from loguru import logger
 from collections import namedtuple
 from skimage.morphology import ball, disk
+from ._unpad import unpad
 try:
     from skimage.measure import marching_cubes
 except ImportError:
@@ -904,7 +905,6 @@ def mesh_region(region: bool, strel=None):
     ----------
     im : ND-array
         A boolean image with ``True`` values indicating the region of interest
-
     strel : ND-array
         The structuring element to use when blurring the region.  The blur is
         perfomed using a simple convolution filter.  The point is to create a
@@ -1170,7 +1170,7 @@ def insert_sphere(im, c, r, v=True, overwrite=True):
 
 def insert_cylinder(im, xyz0, xyz1, r):
     r"""
-    Inserts a cylinder of given radius onto a given image
+    Inserts a cylinder of given radius onto an image
 
     Parameters
     ----------
@@ -1204,6 +1204,14 @@ def insert_cylinder(im, xyz0, xyz1, r):
     L = np.absolute(xyz0 - xyz1).max() + 1
     xyz_line = [np.linspace(xyz0[i], xyz1[i], L).astype(int) for i in range(3)]
 
+    for i, c in enumerate(xyz_line):
+        if c.min() < 0:
+            raise Exception('Given endpoint coordinates lie outside image')
+        if c.max() > im.shape[i]:
+            raise Exception('Given endpoint coordinates lie outside image')
+        c += r
+
+    im = np.pad(im, r)
     xyz_min = np.amin(xyz_line, axis=1) - r
     xyz_max = np.amax(xyz_line, axis=1) + r
     shape_template = xyz_max - xyz_min + 1
@@ -1225,6 +1233,8 @@ def insert_cylinder(im, xyz0, xyz1, r):
     im[xyz_min[0]: xyz_max[0] + 1,
        xyz_min[1]: xyz_max[1] + 1,
        xyz_min[2]: xyz_max[2] + 1] += template
+
+    im = unpad(im, r)
 
     return im
 
