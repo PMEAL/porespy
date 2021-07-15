@@ -12,6 +12,8 @@ def snow2(phases,
           boundary_width=3,
           accuracy='standard',
           voxel_size=1,
+          sigma=0.4,
+          r_max=4,
           parallelization={},):
     r"""
     Applies the SNOW algorithm to each phase indicated in ``phases``.
@@ -63,6 +65,14 @@ def snow2(phases,
     voxel_size : scalar (default = 1)
         The resolution of the image, expressed as the length of one side
         of a voxel, so the volume of a voxel would be **voxel_size**-cubed.
+    r_max : int
+        The radius of the spherical structuring element to use in the
+        Maximum filter stage that is used to find peaks. The default is 4.
+    sigma : float
+        The standard deviation of the Gaussian filter used in step 1. The
+        default is 0.4.  If 0 is given then the filter is not applied,
+        which is useful if a distance transform is supplied as the ``im``
+        argument that has already been processed.
     parallelization : dict
         The arguments for controlling the parallization of the watershed
         function are rolled into this dictionary, otherwise the function
@@ -103,9 +113,9 @@ def snow2(phases,
         phase = phases == (i + 1)
         if parallelization is not None:
             snow = snow_partitioning_parallel(
-                im=phase, sigma=0.4, r_max=4, **parallelization)
+                im=phase, sigma=sigma, r_max=r_max, **parallelization)
         else:
-            snow = snow_partitioning(im=phase, sigma=0.4, r_max=4)
+            snow = snow_partitioning(im=phase, sigma=sigma, r_max=r_max)
         if regions is None:
             regions = np.zeros_like(snow.regions, dtype=int)
         # Note: Using snow.regions > 0 here instead of phase is needed to
