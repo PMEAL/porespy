@@ -34,16 +34,16 @@ def ibip_gpu(im_g, dt_g, inlets_g=None, max_iters=10000):
 
     """
     if inlets_g is None:
-        inlets_g = get_border_g(shape=im_g.shape)
+        inlets_g = get_border_gpu(shape=im_g.shape)
     bd_g = cp.copy(inlets_g > 0)
     dt_g = dt_g.astype(int)
     # alternative to _ibip
     inv_g = -1*((~im_g).astype(int))
     sizes_g = -1*((~im_g).astype(int))
     if im_g.ndim == 3:
-        strel_g = ball_g
+        strel_g = ball_gpu
     else:
-        strel_g = disk_g
+        strel_g = disk_gpu
     for step in tqdm(range(1, max_iters)):
         temp_g = cndi.binary_dilation(input=bd_g, structure=strel_g(1, smooth=False))
         edge_g = temp_g*(dt_g > 0)
@@ -81,7 +81,7 @@ def ibip_gpu(im_g, dt_g, inlets_g=None, max_iters=10000):
     temp_g = inv_g == 0
     inv_g[~im_g] = 0
     inv_g[temp_g] = -1
-    inv_seq_g = make_contiguous_g(im=inv_g)
+    inv_seq_g = make_contiguous_gpu(im=inv_g)
     temp_g = sizes_g == 0
     sizes_g[~im_g] = 0
     sizes_g[temp_g] = -1
@@ -89,7 +89,7 @@ def ibip_gpu(im_g, dt_g, inlets_g=None, max_iters=10000):
     return inv_result_g
 
 
-def get_border_g(shape):
+def get_border_gpu(shape):
     """
     Creates an array of specified size with faces labelled as
     True.
@@ -116,7 +116,7 @@ def get_border_g(shape):
     return border
 
 
-def rankdata_g(im_arr):
+def rankdata_gpu(im_arr):
     """
     GPU alternative to scipy's rankdata using 'dense' method.
     Assign ranks to data, dealing with ties appropriately.
@@ -142,7 +142,7 @@ def rankdata_g(im_arr):
     return dense
 
 
-def make_contiguous_g(im):
+def make_contiguous_gpu(im):
     """
     Take an image with arbitrary greyscale values and adjust them to ensure
     all values fall in a contiguous range starting at 0.
@@ -162,16 +162,16 @@ def make_contiguous_g(im):
     shape = im.shape
     im_flat = im.flatten()
     mask_neg = im_flat < 0
-    im_neg = -rankdata_g(-im_flat[mask_neg])
+    im_neg = -rankdata_gpu(-im_flat[mask_neg])
     mask_pos = im_flat > 0
-    im_pos = rankdata_g(im_flat[mask_pos])
+    im_pos = rankdata_gpu(im_flat[mask_pos])
     im_flat[mask_pos] = im_pos
     im_flat[mask_neg] = im_neg
     im_new = np.reshape(im_flat, shape)
     return im_new
 
 
-def ball_g(radius, dtype=cp.uint8, smooth=True):
+def ball_gpu(radius, dtype=cp.uint8, smooth=True):
     """
     Generates a ball-shaped structuring element.
 
@@ -202,7 +202,7 @@ def ball_g(radius, dtype=cp.uint8, smooth=True):
     return s <= radius * radius
 
 
-def disk_g(radius, dtype=cp.uint8, smooth=True):
+def disk_gpu(radius, dtype=cp.uint8, smooth=True):
     """
     Generates a flat, disk-shaped structuring element.
 
