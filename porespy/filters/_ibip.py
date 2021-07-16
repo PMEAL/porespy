@@ -12,7 +12,7 @@ from porespy import settings
 tqdm = get_tqdm()
 
 
-def ibip(im, inlets=None, dt=None, inv=None, mode='morph', max_iters=10000):
+def ibip(im, inlets=None, dt=None, max_iters=10000):
     r"""
     Performs invasion percolation on given image using iterative image dilation
 
