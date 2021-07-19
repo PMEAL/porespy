@@ -1,5 +1,6 @@
 import os
 import sys
+import numpy as np
 import importlib
 from dataclasses import dataclass
 from loguru import logger
@@ -246,3 +247,39 @@ def sanitize_filename(filename, ext, exclude_ext=False):
         name = filename
     filename_formatted = f"{name}" if exclude_ext else f"{name}.{ext}"
     return filename_formatted
+
+
+class Results:
+    r"""
+    A minimal class for use when returning multiple values from a function
+
+    This class supports dict-like assignment and retrieval
+    (``obj['im'] = im``), namedtuple-like attribute look-ups (``obj.im``),
+    and generic class-like object assignment (``obj.im = im``)
+
+    """
+    _value = "Description"
+    _key = "Item"
+
+    def __iter__(self):
+        for item in self.__dict__.values():
+            yield item
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+    def __setitem__(self, key, value):
+        self.__dict__[key] = value
+
+    def __str__(self):
+        header = "―" * 78
+        lines = [header, "{0:<25s} {1}".format(self._key, self._value), header]
+        for item in list(self.__dict__.keys()):
+            if item.startswith('_'):
+                continue
+            if isinstance(self[item], np.ndarray):
+                lines.append("{0:<25s} Image of shape: {1}".format(item, np.shape(self[item])))
+            else:
+                lines.append("{0:<25s} {1}".format(item, self[item]))
+        lines.append(header)
+        return "\n".join(lines)
