@@ -5,11 +5,11 @@ from numba import njit, prange
 from edt import edt
 import scipy.ndimage as spim
 import scipy.spatial as sptl
-from collections import namedtuple
 from skimage.segmentation import watershed
 from skimage.morphology import ball, disk, square, cube
 from porespy.tools import _check_for_singleton_axes
 from porespy.tools import extend_slice
+from openpnm.tools import Results
 from porespy.filters import chunked_func
 from porespy import settings
 from loguru import logger
@@ -94,7 +94,7 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4):
     # Note that the mask argument results in some void voxels left unlabeled
     regions = watershed(image=-dt, markers=peaks)
     regions = regions * (im > 0)
-    tup = namedtuple("results", field_names=["im", "dt", "peaks", "regions"])
+    tup = Results()
     tup.im = im
     tup.dt = dt
     tup.peaks = peaks
@@ -181,9 +181,7 @@ def snow_partitioning_n(im, r_max=4, sigma=0.4):
         peaks = peaks + phase_snow.peaks + (phase_snow.peaks > 0)*num[i]
         num.append(np.amax(combined_region))
 
-    tup = namedtuple("results",
-                     field_names=["im", "dt", "phase_max_label",
-                                  "regions", "peaks"])
+    tup = Results()
     tup.im = im
     tup.dt = combined_dt
     tup.phase_max_label = num[1:]
@@ -543,11 +541,10 @@ def snow_partitioning_parallel(im,
     # Stitching watershed chunks
     logger.trace('Stitching watershed chunks')
     regions = _watershed_stitching(im=regions, chunk_shape=chunk_shape)
-    tup = namedtuple("results", field_names=["im", "dt", "regions"])
+    tup = Results()
     tup.im = im
     tup.dt = dt
     tup.regions = regions
-
     return tup
 
 
