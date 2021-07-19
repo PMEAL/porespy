@@ -218,9 +218,6 @@ def disk_gpu(radius, smooth=True):
 
 
 if __name__ == '__main__':
-    import porespy as ps
-    from edt import edt
     im = ps.generators.blobs(shape=[200, 200])
-    dt = edt(im)
-    a = ps.filters.ibip_gpu(im=im, dt=dt)
+    a = ps.filters.ibip_gpu(im=im)
     
