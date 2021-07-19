@@ -6,7 +6,7 @@ from porespy.tools import extend_slice
 from porespy import settings
 from porespy.tools import get_tqdm, make_contiguous
 from porespy.metrics import region_surface_areas, region_interface_areas
-from porespy.metrics import region_volumes, throat_perimeter
+from porespy.metrics import region_volumes
 from loguru import logger
 tqdm = get_tqdm()
 
