@@ -99,7 +99,9 @@ def ibip_gpu(im, dt=None, inlets=None, max_iters=10000):
     temp_g = sizes_g == 0
     sizes_g[~im_g] = 0
     sizes_g[temp_g] = -1
-    return inv_seq_g, sizes_g
+    inv_sequence = cp.asnumpy(inv_seq_g)
+    inv_size = cp.asnumpy(sizes_g)
+    return inv_sequence, inv_size
 
 
 def rankdata_gpu(im_arr):
@@ -166,8 +168,6 @@ def ball_gpu(radius, smooth=True):
     ----------
     radius : int
         The radius of the ball-shaped structuring element.
-    dtype : TYPE, optional
-        The data type of the structuring element.
     smooth : bool, optional
         Indicates whether the balls should include the nibs (``False``) on
         the surface or not (``True``).  The default is ``True``.
@@ -198,8 +198,6 @@ def disk_gpu(radius, smooth=True):
     ----------
     radius : int
         The radius of the disk-shaped structuring element.
-    dtype : TYPE, optional
-        The data type of the structuring element.
     smooth : bool, optional
         Indicates whether the disks should include the nibs (``False``) on
         the surface or not (``True``).  The default is ``True``.
