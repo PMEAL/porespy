@@ -2,12 +2,9 @@ import numpy as np
 from edt import edt
 from porespy.tools import get_tqdm
 import scipy.ndimage as spim
-from skimage.morphology import ball, disk
 from porespy.tools import get_border
 from porespy.tools import make_contiguous
-from porespy.filters import fftmorphology
 import numba
-from loguru import logger
 from porespy import settings
 tqdm = get_tqdm()
 
@@ -56,7 +53,7 @@ def ibip(im, inlets=None, dt=None, max_iters=10000):
     inv = -1*(~im)
     sizes = -1*(~im)
     scratch = np.copy(bd)
-    for step in tqdm(range(1, max_iters), **settings):
+    for step in tqdm(range(1, max_iters), **settings.tqdm):
         pt = _where(bd)
         scratch = np.copy(bd)
         temp = _insert_disks_at_points(im=scratch, coords=pt,
