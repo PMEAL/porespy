@@ -1,7 +1,7 @@
-import collections
 import numpy as np
 import openpnm as op
 from porespy.filters import trim_nonpercolating_paths
+from openpnm.tools import Results
 from loguru import logger
 from porespy.generators import faces
 
@@ -77,13 +77,7 @@ def tortuosity(im, axis):
     N_A = A / (L-1) * delta_C  # -1 because BCs are put inside domain, see #495
     Deff = rate_in / N_A
     tau = eps / Deff
-    result = collections.namedtuple(
-        'tortuosity_result',
-        ['tortuosity',
-         'effective_porosity',
-         'original_porosity',
-         'formation_factor',
-         'concentration'])
+    result = Results()
     result.tortuosity = tau
     result.formation_factor = 1 / Deff
     result.original_porosity = eps0
