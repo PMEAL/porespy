@@ -6,9 +6,9 @@ from loguru import logger
 from porespy.generators import faces
 
 
-def tortuosity(im, axis, return_im=False, **kwargs):
+def tortuosity(im, axis):
     r"""
-    Calculates tortuosity of given image in specified direction
+    Calculates tortuosity of given image in the specified direction
 
     Parameters
     ----------
@@ -16,24 +16,22 @@ def tortuosity(im, axis, return_im=False, **kwargs):
         The binary image to analyze with ``True`` indicating phase of interest
     axis : int
         The axis along which to apply boundary conditions
-    return_im : boolean
-        If ``True`` then the resulting tuple contains a copy of the input
-        image with the concentration profile.
 
     Returns
     -------
-    results : tuple
-        A named-tuple containing:
-          - ``tortuosity``: calculated using the ``effective_porosity``
-            as :math:`\tau = \frac{D_{AB}}{D_{eff}} \cdot \varepsilon`.
-          - ``effective_porosity``: of the image after applying
-            ``trim_nonpercolating_paths``. This removes disconnected
-            voxels which cause singular matrices.
-          - ``original_porosity``: of the image as given
-          - ``formation_factor``: found as :math:`D_{AB}/D_{eff}`.
-          - ``image``: containing the concentration values from the
-            simulation. This is only returned if ``return_im`` is
-            ``True``.
+    results : named-tuple
+        The following values are computed and returned:
+
+        - ``tortuosity``: calculated using the ``effective_porosity``
+          as :math:`\tau = \frac{D_{AB}}{D_{eff}} \cdot \varepsilon`.
+        - ``effective_porosity``: of the image after applying
+          ``trim_nonpercolating_paths``. This removes disconnected
+          voxels which cause singular matrices.
+        - ``original_porosity``: of the image as given
+        - ``formation_factor``: found as :math:`D_{AB}/D_{eff}`.
+        - ``concentration``: containing the concentration values from the
+          simulation. This is only returned if ``return_im`` is
+          ``True``.
 
     """
     if axis > (im.ndim - 1):
@@ -48,7 +46,7 @@ def tortuosity(im, axis, return_im=False, **kwargs):
     # porosity is changed because of trimmimg floating pores
     eps = im.sum() / im.size
     if eps < eps0:  # pragma: no cover
-        logger.warning(f'True porosity is {eps:.2f}, filled {eps0 - eps:.2f}'
+        logger.warning(f'True porosity is {eps:.2f}, filled {eps0 - eps:.5f}'
                        ' volume fraction of the image for it to percolate.')
     # cubic network generation
     net = op.network.CubicTemplate(template=im, spacing=1)
@@ -65,19 +63,9 @@ def tortuosity(im, axis, return_im=False, **kwargs):
     C_out = 0.0
     fd.set_value_BC(pores=inlets, values=C_in)
     fd.set_value_BC(pores=outlets, values=C_out)
-    # Use specified solver if given
-    if 'solver_family' in kwargs.keys():
-        fd.settings.update(kwargs)
-        fd.run()
-    else:
-        try:
-            fd.run()
-        # TODO: change Exception to ModuleNotFoundError (fix OpenPNM first)
-        except Exception:  # pragma: no cover
-            logger.warning('pypardiso not found, using cg from scipy')
-            fd.settings['solver_family'] = 'scipy'
-            fd.settings['solver_type'] = 'cg'
-            fd.run()
+    fd.settings['solver_family'] = 'scipy'
+    fd.settings['solver_type'] = 'cg'
+    fd.run()
     # Calculating molar flow rate, effective diffusivity and tortuosity
     rate_out = fd.rate(pores=outlets)[0]
     rate_in = fd.rate(pores=inlets)[0]
@@ -95,16 +83,13 @@ def tortuosity(im, axis, return_im=False, **kwargs):
          'effective_porosity',
          'original_porosity',
          'formation_factor',
-         'image'])
+         'concentration'])
     result.tortuosity = tau
     result.formation_factor = 1 / Deff
     result.original_porosity = eps0
     result.effective_porosity = eps
-    if return_im:  # pragma: no cover
-        conc = np.zeros([im.size, ], dtype=float)
-        conc[net['pore.template_indices']] = fd['pore.concentration']
-        conc = np.reshape(conc, newshape=im.shape)
-        result.image = conc
-    else:
-        result.image = None
+    conc = np.zeros([im.size, ], dtype=float)
+    conc[net['pore.template_indices']] = fd['pore.concentration']
+    conc = np.reshape(conc, newshape=im.shape)
+    result.concentration = conc
     return result
