@@ -1,8 +1,10 @@
 import numba
 import numpy as np
+import scipy.ndimage as spim
+from edt import edt
 from skimage.morphology import disk, ball
 from porespy import settings
-from porespy.tools import get_tqdm
+from porespy.tools import get_tqdm, ps_round
 from porespy.filters import trim_disconnected_blobs, fftmorphology
 from loguru import logger
 tqdm = get_tqdm()
@@ -164,4 +166,66 @@ def pseudo_gravity_packing(im, r, clearance=0, axis=0, max_iter=1000):
         x_min += x.min()
     logger.debug(f'A total of {n} spheres were added')
     im_temp = np.swapaxes(im_temp, 0, axis)
+    return im_temp
+
+
+def pseudo_electrostatic_packing(im, r, sites=None,
+                                 clearance=0,
+                                 protrusion=0,
+                                 max_iter=1000):
+    r"""
+    Iterativley inserts spheres as close to the given sites as possible.
+
+    Parameters
+    ----------
+    im : ndarray
+        Image with ``True`` values indicating the phase where spheres should be
+        inserted.
+    r : int
+        Radius of spheres to insert.
+    sites : ndarray (optional)
+        An image with ``True`` values indicating the electrostatic attraction points.
+        If this is not given then the peaks in the distance transform are used.
+    clearance : int (optional, default=0)
+        The amount of space to put between each sphere. Negative values are
+        acceptable to create overlaps, but abs(clearance) < r.
+    protrusion : int (optional, default=0)
+        The amount that spheres are allowed to protrude beyond the active phase.
+    max_iter : int (optional, default=1000)
+        The maximum number of spheres to insert.
+
+    Returns
+    -------
+    im : ndarray
+        An image with inserted spheres indicated by ``True``
+
+    """
+    im_temp = np.zeros_like(im, dtype=bool)
+    dt_im = edt(im)
+    if sites is None:
+        dt2 = spim.gaussian_filter(dt_im, sigma=0.5)
+        strel = ps_round(r, ndim=im.ndim, smooth=True)
+        sites = (spim.maximum_filter(dt2, footprint=strel) == dt2)*im
+    dt = edt(sites == 0).astype(int)
+    sites = (sites == 0)*(dt_im >= (r - protrusion))
+    dtmax = int(dt_im.max()*2)
+    dt[~sites] = dtmax
+    r = r + clearance
+    # Get initial options
+    options = np.where(dt == 1)
+    for _ in tqdm(range(max_iter), **settings.tqdm):
+        hits = dt[options] < dtmax
+        if hits.sum() == 0:
+            if dt.min() == dtmax:
+                break
+            options = np.where(dt == dt.min())
+            hits = dt[options] < dtmax
+        if hits.size == 0:
+            break
+        choice = np.where(hits)[0][0]
+        cen = np.vstack([options[i][choice] for i in range(im.ndim)])
+        im_temp = insert_disks_at_points(im_temp, coords=cen,
+                                         radii=np.array([r-clearance]), v=True)
+        dt = insert_disks_at_points(dt, coords=cen,
+                                    radii=np.array([2*r-clearance]), v=int(dtmax))
     return im_temp
