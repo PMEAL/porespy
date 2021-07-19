@@ -435,46 +435,56 @@ def trim_extrema(im, h, mode="maxima"):
     return result
 
 
-def flood(im, labels=None, mode="max", func=None):
+def flood(im, labels, mode="max", func=None):
     r"""
     Floods/fills each region in an image with a single value based on the
     specific values in that region.
 
-    The ``mode`` argument is used to determine how the value is calculated.
+    This function calls the various functions in ``scipy.ndimage.measurements``
+    but instead of returning a list of values, it fills each region with its
+    value.  This is useful for visualization and statistics.
 
     Parameters
     ----------
     im : array_like
-        An image with isolated regions with numerical values in each voxel,
+        An image with the numerical values of interest in each voxel,
         and 0's elsewhere.
     labels : array_like
-        An array the same shape as ``im`` with each region labeled.  If
-        ``None`` is supplied (default) then ``scipy.ndimage.label`` is
-        used with its default arguments.
+        An array the same shape as ``im`` with each region labeled.
     mode : string
-        Specifies how to determine which value should be used to flood
-        each region. Options are:
+        Specifies how to determine the value to flood each region. Options
+        taken from the ``scipy.ndimage.measurements`` functions:
 
             'maximum'
-                Floods each region with the local max in that region
+                Floods each region with the local max in that region. The
+                keyword ``max`` is also accepted.
             'minimum'
-                Floods each region the local minimum in that region
+                Floods each region the local minimum in that region. The
+                keyword ``min`` is also accepted.
             'median'
                 Floods each region the local median in that region
             'mean'
                 Floods each region the local mean in that region
             'size'
-                Floods each region with the size of that region
+                Floods each region with the size of that region.  This is
+                actually accomplished with ``scipy.ndimage.sum`` by converting
+                ``im`` to a boolean image (``im = im > 0``).
+            'standard_deviation'
+                Floods each region with the value of the standard deviation
+                of the voxels in ``im``.
+            'variance'
+                Floods each region with the value of the variance of the voxels
+                in ``im``.
 
     Returns
     -------
-    image : ND-array
+    flooded : ND-array
         A copy of ``im`` with new values placed in each forground voxel
         based on the ``mode``.
 
     See Also
     --------
-    prop_to_image
+    prop_to_image, flood_func, region_size
 
     Examples
     --------
@@ -484,25 +494,18 @@ def flood(im, labels=None, mode="max", func=None):
 
     """
     mask = im > 0
-    if labels is None:
-        labels, N = spim.label(mask)
-    else:
-        labels = np.copy(labels)
-        N = labels.max()
+    N = labels.max()
     mode = "sum" if mode == "size" else mode
     mode = "maximum" if mode == "max" else mode
     mode = "minimum" if mode == "min" else mode
-    if mode in ["mean", "median", "maximum", "minimum", "sum"]:
-        f = getattr(spim, mode)
-        vals = f(input=im, labels=labels, index=range(0, N + 1))
-        im_flooded = vals[labels]
-        im_flooded = im_flooded * mask
-    else:
-        raise Exception(mode + " is not a recognized mode")
-    return im_flooded
+    f = getattr(spim, mode)
+    vals = f(input=im, labels=labels, index=range(0, N + 1))
+    flooded = vals[labels]
+    flooded = flooded * mask
+    return flooded
 
 
-def flood_func(im, func, labels=None):
+def flood_func(im, labels, func):
     r"""
     Flood each isolated region in an image with a constant value calculated by
     the given function.
@@ -510,15 +513,16 @@ def flood_func(im, func, labels=None):
     Parameters
     ----------
     im : ND-array
-        The image containing distinct regions which should each be flooded
+        An image with the numerical values of interest in each voxel,
+        and 0's elsewhere.
+    labels : ND-image
+        An array containing labels identify each individual region to be
+        flooded. If not provided then ``scipy.ndimage.label`` is applied to
+        ``im > 0``.
     func : Numpy function handle
         The function to be applied to each region in the image.  Any Numpy
         function that returns a scalar value can be passed, such as ``amin``,
         ``amax``, ``sum``, ``mean``, ``median``, etc.
-    labels : ND-image, optional
-        An array containing labels identify each individual region to be
-        flooded. If not provided then ``scipy.ndimage.label`` is applied to
-        ``im > 0``.
 
     Returns
     -------
@@ -527,6 +531,19 @@ def flood_func(im, func, labels=None):
         with a constant value based on the given ``func`` and the values
         in ``im``.
 
+    See Also
+    --------
+    flood, region_size
+
+    Notes
+    -----
+    Many of the functions in ``scipy.ndimage`` can be applied to
+    individual regions using the ``index`` argument.  This function extend
+    that behavior to all numpy function, in the event you wanted to compute
+    the cosine of the values in each region for some reason. This function
+    also floods the original image instead of return a list of values for
+    each region.
+
     Examples
     --------
     `Click here
@@ -534,15 +551,13 @@ def flood_func(im, func, labels=None):
     to view online example.
 
     """
-    if labels is None:
-        labels, N = spim.label(im > 0)
     slices = spim.find_objects(labels)
-    new_im = np.zeros_like(im, dtype=float)
+    flooded = np.zeros_like(im, dtype=float)
     for i, s in enumerate(slices):
         sub_im = labels[s] == (i + 1)
         val = func(im[s][sub_im])
-        new_im[s] += sub_im*val
-    return new_im
+        flooded[s] += sub_im*val
+    return flooded
 
 
 def find_dt_artifacts(dt):
@@ -552,7 +567,7 @@ def find_dt_artifacts(dt):
 
     These points could *potentially* be erroneously high since their
     distance values do not reflect the possibility that solid may have
-    been present beyond the border of the image but lost by trimming.
+    been present beyond the border of the image but was lost by trimming.
 
     Parameters
     ----------

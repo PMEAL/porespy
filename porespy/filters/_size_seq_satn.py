@@ -48,7 +48,9 @@ def size_to_seq(size, im=None, bins=None):
 
 def size_to_satn(size, im=None, bins=None):
     r"""
-    Converts an image of invasion size values into saturations
+    Converts an image of invasion size values into saturations.
+
+    This is meant to accept the output of the ``porosimetry`` function.
 
     Parameters
     ----------
@@ -92,6 +94,8 @@ def size_to_satn(size, im=None, bins=None):
 def seq_to_satn(seq, im=None):
     r"""
     Converts an image of invasion sequence values to saturation values.
+
+    This is meant to accept the output of the ``ibip`` function.
 
     Parameters
     ----------
