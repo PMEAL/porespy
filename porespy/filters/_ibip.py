@@ -56,7 +56,7 @@ def ibip(im, inlets=None, dt=None, max_iters=10000):
     inv = -1*(~im)
     sizes = -1*(~im)
     scratch = np.copy(bd)
-    for step in tqdm(range(1, max_iters)):
+    for step in tqdm(range(1, max_iters), **settings):
         pt = _where(bd)
         scratch = np.copy(bd)
         temp = _insert_disks_at_points(im=scratch, coords=pt,
