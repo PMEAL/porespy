@@ -66,7 +66,7 @@ class VisualizationTest():
                                            lattice='tri')
         bd = np.zeros_like(im)
         bd[:, 0] = True
-        inv, size, step = ps.filters.ibip(im=im, inlets=bd)
+        inv, size = ps.filters.ibip(im=im, inlets=bd)
         satn = ps.filters.seq_to_satn(seq=inv, im=im)
         mov = ps.visualization.satn_to_movie(im, satn, cmap='viridis',
                                              c_under='grey', c_over='white',
