@@ -10,14 +10,6 @@
 Quantitative Image Analysis of Porous Materials
 ###############################################
 
-.. warning::
-
-    As of February 12th, 2021, we are actively working on version 2.0.
-    The ``dev`` branch will no longer be backwards compatible with
-    previous versions of PoreSpy. We expect this conversion to be
-    complete by winter's end.
-
-----
 
 What is PoreSpy? |stars|
 ########################
