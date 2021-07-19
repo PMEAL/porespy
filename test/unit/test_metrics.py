@@ -219,7 +219,7 @@ class MetricsTest():
         im = ps.generators.blobs(shape=[100, 100], porosity=0.7)
         sizes = ps.filters.porosimetry(im=im)
         pc1 = ps.metrics.pc_curve_from_mio(sizes=sizes)
-        seq, sizes, step = ps.filters.ibip(im=im)
+        seq, sizes = ps.filters.ibip(im=im)
         pc2 = ps.metrics.pc_curve_from_ibip(sizes=sizes, seq=seq)
         assert hasattr(pc1, 'pc')
         assert hasattr(pc1, 'snwp')
