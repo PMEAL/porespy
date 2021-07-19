@@ -215,14 +215,12 @@ def distance_transform_lin(im, axis=0, mode="both"):
 
 def find_disconnected_voxels(im, conn=None):
     r"""
-    This identifies all pore (or solid) voxels that are not connected to
-    the edge of the image.  This can be used to find blind pores, or
-    remove artifacts such as solid phase voxels that are floating in space.
+    Identifies all voxels that are not connected to the edge of the image.
 
     Parameters
     ----------
     im : ND-array
-        A Boolean image, with True values indicating the phase for which
+        A Boolean image, with ``True`` values indicating the phase for which
         disconnected voxels are sought.
     conn : int
         For 2D the options are 4 and 8 for square and diagonal neighbors,
@@ -236,11 +234,14 @@ def find_disconnected_voxels(im, conn=None):
         voxels of the phase of interest (i.e. True values in the original
         image) that are not connected to the outer edges.
 
+    See Also
+    --------
+    fill_blind_pores, trim_floating_solid
+
     Notes
     -----
-    image : ND-array
-        The returned array (e.g. ``holes``) be used to trim blind pores
-        from ``im`` using: ``im[holes] = False``
+    This function is just a convenient wrapper around the ``clear_border``
+    function of ``scikit-image``.
 
     Examples
     --------
@@ -281,7 +282,7 @@ def fill_blind_pores(im, conn=None):
 
     Returns
     -------
-    image : ND-array
+    im : ND-array
         A version of ``im`` but with all the disconnected pores removed.
     conn : int
         For 2D the options are 4 and 8 for square and diagonal neighbors,
@@ -1041,6 +1042,10 @@ def trim_disconnected_blobs(im, inlets, strel=None):
     image : ND-array
         An array of the same shape as ``im``, but with all foreground
         voxels not connected to the ``inlets`` removed.
+
+    See Also
+    --------
+    find_disconnected_voxels, find_nonpercolating_paths
 
     Examples
     --------
