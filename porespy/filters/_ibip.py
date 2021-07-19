@@ -52,29 +52,6 @@ def ibip(im, inlets=None, dt=None, max_iters=10000):
     if dt is None:  # Find dt if not given
         dt = edt(im)
     dt = dt.astype(int)  # Conert the dt to nearest integer
-    inv, sizes, iters = _ibip(im=im, bd=bd, dt=dt, max_iters=max_iters)
-    # Convert inv image so that uninvaded voxels are set to -1 and solid to 0
-    temp = inv == 0  # Uninvaded voxels are set to -1 after _ibip
-    inv[~im] = 0
-    inv[temp] = -1
-    inv = make_contiguous(im=inv, mode='symmetric')
-    # Deal with invasion sizes similarly
-    temp = sizes == 0
-    sizes[~im] = 0
-    sizes[temp] = -1
-    inv = (inv, sizes, iters)
-    return inv
-
-
-@numba.jit(nopython=True, parallel=False)
-def _where(arr):
-    inds = np.where(arr)
-    result = np.vstack(inds)
-    return result
-
-
-# @numba.jit(nopython=True, parallel=False)
-def _ibip(im, bd, dt, max_iters):
     # Initialize inv image with -1 in the solid, and 0's in the void
     inv = -1*(~im)
     sizes = -1*(~im)
@@ -99,7 +76,23 @@ def _ibip(im, bd, dt, max_iters):
         sizes = _insert_disks_at_points(im=sizes, coords=pt,
                                         r=r_max, v=r_max, smooth=True)
         dt, bd = _update_dt_and_bd(dt, bd, pt)
-    return inv, sizes, step
+    # Convert inv image so that uninvaded voxels are set to -1 and solid to 0
+    temp = inv == 0  # Uninvaded voxels are set to -1 after _ibip
+    inv[~im] = 0
+    inv[temp] = -1
+    inv = make_contiguous(im=inv, mode='symmetric')
+    # Deal with invasion sizes similarly
+    temp = sizes == 0
+    sizes[~im] = 0
+    sizes[temp] = -1
+    return inv, sizes
+
+
+@numba.jit(nopython=True, parallel=False)
+def _where(arr):
+    inds = np.where(arr)
+    result = np.vstack(inds)
+    return result
 
 
 @numba.jit(nopython=True)
@@ -301,13 +294,11 @@ def find_trapped_regions(seq, outlets=None, bins=25, return_mask=True):
         bins = bins[bins > 0]
     else:
         bins = np.linspace(seq.max(), 1, bins)
-    with tqdm(bins, **settings.tqdm) as pbar:
-        for i in bins:
-            pbar.update()
-            temp = seq > i
-            labels = spim.label(temp)[0]
-            keep = np.unique(labels[outlets])[1:]
-            trapped += temp*np.isin(labels, keep, invert=True)
+    for i in tqdm(bins, **settings.tqdm):
+        temp = seq > i
+        labels = spim.label(temp)[0]
+        keep = np.unique(labels[outlets])[1:]
+        trapped += temp*np.isin(labels, keep, invert=True)
     if return_mask:
         return trapped
     else:
