@@ -1,40 +1,54 @@
 import numpy as np
-import cupy as cp
-from cupyx.scipy import ndimage as cndi
 from loguru import logger
-from porespy.tools import get_tqdm
+from edt import edt
+from porespy.tools import get_tqdm, get_border
 tqdm = get_tqdm()
 
 
-def ibip_gpu(im_g, dt_g, inlets_g=None, max_iters=10000):
+def ibip_gpu(im, dt=None, inlets=None, max_iters=10000):
     """
     Performs invasion percolation on given image using iterative image dilation
     on GPU.
 
     Parameters
     ----------
-    im_g : cupy ND-array
-        Boolean array with ``True`` values indicating void voxels
-    dt_g : cupy ND-array
-        The distance transform of ``im_g``.
-    inlets_g : cupy ND-array, optional
+    im : array_like
+        Boolean array with ``True`` values indicating void voxels.  If a standard
+        numpy array is passed, it is converted to a cupy array.
+    dt : array_like, optional
+        The distance transform of ``im``.  If a standard numpy array is passed,
+        it is converted to a cupy array.
+    inlets : array_like, optional
         Boolean array with ``True`` values indicating where the invading fluid
-        is injected from.  If ``None``, all faces will be used.
+        is injected from.  If ``None``, all faces will be used.  If a standard
+        numpy array is passed, it is converted to a cupy array.
     max_iters : scalar, optional
         The number of steps to apply before stopping.  The default is to run
         for 10,000 steps which is almost certain to reach completion if the
         image is smaller than about 250-cubed.
+
     Returns
     -------
-    inv_result_g : tuple of cupy ND-array
-        A tuple containing (inv_seq_g, sizes_g). inv_seq_g is an array the same
-        shape as ``im_g`` with each voxel labelled by the sequence at which it was
-        invaded. sizes_g is and array the same shape as ``im_g`` with each
-        voxel labelled by the ``inv_size`` at which was filled.
+    inv_sequence : ndarray
+        An array the same shape as ``im`` with each voxel labelled by the
+        sequence at which it was invaded.  The returned array will be a cupy
+    inv_size : ndarray
+        An array the same shape as ``im`` with each voxel labelled by the
+        ``inv_size`` at which was filled.
 
     """
-    if inlets_g is None:
-        inlets_g = get_border_gpu(shape=im_g.shape)
+    import cupy as cp
+    from cupyx.scipy import ndimage as cndi
+    if dt is None:
+        if isinstance(im, cp.ndarray):
+            im = cp.asnumpy(im)
+        dt = edt(im)
+    im_g = cp.array(im)
+    dt_g = cp.array(dt)
+    if inlets is None:
+        inlets = get_border(shape=im.shape)
+    inlets_g = cp.array(inlets)
+
     bd_g = cp.copy(inlets_g > 0)
     dt_g = dt_g.astype(int)
     # alternative to _ibip
@@ -85,35 +99,7 @@ def ibip_gpu(im_g, dt_g, inlets_g=None, max_iters=10000):
     temp_g = sizes_g == 0
     sizes_g[~im_g] = 0
     sizes_g[temp_g] = -1
-    inv_result_g = (inv_seq_g, sizes_g, step)
-    return inv_result_g
-
-
-def get_border_gpu(shape):
-    """
-    Creates an array of specified size with faces labelled as
-    True.
-
-    Parameters
-    ----------
-    shape : cupy array_like
-        The shape of the array to return.  Can be either 2D or 3D.
-
-    Returns
-    -------
-    border : cupy ND-array
-        An ND-array of specified shape with ``True`` values at the perimeter
-        and ``False`` elsewhere
-
-    """
-    ndims = len(shape)
-    t = 1
-    border = cp.ones(shape, dtype=bool)
-    if ndims == 2:
-        border[t:-t, t:-t] = False
-    if ndims == 3:
-        border[t:-t, t:-t, t:-t] = False
-    return border
+    return inv_seq_g, sizes_g
 
 
 def rankdata_gpu(im_arr):
@@ -132,6 +118,7 @@ def rankdata_gpu(im_arr):
         An array of length equal to the size of im_arr, containing rank scores.
 
     """
+    import cupy as cp
     arr = cp.ravel(im_arr)
     sorter = cp.argsort(arr)
     inv = cp.empty(sorter.size, dtype=cp.intp)
@@ -171,7 +158,7 @@ def make_contiguous_gpu(im):
     return im_new
 
 
-def ball_gpu(radius, dtype=cp.uint8, smooth=True):
+def ball_gpu(radius, smooth=True):
     """
     Generates a ball-shaped structuring element.
 
@@ -192,6 +179,7 @@ def ball_gpu(radius, dtype=cp.uint8, smooth=True):
         are 1 and 0 otherwise.
 
     """
+    import cupy as cp
     n = 2 * radius + 1
     Z, Y, X = cp.mgrid[-radius:radius:n * 1j,
                        -radius:radius:n * 1j,
@@ -202,7 +190,7 @@ def ball_gpu(radius, dtype=cp.uint8, smooth=True):
     return s <= radius * radius
 
 
-def disk_gpu(radius, dtype=cp.uint8, smooth=True):
+def disk_gpu(radius, smooth=True):
     """
     Generates a flat, disk-shaped structuring element.
 
@@ -223,8 +211,18 @@ def disk_gpu(radius, dtype=cp.uint8, smooth=True):
         are 1 and 0 otherwise.
 
     """
+    import cupy as cp
     L = cp.arange(-radius, radius + 1)
     X, Y = cp.meshgrid(L, L)
     if smooth:
         radius = radius - 0.001
     return (X ** 2 + Y ** 2) <= radius ** 2
+
+
+if __name__ == '__main__':
+    import porespy as ps
+    from edt import edt
+    im = ps.generators.blobs(shape=[200, 200])
+    dt = edt(im)
+    a = ps.filters.ibip_gpu(im=im, dt=dt)
+    
