@@ -277,8 +277,12 @@ class Results:
         for item in list(self.__dict__.keys()):
             if item.startswith('_'):
                 continue
-            if isinstance(self[item], np.ndarray):
-                lines.append("{0:<25s} Image of shape: {1}".format(item, np.shape(self[item])))
+            if (isinstance(self[item], np.ndarray)):
+                s = np.shape(self[item])
+                if (self[item].ndim > 1):
+                    lines.append("{0:<25s} Image of size {1}".format(item, s))
+                else:
+                    lines.append("{0:<25s} Array of size {1}".format(item, s))
             else:
                 lines.append("{0:<25s} {1}".format(item, self[item]))
         lines.append(header)
