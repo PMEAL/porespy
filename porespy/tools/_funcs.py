@@ -4,8 +4,8 @@ import scipy.ndimage as spim
 from scipy.stats import rankdata
 from edt import edt
 from loguru import logger
-from collections import namedtuple
 from skimage.morphology import ball, disk
+from ._utils import Results
 from ._unpad import unpad
 try:
     from skimage.measure import marching_cubes
@@ -936,7 +936,7 @@ def mesh_region(region: bool, strel=None):
         padded_mask = np.reshape(im, (1,) + im.shape)
         padded_mask = np.pad(padded_mask, pad_width=pad_width, mode='constant')
     verts, faces, norm, val = marching_cubes(padded_mask)
-    result = namedtuple('mesh', ('verts', 'faces', 'norm', 'val'))
+    result = Results()
     result.verts = verts - pad_width
     result.faces = faces
     result.norm = norm

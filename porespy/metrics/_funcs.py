@@ -6,11 +6,11 @@ from skimage.measure import regionprops
 from porespy.tools import extend_slice, mesh_region, ps_round
 from porespy.filters import find_dt_artifacts
 from porespy.tools import _check_for_singleton_axes
-from collections import namedtuple
 from skimage import measure
 from loguru import logger
 from porespy.tools import extend_slice, mesh_region, ps_round
 from porespy.tools import _check_for_singleton_axes
+from porespy.tools import Results
 from porespy import settings
 from porespy.tools import get_tqdm
 tqdm = get_tqdm()
@@ -78,7 +78,7 @@ def representative_elementary_volume(im, npoints=1000):
         Vt = np.size(temp)
         porosity[i] = Vp / Vt
         volume[i] = Vt
-    profile = namedtuple('profile', ('volume', 'porosity'))
+    profile = Results()
     profile.volume = volume
     profile.porosity = porosity
     return profile
@@ -207,11 +207,15 @@ def radial_density_distribution(dt, bins=10, log=False, voxel_size=1):
         x = np.log10(x)
     h = np.histogram(x, bins=bins, density=True)
     h = _parse_histogram(h=h, voxel_size=voxel_size)
-    rdf = namedtuple('radial_density_distribution',
-                     (log*'Log' + 'R', 'pdf', 'cdf', 'bin_centers', 'bin_edges',
-                      'bin_widths'))
-    return rdf(h.bin_centers, h.pdf, h.cdf, h.bin_centers, h.bin_edges,
-               h.bin_widths)
+    rdf = Results()
+    rdf[f"{log*'Log' + 'R'}"] = h.bin_centers
+    rdf.pdf = h.pdf
+    rdf.cdf = h.cdf
+    rdf.relfreq = h.relfreq
+    rdf.bin_centers = h.bin_centers
+    rdf.bin_edges = h.bin_edges
+    rdf.bin_widths = h.bin_widths
+    return rdf
 
 
 def lineal_path_distribution(im, bins=25, voxel_size=1, log=False):
@@ -283,11 +287,15 @@ def lineal_path_distribution(im, bins=25, voxel_size=1, log=False):
         x = np.log10(x)
     h = list(np.histogram(x, bins=bins, density=True))
     h = _parse_histogram(h=h, voxel_size=voxel_size)
-    cld = namedtuple('lineal_path_distribution',
-                     (log*'Log'+'L', 'pdf', 'cdf', 'relfreq',
-                      'bin_centers', 'bin_edges', 'bin_widths'))
-    return cld(h.bin_centers, h.pdf, h.cdf, h.relfreq,
-               h.bin_centers, h.bin_edges, h.bin_widths)
+    cld = Results()
+    cld[f"{log*'Log' + 'L'}"] = h.bin_centers
+    cld.pdf = h.pdf
+    cld.cdf = h.cdf
+    cld.relfreq = h.relfreq
+    cld.bin_centers = h.bin_centers
+    cld.bin_edges = h.bin_edges
+    cld.bin_widths = h.bin_widths
+    return cld
 
 
 def chord_length_distribution(im, bins=None, log=False, voxel_size=1,
@@ -381,11 +389,15 @@ def chord_length_distribution(im, bins=None, log=False, voxel_size=1,
     else:
         raise Exception('Unsupported normalization:', normalization)
     h = _parse_histogram(h)
-    cld = namedtuple('chord_length_distribution',
-                     (log * 'Log' + 'L', 'pdf', 'cdf', 'relfreq',
-                      'bin_centers', 'bin_edges', 'bin_widths'))
-    return cld(h.bin_centers, h.pdf, h.cdf, h.relfreq,
-               h.bin_centers, h.bin_edges, h.bin_widths)
+    cld = Results()
+    cld[f"{log*'Log' + 'L'}"] = h.bin_centers
+    cld.pdf = h.pdf
+    cld.cdf = h.cdf
+    cld.relfreq = h.relfreq
+    cld.bin_centers = h.bin_centers
+    cld.bin_edges = h.bin_edges
+    cld.bin_widths = h.bin_widths
+    return cld
 
 
 def pore_size_distribution(im, bins=10, log=True, voxel_size=1):
@@ -454,11 +466,15 @@ def pore_size_distribution(im, bins=10, log=True, voxel_size=1):
     if log:
         vals = np.log10(vals)
     h = _parse_histogram(np.histogram(vals, bins=bins, density=True))
-    psd = namedtuple('pore_size_distribution',
-                     (log * 'Log' + 'R', 'pdf', 'cdf', 'satn',
-                      'bin_centers', 'bin_edges', 'bin_widths'))
-    return psd(h.bin_centers, h.pdf, h.cdf, h.relfreq,
-               h.bin_centers, h.bin_edges, h.bin_widths)
+    cld = Results()
+    cld[f"{log*'Log' + 'R'}"] = h.bin_centers
+    cld.pdf = h.pdf
+    cld.cdf = h.cdf
+    cld.satn = h.relfreq
+    cld.bin_centers = h.bin_centers
+    cld.bin_edges = h.bin_edges
+    cld.bin_widths = h.bin_widths
+    return cld
 
 
 def two_point_correlation_bf(im, spacing=10):
@@ -520,8 +536,10 @@ def two_point_correlation_bf(im, spacing=10):
     h1 = np.histogram(dmat, bins=range(0, int(np.amin(im.shape) / 2), spacing))
     dmat = dmat[:, hits]
     h2 = np.histogram(dmat, bins=h1[1])
-    tpcf = namedtuple('two_point_correlation_function', ('distance', 'probability'))
-    return tpcf(h2[1][:-1], h2[0] / h1[0])
+    tpcf = Results()
+    tpcf.distance = h2[1][:-1]
+    tpcf.probability = h2[0] / h1[0]
+    return tpcf
 
 
 def _radial_profile(autocorr, r_max, nbins=100):
@@ -563,9 +581,10 @@ def _radial_profile(autocorr, r_max, nbins=100):
         radial_sum[i] = np.sum(autocorr[mask]) / np.sum(mask)
     # Return normalized bin and radially summed autoc
     norm_autoc_radial = radial_sum / np.max(autocorr)
-    tpcf = namedtuple('two_point_correlation_function',
-                      ('distance', 'probability'))
-    return tpcf(bins, norm_autoc_radial)
+    tpcf = Results()
+    tpcf.distance = bins
+    tpcf.probability = norm_autoc_radial
+    return tpcf
 
 
 def two_point_correlation(im):
@@ -623,9 +642,14 @@ def _parse_histogram(h, voxel_size=1):
     bin_edges = delta_x * voxel_size
     bin_widths = (delta_x[1:] - delta_x[:-1]) * voxel_size
     bin_centers = ((delta_x[1:] + delta_x[:-1]) / 2) * voxel_size
-    psd = namedtuple('histogram', ('pdf', 'cdf', 'relfreq',
-                                   'bin_centers', 'bin_edges', 'bin_widths'))
-    return psd(P, C, S, bin_centers, bin_edges, bin_widths)
+    hist = Results()
+    hist.pdf = P
+    hist.cdf = C
+    hist.relfreq = S
+    hist.bin_centers = bin_centers
+    hist.bin_edges = bin_edges
+    hist.bin_widths = bin_widths
+    return hist
 
 
 def chord_counts(im):
@@ -728,11 +752,11 @@ def pc_curve_from_ibip(seq, sizes, im=None, sigma=0.072, theta=180, voxel_size=1
 
     Returns
     -------
-    pc_curve : namedtuple
-        A namedtuple containing the capillary pressure (``pc``) and
-        non-wetting phase saturation (``snwp``). If ``stepped`` was set to
-        ``True`` then the values in this tuple include the corners of the
-        steps.
+    pc_curve
+        An object with the capillary pressure (``pc``) and
+        non-wetting phase saturation (``snwp``) as attributes. If ``stepped``
+        was set to ``True`` then the values in this tuple include the corners
+        of the steps.
 
     """
     if im is None:
@@ -759,7 +783,7 @@ def pc_curve_from_ibip(seq, sizes, im=None, sigma=0.072, theta=180, voxel_size=1
             snwp.insert(j, y[i])
         x = pc
         y = snwp
-    pc_curve = namedtuple('data', field_names=['pc', 'snwp'])
+    pc_curve = Results()
     pc_curve.pc = x
     pc_curve.snwp = y
     return pc_curve
@@ -789,11 +813,11 @@ def pc_curve_from_mio(sizes, im=None, sigma=0.072, theta=180, voxel_size=1,
 
     Returns
     -------
-    pc_curve : namedtuple
-        A namedtuple containing the capillary pressure (``pc``) and
-        non-wetting phase saturation (``snwp``).  If ``stepped`` was set to
-        ``True`` then the values in this tuple include the corners of the
-        steps.
+    pc_curve
+        An object with the capillary pressure (``pc``) and
+        non-wetting phase saturation (``snwp``) as attributes.  If ``stepped``
+        was set to ``True`` then the values in this tuple include the corners
+        of the steps.
 
     """
     if im is None:
@@ -818,7 +842,7 @@ def pc_curve_from_mio(sizes, im=None, sigma=0.072, theta=180, voxel_size=1,
             snwp.insert(j, y[i])
         x = pc
         y = snwp
-    pc_curve = namedtuple('data', field_names=['pc', 'snwp'])
+    pc_curve = Results()
     pc_curve.pc = x
     pc_curve.snwp = y
     return pc_curve

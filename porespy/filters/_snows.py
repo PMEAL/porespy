@@ -9,7 +9,7 @@ from skimage.segmentation import watershed
 from skimage.morphology import ball, disk, square, cube
 from porespy.tools import _check_for_singleton_axes
 from porespy.tools import extend_slice
-from openpnm.tools import Results
+from porespy.tools import Results
 from porespy.filters import chunked_func
 from porespy import settings
 from loguru import logger
