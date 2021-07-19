@@ -568,7 +568,7 @@ def _radial_profile(autocorr, r_max, nbins=100):
     return tpcf(bins, norm_autoc_radial)
 
 
-def two_point_correlation_fft(im):
+def two_point_correlation(im):
     r"""
     Calculates the two-point correlation function using fourier
     transforms.
