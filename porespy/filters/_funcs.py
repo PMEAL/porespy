@@ -435,7 +435,7 @@ def trim_extrema(im, h, mode="maxima"):
     return result
 
 
-def flood(im, regions=None, mode="max"):
+def flood(im, labels=None, mode="max", func=None):
     r"""
     Floods/fills each region in an image with a single value based on the
     specific values in that region.
@@ -447,7 +447,7 @@ def flood(im, regions=None, mode="max"):
     im : array_like
         An image with isolated regions with numerical values in each voxel,
         and 0's elsewhere.
-    regions : array_like
+    labels : array_like
         An array the same shape as ``im`` with each region labeled.  If
         ``None`` is supplied (default) then ``scipy.ndimage.label`` is
         used with its default arguments.
@@ -484,10 +484,10 @@ def flood(im, regions=None, mode="max"):
 
     """
     mask = im > 0
-    if regions is None:
+    if labels is None:
         labels, N = spim.label(mask)
     else:
-        labels = np.copy(regions)
+        labels = np.copy(labels)
         N = labels.max()
     mode = "sum" if mode == "size" else mode
     mode = "maximum" if mode == "max" else mode
@@ -620,8 +620,7 @@ def region_size(im):
         im = spim.label(im)[0]
     counts = np.bincount(im.flatten())
     counts[0] = 0
-    chords = counts[im]
-    return chords
+    return counts[im]
 
 
 def apply_chords(im, spacing=1, axis=0, trim_edges=True, label=False):
