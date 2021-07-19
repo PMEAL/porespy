@@ -8,40 +8,41 @@ dask.config.set(scheduler="threads")
 
 def nl_means_layered(im, cores=None, axis=0, patch_size=5, patch_distance=15, h=4):
     r"""
-    Apply the non-local means filter to each layer of a stack, in parallel.
+    Apply the non-local means filter to each 2D layer of a stack in parallel.
 
-    This applies ``skimage.restoration.denoise_nl_means`` to each slice, so refer
-    to the documentation of that function for further information.
+    This applies ``skimage.restoration.denoise_nl_means`` to each slice, so
+    refer to the documentation of that function for further information.
 
     Parameters
     ----------
     im : ND-array
         The greyscale image with noise to be removed
     cores : int (optional)
-        The number of cores to use for the processing.  By default all available
-        cores are used.
+        The number of cores to use for the processing.  By default all
+        available cores are used.
     axis : int
-        The axis along which slices should be taken.  This should correspond to the
-        axis of rotation of the tomography stage, so if the sample was rotated
-        about the z-axis, then use ``axis=2``.
+        The axis along which slices should be taken.  This should correspond
+        to the axis of rotation of the tomography stage, so if the sample was
+        rotated about the z-axis, then use ``axis=2``.
     patch_size : int
         Size of patches used for denoising
-    patch_distance : ing
+    patch_distance : int
         Maximal distance in pixels where to search patches used for denoising.
     h : float
-        Cut-off distance (in gray levels). The higher h, the more permissive one
-        is in accepting patches. A higher h results in a smoother image, at the
-        expense of blurring features. For a Gaussian noise of standard deviation
-        sigma, a rule of thumb is to choose the value of h to be sigma of slightly
-        less.
+        Cut-off distance (in gray levels). The higher ``h``, the more
+        permissive one is in accepting patches. A higher h results in a
+        smoother image, at the expense of blurring features. For a Gaussian
+        noise of standard deviation sigma, a rule of thumb is to choose the
+        value of ``h`` to be sigma of slightly less.
 
     Notes
     -----
-    The quality of the result depends on ``patch_size``, ``patch_distance``, ``h``,
-    and ``sigma``.  It is recommended to experiment with a single slice first until
-    a suitable set of parameters is found.
+    The quality of the result depends on ``patch_size``, ``patch_distance``,
+    ``h``, and ``sigma``.  It is recommended to experiment with a single
+    slice first until a suitable set of parameters is found.
 
-    Each slice in the stack is adjusted to have the same histogram and intensity
+    Each slice in the stack is adjusted to have the same histogram and
+    intensity.
     """
 
     @dask.delayed
