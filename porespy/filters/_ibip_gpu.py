@@ -226,4 +226,3 @@ if __name__ == '__main__':
     import porespy as ps
     im = ps.generators.blobs(shape=[200, 200])
     out = ps.filters.ibip_gpu(im=im)
-
