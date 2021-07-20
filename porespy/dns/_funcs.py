@@ -8,7 +8,7 @@ from porespy.generators import faces
 
 def tortuosity(im, axis):
     r"""
-    Calculates tortuosity of given image in the specified direction
+    Calculate the tortuosity of image in the specified direction
 
     Parameters
     ----------
@@ -19,19 +19,26 @@ def tortuosity(im, axis):
 
     Returns
     -------
-    results : named-tuple
-        The following values are computed and returned:
+    results : Results objects
+        The following values are computed and returned as attributes:
 
-        - ``tortuosity``: calculated using the ``effective_porosity``
-          as :math:`\tau = \frac{D_{AB}}{D_{eff}} \cdot \varepsilon`.
-        - ``effective_porosity``: of the image after applying
-          ``trim_nonpercolating_paths``. This removes disconnected
-          voxels which cause singular matrices.
-        - ``original_porosity``: of the image as given
-        - ``formation_factor``: found as :math:`D_{AB}/D_{eff}`.
-        - ``concentration``: containing the concentration values from the
-          simulation. This is only returned if ``return_im`` is
-          ``True``.
+        - tortuosity
+            Calculated using the ``effective_porosity`` as
+            :math:`\tau = \frac{D_{AB}}{D_{eff}} \cdot \varepsilon`.
+
+        - effective_porosity
+            Porosity of the image after applying ``trim_nonpercolating_paths``.
+            This removes disconnected voxels which cause singular matrices.
+
+        - original_porosity
+            Porosity of the as-received the image
+
+        - formation_factor
+            Found as :math:`D_{AB}/D_{eff}`.
+
+        - concentration
+            An image containing the concentration values from the
+            simulation.
 
     """
     if axis > (im.ndim - 1):
