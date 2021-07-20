@@ -182,9 +182,9 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    size : ND-image</span>
+<span class="sd">    size : ndarray</span>
 <span class="sd">        The image containing invasion size values in each voxel.</span>
-<span class="sd">    im : ND-image, optional</span>
+<span class="sd">    im : ndarray, optional</span>
 <span class="sd">        A binary image of the porous media, with ``True`` indicating the</span>
 <span class="sd">        void space and ``False`` indicating the solid phase. If not given</span>
 <span class="sd">        then it is assumed that the solid is identified as ``size == 0``.</span>
@@ -197,8 +197,8 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    seq : ND-image</span>
-<span class="sd">        An ND-image the same shape as ``size`` with invasion size values</span>
+<span class="sd">    seq : ndarray</span>
+<span class="sd">        An ndarray the same shape as ``size`` with invasion size values</span>
 <span class="sd">        replaced by the invasion sequence.  This assumes that the invasion</span>
 <span class="sd">        process occurs via increasing pressure steps, such as produced by</span>
 <span class="sd">        the ``porosimetry`` function.</span>
@@ -219,13 +219,15 @@
 
 <div class="viewcode-block" id="size_to_satn"><a class="viewcode-back" href="../../../modules/generated/porespy.filters.size_to_satn.html#porespy.filters.size_to_satn">[docs]</a><span class="k">def</span> <span class="nf">size_to_satn</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">im</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Converts an image of invasion size values into saturations</span>
+<span class="sd">    Converts an image of invasion size values into saturations.</span>
+
+<span class="sd">    This is meant to accept the output of the ``porosimetry`` function.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    size : ND-image</span>
+<span class="sd">    size : ndarray</span>
 <span class="sd">        The image containing invasion size values in each voxel.</span>
-<span class="sd">    im : ND-image, optional</span>
+<span class="sd">    im : ndarray, optional</span>
 <span class="sd">        A binary image of the porous media, with ``True`` indicating the</span>
 <span class="sd">        void space and ``False`` indicating the solid phase. If not given</span>
 <span class="sd">        then it is assumed that the solid is identified as ``size == 0``.</span>
@@ -238,8 +240,8 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    satn : ND-image</span>
-<span class="sd">        An ND-image the same size as ``seq`` but with sequence values replaced</span>
+<span class="sd">    satn : ndarray</span>
+<span class="sd">        An ndarray the same size as ``seq`` but with sequence values replaced</span>
 <span class="sd">        by the fraction of void space invaded at or below the sequence number.</span>
 <span class="sd">        Solid voxels and uninvaded voxels are represented by 0 and -1,</span>
 <span class="sd">        respectively.</span>
@@ -264,20 +266,22 @@
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts an image of invasion sequence values to saturation values.</span>
 
+<span class="sd">    This is meant to accept the output of the ``ibip`` function.</span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    seq : ND-image</span>
+<span class="sd">    seq : ndarray</span>
 <span class="sd">        The image containing invasion sequence values in each voxel.  Solid</span>
 <span class="sd">        should be indicated as 0&#39;s and uninvaded voxels as -1.</span>
-<span class="sd">    im : ND-image, optional</span>
+<span class="sd">    im : ndarray, optional</span>
 <span class="sd">        A binary image of the porous media, with ``True`` indicating the</span>
 <span class="sd">        void space and ``False`` indicating the solid phase. If not given</span>
 <span class="sd">        then it is assumed that the solid is identified as ``seq == 0``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    satn : ND-image</span>
-<span class="sd">        An ND-image the same size as ``seq`` but with sequence values replaced</span>
+<span class="sd">    satn : ndarray</span>
+<span class="sd">        An ndarray the same size as ``seq`` but with sequence values replaced</span>
 <span class="sd">        by the fraction of void space invaded at or below the sequence number.</span>
 <span class="sd">        Solid voxels and uninvaded voxels are represented by 0 and -1,</span>
 <span class="sd">        respectively.</span>

@@ -393,11 +393,6 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../../metrics/howtos/geometrical_tortuosity.html">
-   geometrical_tortuosity
-  </a>
- </li>
- <li class="toctree-l1">
   <a class="reference internal" href="../../metrics/howtos/linear_density.html">
    lineal_path_distribution
   </a>
@@ -443,12 +438,7 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../../metrics/howtos/two_point_correlation_bf.html">
-   two_point_correlation_bf
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../metrics/howtos/two_point_correlation_fft.html">
+  <a class="reference internal" href="../../metrics/howtos/two_point_correlation.html">
    two_point_correlation_fft
   </a>
  </li>
@@ -970,7 +960,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "ab77ec4e3cce433398252c40ad61405f", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "8c2a957b9a0840dfb516e44e6bbb61a4", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
@@ -993,7 +983,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "63abf139bc3a4b67b8b4d56d0146e159", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "1d2f0f71e59f4c7e9f9e9e4ba04caf0d", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 </div>
 <div class="section" id="Extracting-PSD-as-a-Histogram">
@@ -1008,13 +998,13 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
-<p>The result returned into <code class="docutils literal notranslate"><span class="pre">psd</span></code> is a “named-tuple”, which is a list of arrays that can be accessed by location (i.e. <code class="docutils literal notranslate"><span class="pre">psd[0]</span></code>), but has the added benefit of accessing arrays by name so you know what you’re getting. You can print a list of available arrays as follows:</p>
+<p>This function, like many of the functions in the <code class="docutils literal notranslate"><span class="pre">metrics</span></code> module, returns several arrays lumped together on a single object. The advantage of this is that each array can be accessed by name as attributes, such as <code class="docutils literal notranslate"><span class="pre">psd.pdf</span></code>. To see all the available attributes (i.e. arrays) use the autocomplete function if your IDE supports it, or just print it as follows:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="nb">print</span><span class="p">(</span><span class="n">psd</span><span class="o">.</span><span class="n">_fields</span><span class="p">)</span>
+<span></span><span class="nb">print</span><span class="p">(</span><span class="n">psd</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1023,7 +1013,17 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-(&#39;LogR&#39;, &#39;pdf&#39;, &#39;cdf&#39;, &#39;satn&#39;, &#39;bin_centers&#39;, &#39;bin_edges&#39;, &#39;bin_widths&#39;)
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+Item                      Description
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+LogR                      Array of size (10,)
+pdf                       Array of size (10,)
+cdf                       Array of size (10,)
+satn                      Array of size (10,)
+bin_centers               Array of size (10,)
+bin_edges                 Array of size (11,)
+bin_widths                Array of size (10,)
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div></div>
 </div>
 <p>Let’s plot a pore-size distribution histogram:</p>

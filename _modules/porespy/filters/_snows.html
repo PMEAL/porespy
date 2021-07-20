@@ -176,11 +176,11 @@
 <span class="kn">from</span> <span class="nn">edt</span> <span class="kn">import</span> <span class="n">edt</span>
 <span class="kn">import</span> <span class="nn">scipy.ndimage</span> <span class="k">as</span> <span class="nn">spim</span>
 <span class="kn">import</span> <span class="nn">scipy.spatial</span> <span class="k">as</span> <span class="nn">sptl</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
 <span class="kn">from</span> <span class="nn">skimage.segmentation</span> <span class="kn">import</span> <span class="n">watershed</span>
 <span class="kn">from</span> <span class="nn">skimage.morphology</span> <span class="kn">import</span> <span class="n">ball</span><span class="p">,</span> <span class="n">disk</span><span class="p">,</span> <span class="n">square</span><span class="p">,</span> <span class="n">cube</span>
 <span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">_check_for_singleton_axes</span>
 <span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">extend_slice</span>
+<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">Results</span>
 <span class="kn">from</span> <span class="nn">porespy.filters</span> <span class="kn">import</span> <span class="n">chunked_func</span>
 <span class="kn">from</span> <span class="nn">porespy</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">loguru</span> <span class="kn">import</span> <span class="n">logger</span>
@@ -211,17 +211,20 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    A **named tuple** containing all of the images used during the</span>
-<span class="sd">    process.  They can be accessed as attriutes with the following names:</span>
+<span class="sd">    results : Results object</span>
+<span class="sd">        A custom object with the follow data as attributes:</span>
 
-<span class="sd">        ``im``</span>
+<span class="sd">        - &#39;im&#39;</span>
 <span class="sd">            The binary image of the void space</span>
-<span class="sd">        ``dt``</span>
+
+<span class="sd">        - &#39;dt&#39;</span>
 <span class="sd">            The distance transform of the image</span>
-<span class="sd">        ``peaks``</span>
-<span class="sd">            The peaks of the distance transform after applying the steps of the</span>
-<span class="sd">            SNOW algorithm</span>
-<span class="sd">        ``regions``</span>
+
+<span class="sd">        - &#39;peaks&#39;</span>
+<span class="sd">            The peaks of the distance transform after applying the steps</span>
+<span class="sd">            of the SNOW algorithm</span>
+
+<span class="sd">        - &#39;regions&#39;</span>
 <span class="sd">            The void space partitioned into pores using a marker</span>
 <span class="sd">            based watershed with the peaks found by the SNOW algorithm</span>
 
@@ -234,8 +237,9 @@
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
-<span class="sd">    [1] Gostick, J. &quot;A versatile and efficient network extraction algorithm</span>
-<span class="sd">    using marker-based watershed segmenation&quot;.  Physical Review E. (2017)</span>
+<span class="sd">    [1] Gostick, J. &quot;A versatile and efficient network extraction</span>
+<span class="sd">    algorithm using marker-based watershed segmenation&quot;.  Physical Review</span>
+<span class="sd">    E. (2017)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="s2">&quot;Beginning SNOW algorithm&quot;</span><span class="p">)</span>
@@ -265,7 +269,7 @@
     <span class="c1"># Note that the mask argument results in some void voxels left unlabeled</span>
     <span class="n">regions</span> <span class="o">=</span> <span class="n">watershed</span><span class="p">(</span><span class="n">image</span><span class="o">=-</span><span class="n">dt</span><span class="p">,</span> <span class="n">markers</span><span class="o">=</span><span class="n">peaks</span><span class="p">)</span>
     <span class="n">regions</span> <span class="o">=</span> <span class="n">regions</span> <span class="o">*</span> <span class="p">(</span><span class="n">im</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
-    <span class="n">tup</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;results&quot;</span><span class="p">,</span> <span class="n">field_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;im&quot;</span><span class="p">,</span> <span class="s2">&quot;dt&quot;</span><span class="p">,</span> <span class="s2">&quot;peaks&quot;</span><span class="p">,</span> <span class="s2">&quot;regions&quot;</span><span class="p">])</span>
+    <span class="n">tup</span> <span class="o">=</span> <span class="n">Results</span><span class="p">()</span>
     <span class="n">tup</span><span class="o">.</span><span class="n">im</span> <span class="o">=</span> <span class="n">im</span>
     <span class="n">tup</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="n">dt</span>
     <span class="n">tup</span><span class="o">.</span><span class="n">peaks</span> <span class="o">=</span> <span class="n">peaks</span>
@@ -282,7 +286,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    im : ND-array</span>
+<span class="sd">    im : ndarray</span>
 <span class="sd">        Image of porous material where each phase is represented by unique</span>
 <span class="sd">        integer starting from 1 (0&#39;s are ignored).</span>
 <span class="sd">    r_max : scalar</span>
@@ -294,16 +298,20 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    A **named tuple** with the following attribute:</span>
+<span class="sd">    results : Results object</span>
+<span class="sd">        A custom object with the follow data as attributes:</span>
 
-<span class="sd">        ``im``</span>
-<span class="sd">            The actual image of the porous material</span>
-<span class="sd">        ``dt``</span>
-<span class="sd">            The combined distance transform of the image</span>
-<span class="sd">        ``phase_max_label``</span>
+<span class="sd">        - &#39;im&#39;</span>
+<span class="sd">            The original image of the porous material</span>
+
+<span class="sd">        - &#39;dt&#39;</span>
+<span class="sd">            The combined distance transform in alll phases of the image</span>
+
+<span class="sd">        - &#39;phase_max_label&#39;</span>
 <span class="sd">            The list of max label of each phase in order to</span>
 <span class="sd">            distinguish between each other</span>
-<span class="sd">        ``regions``</span>
+
+<span class="sd">        - &#39;regions&#39;</span>
 <span class="sd">            The partitioned regions of n phases using a marker</span>
 <span class="sd">            based watershed with the peaks found by the SNOW algorithm</span>
 
@@ -352,9 +360,7 @@
         <span class="n">peaks</span> <span class="o">=</span> <span class="n">peaks</span> <span class="o">+</span> <span class="n">phase_snow</span><span class="o">.</span><span class="n">peaks</span> <span class="o">+</span> <span class="p">(</span><span class="n">phase_snow</span><span class="o">.</span><span class="n">peaks</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">*</span><span class="n">num</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
         <span class="n">num</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">combined_region</span><span class="p">))</span>
 
-    <span class="n">tup</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;results&quot;</span><span class="p">,</span>
-                     <span class="n">field_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;im&quot;</span><span class="p">,</span> <span class="s2">&quot;dt&quot;</span><span class="p">,</span> <span class="s2">&quot;phase_max_label&quot;</span><span class="p">,</span>
-                                  <span class="s2">&quot;regions&quot;</span><span class="p">,</span> <span class="s2">&quot;peaks&quot;</span><span class="p">])</span>
+    <span class="n">tup</span> <span class="o">=</span> <span class="n">Results</span><span class="p">()</span>
     <span class="n">tup</span><span class="o">.</span><span class="n">im</span> <span class="o">=</span> <span class="n">im</span>
     <span class="n">tup</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="n">combined_dt</span>
     <span class="n">tup</span><span class="o">.</span><span class="n">phase_max_label</span> <span class="o">=</span> <span class="n">num</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
@@ -369,25 +375,26 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    dt : ND-array</span>
+<span class="sd">    dt : ndarray</span>
 <span class="sd">        The distance transform of the pore space.  This may be calculated</span>
 <span class="sd">        and filtered using any means desired.</span>
 <span class="sd">    r_max : scalar</span>
 <span class="sd">        The size of the structuring element used in the maximum filter.</span>
 <span class="sd">        This controls the localness of any maxima. The default is 4 voxels.</span>
-<span class="sd">    strel : ND-array</span>
+<span class="sd">    strel : ndarray</span>
 <span class="sd">        Specifies the shape of the structuring element used to define the</span>
 <span class="sd">        neighborhood when looking for peaks.  If ``None`` (the default) is</span>
 <span class="sd">        specified then a spherical shape is used (or circular in 2D).</span>
 <span class="sd">    divs : int or array_like</span>
-<span class="sd">        The number of times to divide the image for parallel processing.  If ``1``</span>
-<span class="sd">        then parallel processing does not occur.  ``2`` is equivalent to</span>
-<span class="sd">        ``[2, 2, 2]`` for a 3D image.  The number of cores used is specified in</span>
-<span class="sd">        ``porespy.settings.ncores`` and defaults to all cores.</span>
+<span class="sd">        The number of times to divide the image for parallel processing.</span>
+<span class="sd">        If ``1`` then parallel processing does not occur.  ``2`` is</span>
+<span class="sd">        equivalent to ``[2, 2, 2]`` for a 3D image. The number of cores</span>
+<span class="sd">        used is specified in ``porespy.settings.ncores`` and defaults to</span>
+<span class="sd">        all cores.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    image : ND-array</span>
+<span class="sd">    image : ndarray</span>
 <span class="sd">        An array of booleans with ``True`` values at the location of any</span>
 <span class="sd">        local maxima.</span>
 
@@ -439,13 +446,13 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    peaks : ND-image</span>
+<span class="sd">    peaks : ndarray</span>
 <span class="sd">        An image containing ``True`` values indicating peaks in the</span>
 <span class="sd">        distance transform</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    image : ND-array</span>
+<span class="sd">    image : ndarray</span>
 <span class="sd">        An array with the same number of isolated peaks as the original</span>
 <span class="sd">        image, but fewer total ``True`` voxels.</span>
 
@@ -471,7 +478,7 @@
     <span class="k">return</span> <span class="n">peaks_new</span></div>
 
 
-<div class="viewcode-block" id="trim_saddle_points"><a class="viewcode-back" href="../../../modules/generated/porespy.filters.trim_saddle_points.html#porespy.filters.trim_saddle_points">[docs]</a><span class="k">def</span> <span class="nf">trim_saddle_points</span><span class="p">(</span><span class="n">peaks</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">max_iters</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>
+<div class="viewcode-block" id="trim_saddle_points"><a class="viewcode-back" href="../../../modules/generated/porespy.filters.trim_saddle_points.html#porespy.filters.trim_saddle_points">[docs]</a><span class="k">def</span> <span class="nf">trim_saddle_points</span><span class="p">(</span><span class="n">peaks</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">maxiter</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Removes peaks that were mistakenly identified because they lied on a</span>
 <span class="sd">    saddle or ridge in the distance transform that was not actually a true</span>
@@ -479,19 +486,19 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    peaks : ND-array</span>
+<span class="sd">    peaks : ndarray</span>
 <span class="sd">        A boolean image containing ``True`` values to mark peaks in the</span>
 <span class="sd">        distance transform (``dt``)</span>
-<span class="sd">    dt : ND-array</span>
+<span class="sd">    dt : ndarray</span>
 <span class="sd">        The distance transform of the pore space for which the peaks</span>
 <span class="sd">        are sought.</span>
-<span class="sd">    max_iters : int</span>
-<span class="sd">        The number of iteration to use when finding saddle points.  The default</span>
-<span class="sd">        is 20.</span>
+<span class="sd">    maxiter : int</span>
+<span class="sd">        The number of iteration to use when finding saddle points.</span>
+<span class="sd">        The default value is 20.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    image : ND-array</span>
+<span class="sd">    image : ndarray</span>
 <span class="sd">        An image with fewer peaks than the input image</span>
 
 <span class="sd">    References</span>
@@ -516,7 +523,7 @@
         <span class="n">dt_i</span> <span class="o">=</span> <span class="n">dt</span><span class="p">[</span><span class="n">sx</span><span class="p">]</span>
         <span class="n">peak_dil</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">peak_i</span><span class="p">)</span>
         <span class="n">iters</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">while</span> <span class="n">iters</span> <span class="o">&lt;</span> <span class="n">max_iters</span><span class="p">:</span>
+        <span class="k">while</span> <span class="n">iters</span> <span class="o">&lt;</span> <span class="n">maxiter</span><span class="p">:</span>
             <span class="n">iters</span> <span class="o">+=</span> <span class="mi">1</span>
             <span class="n">peak_orig</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">peak_dil</span><span class="p">)</span>
             <span class="n">peak_dil</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">binary_dilation</span><span class="p">(</span><span class="n">peak_orig</span><span class="p">,</span> <span class="n">structure</span><span class="o">=</span><span class="n">cube</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
@@ -536,7 +543,7 @@
                 <span class="c1"># peaks[sx] = peaks[sx]*(~peak_i)</span>
                 <span class="c1"># logger.debug(&quot;Ridge point found&quot;)</span>
                 <span class="k">break</span>  <span class="c1"># Ridge point</span>
-        <span class="k">if</span> <span class="n">iters</span> <span class="o">&gt;=</span> <span class="n">max_iters</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">iters</span> <span class="o">&gt;=</span> <span class="n">maxiter</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">iters</span><span class="si">}</span><span class="s2"> iterations reached on point </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">hits</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="n">hits</span><span class="si">}</span><span class="s2"> saddle points&quot;</span><span class="p">)</span>
@@ -550,19 +557,20 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    peaks : ND-array</span>
+<span class="sd">    peaks : ndarray</span>
 <span class="sd">        A boolean image containing True values to mark peaks in the</span>
 <span class="sd">        distance transform (``dt``)</span>
-<span class="sd">    dt : ND-array</span>
+<span class="sd">    dt : ndarray</span>
 <span class="sd">        The distance transform of the pore space for which the true peaks</span>
 <span class="sd">        are sought.</span>
 <span class="sd">    f : scalar</span>
-<span class="sd">        Controls how close peaks must be before they are considered near to each</span>
-<span class="sd">        other.  Sets of peaks are tagged as near if ``d_neighbor &lt; f * d_solid``.</span>
+<span class="sd">        Controls how close peaks must be before they are considered near</span>
+<span class="sd">        to each other. Sets of peaks are tagged as near if</span>
+<span class="sd">        ``d_neighbor &lt; f * d_solid``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    image : ND-array</span>
+<span class="sd">    image : ndarray</span>
 <span class="sd">        An array the same size as ``peaks`` containing a subset of the</span>
 <span class="sd">        peaks in the original image.</span>
 
@@ -575,7 +583,7 @@
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
 <span class="sd">    [1] Gostick, J. &quot;A versatile and efficient network extraction</span>
-<span class="sd">    algorithm using marker-based watershed segmenation&quot;.  Physical Review</span>
+<span class="sd">    algorithm using marker-based watershed segmenation&quot;. Physical Review</span>
 <span class="sd">    E. (2017)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -640,27 +648,29 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    im : ND-array</span>
+<span class="sd">    im : ndarray</span>
 <span class="sd">        A binary image of porous media with &#39;True&#39; values indicating</span>
 <span class="sd">        phase of interest.</span>
 <span class="sd">    overlap : float (optional)</span>
-<span class="sd">        The amount of overlap to apply between chunks.  If not provided it will</span>
-<span class="sd">        be estiamted using ``porespy.tools.estimate_overlap`` with ``mode=&#39;dt&#39;``.</span>
+<span class="sd">        The amount of overlap to apply between chunks.  If not provided it</span>
+<span class="sd">        will be estiamted using ``porespy.tools.estimate_overlap`` with</span>
+<span class="sd">        ``mode=&#39;dt&#39;``.</span>
 <span class="sd">    divs : list or int</span>
 <span class="sd">        Number of domains each axis will be divided. Options are:</span>
 <span class="sd">          - scalar: it will be assigned to all axis.</span>
-<span class="sd">          - list: each respective axis will be divided by its corresponding</span>
-<span class="sd">            number in the list. For example [2, 3, 4] will divide z, y and</span>
-<span class="sd">            x axis to 2, 3, and 4 respectively.</span>
+<span class="sd">          - list: each respective axis will be divided by its</span>
+<span class="sd">            corresponding number in the list. For example [2, 3, 4] will</span>
+<span class="sd">            divide z, y and x axis to 2, 3, and 4 respectively.</span>
 <span class="sd">    cores : int or None</span>
 <span class="sd">        Number of cores that will be used to parallel process all domains.</span>
 <span class="sd">        If ``None`` then all cores will be used but user can specify any</span>
-<span class="sd">        integer values to control the memory usage.  Setting value to 1 will</span>
-<span class="sd">        effectively process the chunks in serial to minimize memory usage.</span>
+<span class="sd">        integer values to control the memory usage.  Setting value to 1</span>
+<span class="sd">        will effectively process the chunks in serial to minimize memory</span>
+<span class="sd">        usage.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    regions : ND-array</span>
+<span class="sd">    regions : ndarray</span>
 <span class="sd">        Partitioned image of segmentated regions with unique labels. Each</span>
 <span class="sd">        region correspond to pore body while intersection with other</span>
 <span class="sd">        region correspond throat area.</span>
@@ -714,11 +724,10 @@
     <span class="c1"># Stitching watershed chunks</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="s1">&#39;Stitching watershed chunks&#39;</span><span class="p">)</span>
     <span class="n">regions</span> <span class="o">=</span> <span class="n">_watershed_stitching</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">regions</span><span class="p">,</span> <span class="n">chunk_shape</span><span class="o">=</span><span class="n">chunk_shape</span><span class="p">)</span>
-    <span class="n">tup</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;results&quot;</span><span class="p">,</span> <span class="n">field_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;im&quot;</span><span class="p">,</span> <span class="s2">&quot;dt&quot;</span><span class="p">,</span> <span class="s2">&quot;regions&quot;</span><span class="p">])</span>
+    <span class="n">tup</span> <span class="o">=</span> <span class="n">Results</span><span class="p">()</span>
     <span class="n">tup</span><span class="o">.</span><span class="n">im</span> <span class="o">=</span> <span class="n">im</span>
     <span class="n">tup</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="n">dt</span>
     <span class="n">tup</span><span class="o">.</span><span class="n">regions</span> <span class="o">=</span> <span class="n">regions</span>
-
     <span class="k">return</span> <span class="n">tup</span></div>
 
 
@@ -728,7 +737,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    im : ND-array</span>
+<span class="sd">    im : ndarray</span>
 <span class="sd">        The image that requires padding</span>
 <span class="sd">    pad_width : int</span>
 <span class="sd">        The number of values that will be padded from the edges. Default</span>
@@ -738,7 +747,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    output: ND-array</span>
+<span class="sd">    output: ndarray</span>
 <span class="sd">        Padded image with same dimnesions as provided image</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -767,7 +776,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    im: ND-array</span>
+<span class="sd">    im: ndarray</span>
 <span class="sd">        Actual image that contains repeating labels in chunks/sub-domains.</span>
 <span class="sd">    chunk_shape: tuple</span>
 <span class="sd">        The shape of chunk that will be relabeled in actual image. Note</span>
@@ -776,7 +785,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    output : ND-array</span>
+<span class="sd">    output : ndarray</span>
 <span class="sd">        Relabeled image with unique label assigned to each region.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -820,14 +829,14 @@
 
 <span class="sd">    Parameters:</span>
 <span class="sd">    -----------</span>
-<span class="sd">    im :  ND-array</span>
+<span class="sd">    im :  ndarray</span>
 <span class="sd">        image that contains extra slices in x, y, z direction.</span>
 <span class="sd">    chunk_shape : tuple</span>
 <span class="sd">        The shape of the chunk from which image is subdivided.</span>
 
 <span class="sd">    Return:</span>
 <span class="sd">    -------</span>
-<span class="sd">    output : ND-array</span>
+<span class="sd">    output : ndarray</span>
 <span class="sd">        Image without extra internal slices. The shape of the image will</span>
 <span class="sd">        be same as input image provided for waterhsed segmentation.</span>
 
@@ -870,7 +879,7 @@
 
 <span class="sd">    Parameters:</span>
 <span class="sd">    -----------</span>
-<span class="sd">    im : ND-array</span>
+<span class="sd">    im : ndarray</span>
 <span class="sd">        A worked image with watershed segmentation performed on all</span>
 <span class="sd">        sub-domains individually.</span>
 <span class="sd">    chunk_shape: tuple</span>
@@ -878,7 +887,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    output : ND-array</span>
+<span class="sd">    output : ndarray</span>
 <span class="sd">        Stitched watershed segmentation with all sub-domains merged to</span>
 <span class="sd">        form a single watershed segmentation.</span>
 
@@ -923,12 +932,12 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    array: ND-array</span>
+<span class="sd">    array: ndarray</span>
 <span class="sd">        Array that needs to be copied.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    output: ND-array</span>
+<span class="sd">    output: ndarray</span>
 <span class="sd">        Copied array.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -958,7 +967,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    array : ND-array</span>
+<span class="sd">    array : ndarray</span>
 <span class="sd">        Array which requires replacing labels.</span>
 <span class="sd">    keys :  array_like</span>
 <span class="sd">        1d array containing unique labels that need to be replaced.</span>
@@ -967,7 +976,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    array : ND-array</span>
+<span class="sd">    array : ndarray</span>
 <span class="sd">        Array with replaced labels.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -988,7 +997,7 @@
 
 <span class="sd">    Parameter:</span>
 <span class="sd">    ----------</span>
-<span class="sd">    array : ND-array</span>
+<span class="sd">    array : ndarray</span>
 <span class="sd">        Array which requires replacing labels</span>
 <span class="sd">    keys :  1D-array</span>
 <span class="sd">        The unique labels that need to be replaced</span>
@@ -997,7 +1006,7 @@
 
 <span class="sd">    return:</span>
 <span class="sd">    -------</span>
-<span class="sd">    array : ND-array</span>
+<span class="sd">    array : ndarray</span>
 <span class="sd">        Array with replaced labels.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">a_shape</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">shape</span>
@@ -1019,7 +1028,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    array: ND-array</span>
+<span class="sd">    array: ndarray</span>
 <span class="sd">        1d array that needs resquencing.</span>
 <span class="sd">    count: array_like</span>
 <span class="sd">        1d array of zeros having same size as array.</span>
@@ -1056,7 +1065,7 @@
 
 <span class="sd">    Parameter:</span>
 <span class="sd">    ----------</span>
-<span class="sd">    array: ND-array</span>
+<span class="sd">    array: ndarray</span>
 <span class="sd">        Array in which largest elements needs to be calcuted.</span>
 
 <span class="sd">    Returns</span>
@@ -1074,12 +1083,12 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    array: ND-array</span>
+<span class="sd">    array: ndarray</span>
 <span class="sd">        Array that requires resequencing.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    array : ND-array</span>
+<span class="sd">    array : ndarray</span>
 <span class="sd">        Resequenced array with same shape as input array.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1094,8 +1103,8 @@
 
 <span class="k">def</span> <span class="nf">_snow_chunked</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">r_max</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">0.4</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This private version of snow is called during snow_parallel.  Dask does not</span>
-<span class="sd">    all the calls to the logger between each step apparently.</span>
+<span class="sd">    This private version of snow is called during snow_parallel. Dask does</span>
+<span class="sd">    not all the calls to the logger between each step apparently.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">dt2</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">gaussian_filter</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">)</span>
     <span class="n">peaks</span> <span class="o">=</span> <span class="n">find_peaks</span><span class="p">(</span><span class="n">dt</span><span class="o">=</span><span class="n">dt2</span><span class="p">,</span> <span class="n">r_max</span><span class="o">=</span><span class="n">r_max</span><span class="p">)</span>

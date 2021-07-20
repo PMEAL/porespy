@@ -174,9 +174,8 @@
 <span class="kn">from</span> <span class="nn">trimesh</span> <span class="kn">import</span> <span class="n">Trimesh</span>
 <span class="kn">from</span> <span class="nn">edt</span> <span class="kn">import</span> <span class="n">edt</span>
 <span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">extend_slice</span><span class="p">,</span> <span class="n">ps_round</span><span class="p">,</span> <span class="n">ps_rect</span>
-<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">_check_for_singleton_axes</span>
+<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">_check_for_singleton_axes</span><span class="p">,</span> <span class="n">Results</span>
 <span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">mesh_region</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
 <span class="kn">from</span> <span class="nn">skimage</span> <span class="kn">import</span> <span class="n">measure</span>
 <span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">get_tqdm</span>
 <span class="kn">from</span> <span class="nn">loguru</span> <span class="kn">import</span> <span class="n">logger</span>
@@ -232,11 +231,11 @@
 
 <span class="k">def</span> <span class="nf">region_volumes</span><span class="p">(</span><span class="n">regions</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;marching_cubes&#39;</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Computes volumes of each labelled region in an image</span>
+<span class="sd">    Compute volume of each labelled region in an image</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    regions : ND-array</span>
+<span class="sd">    regions : ndarray</span>
 <span class="sd">        An image with labelled regions</span>
 <span class="sd">    mode : string</span>
 <span class="sd">        Controls the method used. Options are:</span>
@@ -245,15 +244,17 @@
 <span class="sd">            Finds a mesh for each region using the marching cubes algorithm</span>
 <span class="sd">            from ``scikit-image``, then finds the volume of the mesh using the</span>
 <span class="sd">            ``trimesh`` package.</span>
+
 <span class="sd">        &#39;voxel&#39;</span>
 <span class="sd">            Calculates the region volume as the sum of voxels within each</span>
 <span class="sd">            region.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    volumes : ND-array</span>
+<span class="sd">    volumes : ndarray</span>
 <span class="sd">        An array of shape [N by 1] where N is the number of labelled regions</span>
 <span class="sd">        in the image.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">slices</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">find_objects</span><span class="p">(</span><span class="n">regions</span><span class="p">)</span>
     <span class="n">vols</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">slices</span><span class="p">),</span> <span class="p">])</span>
@@ -267,13 +268,13 @@
     <span class="k">return</span> <span class="n">vols</span>
 
 
-<span class="k">def</span> <span class="nf">mesh_volume</span><span class="p">(</span><span class="n">region</span><span class="p">):</span>
+<div class="viewcode-block" id="mesh_volume"><a class="viewcode-back" href="../../../modules/generated/porespy.metrics.mesh_volume.html#porespy.metrics.mesh_volume">[docs]</a><span class="k">def</span> <span class="nf">mesh_volume</span><span class="p">(</span><span class="n">region</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Computes the volume of a single region by meshing it</span>
+<span class="sd">    Compute the volume of a single region by meshing it</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    region : ND-array</span>
+<span class="sd">    region : ndarray</span>
 <span class="sd">        An image with a single region labelled as ``True`` (or &gt; 0)</span>
 
 <span class="sd">    Returns</span>
@@ -282,6 +283,7 @@
 <span class="sd">        The volume of the region computed by applyuing the marching cubes</span>
 <span class="sd">        algorithm to the region, then finding the mesh volume using the</span>
 <span class="sd">        ``trimesh`` package.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">mc</span> <span class="o">=</span> <span class="n">mesh_region</span><span class="p">(</span><span class="n">region</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
     <span class="n">m</span> <span class="o">=</span> <span class="n">Trimesh</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="n">mc</span><span class="o">.</span><span class="n">verts</span><span class="p">,</span> <span class="n">faces</span><span class="o">=</span><span class="n">mc</span><span class="o">.</span><span class="n">faces</span><span class="p">,</span> <span class="n">vertex_normals</span><span class="o">=</span><span class="n">mc</span><span class="o">.</span><span class="n">norm</span><span class="p">)</span>
@@ -289,19 +291,19 @@
         <span class="n">vol</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">volume</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">vol</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
-    <span class="k">return</span> <span class="n">vol</span>
+    <span class="k">return</span> <span class="n">vol</span></div>
 
 
 <div class="viewcode-block" id="region_surface_areas"><a class="viewcode-back" href="../../../modules/generated/porespy.metrics.region_surface_areas.html#porespy.metrics.region_surface_areas">[docs]</a><span class="k">def</span> <span class="nf">region_surface_areas</span><span class="p">(</span><span class="n">regions</span><span class="p">,</span> <span class="n">voxel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">strel</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Extracts the surface area of each region in a labeled image.</span>
+<span class="sd">    Extract the surface area of each region in a labeled image.</span>
 
 <span class="sd">    Optionally, it can also find the the interfacial area between all</span>
 <span class="sd">    adjoining regions.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    regions : ND-array</span>
+<span class="sd">    regions : ndarray</span>
 <span class="sd">        An image of the pore space partitioned into individual pore regions.</span>
 <span class="sd">        Note that zeros in the image will not be considered for area</span>
 <span class="sd">        calculation.</span>
@@ -347,7 +349,7 @@
 
 <div class="viewcode-block" id="mesh_surface_area"><a class="viewcode-back" href="../../../modules/generated/porespy.metrics.mesh_surface_area.html#porespy.metrics.mesh_surface_area">[docs]</a><span class="k">def</span> <span class="nf">mesh_surface_area</span><span class="p">(</span><span class="n">mesh</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">faces</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculates the surface area of a meshed region</span>
+<span class="sd">    Calculate the surface area of a meshed region</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -370,6 +372,7 @@
 <span class="sd">    This function simply calls ``scikit-image.measure.mesh_surface_area``, but</span>
 <span class="sd">    it allows for the passing of the ``mesh`` tuple returned by the</span>
 <span class="sd">    ``mesh_region`` function, entirely for convenience.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">mesh</span><span class="p">:</span>
         <span class="n">verts</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">verts</span>
@@ -383,11 +386,11 @@
 
 <div class="viewcode-block" id="region_interface_areas"><a class="viewcode-back" href="../../../modules/generated/porespy.metrics.region_interface_areas.html#porespy.metrics.region_interface_areas">[docs]</a><span class="k">def</span> <span class="nf">region_interface_areas</span><span class="p">(</span><span class="n">regions</span><span class="p">,</span> <span class="n">areas</span><span class="p">,</span> <span class="n">voxel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">strel</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculates the interfacial area between all pairs of adjecent regions</span>
+<span class="sd">    Calculate the interfacial area between all pairs of adjecent regions</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    regions : ND-array</span>
+<span class="sd">    regions : ndarray</span>
 <span class="sd">        An image of the pore space partitioned into individual pore regions.</span>
 <span class="sd">        Note that zeros in the image will not be considered for area</span>
 <span class="sd">        calculation.</span>
@@ -408,13 +411,17 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    areas : named_tuple</span>
-<span class="sd">        A named-tuple containing 2 arrays. ``conns`` holds the connectivity</span>
-<span class="sd">        information and ``area`` holds the result for each pair.  ``conns`` is</span>
-<span class="sd">        a N-regions by 2 array with each row containing the region number of an</span>
-<span class="sd">        adjacent pair of regions.  For instance, if ``conns[0, 0]`` is 0 and</span>
-<span class="sd">        ``conns[0, 1]`` is 5, then row 0 of ``area`` contains the interfacial</span>
-<span class="sd">        area shared by regions 0 and 5.</span>
+<span class="sd">    areas : Results object</span>
+<span class="sd">        A custom object with the following data added as named attributes:</span>
+
+<span class="sd">        &#39;conns&#39;</span>
+<span class="sd">            An N-regions by 2 array with each row containing the region</span>
+<span class="sd">            number of an adjacent pair of regions.  For instance, if</span>
+<span class="sd">            ``conns[0, 0]`` is 0 and ``conns[0, 1]`` is 5, then row 0 of</span>
+<span class="sd">            ``area`` contains the interfacial area shared by regions 0 and 5.</span>
+
+<span class="sd">        &#39;area&#39;</span>
+<span class="sd">            The area calculated for each pair of regions in ``conns``</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="s1">&#39;Finding interfacial areas between each region&#39;</span><span class="p">)</span>
@@ -462,7 +469,7 @@
     <span class="n">cn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">cn</span><span class="p">)</span>
     <span class="n">ia</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">sa</span><span class="p">[</span><span class="n">cn</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]]</span> <span class="o">+</span> <span class="n">sa</span><span class="p">[</span><span class="n">cn</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]]</span> <span class="o">-</span> <span class="n">sa_combined</span><span class="p">)</span>
     <span class="n">ia</span><span class="p">[</span><span class="n">ia</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;interfacial_areas&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;conns&#39;</span><span class="p">,</span> <span class="s1">&#39;area&#39;</span><span class="p">))</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">Results</span><span class="p">()</span>
     <span class="n">result</span><span class="o">.</span><span class="n">conns</span> <span class="o">=</span> <span class="n">cn</span>
     <span class="n">result</span><span class="o">.</span><span class="n">area</span> <span class="o">=</span> <span class="n">ia</span> <span class="o">*</span> <span class="n">voxel_size</span><span class="o">**</span><span class="mi">2</span>
     <span class="k">return</span> <span class="n">result</span></div>

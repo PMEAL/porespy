@@ -187,7 +187,7 @@
 
 <div class="viewcode-block" id="props_to_DataFrame"><a class="viewcode-back" href="../../../modules/generated/porespy.metrics.props_to_DataFrame.html#porespy.metrics.props_to_DataFrame">[docs]</a><span class="k">def</span> <span class="nf">props_to_DataFrame</span><span class="p">(</span><span class="n">regionprops</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns a Pandas DataFrame containing all the scalar metrics for each</span>
+<span class="sd">    Create a ``pandas`` DataFrame containing all the scalar metrics for each</span>
 <span class="sd">    region, such as volume, sphericity, and so on, calculated by</span>
 <span class="sd">    ``regionprops_3D``.</span>
 
@@ -212,6 +212,7 @@
 <span class="sd">    --------</span>
 <span class="sd">    prop_to_image</span>
 <span class="sd">    regionprops_3d</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Parse the regionprops list and pull out all props with scalar values</span>
     <span class="n">metrics</span> <span class="o">=</span> <span class="p">[]</span>
@@ -238,7 +239,7 @@
 
 <div class="viewcode-block" id="prop_to_image"><a class="viewcode-back" href="../../../modules/generated/porespy.metrics.prop_to_image.html#porespy.metrics.prop_to_image">[docs]</a><span class="k">def</span> <span class="nf">prop_to_image</span><span class="p">(</span><span class="n">regionprops</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">prop</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Creates an image with each region colored according the specified ``prop``,</span>
+<span class="sd">    Create an image with each region colored according the specified ``prop``,</span>
 <span class="sd">    as obtained by ``regionprops_3d``.</span>
 
 <span class="sd">    Parameters</span>
@@ -256,8 +257,8 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    image : ND-array</span>
-<span class="sd">        An ND-image the same size as the original image, with each region</span>
+<span class="sd">    image : ndarray</span>
+<span class="sd">        An ndarray the same size as the original image, with each region</span>
 <span class="sd">        represented by the values specified in ``prop``.</span>
 
 <span class="sd">    See Also</span>
@@ -282,14 +283,13 @@
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates various metrics for each labeled region in a 3D image.</span>
 
-<span class="sd">    The ``regionsprops`` method in **skimage** is very thorough for 2D images,</span>
-<span class="sd">    but is a bit limited when it comes to 3D images, so this function aims</span>
-<span class="sd">    to fill this gap.</span>
+<span class="sd">    This functions offers a few extras for 3D images that are not provided</span>
+<span class="sd">    by the ``regionprops`` function in ``scikit-image``.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    im : array_like</span>
-<span class="sd">        An imaging containing at least one labeled region.  If a boolean image</span>
+<span class="sd">        An image containing at least one labeled region. If a boolean image</span>
 <span class="sd">        is received than the ``True`` voxels are treated as a single region</span>
 <span class="sd">        labeled ``1``.  Regions labeled 0 are ignored in all cases.</span>
 

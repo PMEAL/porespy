@@ -393,11 +393,6 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../howtos/geometrical_tortuosity.html">
-   geometrical_tortuosity
-  </a>
- </li>
- <li class="toctree-l1">
   <a class="reference internal" href="../howtos/linear_density.html">
    lineal_path_distribution
   </a>
@@ -443,12 +438,7 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../howtos/two_point_correlation_bf.html">
-   two_point_correlation_bf
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../howtos/two_point_correlation_fft.html">
+  <a class="reference internal" href="../howtos/two_point_correlation.html">
    two_point_correlation_fft
   </a>
  </li>
@@ -905,12 +895,12 @@ div.rendered_html tbody tr:hover {
 <h1>Measuring fractal dimension by box-counting<a class="headerlink" href="#Measuring-fractal-dimension-by-box-counting" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="Theory">
 <h2>Theory<a class="headerlink" href="#Theory" title="Permalink to this headline">¶</a></h2>
-<p>The term ‘fractal dimension’ was introduced by by Benoit Mandelbrot in 1967 to explain self-similarity of a pattern. A fractal dimension is defined as a ratio of the change in detail to the change in scale. It is used as an index that quantifies the complexity of a fractal pattern (<a class="reference external" href="https://en.wikipedia.org/wiki/Fractal_dimension">https://en.wikipedia.org/wiki/Fractal_dimension</a>).</p>
-<p>Famously, fractal dimension has been described in the context of the British coastline. A coastline’s measured length was observed to change depending on the length of the measuring stick used. In 2-D and 3-D, this notion can be extended to the length of a measuring pixel or voxel, respectively.</p>
+<p>The term ‘fractal dimension’ was introduced by Benoit Mandelbrot in 1967 to explain self-similarity of a pattern. A fractal dimension is defined as a ratio of the change in detail to the change in scale. It is used as an index that quantifies the complexity of a fractal pattern (<a class="reference external" href="https://en.wikipedia.org/wiki/Fractal_dimension">https://en.wikipedia.org/wiki/Fractal_dimension</a>).</p>
+<p>Famously, fractal dimensions have been used to analyze the length of the British coastline. A coastline’s measured length is observed to change depending on the length of the measuring stick used. In 2-D and 3-D, this notion can be extended to the length of a measuring pixel or voxel, respectively.</p>
 <img alt="image" src="https://upload.wikimedia.org/wikipedia/commons/2/20/Britain-fractal-coastline-combined.jpg" />
 <div class="section" id="Box-Counting-Method">
 <h3>Box Counting Method<a class="headerlink" href="#Box-Counting-Method" title="Permalink to this headline">¶</a></h3>
-<p>One way to determine fractal dimension of an image is through the box counting method. Measuring elements are laid over the image in a fixed grid pattern. As it scans over the grid, information is collected as to whether or not the measuring element is at the edge of the pattern. The number of measuring elements that are at the edge is then used to calculate the fractal dimension (<a class="reference external" href="https://en.wikipedia.org/wiki/Box_counting">https://en.wikipedia.org/wiki/Box_counting</a>).</p>
+<p>One way to determine fractal dimension of an image is the box counting method. Boxes of various sizes are laid over the image in a fixed grid pattern. The number of boxes that span the edge of the pattern (i.e. partially 1 and partially 0) are tallied as a function of box size. This count is then used to calculate the fractal dimension (<a class="reference external" href="https://en.wikipedia.org/wiki/Box_counting">https://en.wikipedia.org/wiki/Box_counting</a>).</p>
 </div>
 </div>
 <div class="section" id="Mathematical-Definition">
@@ -919,8 +909,8 @@ div.rendered_html tbody tr:hover {
 <p><span class="math notranslate nohighlight">\(N \propto \frac{1}{D^F}\)</span></p>
 <p><span class="math notranslate nohighlight">\(F = \lim_{D \to 0} \frac{-log N(D)}{log(D)}\)</span></p>
 <ul class="simple">
-<li><p>N: number of measuring elements</p></li>
-<li><p>D: size of measuring element</p></li>
+<li><p>N: number of boxes of side D that span an edge</p></li>
+<li><p>D: size of the boxes</p></li>
 <li><p>F: fractal dimension</p></li>
 </ul>
 </div>
@@ -980,9 +970,9 @@ div.rendered_html tbody tr:hover {
 <span></span><span class="n">fig</span><span class="p">,</span> <span class="p">(</span><span class="n">ax1</span><span class="p">,</span> <span class="n">ax2</span><span class="p">)</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
 <span class="n">ax1</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
 <span class="n">ax1</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
-<span class="n">ax1</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;log D&#39;</span><span class="p">)</span>
-<span class="n">ax1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;log N&#39;</span><span class="p">)</span>
-<span class="n">ax2</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;log D&#39;</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;box edge length&#39;</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;number of boxes spanning phases&#39;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;box edge length&#39;</span><span class="p">)</span>
 <span class="n">ax2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;slope&#39;</span><span class="p">)</span>
 <span class="n">ax2</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
 <span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">count</span><span class="p">,</span><span class="s1">&#39;-o&#39;</span><span class="p">)</span>
@@ -996,6 +986,7 @@ div.rendered_html tbody tr:hover {
 <div class="output_area docutils container">
 <img alt="../../../_images/examples_metrics_tutorials_computing_fractal_dim_9_0.svg" src="../../../_images/examples_metrics_tutorials_computing_fractal_dim_9_0.svg" /></div>
 </div>
+<p>The horizontal portion of the <code class="docutils literal notranslate"><span class="pre">slope</span> <span class="pre">vs</span> <span class="pre">box</span> <span class="pre">edge</span> <span class="pre">length</span></code> curve, between <span class="math notranslate nohighlight">\(10^1\)</span> and <span class="math notranslate nohighlight">\(10^2\)</span> is a flat line with a value of approximately 1.9. Beyond a box edge length of <span class="math notranslate nohighlight">\(10^2\)</span> the analysis becomes impacted by the finite image size so the result begins to diverge.</p>
 </div>
 </div>
 

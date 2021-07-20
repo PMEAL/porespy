@@ -393,11 +393,6 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../../metrics/howtos/geometrical_tortuosity.html">
-   geometrical_tortuosity
-  </a>
- </li>
- <li class="toctree-l1">
   <a class="reference internal" href="../../metrics/howtos/linear_density.html">
    lineal_path_distribution
   </a>
@@ -443,12 +438,7 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../../metrics/howtos/two_point_correlation_bf.html">
-   two_point_correlation_bf
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../metrics/howtos/two_point_correlation_fft.html">
+  <a class="reference internal" href="../../metrics/howtos/two_point_correlation.html">
    two_point_correlation_fft
   </a>
  </li>
@@ -915,7 +905,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">snow_out</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">snow_partitioning</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">r_max</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">0.4</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">snow_out</span><span class="o">.</span><span class="n">_fields</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">snow_out</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -924,7 +914,14 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-(&#39;im&#39;, &#39;dt&#39;, &#39;peaks&#39;, &#39;regions&#39;)
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+Item                      Description
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+im                        Image of size (500, 500)
+dt                        Image of size (500, 500)
+peaks                     Image of size (500, 500)
+regions                   Image of size (500, 500)
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
