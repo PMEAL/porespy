@@ -26,7 +26,7 @@ class GeneratorTest():
         assert np.shape(im.squeeze()) == (50, 50, 50)
         # Now, testing cylinders with porosity as input
         im = ps.generators.cylinders(
-            shape=[50, 50, 50], r=3, porosity=0.5, max_iter=10)
+            shape=[50, 50, 50], r=3, porosity=0.5, maxiter=10)
         assert im.dtype == bool
         assert np.shape(im.squeeze()) == (50, 50, 50)
         porosity = im.sum() / im.size
@@ -294,11 +294,11 @@ class GeneratorTest():
         assert e2 < e1
         im = np.ones([400, 400], dtype=bool)
         np.random.seed(0)
-        im = ps.generators.pseudo_gravity_packing(im=im, r=20, max_iter=10)
+        im = ps.generators.pseudo_gravity_packing(im=im, r=20, maxiter=10)
         e3 = im.sum()/im.size
         im = np.ones([400, 400], dtype=bool)
         np.random.seed(0)
-        im = ps.generators.pseudo_gravity_packing(im=im, r=50, max_iter=10)
+        im = ps.generators.pseudo_gravity_packing(im=im, r=50, maxiter=10)
         e4 = im.sum()/im.size
         assert e4 > e3
 

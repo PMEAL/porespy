@@ -282,12 +282,12 @@ def _make_choice(options_im, free_sites):
     choice = False
     count = 0
     upper_limit = len(free_sites)
-    max_iters = upper_limit * 20
+    maxiter = upper_limit * 20
     if options_im.ndim == 2:
         coords = [-1, -1]
         Nx, Ny = options_im.shape
         while not choice:
-            if count >= max_iters:
+            if count >= maxiter:
                 coords = [-1, -1]
                 break
             ind = np.random.randint(0, upper_limit)
@@ -302,7 +302,7 @@ def _make_choice(options_im, free_sites):
         coords = [-1, -1, -1]
         Nx, Ny, Nz = options_im.shape
         while not choice:
-            if count >= max_iters:
+            if count >= maxiter:
                 coords = [-1, -1, -1]
                 break
             ind = np.random.randint(0, upper_limit)
@@ -937,7 +937,7 @@ def cylinders(shape: List[int],
               phi_max: float = 0,
               theta_max: float = 90,
               length: float = None,
-              max_iter: int = 3):
+              maxiter: int = 3):
     r"""
     Generates a binary image of overlapping cylinders given porosity OR
     number of cylinders.
@@ -978,7 +978,7 @@ def cylinders(shape: List[int],
         cylinder. Note that one or both of the ends *may* still lie
         outside the domain, depending on the randomly chosen center point
         of the cylinder.
-    max_iter : int
+    maxiter : int
         The number of fractional fiber insertions used to target the
         requested porosity. By default a value of 3 is used (and this is
         typically effective in getting very close to the targeted
@@ -1006,7 +1006,7 @@ def cylinders(shape: List[int],
     fraction of the estimated number, the true cylinder volume is
     calculated, the estimate refined, and a larger fraction of cylinders
     inserted. This is repeated a number of times according to the
-    'max_iter' argument, yielding an image with a porosity close to
+    ``maxiter`` argument, yielding an image with a porosity close to
     the goal.
 
     Examples
@@ -1030,7 +1030,7 @@ def cylinders(shape: List[int],
     if porosity is None:
         raise Exception("'ncylinders' and 'porosity' can't be both None")
 
-    # if max_iter < 3:
+    # if maxiter < 3:
     #     raise Exception("Iterations must be greater than or equal to 3")
 
     vol_total = float(np.prod(shape))
@@ -1051,10 +1051,10 @@ def cylinders(shape: List[int],
     # Rough estimate of n_fibers
     n_fibers_added = 0
     # Calculate fraction of fibers to be added in each iteration.
-    subdif = 0.8 / np.sum(np.arange(1, max_iter) ** 2)
+    subdif = 0.8 / np.sum(np.arange(1, maxiter) ** 2)
     fractions = [0.2]
-    for i in range(1, max_iter):
-        fractions.append(fractions[i - 1] + (max_iter - i) ** 2 * subdif)
+    for i in range(1, maxiter):
+        fractions.append(fractions[i - 1] + (maxiter - i) ** 2 * subdif)
 
     im = np.ones(shape, dtype=bool)
     for frac in tqdm(fractions, **settings.tqdm):

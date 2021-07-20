@@ -107,7 +107,7 @@ def _make_ball(r, smooth=True):
     return s
 
 
-def pseudo_gravity_packing(im, r, clearance=0, axis=0, max_iter=1000):
+def pseudo_gravity_packing(im, r, clearance=0, axis=0, maxiter=1000):
     r"""
     Iteratively inserts spheres at the lowest accessible point in an image,
     mimicking a gravity packing.
@@ -125,7 +125,7 @@ def pseudo_gravity_packing(im, r, clearance=0, axis=0, max_iter=1000):
         negative for overlapping spheres, but ``abs(clearance) > r``.
     axis : int (default is 0)
         The axis along which gravity acts.
-    max_iter : int (default is 1000)
+    maxiter : int (default is 1000)
         The maximum number of spheres to add
 
     Returns
@@ -147,7 +147,7 @@ def pseudo_gravity_packing(im, r, clearance=0, axis=0, max_iter=1000):
     sites = trim_disconnected_blobs(im=sites, inlets=inlets)
     x_min = np.where(sites)[0].min()
     n = None
-    for n in tqdm(range(max_iter), **settings.tqdm):
+    for n in tqdm(range(maxiter), **settings.tqdm):
         if im.ndim == 2:
             x, y = np.where(sites[x_min:x_min+2*r, ...])
         else:
@@ -176,7 +176,7 @@ def pseudo_gravity_packing(im, r, clearance=0, axis=0, max_iter=1000):
 def pseudo_electrostatic_packing(im, r, sites=None,
                                  clearance=0,
                                  protrusion=0,
-                                 max_iter=1000):
+                                 maxiter=1000):
     r"""
     Iterativley inserts spheres as close to the given sites as possible.
 
@@ -195,7 +195,7 @@ def pseudo_electrostatic_packing(im, r, sites=None,
         acceptable to create overlaps, but ``abs(clearance) < r``.
     protrusion : int (optional, default=0)
         The amount that spheres are allowed to protrude beyond the active phase.
-    max_iter : int (optional, default=1000)
+    maxiter : int (optional, default=1000)
         The maximum number of spheres to insert.
 
     Returns
@@ -217,7 +217,7 @@ def pseudo_electrostatic_packing(im, r, sites=None,
     r = r + clearance
     # Get initial options
     options = np.where(dt == 1)
-    for _ in tqdm(range(max_iter), **settings.tqdm):
+    for _ in tqdm(range(maxiter), **settings.tqdm):
         hits = dt[options] < dtmax
         if hits.sum() == 0:
             if dt.min() == dtmax:

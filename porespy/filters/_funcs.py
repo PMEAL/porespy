@@ -436,7 +436,7 @@ def trim_extrema(im, h, mode="maxima"):
     return result
 
 
-def flood(im, labels, mode="max", func=None):
+def flood(im, labels, mode="max"):
     r"""
     Floods/fills each region in an image with a single value based on the
     specific values in that region.
