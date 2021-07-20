@@ -678,11 +678,12 @@ def make_contiguous(im, mode='keep_zeros'):
     return im_new
 
 
-def get_border(shape, thickness=1, mode='edges', return_indices=False):
+def get_border(shape, thickness=1, mode='edges'):
     r"""
-    Creates an array of specified size with corners, edges or faces labelled as
-    True.  This can be used as mask to manipulate values laying on the
-    perimeter of an image.
+    Create an array with corners, edges or faces labelled as ``True``.
+
+    This can be used as mask to manipulate values laying on the perimeter of
+    an image.
 
     Parameters
     ----------
@@ -693,20 +694,16 @@ def get_border(shape, thickness=1, mode='edges', return_indices=False):
     mode : string
         The type of border to create.  Options are 'faces', 'edges' (default)
         and 'corners'.  In 2D 'faces' and 'edges' give the same result.
-    return_indices : boolean
-        If ``False`` (default) an image is returned with the border voxels set
-        to ``True``.  If ``True``, then a tuple with the x, y, z (if ``im`` is
-        3D) indices is returned.  This tuple can be used directly to index into
-        the image, such as ``im[tup] = 2``.
-    asmask : Boolean
-        If ``True`` (default) then an image of the specified ``shape`` is
-        returned, otherwise indices of the border voxels are returned.
 
     Returns
     -------
     image : ND-array
         An ND-array of specified shape with ``True`` values at the perimeter
-        and ``False`` elsewhere
+        and ``False`` elsewhere.
+
+    Notes
+    -----
+    The indices of the ``True`` values can be found using ``numpy.where``.
 
     Examples
     --------
@@ -757,8 +754,6 @@ def get_border(shape, thickness=1, mode='edges', return_indices=False):
             border[t:-t, 0::, 0::] = False
             border[0::, t:-t, 0::] = False
             border[0::, 0::, t:-t] = False
-    if return_indices:
-        border = sp.where(border)
     return border
 
 
