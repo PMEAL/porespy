@@ -13,7 +13,7 @@ def random_cantor_dust(shape, n, p=2, f=0.8):
     Parameters
     ----------
     shape : array_like
-        The shape of the final image.  If not evenly divisible by ``p**n`` it will
+        The shape of the final image.  If not evenly divisible by $p**n$ it will
         be increased to the nearest size that is.
     n : int
         The number of times to iteratively divide the image.

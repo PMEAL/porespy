@@ -3,11 +3,12 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
 
-def bar(tup, h='pdf', **kwargs):  # pragma: no cover
+def bar(results, h='pdf', **kwargs):  # pragma: no cover
     r"""
     Convenience wrapper for matplotlib's ``bar``.
 
     This automatically:
+
         * fetches the ``bin_centers``
         * fetches the bin heights from the specified ``h``
         * sets the bin widths
@@ -15,8 +16,8 @@ def bar(tup, h='pdf', **kwargs):  # pragma: no cover
 
     Parameters
     ----------
-    tup : named-tuple
-        The named tuple returned by various functions in the
+    results : object
+        The objects returned by various functions in the
         ``porespy.metrics`` submodule, such as ``chord_length_distribution``.
     h : str
         The value to use for bin heights.  The default is ``pdf``, but
@@ -32,9 +33,9 @@ def bar(tup, h='pdf', **kwargs):  # pragma: no cover
     """
     if 'edgecolor' not in kwargs:
         kwargs['edgecolor'] = 'k'
-    fig = plt.bar(x=tup.bin_centers, height=getattr(tup, h),
-                  width=tup.bin_widths, **kwargs)
-    xlab = [attr for attr in tup.__dir__() if not attr.startswith('_')][0]
+    fig = plt.bar(x=results.bin_centers, height=getattr(results, h),
+                  width=results.bin_widths, **kwargs)
+    xlab = [attr for attr in results.__dir__() if not attr.startswith('_')][0]
     plt.xlabel(xlab)
     plt.ylabel(h)
     return fig
@@ -45,9 +46,11 @@ def imshow(*im, ind=None, axis=None):  # pragma: no cover
     Convenience wrapper for matplotlib's ``imshow``.
 
     This automatically:
+
         * slices a 3D image in the middle of the last axis
         * uses a masked array to make 0's white
         * sets the origin to 'lower' so bottom-left corner is [0, 0]
+        * disables interpolation
 
     Parameters
     ----------

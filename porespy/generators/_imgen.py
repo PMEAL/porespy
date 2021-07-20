@@ -34,7 +34,7 @@ def insert_shape(im, element, center=None, corner=None, value=1, mode="overwrite
     corner : tuple
         Coordinates indicating the position in the main image where the
         lower corner (i.e. [0, 0, 0]) of the inserted image should be anchored.
-        If ``corner`` is given then ``corner`` cannot be specified.
+        If ``center`` is given then ``corner`` cannot be specified.
     value : scalar
         A scalar value to apply to the sub-image.  The default is 1.
     mode : string
@@ -378,7 +378,7 @@ def polydisperse_spheres(
     shape: List[int], porosity: float, dist, nbins: int = 5, r_min: int = 5
 ):
     r"""
-    Create an image of randomly place, overlapping spheres with a distribution
+    Create an image of randomly placed, overlapping spheres with a distribution
     of radii.
 
     Parameters
@@ -433,7 +433,7 @@ def polydisperse_spheres(
 
 def voronoi_edges(shape: List[int], r: int, ncells: int, flat_faces: bool = True):
     r"""
-    Create an image of the edges in a Voronoi tessellation
+    Create an image from the edges of a Voronoi tessellation
 
     Parameters
     ----------
@@ -446,7 +446,8 @@ def voronoi_edges(shape: List[int], r: int, ncells: int, flat_faces: bool = True
         The number of Voronoi cells to include in the tesselation.
     flat_faces : Boolean
         Whether the Voronoi edges should lie on the boundary of the
-        image (True), or if edges outside the image should be removed (False).
+        image (``True``), or if edges outside the image should be removed
+        (``False``).
 
     Returns
     -------
@@ -530,7 +531,7 @@ def lattice_spheres(shape: List[int],
                     smooth: bool = True,
                     lattice: str = "sc"):
     r"""
-    Generates a cubic packing of spheres in a specified lattice
+    Generate a cubic packing of spheres in a specified lattice
     arrangement.
 
     Parameters
@@ -775,6 +776,16 @@ def blobs(shape: List[int], porosity: float = 0.5, blobiness: int = 1,
     See Also
     --------
     norm_to_uniform
+
+    Notes
+    -----
+    This function generates random noise, the applies a gaussian blur to the
+    noise with a sigma controlled by the blobiness argument as:
+
+        $$ np.mean(shape) / (40 * blobiness) $$
+
+    The value of 40 was chosen so that a ``blobiness`` of 1 gave a reasonable
+    result.
 
     Examples
     --------

@@ -8,7 +8,7 @@ def show_3D(im):  # pragma: no cover
     r"""
     Rotates a 3D image and creates an angled view for rough 2D visualization.
 
-    Because it rotates the image it can be slow for large image, so is
+    Because it rotates the image it can be slow for large images, so is
     mostly meant for rough checking of small prototype images.
 
     Parameters

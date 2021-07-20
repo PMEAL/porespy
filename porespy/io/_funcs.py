@@ -23,13 +23,10 @@ def dict_to_vtk(data, filename, voxel_size=1, origin=(0, 0, 0)):
         A dictionary of *key: value* pairs, where the *key* is the name of the
         scalar property stored in each voxel of the array stored in the
         corresponding *value*.
-
     path : string
         Path to output file
-
     voxel_size : int
         The side length of the voxels (voxels  are cubic)
-
     origin : float
         data origin (according to selected voxel size)
 
@@ -55,22 +52,17 @@ def to_vtk(im, filename, divide=False, downsample=False, voxel_size=1, vox=False
     ----------
     im : 3D image
         The image of the porous material
-
     path : string
         Path to output file
-
     divide : bool
         vtk files can get very large, this option allows you for two output
         files, divided at z = half. This allows for large data sets to be
         imaged without loss of information
-
     downsample : bool
         very large images acan be downsampled to half the size in each
         dimension, this doubles the effective voxel size
-
     voxel_size : int
         The side length of the voxels (voxels  are cubic)
-
     vox : bool
         For an image that is binary (1's and 0's) this reduces the file size by
         using int8 format (can also be used to reduce file size when accuracy
@@ -121,10 +113,8 @@ def to_palabos(im, filename, solid=0):
     ----------
     im : ND-array
         The image of the porous material
-
     filename : string
         Path to output file
-
     solid : int
         The value of the solid voxels in the image used to convert image to
         binary with all other voxels assumed to be fluid.
@@ -166,16 +156,12 @@ def openpnm_to_im(
     ----------
     network : OpenPNM GenericNetwork
         Network from which voxel image is to be generated
-
     pore_shape : str
         Shape of pores in the network, valid choices are "sphere", "cube"
-
     throat_shape : str
         Shape of throats in the network, valid choices are "cylinder", "cuboid"
-
     max_dim : int
         Number of voxels in the largest dimension of the network
-
     rtol : float
         Stopping criteria for finding the smallest voxel image such that
         further increasing the number of voxels in each dimension by 25% would
@@ -212,22 +198,17 @@ def to_stl(im, filename, divide=False, downsample=False, voxel_size=1, vox=False
     ----------
     im : 3D image
         The image of the porous material
-
     path : string
         Path to output file
-
     divide : bool
         vtk files can get very large, this option allows you for two output
         files, divided at z = half. This allows for large data sets to be
         imaged without loss of information
-
     downsample : bool
         very large images acan be downsampled to half the size in each
         dimension, this doubles the effective voxel size
-
     voxel_size : int
         The side length of the voxels (voxels  are cubic)
-
     vox : bool
         For an image that is binary (1's and 0's) this reduces the file size by
         using int8 format (can also be used to reduce file size when accuracy
@@ -267,10 +248,8 @@ def _save_stl(im, vs, filename):
     ----------
     im : 3D image
         The image of the porous material
-
     voxel_size : int
         The side length of the voxels (voxels are cubic)
-
     filename : string
         Path to output file
 
@@ -488,7 +467,7 @@ def spheres_to_comsol(filename, im=None, centers=None, radii=None):
     -----
     If ``im`` is given then some image analysis is performed to find sphere
     centers so it may not perfectly represent the spheres in the original
-    image. This is especially true for overlapping sphere and sphere extending
+    image. This is especially true for overlapping sphere and spheres extending
     beyond the edge of the image.
 
     """
