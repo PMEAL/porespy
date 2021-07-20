@@ -1202,6 +1202,9 @@ def prune_branches(skel, branch_points=None, iterations=1):
         An image the same size ``skel`` with ``True`` values indicating the
         branch points of the skeleton.  If this is not provided it is
         calculated automatically.
+    iterations : int
+        The number of times to recursively repeat the process.  The default is
+        1.
 
     Returns
     -------

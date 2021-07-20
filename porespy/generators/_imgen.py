@@ -664,7 +664,7 @@ def lattice_spheres(shape: List[int],
 def overlapping_spheres(shape: List[int],
                         r: int,
                         porosity: float,
-                        iter_max: int = 10,
+                        maxiter: int = 10,
                         tol: float = 0.01):
     r"""
     Generate a packing of overlapping mono-disperse spheres
@@ -678,7 +678,7 @@ def overlapping_spheres(shape: List[int],
         The radius of spheres in the packing.
     porosity : scalar
         The porosity of the final image, accurate to the given tolerance.
-    iter_max : int
+    maxiter : int
         Maximum number of iterations for the iterative algorithm that improves
         the porosity of the final image to match the given value.
     tol : float
@@ -723,7 +723,7 @@ def overlapping_spheres(shape: List[int],
     # # Newton's method for getting image porosity match the given
     # w = 1.0                         # Damping factor
     # dN = 5 if ndim == 2 else 25     # Perturbation
-    # for i in range(iter_max):
+    # for i in range(maxiter):
     #     err = g(f(N)) - porosity
     #     d_err = (g(f(N+dN)) - g(f(N))) / dN
     #     if d_err == 0:
@@ -735,7 +735,7 @@ def overlapping_spheres(shape: List[int],
 
     # Bisection search: N is always undershoot (bc. of overlaps)
     N_low, N_high = N, 4 * N
-    for i in range(iter_max):
+    for i in range(maxiter):
         N = np.mean([N_high, N_low], dtype=int)
         err = g(f(N)) - porosity
         if err > 0:

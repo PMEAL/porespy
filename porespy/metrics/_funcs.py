@@ -226,7 +226,7 @@ def radial_density_distribution(dt, bins=10, log=False, voxel_size=1):
     return rdf
 
 
-def lineal_path_distribution(im, bins=25, voxel_size=1, log=False):
+def lineal_path_distribution(im, bins=10, voxel_size=1, log=False):
     r"""
     Determines the probability that a point lies within a certain distance
     of the opposite phase *along a specified direction*
@@ -308,7 +308,7 @@ def lineal_path_distribution(im, bins=25, voxel_size=1, log=False):
     return cld
 
 
-def chord_length_distribution(im, bins=None, log=False, voxel_size=1,
+def chord_length_distribution(im, bins=10, log=False, voxel_size=1,
                               normalization='count'):
     r"""
     Determines the distribution of chord lengths in an image containing chords.
@@ -521,7 +521,7 @@ def two_point_correlation_bf(im, spacing=10):
     points, then counting the instances where both pairs lie in the void space.
 
     This approach uses a distance matrix so can consume memory very quickly for
-    large 3D images and/or close spacing.
+    large 3D images and/or close spacing.  It is recommended to avoid this.
 
     Examples
     --------
@@ -603,8 +603,7 @@ def _radial_profile(autocorr, r_max, nbins=100):
 
 def two_point_correlation(im):
     r"""
-    Calculates the two-point correlation function using fourier
-    transforms.
+    Calculate the two-point correlation function using Fourier transforms
 
     Parameters
     ----------
@@ -672,8 +671,7 @@ def _parse_histogram(h, voxel_size=1):
 
 def chord_counts(im):
     r"""
-    Finds the length of each chord in the supplied image and returns a list
-    of their individual sizes
+    Find the length of each chord in the supplied image
 
     Parameters
     ----------
@@ -707,7 +705,7 @@ def chord_counts(im):
 
 def phase_fraction(im, normed=True):
     r"""
-    Calculates the number (or fraction) of each phase in an image
+    Calculate the fraction of each phase in an image
 
     Parameters
     ----------
@@ -755,15 +753,14 @@ def pc_curve_from_ibip(seq, sizes, im=None, sigma=0.072, theta=180, voxel_size=1
         The image containing the invasion sequence values returned from the
         ``ibip`` function.
     sizes : ndarray
-        This image is returned from ``ibip`` when ``return_sizes``
-        is set to ``True``.
+        The image containing the invasion size values returned from ``ibip``
     im : ndarray
         The voxel image of the porous media.  It not provided then the void
-        space is assumed to be ``im = !(seq == 0)``.
+        space is assumed to be ``im = ~(seq == 0)``.
     sigma : float
         The surface tension of the fluid-fluid system of interest
     theta : float
-        The contact angle through the invading phase in degrees
+        The contact angle measured through the invading phase in degrees
     voxel_size : float
         The voxel resolution of the image
     stepped : boolean
@@ -824,14 +821,14 @@ def pc_curve_from_mio(sizes, im=None, sigma=0.072, theta=180, voxel_size=1,
     Parameters
     ----------
     sizes : ndarray
-        This image is returned from ``porosimetry``
+        The image of invasion sizes returned from ``porosimetry``
     im : ndarray
         The voxel image of the porous media.  It not provided then the void
         space is assumed to be ``im = ~(sizes == 0)``.
     sigma : float
         The surface tension of the fluid-fluid system of interest
     theta : float
-        The contact angle through the invading phase in degrees
+        The contact angle measured through the invading phase in degrees
     voxel_size : float
         The voxel resolution of the image
     stepped : boolean
@@ -888,18 +885,21 @@ def porosity(im):
     solid phase.
 
     All other values are ignored, so this can also return the relative
-    fraction of a phase of interest in trinary or multiphase images.
+    fraction of a phase of interest in multiphase images.
 
     Parameters
     ----------
     im : ndarray
-        Image of the void space with 1's indicating void phase (or True) and
-        0's indicating the solid phase (or False).
+        Image of the void space with 1's indicating void phase (or ``True``)
+        and 0's indicating the solid phase (or ``False``).
 
     Returns
     -------
     porosity : float
         Calculated as the sum of all 1's divided by the sum of all 1's and 0's.
+        Note that the denominator is *not* the total image size, so putting
+        values of 2 in some voxels, for instance, will remove those voxels
+        from consideration.
 
     See Also
     --------
