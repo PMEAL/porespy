@@ -962,15 +962,10 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">inv_seq</span><span class="p">,</span> <span class="n">inv_size</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">ibip</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">inlets</span><span class="o">=</span><span class="n">bd</span><span class="p">,</span> <span class="n">maxiter</span><span class="o">=</span><span class="mi">15000</span><span class="p">)</span>
+<span></span><span class="n">out</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">ibip</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">inlets</span><span class="o">=</span><span class="n">bd</span><span class="p">,</span> <span class="n">maxiter</span><span class="o">=</span><span class="mi">15000</span><span class="p">)</span>
+<span class="n">inv_seq</span><span class="p">,</span> <span class="n">inv_size</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">inv_sequence</span><span class="p">,</span> <span class="n">out</span><span class="o">.</span><span class="n">inv_sizes</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "2b1a19dec2d749da8909e1db90a44bc1", "version_major": 2, "version_minor": 0}</script></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
@@ -978,7 +973,6 @@ div.rendered_html tbody tr:hover {
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 
-No more accessible invasion sites found...exiting
 </pre></div></div>
 </div>
 </div>
@@ -1001,7 +995,9 @@ No more accessible invasion sites found...exiting
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "", "version_major": 2, "version_minor": 0}</script></div>
+<div class="highlight"><pre>
+
+</pre></div></div>
 </div>
 </div>
 <div class="section" id="Run-standard-MIO-for-comparison:">
@@ -1022,17 +1018,13 @@ No more accessible invasion sites found...exiting
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "", "version_major": 2, "version_minor": 0}</script></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "", "version_major": 2, "version_minor": 0}</script></div>
+<div class="highlight"><pre>
+
+</pre></div></div>
 </div>
 <p>Comparing the invasion configurations between the MIO and IBIP algorithms below suggests that the methods produce similar results when trapping is turned off. In fact, it can be shown that the MIO result is a subset of the IBIP result.</p>
 </div>
@@ -1113,17 +1105,13 @@ of a 500 x 500 image. The differences are due to the numerical precision of the 
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "", "version_major": 2, "version_minor": 0}</script></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "", "version_major": 2, "version_minor": 0}</script></div>
+<div class="highlight"><pre>
+
+</pre></div></div>
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
