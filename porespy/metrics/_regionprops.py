@@ -16,7 +16,7 @@ from loguru import logger
 
 def props_to_DataFrame(regionprops):
     r"""
-    Returns a Pandas DataFrame containing all the scalar metrics for each
+    Create a ``pandas`` DataFrame containing all the scalar metrics for each
     region, such as volume, sphericity, and so on, calculated by
     ``regionprops_3D``.
 
@@ -67,7 +67,7 @@ def props_to_DataFrame(regionprops):
 
 def prop_to_image(regionprops, shape, prop):
     r"""
-    Creates an image with each region colored according the specified ``prop``,
+    Create an image with each region colored according the specified ``prop``,
     as obtained by ``regionprops_3d``.
 
     Parameters
@@ -111,14 +111,13 @@ def regionprops_3D(im):
     r"""
     Calculates various metrics for each labeled region in a 3D image.
 
-    The ``regionsprops`` method in **skimage** is very thorough for 2D images,
-    but is a bit limited when it comes to 3D images, so this function aims
-    to fill this gap.
+    This functions offers a few extras for 3D images that are not provided
+    by the ``regionprops`` function in ``scikit-image``.
 
     Parameters
     ----------
     im : array_like
-        An imaging containing at least one labeled region.  If a boolean image
+        An image containing at least one labeled region. If a boolean image
         is received than the ``True`` voxels are treated as a single region
         labeled ``1``.  Regions labeled 0 are ignored in all cases.
 

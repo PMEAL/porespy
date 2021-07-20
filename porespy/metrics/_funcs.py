@@ -18,9 +18,10 @@ tqdm = get_tqdm()
 
 def representative_elementary_volume(im, npoints=1000):
     r"""
-    Calculates the porosity of the image as a function subdomain size.  This
-    function extracts a specified number of subdomains of random size, then
-    finds their porosity.
+    Calculates the porosity of an image as a function subdomain size.
+
+    This function extracts a specified number of subdomains of random size,
+    then finds their porosity.
 
     Parameters
     ----------
@@ -32,11 +33,16 @@ def representative_elementary_volume(im, npoints=1000):
 
     Returns
     -------
-    result : named_tuple
-        A tuple containing the *volume* and *porosity* of each subdomain
-        tested in arrays ``npoints`` long.  They can be accessed as
-        attributes of the tuple.  They can be conveniently plotted
-        by passing the tuple to matplotlib's ``plot`` function using the
+    result : Results object
+        A custom object with the following data added as named attributes:
+
+        'volume'
+            The total volume of each cubic subdomain tested
+        'porosity'
+            The porosity of each subdomain tested
+
+        These attributes can be conveniently plotted by passing the Results
+        object to matplotlib's ``plot`` function using the
         \* notation: ``plt.plot(*result, 'b.')``.  The resulting plot is
         similar to the sketch given by Bachmat and Bear [1]
 
@@ -45,9 +51,6 @@ def representative_elementary_volume(im, npoints=1000):
     This function is frustratingly slow.  Profiling indicates that all the time
     is spent on scipy's ``sum`` function which is needed to sum the number of
     void voxels (1's) in each subdomain.
-
-    Also, this function is a prime target for parallelization since the
-    ``npoints`` are calculated independenlty.
 
     References
     ----------
@@ -61,6 +64,8 @@ def representative_elementary_volume(im, npoints=1000):
     <https://porespy.org/examples/metrics/howtos/representative_elementary_volume.html>`_
     to view online example.
     """
+    # TODO: this function is a prime target for parallelization since the
+    # ``npoints`` are calculated independenlty.
     im_temp = np.zeros_like(im)
     crds = np.array(np.random.rand(npoints, im.ndim) * im.shape, dtype=int)
     pads = np.array(np.random.rand(npoints) * np.amin(im.shape) / 2 + 10, dtype=int)
@@ -86,7 +91,7 @@ def representative_elementary_volume(im, npoints=1000):
 
 def porosity_profile(im, axis=0):
     r"""
-    Returns a porosity profile along the specified axis
+    Computes the porosity profile along the specified axis
 
     Parameters
     ----------
@@ -165,8 +170,8 @@ def radial_density_distribution(dt, bins=10, log=False, voxel_size=1):
 
     Returns
     -------
-    result : named_tuple
-        A named-tuple containing several 1D arrays:
+    result : Results object
+        A custom object with the following data added as named attributes:
 
         *R* or *LogR*
             Radius, equivalent to ``bin_centers``
@@ -244,13 +249,15 @@ def lineal_path_distribution(im, bins=25, voxel_size=1, log=False):
     log : boolean
         If ``True`` (default) the size data is converted to log (base-10)
         values before processing.  This can help to plot wide size
-        distributions or to better visualize the in the small size region.
+        distributions or to better visualize data in the small size region.
         Note that you should not anti-log the radii values in the retunred
-        ``tuple``, since the binning is performed on the logged radii values.
+        ``results``, since the binning is performed on the logged radii values.
 
     Returns
     -------
-    result : named_tuple
+    result : Results object
+        A custom object with the following data added as named attributes:
+
         *L* or *LogL*
             Length, equivalent to ``bin_centers``
         *pdf*
@@ -340,9 +347,8 @@ def chord_length_distribution(im, bins=None, log=False, voxel_size=1,
 
     Returns
     -------
-    result : named_tuple
-        A tuple containing the following elements, which can be retrieved by
-        attribute name:
+    result : Results object
+        A custom object with the following data added as named attributes:
 
         *L* or *LogL*
             Chord length, equivalent to ``bin_centers``
@@ -426,9 +432,8 @@ def pore_size_distribution(im, bins=10, log=True, voxel_size=1):
 
     Returns
     -------
-    result : named_tuple
-        A named-tuple containing the following attributes which can be accessed
-        by name:
+    result : Results object
+        A custom object with the following data added as named attributes:
 
         *R* or *logR*
             Radius, equivalent to ``bin_centers``
@@ -492,14 +497,17 @@ def two_point_correlation_bf(im, spacing=10):
 
     Returns
     -------
-    result : named_tuple
-        A tuple containing the x and y data for plotting the two-point
-        correlation function, using the \*args feature of matplotlib's
-        plot function. The x array is the distances between points and
-        the y array is corresponding probabilities that points of a
-        given distance both lie in the void space. The distance values
-        are binned as follows:
-        ``bins = range(start=0, stop=np.amin(im.shape)/2, stride=spacing)``
+    result : Results object
+        A custom object with the following data added as named attributes:
+
+        'distance'
+            The distance between two points. The distance values are binned
+            as:
+        $$ bins = range(start=0, stop=np.amin(im.shape)/2, stride=spacing) $$
+
+        'probability'
+            The probability that two points of the stated separation distance
+            are within the same phase
 
     Notes
     -----
@@ -600,12 +608,15 @@ def two_point_correlation(im):
 
     Returns
     -------
-    result : named_tuple
-        A tuple containing the x and y data for plotting the two-point
-        correlation function, using the \*args feature of matplotlib's
-        plot function. The x array is the distances between points and
-        the y array is corresponding probabilities that points of a
-        given distance both lie in the void space.
+    result : Results object
+        A custom object with the following data added as named attributes:
+
+        'distance'
+            The distance between two points.
+
+        'probability'
+            The probability that two points of the stated separation distance
+            are within the same phase
 
     Notes
     -----
@@ -752,11 +763,18 @@ def pc_curve_from_ibip(seq, sizes, im=None, sigma=0.072, theta=180, voxel_size=1
 
     Returns
     -------
-    pc_curve
-        An object with the capillary pressure (``pc``) and
-        non-wetting phase saturation (``snwp``) as attributes. If ``stepped``
-        was set to ``True`` then the values in this tuple include the corners
-        of the steps.
+    pc_curve : Results object
+        A custom object with the following data added as named attributes:
+
+        'pc'
+            The capillary pressure, computed using the Washburn equation with
+            the given fluid properties
+
+        'snwp'
+            the fraction of void space filled by non-wetting phase.
+
+        If ``stepped`` was set to ``True`` then the values include the corners
+        of the steps, which may be helpful for plotting.
 
     """
     if im is None:
@@ -813,11 +831,18 @@ def pc_curve_from_mio(sizes, im=None, sigma=0.072, theta=180, voxel_size=1,
 
     Returns
     -------
-    pc_curve
-        An object with the capillary pressure (``pc``) and
-        non-wetting phase saturation (``snwp``) as attributes.  If ``stepped``
-        was set to ``True`` then the values in this tuple include the corners
-        of the steps.
+    pc_curve : Results object
+        A custom object with the following data added as named attributes:
+
+        'pc'
+            The capillary pressure, computed using the Washburn equation with
+            the given fluid properties
+
+        'snwp'
+            the fraction of void space filled by non-wetting phase.
+
+        If ``stepped`` was set to ``True`` then the values include the corners
+        of the steps, which may be helpful for plotting.
 
     """
     if im is None:

@@ -13,9 +13,7 @@ tqdm = get_tqdm()
 @numba.jit(nopython=True, parallel=False)
 def insert_disks_at_points(im, coords, radii, v, smooth=True):
     r"""
-    Insert spheres (or disks) of specified radii into an ND-image at given locations.
-
-    This function uses numba to accelerate the process.
+    Insert spheres of specified radii into an ND-image at given locations.
 
     Parameters
     ----------
@@ -32,6 +30,10 @@ def insert_disks_at_points(im, coords, radii, v, smooth=True):
     smooth : boolean
         If ``True`` (default) then the spheres/disks will not have the litte
         nibs on the surfaces.
+
+    Notes
+    -----
+    This function uses numba to accelerate the process.
     """
     npts = len(coords[0])
     if im.ndim == 2:
@@ -112,14 +114,14 @@ def pseudo_gravity_packing(im, r, clearance=0, axis=0, max_iter=1000):
     Parameters
     ----------
     im : ND-array
-        The image controlling where the spheres should be added, indicated by
-        ``True`` values. A common option would be a cylindrical plug which would
+        Image with ``True`` values indicating the phase where spheres should be
+        inserted. A common option would be a cylindrical plug which would
         result in a tube filled with beads.
     r : int
         The radius of the spheres to be added
     clearance : int (default is 0)
-        The abount space to added between neighboring spheres. The value can be
-        negative for overlapping spheres, but abs(clearance) > r.
+        The amount space to add between neighboring spheres. The value can be
+        negative for overlapping spheres, but ``abs(clearance) > r``.
     axis : int (default is 0)
         The axis along which gravity acts.
     max_iter : int (default is 1000)
@@ -128,8 +130,9 @@ def pseudo_gravity_packing(im, r, clearance=0, axis=0, max_iter=1000):
     Returns
     -------
     spheres : ND-array
-        An image the same size as ``im`` with spheres indicated by ``True``.  The
-        spheres are only inserted locations that are
+        An image the same size as ``im`` with spheres indicated by ``True``.
+        The spheres are only inserted at locations that are accessible
+        from the top of the image.
 
     """
     logger.debug(f'Adding spheres of radius {r}')
@@ -188,7 +191,7 @@ def pseudo_electrostatic_packing(im, r, sites=None,
         If this is not given then the peaks in the distance transform are used.
     clearance : int (optional, default=0)
         The amount of space to put between each sphere. Negative values are
-        acceptable to create overlaps, but abs(clearance) < r.
+        acceptable to create overlaps, but ``abs(clearance) < r``.
     protrusion : int (optional, default=0)
         The amount that spheres are allowed to protrude beyond the active phase.
     max_iter : int (optional, default=1000)
