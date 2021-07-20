@@ -27,41 +27,81 @@ setup(
     long_description_content_type='text/markdown',
     version=about['__version__'],
     zip_safe=False,
-    classifiers=['Development Status :: 3 - Alpha',
-                 'License :: OSI Approved :: MIT License',
-                 'Programming Language :: Python',
-                 'Topic :: Scientific/Engineering',
-                 'Topic :: Scientific/Engineering :: Physics'],
-    packages=['porespy',
-              'porespy.tools',
-              'porespy.generators',
-              'porespy.metrics',
-              'porespy.filters',
-              'porespy.networks',
-              'porespy.dns',
-              'porespy.visualization',
-              'porespy.io'],
-    install_requires=['numpy',
-                      'scipy',
-                      'matplotlib',
-                      'scikit-image',
-                      'pandas',
-                      'imageio',
-                      'tqdm',
-                      'array_split',
-                      'pytrax',
-                      'pyevtk',
-                      'numba',
-                      'openpnm',
-                      'dask[complete]',
-                      'edt'],
+    classifiers=[
+        'Development Status :: 5 - Production/Stable',
+        'License :: OSI Approved :: MIT License',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3 :: Only',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
+        'Topic :: Scientific/Engineering',
+        'Topic :: Scientific/Engineering :: Physics'
+    ],
+    packages=[
+        'porespy',
+        'porespy.tools',
+        'porespy.generators',
+        'porespy.metrics',
+        'porespy.filters',
+        'porespy.filters.imagej',
+        'porespy.networks',
+        'porespy.dns',
+        'porespy.visualization',
+        'porespy.io'
+    ],
+    install_requires=[
+        'dask',
+        'edt',
+        'imageio',
+        'jupyterlab_widgets',
+        'loguru',
+        'matplotlib',
+        'numba',
+        'numpy',
+        'numpy-stl',
+        'openpnm',
+        'pandas',
+        'psutil',
+        'pyevtk',
+        'pyfastnoisesimd',
+        'scikit-fmm',
+        'scikit-image',
+        'scipy',
+        'tqdm',
+        'transforms3d',
+        'trimesh'
+    ],
     author='PoreSpy Team',
     author_email='jgostick@gmail.com',
     download_url='https://github.com/PMEAL/porespy/',
     url='http://porespy.org',
     project_urls={
-        'Documentation': 'https://porespy.readthedocs.io/en/dev/',
+        'Documentation': 'https://porespy.org/',
         'Source': 'https://github.com/PMEAL/porespy/',
         'Tracker': 'https://github.com/PMEAL/porespy/issues',
     },
 )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

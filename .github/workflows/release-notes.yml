@@ -1,4 +1,4 @@
-name: 📝 Release notes
+name: Release notes
 
 on:
   push:
@@ -18,10 +18,12 @@ jobs:
 
       - name: Generate release notes
         run: |
-          git fetch --all --tags
+          git fetch --all --tags --force
           chmod +x .github/workflows/logger.sh
+          chmod +x .github/workflows/utils.sh
+          source .github/workflows/utils.sh
           bash .github/workflows/logger.sh
-          echo ::set-env name=TAG::$(git tag | sort -V | tail -1)
+          echo "TAG=$(get_most_recent_tag)" >> $GITHUB_ENV
 
       - name: Create GitHub release
         uses: Roang-zero1/github-create-release-action@master

@@ -41,9 +41,71 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.ifconfig',
               'sphinx.ext.viewcode',
               'sphinx.ext.mathjax',
-              ]
+              'sphinx_copybutton',
+              'nbsphinx',
+              'nbsphinx_link',
+              'sphinx_panels']
+
+html_theme_options = {
+    "logo_link": "https://www.porespy.org",
+    "icon_links": [
+        {
+            "name": "GitHub",
+            "url": "https://github.com/PMEAL/porespy",
+            "icon": "fab fa-github-square",
+        },
+        {
+            "name": "Substack",
+            "url": "https://porespy.substack.com/",
+            "icon": "fas fa-envelope-square",
+        },
+        {
+            "name": "Twitter",
+            "url": "https://twitter.com/porespy",
+            "icon": "fab fa-twitter-square",
+        },
+    ],
+    "external_links": [
+        {
+            "name": "Issue Tracker", "url": "https://github.com/PMEAL/porespy/issues"
+        },
+        {
+            "name": "Get Help", "url": "https://github.com/PMEAL/porespy/discussions"
+        },
+    ],
+    "navigation_with_keys": False,
+    "show_prev_next": False,
+    "icon_links_label": "Quick Links",
+    "use_edit_page_button": False,
+    "search_bar_position": "sidebar",
+    "navbar_align": "left",
+}
+
+html_sidebars = {
+    "contributing": ["sidebar-search-bs.html"],
+    "changelog": [],
+    "examples/*": []
+}
+
+# So that 'sphinx-copybutton' only copies the actual code, not the prompt
+copybutton_prompt_text = r">>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: "
+copybutton_prompt_is_regexp = True
+
+html_js_files = ['js/custom.js']
+
+html_css_files = ['css/custom.css']
+
+nbsphinx_prompt_width = "0"
+
+panels_add_bootstrap_css = False  # to fix narrow width
 
 exclude_patterns = ['_build', '_templates']
+
+add_module_names = False  # porespy.generators --> generators
+
+autosummary_generate = True
+
+globaltoc_maxdepth = 2
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -110,8 +172,12 @@ html_show_sphinx = False
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-#
-html_theme = 'sphinx_rtd_theme'
+
+# html_theme = 'alabaster'
+# html_theme = 'sphinx_rtd_theme'
+html_theme = 'pydata_sphinx_theme'
+
+html_logo = '_static/images/porespy_logo.png'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the

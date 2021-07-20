@@ -1,29 +1,80 @@
+.. _front_page:
 
-.. image:: https://travis-ci.org/PMEAL/porespy.svg?branch=master
-   :target: https://travis-ci.org/PMEAL/porespy
+.. module:: porespy
+   :noindex:
 
-.. image:: https://codecov.io/gh/PMEAL/PoreSpy/branch/master/graph/badge.svg
-   :target: https://codecov.io/gh/PMEAL/PoreSpy
+.. image:: ./_static/images/porespy_logo.png
+   :name: banner
 
-.. image:: https://img.shields.io/badge/ReadTheDocs-GO-blue.svg
-   :target: http://porespy.readthedocs.io/en/master/
-
-.. image:: https://img.shields.io/pypi/v/porespy.svg
-   :target: https://pypi.python.org/pypi/porespy/
-
-.. image:: https://img.shields.io/badge/DOI-10.5281%2Fzenodo.2633284-blue.svg
-   :target: https://www.doi.org/10.5281/zenodo.2633284
-
-.. image:: https://img.shields.io/github/stars/PMEAL/porespy.svg?style=social&label=Star&maxAge=2592000
-   :target: https://GitHub.com/PMEAL/porespy/stargazers/
+###############################################
+Quantitative Image Analysis of Porous Materials
+###############################################
 
 
-=====================
-PoreSpy Documentation
-=====================
+What is PoreSpy? |stars|
+########################
+
+PoreSpy is a collection of image analysis functions used to extract information
+from 3D images of porous materials (typically obtained from X-ray
+tomography). There are other packages that offer generalized image analysis
+tools (i.e ``skimage`` and ``scipy.ndimage`` in the Python environment, ImageJ,
+MatLab's Image Processing Toolbox), but they all require building up
+complex scripts or macros to accomplish tasks of specific use to porous
+media. Porespy includes predefined functions to accomplish many of these
+routine analyses rapidly and conveniently.
+
+----
+
+Capabilities
+############
+
+PoreSpy consists of the following modules:
+
+-  ``generators``: Routines for generating artificial images of porous
+   materials useful for testing and illustration
+-  ``filters``: Functions that accept an image and return an altered
+   image
+-  ``metrics``: Tools for quantifying properties of images
+-  ``networks``: Algorithms and tools for analyzing images as pore
+   networks
+-  ``visualization``: Helper functions for creating useful views of the
+   image
+-  ``io``: Functions for outputting image data in various formats for
+   use in common software
+-  ``tools``: Various useful tools for working with images
 
 .. toctree::
-    :maxdepth: 3
+   :hidden:
+   :maxdepth: 0
 
-    getting_started.rst
-    modules/index.rst
+   user_guide/index
+   modules/index
+   examples
+
+.. WARNING: examples.rst MUST BE THE LAST ENTRY, OTHERWISE OUR JS
+.. SCRIPT MIGHT BREAK! SEE _static/js/custom.js
+
+
+Gallery
+#######
+
+.. image:: ./_static/images/montage.svg
+   :name: montage
+
+
+----
+
+How To Cite
+###########
+
+If you use PoreSpy in a publication, please add the following citation:
+
+.. admonition:: Citation
+
+    Gostick J, Khan ZA, Tranter TG, Kok MDR, Agnaou M, Sadeghi MA,
+    Jervis R. PoreSpy: A Python Toolkit for Quantitative Analysis of
+    Porous Media Images. *Journal of Open Source Software*, 2019.
+    `doi:10.21105/joss.01296 <https://doi.org/10.21105/joss.01296>`_
+
+.. |stars| image:: https://img.shields.io/github/stars/PMEAL/porespy.svg?style=social&label=Star&maxAge=2592000
+   :target: https://GitHub.com/PMEAL/porespy/stargazers/

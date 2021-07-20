@@ -1,51 +1,53 @@
 r"""
 
-===============================================================================
-generators
-===============================================================================
+Generators
+##########
 
 **Generate Artificial Images**
 
-This module contains a variety of functions for generating artificial images
-of porous materials, generally for testing, validation, debugging, and
-illustration purposes.
+This module contains a variety of functions for generating artificial
+images of porous materials, generally for testing, validation,
+debugging, and illustration purposes.
+
+.. currentmodule:: porespy
 
 .. autosummary::
+   :template: mybase.rst
+   :toctree: generated/
 
-    porespy.generators.blobs
-    porespy.generators.bundle_of_tubes
-    porespy.generators.cylinders
-    porespy.generators.insert_shape
-    porespy.generators.lattice_spheres
-    porespy.generators.line_segment
-    porespy.generators.overlapping_spheres
-    porespy.generators.perlin_noise
-    porespy.generators.polydisperse_spheres
-    porespy.generators.RSA
-    porespy.generators.voronoi_edges
-
-.. autofunction:: blobs
-.. autofunction:: bundle_of_tubes
-.. autofunction:: cylinders
-.. autofunction:: insert_shape
-.. autofunction:: lattice_spheres
-.. autofunction:: line_segment
-.. autofunction:: overlapping_spheres
-.. autofunction:: perlin_noise
-.. autofunction:: polydisperse_spheres
-.. autofunction:: RSA
-.. autofunction:: voronoi_edges
+    generators.blobs
+    generators.bundle_of_tubes
+    generators.cylindrical_plug
+    generators.cylinders
+    generators.fractal_noise
+    generators.insert_shape
+    generators.lattice_spheres
+    generators.line_segment
+    generators.overlapping_spheres
+    generators.polydisperse_spheres
+    generators.pseudo_electrostatic_packing
+    generators.pseudo_gravity_packing
+    generators.RSA
+    generators.random_cantor_dust
+    generators.sierpinski_foam
+    generators.voronoi_edges
 
 """
 
-from .__imgen__ import blobs
-from .__imgen__ import bundle_of_tubes
-from .__imgen__ import cylinders
-from .__imgen__ import insert_shape
-from .__imgen__ import lattice_spheres
-from .__imgen__ import line_segment
-from .__imgen__ import overlapping_spheres
-from .__imgen__ import perlin_noise
-from .__imgen__ import polydisperse_spheres
-from .__imgen__ import RSA
-from .__imgen__ import voronoi_edges
+from ._imgen import blobs
+from ._imgen import bundle_of_tubes
+from ._imgen import cylinders
+from ._imgen import insert_shape
+from ._imgen import lattice_spheres
+from ._imgen import line_segment
+from ._imgen import overlapping_spheres
+from ._imgen import polydisperse_spheres
+from ._imgen import RSA
+from ._imgen import voronoi_edges
+from ._pseudo_packings import pseudo_gravity_packing
+from ._pseudo_packings import pseudo_electrostatic_packing
+from ._cylinder import cylindrical_plug
+from ._noise import fractal_noise
+from ._borders import *
+from ._fractals import random_cantor_dust
+from ._fractals import sierpinski_foam
