@@ -187,7 +187,6 @@ def get_tqdm():  # pragma: no cover
         tqdm = importlib.import_module('tqdm.notebook')
     else:
         tqdm = importlib.import_module('tqdm')
-    tqdm = importlib.import_module('tqdm')
     return tqdm.tqdm
 
 
