@@ -24,7 +24,7 @@ def apply_padded(im, pad_width, func, pad_val=1, **kwargs):
 
     Parameters
     ----------
-    im : ND-array
+    im : ndarray
         The image to which ``func`` should be applied
     pad_width : int or list of ints
         The amount of padding to apply to each axis. Refer to
@@ -62,7 +62,7 @@ def trim_small_clusters(im, size=1):
 
     Parameters
     ----------
-    im : ND-array
+    im : ndarray
         The binary image from which voxels are to be removed.
     size : scalar
         The threshold size of clusters to trim.  As clusters with this
@@ -71,7 +71,7 @@ def trim_small_clusters(im, size=1):
 
     Returns
     -------
-    im : ND-array
+    im : ndarray
         A copy of ``im`` with clusters of voxels smaller than the given
         ``size`` removed.
 
@@ -102,14 +102,14 @@ def hold_peaks(im, axis=-1):
 
     Parameters
     ----------
-    im : ND-array
+    im : ndarray
         A greyscale image whose peaks are to be found.
     axis : int
         The axis along which the operation is to be applied.
 
     Returns
     -------
-    result : ND-array
+    result : ndarray
         A copy of ``im`` with each voxel is replaced with the highest value along
         the given axis.
 
@@ -150,7 +150,7 @@ def distance_transform_lin(im, axis=0, mode="both"):
 
     Parameters
     ----------
-    im : ND-array
+    im : ndarray
         The image of the porous material with ``True`` values indicating
         the void phase (or phase of interest).
     axis : int
@@ -172,7 +172,7 @@ def distance_transform_lin(im, axis=0, mode="both"):
 
     Returns
     -------
-    image : ND-array
+    image : ndarray
         A copy of ``im`` with each foreground voxel containing the
         distance to the nearest background along the specified axis.
 
@@ -219,7 +219,7 @@ def find_disconnected_voxels(im, conn=None):
 
     Parameters
     ----------
-    im : ND-array
+    im : ndarray
         A Boolean image, with ``True`` values indicating the phase for which
         disconnected voxels are sought.
     conn : int
@@ -229,8 +229,8 @@ def find_disconnected_voxels(im, conn=None):
 
     Returns
     -------
-    image : ND-array
-        An ND-image the same size as ``im``, with True values indicating
+    image : ndarray
+        An ndarray the same size as ``im``, with True values indicating
         voxels of the phase of interest (i.e. True values in the original
         image) that are not connected to the outer edges.
 
@@ -277,12 +277,12 @@ def fill_blind_pores(im, conn=None):
 
     Parameters
     ----------
-    im : ND-array
+    im : ndarray
         The image of the porous material
 
     Returns
     -------
-    im : ND-array
+    im : ndarray
         A version of ``im`` but with all the disconnected pores removed.
     conn : int
         For 2D the options are 4 and 8 for square and diagonal neighbors,
@@ -312,7 +312,7 @@ def trim_floating_solid(im, conn=None):
 
     Parameters
     ----------
-    im : ND-array
+    im : ndarray
         The image of the porous material
     conn : int
         For 2D the options are 4 and 8 for square and diagonal neighbors,
@@ -321,7 +321,7 @@ def trim_floating_solid(im, conn=None):
 
     Returns
     -------
-    image : ND-array
+    image : ndarray
         A version of ``im`` but with all the disconnected solid removed.
 
     See Also
@@ -347,19 +347,19 @@ def trim_nonpercolating_paths(im, inlets, outlets):
 
     Parameters
     ----------
-    im : ND-array
+    im : ndarray
         The image of the porous material with ```True`` values indicating the
         phase of interest
-    inlets : ND-image
+    inlets : ndarray
         A boolean mask indicating locations of inlets, such as produced by
         ``porespy.generators.faces``.
-    outlets : ND-image
+    outlets : ndarray
         A boolean mask indicating locations of outlets, such as produced by
         ``porespy.generators.faces``.
 
     Returns
     -------
-    image : ND-array
+    image : ndarray
         A copy of ``im`` with all the nonpercolating paths removed
 
     Notes
@@ -397,7 +397,7 @@ def trim_extrema(im, h, mode="maxima"):
 
     Parameters
     ----------
-    im : ND-array
+    im : ndarray
         The image whose extrema are to be removed
     h : float
         The height to remove from each peak or fill in each valley
@@ -406,7 +406,7 @@ def trim_extrema(im, h, mode="maxima"):
 
     Returns
     -------
-    image : ND-array
+    image : ndarray
         A copy of the input image with all the peaks and/or valleys
         removed.
 
@@ -479,7 +479,7 @@ def flood(im, labels, mode="max", func=None):
 
     Returns
     -------
-    flooded : ND-array
+    flooded : ndarray
         A copy of ``im`` with new values placed in each forground voxel
         based on the ``mode``.
 
@@ -513,10 +513,10 @@ def flood_func(im, labels, func):
 
     Parameters
     ----------
-    im : ND-array
+    im : ndarray
         An image with the numerical values of interest in each voxel,
         and 0's elsewhere.
-    labels : ND-image
+    labels : ndarray
         An array containing labels identify each individual region to be
         flooded. If not provided then ``scipy.ndimage.label`` is applied to
         ``im > 0``.
@@ -527,7 +527,7 @@ def flood_func(im, labels, func):
 
     Returns
     -------
-    flooded : ND-array
+    flooded : ndarray
         An image the same size as ``im`` with each isolated region flooded
         with a constant value based on the given ``func`` and the values
         in ``im``.
@@ -572,13 +572,13 @@ def find_dt_artifacts(dt):
 
     Parameters
     ----------
-    dt : ND-array
+    dt : ndarray
         The distance transform of the phase of interest.
 
     Returns
     -------
-    image : ND-array
-        An ND-array the same shape as ``dt`` with numerical values
+    image : ndarray
+        An ndarray the same shape as ``dt`` with numerical values
         indicating the maximum amount of error in each volxel, which is
         found by subtracting the distance to nearest edge of image from
         the distance transform value. In other words, this is the error
@@ -608,7 +608,7 @@ def region_size(im):
 
     Parameters
     ----------
-    im : ND-array
+    im : ndarray
         Either a boolean image wtih ``True`` indicating the features of
         interest, in which case ``scipy.ndimage.label`` will be applied to
         find regions, or a greyscale image with integer values indicating
@@ -616,7 +616,7 @@ def region_size(im):
 
     Returns
     -------
-    image : ND-array
+    image : ndarray
         A copy of ``im`` with each voxel value indicating the size of the
         region to which it belongs.  This is particularly useful for
         finding chord sizes on the image produced by ``apply_chords``.
@@ -650,7 +650,7 @@ def apply_chords(im, spacing=1, axis=0, trim_edges=True, label=False):
 
     Parameters
     ----------
-    im : ND-array
+    im : ndarray
         An image of the porous material with void marked as ``True``.
     spacing : int
         Separation between chords.  The default is 1 voxel.  This can be
@@ -670,7 +670,7 @@ def apply_chords(im, spacing=1, axis=0, trim_edges=True, label=False):
 
     Returns
     -------
-    image : ND-array
+    image : ndarray
         A copy of ``im`` with non-zero values indicating the chords.
 
     See Also
@@ -715,7 +715,7 @@ def apply_chords_3D(im, spacing=0, trim_edges=True):
 
     Parameters
     ----------
-    im : ND-array
+    im : ndarray
         A 3D image of the porous material with void space marked as True.
     spacing : int (default = 0)
         Chords are automatically separed by 1 voxel on all sides, and this
@@ -727,7 +727,7 @@ def apply_chords_3D(im, spacing=0, trim_edges=True):
 
     Returns
     -------
-    image : ND-array
+    image : ndarray
         A copy of ``im`` with values of 1 indicating x-direction chords,
         2 indicating y-direction chords, and 3 indicating z-direction
         chords.
@@ -776,7 +776,7 @@ def local_thickness(im, sizes=25, mode="hybrid", divs=1):
 
     Parameters
     ----------
-    im : ND-array
+    im : ndarray
         A binary image with the phase of interest set to True
     sizes : array_like or scalar
         The sizes to invade.  If a list of values of provided they are
@@ -810,7 +810,7 @@ def local_thickness(im, sizes=25, mode="hybrid", divs=1):
 
     Returns
     -------
-    image : ND-array
+    image : ndarray
         A copy of ``im`` with the pore size values in each voxel.
 
     See Also
@@ -852,14 +852,14 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
 
     Parameters
     ----------
-    im : ND-array
+    im : ndarray
         An ND image of the porous material containing ``True`` values in the
         pore space.
     sizes : array_like or scalar
         The sizes to invade.  If a list of values of provided they are
         used directly.  If a scalar is provided then that number of points
         spanning the min and max of the distance transform are used.
-    inlets : ND-array, boolean
+    inlets : ndarray, boolean
         A boolean mask with ``True`` values indicating where the invasion
         enters the image.  By default all faces are considered inlets,
         akin to a mercury porosimetry experiment.  Users can also apply
@@ -902,7 +902,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
 
     Returns
     -------
-    image : ND-array
+    image : ndarray
         A copy of ``im`` with voxel values indicating the sphere radius at
         which it becomes accessible from the inlets.  This image can be
         used to find invading fluid configurations as a function of
@@ -1027,9 +1027,9 @@ def trim_disconnected_blobs(im, inlets, strel=None):
 
     Parameters
     ----------
-    im : ND-array
+    im : ndarray
         The image containing the blobs to be trimmed
-    inlets : ND-array or tuple of indices
+    inlets : ndarray or tuple of indices
         The locations of the inlets.  Can either be a boolean mask the
         same shape as ``im``, or a tuple of indices such as that returned
         by the ``where`` function.  Any voxels *not* connected directly to
@@ -1043,7 +1043,7 @@ def trim_disconnected_blobs(im, inlets, strel=None):
 
     Returns
     -------
-    image : ND-array
+    image : ndarray
         An array of the same shape as ``im``, but with all foreground
         voxels not connected to the ``inlets`` removed.
 
@@ -1147,7 +1147,7 @@ def nphase_border(im, include_diagonals=False):
 
     Parameters
     ----------
-    im : ND-array
+    im : ndarray
         An ND image of the porous material containing discrete values in
         the pore space identifying different regions. e.g. the result of a
         snow-partition
@@ -1157,7 +1157,7 @@ def nphase_border(im, include_diagonals=False):
 
     Returns
     -------
-    image : ND-array
+    image : ndarray
         A copy of ``im`` with voxel values equal to the number of uniquely
         different bordering values
 
@@ -1195,10 +1195,10 @@ def prune_branches(skel, branch_points=None, iterations=1):
 
     Parameters
     ----------
-    skel : ND-array
+    skel : ndarray
         A image of a full or partial skeleton from which the tails should
         be trimmed.
-    branch_points : ND-array, optional
+    branch_points : ndarray, optional
         An image the same size ``skel`` with ``True`` values indicating the
         branch points of the skeleton.  If this is not provided it is
         calculated automatically.
@@ -1206,7 +1206,7 @@ def prune_branches(skel, branch_points=None, iterations=1):
     Returns
     -------
     array
-        An ND-array containing the skeleton with tails removed.
+        An ndarray containing the skeleton with tails removed.
 
     Examples
     --------
@@ -1314,7 +1314,7 @@ def chunked_func(func,
 
     Returns
     -------
-    result : ND-array
+    result : ndarray
         An image the same size as the input image, with the specified
         filter applied as though done on a single large image. There
         should be *no* difference.

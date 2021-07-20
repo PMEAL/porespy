@@ -9,9 +9,9 @@ def fftmorphology(im, strel, mode='opening'):
 
     Parameters
     ----------
-    im : nd-array
+    im : ndarray
         The binary image on which to perform the morphological operation
-    strel : nd-array
+    strel : ndarray
         The structuring element to use.  Must have the same dims as ``im``.
     mode : string
         The type of operation to perform.  Options are 'dilation', 'erosion',
@@ -19,7 +19,7 @@ def fftmorphology(im, strel, mode='opening'):
 
     Returns
     -------
-    image : ND-array
+    image : ndarray
         A copy of the image with the specified moropholgical operation applied
         using the fft-based methods available in ``scipy.signal.fftconvolve``.
 

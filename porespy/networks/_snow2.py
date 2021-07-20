@@ -23,7 +23,7 @@ def snow2(phases,
 
     Parameters
     ----------
-    phases : ND-image
+    phases : ndarray
         An image indicating the phase(s) of interest. A watershed is
         produced for each integer value in ``phases`` (except 0's). These
         are then combined into a single image and one network is extracted

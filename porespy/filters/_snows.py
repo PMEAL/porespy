@@ -48,8 +48,8 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4):
         ``dt``
             The distance transform of the image
         ``peaks``
-            The peaks of the distance transform after applying the steps of the
-            SNOW algorithm
+            The peaks of the distance transform after applying the steps
+            of the SNOW algorithm
         ``regions``
             The void space partitioned into pores using a marker
             based watershed with the peaks found by the SNOW algorithm
@@ -63,8 +63,9 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4):
 
     References
     ----------
-    [1] Gostick, J. "A versatile and efficient network extraction algorithm
-    using marker-based watershed segmenation".  Physical Review E. (2017)
+    [1] Gostick, J. "A versatile and efficient network extraction
+    algorithm using marker-based watershed segmenation".  Physical Review
+    E. (2017)
 
     """
     logger.trace("Beginning SNOW algorithm")
@@ -111,7 +112,7 @@ def snow_partitioning_n(im, r_max=4, sigma=0.4):
 
     Parameters
     ----------
-    im : ND-array
+    im : ndarray
         Image of porous material where each phase is represented by unique
         integer starting from 1 (0's are ignored).
     r_max : scalar
@@ -196,25 +197,26 @@ def find_peaks(dt, r_max=4, strel=None, divs=1):
 
     Parameters
     ----------
-    dt : ND-array
+    dt : ndarray
         The distance transform of the pore space.  This may be calculated
         and filtered using any means desired.
     r_max : scalar
         The size of the structuring element used in the maximum filter.
         This controls the localness of any maxima. The default is 4 voxels.
-    strel : ND-array
+    strel : ndarray
         Specifies the shape of the structuring element used to define the
         neighborhood when looking for peaks.  If ``None`` (the default) is
         specified then a spherical shape is used (or circular in 2D).
     divs : int or array_like
-        The number of times to divide the image for parallel processing.  If ``1``
-        then parallel processing does not occur.  ``2`` is equivalent to
-        ``[2, 2, 2]`` for a 3D image.  The number of cores used is specified in
-        ``porespy.settings.ncores`` and defaults to all cores.
+        The number of times to divide the image for parallel processing.
+        If ``1`` then parallel processing does not occur.  ``2`` is
+        equivalent to ``[2, 2, 2]`` for a 3D image. The number of cores
+        used is specified in ``porespy.settings.ncores`` and defaults to
+        all cores.
 
     Returns
     -------
-    image : ND-array
+    image : ndarray
         An array of booleans with ``True`` values at the location of any
         local maxima.
 
@@ -266,13 +268,13 @@ def reduce_peaks(peaks):
 
     Parameters
     ----------
-    peaks : ND-image
+    peaks : ndarray
         An image containing ``True`` values indicating peaks in the
         distance transform
 
     Returns
     -------
-    image : ND-array
+    image : ndarray
         An array with the same number of isolated peaks as the original
         image, but fewer total ``True`` voxels.
 
@@ -306,19 +308,19 @@ def trim_saddle_points(peaks, dt, max_iters=20):
 
     Parameters
     ----------
-    peaks : ND-array
+    peaks : ndarray
         A boolean image containing ``True`` values to mark peaks in the
         distance transform (``dt``)
-    dt : ND-array
+    dt : ndarray
         The distance transform of the pore space for which the peaks
         are sought.
     max_iters : int
-        The number of iteration to use when finding saddle points.  The default
-        is 20.
+        The number of iteration to use when finding saddle points.
+        The default value is 20.
 
     Returns
     -------
-    image : ND-array
+    image : ndarray
         An image with fewer peaks than the input image
 
     References
@@ -377,19 +379,20 @@ def trim_nearby_peaks(peaks, dt, f=1.0):
 
     Parameters
     ----------
-    peaks : ND-array
+    peaks : ndarray
         A boolean image containing True values to mark peaks in the
         distance transform (``dt``)
-    dt : ND-array
+    dt : ndarray
         The distance transform of the pore space for which the true peaks
         are sought.
     f : scalar
-        Controls how close peaks must be before they are considered near to each
-        other.  Sets of peaks are tagged as near if ``d_neighbor < f * d_solid``.
+        Controls how close peaks must be before they are considered near
+        to each other. Sets of peaks are tagged as near if
+        ``d_neighbor < f * d_solid``.
 
     Returns
     -------
-    image : ND-array
+    image : ndarray
         An array the same size as ``peaks`` containing a subset of the
         peaks in the original image.
 
@@ -402,7 +405,7 @@ def trim_nearby_peaks(peaks, dt, f=1.0):
     References
     ----------
     [1] Gostick, J. "A versatile and efficient network extraction
-    algorithm using marker-based watershed segmenation".  Physical Review
+    algorithm using marker-based watershed segmenation". Physical Review
     E. (2017)
 
     """
@@ -467,27 +470,29 @@ def snow_partitioning_parallel(im,
 
     Parameters
     ----------
-    im : ND-array
+    im : ndarray
         A binary image of porous media with 'True' values indicating
         phase of interest.
     overlap : float (optional)
-        The amount of overlap to apply between chunks.  If not provided it will
-        be estiamted using ``porespy.tools.estimate_overlap`` with ``mode='dt'``.
+        The amount of overlap to apply between chunks.  If not provided it
+        will be estiamted using ``porespy.tools.estimate_overlap`` with
+        ``mode='dt'``.
     divs : list or int
         Number of domains each axis will be divided. Options are:
           - scalar: it will be assigned to all axis.
-          - list: each respective axis will be divided by its corresponding
-            number in the list. For example [2, 3, 4] will divide z, y and
-            x axis to 2, 3, and 4 respectively.
+          - list: each respective axis will be divided by its
+            corresponding number in the list. For example [2, 3, 4] will
+            divide z, y and x axis to 2, 3, and 4 respectively.
     cores : int or None
         Number of cores that will be used to parallel process all domains.
         If ``None`` then all cores will be used but user can specify any
-        integer values to control the memory usage.  Setting value to 1 will
-        effectively process the chunks in serial to minimize memory usage.
+        integer values to control the memory usage.  Setting value to 1
+        will effectively process the chunks in serial to minimize memory
+        usage.
 
     Returns
     -------
-    regions : ND-array
+    regions : ndarray
         Partitioned image of segmentated regions with unique labels. Each
         region correspond to pore body while intersection with other
         region correspond throat area.
@@ -554,7 +559,7 @@ def _pad(im, pad_width=1, constant_value=0):
 
     Parameters
     ----------
-    im : ND-array
+    im : ndarray
         The image that requires padding
     pad_width : int
         The number of values that will be padded from the edges. Default
@@ -564,7 +569,7 @@ def _pad(im, pad_width=1, constant_value=0):
 
     Returns
     -------
-    output: ND-array
+    output: ndarray
         Padded image with same dimnesions as provided image
 
     """
@@ -593,7 +598,7 @@ def relabel_chunks(im, chunk_shape):
 
     Parameters
     ----------
-    im: ND-array
+    im: ndarray
         Actual image that contains repeating labels in chunks/sub-domains.
     chunk_shape: tuple
         The shape of chunk that will be relabeled in actual image. Note
@@ -602,7 +607,7 @@ def relabel_chunks(im, chunk_shape):
 
     Returns
     -------
-    output : ND-array
+    output : ndarray
         Relabeled image with unique label assigned to each region.
 
     """
@@ -646,14 +651,14 @@ def _trim_internal_slice(im, chunk_shape):
 
     Parameters:
     -----------
-    im :  ND-array
+    im :  ndarray
         image that contains extra slices in x, y, z direction.
     chunk_shape : tuple
         The shape of the chunk from which image is subdivided.
 
     Return:
     -------
-    output : ND-array
+    output : ndarray
         Image without extra internal slices. The shape of the image will
         be same as input image provided for waterhsed segmentation.
 
@@ -696,7 +701,7 @@ def _watershed_stitching(im, chunk_shape):
 
     Parameters:
     -----------
-    im : ND-array
+    im : ndarray
         A worked image with watershed segmentation performed on all
         sub-domains individually.
     chunk_shape: tuple
@@ -704,7 +709,7 @@ def _watershed_stitching(im, chunk_shape):
 
     Returns
     -------
-    output : ND-array
+    output : ndarray
         Stitched watershed segmentation with all sub-domains merged to
         form a single watershed segmentation.
 
@@ -749,12 +754,12 @@ def _copy(im, output):
 
     Parameters
     ----------
-    array: ND-array
+    array: ndarray
         Array that needs to be copied.
 
     Returns
     -------
-    output: ND-array
+    output: ndarray
         Copied array.
 
     """
@@ -784,7 +789,7 @@ def _replace(array, keys, values, ind_sort):
 
     Parameters
     ----------
-    array : ND-array
+    array : ndarray
         Array which requires replacing labels.
     keys :  array_like
         1d array containing unique labels that need to be replaced.
@@ -793,7 +798,7 @@ def _replace(array, keys, values, ind_sort):
 
     Returns
     -------
-    array : ND-array
+    array : ndarray
         Array with replaced labels.
 
     """
@@ -814,7 +819,7 @@ def _replace_labels(array, keys, values):
 
     Parameter:
     ----------
-    array : ND-array
+    array : ndarray
         Array which requires replacing labels
     keys :  1D-array
         The unique labels that need to be replaced
@@ -823,7 +828,7 @@ def _replace_labels(array, keys, values):
 
     return:
     -------
-    array : ND-array
+    array : ndarray
         Array with replaced labels.
     """
     a_shape = array.shape
@@ -845,7 +850,7 @@ def _sequence(array, count):
 
     Parameters
     ----------
-    array: ND-array
+    array: ndarray
         1d array that needs resquencing.
     count: array_like
         1d array of zeros having same size as array.
@@ -882,7 +887,7 @@ def _amax(array):
 
     Parameter:
     ----------
-    array: ND-array
+    array: ndarray
         Array in which largest elements needs to be calcuted.
 
     Returns
@@ -900,12 +905,12 @@ def _resequence_labels(array):
 
     Parameters
     ----------
-    array: ND-array
+    array: ndarray
         Array that requires resequencing.
 
     Returns
     -------
-    array : ND-array
+    array : ndarray
         Resequenced array with same shape as input array.
 
     """
@@ -920,8 +925,8 @@ def _resequence_labels(array):
 
 def _snow_chunked(dt, r_max=5, sigma=0.4):
     r"""
-    This private version of snow is called during snow_parallel.  Dask does not
-    all the calls to the logger between each step apparently.
+    This private version of snow is called during snow_parallel. Dask does
+    not all the calls to the logger between each step apparently.
     """
     dt2 = spim.gaussian_filter(input=dt, sigma=sigma)
     peaks = find_peaks(dt=dt2, r_max=r_max)

@@ -13,8 +13,8 @@ def random_cantor_dust(shape, n, p=2, f=0.8):
     Parameters
     ----------
     shape : array_like
-        The shape of the final image.  If not evenly divisible by $p**n$ it will
-        be increased to the nearest size that is.
+        The shape of the final image.  If not evenly divisible by $p**n$
+        it will be increased to the nearest size that is.
     n : int
         The number of times to iteratively divide the image.
     p : int (default = 2)
@@ -24,7 +24,7 @@ def random_cantor_dust(shape, n, p=2, f=0.8):
 
     Returns
     -------
-    dust : ND-image
+    dust : ndarray
         A boolean image of a random Cantor dust
 
     """
@@ -61,11 +61,12 @@ def sierpinski_foam(dmin, n, ndim=2, max_size=1e9):
     n : int
         The number of times to iteratively tile the image
     ndim : int
-        The number of dimensions of the desired image, can be 2 (default) or 3
+        The number of dimensions of the desired image, can be 2 or 3. The
+        default value is 2.
 
     Returns
     -------
-    foam : ND-array
+    foam : ndarray
         A boolean image of a Sierpinski gasket or foam
 
     """

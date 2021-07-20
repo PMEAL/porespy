@@ -25,7 +25,7 @@ def representative_elementary_volume(im, npoints=1000):
 
     Parameters
     ----------
-    im : ND-array
+    im : ndarray
         The image of the porous material
     npoints : int
         The number of randomly located and sized boxes to sample.  The default
@@ -63,6 +63,7 @@ def representative_elementary_volume(im, npoints=1000):
     `Click here
     <https://porespy.org/examples/metrics/howtos/representative_elementary_volume.html>`_
     to view online example.
+
     """
     # TODO: this function is a prime target for parallelization since the
     # ``npoints`` are calculated independenlty.
@@ -95,7 +96,7 @@ def porosity_profile(im, axis=0):
 
     Parameters
     ----------
-    im : ND-array
+    im : ndarray
         The volumetric image for which to calculate the porosity profile
     axis : int
         The axis (0, 1, or 2) along which to calculate the profile.  For
@@ -112,6 +113,7 @@ def porosity_profile(im, axis=0):
     `Click here
     <https://porespy.org/examples/metrics/howtos/porosity_profile.html>`_
     to view online example.
+
     """
     if axis >= im.ndim:
         raise Exception('axis out of range')
@@ -147,7 +149,7 @@ def radial_density_distribution(dt, bins=10, log=False, voxel_size=1):
 
     Parameters
     ----------
-    dt : ND-array
+    dt : ndarray
         A distance transform of the pore space (the ``edt`` package is
         recommended).  Note that it is recommended to apply
         ``find_dt_artifacts`` to this image first, and set potentially
@@ -205,6 +207,7 @@ def radial_density_distribution(dt, bins=10, log=False, voxel_size=1):
     `Click here
     <https://porespy.org/examples/metrics/howtos/radial_density.html>`_
     to view online example.
+
     """
     im = np.copy(dt)
     x = im[im > 0].flatten()
@@ -237,7 +240,7 @@ def lineal_path_distribution(im, bins=25, voxel_size=1, log=False):
 
     Parameters
     ----------
-    im : ND-array
+    im : ndarray
         An image with each voxel containing the distance to the nearest solid
         along a linear path, as produced by ``distance_transform_lin``.
     bins : int or array_like
@@ -312,7 +315,7 @@ def chord_length_distribution(im, bins=None, log=False, voxel_size=1,
 
     Parameters
     ----------
-    im : ND-image
+    im : ndarray
         An image with chords drawn in the pore space, as produced by
         ``apply_chords`` or ``apply_chords_3d``.  ``im`` can be either boolean,
         in which case each chord will be identified using ``scipy.ndimage.label``,
@@ -379,6 +382,7 @@ def chord_length_distribution(im, bins=None, log=False, voxel_size=1,
     `Click here
     <https://porespy.org/examples/metrics/howtos/chord_length_distribution.html>`_
     to view online example.
+
     """
     x = chord_counts(im)
     if bins is None:
@@ -413,7 +417,7 @@ def pore_size_distribution(im, bins=10, log=True, voxel_size=1):
 
     Parameters
     ----------
-    im : ND-array
+    im : ndarray
         The array of containing the sizes of the largest sphere that overlaps
         each voxel.  Obtained from either ``porosimetry`` or
         ``local_thickness``.
@@ -465,6 +469,7 @@ def pore_size_distribution(im, bins=10, log=True, voxel_size=1):
     `Click here
     <https://porespy.org/examples/metrics/howtos/pore_size_distribution.html>`_
     to view online example.
+
     """
     im = im.flatten()
     vals = im[im > 0] * voxel_size
@@ -559,7 +564,7 @@ def _radial_profile(autocorr, r_max, nbins=100):
 
     Parameters
     ----------
-    autocorr : ND-array
+    autocorr : ndarray
         The image of autocorrelation produced by FFT
     r_max : int or float
         The maximum radius in pixels to sum the image over
@@ -569,6 +574,7 @@ def _radial_profile(autocorr, r_max, nbins=100):
     result : named_tuple
         A named tupling containing an array of ``bins`` of radial position
         and an array of ``counts`` in each bin.
+
     """
     if len(autocorr.shape) == 2:
         adj = np.reshape(autocorr.shape, [2, 1, 1])
@@ -631,6 +637,7 @@ def two_point_correlation(im):
     `Click here
     <https://porespy.org/examples/metrics/howtos/two_point_correlation_fft.html>`_
     to view online example.
+
     """
     # Calculate half lengths of the image
     hls = (np.ceil(np.shape(im)) / 2).astype(int)
@@ -670,7 +677,7 @@ def chord_counts(im):
 
     Parameters
     ----------
-    im : ND-array
+    im : ndarray
         An image containing chords drawn in the void space.
 
     Returns
@@ -690,6 +697,7 @@ def chord_counts(im):
     `Click here
     <https://porespy.org/examples/howtos/metrics/chord_counts.html>`_
     to view online example.
+
     """
     labels, N = spim.label(im > 0)
     props = regionprops(labels)
@@ -703,8 +711,8 @@ def phase_fraction(im, normed=True):
 
     Parameters
     ----------
-    im : ND-array
-        An ND-array containing integer values
+    im : ndarray
+        An ndarray containing integer values
     normed : boolean
         If ``True`` (default) the returned values are normalized by the total
         number of voxels in image, otherwise the voxel count of each phase is
@@ -725,6 +733,7 @@ def phase_fraction(im, normed=True):
     `Click here
     <https://porespy.org/examples/metrics/howtos/phase_fraction.html>`_
     to view online example.
+
     """
     if im.dtype == bool:
         im = im.astype(int)
@@ -742,13 +751,13 @@ def pc_curve_from_ibip(seq, sizes, im=None, sigma=0.072, theta=180, voxel_size=1
 
     Parameters
     ----------
-    seq : ND-array
+    seq : ndarray
         The image containing the invasion sequence values returned from the
         ``ibip`` function.
-    sizes : ND-array
+    sizes : ndarray
         This image is returned from ``ibip`` when ``return_sizes``
         is set to ``True``.
-    im : ND-array
+    im : ndarray
         The voxel image of the porous media.  It not provided then the void
         space is assumed to be ``im = !(seq == 0)``.
     sigma : float
@@ -814,9 +823,9 @@ def pc_curve_from_mio(sizes, im=None, sigma=0.072, theta=180, voxel_size=1,
 
     Parameters
     ----------
-    sizes : ND-array
+    sizes : ndarray
         This image is returned from ``porosimetry``
-    im : ND-array
+    im : ndarray
         The voxel image of the porous media.  It not provided then the void
         space is assumed to be ``im = ~(sizes == 0)``.
     sigma : float
@@ -883,7 +892,7 @@ def porosity(im):
 
     Parameters
     ----------
-    im : ND-array
+    im : ndarray
         Image of the void space with 1's indicating void phase (or True) and
         0's indicating the solid phase (or False).
 

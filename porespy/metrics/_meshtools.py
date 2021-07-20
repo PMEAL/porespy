@@ -64,7 +64,7 @@ def region_volumes(regions, mode='marching_cubes'):
 
     Parameters
     ----------
-    regions : ND-array
+    regions : ndarray
         An image with labelled regions
     mode : string
         Controls the method used. Options are:
@@ -80,9 +80,10 @@ def region_volumes(regions, mode='marching_cubes'):
 
     Returns
     -------
-    volumes : ND-array
+    volumes : ndarray
         An array of shape [N by 1] where N is the number of labelled regions
         in the image.
+
     """
     slices = spim.find_objects(regions)
     vols = np.zeros([len(slices), ])
@@ -102,7 +103,7 @@ def mesh_volume(region):
 
     Parameters
     ----------
-    region : ND-array
+    region : ndarray
         An image with a single region labelled as ``True`` (or > 0)
 
     Returns
@@ -111,6 +112,7 @@ def mesh_volume(region):
         The volume of the region computed by applyuing the marching cubes
         algorithm to the region, then finding the mesh volume using the
         ``trimesh`` package.
+
     """
     mc = mesh_region(region > 0)
     m = Trimesh(vertices=mc.verts, faces=mc.faces, vertex_normals=mc.norm)
@@ -130,7 +132,7 @@ def region_surface_areas(regions, voxel_size=1, strel=None):
 
     Parameters
     ----------
-    regions : ND-array
+    regions : ndarray
         An image of the pore space partitioned into individual pore regions.
         Note that zeros in the image will not be considered for area
         calculation.
@@ -199,6 +201,7 @@ def mesh_surface_area(mesh=None, verts=None, faces=None):
     This function simply calls ``scikit-image.measure.mesh_surface_area``, but
     it allows for the passing of the ``mesh`` tuple returned by the
     ``mesh_region`` function, entirely for convenience.
+
     """
     if mesh:
         verts = mesh.verts
@@ -216,7 +219,7 @@ def region_interface_areas(regions, areas, voxel_size=1, strel=None):
 
     Parameters
     ----------
-    regions : ND-array
+    regions : ndarray
         An image of the pore space partitioned into individual pore regions.
         Note that zeros in the image will not be considered for area
         calculation.

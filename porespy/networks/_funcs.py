@@ -19,7 +19,7 @@ def map_to_regions(regions, values):
 
     Parameters
     ----------
-    regions : ND-array
+    regions : ndarray
         An image of the pore space partitioned into regions and labeled
     values : array_like
         An array containing the numerical values to insert into each region.
@@ -39,6 +39,7 @@ def map_to_regions(regions, values):
     `Click here
     <https://porespy.org/examples/networks/howtos/map_to_regions.html>`_
     to view online example.
+
     """
     values = np.array(values).flatten()
     if np.size(values) != regions.max():
@@ -55,7 +56,7 @@ def add_boundary_regions(regions, pad_width=3):
 
     Parameters
     ----------
-    regions : ND-image
+    regions : ndarray
         An image containing labelled regions, such as a watershed segmentation
     pad_width : array_like
         Number of layers to add to the beginning and end of each axis. This
@@ -70,7 +71,7 @@ def add_boundary_regions(regions, pad_width=3):
 
     Returns
     -------
-    padded_regions : ND-array
+    padded_regions : ndarray
         An image with new regions padded on each side of the specified
         width.
 
@@ -121,7 +122,7 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200):
 
     Returns
     -------
-    im : ND-array
+    im : ndarray
         Voxelated image corresponding to the given pore network model
 
     Notes
@@ -276,6 +277,7 @@ def label_phases(
     network : dict
         The same ``network`` as passed in but with new boolean arrays added
         for the phase labels.
+
     """
     conns = network['throat.conns']
     for i in alias.keys():
@@ -318,6 +320,7 @@ def label_boundaries(
     network : dict
         The same ``network`` as passed in but with new boolean arrays added
         for the boundary labels.
+
     """
     crds = network['pore.coords']
     extents = [[crds[:, i].min(), crds[:, i].max()]

@@ -13,12 +13,12 @@ def show_3D(im):  # pragma: no cover
 
     Parameters
     ----------
-    im : 3D-array
+    im : ndarray
         The 3D array to be viewed from an angle
 
     Returns
     -------
-    image : 2D-array
+    image : ndarray
         A 2D veiw of the given 3D image
 
     Notes
@@ -50,14 +50,14 @@ def show_planes(im, spacing=10):  # pragma: no cover
 
     Parameters
     ----------
-    im : ND-array
+    im : ndarray
         A 3D image of the porous material
     spacing : int (optional, default=10)
         Controls the amount of space to put between each panel
 
     Returns
     -------
-    image : ND-array
+    image : ndarray
         A 2D array containing the views.  This single image can be viewed using
         ``matplotlib.pyplot.imshow``.
 
@@ -100,14 +100,14 @@ def sem(im, axis=0):  # pragma: no cover
     Parameters
     ----------
     im : array_like
-        ND-image of the porous material with the solid phase marked as 1 or
+        ndarray of the porous material with the solid phase marked as 1 or
         True
     axis : int
         Specifes the axis along which the camera will point.
 
     Returns
     -------
-    image : 2D-array
+    image : ndarray
         A 2D greyscale image suitable for use in matplotlib's ``imshow``
         function.
 
@@ -134,7 +134,7 @@ def xray(im, axis=0):  # pragma: no cover
     Parameters
     ----------
     im : array_like
-        ND-image of the porous material with the solid phase marked as 1 or
+        ndarray of the porous material with the solid phase marked as 1 or
         True
 
     axis : int
@@ -142,7 +142,7 @@ def xray(im, axis=0):  # pragma: no cover
 
     Returns
     -------
-    image : 2D-array
+    image : ndarray
         A 2D greyscale image suitable for use in matplotlib\'s ```imshow```
         function.
     """

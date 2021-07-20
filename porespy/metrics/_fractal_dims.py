@@ -11,7 +11,7 @@ def boxcount(im, bins=10, d_min=1, d_max=None):
 
     Parameters
     ----------
-    im : ND-array
+    im : ndarray
         The image of the porous material.
     bins : int or array_like, optional
         The number of box sizes to use. The default is 10 sizes
@@ -23,11 +23,11 @@ def boxcount(im, bins=10, d_min=1, d_max=None):
     results
         An object possessing the following attributes:
 
-        size : ND-array
+        size : ndarray
             The box sizes used
-        count : ND-array
+        count : ndarray
             The number of boxes of each size that contain both solid and void
-        slope : ND-array
+        slope : ndarray
             The gradient of ``count``. This has the same number of elements as
             ``count`` and
 

@@ -54,7 +54,7 @@ def imshow(*im, ind=None, axis=None):  # pragma: no cover
 
     Parameters
     ----------
-    im : ND-array
+    im : ndarray
         The 2D or 3D image (or images) to show.  If 2D then all other
         arguments are ignored.
     ind : int

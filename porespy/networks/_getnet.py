@@ -18,10 +18,10 @@ def regions_to_network(regions, phases=None, voxel_size=1, accuracy='standard'):
 
     Parameters
     ----------
-    regions : ND-array
+    regions : ndarray
         An image of the material partitioned into individual regions.
         Zeros in this image are ignored.
-    phases : ND-array, optional
+    phases : ndarray, optional
         An image indicating to which phase each voxel belongs. The returned
         network contains a 'pore.phase' array with the corresponding value.
         If not given a value of 1 is assigned to every pore.

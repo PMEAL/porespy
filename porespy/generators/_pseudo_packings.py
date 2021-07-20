@@ -13,14 +13,14 @@ tqdm = get_tqdm()
 @numba.jit(nopython=True, parallel=False)
 def insert_disks_at_points(im, coords, radii, v, smooth=True):
     r"""
-    Insert spheres of specified radii into an ND-image at given locations.
+    Insert spheres of specified radii into an ndarray at given locations.
 
     Parameters
     ----------
-    im : ND-array
+    im : ndarray
         The image into which the spheres/disks should be inserted. This is an
         'in-place' operation.
-    coords : ND-array
+    coords : ndarray
         The center point of each sphere/disk in an array of shape
         ``ndim by npts``
     radii : array_like
@@ -34,6 +34,7 @@ def insert_disks_at_points(im, coords, radii, v, smooth=True):
     Notes
     -----
     This function uses numba to accelerate the process.
+
     """
     npts = len(coords[0])
     if im.ndim == 2:
@@ -113,7 +114,7 @@ def pseudo_gravity_packing(im, r, clearance=0, axis=0, max_iter=1000):
 
     Parameters
     ----------
-    im : ND-array
+    im : ndarray
         Image with ``True`` values indicating the phase where spheres should be
         inserted. A common option would be a cylindrical plug which would
         result in a tube filled with beads.
@@ -129,7 +130,7 @@ def pseudo_gravity_packing(im, r, clearance=0, axis=0, max_iter=1000):
 
     Returns
     -------
-    spheres : ND-array
+    spheres : ndarray
         An image the same size as ``im`` with spheres indicated by ``True``.
         The spheres are only inserted at locations that are accessible
         from the top of the image.

@@ -41,6 +41,7 @@ def props_to_DataFrame(regionprops):
     --------
     prop_to_image
     regionprops_3d
+
     """
     # Parse the regionprops list and pull out all props with scalar values
     metrics = []
@@ -85,8 +86,8 @@ def prop_to_image(regionprops, shape, prop):
 
     Returns
     -------
-    image : ND-array
-        An ND-image the same size as the original image, with each region
+    image : ndarray
+        An ndarray the same size as the original image, with each region
         represented by the values specified in ``prop``.
 
     See Also

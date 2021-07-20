@@ -104,14 +104,14 @@ def to_vtk(im, filename, divide=False, downsample=False, voxel_size=1, vox=False
 
 def to_palabos(im, filename, solid=0):
     r"""
-    Converts an ND-array image to a text file that Palabos can read in as a
+    Converts an ndarray image to a text file that Palabos can read in as a
     geometry for Lattice Boltzmann simulations. Uses a Euclidean distance
     transform to identify solid voxels neighboring fluid voxels and labels
     them as the interface.
 
     Parameters
     ----------
-    im : ND-array
+    im : ndarray
         The image of the porous material
     filename : string
         Path to output file
@@ -169,7 +169,7 @@ def openpnm_to_im(
 
     Returns
     -------
-    im : ND-array
+    im : ndarray
         Voxelated image corresponding to the given pore network model
 
     Notes
@@ -421,7 +421,7 @@ def open_paraview(filename=None, im=None, **kwargs):
     ----------
     filename : str
         Path to input state file.
-    im : ND-array
+    im : ndarray
         An image to open directly.  If no filename given, then this image is
         sent to ``to_paraview`` and a state file is created with a random name.
         Any additional keyword arguments are sent to ``to_paraview``.
@@ -450,7 +450,7 @@ def spheres_to_comsol(filename, im=None, centers=None, radii=None):
     ----------
     filename : string or path object
         Location and namge to output file
-    im : ND-array (optional)
+    im : ndarray (optional)
         A voxel image containing spheres indicated by non-zeros values.
         Spheres can be generated using a variety of methods and can overlap.
         The sphere centers and radii are found as the peaks in the

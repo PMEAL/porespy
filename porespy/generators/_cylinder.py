@@ -20,9 +20,9 @@ def cylindrical_plug(shape, r=None, axis=2):
 
     Returns
     -------
-    cylinder : ND-array
-        A boolean image of the size given by ``shape`` with ``True``'s inside
-        the cylinder and ``False``'s outside.
+    cylinder : ndarray
+        A boolean image of the size given by ``shape`` with ``True``'s
+        inside the cylinder and ``False``'s outside.
 
     """
     shape = np.array(shape, dtype=int)
