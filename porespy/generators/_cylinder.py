@@ -13,16 +13,16 @@ def cylindrical_plug(shape, r=None, axis=2):
         a circle is returned.
     r : int (optional)
         The diameter of the cylinder to create. If not provided then the
-        largest possible radius is used to fits within the image.
+        largest possible radius is used to fit within the image.
     axis : int
         The direction along with the cylinder's axis of rotation should be
         oriented.  The default is 2, which is the z-direction.
 
     Returns
     -------
-    cylinder : ND-array
-        A boolean image of the size given by ``shape`` with ``True``'s inside
-        the cylinder and ``False``'s outside.
+    cylinder : ndarray
+        A boolean image of the size given by ``shape`` with ``True``'s
+        inside the cylinder and ``False``'s outside.
 
     """
     shape = np.array(shape, dtype=int)

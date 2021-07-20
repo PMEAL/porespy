@@ -1,50 +1,52 @@
 import numpy as np
 from porespy import settings
-from porespy.tools import get_tqdm
+from porespy.tools import get_tqdm, Results
 tqdm = get_tqdm()
 
 
 def boxcount(im, bins=10, d_min=1, d_max=None):
     r"""
-    Calculates fractal dimension of the image.
-
-    This function scans the image using a measuring element
-    and counts the number of pixels or voxels (for a 2-D or 3-D image,
-    respectively) that lay over the edge of a pore [1]_.
+    Calculates fractal dimension of an image using the tiled box counting
+    method [1]_
 
     Parameters
     ----------
-    im : ND-array
+    im : ndarray
         The image of the porous material.
-    bins : int or ND-array
-        The number of times to iteratively scan the image. The default is 10.
-        If an array is entered, this is directly taken as the measuring
-        element sizes.
-    d_min : int
-        The size of the smallest measuring element. Measuring elements are
-        taken as a square or a cube.
-    d_max : int
-        The size of the largest measuring element. Measuring elements are
-        taken as a square or a cube.
+    bins : int or array_like, optional
+        The number of box sizes to use. The default is 10 sizes
+        logarithmically spaced between 1 and ``min(im.shape)``.
+        If an array is provided, this is used directly.
 
     Returns
     -------
-    Ds : ND-array
-        The measuring element sizes. This array has 'bins'-number of elements.
-    N : ND-array
-        The number of pixels or voxels that lay over the edge of a pore,
-        corresponding to each measuring element size.
-    slope: ND-array
-        The gradient of N. This array has the same number of elements as Ds and N.
+    results
+        An object possessing the following attributes:
 
+        size : ndarray
+            The box sizes used
+        count : ndarray
+            The number of boxes of each size that contain both solid and void
+        slope : ndarray
+            The gradient of ``count``. This has the same number of elements as
+            ``count`` and
 
     References
     ----------
     [1] See Boxcounting on `Wikipedia <https://en.wikipedia.org/wiki/Box_counting>`_
 
-    """
-    from collections import namedtuple
+    Examples
+    --------
+    >>> import porespy as ps
+    >>> import matplotlib.pyplot as plt
+    >>> dust = ps.generators.random_cantor_dust([1024, 1024], n=8)
+    >>> f = ps.metrics.boxcount(dust)
+    >>> fig, ax = plt.subplots(1, 2)
+    >>> ax[0].loglog(f.size, f.count, 'bo-')
+    >>> ax[1].semilogx(f.size, f.slope, 'ro-')
+    >>> ax[1].set_ylim([0, 4])
 
+    """
     im = np.array(im, dtype=bool)
 
     if (len(im.shape) != 2 and len(im.shape) != 3):
@@ -71,7 +73,7 @@ def boxcount(im, bins=10, d_min=1, d_max=None):
                         result -= np.all(temp)
         N.append(result)
     slope = -1*np.gradient(np.log(np.array(N)), np.log(Ds))
-    data = namedtuple("data", ("size", "count", "slope"))
+    data = Results()
     data.size = Ds
     data.count = N
     data.slope = slope

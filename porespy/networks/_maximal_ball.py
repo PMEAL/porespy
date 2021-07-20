@@ -7,7 +7,7 @@ from loguru import logger
 import imageio
 
 
-def maximal_ball(im, prefix, path_to_exe, voxel_size=1e-6):
+def maximal_ball_wrapper(im, prefix, path_to_exe, voxel_size=1e-6):
     r"""
     Implementing a maximal ball algorithm on an image
 

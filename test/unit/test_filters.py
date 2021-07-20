@@ -89,12 +89,20 @@ class FilterTest():
     def test_flood(self):
         im = ~ps.generators.lattice_spheres(shape=[100, 100], spacing=26,
                                             r=10)
-        sz = ps.filters.flood(im*2.0, mode='max')
+        labels = spim.label(im)[0]
+        sz = ps.filters.flood(im*2.0, labels=labels, mode='max')
         assert np.all(np.unique(sz) == [0, 2])
-        sz = ps.filters.flood(im, mode='min')
+        sz = ps.filters.flood(im, labels=labels, mode='min')
         assert np.all(np.unique(sz) == [0, 1])
-        sz = ps.filters.flood(im, mode='size')
+        sz = ps.filters.flood(im, labels=labels, mode='size')
         assert np.all(np.unique(sz) == [0, 305])
+
+    def test_flood_func(self):
+        im = ~ps.generators.lattice_spheres(shape=[100, 100], spacing=26,
+                                            r=10)
+        labels = spim.label(im)[0]
+        sz = ps.filters.flood_func(im*2.0, labels=labels, func=np.amax)
+        assert np.all(np.unique(sz) == [0, 2])
 
     def test_find_disconnected_voxels_2d(self):
         h = ps.filters.find_disconnected_voxels(self.im[:, :, 0])

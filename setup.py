@@ -66,6 +66,7 @@ setup(
         'pandas',
         'psutil',
         'pyevtk',
+        'pyfastnoisesimd',
         'scikit-fmm',
         'scikit-image',
         'scipy',

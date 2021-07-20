@@ -13,7 +13,7 @@ tqdm = get_tqdm()
 
 
 def ibip(im, inlets=None, dt=None, inv=None, mode='morph', return_sizes=False,
-         max_iters=10000, **kwargs):
+         maxiter=10000, **kwargs):
     r"""
     Performs invasion percolation on given image using iterative image dilation
 
@@ -27,7 +27,7 @@ def ibip(im, inlets=None, dt=None, inv=None, mode='morph', return_sizes=False,
     dt : ND-array (optional)
         The distance transform of ``im``.  If not provided it will be
         calculated, so supplying it saves time.
-    max_iters : scalar
+    maxiter : scalar
         The number of steps to apply before stopping.  The default is to run
         for 10,000 steps which is almost certain to reach completion if the
         image is smaller than about 250-cubed.
@@ -89,8 +89,8 @@ def ibip(im, inlets=None, dt=None, inv=None, mode='morph', return_sizes=False,
     # Intialize scratch array so it can be cleared and refilled inside loop
     if mode == 'insert':
         scratch = np.zeros_like(bd)
-    with tqdm(range(1, max_iters), **settings.tqdm) as pbar:
-        for step in range(1, max_iters):
+    with tqdm(range(1, maxiter), **settings.tqdm) as pbar:
+        for step in range(1, maxiter):
             pbar.update()
             # Dilate the boundary by given 'thickness'
             if mode == 'morph':
@@ -122,7 +122,7 @@ def ibip(im, inlets=None, dt=None, inv=None, mode='morph', return_sizes=False,
                                                 r=r_max, v=r_max, smooth=True)
             bd[pt] = True  # Update boundary image with newly invaded points
             dt[pt] = 0
-            if step == (max_iters - 1):  # If max_iters reached, end loop
+            if step == (maxiter - 1):  # If maxiter reached, end loop
                 logger.info('Maximum number of iterations reached')
                 break
     # Convert inv image so that uninvaded voxels are set to -1 and solid to 0

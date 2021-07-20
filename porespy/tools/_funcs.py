@@ -1,11 +1,11 @@
 import scipy as sp
 import numpy as np
 import scipy.ndimage as spim
-from scipy.stats import rankdata
+from skimage.segmentation import relabel_sequential
 from edt import edt
 from loguru import logger
-from collections import namedtuple
 from skimage.morphology import ball, disk
+from ._utils import Results
 from ._unpad import unpad
 try:
     from skimage.measure import marching_cubes
@@ -20,7 +20,7 @@ def isolate_object(region, i, s=None):
 
     Parameters
     ----------
-    region : ND-array
+    region : ndarray
         An image containing labelled regions, as returned by
         ``scipy.ndimage.label``.
     i : int
@@ -31,10 +31,11 @@ def isolate_object(region, i, s=None):
 
     Returns
     -------
-    label : ND-array
-        An ND-array the same size as ``region`` containing *only* the objects
+    label : ndarray
+        An ndarray the same size as ``region`` containing *only* the objects
         with the given value ``i``.  If ``s`` is provided, the returned image
         will be a subsection of ``region``.
+
     """
     if s is not None:
         region = region[s]
@@ -49,25 +50,22 @@ def marching_map(path, start):
 
     Parameters
     ----------
-    path : ND-image
+    path : ndarray
         A boolean image with ``True`` values demarcating the path along which
         the march will occur
-    start : ND-image
+    start : ndarray
         A boolean image with ``True`` values indicating where the march should
         start.
 
     Returns
     -------
-    distance : ND-image
+    distance : ndarray
         An array the same size as ``path`` with numerical values in each voxel
         indicating it's distance from the start point(s) along the given path.
 
     Notes
     -----
-    This function assumes scikit-fmm is installed on your machine. This
-    package requires downloading and installing the binaries specific for your
-    platform.  Mac and Linux builds are available fron conda, while windows
-    builds can be downloaded from Christoph Gohlke website.
+    This function assumes ``scikit-fmm`` is installed.
 
     """
     try:
@@ -85,18 +83,17 @@ def align_image_with_openpnm(im):
     r"""
     Rotates an image to agree with the coordinates used in OpenPNM.
 
-    It is unclear why they are not in agreement to start with.  This is
-    necessary for overlaying the image and the network in Paraview.
+    This is necessary for overlaying the image and the network in Paraview.
 
     Parameters
     ----------
-    im : ND-array
+    im : ndarray
         The image to be rotated.  Can be the Boolean image of the pore space
         or any other image of interest.
 
     Returns
     -------
-    image : ND-array
+    image : ndarray
         Returns a copy of ``im`` rotated accordingly.
 
     Examples
@@ -104,6 +101,7 @@ def align_image_with_openpnm(im):
     `Click here
     <https://porespy.org/examples/tools/howtos/align_image_with_openpnm.html>`_
     to view online example.
+
     """
     _check_for_singleton_axes(im)
     im = np.copy(im)
@@ -126,7 +124,7 @@ def subdivide(im, divs=2, overlap=0):
 
     Parameters
     ----------
-    im : ND-array
+    im : ndarray
         The image of the porous media
     divs : scalar or array_like
         The number of sub-divisions to create in each axis of the image.  If a
@@ -137,12 +135,12 @@ def subdivide(im, divs=2, overlap=0):
 
     Returns
     -------
-    slices : ND-array
-        An ND-array containing sets of slice objects for indexing into ``im``
+    slices : ndarray
+        An ndarray containing sets of slice objects for indexing into ``im``
         that extract subdivisions of an image.  If ``flatten`` was ``True``,
-        then this array is flat, suitable  for iterating.  If ``flatten`` was
+        then this array is suitable for iterating.  If ``flatten`` was
         ``False`` then the slice objects must be accessed by row, col, layer
-        indices.  An ND-array is the preferred container since it's shape can
+        indices.  An ndarray is the preferred container since its shape can
         be easily queried.
 
     See Also
@@ -158,11 +156,10 @@ def subdivide(im, divs=2, overlap=0):
     >>> print(len(s))
     4
 
-    Examples
-    --------
     `Click here
     <https://porespy.org/examples/tools/howtos/subdivide.html>`_
     to view online example.
+
     """
     divs = np.ones((im.ndim,), dtype=int) * np.array(divs)
     overlap = overlap * (divs > 1)
@@ -194,7 +191,7 @@ def recombine(ims, slices, overlap):
 
     Parameters
     ----------
-    ims : list of ND-arrays
+    ims : list of ndarrays
         The chunks of the original image, which may or may not have been
         processed.
     slices : list of slice objects
@@ -204,9 +201,14 @@ def recombine(ims, slices, overlap):
 
     Returns
     -------
-    im : ND-array
+    im : ndarray
         An image constituted from the chunks in ``ims`` of the same shape
         as the original image.
+
+    See Also
+    --------
+    chunked_func, subdivide
+
     """
     shape = [0]*ims[0].ndim
     for s in slices:
@@ -276,6 +278,7 @@ def bbox_to_slices(bbox):
     `Click here
     <https://porespy.org/examples/tools/howtos/bbox_to_slices.html>`_
     to view online example.
+
     """
     if len(bbox) == 4:
         ret = (slice(bbox[0], bbox[2]),
@@ -289,18 +292,11 @@ def bbox_to_slices(bbox):
 
 def find_outer_region(im, r=None):
     r"""
-    Finds regions of the image that are outside of the solid matrix.
-
-    This function uses the rolling ball method to define where the outer region
-    ends and the void space begins.
-
-    This function is particularly useful for samples that do not fill the
-    entire rectangular image, such as cylindrical cores or samples with non-
-    parallel faces.
+    Find regions of the image that are outside of the solid matrix.
 
     Parameters
     ----------
-    im : ND-array
+    im : ndarray
         Image of the porous material with 1's for void and 0's for solid
     r : scalar
         The radius of the rolling ball to use.  If not specified then a value
@@ -310,9 +306,18 @@ def find_outer_region(im, r=None):
 
     Returns
     -------
-    image : ND-array
+    image : ndarray
         A boolean mask the same shape as ``im``, containing True in all voxels
         identified as *outside* the sample.
+
+    Notes
+    -----
+    This function uses the rolling ball method to define where the outer region
+    ends and the void space begins.
+
+    This is particularly useful for samples that do not fill the
+    entire rectangular image, such as cylindrical cores or samples with non-
+    parallel faces.
 
     """
     if r is None:
@@ -340,7 +345,7 @@ def extract_cylinder(im, r=None, axis=0):
 
     Parameters
     ----------
-    im : ND-array
+    im : ndarray
         The image of the porous material.  Can be any data type.
     r : scalr
         The radius of the cylinder to extract.  If ``None`` is given then the
@@ -351,7 +356,7 @@ def extract_cylinder(im, r=None, axis=0):
 
     Returns
     -------
-    image : ND-array
+    image : ndarray
         A copy of ``im`` with values outside the cylindrical area set to 0 or
         ``False``.
 
@@ -382,7 +387,7 @@ def extract_subsection(im, shape):
 
     Parameters
     ----------
-    im : ND-array
+    im : ndarray
         Image from which to extract the subsection
     shape : array_like
         Can either specify the size of the extracted section or the fractional
@@ -390,8 +395,8 @@ def extract_subsection(im, shape):
 
     Returns
     -------
-    image : ND-array
-        An ND-array of size given by the ``shape`` argument, taken from the
+    image : ndarray
+        An ndarray of size given by the ``shape`` argument, taken from the
         center of the image.
 
     See Also
@@ -413,11 +418,10 @@ def extract_subsection(im, shape):
     [[2 2]
      [2 3]]
 
-    Examples
-    --------
     `Click here
     <https://porespy.org/examples/tools/howtos/extract_subsection.html>`_
     to view online example.
+
     """
     # Check if shape was given as a fraction
     shape = np.array(shape)
@@ -440,7 +444,7 @@ def get_planes(im, squeeze=True):
 
     Parameters
     ----------
-    im : ND-array
+    im : ndarray
         The volumetric image from which the 3 planar images are to be obtained
     squeeze : boolean, optional
         If True (default) the returned images are 2D (i.e. squeezed).  If
@@ -457,6 +461,7 @@ def get_planes(im, squeeze=True):
     `Click here
     <https://porespy.org/examples/tools/get_planes.html>`_
     to view online example.
+
     """
     x, y, z = (np.array(im.shape) / 2).astype(int)
     planes = [im[x, :, :], im[:, y, :], im[:, :, z]]
@@ -522,6 +527,7 @@ def extend_slice(slices, shape, pad=1):
 
     As can be seen by the location of the 4s, the slice was extended by 1, and
     also handled the extension beyond the boundary correctly.
+
     """
     shape = np.array(shape)
     pad = np.array(pad).astype(int)*(shape > 0)
@@ -557,7 +563,7 @@ def randomize_colors(im, keep_vals=[0]):
 
     Returns
     -------
-    image : ND-array
+    image : ndarray
         An image the same size and type as ``im`` but with the greyscale values
         reassigned.  The unique values in both the input and output images will
         be identical.
@@ -638,12 +644,12 @@ def make_contiguous(im, mode='keep_zeros'):
 
     Returns
     -------
-    image : ND-array
-        An ND-array the same size as ``im`` but with all values in contiguous
+    image : ndarray
+        An ndarray the same size as ``im`` but with all values in contiguous
         order.
 
-    Example
-    -------
+    Examples
+    --------
     >>> import porespy as ps
     >>> import scipy as sp
     >>> im = np.array([[0, 2, 9], [6, 8, 3]])
@@ -652,65 +658,40 @@ def make_contiguous(im, mode='keep_zeros'):
     [[0 1 5]
      [3 4 2]]
 
-    Examples
-    --------
     `Click here
     <https://porespy.org/examples/tools/howtos/make_contiguous.html>`_
     to view online example.
+
     """
     # This is a very simple version using relabel_sequential
-    # if keep_zeros:
-    #     mask = im == 0
-    #     im = im + np.abs(np.min(im)) + 1
-    #     im[mask] = 0
-    # elif np.min(im) < 0:
-    #     im = im + np.abs(np.min(im))
-    # im_new = relabel_sequential(im)[0]
-    # return im_new
-
-    shape = im.shape
-    im_flat = im.flatten()
-
+    im = np.array(im)
     if mode == 'none':
-        im_new = rankdata(im_flat, method='dense')
-        im_new = np.reshape(im_new, shape)
-        return im_new
-
-    elif mode.startswith('clip'):
-        mask = im_flat <= 0
-        im_flat[mask] = 0
-        im_new = rankdata(im_flat, method='dense') - 1
-        im_new[mask] = 0
-        im_new = np.reshape(im_new, shape)
-        return im_new
-
-    elif mode.startswith('keep_zero'):
-        mask = im_flat == 0
-        im_flat[mask] = im.min() - 1
-        im_new = rankdata(im_flat, method='dense') - 1
-        im_new[mask] = 0
-        im_new = np.reshape(im_new, shape)
-        return im_new
-
-    elif mode.startswith('sym'):
-        mask_neg = im_flat < 0
-        im_neg = -rankdata(-im_flat[mask_neg], method='dense')
-        mask_pos = im_flat > 0
-        im_pos = rankdata(im_flat[mask_pos], method='dense')
-        im_flat[mask_pos] = im_pos
-        im_flat[mask_neg] = im_neg
-        im_new = np.reshape(im_flat, shape)
-        return im_new
-
-    else:
-        raise Exception("Unrecognized mode:" + mode)
+        im = im + np.abs(np.min(im)) + 1
+        im_new = relabel_sequential(im)[0]
+    if mode == 'keep_zeros':
+        mask = im == 0
+        im = im + np.abs(np.min(im)) + 1
+        im[mask] = 0
+        im_new = relabel_sequential(im)[0]
+    if mode == 'clipped':
+        mask = im <= 0
+        im[mask] = 0
+        im_new = relabel_sequential(im)[0]
+    if mode == 'symmetric':
+        mask = im < 0
+        im_neg = relabel_sequential(-im*mask)[0]
+        mask = im >= 0
+        im_pos = relabel_sequential(im*mask)[0]
+        im_new = im_pos - im_neg
+    return im_new
 
 
-def get_border(shape, thickness=1, mode='edges', return_indices=False):
+def get_border(shape, thickness=1, mode='edges'):
     r"""
-    Creates an array of specified size with corners, edges or faces labelled as
-    True.  This can be used as mask to manipulate values laying on the
-    perimeter of an image.
+    Create an array with corners, edges or faces labelled as ``True``.
+
+    This can be used as mask to manipulate values laying on the perimeter of
+    an image.
 
     Parameters
     ----------
@@ -721,20 +702,16 @@ def get_border(shape, thickness=1, mode='edges', return_indices=False):
     mode : string
         The type of border to create.  Options are 'faces', 'edges' (default)
         and 'corners'.  In 2D 'faces' and 'edges' give the same result.
-    return_indices : boolean
-        If ``False`` (default) an image is returned with the border voxels set
-        to ``True``.  If ``True``, then a tuple with the x, y, z (if ``im`` is
-        3D) indices is returned.  This tuple can be used directly to index into
-        the image, such as ``im[tup] = 2``.
-    asmask : Boolean
-        If ``True`` (default) then an image of the specified ``shape`` is
-        returned, otherwise indices of the border voxels are returned.
 
     Returns
     -------
-    image : ND-array
-        An ND-array of specified shape with ``True`` values at the perimeter
-        and ``False`` elsewhere
+    image : ndarray
+        An ndarray of specified shape with ``True`` values at the perimeter
+        and ``False`` elsewhere.
+
+    Notes
+    -----
+    The indices of the ``True`` values can be found using ``numpy.where``.
 
     Examples
     --------
@@ -751,11 +728,10 @@ def get_border(shape, thickness=1, mode='edges', return_indices=False):
      [ True False  True]
      [ True  True  True]]
 
-    Examples
-    --------
     `Click here
     <https://porespy.org/examples/tools/howtos/get_border.html>`_
     to view online example.
+
     """
     # TODO: This function uses brute force to create an image then fills the
     # edges using location-based logic, and if the user requests
@@ -787,8 +763,6 @@ def get_border(shape, thickness=1, mode='edges', return_indices=False):
             border[t:-t, 0::, 0::] = False
             border[0::, t:-t, 0::] = False
             border[0::, 0::, t:-t] = False
-    if return_indices:
-        border = sp.where(border)
     return border
 
 
@@ -826,7 +800,7 @@ def norm_to_uniform(im, scale=None):
 
     Parameters
     ----------
-    im : ND-image
+    im : ndarray
         The image containing the normally distributed scalar field
     scale : [low, high]
         A list or array indicating the lower and upper bounds for the new
@@ -836,7 +810,7 @@ def norm_to_uniform(im, scale=None):
 
     Returns
     -------
-    image : ND-array
+    image : ndarray
         A copy of ``im`` with uniformly distributed greyscale values spanning
         the specified range, if given.
 
@@ -845,6 +819,7 @@ def norm_to_uniform(im, scale=None):
     `Click here
     <https://porespy.org/examples/tools/howtos/norm_to_uniform.html>`_
     to view online example.
+
     """
     if scale is None:
         scale = [im.min(), im.max()]
@@ -865,12 +840,12 @@ def _functions_to_table(mod, colwidth=[27, 48]):
     mod : module
         The module containing the functions to be included in the table, such
         as 'porespy.filters'.
-
     colwidths : list of ints
         The width of the first and second columns.  Note that because of the
         vertical lines separating columns and define the edges of the table,
         the total table width will be 3 characters wider than the total sum
         of the specified column widths.
+
     """
     temp = mod.__dir__()
     funcs = [i for i in temp if not i[0].startswith('_')]
@@ -903,9 +878,9 @@ def mesh_region(region: bool, strel=None):
 
     Parameters
     ----------
-    im : ND-array
+    im : ndarray
         A boolean image with ``True`` values indicating the region of interest
-    strel : ND-array
+    strel : ndarray
         The structuring element to use when blurring the region.  The blur is
         perfomed using a simple convolution filter.  The point is to create a
         greyscale region to allow the marching cubes algorithm some freedom
@@ -936,7 +911,7 @@ def mesh_region(region: bool, strel=None):
         padded_mask = np.reshape(im, (1,) + im.shape)
         padded_mask = np.pad(padded_mask, pad_width=pad_width, mode='constant')
     verts, faces, norm, val = marching_cubes(padded_mask)
-    result = namedtuple('mesh', ('verts', 'faces', 'norm', 'val'))
+    result = Results()
     result.verts = verts - pad_width
     result.faces = faces
     result.norm = norm
@@ -958,7 +933,7 @@ def ps_disk(r, smooth=True):
 
     Returns
     -------
-    disk : 2D-array
+    disk : ndarray
         A 2D numpy bool array of the structring element
 
     Examples
@@ -966,6 +941,7 @@ def ps_disk(r, smooth=True):
     `Click here
     <https://porespy.org/examples/tools/howtos/ps_disk.html>`_
     to view online example.
+
     """
     disk = ps_round(r=r, ndim=2, smooth=smooth)
     return disk
@@ -985,7 +961,7 @@ def ps_ball(r, smooth=True):
 
     Returns
     -------
-    ball : 3D-array
+    ball : ndarray
         A 3D numpy array of the structuring element
 
     Examples
@@ -993,6 +969,7 @@ def ps_ball(r, smooth=True):
     `Click here
     <https://porespy.org/examples/tools/howtos/ps_ball.html>`_
     to view online example.
+
     """
     ball = ps_round(r=r, ndim=3, smooth=smooth)
     return ball
@@ -1014,7 +991,7 @@ def ps_round(r, ndim, smooth=True):
 
     Returns
     -------
-    strel : 3D-array
+    strel : ndarray
         A 3D numpy array of the structuring element
 
     Examples
@@ -1022,6 +999,7 @@ def ps_round(r, ndim, smooth=True):
     `Click here
     <https://porespy.org/examples/tools/howtos/ps_round.html>`_
     to view online example.
+
     """
     rad = int(np.ceil(r))
     other = np.ones([2*rad + 1 for i in range(ndim)], dtype=bool)
@@ -1055,6 +1033,7 @@ def ps_rect(w, ndim):
     `Click here
     <https://porespy.org/examples/tools/howtos/ps_rect.html>`_
     to view online example.
+
     """
     if ndim == 2:
         from skimage.morphology import square
@@ -1072,16 +1051,16 @@ def overlay(im1, im2, c):
 
     Parameters
     ----------
-    im1 : ND-array
+    im1 : ndarray
         Original voxelated image
-    im2 : ND-array
+    im2 : ndarray
         Template voxelated image
     c : array_like
         [x, y, z] coordinates in ``im1`` where ``im2`` will be centered
 
     Returns
     -------
-    image : ND-array
+    image : ndarray
         A modified version of ``im1``, with ``im2`` overlaid at the specified
         location
 
@@ -1129,7 +1108,7 @@ def insert_sphere(im, c, r, v=True, overwrite=True):
 
     Returns
     -------
-    image : ND-array
+    image : ndarray
         The original image with a sphere inerted at the specified location
 
     Examples
@@ -1137,6 +1116,7 @@ def insert_sphere(im, c, r, v=True, overwrite=True):
     `Click here
     <https://porespy.org/examples/tools/howtos/insert_sphere.html>`_
     to view online example.
+
     """
     # Convert image to same type os v for eventual insertion
     if im.dtype != type(v):
@@ -1183,7 +1163,7 @@ def insert_cylinder(im, xyz0, xyz1, r):
 
     Returns
     -------
-    im : ND-array
+    im : ndarray
         Original voxelated image overlayed with the cylinder
 
     Notes
@@ -1195,6 +1175,7 @@ def insert_cylinder(im, xyz0, xyz1, r):
     `Click here
     <https://porespy.org/examples/tools/howtos/insert_cylinder.html>`_
     to view online example.
+
     """
     if im.ndim != 3:
         raise Exception('This function is only implemented for 3D images')
@@ -1245,7 +1226,7 @@ def extract_regions(regions, labels: list, trim=True):
 
     Parameters
     -----------
-    regions : ND-array
+    regions : ndarray
         An image containing an arbitrary number of labeled regions
     labels : array_like or scalar
         A list of labels indicating which region or regions to extract
@@ -1255,7 +1236,7 @@ def extract_regions(regions, labels: list, trim=True):
 
     Returns
     -------
-    im : ND-array
+    im : ndarray
         A boolean mask with ``True`` values indicating where the given labels
         exist
 
@@ -1264,6 +1245,7 @@ def extract_regions(regions, labels: list, trim=True):
     `Click here
     <https://porespy.org/examples/tools/howtos/extract_regions.html>`_
     to view online example.
+
     """
     if type(labels) is int:
         labels = [labels]

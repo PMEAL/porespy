@@ -103,5 +103,6 @@ from ._funcs import subdivide
 from ._utils import sanitize_filename
 from ._utils import get_tqdm
 from ._utils import show_docstring
+from ._utils import Results
 from ._funcs import _check_for_singleton_axes
 from ._unpad import unpad
