@@ -3,9 +3,8 @@ import scipy.ndimage as spim
 from trimesh import Trimesh
 from edt import edt
 from porespy.tools import extend_slice, ps_round, ps_rect
-from porespy.tools import _check_for_singleton_axes
+from porespy.tools import _check_for_singleton_axes, Results
 from porespy.tools import mesh_region
-from collections import namedtuple
 from skimage import measure
 from porespy.tools import get_tqdm
 from loguru import logger
@@ -61,7 +60,7 @@ def throat_perimeter2(regions):
 
 def region_volumes(regions, mode='marching_cubes'):
     r"""
-    Computes volumes of each labelled region in an image
+    Compute volume of each labelled region in an image
 
     Parameters
     ----------
@@ -74,6 +73,7 @@ def region_volumes(regions, mode='marching_cubes'):
             Finds a mesh for each region using the marching cubes algorithm
             from ``scikit-image``, then finds the volume of the mesh using the
             ``trimesh`` package.
+
         'voxel'
             Calculates the region volume as the sum of voxels within each
             region.
@@ -98,7 +98,7 @@ def region_volumes(regions, mode='marching_cubes'):
 
 def mesh_volume(region):
     r"""
-    Computes the volume of a single region by meshing it
+    Compute the volume of a single region by meshing it
 
     Parameters
     ----------
@@ -123,7 +123,7 @@ def mesh_volume(region):
 
 def region_surface_areas(regions, voxel_size=1, strel=None):
     r"""
-    Extracts the surface area of each region in a labeled image.
+    Extract the surface area of each region in a labeled image.
 
     Optionally, it can also find the the interfacial area between all
     adjoining regions.
@@ -176,7 +176,7 @@ def region_surface_areas(regions, voxel_size=1, strel=None):
 
 def mesh_surface_area(mesh=None, verts=None, faces=None):
     r"""
-    Calculates the surface area of a meshed region
+    Calculate the surface area of a meshed region
 
     Parameters
     ----------
@@ -212,7 +212,7 @@ def mesh_surface_area(mesh=None, verts=None, faces=None):
 
 def region_interface_areas(regions, areas, voxel_size=1, strel=None):
     r"""
-    Calculates the interfacial area between all pairs of adjecent regions
+    Calculate the interfacial area between all pairs of adjecent regions
 
     Parameters
     ----------
@@ -237,13 +237,17 @@ def region_interface_areas(regions, areas, voxel_size=1, strel=None):
 
     Returns
     -------
-    areas : named_tuple
-        A named-tuple containing 2 arrays. ``conns`` holds the connectivity
-        information and ``area`` holds the result for each pair.  ``conns`` is
-        a N-regions by 2 array with each row containing the region number of an
-        adjacent pair of regions.  For instance, if ``conns[0, 0]`` is 0 and
-        ``conns[0, 1]`` is 5, then row 0 of ``area`` contains the interfacial
-        area shared by regions 0 and 5.
+    areas : Results object
+        A custom object with the following data added as named attributes:
+
+        'conns'
+            An N-regions by 2 array with each row containing the region
+            number of an adjacent pair of regions.  For instance, if
+            ``conns[0, 0]`` is 0 and ``conns[0, 1]`` is 5, then row 0 of
+            ``area`` contains the interfacial area shared by regions 0 and 5.
+
+        'area'
+            The area calculated for each pair of regions in ``conns``
 
     """
     logger.trace('Finding interfacial areas between each region')
@@ -291,7 +295,7 @@ def region_interface_areas(regions, areas, voxel_size=1, strel=None):
     cn = np.array(cn)
     ia = 0.5 * (sa[cn[:, 0]] + sa[cn[:, 1]] - sa_combined)
     ia[ia <= 0] = 1
-    result = namedtuple('interfacial_areas', ('conns', 'area'))
+    result = Results()
     result.conns = cn
     result.area = ia * voxel_size**2
     return result
