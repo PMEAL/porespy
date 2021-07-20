@@ -21,7 +21,7 @@ def fftmorphology(im, strel, mode='opening'):
     -------
     image : ND-array
         A copy of the image with the specified moropholgical operation applied
-        using the fft-based methods available in scipy.fftconvolve.
+        using the fft-based methods available in ``scipy.signal.fftconvolve``.
 
     Notes
     -----

@@ -343,7 +343,7 @@ def trim_floating_solid(im, conn=None):
 
 def trim_nonpercolating_paths(im, inlets, outlets):
     r"""
-    Remove all nonpercolating paths between specified edges or faces
+    Remove all nonpercolating paths between specified locations
 
     Parameters
     ----------
@@ -365,7 +365,7 @@ def trim_nonpercolating_paths(im, inlets, outlets):
     Notes
     -----
     This function is essential when performing transport simulations on an
-    image since image regions that do not span between the desired inlet and
+    image since regions that do not span between the desired inlet and
     outlet do not contribute to the transport.
 
     See Also
@@ -563,8 +563,8 @@ def flood_func(im, labels, func):
 
 def find_dt_artifacts(dt):
     r"""
-    lavel points in a distance transform that are closer to image bounadry than
-    solid.
+    Label points in a distance transform that are closer to image boundary
+    than solid
 
     These points could *potentially* be erroneously high since their
     distance values do not reflect the possibility that solid may have
@@ -625,6 +625,11 @@ def region_size(im):
     --------
     flood
 
+    Notes
+    -----
+    This function provides the same result as ``flood`` with ``mode='size'``,
+    although does the computation in a different way.
+
     Examples
     --------
     `Click here
@@ -641,8 +646,7 @@ def region_size(im):
 
 def apply_chords(im, spacing=1, axis=0, trim_edges=True, label=False):
     r"""
-    Adds chords to the void space in the specified direction. The chords
-    are separated by 1 voxel plus the provided spacing.
+    Adds chords to the void space in the specified direction.
 
     Parameters
     ----------
@@ -705,9 +709,9 @@ def apply_chords(im, spacing=1, axis=0, trim_edges=True, label=False):
 
 def apply_chords_3D(im, spacing=0, trim_edges=True):
     r"""
-    Adds chords to the void space in all three principle directions. The
-    chords are seprated by 1 voxel plus the provided spacing. Chords in
-    the X, Y and Z directions are labelled 1, 2 and 3 resepctively.
+    Adds chords to the void space in all three principle directions.
+
+    Chords in the X, Y and Z directions are labelled 1, 2 and 3 resepctively.
 
     Parameters
     ----------
@@ -782,7 +786,7 @@ def local_thickness(im, sizes=25, mode="hybrid", divs=1):
         Controls with method is used to compute the result. Options are:
 
         'hybrid'
-            (default) Performs a distance tranform of the void
+            (default) Performs a distance transform of the void
             space, thresholds to find voxels larger than ``sizes[i]``, trims
             the resulting mask if ``access_limitations`` is ``True``, then
             dilates it using the efficient fft-method to obtain the
@@ -1147,7 +1151,6 @@ def nphase_border(im, include_diagonals=False):
         An ND image of the porous material containing discrete values in
         the pore space identifying different regions. e.g. the result of a
         snow-partition
-
     include_diagonals : bool
         When identifying bordering pixels (2D) and voxels (3D) include
         those shifted along more than one axis
@@ -1188,7 +1191,7 @@ def nphase_border(im, include_diagonals=False):
 
 def prune_branches(skel, branch_points=None, iterations=1):
     r"""
-    Removes all dangling ends or tails of a skeleton.
+    Remove all dangling ends or tails of a skeleton
 
     Parameters
     ----------
@@ -1196,7 +1199,7 @@ def prune_branches(skel, branch_points=None, iterations=1):
         A image of a full or partial skeleton from which the tails should
         be trimmed.
     branch_points : ND-array, optional
-        An image the same size ``skel`` with True values indicating the
+        An image the same size ``skel`` with ``True`` values indicating the
         branch points of the skeleton.  If this is not provided it is
         calculated automatically.
 
@@ -1263,7 +1266,7 @@ def chunked_func(func,
                  strel_arg=["strel", "structure", "footprint"],
                  **kwargs):
     r"""
-    Performs the specfied operation "chunk-wise" in parallel using dask.
+    Performs the specfied operation "chunk-wise" in parallel using ``dask``.
 
     This can be used to save memory by doing one chunk at a time
     (``cores=1``) or to increase computation speed by spreading the work
@@ -1328,7 +1331,7 @@ def chunked_func(func,
 
     See Also
     --------
-    skikit-image.util.apply_parallel
+    scikit-image.util.apply_parallel
 
     Examples
     --------
