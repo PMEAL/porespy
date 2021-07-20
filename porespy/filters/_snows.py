@@ -40,17 +40,20 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4):
 
     Returns
     -------
-    A **named tuple** containing all of the images used during the
-    process.  They can be accessed as attriutes with the following names:
+    results : Results object
+        A custom object with the follow data as attributes:
 
-        ``im``
+        - 'im'
             The binary image of the void space
-        ``dt``
+
+        - 'dt'
             The distance transform of the image
-        ``peaks``
+
+        - 'peaks'
             The peaks of the distance transform after applying the steps
             of the SNOW algorithm
-        ``regions``
+
+        - 'regions'
             The void space partitioned into pores using a marker
             based watershed with the peaks found by the SNOW algorithm
 
@@ -124,16 +127,20 @@ def snow_partitioning_n(im, r_max=4, sigma=0.4):
 
     Returns
     -------
-    A **named tuple** with the following attribute:
+    results : Results object
+        A custom object with the follow data as attributes:
 
-        ``im``
-            The actual image of the porous material
-        ``dt``
-            The combined distance transform of the image
-        ``phase_max_label``
+        - 'im'
+            The original image of the porous material
+
+        - 'dt'
+            The combined distance transform in alll phases of the image
+
+        - 'phase_max_label'
             The list of max label of each phase in order to
             distinguish between each other
-        ``regions``
+
+        - 'regions'
             The partitioned regions of n phases using a marker
             based watershed with the peaks found by the SNOW algorithm
 

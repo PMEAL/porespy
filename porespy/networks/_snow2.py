@@ -43,9 +43,13 @@ def snow2(phases,
         passed, it will be applied to the beginning and end of all axes.
         In case of a list, you can specify the number of voxels for each
         axis individually. Here are some examples:
+
             - [0, 3, 0]: 3 voxels only applied to the y-axis.
+
             - [0, [0, 3], 0]: 3 voxels only applied to the end of y-axis.
+
             - [0, [3, 0], 0]: 3 voxels only applied to the beginning of y-axis.
+
         The default is to add 3 voxels on both ends of all axes. For each
         boundary width that is not 0, a label will automatically be
         applied indicating which end of which axis (i.e. ``'xmin'`` and
