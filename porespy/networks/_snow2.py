@@ -3,7 +3,7 @@ from porespy.networks import regions_to_network
 from porespy.networks import add_boundary_regions
 from porespy.networks import label_phases, label_boundaries
 from porespy.filters import snow_partitioning, snow_partitioning_parallel
-from collections import namedtuple
+from porespy.tools import Results
 from loguru import logger
 
 
@@ -23,14 +23,14 @@ def snow2(phases,
 
     Parameters
     ----------
-    phases : ND-image
+    phases : ndarray
         An image indicating the phase(s) of interest. A watershed is
         produced for each integer value in ``phases`` (except 0's). These
         are then combined into a single image and one network is extracted
         using ``regions_to_network``.
     phase_alias : dict
         A mapping between integer values in ``phases`` and phase name
-        used to add labels to the network. For instance, asssuming
+        used to add labels to the network. For instance, asssuming a
         two-phase image, ``{1: 'void', 2: 'solid'}`` will result in the
         labels ``'pore.void'`` and ``'pore.solid'``, as well as
         ``'throat.solid_void'``, ``'throat.solid_solid'``, and
@@ -40,12 +40,16 @@ def snow2(phases,
     boundary_width : depends
         Number of voxels to add to the beginning and end of each axis.
         This argument can either be a scalar or a list. If a scalar is
-        passed, it will be applied to the begining and end of all axes.
+        passed, it will be applied to the beginning and end of all axes.
         In case of a list, you can specify the number of voxels for each
         axis individually. Here are some examples:
+
             - [0, 3, 0]: 3 voxels only applied to the y-axis.
+
             - [0, [0, 3], 0]: 3 voxels only applied to the end of y-axis.
+
             - [0, [3, 0], 0]: 3 voxels only applied to the beginning of y-axis.
+
         The default is to add 3 voxels on both ends of all axes. For each
         boundary width that is not 0, a label will automatically be
         applied indicating which end of which axis (i.e. ``'xmin'`` and
@@ -54,14 +58,19 @@ def snow2(phases,
         Controls how accurately certain properties are calculated during
         the analysis of regions in the ``regions_to_network`` function.
         Options are:
-            - 'standard' (default): Computes the surface areas and
-              perimeters by simply counting voxels. This is *much* faster
-              but does not properly account for the rough voxelated nature
-              of the surfaces.
-            - 'high': Computes surface areas using the marching cube
-              method, and perimeters using the fast marching method. These
-              are substantially slower but better account for the
-              voxelated nature of the images.
+
+            - 'standard' (default)
+                Computes the surface areas and perimeters by simply
+                counting voxels. This is *much* faster but does not
+                properly account for the rough voxelated nature
+                of the surfaces.
+
+            - 'high'
+                Computes surface areas using the marching cube
+                method, and perimeters using the fast marching method. These
+                are substantially slower but better account for the
+                voxelated nature of the images.
+
     voxel_size : scalar (default = 1)
         The resolution of the image, expressed as the length of one side
         of a voxel, so the volume of a voxel would be **voxel_size**-cubed.
@@ -70,23 +79,31 @@ def snow2(phases,
         Maximum filter stage that is used to find peaks. The default is 4.
     sigma : float
         The standard deviation of the Gaussian filter used in step 1. The
-        default is 0.4.  If 0 is given then the filter is not applied,
-        which is useful if a distance transform is supplied as the ``im``
-        argument that has already been processed.
+        default is 0.4.  If 0 is given then the filter is not applied.
     parallelization : dict
-        The arguments for controlling the parallization of the watershed
+        The arguments for controlling the parallelization of the watershed
         function are rolled into this dictionary, otherwise the function
         signature would become too complex. Refer to the docstring of
         ``snow_partitioning_parallel`` for complete details. If no values
-        are provided then the defaults for that function are used.
+        are provided then the defaults for that function are used here.
         To disable parallelization pass ``parallel=None``, which will
-        invoke the standard ``snow_partitioning``.
+        invoke the standard ``snow_partitioning`` or ``snow_partitioning_n``.
 
     Returns
     -------
-    network : dict or named-tuple
-        A *named-tuple* is returned with the padded ``phases`` image, the
-        watershed segmentated ``regions``, and the ``network`` dictionary.
+    network : Results object
+        A custom object is returned with the following data added as attributes:
+
+        - 'phases'
+            The original ``phases`` image with any padding applied
+
+        - 'regions'
+            The watershed segmentation of the image, including boundary
+            regions if padding was applied
+
+        - 'network'
+            A dictionary containing all the extracted network properties in
+            OpenPNM format ('pore.coords', 'throat.conns', etc).
 
     References
     ----------
@@ -147,7 +164,7 @@ def snow2(phases,
         L = [L[i]*int(W[i] > 0) for i in range(len(L))]
         L = np.reshape(L, newshape=boundary_width.shape)
         net = label_boundaries(net, labels=L)
-    result = namedtuple('snow2', ('network', 'regions', 'phases'))
+    result = Results()
     result.network = net
     result.regions = regions
     result.phases = phases

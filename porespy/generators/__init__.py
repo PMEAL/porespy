@@ -44,8 +44,8 @@ from ._imgen import overlapping_spheres
 from ._imgen import polydisperse_spheres
 from ._imgen import RSA
 from ._imgen import voronoi_edges
-from ._gravity import pseudo_gravity_packing
-from ._electrostatic import pseudo_electrostatic_packing
+from ._pseudo_packings import pseudo_gravity_packing
+from ._pseudo_packings import pseudo_electrostatic_packing
 from ._cylinder import cylindrical_plug
 from ._noise import fractal_noise
 from ._borders import *

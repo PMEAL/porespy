@@ -27,9 +27,11 @@ image, but with altered values.
     filters.find_dt_artifacts
     filters.find_peaks
     filters.flood
+    filters.flood_func
     filters.hold_peaks
     filters.local_thickness
     filters.nphase_border
+    filters.nl_means_layered
     filters.porosimetry
     filters.prune_branches
     filters.reduce_peaks

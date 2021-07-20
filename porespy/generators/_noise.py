@@ -1,6 +1,7 @@
-from porespy.tools import norm_to_uniform
+import pyfastnoisesimd as fns
 import multiprocessing
 import numpy as np
+from porespy.tools import norm_to_uniform
 
 
 def fractal_noise(shape, frequency=0.05, octaves=4, gain=0.5, mode='simplex',
@@ -24,26 +25,35 @@ def fractal_noise(shape, frequency=0.05, octaves=4, gain=0.5, mode='simplex',
         below 1.0 mean the higher octaves are less prominent.
     mode : string
         The type of noise to generate. Options are:
-        - 'perlin' : classic Perlin noise
-        - 'simplex' : updated Perlin noise for more realistic textures
-        - 'value' : blnear interpolation of white noise
-        - 'cubic' : cubic interpolation of white noise
+
+        - 'perlin'
+            classic Perlin noise
+
+        - 'simplex'
+            updated Perlin noise for more realistic textures
+
+        - 'value'
+            bilnear interpolation of white noise
+
+        - 'cubic'
+            cubic interpolation of white noise
+
     seed : int, optional
         The seed of the random number generator.  Using the same
         ``seed`` between runs will produce the same image.
     cores : int, optional
-        The number of cores to use.  This package used by this function
-        has implemented SIMD processing which can be spread across
+        The number of cores to use. This function uses ``pyfastnoisesimd``,
+        which has implemented SIMD processing which can be spread across
         cores. The default is to use all cores.
-    uniform : boolean, default=True
+    uniform : boolean, optional
         If ``True`` (default) the random values are converted to a
-        uniform distribution between 0 and 1, otherwise the result image
+        uniform distribution between 0 and 1, otherwise the resulting image
         contains the unprocesssed values, which have a 'normal-esque'
         distribution centered on 0.
 
     Notes
     -----
-    This function provides a simplified wrapper for the the functions in
+    This function provides a simplified wrapper for the functions in
     the `pyfastnoisesimd <https://github.com/robbmcleod/pyfastnoisesimd>`_
     package. ``pyfastnoisesimd`` is itself a wrapper for a C-library
     called `FastNoiseSIMD <https://github.com/Auburn/FastNoiseSIMD>`_.
@@ -63,16 +73,7 @@ def fractal_noise(shape, frequency=0.05, octaves=4, gain=0.5, mode='simplex',
     For more information on ``cubic noise`` see
     `here <https://github.com/jobtalle/CubicNoise>`__.
 
-    ``pyfastnoisesimd`` is not installed by default with PoreSpy so you will
-    receive an expection/warning when using this function.  Install may require
-    a c-compiler is installed.
-
     """
-    try:
-        import pyfastnoisesimd as fns
-    except ModuleNotFoundError:
-        raise Exception('fractal_noise requires pyfastnoisesimd, which can be ' +
-                        'install using pip')
     if cores is None:
         cores = multiprocessing.cpu_count()
     if seed is None:
