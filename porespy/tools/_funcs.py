@@ -1,7 +1,7 @@
 import scipy as sp
 import numpy as np
 import scipy.ndimage as spim
-from scipy.stats import rankdata
+from skimage.segmentation import relabel_sequential
 from edt import edt
 from loguru import logger
 from skimage.morphology import ball, disk
@@ -64,10 +64,7 @@ def marching_map(path, start):
 
     Notes
     -----
-    This function assumes scikit-fmm is installed on your machine. This
-    package requires downloading and installing the binaries specific for your
-    platform.  Mac and Linux builds are available fron conda, while windows
-    builds can be downloaded from Christoph Gohlke website.
+    This function assumes ``scikit-fmm`` is installed.
 
     """
     try:
@@ -85,8 +82,7 @@ def align_image_with_openpnm(im):
     r"""
     Rotates an image to agree with the coordinates used in OpenPNM.
 
-    It is unclear why they are not in agreement to start with.  This is
-    necessary for overlaying the image and the network in Paraview.
+    This is necessary for overlaying the image and the network in Paraview.
 
     Parameters
     ----------
@@ -140,9 +136,9 @@ def subdivide(im, divs=2, overlap=0):
     slices : ND-array
         An ND-array containing sets of slice objects for indexing into ``im``
         that extract subdivisions of an image.  If ``flatten`` was ``True``,
-        then this array is flat, suitable  for iterating.  If ``flatten`` was
+        then this array is suitable for iterating.  If ``flatten`` was
         ``False`` then the slice objects must be accessed by row, col, layer
-        indices.  An ND-array is the preferred container since it's shape can
+        indices.  An ND-array is the preferred container since its shape can
         be easily queried.
 
     See Also
@@ -158,8 +154,6 @@ def subdivide(im, divs=2, overlap=0):
     >>> print(len(s))
     4
 
-    Examples
-    --------
     `Click here
     <https://porespy.org/examples/tools/howtos/subdivide.html>`_
     to view online example.
@@ -207,6 +201,11 @@ def recombine(ims, slices, overlap):
     im : ND-array
         An image constituted from the chunks in ``ims`` of the same shape
         as the original image.
+
+    See Also
+    --------
+    chunked_func, subdivide
+
     """
     shape = [0]*ims[0].ndim
     for s in slices:
@@ -289,14 +288,7 @@ def bbox_to_slices(bbox):
 
 def find_outer_region(im, r=None):
     r"""
-    Finds regions of the image that are outside of the solid matrix.
-
-    This function uses the rolling ball method to define where the outer region
-    ends and the void space begins.
-
-    This function is particularly useful for samples that do not fill the
-    entire rectangular image, such as cylindrical cores or samples with non-
-    parallel faces.
+    Find regions of the image that are outside of the solid matrix.
 
     Parameters
     ----------
@@ -313,6 +305,15 @@ def find_outer_region(im, r=None):
     image : ND-array
         A boolean mask the same shape as ``im``, containing True in all voxels
         identified as *outside* the sample.
+
+    Notes
+    -----
+    This function uses the rolling ball method to define where the outer region
+    ends and the void space begins.
+
+    This is particularly useful for samples that do not fill the
+    entire rectangular image, such as cylindrical cores or samples with non-
+    parallel faces.
 
     """
     if r is None:
@@ -413,8 +414,6 @@ def extract_subsection(im, shape):
     [[2 2]
      [2 3]]
 
-    Examples
-    --------
     `Click here
     <https://porespy.org/examples/tools/howtos/extract_subsection.html>`_
     to view online example.
@@ -642,8 +641,8 @@ def make_contiguous(im, mode='keep_zeros'):
         An ND-array the same size as ``im`` but with all values in contiguous
         order.
 
-    Example
-    -------
+    Examples
+    --------
     >>> import porespy as ps
     >>> import scipy as sp
     >>> im = np.array([[0, 2, 9], [6, 8, 3]])
@@ -652,58 +651,31 @@ def make_contiguous(im, mode='keep_zeros'):
     [[0 1 5]
      [3 4 2]]
 
-    Examples
-    --------
     `Click here
     <https://porespy.org/examples/tools/howtos/make_contiguous.html>`_
     to view online example.
     """
     # This is a very simple version using relabel_sequential
-    # if keep_zeros:
-    #     mask = im == 0
-    #     im = im + np.abs(np.min(im)) + 1
-    #     im[mask] = 0
-    # elif np.min(im) < 0:
-    #     im = im + np.abs(np.min(im))
-    # im_new = relabel_sequential(im)[0]
-    # return im_new
-
-    shape = im.shape
-    im_flat = im.flatten()
-
+    im = np.array(im)
     if mode == 'none':
-        im_new = rankdata(im_flat, method='dense')
-        im_new = np.reshape(im_new, shape)
-        return im_new
-
-    elif mode.startswith('clip'):
-        mask = im_flat <= 0
-        im_flat[mask] = 0
-        im_new = rankdata(im_flat, method='dense') - 1
-        im_new[mask] = 0
-        im_new = np.reshape(im_new, shape)
-        return im_new
-
-    elif mode.startswith('keep_zero'):
-        mask = im_flat == 0
-        im_flat[mask] = im.min() - 1
-        im_new = rankdata(im_flat, method='dense') - 1
-        im_new[mask] = 0
-        im_new = np.reshape(im_new, shape)
-        return im_new
-
-    elif mode.startswith('sym'):
-        mask_neg = im_flat < 0
-        im_neg = -rankdata(-im_flat[mask_neg], method='dense')
-        mask_pos = im_flat > 0
-        im_pos = rankdata(im_flat[mask_pos], method='dense')
-        im_flat[mask_pos] = im_pos
-        im_flat[mask_neg] = im_neg
-        im_new = np.reshape(im_flat, shape)
-        return im_new
-
-    else:
-        raise Exception("Unrecognized mode:" + mode)
+        im = im + np.abs(np.min(im)) + 1
+        im_new = relabel_sequential(im)[0]
+    if mode == 'keep_zeros':
+        mask = im == 0
+        im = im + np.abs(np.min(im)) + 1
+        im[mask] = 0
+        im_new = relabel_sequential(im)[0]
+    if mode == 'clipped':
+        mask = im <= 0
+        im[mask] = 0
+        im_new = relabel_sequential(im)[0]
+    if mode == 'symmetric':
+        mask = im < 0
+        im_neg = relabel_sequential(-im*mask)[0]
+        mask = im >= 0
+        im_pos = relabel_sequential(im*mask)[0]
+        im_new = im_pos - im_neg
+    return im_new
 
 
 def get_border(shape, thickness=1, mode='edges', return_indices=False):
@@ -751,8 +723,6 @@ def get_border(shape, thickness=1, mode='edges', return_indices=False):
      [ True False  True]
      [ True  True  True]]
 
-    Examples
-    --------
     `Click here
     <https://porespy.org/examples/tools/howtos/get_border.html>`_
     to view online example.

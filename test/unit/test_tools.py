@@ -12,6 +12,7 @@ class ToolsTest():
 
     def setup_class(self):
         plt.close('all')
+        np.random.seed(0)
         self.im = np.random.randint(0, 10, 20)
         np.random.seed(0)
         self.blobs = ps.generators.blobs(shape=[101, 101])
