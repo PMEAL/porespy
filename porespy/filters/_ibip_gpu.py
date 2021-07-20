@@ -70,7 +70,7 @@ def ibip_gpu(im, dt=None, inlets=None, max_iters=10000):
         pt_gpu = cp.where(edge_gpu * dt_thresh_gpu)  # will be used later in updating bd
         # Update inv image
         bi_dial_gpu = cndi.binary_dilation(input=edge_gpu*dt_thresh_gpu,
-                                           structure=strel_gpu(r_max_g.item()))
+                                           structure=strel_gpu(r_max_gpu.item()))
         bi_dial_step_gpu = bi_dial_gpu * step
         inv_prev_gpu = cp.copy(inv_gpu)
         mask_inv_prev_gpu = ~(inv_prev_gpu > 0)
@@ -217,6 +217,7 @@ def disk_gpu(radius, smooth=True):
 
 
 if __name__ == '__main__':
+    import porespy as ps
     im = ps.generators.blobs(shape=[200, 200])
     out = ps.filters.ibip_gpu(im=im)
     
