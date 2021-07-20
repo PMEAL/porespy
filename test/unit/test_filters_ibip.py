@@ -29,12 +29,12 @@ class IBIPTest():
         return im
 
     def test_ibip(self):
-        inv = ps.filters.ibip(self.im, inlets=self.bd)
+        inv, size = ps.filters.ibip(self.im, inlets=self.bd)
         assert inv.max() == 318
 
     def test_ibip_w_trapping(self):
         im = self.sc_lattice_with_trapped_region()
-        inv = ps.filters.ibip(im, inlets=self.bd)
+        inv, size = ps.filters.ibip(im, inlets=self.bd)
         assert inv.max() == 391
         inv_w_trapping = ps.filters.find_trapped_regions(seq=inv,
                                                          return_mask=True)
@@ -54,14 +54,6 @@ class IBIPTest():
         inv_w_trapping = ps.filters.find_trapped_regions(seq=seq,
                                                          return_mask=False)
         assert (inv_w_trapping == -1).sum() == 236
-
-    def test_ibip_w_modes(self):
-        inv = ps.filters.ibip(self.im, inlets=self.bd)
-        assert inv.max() == 318
-        inv = ps.filters.ibip(self.im, inlets=self.bd, mode='fft')
-        assert inv.max() == 318
-        inv = ps.filters.ibip(self.im, inlets=self.bd, mode='insert')
-        assert inv.max() == 318
 
     def test_size_to_seq(self):
         im = self.im2D

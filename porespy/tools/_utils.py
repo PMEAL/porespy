@@ -12,13 +12,12 @@ def _is_ipython_notebook():  # pragma: no cover
     try:
         shell = get_ipython().__class__.__name__
         if shell == 'ZMQInteractiveShell':
-            return True   # Jupyter notebook or qtconsole
-        elif shell == 'TerminalInteractiveShell':
-            return False  # Terminal running IPython
-        else:
-            return False  # Other type (?)
+            return True     # Jupyter notebook or qtconsole
+        if shell == 'TerminalInteractiveShell':
+            return False    # Terminal running IPython
+        return False        # Other type (?)
     except NameError:
-        return False      # Probably standard Python interpreter
+        return False        # Probably standard Python interpreter
 
 
 def config_logger(fmt, loglevel):  # pragma: no cover
@@ -188,6 +187,7 @@ def get_tqdm():  # pragma: no cover
         tqdm = importlib.import_module('tqdm.notebook')
     else:
         tqdm = importlib.import_module('tqdm')
+    tqdm = importlib.import_module('tqdm')
     return tqdm.tqdm
 
 
