@@ -2,10 +2,11 @@ import numpy as np
 from loguru import logger
 from edt import edt
 from porespy.tools import get_tqdm, get_border
+from porespy.tools import Results
 tqdm = get_tqdm()
 
 
-def ibip_gpu(im, dt=None, inlets=None, max_iters=10000):
+def ibip_gpu(im, dt=None, inlets=None, maxiter=10000):
     """
     Performs invasion percolation on given image using iterative image
     dilation on GPU.
@@ -23,20 +24,23 @@ def ibip_gpu(im, dt=None, inlets=None, max_iters=10000):
         fluid is injected from.  If ``None``, all faces will be used.
         If a standard numpy array is passed, it is converted to a cupy
         array.
-    max_iters : int, optional
+    maxiter : int, optional
         The number of steps to apply before stopping.  The default is to
         run for 10,000 steps which is almost certain to reach completion
         if the image is smaller than about 250-cubed.
 
     Returns
     -------
-    inv_sequence : ndarray
-        An array the same shape as ``im`` with each voxel labelled by the
-        sequence at which it was invaded. The returned array will be a
-        cupy array
-    inv_size : ndarray
-        An array the same shape as ``im`` with each voxel labelled by the
-        ``inv_size`` at which was filled.
+    results : Results object
+        A custom object with the following two arrays as attributes:
+
+        'inv_sequence'
+            An ndarray the same shape as ``im`` with each voxel labelled by
+            the sequence at which it was invaded.
+
+        'inv_size'
+            An ndarray the same shape as ``im`` with each voxel labelled by
+            the ``inv_size`` at which was filled.
 
     """
     import cupy as cp
@@ -55,7 +59,7 @@ def ibip_gpu(im, dt=None, inlets=None, max_iters=10000):
     sizes_gpu = -1*((~im_gpu).astype(int))
     strel_gpu = ball_gpu if im_gpu.ndim == 3 else disk_gpu
 
-    for step in tqdm(range(1, max_iters)):
+    for step in tqdm(range(1, maxiter)):
         temp_gpu = cndi.binary_dilation(input=bd_gpu,
                                         structure=strel_gpu(1, smooth=False))
         edge_gpu = temp_gpu * (dt_gpu > 0)
@@ -85,7 +89,7 @@ def ibip_gpu(im, dt=None, inlets=None, max_iters=10000):
         # Update boundary image with newly invaded points
         bd_gpu[pt_gpu] = True
         dt_gpu[pt_gpu] = 0
-        if step == (max_iters - 1):  # If max_iters reached, end loop
+        if step == (maxiter - 1):  # If max_iters reached, end loop
             logger.info('Maximum number of iterations reached')
             break
 
@@ -98,8 +102,10 @@ def ibip_gpu(im, dt=None, inlets=None, max_iters=10000):
     sizes_gpu[temp_gpu] = -1
     inv_sequence = cp.asnumpy(inv_seq_gpu)
     inv_size = cp.asnumpy(sizes_gpu)
-
-    return inv_sequence, inv_size
+    results = Results()
+    results.inv_sequence = inv_sequence
+    results.inv_size = inv_size
+    return results
 
 
 def rankdata_gpu(im_arr):
@@ -220,4 +226,4 @@ if __name__ == '__main__':
     import porespy as ps
     im = ps.generators.blobs(shape=[200, 200])
     out = ps.filters.ibip_gpu(im=im)
-    
+

@@ -2,14 +2,14 @@ import numpy as np
 from edt import edt
 from porespy.tools import get_tqdm
 import scipy.ndimage as spim
-from porespy.tools import get_border
-from porespy.tools import make_contiguous
+from porespy.tools import get_border, make_contiguous
+from porespy.tools import Results
 import numba
 from porespy import settings
 tqdm = get_tqdm()
 
 
-def ibip(im, inlets=None, dt=None, max_iters=10000):
+def ibip(im, inlets=None, dt=None, maxiter=10000):
     r"""
     Performs invasion percolation on given image using iterative image dilation
 
@@ -23,19 +23,23 @@ def ibip(im, inlets=None, dt=None, max_iters=10000):
     dt : ND-array (optional)
         The distance transform of ``im``.  If not provided it will be
         calculated, so supplying it saves time.
-    max_iters : scalar
+    maxiter : scalar
         The number of steps to apply before stopping.  The default is to run
         for 10,000 steps which is almost certain to reach completion if the
         image is smaller than about 250-cubed.
 
     Returns
     -------
-    inv_sequence : ND-array
-        An array the same shape as ``im`` with each voxel labelled by the
-        sequence at which it was invaded.
-    inv_size : ND-array
-        An array the same shape as ``im`` with each voxel labelled by the
-        ``inv_size`` at which was filled.
+    results : Results object
+        A custom object with the following two arrays as attributes:
+
+        'inv_sequence'
+            An ndarray the same shape as ``im`` with each voxel labelled by
+            the sequence at which it was invaded.
+
+        'inv_size'
+            An ndarray the same shape as ``im`` with each voxel labelled by
+            the ``inv_size`` at which was filled.
 
     See Also
     --------
@@ -53,7 +57,7 @@ def ibip(im, inlets=None, dt=None, max_iters=10000):
     inv = -1*(~im)
     sizes = -1*(~im)
     scratch = np.copy(bd)
-    for step in tqdm(range(1, max_iters), **settings.tqdm):
+    for step in tqdm(range(1, maxiter), **settings.tqdm):
         pt = _where(bd)
         scratch = np.copy(bd)
         temp = _insert_disks_at_points(im=scratch, coords=pt,
@@ -82,7 +86,10 @@ def ibip(im, inlets=None, dt=None, max_iters=10000):
     temp = sizes == 0
     sizes[~im] = 0
     sizes[temp] = -1
-    return inv, sizes
+    results = Results()
+    results.inv_sequence = inv
+    results.inv_sizes = sizes
+    return results
 
 
 @numba.jit(nopython=True, parallel=False)
@@ -266,7 +273,7 @@ def find_trapped_regions(seq, outlets=None, bins=25, return_mask=True):
         consuming. If ``None`` is specified, then *all* the steps will
         analyzed, providing the highest accuracy.
     return_mask : bool
-        If ``True`` (default) then the return image is a boolean mask
+        If ``True`` (default) then the returned image is a boolean mask
         indicating which voxels are trapped.  If ``False``, then a copy of
         ``seq`` is returned with the trapped voxels set to uninvaded and
         the invasion sequence values adjusted accordingly.
