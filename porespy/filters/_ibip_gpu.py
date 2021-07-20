@@ -7,31 +7,33 @@ tqdm = get_tqdm()
 
 def ibip_gpu(im, dt=None, inlets=None, max_iters=10000):
     """
-    Performs invasion percolation on given image using iterative image dilation
-    on GPU.
+    Performs invasion percolation on given image using iterative image
+    dilation on GPU.
 
     Parameters
     ----------
     im : array_like
-        Boolean array with ``True`` values indicating void voxels.  If a standard
-        numpy array is passed, it is converted to a cupy array.
+        Boolean array with ``True`` values indicating void voxels. If a
+        standard numpy array is passed, it is converted to a cupy array.
     dt : array_like, optional
-        The distance transform of ``im``.  If a standard numpy array is passed,
-        it is converted to a cupy array.
+        The distance transform of ``im``. If a standard numpy array is
+        passed, it is converted to a cupy array.
     inlets : array_like, optional
-        Boolean array with ``True`` values indicating where the invading fluid
-        is injected from.  If ``None``, all faces will be used.  If a standard
-        numpy array is passed, it is converted to a cupy array.
-    max_iters : scalar, optional
-        The number of steps to apply before stopping.  The default is to run
-        for 10,000 steps which is almost certain to reach completion if the
-        image is smaller than about 250-cubed.
+        Boolean array with ``True`` values indicating where the invading
+        fluid is injected from.  If ``None``, all faces will be used.
+        If a standard numpy array is passed, it is converted to a cupy
+        array.
+    max_iters : int, optional
+        The number of steps to apply before stopping.  The default is to
+        run for 10,000 steps which is almost certain to reach completion
+        if the image is smaller than about 250-cubed.
 
     Returns
     -------
     inv_sequence : ndarray
         An array the same shape as ``im`` with each voxel labelled by the
-        sequence at which it was invaded.  The returned array will be a cupy
+        sequence at which it was invaded. The returned array will be a
+        cupy array
     inv_size : ndarray
         An array the same shape as ``im`` with each voxel labelled by the
         ``inv_size`` at which was filled.
@@ -39,68 +41,64 @@ def ibip_gpu(im, dt=None, inlets=None, max_iters=10000):
     """
     import cupy as cp
     from cupyx.scipy import ndimage as cndi
-    if dt is None:
-        if isinstance(im, cp.ndarray):
-            im = cp.asnumpy(im)
-        dt = edt(im)
-    im_g = cp.array(im)
-    dt_g = cp.array(dt)
-    if inlets is None:
-        inlets = get_border(shape=im.shape)
-    inlets_g = cp.array(inlets)
 
-    bd_g = cp.copy(inlets_g > 0)
-    dt_g = dt_g.astype(int)
-    # alternative to _ibip
-    inv_g = -1*((~im_g).astype(int))
-    sizes_g = -1*((~im_g).astype(int))
-    if im_g.ndim == 3:
-        strel_g = ball_gpu
-    else:
-        strel_g = disk_gpu
+    im_gpu = cp.array(im)
+    dt = edt(cp.asnumpy(im)) if dt is None else dt
+    dt_gpu = cp.array(dt)
+    inlets = get_border(shape=im.shape) if inlets is None else inlets
+    inlets_gpu = cp.array(inlets)
+    bd_gpu = cp.copy(inlets_gpu > 0)
+    dt_gpu = dt_gpu.astype(int)
+
+    # Alternative to _ibip
+    inv_gpu = -1*((~im_gpu).astype(int))
+    sizes_gpu = -1*((~im_gpu).astype(int))
+    strel_gpu = ball_gpu if im_gpu.ndim == 3 else disk_gpu
+
     for step in tqdm(range(1, max_iters)):
-        temp_g = cndi.binary_dilation(input=bd_g, structure=strel_g(1, smooth=False))
-        edge_g = temp_g*(dt_g > 0)
-        if ~cp.any(edge_g):
+        temp_gpu = cndi.binary_dilation(input=bd_gpu,
+                                        structure=strel_gpu(1, smooth=False))
+        edge_gpu = temp_gpu * (dt_gpu > 0)
+        if ~cp.any(edge_gpu):
             logger.info('No more accessible invasion sites found')
             break
         # Find the maximum value of the dt underlaying the new edge
-        r_max_g = dt_g[edge_g].max()
+        r_max_gpu = dt_gpu[edge_gpu].max()
         # Find all values of the dt with that size
-        dt_thresh_g = dt_g >= r_max_g
-        # insert the disk/sphere
-        pt_g = cp.where(edge_g*dt_thresh_g)  # will be used later in updating bd
-        # ------------------------------------------------
-        # update inv image
-        bi_dial_g = cndi.binary_dilation(input=edge_g*dt_thresh_g,
-                                         structure=strel_g(r_max_g.item()))
-        bi_dial_step_g = bi_dial_g*step
-        inv_prev_g = cp.copy(inv_g)
-        mask_inv_prev_g = ~(inv_prev_g > 0)
-        dial_single_g = mask_inv_prev_g*bi_dial_step_g
-        inv_g = inv_prev_g+dial_single_g
-        # update size image
-        bi_dial_size_g = bi_dial_g*r_max_g
-        sizes_prev_g = cp.copy(sizes_g)
-        mask_sizes_prev_g = ~(sizes_prev_g > 0)
-        dial_single_size_g = mask_sizes_prev_g*bi_dial_size_g
-        sizes_g = sizes_prev_g+dial_single_size_g
-        # ------------------------------------------------
+        dt_thresh_gpu = dt_gpu >= r_max_gpu
+        # Insert the disk/sphere
+        pt_gpu = cp.where(edge_gpu * dt_thresh_gpu)  # will be used later in updating bd
+        # Update inv image
+        bi_dial_gpu = cndi.binary_dilation(input=edge_gpu*dt_thresh_gpu,
+                                           structure=strel_gpu(r_max_g.item()))
+        bi_dial_step_gpu = bi_dial_gpu * step
+        inv_prev_gpu = cp.copy(inv_gpu)
+        mask_inv_prev_gpu = ~(inv_prev_gpu > 0)
+        dial_single_gpu = mask_inv_prev_gpu * bi_dial_step_gpu
+        inv_gpu = inv_prev_gpu + dial_single_gpu
+        # Update size image
+        bi_dial_size_gpu = bi_dial_gpu * r_max_gpu
+        sizes_prev_gpu = cp.copy(sizes_gpu)
+        mask_sizes_prev_gpu = ~(sizes_prev_gpu > 0)
+        dial_single_size_gpu = mask_sizes_prev_gpu * bi_dial_size_gpu
+        sizes_gpu = sizes_prev_gpu + dial_single_size_gpu
         # Update boundary image with newly invaded points
-        bd_g[pt_g] = True
-        dt_g[pt_g] = 0
+        bd_gpu[pt_gpu] = True
+        dt_gpu[pt_gpu] = 0
         if step == (max_iters - 1):  # If max_iters reached, end loop
             logger.info('Maximum number of iterations reached')
             break
-    temp_g = inv_g == 0
-    inv_g[~im_g] = 0
-    inv_g[temp_g] = -1
-    inv_seq_g = make_contiguous_gpu(im=inv_g)
-    temp_g = sizes_g == 0
-    sizes_g[~im_g] = 0
-    sizes_g[temp_g] = -1
-    inv_sequence = cp.asnumpy(inv_seq_g)
-    inv_size = cp.asnumpy(sizes_g)
+
+    temp_gpu = inv_gpu == 0
+    inv_gpu[~im_gpu] = 0
+    inv_gpu[temp_gpu] = -1
+    inv_seq_gpu = make_contiguous_gpu(im=inv_gpu)
+    temp_gpu = sizes_gpu == 0
+    sizes_gpu[~im_gpu] = 0
+    sizes_gpu[temp_gpu] = -1
+    inv_sequence = cp.asnumpy(inv_seq_gpu)
+    inv_size = cp.asnumpy(sizes_gpu)
+
     return inv_sequence, inv_size
 
 
@@ -111,13 +109,14 @@ def rankdata_gpu(im_arr):
 
     Parameters
     ----------
-    im_arr : cupy array_like
-        DESCRIPTION.
+    im_arr : cupy ndarray
+        Input image.
 
     Returns
     -------
-    dense : cupy ND-array
-        An array of length equal to the size of im_arr, containing rank scores.
+    dense : cupy ndarray
+        An array of length equal to the size of im_arr, containing rank
+        scores.
 
     """
     import cupy as cp
@@ -133,18 +132,18 @@ def rankdata_gpu(im_arr):
 
 def make_contiguous_gpu(im):
     """
-    Take an image with arbitrary greyscale values and adjust them to ensure
-    all values fall in a contiguous range starting at 0.
+    Take an image with arbitrary greyscale values and adjust them to
+    ensure all values fall in a contiguous range starting at 0.
 
     Parameters
     ----------
-    im : cupy ND-array
-        An ND array containing greyscale values
+    im : cupy ndarray
+        Input array containing greyscale values
 
     Returns
     -------
-    im_new : cupy ND-array
-        An ND-array the same size as ``im`` but with all values in contiguous
+    im_new : cupy ndarray
+        Array the same size as ``im`` but with all values in contiguous
         order.
 
     """
@@ -174,7 +173,7 @@ def ball_gpu(radius, smooth=True):
 
     Returns
     -------
-    cupy ND-array
+    cupy ndarray
         The structuring element where elements of the neighborhood
         are 1 and 0 otherwise.
 
@@ -204,9 +203,9 @@ def disk_gpu(radius, smooth=True):
 
     Returns
     -------
-    cupy ND-array
-        The structuring element where elements of the neighborhood
-        are 1 and 0 otherwise.
+    cupy ndarray
+        The structuring element where elements of the neighborhood are
+        1 and 0 otherwise.
 
     """
     import cupy as cp
@@ -219,5 +218,5 @@ def disk_gpu(radius, smooth=True):
 
 if __name__ == '__main__':
     im = ps.generators.blobs(shape=[200, 200])
-    a = ps.filters.ibip_gpu(im=im)
+    out = ps.filters.ibip_gpu(im=im)
     
