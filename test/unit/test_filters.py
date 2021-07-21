@@ -497,6 +497,18 @@ class FilterTest():
         num_peaks_after_close_trim = spim.label(peaks_close)[1]
         assert num_peaks_after_far_trim <= num_peaks_after_close_trim
 
+    def test_regions_size(self):
+        np.random.seed(0)
+        im = ps.generators.blobs([50, 50], porosity=0.1)
+        s = ps.filters.region_size(im)
+        hits = [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 14, 15, 18, 19, 20, 25]
+        assert np.all(hits == np.unique(s)[1:])
+        np.random.seed(0)
+        im = ps.generators.blobs([20, 20, 20], porosity=0.1)
+        s = ps.filters.region_size(im)
+        hits = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 16, 17, 19, 31, 32, 37]
+        assert np.all(hits == np.unique(s)[1:])
+
 
 if __name__ == '__main__':
     t = FilterTest()
