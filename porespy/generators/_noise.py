@@ -73,7 +73,11 @@ def fractal_noise(shape, frequency=0.05, octaves=4, gain=0.5, mode='simplex',
     `here <https://github.com/jobtalle/CubicNoise>`__.
 
     """
-    from pyfastnoisesimd import Noise, NoiseType, PerturbType
+    try:
+        from pyfastnoisesimd import Noise, NoiseType, PerturbType
+    except ModuleNotFoundError:
+        raise ModuleNotFoundError("You need to install `pyfastnoisesimd` using"
+                                  " `pip install pyfastnoisesimd`")
     if cores is None:
         cores = multiprocessing.cpu_count()
     if seed is None:
