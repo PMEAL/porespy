@@ -349,7 +349,7 @@ class GeneratorTest():
         with pytest.raises(Exception):
             ps.generators.faces(shape=[10, 10, 10])
 
-    def test_fractal_noise_2D(self):
+    def test_fractal_noise_2d(self):
         s = [100, 100]
         # Ensure identical images are returned if seed is same
         im1 = ps.generators.fractal_noise(shape=s, seed=0, cores=1)
