@@ -1,5 +1,6 @@
 import numpy as np
 import scipy.ndimage as spim
+from trimesh import Trimesh
 from porespy.tools import extend_slice, ps_round
 from porespy.tools import _check_for_singleton_axes, Results
 from porespy.tools import mesh_region
@@ -8,6 +9,71 @@ from porespy.tools import get_tqdm
 from loguru import logger
 from porespy import settings
 tqdm = get_tqdm()
+
+
+def region_volumes(regions, mode='marching_cubes'):
+    r"""
+    Compute volume of each labelled region in an image
+
+    Parameters
+    ----------
+    regions : ndarray
+        An image with labelled regions
+    mode : string
+        Controls the method used. Options are:
+
+        'marching_cubes' (default)
+            Finds a mesh for each region using the marching cubes algorithm
+            from ``scikit-image``, then finds the volume of the mesh using the
+            ``trimesh`` package.
+
+        'voxel'
+            Calculates the region volume as the sum of voxels within each
+            region.
+
+    Returns
+    -------
+    volumes : ndarray
+        An array of shape [N by 1] where N is the number of labelled regions
+        in the image.
+
+    """
+    slices = spim.find_objects(regions)
+    vols = np.zeros([len(slices), ])
+    msg = "Computing region volumes".ljust(60)
+    for i, s in enumerate(tqdm(slices, desc=msg, **settings.tqdm)):
+        region = regions[s] == (i + 1)
+        if mode == 'marching_cubes':
+            vols[i] = mesh_volume(region)
+        elif mode.startswith('voxel'):
+            vols[i] = regions.sum()
+    return vols
+
+
+def mesh_volume(region):
+    r"""
+    Compute the volume of a single region by meshing it
+
+    Parameters
+    ----------
+    region : ndarray
+        An image with a single region labelled as ``True`` (or > 0)
+
+    Returns
+    -------
+    volume : float
+        The volume of the region computed by applyuing the marching cubes
+        algorithm to the region, then finding the mesh volume using the
+        ``trimesh`` package.
+
+    """
+    mc = mesh_region(region > 0)
+    m = Trimesh(vertices=mc.verts, faces=mc.faces, vertex_normals=mc.norm)
+    if m.is_watertight:
+        vol = m.volume
+    else:
+        vol = np.nan
+    return vol
 
 
 def region_surface_areas(regions, voxel_size=1, strel=None):
