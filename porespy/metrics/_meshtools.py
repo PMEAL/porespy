@@ -1,8 +1,7 @@
 import numpy as np
 import scipy.ndimage as spim
 from trimesh import Trimesh
-from edt import edt
-from porespy.tools import extend_slice, ps_round, ps_rect
+from porespy.tools import extend_slice, ps_round
 from porespy.tools import _check_for_singleton_axes, Results
 from porespy.tools import mesh_region
 from skimage import measure
@@ -10,52 +9,6 @@ from porespy.tools import get_tqdm
 from loguru import logger
 from porespy import settings
 tqdm = get_tqdm()
-import skfmm
-
-
-def throat_perimeter(throat):
-    r"""
-    """
-    # Find interfacial voxels
-    label, N = spim.label(throat, structure=ps_rect(w=3, ndim=throat.ndim))
-    if N > 1:
-        perim = np.nan
-    elif N == 0:
-        perim = np.nan
-    else:
-        temp = throat
-        inds = np.where(temp)
-        phi = np.ones_like(throat)
-        phi[inds[0][0], inds[1][0]] = 0
-        v = (temp)*1.0
-        perim = skfmm.travel_time(phi=phi, speed=v)
-        perim = perim.max()*2.0
-    return perim
-
-
-def throat_perimeter2(regions):
-    r"""
-    """
-    # Find interfacial voxels
-    im1 = regions == regions.max()
-    im2 = regions * (~im1) > 0
-    dil1 = spim.binary_dilation(input=im1,
-                                structure=ps_rect(w=3, ndim=regions.ndim))
-    dil2 = spim.binary_dilation(input=im2,
-                                structure=ps_rect(w=3, ndim=regions.ndim))
-    throat = dil1*dil2
-    labels, N = spim.label(throat, structure=ps_rect(w=3, ndim=regions.ndim))
-    if N > 1:
-        perim = None
-    else:
-        dt = edt(im1 + im2)
-        temp = throat*(~((im1 > 0) + (im2 > 0)))
-        inds = np.where(temp)
-        phi = np.ones_like(regions)
-        phi[inds[0][0], inds[1][0]] = 0
-        v = (temp)*1.0
-        perim = skfmm.travel_time(phi=phi, speed=v)
-    return perim.max()*2.0
 
 
 def region_volumes(regions, mode='marching_cubes'):
