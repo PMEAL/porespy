@@ -1,4 +1,3 @@
-import pyfastnoisesimd as fns
 import multiprocessing
 import numpy as np
 from porespy.tools import norm_to_uniform
@@ -74,24 +73,22 @@ def fractal_noise(shape, frequency=0.05, octaves=4, gain=0.5, mode='simplex',
     `here <https://github.com/jobtalle/CubicNoise>`__.
 
     """
+    try:
+        from pyfastnoisesimd import Noise, NoiseType, PerturbType
+    except ModuleNotFoundError:
+        raise ModuleNotFoundError("You need to install `pyfastnoisesimd` using"
+                                  " `pip install pyfastnoisesimd`")
     if cores is None:
         cores = multiprocessing.cpu_count()
     if seed is None:
         seed = np.random.randint(2**31)
-    perlin = fns.Noise(numWorkers=cores)
-    if mode == 'simplex':
-        perlin.noiseType = fns.NoiseType.SimplexFractal
-    elif mode == 'perlin':
-        perlin.noiseType = fns.NoiseType.PerlinFractal
-    elif mode == 'cubic':
-        perlin.noiseType = fns.NoiseType.CubicFractal
-    elif mode == 'value':
-        perlin.noiseType = fns.NoiseType.ValueFractal
+    perlin = Noise(numWorkers=cores)
+    perlin.noiseType = getattr(NoiseType, f'{mode.capitalize()}Fractal')
     perlin.frequency = frequency
     perlin.fractal.octaves = octaves
     perlin.fractal.gain = gain
     perlin.fractal.lacunarity = 2
-    perlin.perturb.perturbType = fns.PerturbType.NoPerturb
+    perlin.perturb.perturbType = PerturbType.NoPerturb
     perlin.seed = seed
     result = perlin.genAsGrid(shape)
     if uniform:
