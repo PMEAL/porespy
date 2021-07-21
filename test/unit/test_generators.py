@@ -411,6 +411,16 @@ class GeneratorTest():
         c = ps.generators.borders(self.im3D.shape, thickness=1, mode='faces')
         assert c.sum() == 15002
 
+    def test_cylindrical_plug(self):
+        s = (50, 50)
+        p = ps.generators.cylindrical_plug(shape=s, r=21, axis=2)
+        assert np.all(p.shape == s)
+        assert p.sum() == 1369
+        s = (50, 50, 10)
+        p = ps.generators.cylindrical_plug(shape=s, r=21, axis=2)
+        assert np.all(p.shape == s)
+        assert p.sum() == 13690
+
 
 if __name__ == '__main__':
     t = GeneratorTest()
