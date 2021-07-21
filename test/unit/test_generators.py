@@ -397,6 +397,20 @@ class GeneratorTest():
         im2D = ps.generators.sierpinski_foam(4, 2, 2)
         np.testing.assert_allclose(im2D.sum()/im2D.size, 0.7901234567901234)
 
+    def test_border(self):
+        c = ps.generators.borders(self.im2D.shape, thickness=1, mode='corners')
+        assert c.sum() == 4
+        c = ps.generators.borders(self.im3D.shape, thickness=1, mode='corners')
+        assert c.sum() == 8
+        c = ps.generators.borders(self.im2D.shape, thickness=1, mode='edges')
+        assert c.sum() == 4
+        c = ps.generators.borders(self.im3D.shape, thickness=1, mode='edges')
+        assert c.sum() == 596
+        c = ps.generators.borders(self.im2D.shape, thickness=1, mode='faces')
+        assert c.sum() == 200
+        c = ps.generators.borders(self.im3D.shape, thickness=1, mode='faces')
+        assert c.sum() == 15002
+
 
 if __name__ == '__main__':
     t = GeneratorTest()
