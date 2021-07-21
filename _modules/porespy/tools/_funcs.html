@@ -904,37 +904,8 @@
 <span class="sd">    to view online example.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># TODO: This function uses brute force to create an image then fills the</span>
-    <span class="c1"># edges using location-based logic, and if the user requests</span>
-    <span class="c1"># ``return_indices`` it finds them using ``np.where``.  Since these arrays</span>
-    <span class="c1"># are cubic it should be possible to use more elegant and efficient</span>
-    <span class="c1"># index-based logic to find the indices, then use them to fill an empty</span>
-    <span class="c1"># image with ``True`` using these indices.</span>
-
-    <span class="n">ndims</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
-    <span class="n">t</span> <span class="o">=</span> <span class="n">thickness</span>
-    <span class="n">border</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;faces&#39;</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">ndims</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="n">border</span><span class="p">[</span><span class="n">t</span><span class="p">:</span><span class="o">-</span><span class="n">t</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span><span class="o">-</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="k">if</span> <span class="n">ndims</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-            <span class="n">border</span><span class="p">[</span><span class="n">t</span><span class="p">:</span><span class="o">-</span><span class="n">t</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span><span class="o">-</span><span class="n">t</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span><span class="o">-</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;edges&#39;</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">ndims</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="n">border</span><span class="p">[</span><span class="n">t</span><span class="p">:</span><span class="o">-</span><span class="n">t</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span><span class="o">-</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="k">if</span> <span class="n">ndims</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-            <span class="n">border</span><span class="p">[</span><span class="mi">0</span><span class="p">::,</span> <span class="n">t</span><span class="p">:</span><span class="o">-</span><span class="n">t</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span><span class="o">-</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="n">border</span><span class="p">[</span><span class="n">t</span><span class="p">:</span><span class="o">-</span><span class="n">t</span><span class="p">,</span> <span class="mi">0</span><span class="p">::,</span> <span class="n">t</span><span class="p">:</span><span class="o">-</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="n">border</span><span class="p">[</span><span class="n">t</span><span class="p">:</span><span class="o">-</span><span class="n">t</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span><span class="o">-</span><span class="n">t</span><span class="p">,</span> <span class="mi">0</span><span class="p">::]</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;corners&#39;</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">ndims</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="n">border</span><span class="p">[</span><span class="n">t</span><span class="p">:</span><span class="o">-</span><span class="n">t</span><span class="p">,</span> <span class="mi">0</span><span class="p">::]</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="n">border</span><span class="p">[</span><span class="mi">0</span><span class="p">::,</span> <span class="n">t</span><span class="p">:</span><span class="o">-</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="k">if</span> <span class="n">ndims</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-            <span class="n">border</span><span class="p">[</span><span class="n">t</span><span class="p">:</span><span class="o">-</span><span class="n">t</span><span class="p">,</span> <span class="mi">0</span><span class="p">::,</span> <span class="mi">0</span><span class="p">::]</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="n">border</span><span class="p">[</span><span class="mi">0</span><span class="p">::,</span> <span class="n">t</span><span class="p">:</span><span class="o">-</span><span class="n">t</span><span class="p">,</span> <span class="mi">0</span><span class="p">::]</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="n">border</span><span class="p">[</span><span class="mi">0</span><span class="p">::,</span> <span class="mi">0</span><span class="p">::,</span> <span class="n">t</span><span class="p">:</span><span class="o">-</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="k">return</span> <span class="n">border</span></div>
+    <span class="kn">from</span> <span class="nn">porespy.generators</span> <span class="kn">import</span> <span class="n">borders</span>
+    <span class="k">return</span> <span class="n">borders</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">thickness</span><span class="o">=</span><span class="n">thickness</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="in_hull"><a class="viewcode-back" href="../../../modules/generated/porespy.tools.in_hull.html#porespy.tools.in_hull">[docs]</a><span class="k">def</span> <span class="nf">in_hull</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">hull</span><span class="p">):</span>
