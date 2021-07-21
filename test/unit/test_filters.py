@@ -509,7 +509,7 @@ class FilterTest():
         np.random.seed(0)
         im = ps.generators.blobs([50, 50], porosity=0.1)
         s = ps.filters.region_size(im)
-        hits = [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 14, 15, 18, 19, 20, 25]
+        hits = [1, 2, 3, 4, 5, 6, 8, 9, 18, 23, 24, 26, 28, 31]
         assert np.all(hits == np.unique(s)[1:])
         np.random.seed(0)
         im = ps.generators.blobs([20, 20, 20], porosity=0.1)

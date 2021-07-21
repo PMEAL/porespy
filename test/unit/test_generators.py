@@ -397,19 +397,37 @@ class GeneratorTest():
         im2D = ps.generators.sierpinski_foam(4, 2, 2)
         np.testing.assert_allclose(im2D.sum()/im2D.size, 0.7901234567901234)
 
-    def test_border(self):
-        c = ps.generators.borders(self.im2D.shape, thickness=1, mode='corners')
+    def test_border_thickness_1(self):
+        s = (10, 10)
+        c = ps.generators.borders(shape=s, thickness=1, mode='corners')
         assert c.sum() == 4
-        c = ps.generators.borders(self.im3D.shape, thickness=1, mode='corners')
+        c = ps.generators.borders(shape=s, thickness=1, mode='edges')
+        assert c.sum() == 4
+        c = ps.generators.borders(shape=s, thickness=1, mode='faces')
+        assert c.sum() == 36
+        s = (10, 10, 10)
+        c = ps.generators.borders(shape=s, thickness=1, mode='corners')
         assert c.sum() == 8
-        c = ps.generators.borders(self.im2D.shape, thickness=1, mode='edges')
-        assert c.sum() == 4
-        c = ps.generators.borders(self.im3D.shape, thickness=1, mode='edges')
-        assert c.sum() == 596
-        c = ps.generators.borders(self.im2D.shape, thickness=1, mode='faces')
-        assert c.sum() == 200
-        c = ps.generators.borders(self.im3D.shape, thickness=1, mode='faces')
-        assert c.sum() == 15002
+        c = ps.generators.borders(shape=s, thickness=1, mode='edges')
+        assert c.sum() == 104
+        c = ps.generators.borders(shape=s, thickness=1, mode='faces')
+        assert c.sum() == 488
+
+    def test_border_thickness_2(self):
+        s = (10, 10)
+        c = ps.generators.borders(shape=s, thickness=2, mode='corners')
+        assert c.sum() == 16
+        c = ps.generators.borders(shape=s, thickness=2, mode='edges')
+        assert c.sum() == 16
+        c = ps.generators.borders(shape=s, thickness=2, mode='faces')
+        assert c.sum() == 64
+        s = (10, 10, 10)
+        c = ps.generators.borders(shape=s, thickness=2, mode='corners')
+        assert c.sum() == 64
+        c = ps.generators.borders(shape=s, thickness=2, mode='edges')
+        assert c.sum() == 352
+        c = ps.generators.borders(shape=s, thickness=2, mode='faces')
+        assert c.sum() == (1000 - 6*6*6)
 
     def test_cylindrical_plug(self):
         s = (50, 50)
