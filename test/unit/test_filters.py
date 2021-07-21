@@ -441,6 +441,14 @@ class FilterTest():
         skel2 = ps.filters.prune_branches(skel1)
         assert skel1.sum() > skel2.sum()
 
+    def test_prune_branches_n2(self):
+        im = ps.generators.lattice_spheres(shape=[100, 100, 100], r=4)
+        skel1 = skeletonize_3d(im)
+        skel2 = ps.filters.prune_branches(skel1, iterations=1)
+        skel3 = ps.filters.prune_branches(skel1, iterations=2)
+        assert skel1.sum() > skel2.sum()
+        assert skel2.sum() == skel3.sum()
+
     def test_apply_padded(self):
         im = ps.generators.blobs(shape=[100, 100])
         skel1 = skeletonize_3d(im)
