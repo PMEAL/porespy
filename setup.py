@@ -71,7 +71,6 @@ setup(
         'scikit-image',
         'scipy',
         'tqdm',
-        'transforms3d',
         'trimesh'
     ],
     author='PoreSpy Team',
