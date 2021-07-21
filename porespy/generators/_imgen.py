@@ -21,9 +21,9 @@ def insert_shape(im, element, center=None, corner=None, value=1, mode="overwrite
 
     Parameters
     ----------
-    im : ND-array
+    im : ndarray
         The image into which the sub-image will be inserted
-    element : ND-array
+    element : ndarray
         The sub-image to insert
     center : tuple
         Coordinates indicating the position in the main image where the
@@ -34,7 +34,7 @@ def insert_shape(im, element, center=None, corner=None, value=1, mode="overwrite
     corner : tuple
         Coordinates indicating the position in the main image where the
         lower corner (i.e. [0, 0, 0]) of the inserted image should be anchored.
-        If ``corner`` is given then ``corner`` cannot be specified.
+        If ``center`` is given then ``corner`` cannot be specified.
     value : scalar
         A scalar value to apply to the sub-image.  The default is 1.
     mode : string
@@ -45,7 +45,7 @@ def insert_shape(im, element, center=None, corner=None, value=1, mode="overwrite
 
     Returns
     -------
-    im : ND-array
+    im : ndarray
         A copy of ``im`` with the supplied element inserted.
 
     Examples
@@ -57,9 +57,9 @@ def insert_shape(im, element, center=None, corner=None, value=1, mode="overwrite
     """
     im = im.copy()
     if im.ndim != element.ndim:
-        raise Exception(
-            f"Image shape {im.shape} and element shape {element.shape} do not match"
-        )
+        msg = f"Image shape {im.shape} and element shape {element.shape} do not match"
+        raise Exception(msg)
+
     s_im = []
     s_el = []
     if (center is not None) and (corner is None):
@@ -104,14 +104,13 @@ def RSA(im_or_shape: np.array,
         n_max: int = 100000,
         mode: str = "contained",
         return_spheres: bool = False,
-        smooth: bool = True,
-        ):
+        smooth: bool = True):
     r"""
     Generates a sphere or disk packing using Random Sequential Addition
 
     Parameters
     ----------
-    im_or_shape : ND-array or list
+    im_or_shape : ndarray or list
         To provide flexibility, this argument accepts either an image into
         which the spheres are inserted, or a shape which is used to create an
         empty image.  In both cases the spheres are added as ``True`` values
@@ -154,7 +153,7 @@ def RSA(im_or_shape: np.array,
 
     Returns
     -------
-    image : ND-array
+    image : ndarray
         An image with spheres of specified radius *added* to the background.
 
     See Also
@@ -220,7 +219,6 @@ def RSA(im_or_shape: np.array,
     logger.trace("Dilating foreground features by sphere radius")
     dt = edt(im == 0)
     options_im = dt >= r
-    # ------------------------------------------------------------------------
     # Begin inserting the spheres
     vf = vf_start
     free_sites = np.flatnonzero(options_im)
@@ -242,7 +240,6 @@ def RSA(im_or_shape: np.array,
         vf += vf_template
         i += 1
     logger.trace(f"Number of spheres inserted: {i}")
-    # ------------------------------------------------------------------------
     # Get slice into returned image to retain original size
     s = tuple([slice(2 * (r + clearance), d - 2 * (r + clearance), None)
                for d in im.shape])
@@ -257,18 +254,19 @@ def RSA(im_or_shape: np.array,
 @njit
 def _make_choice(options_im, free_sites):
     r"""
-    This function is called by _begin_inserting to find valid insertion points
+    This function is called by _begin_inserting to find valid insertion
+    points.
 
     Parameters
     ----------
-    options_im : ND-array
+    options_im : ndarray
         An array with ``True`` at all valid locations and ``False`` at all
         locations where a sphere already exists PLUS a region of radius R
         around each sphere since these points are also invalid insertion
         points.
     free_sites : array_like
-        A 1D array containing valid insertion indices.  This list is used to
-        select insertion points from a limited which occasionally gets
+        A 1D array containing valid insertion indices.  This list is used
+        to select insertion points from a limited which occasionally gets
         smaller.
 
     Returns
@@ -284,12 +282,12 @@ def _make_choice(options_im, free_sites):
     choice = False
     count = 0
     upper_limit = len(free_sites)
-    max_iters = upper_limit * 20
+    maxiter = upper_limit * 20
     if options_im.ndim == 2:
         coords = [-1, -1]
         Nx, Ny = options_im.shape
         while not choice:
-            if count >= max_iters:
+            if count >= maxiter:
                 coords = [-1, -1]
                 break
             ind = np.random.randint(0, upper_limit)
@@ -304,7 +302,7 @@ def _make_choice(options_im, free_sites):
         coords = [-1, -1, -1]
         Nx, Ny, Nz = options_im.shape
         while not choice:
-            if count >= max_iters:
+            if count >= maxiter:
                 coords = [-1, -1, -1]
                 break
             ind = np.random.randint(0, upper_limit)
@@ -330,13 +328,13 @@ def bundle_of_tubes(shape: List[int], spacing: int):
         The size the image, with the 3rd dimension indicating the plate
         thickness.  If the 3rd dimension is not given then a thickness of
         1 voxel is assumed.
-    spacing : scalar
-        The center to center distance of the holes.  The hole sizes will be
-        randomly distributed between this values down to 3 voxels.
+    spacing : int
+        The center to center distance of the holes.  The hole sizes will
+        be randomly distributed between this values down to 3 voxels.
 
     Returns
     -------
-    image : ND-array
+    image : ndarray
         A boolean array with ``True`` values denoting the pore space
 
     Examples
@@ -344,6 +342,7 @@ def bundle_of_tubes(shape: List[int], spacing: int):
     `Click here
     <https://porespy.org/examples/generators/howtos/bundle_of_tubes.html>`_
     to view online example.
+
     """
     shape = np.array(shape)
     if np.size(shape) == 1:
@@ -378,8 +377,8 @@ def polydisperse_spheres(
     shape: List[int], porosity: float, dist, nbins: int = 5, r_min: int = 5
 ):
     r"""
-    Create an image of randomly place, overlapping spheres with a distribution
-    of radii.
+    Create an image of randomly placed, overlapping spheres with a
+    distribution of radii.
 
     Parameters
     ----------
@@ -387,25 +386,27 @@ def polydisperse_spheres(
         The size of the image to generate in [Nx, Ny, Nz] where Ni is the
         number of voxels in each direction.  If shape is only 2D, then an
         image of polydisperse disks is returns
-    porosity : scalar
+    porosity : float
         The porosity of the image, defined as the number of void voxels
         divided by the number of voxels in the image. The specified value
-        is only matched approximately, so it's suggested to check this value
-        after the image is generated.
+        is only matched approximately, so it's suggested to check this
+        value after the image is generated.
     dist : scipy.stats distribution object
-        This should be an initialized distribution chosen from the large number
-        of options in the ``scipy.stats`` submodule.  For instance, a normal
-        distribution with a mean of 20 and a standard deviation of 10 can be
-        obtained with ``dist = scipy.stats.norm(loc=20, scale=10)``
-    nbins : scalar
-        The number of discrete sphere sizes that will be used to generate the
-        image.  This function generates  ``nbins`` images of monodisperse
-        spheres that span 0.05 and 0.95 of the possible values produced by the
-        provided distribution, then overlays them to get polydispersivity.
+        This should be an initialized distribution chosen from the large
+        number of options in the ``scipy.stats`` submodule.  For instance,
+        a normal distribution with a mean of 20 and a standard deviation
+        of 10 can be obtained with
+        ``dist = scipy.stats.norm(loc=20, scale=10)``
+    nbins : int
+        The number of discrete sphere sizes that will be used to generate
+        the image. This function generates ``nbins`` images of
+        monodisperse spheres that span 0.05 and 0.95 of the possible
+        values produced by the provided distribution, then overlays them
+        to get polydispersivity.
 
     Returns
     -------
-    image : ND-array
+    image : ndarray
         A boolean array with ``True`` values denoting the pore space
 
     Examples
@@ -413,6 +414,7 @@ def polydisperse_spheres(
     `Click here
     <https://porespy.org/examples/generators/howtos/polydisperse_spheres.html>`_
     to view online example.
+
     """
     shape = np.array(shape)
     if np.size(shape) == 1:
@@ -433,24 +435,26 @@ def polydisperse_spheres(
 
 def voronoi_edges(shape: List[int], r: int, ncells: int, flat_faces: bool = True):
     r"""
-    Create an image of the edges in a Voronoi tessellation
+    Create an image from the edges of a Voronoi tessellation.
 
     Parameters
     ----------
     shape : array_like
         The size of the image to generate in [Nx, Ny, Nz] where Ni is the
         number of voxels in each direction.
-    radius : scalar
-        The radius to which Voronoi edges should be dilated in the final image.
-    ncells : scalar
+    radius : int
+        The radius to which Voronoi edges should be dilated in the final
+        image.
+    ncells : int
         The number of Voronoi cells to include in the tesselation.
-    flat_faces : Boolean
+    flat_faces : bool
         Whether the Voronoi edges should lie on the boundary of the
-        image (True), or if edges outside the image should be removed (False).
+        image (``True``), or if edges outside the image should be removed
+        (``False``).
 
     Returns
     -------
-    image : ND-array
+    image : ndarray
         A boolean array with ``True`` values denoting the pore space
 
     Examples
@@ -502,9 +506,11 @@ def _get_Voronoi_edges(vor):
 
     Returns
     -------
-    A 2-by-N array of vertex indices, indicating the start and end points of
-    each vertex in the Voronoi diagram.  These vertex indices can be used to
-    index straight into the ``vor.vertices`` array to get spatial positions.
+    A 2-by-N array of vertex indices, indicating the start and end points
+    of each vertex in the Voronoi diagram.  These vertex indices can be
+    used to index straight into the ``vor.vertices`` array to get spatial
+    positions.
+
     """
     edges = [[], []]
     for facet in vor.ridge_vertices:
@@ -530,8 +536,7 @@ def lattice_spheres(shape: List[int],
                     smooth: bool = True,
                     lattice: str = "sc"):
     r"""
-    Generates a cubic packing of spheres in a specified lattice
-    arrangement.
+    Generate a cubic packing of spheres in a specified lattice arrangement.
 
     Parameters
     ----------
@@ -659,7 +664,7 @@ def lattice_spheres(shape: List[int],
 def overlapping_spheres(shape: List[int],
                         r: int,
                         porosity: float,
-                        iter_max: int = 10,
+                        maxiter: int = 10,
                         tol: float = 0.01):
     r"""
     Generate a packing of overlapping mono-disperse spheres
@@ -673,7 +678,7 @@ def overlapping_spheres(shape: List[int],
         The radius of spheres in the packing.
     porosity : scalar
         The porosity of the final image, accurate to the given tolerance.
-    iter_max : int
+    maxiter : int
         Maximum number of iterations for the iterative algorithm that improves
         the porosity of the final image to match the given value.
     tol : float
@@ -681,7 +686,7 @@ def overlapping_spheres(shape: List[int],
 
     Returns
     -------
-    image : ND-array
+    image : ndarray
         A boolean array with ``True`` values denoting the pore space
 
     Notes
@@ -695,6 +700,7 @@ def overlapping_spheres(shape: List[int],
     `Click here
     <https://porespy.org/examples/generators/howtos/overlapping_spheres.html>`_
     to view online example.
+
     """
     shape = np.array(shape)
     if np.size(shape) == 1:
@@ -717,7 +723,7 @@ def overlapping_spheres(shape: List[int],
     # # Newton's method for getting image porosity match the given
     # w = 1.0                         # Damping factor
     # dN = 5 if ndim == 2 else 25     # Perturbation
-    # for i in range(iter_max):
+    # for i in range(maxiter):
     #     err = g(f(N)) - porosity
     #     d_err = (g(f(N+dN)) - g(f(N))) / dN
     #     if d_err == 0:
@@ -729,7 +735,7 @@ def overlapping_spheres(shape: List[int],
 
     # Bisection search: N is always undershoot (bc. of overlaps)
     N_low, N_high = N, 4 * N
-    for i in range(iter_max):
+    for i in range(maxiter):
         N = np.mean([N_high, N_low], dtype=int)
         err = g(f(N)) - porosity
         if err > 0:
@@ -754,27 +760,38 @@ def blobs(shape: List[int], porosity: float = 0.5, blobiness: int = 1,
         number of voxels
     porosity : float
         If specified, this will threshold the image to the specified value
-        prior to returning.  If ``None`` is specified, then the scalar noise
-        field is converted to a uniform distribution and returned without
-        thresholding.
+        prior to returning.  If ``None`` is specified, then the scalar
+        noise field is converted to a uniform distribution and returned
+        without thresholding.
     blobiness : int or list of ints(default = 1)
         Controls the morphology of the blobs.  A higher number results in
-        a larger number of small blobs.  If a list is supplied then the blobs
-        are anisotropic.
+        a larger number of small blobs.  If a list is supplied then the
+        blobs are anisotropic.
     divs : int or array_like
-        The number of times to divide the image for parallel processing.  If ``1``
-        then parallel processing does not occur.  ``2`` is equivalent to
-        ``[2, 2, 2]`` for a 3D image.  The number of cores used is specified in
-        ``porespy.settings.ncores`` and defaults to all cores.
+        The number of times to divide the image for parallel processing.
+        If ``1`` then parallel processing does not occur.  ``2`` is
+        equivalent to ``[2, 2, 2]`` for a 3D image.  The number of cores
+        used is specified in ``porespy.settings.ncores`` and defaults to
+        all cores.
 
     Returns
     -------
-    image : ND-array
+    image : ndarray
         A boolean array with ``True`` values denoting the pore space
 
     See Also
     --------
     norm_to_uniform
+
+    Notes
+    -----
+    This function generates random noise, the applies a gaussian blur to
+    the noise with a sigma controlled by the blobiness argument as:
+
+        $$ np.mean(shape) / (40 * blobiness) $$
+
+    The value of 40 was chosen so that a ``blobiness`` of 1 gave a
+    reasonable result.
 
     Examples
     --------
@@ -806,9 +823,6 @@ def blobs(shape: List[int], porosity: float = 0.5, blobiness: int = 1,
                                      divs=divs, overlap=overlap)
     else:
         im = spim.gaussian_filter(im, sigma=sigma)
-    # fig, ax = plt.subplots(1, 2)
-    # ax[0].imshow(im1)
-    # ax[1].imshow(im2)
     im = norm_to_uniform(im, scale=[0, 1])
     if porosity:
         im = im < porosity
@@ -832,33 +846,34 @@ def _cylinders(shape: List[int],
     shape : list
         The size of the image to generate in [Nx, Ny, Nz] where N is the
         number of voxels. 2D images are not permitted.
-    r : scalar
+    r : int
         The radius of the cylinders in voxels
-    ncylinders : scalar
+    ncylinders : int
         The number of cylinders to add to the domain. Adjust this value to
         control the final porosity, which is not easily specified since
         cylinders overlap and intersect different fractions of the domain.
-    phi_max : scalar
-        A value between 0 and 90 that controls the amount that the cylinders
-        lie *out of* the XY plane, with 0 meaning all cylinders lie in the XY
-        plane, and 90 meaning that cylinders are randomly oriented out of the
-        plane by as much as +/- 90 degrees.
-    theta_max : scalar
-        A value between 0 and 90 that controls the amount of rotation *in the*
-        XY plane, with 0 meaning all cylinders point in the X-direction, and
-        90 meaning they are randomly rotated about the Z axis by as much
-        as +/- 90 degrees.
-    length : scalar
-        The length of the cylinders to add.  If ``None`` (default) then the
-        cylinders will extend beyond the domain in both directions so no ends
-        will exist. If a scalar value is given it will be interpreted as the
-        Euclidean distance between the two ends of the cylinder.  Note that
-        one or both of the ends *may* still lie outside the domain, depending
-        on the randomly chosen center point of the cylinder.
+    phi_max : int
+        A value between 0 and 90 that controls the amount that the
+        cylinders lie *out of* the XY plane, with 0 meaning all cylinders
+        lie in the XY plane, and 90 meaning that cylinders are randomly
+        oriented out of the plane by as much as +/- 90 degrees.
+    theta_max : int
+        A value between 0 and 90 that controls the amount of rotation
+        *in the* XY plane, with 0 meaning all cylinders point in the
+        X-direction, and 90 meaning they are randomly rotated about the Z
+        axis by as much as +/- 90 degrees.
+    length : int
+        The length of the cylinders to add.  If ``None`` (default) then
+        the cylinders will extend beyond the domain in both directions so
+        no ends will exist. If a scalar value is given it will be
+        interpreted as the Euclidean distance between the two ends of the
+        cylinder. Note that one or both of the ends *may* still lie
+        outside the domain, depending on the randomly chosen center point
+        of the cylinder.
 
     Returns
     -------
-    image : ND-array
+    image : ndarray
         A boolean array with ``True`` values denoting the pore space
 
     Examples
@@ -866,6 +881,7 @@ def _cylinders(shape: List[int],
     `Click here
     <https://porespy.org/examples/generators/cylinders.html>`_
     to view online example.
+
     """
     shape = np.array(shape)
     if np.size(shape) == 1:
@@ -921,10 +937,10 @@ def cylinders(shape: List[int],
               phi_max: float = 0,
               theta_max: float = 90,
               length: float = None,
-              max_iter: int = 3):
+              maxiter: int = 3):
     r"""
-    Generates a binary image of overlapping cylinders given porosity OR number
-    of cylinders.
+    Generates a binary image of overlapping cylinders given porosity OR
+    number of cylinders.
 
     This is a good approximation of a fibrous mat.
 
@@ -935,44 +951,43 @@ def cylinders(shape: List[int],
         number of voxels. 2D images are not permitted.
     r : scalar
         The radius of the cylinders in voxels
-    ncylinders : scalar
+    ncylinders : int
         The number of cylinders to add to the domain. Adjust this value to
         control the final porosity, which is not easily specified since
         cylinders overlap and intersect different fractions of the domain.
-    porosity : scalar
+    porosity : float
         The targeted value for the porosity of the generated mat. The
         function uses an algorithm for predicted the number of required
         number of cylinder, and refines this over a certain number of
         fractional insertions (according to the 'iterations' input).
-    phi_max : scalar
-        A value between 0 and 90 that controls the amount that the cylinders
-        lie *out of* the XY plane, with 0 meaning all cylinders lie in the XY
-        plane, and 90 meaning that cylinders are randomly oriented out of the
-        plane by as much as +/- 90 degrees.
-    theta_max : scalar
-        A value between 0 and 90 that controls the amount of rotation *in the*
-        XY plane, with 0 meaning all cylinders point in the X-direction, and
-        90 meaning they are randomly rotated about the Z axis by as much
-        as +/- 90 degrees.
-    length : scalar
-        The length of the cylinders to add.  If ``None`` (default) then the
-        cylinders will extend beyond the domain in both directions so no ends
-        will exist. If a scalar value is given it will be interpreted as the
-        Euclidean distance between the two ends of the cylinder.  Note that
-        one or both of the ends *may* still lie outside the domain, depending
-        on the randomly chosen center point of the cylinder.
-    max_iter : scalar
-        The number of fractional fiber insertions used to target the requested
-        porosity. By default a value of 3 is used (and this is typically
-        effective in getting very close to the targeted porosity), but a
-        greater number can be input to improve the achieved porosity.
-    return_fiber_number : bool
-        Determines whether the function will return the number of fibers
-        along with the image
+    phi_max : int
+        A value between 0 and 90 that controls the amount that the
+        cylinders lie *out of* the XY plane, with 0 meaning all cylinders
+        lie in the XY plane, and 90 meaning that cylinders are randomly
+        oriented out of the plane by as much as +/- 90 degrees.
+    theta_max : int
+        A value between 0 and 90 that controls the amount of rotation
+        *in the* XY plane, with 0 meaning all cylinders point in the
+        X-direction, and 90 meaning they are randomly rotated about the Z
+        axis by as much as +/- 90 degrees.
+    length : int
+        The length of the cylinders to add.  If ``None`` (default) then
+        the cylinders will extend beyond the domain in both directions so
+        no ends will exist. If a scalar value is given it will be
+        interpreted as the Euclidean distance between the two ends of the
+        cylinder. Note that one or both of the ends *may* still lie
+        outside the domain, depending on the randomly chosen center point
+        of the cylinder.
+    maxiter : int
+        The number of fractional fiber insertions used to target the
+        requested porosity. By default a value of 3 is used (and this is
+        typically effective in getting very close to the targeted
+        porosity), but a greater number can be input to improve the
+        achieved porosity.
 
     Returns
     -------
-    image : ND-array
+    image : ndarray
         A boolean array with ``True`` values denoting the pore space
 
     Notes
@@ -991,7 +1006,7 @@ def cylinders(shape: List[int],
     fraction of the estimated number, the true cylinder volume is
     calculated, the estimate refined, and a larger fraction of cylinders
     inserted. This is repeated a number of times according to the
-    'max_iter' argument, yielding an image with a porosity close to
+    ``maxiter`` argument, yielding an image with a porosity close to
     the goal.
 
     Examples
@@ -1015,7 +1030,7 @@ def cylinders(shape: List[int],
     if porosity is None:
         raise Exception("'ncylinders' and 'porosity' can't be both None")
 
-    # if max_iter < 3:
+    # if maxiter < 3:
     #     raise Exception("Iterations must be greater than or equal to 3")
 
     vol_total = float(np.prod(shape))
@@ -1036,10 +1051,10 @@ def cylinders(shape: List[int],
     # Rough estimate of n_fibers
     n_fibers_added = 0
     # Calculate fraction of fibers to be added in each iteration.
-    subdif = 0.8 / np.sum(np.arange(1, max_iter) ** 2)
+    subdif = 0.8 / np.sum(np.arange(1, maxiter) ** 2)
     fractions = [0.2]
-    for i in range(1, max_iter):
-        fractions.append(fractions[i - 1] + (max_iter - i) ** 2 * subdif)
+    for i in range(1, maxiter):
+        fractions.append(fractions[i - 1] + (maxiter - i) ** 2 * subdif)
 
     im = np.ones(shape, dtype=bool)
     for frac in tqdm(fractions, **settings.tqdm):
@@ -1062,8 +1077,8 @@ def cylinders(shape: List[int],
 
 def line_segment(X0, X1):
     r"""
-    Calculate the voxel coordinates of a straight line between the two given
-    end points
+    Calculate the voxel coordinates of a straight line between the two
+    given end points
 
     Parameters
     ----------
@@ -1074,15 +1089,16 @@ def line_segment(X0, X1):
     Returns
     -------
     coords : list of lists
-        A list of lists containing the X, Y, and Z coordinates of all voxels
-        that should be drawn between the start and end points to create a solid
-        line.
+        A list of lists containing the X, Y, and Z coordinates of all
+        voxels that should be drawn between the start and end points to
+        create a solid line.
 
     Examples
     --------
     `Click here
     <https://porespy.org/examples/generators/howtos/line_segment.html>`_
     to view online example.
+
     """
     X0 = np.around(X0).astype(int)
     X1 = np.around(X1).astype(int)

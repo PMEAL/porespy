@@ -12,6 +12,7 @@ class ToolsTest():
 
     def setup_class(self):
         plt.close('all')
+        np.random.seed(0)
         self.im = np.random.randint(0, 10, 20)
         np.random.seed(0)
         self.blobs = ps.generators.blobs(shape=[101, 101])
@@ -223,7 +224,7 @@ class ToolsTest():
         im = np.random.rand(160, 160)
         s = ps.tools.subdivide(im, divs=2, overlap=[0, 0])
         ims = []
-        for i in range(len(s)):
+        for i, _ in enumerate(s):
             ims.append(im[s[i]])
         im2 = ps.tools.recombine(ims=ims, slices=s, overlap=[0, 0])
         assert np.all(im == im2)
@@ -232,7 +233,7 @@ class ToolsTest():
         im = np.random.rand(160, 160)
         s = ps.tools.subdivide(im, divs=2, overlap=[10, 10])
         ims = []
-        for i in range(len(s)):
+        for i, _ in enumerate(s):
             ims.append(im[s[i]])
         im2 = ps.tools.recombine(ims=ims, slices=s, overlap=10)
         assert np.all(im == im2)
@@ -243,7 +244,7 @@ class ToolsTest():
         im = np.random.rand(160, 160)
         s = ps.tools.subdivide(im, divs=2, overlap=10)
         ims = []
-        for i in range(len(s)):
+        for i, _ in enumerate(s):
             ims.append(im[s[i]])
         im2 = ps.tools.recombine(ims=ims, slices=s, overlap=10)
         assert np.all(im == im2)
@@ -252,7 +253,7 @@ class ToolsTest():
         im = np.random.rand(160, 160, 160)
         s = ps.tools.subdivide(im, divs=2, overlap=[0, 0, 0])
         ims = []
-        for i in range(len(s)):
+        for i, _ in enumerate(s):
             ims.append(im[s[i]])
         im2 = ps.tools.recombine(ims=ims, slices=s, overlap=[0, 0, 0])
         assert np.all(im == im2)
@@ -261,7 +262,7 @@ class ToolsTest():
         im = np.random.rand(160, 160, 160)
         s = ps.tools.subdivide(im, divs=2, overlap=[10, 10, 10])
         ims = []
-        for i in range(len(s)):
+        for i, _ in enumerate(s):
             ims.append(im[s[i]])
         im2 = ps.tools.recombine(ims=ims, slices=s, overlap=10)
         assert np.all(im == im2)
@@ -272,7 +273,7 @@ class ToolsTest():
         im = np.random.rand(143, 152)
         s = ps.tools.subdivide(im, divs=2, overlap=10)
         ims = []
-        for i in range(len(s)):
+        for i, _ in enumerate(s):
             ims.append(im[s[i]])
         im2 = ps.tools.recombine(ims=ims, slices=s, overlap=10)
         assert np.all(im == im2)
@@ -281,7 +282,7 @@ class ToolsTest():
         im = np.random.rand(143, 177)
         s = ps.tools.subdivide(im, divs=2, overlap=[10, 20])
         ims = []
-        for i in range(len(s)):
+        for i, _ in enumerate(s):
             ims.append(im[s[i]])
         im2 = ps.tools.recombine(ims=ims, slices=s, overlap=[10, 20])
         assert np.all(im == im2)
@@ -290,7 +291,7 @@ class ToolsTest():
         im = np.random.rand(143, 177, 111)
         s = ps.tools.subdivide(im, divs=3, overlap=[10, 20, 25])
         ims = []
-        for i in range(len(s)):
+        for i, _ in enumerate(s):
             ims.append(im[s[i]])
         im2 = ps.tools.recombine(ims=ims, slices=s, overlap=[10, 20, 25])
         assert np.all(im == im2)

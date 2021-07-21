@@ -115,8 +115,10 @@ class NetworkExtractionTest():
     def test_max_ball(self):
         path = Path(realpath(__file__), '../../fixtures/pnextract.exe')
         if system() == 'Windows':
-            ps.networks.maximal_ball(im=self.im3d, prefix='test_maxball',
-                                     path_to_exe=path, voxel_size=1e-6)
+            ps.networks.maximal_ball_wrapper(im=self.im3d,
+                                             prefix='test_maxball',
+                                             path_to_exe=path,
+                                             voxel_size=1e-6)
             assert os.path.isfile("test_maxball_link1.dat")
             assert os.path.isfile("test_maxball_link2.dat")
             assert os.path.isfile("test_maxball_node1.dat")

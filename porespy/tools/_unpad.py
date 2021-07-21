@@ -7,7 +7,7 @@ def unpad(im, pad_width):
 
     Parameters
     ----------
-    im : ND-image
+    im : ndarray
         The padded image from which padding should be removed
     pad_width : int or list of ints
         The amount of padding previously added to each axis. This should be

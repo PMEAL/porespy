@@ -6,11 +6,11 @@ from skimage.measure import regionprops
 from porespy.tools import extend_slice, mesh_region, ps_round
 from porespy.filters import find_dt_artifacts
 from porespy.tools import _check_for_singleton_axes
-from collections import namedtuple
 from skimage import measure
 from loguru import logger
 from porespy.tools import extend_slice, mesh_region, ps_round
 from porespy.tools import _check_for_singleton_axes
+from porespy.tools import Results
 from porespy import settings
 from porespy.tools import get_tqdm
 tqdm = get_tqdm()
@@ -18,13 +18,14 @@ tqdm = get_tqdm()
 
 def representative_elementary_volume(im, npoints=1000):
     r"""
-    Calculates the porosity of the image as a function subdomain size.  This
-    function extracts a specified number of subdomains of random size, then
-    finds their porosity.
+    Calculates the porosity of an image as a function subdomain size.
+
+    This function extracts a specified number of subdomains of random size,
+    then finds their porosity.
 
     Parameters
     ----------
-    im : ND-array
+    im : ndarray
         The image of the porous material
     npoints : int
         The number of randomly located and sized boxes to sample.  The default
@@ -32,11 +33,16 @@ def representative_elementary_volume(im, npoints=1000):
 
     Returns
     -------
-    result : named_tuple
-        A tuple containing the *volume* and *porosity* of each subdomain
-        tested in arrays ``npoints`` long.  They can be accessed as
-        attributes of the tuple.  They can be conveniently plotted
-        by passing the tuple to matplotlib's ``plot`` function using the
+    result : Results object
+        A custom object with the following data added as named attributes:
+
+        'volume'
+            The total volume of each cubic subdomain tested
+        'porosity'
+            The porosity of each subdomain tested
+
+        These attributes can be conveniently plotted by passing the Results
+        object to matplotlib's ``plot`` function using the
         \* notation: ``plt.plot(*result, 'b.')``.  The resulting plot is
         similar to the sketch given by Bachmat and Bear [1]
 
@@ -45,9 +51,6 @@ def representative_elementary_volume(im, npoints=1000):
     This function is frustratingly slow.  Profiling indicates that all the time
     is spent on scipy's ``sum`` function which is needed to sum the number of
     void voxels (1's) in each subdomain.
-
-    Also, this function is a prime target for parallelization since the
-    ``npoints`` are calculated independenlty.
 
     References
     ----------
@@ -60,7 +63,10 @@ def representative_elementary_volume(im, npoints=1000):
     `Click here
     <https://porespy.org/examples/metrics/howtos/representative_elementary_volume.html>`_
     to view online example.
+
     """
+    # TODO: this function is a prime target for parallelization since the
+    # ``npoints`` are calculated independenlty.
     im_temp = np.zeros_like(im)
     crds = np.array(np.random.rand(npoints, im.ndim) * im.shape, dtype=int)
     pads = np.array(np.random.rand(npoints) * np.amin(im.shape) / 2 + 10, dtype=int)
@@ -78,7 +84,7 @@ def representative_elementary_volume(im, npoints=1000):
         Vt = np.size(temp)
         porosity[i] = Vp / Vt
         volume[i] = Vt
-    profile = namedtuple('profile', ('volume', 'porosity'))
+    profile = Results()
     profile.volume = volume
     profile.porosity = porosity
     return profile
@@ -86,11 +92,11 @@ def representative_elementary_volume(im, npoints=1000):
 
 def porosity_profile(im, axis=0):
     r"""
-    Returns a porosity profile along the specified axis
+    Computes the porosity profile along the specified axis
 
     Parameters
     ----------
-    im : ND-array
+    im : ndarray
         The volumetric image for which to calculate the porosity profile
     axis : int
         The axis (0, 1, or 2) along which to calculate the profile.  For
@@ -107,6 +113,7 @@ def porosity_profile(im, axis=0):
     `Click here
     <https://porespy.org/examples/metrics/howtos/porosity_profile.html>`_
     to view online example.
+
     """
     if axis >= im.ndim:
         raise Exception('axis out of range')
@@ -142,7 +149,7 @@ def radial_density_distribution(dt, bins=10, log=False, voxel_size=1):
 
     Parameters
     ----------
-    dt : ND-array
+    dt : ndarray
         A distance transform of the pore space (the ``edt`` package is
         recommended).  Note that it is recommended to apply
         ``find_dt_artifacts`` to this image first, and set potentially
@@ -165,8 +172,8 @@ def radial_density_distribution(dt, bins=10, log=False, voxel_size=1):
 
     Returns
     -------
-    result : named_tuple
-        A named-tuple containing several 1D arrays:
+    result : Results object
+        A custom object with the following data added as named attributes:
 
         *R* or *LogR*
             Radius, equivalent to ``bin_centers``
@@ -200,6 +207,7 @@ def radial_density_distribution(dt, bins=10, log=False, voxel_size=1):
     `Click here
     <https://porespy.org/examples/metrics/howtos/radial_density.html>`_
     to view online example.
+
     """
     im = np.copy(dt)
     x = im[im > 0].flatten()
@@ -207,14 +215,18 @@ def radial_density_distribution(dt, bins=10, log=False, voxel_size=1):
         x = np.log10(x)
     h = np.histogram(x, bins=bins, density=True)
     h = _parse_histogram(h=h, voxel_size=voxel_size)
-    rdf = namedtuple('radial_density_distribution',
-                     (log*'Log' + 'R', 'pdf', 'cdf', 'bin_centers', 'bin_edges',
-                      'bin_widths'))
-    return rdf(h.bin_centers, h.pdf, h.cdf, h.bin_centers, h.bin_edges,
-               h.bin_widths)
+    rdf = Results()
+    rdf[f"{log*'Log' + 'R'}"] = h.bin_centers
+    rdf.pdf = h.pdf
+    rdf.cdf = h.cdf
+    rdf.relfreq = h.relfreq
+    rdf.bin_centers = h.bin_centers
+    rdf.bin_edges = h.bin_edges
+    rdf.bin_widths = h.bin_widths
+    return rdf
 
 
-def lineal_path_distribution(im, bins=25, voxel_size=1, log=False):
+def lineal_path_distribution(im, bins=10, voxel_size=1, log=False):
     r"""
     Determines the probability that a point lies within a certain distance
     of the opposite phase *along a specified direction*
@@ -228,7 +240,7 @@ def lineal_path_distribution(im, bins=25, voxel_size=1, log=False):
 
     Parameters
     ----------
-    im : ND-array
+    im : ndarray
         An image with each voxel containing the distance to the nearest solid
         along a linear path, as produced by ``distance_transform_lin``.
     bins : int or array_like
@@ -240,13 +252,15 @@ def lineal_path_distribution(im, bins=25, voxel_size=1, log=False):
     log : boolean
         If ``True`` (default) the size data is converted to log (base-10)
         values before processing.  This can help to plot wide size
-        distributions or to better visualize the in the small size region.
+        distributions or to better visualize data in the small size region.
         Note that you should not anti-log the radii values in the retunred
-        ``tuple``, since the binning is performed on the logged radii values.
+        ``results``, since the binning is performed on the logged radii values.
 
     Returns
     -------
-    result : named_tuple
+    result : Results object
+        A custom object with the following data added as named attributes:
+
         *L* or *LogL*
             Length, equivalent to ``bin_centers``
         *pdf*
@@ -283,21 +297,25 @@ def lineal_path_distribution(im, bins=25, voxel_size=1, log=False):
         x = np.log10(x)
     h = list(np.histogram(x, bins=bins, density=True))
     h = _parse_histogram(h=h, voxel_size=voxel_size)
-    cld = namedtuple('lineal_path_distribution',
-                     (log*'Log'+'L', 'pdf', 'cdf', 'relfreq',
-                      'bin_centers', 'bin_edges', 'bin_widths'))
-    return cld(h.bin_centers, h.pdf, h.cdf, h.relfreq,
-               h.bin_centers, h.bin_edges, h.bin_widths)
+    cld = Results()
+    cld[f"{log*'Log' + 'L'}"] = h.bin_centers
+    cld.pdf = h.pdf
+    cld.cdf = h.cdf
+    cld.relfreq = h.relfreq
+    cld.bin_centers = h.bin_centers
+    cld.bin_edges = h.bin_edges
+    cld.bin_widths = h.bin_widths
+    return cld
 
 
-def chord_length_distribution(im, bins=None, log=False, voxel_size=1,
+def chord_length_distribution(im, bins=10, log=False, voxel_size=1,
                               normalization='count'):
     r"""
     Determines the distribution of chord lengths in an image containing chords.
 
     Parameters
     ----------
-    im : ND-image
+    im : ndarray
         An image with chords drawn in the pore space, as produced by
         ``apply_chords`` or ``apply_chords_3d``.  ``im`` can be either boolean,
         in which case each chord will be identified using ``scipy.ndimage.label``,
@@ -332,9 +350,8 @@ def chord_length_distribution(im, bins=None, log=False, voxel_size=1,
 
     Returns
     -------
-    result : named_tuple
-        A tuple containing the following elements, which can be retrieved by
-        attribute name:
+    result : Results object
+        A custom object with the following data added as named attributes:
 
         *L* or *LogL*
             Chord length, equivalent to ``bin_centers``
@@ -365,6 +382,7 @@ def chord_length_distribution(im, bins=None, log=False, voxel_size=1,
     `Click here
     <https://porespy.org/examples/metrics/howtos/chord_length_distribution.html>`_
     to view online example.
+
     """
     x = chord_counts(im)
     if bins is None:
@@ -381,11 +399,15 @@ def chord_length_distribution(im, bins=None, log=False, voxel_size=1,
     else:
         raise Exception('Unsupported normalization:', normalization)
     h = _parse_histogram(h)
-    cld = namedtuple('chord_length_distribution',
-                     (log * 'Log' + 'L', 'pdf', 'cdf', 'relfreq',
-                      'bin_centers', 'bin_edges', 'bin_widths'))
-    return cld(h.bin_centers, h.pdf, h.cdf, h.relfreq,
-               h.bin_centers, h.bin_edges, h.bin_widths)
+    cld = Results()
+    cld[f"{log*'Log' + 'L'}"] = h.bin_centers
+    cld.pdf = h.pdf
+    cld.cdf = h.cdf
+    cld.relfreq = h.relfreq
+    cld.bin_centers = h.bin_centers
+    cld.bin_edges = h.bin_edges
+    cld.bin_widths = h.bin_widths
+    return cld
 
 
 def pore_size_distribution(im, bins=10, log=True, voxel_size=1):
@@ -395,7 +417,7 @@ def pore_size_distribution(im, bins=10, log=True, voxel_size=1):
 
     Parameters
     ----------
-    im : ND-array
+    im : ndarray
         The array of containing the sizes of the largest sphere that overlaps
         each voxel.  Obtained from either ``porosimetry`` or
         ``local_thickness``.
@@ -414,9 +436,8 @@ def pore_size_distribution(im, bins=10, log=True, voxel_size=1):
 
     Returns
     -------
-    result : named_tuple
-        A named-tuple containing the following attributes which can be accessed
-        by name:
+    result : Results object
+        A custom object with the following data added as named attributes:
 
         *R* or *logR*
             Radius, equivalent to ``bin_centers``
@@ -448,17 +469,22 @@ def pore_size_distribution(im, bins=10, log=True, voxel_size=1):
     `Click here
     <https://porespy.org/examples/metrics/howtos/pore_size_distribution.html>`_
     to view online example.
+
     """
     im = im.flatten()
     vals = im[im > 0] * voxel_size
     if log:
         vals = np.log10(vals)
     h = _parse_histogram(np.histogram(vals, bins=bins, density=True))
-    psd = namedtuple('pore_size_distribution',
-                     (log * 'Log' + 'R', 'pdf', 'cdf', 'satn',
-                      'bin_centers', 'bin_edges', 'bin_widths'))
-    return psd(h.bin_centers, h.pdf, h.cdf, h.relfreq,
-               h.bin_centers, h.bin_edges, h.bin_widths)
+    cld = Results()
+    cld[f"{log*'Log' + 'R'}"] = h.bin_centers
+    cld.pdf = h.pdf
+    cld.cdf = h.cdf
+    cld.satn = h.relfreq
+    cld.bin_centers = h.bin_centers
+    cld.bin_edges = h.bin_edges
+    cld.bin_widths = h.bin_widths
+    return cld
 
 
 def two_point_correlation_bf(im, spacing=10):
@@ -476,14 +502,17 @@ def two_point_correlation_bf(im, spacing=10):
 
     Returns
     -------
-    result : named_tuple
-        A tuple containing the x and y data for plotting the two-point
-        correlation function, using the \*args feature of matplotlib's
-        plot function. The x array is the distances between points and
-        the y array is corresponding probabilities that points of a
-        given distance both lie in the void space. The distance values
-        are binned as follows:
-        ``bins = range(start=0, stop=np.amin(im.shape)/2, stride=spacing)``
+    result : Results object
+        A custom object with the following data added as named attributes:
+
+        'distance'
+            The distance between two points. The distance values are binned
+            as:
+        $$ bins = range(start=0, stop=np.amin(im.shape)/2, stride=spacing) $$
+
+        'probability'
+            The probability that two points of the stated separation distance
+            are within the same phase
 
     Notes
     -----
@@ -492,7 +521,7 @@ def two_point_correlation_bf(im, spacing=10):
     points, then counting the instances where both pairs lie in the void space.
 
     This approach uses a distance matrix so can consume memory very quickly for
-    large 3D images and/or close spacing.
+    large 3D images and/or close spacing.  It is recommended to avoid this.
 
     Examples
     --------
@@ -520,8 +549,10 @@ def two_point_correlation_bf(im, spacing=10):
     h1 = np.histogram(dmat, bins=range(0, int(np.amin(im.shape) / 2), spacing))
     dmat = dmat[:, hits]
     h2 = np.histogram(dmat, bins=h1[1])
-    tpcf = namedtuple('two_point_correlation_function', ('distance', 'probability'))
-    return tpcf(h2[1][:-1], h2[0] / h1[0])
+    tpcf = Results()
+    tpcf.distance = h2[1][:-1]
+    tpcf.probability = h2[0] / h1[0]
+    return tpcf
 
 
 def _radial_profile(autocorr, r_max, nbins=100):
@@ -533,7 +564,7 @@ def _radial_profile(autocorr, r_max, nbins=100):
 
     Parameters
     ----------
-    autocorr : ND-array
+    autocorr : ndarray
         The image of autocorrelation produced by FFT
     r_max : int or float
         The maximum radius in pixels to sum the image over
@@ -543,6 +574,7 @@ def _radial_profile(autocorr, r_max, nbins=100):
     result : named_tuple
         A named tupling containing an array of ``bins`` of radial position
         and an array of ``counts`` in each bin.
+
     """
     if len(autocorr.shape) == 2:
         adj = np.reshape(autocorr.shape, [2, 1, 1])
@@ -563,15 +595,15 @@ def _radial_profile(autocorr, r_max, nbins=100):
         radial_sum[i] = np.sum(autocorr[mask]) / np.sum(mask)
     # Return normalized bin and radially summed autoc
     norm_autoc_radial = radial_sum / np.max(autocorr)
-    tpcf = namedtuple('two_point_correlation_function',
-                      ('distance', 'probability'))
-    return tpcf(bins, norm_autoc_radial)
+    tpcf = Results()
+    tpcf.distance = bins
+    tpcf.probability = norm_autoc_radial
+    return tpcf
 
 
-def two_point_correlation_fft(im):
+def two_point_correlation(im):
     r"""
-    Calculates the two-point correlation function using fourier
-    transforms.
+    Calculate the two-point correlation function using Fourier transforms
 
     Parameters
     ----------
@@ -581,12 +613,15 @@ def two_point_correlation_fft(im):
 
     Returns
     -------
-    result : named_tuple
-        A tuple containing the x and y data for plotting the two-point
-        correlation function, using the \*args feature of matplotlib's
-        plot function. The x array is the distances between points and
-        the y array is corresponding probabilities that points of a
-        given distance both lie in the void space.
+    result : Results object
+        A custom object with the following data added as named attributes:
+
+        'distance'
+            The distance between two points.
+
+        'probability'
+            The probability that two points of the stated separation distance
+            are within the same phase
 
     Notes
     -----
@@ -601,6 +636,7 @@ def two_point_correlation_fft(im):
     `Click here
     <https://porespy.org/examples/metrics/howtos/two_point_correlation_fft.html>`_
     to view online example.
+
     """
     # Calculate half lengths of the image
     hls = (np.ceil(np.shape(im)) / 2).astype(int)
@@ -623,19 +659,23 @@ def _parse_histogram(h, voxel_size=1):
     bin_edges = delta_x * voxel_size
     bin_widths = (delta_x[1:] - delta_x[:-1]) * voxel_size
     bin_centers = ((delta_x[1:] + delta_x[:-1]) / 2) * voxel_size
-    psd = namedtuple('histogram', ('pdf', 'cdf', 'relfreq',
-                                   'bin_centers', 'bin_edges', 'bin_widths'))
-    return psd(P, C, S, bin_centers, bin_edges, bin_widths)
+    hist = Results()
+    hist.pdf = P
+    hist.cdf = C
+    hist.relfreq = S
+    hist.bin_centers = bin_centers
+    hist.bin_edges = bin_edges
+    hist.bin_widths = bin_widths
+    return hist
 
 
 def chord_counts(im):
     r"""
-    Finds the length of each chord in the supplied image and returns a list
-    of their individual sizes
+    Find the length of each chord in the supplied image
 
     Parameters
     ----------
-    im : ND-array
+    im : ndarray
         An image containing chords drawn in the void space.
 
     Returns
@@ -655,6 +695,7 @@ def chord_counts(im):
     `Click here
     <https://porespy.org/examples/howtos/metrics/chord_counts.html>`_
     to view online example.
+
     """
     labels, N = spim.label(im > 0)
     props = regionprops(labels)
@@ -664,12 +705,12 @@ def chord_counts(im):
 
 def phase_fraction(im, normed=True):
     r"""
-    Calculates the number (or fraction) of each phase in an image
+    Calculate the fraction of each phase in an image
 
     Parameters
     ----------
-    im : ND-array
-        An ND-array containing integer values
+    im : ndarray
+        An ndarray containing integer values
     normed : boolean
         If ``True`` (default) the returned values are normalized by the total
         number of voxels in image, otherwise the voxel count of each phase is
@@ -690,6 +731,7 @@ def phase_fraction(im, normed=True):
     `Click here
     <https://porespy.org/examples/metrics/howtos/phase_fraction.html>`_
     to view online example.
+
     """
     if im.dtype == bool:
         im = im.astype(int)
@@ -707,19 +749,18 @@ def pc_curve_from_ibip(seq, sizes, im=None, sigma=0.072, theta=180, voxel_size=1
 
     Parameters
     ----------
-    seq : ND-array
+    seq : ndarray
         The image containing the invasion sequence values returned from the
         ``ibip`` function.
-    sizes : ND-array
-        This image is returned from ``ibip`` when ``return_sizes``
-        is set to ``True``.
-    im : ND-array
+    sizes : ndarray
+        The image containing the invasion size values returned from ``ibip``
+    im : ndarray
         The voxel image of the porous media.  It not provided then the void
-        space is assumed to be ``im = !(seq == 0)``.
+        space is assumed to be ``im = ~(seq == 0)``.
     sigma : float
         The surface tension of the fluid-fluid system of interest
     theta : float
-        The contact angle through the invading phase in degrees
+        The contact angle measured through the invading phase in degrees
     voxel_size : float
         The voxel resolution of the image
     stepped : boolean
@@ -728,11 +769,18 @@ def pc_curve_from_ibip(seq, sizes, im=None, sigma=0.072, theta=180, voxel_size=1
 
     Returns
     -------
-    pc_curve : namedtuple
-        A namedtuple containing the capillary pressure (``pc``) and
-        non-wetting phase saturation (``snwp``). If ``stepped`` was set to
-        ``True`` then the values in this tuple include the corners of the
-        steps.
+    pc_curve : Results object
+        A custom object with the following data added as named attributes:
+
+        'pc'
+            The capillary pressure, computed using the Washburn equation with
+            the given fluid properties
+
+        'snwp'
+            the fraction of void space filled by non-wetting phase.
+
+        If ``stepped`` was set to ``True`` then the values include the corners
+        of the steps, which may be helpful for plotting.
 
     """
     if im is None:
@@ -759,7 +807,7 @@ def pc_curve_from_ibip(seq, sizes, im=None, sigma=0.072, theta=180, voxel_size=1
             snwp.insert(j, y[i])
         x = pc
         y = snwp
-    pc_curve = namedtuple('data', field_names=['pc', 'snwp'])
+    pc_curve = Results()
     pc_curve.pc = x
     pc_curve.snwp = y
     return pc_curve
@@ -772,15 +820,15 @@ def pc_curve_from_mio(sizes, im=None, sigma=0.072, theta=180, voxel_size=1,
 
     Parameters
     ----------
-    sizes : ND-array
-        This image is returned from ``porosimetry``
-    im : ND-array
+    sizes : ndarray
+        The image of invasion sizes returned from ``porosimetry``
+    im : ndarray
         The voxel image of the porous media.  It not provided then the void
         space is assumed to be ``im = ~(sizes == 0)``.
     sigma : float
         The surface tension of the fluid-fluid system of interest
     theta : float
-        The contact angle through the invading phase in degrees
+        The contact angle measured through the invading phase in degrees
     voxel_size : float
         The voxel resolution of the image
     stepped : boolean
@@ -789,11 +837,18 @@ def pc_curve_from_mio(sizes, im=None, sigma=0.072, theta=180, voxel_size=1,
 
     Returns
     -------
-    pc_curve : namedtuple
-        A namedtuple containing the capillary pressure (``pc``) and
-        non-wetting phase saturation (``snwp``).  If ``stepped`` was set to
-        ``True`` then the values in this tuple include the corners of the
-        steps.
+    pc_curve : Results object
+        A custom object with the following data added as named attributes:
+
+        'pc'
+            The capillary pressure, computed using the Washburn equation with
+            the given fluid properties
+
+        'snwp'
+            the fraction of void space filled by non-wetting phase.
+
+        If ``stepped`` was set to ``True`` then the values include the corners
+        of the steps, which may be helpful for plotting.
 
     """
     if im is None:
@@ -818,7 +873,7 @@ def pc_curve_from_mio(sizes, im=None, sigma=0.072, theta=180, voxel_size=1,
             snwp.insert(j, y[i])
         x = pc
         y = snwp
-    pc_curve = namedtuple('data', field_names=['pc', 'snwp'])
+    pc_curve = Results()
     pc_curve.pc = x
     pc_curve.snwp = y
     return pc_curve
@@ -830,18 +885,21 @@ def porosity(im):
     solid phase.
 
     All other values are ignored, so this can also return the relative
-    fraction of a phase of interest in trinary or multiphase images.
+    fraction of a phase of interest in multiphase images.
 
     Parameters
     ----------
-    im : ND-array
-        Image of the void space with 1's indicating void phase (or True) and
-        0's indicating the solid phase (or False).
+    im : ndarray
+        Image of the void space with 1's indicating void phase (or ``True``)
+        and 0's indicating the solid phase (or ``False``).
 
     Returns
     -------
     porosity : float
         Calculated as the sum of all 1's divided by the sum of all 1's and 0's.
+        Note that the denominator is *not* the total image size, so putting
+        values of 2 in some voxels, for instance, will remove those voxels
+        from consideration.
 
     See Also
     --------

@@ -19,9 +19,8 @@ def map_to_regions(regions, values):
 
     Parameters
     ----------
-    regions : ND-array
+    regions : ndarray
         An image of the pore space partitioned into regions and labeled
-
     values : array_like
         An array containing the numerical values to insert into each region.
         The value at location *n* will be inserted into the image where
@@ -40,6 +39,7 @@ def map_to_regions(regions, values):
     `Click here
     <https://porespy.org/examples/networks/howtos/map_to_regions.html>`_
     to view online example.
+
     """
     values = np.array(values).flatten()
     if np.size(values) != regions.max():
@@ -56,20 +56,22 @@ def add_boundary_regions(regions, pad_width=3):
 
     Parameters
     ----------
-    regions : ND-image
+    regions : ndarray
         An image containing labelled regions, such as a watershed segmentation
     pad_width : array_like
-        Number of layers to add to the beginnign and end of each axis. This
-        argument is handled the same as ``pad_width`` in the ``np.pad``
+        Number of layers to add to the beginning and end of each axis. This
+        argument is handled similarly to the ``pad_width`` in the ``np.pad``
         function. A scalar adds the same amount to the beginning and end of
         each axis. [A, B] adds A to the beginning of each axis and B to the
         ends.  [[A, B], ..., [C, D]] adds A to the beginning and B to the
         end of the first axis, and so on. The default is to add 3 voxels on
-        both ends of each axis.
+        both ends of each axis.  One exception is is [A, B, C] which A to
+        the beginning and end of the first axis, and so on. This extra option
+        is useful for putting 0 on some axes (i.e. [3, 0, 0]).
 
     Returns
     -------
-    padded_regions : ND-array
+    padded_regions : ndarray
         An image with new regions padded on each side of the specified
         width.
 
@@ -105,7 +107,7 @@ def add_boundary_regions(regions, pad_width=3):
 
 def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200):
     r"""
-    Generates a 3d numpy array from a network model.
+    Generates a 3d numpy array from an OpenPNM network
 
     Parameters
     ----------
@@ -120,7 +122,7 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200):
 
     Returns
     -------
-    im : ND-array
+    im : ndarray
         Voxelated image corresponding to the given pore network model
 
     Notes
@@ -199,7 +201,7 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200):
 def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
                          max_dim=None, rtol=0.1):
     r"""
-    Generates voxel image from an OpenPNM network object.
+    Generate a voxel image from an OpenPNM network object
 
     Parameters
     ----------
@@ -255,7 +257,7 @@ def label_phases(
         network,
         alias={1: 'void', 2: 'solid'}):
     r"""
-    Creates pore and throat labels based on 'pore.phase' values
+    Create pore and throat labels based on 'pore.phase' values
 
     Parameters
     ----------
@@ -275,6 +277,7 @@ def label_phases(
     network : dict
         The same ``network`` as passed in but with new boolean arrays added
         for the phase labels.
+
     """
     conns = network['throat.conns']
     for i in alias.keys():
@@ -297,7 +300,7 @@ def label_boundaries(
         labels=[['left', 'right'], ['front', 'back'], ['top', 'bottom']],
         tol=1e-9):
     r"""
-    Creates boundary pore labels based on proximity to axis extrema
+    Create boundary pore labels based on proximity to axis extrema
 
     Parameters
     ----------
@@ -317,6 +320,7 @@ def label_boundaries(
     network : dict
         The same ``network`` as passed in but with new boolean arrays added
         for the boundary labels.
+
     """
     crds = network['pore.coords']
     extents = [[crds[:, i].min(), crds[:, i].max()]

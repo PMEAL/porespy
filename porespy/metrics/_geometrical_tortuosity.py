@@ -17,7 +17,7 @@ def geometrical_tortuosity(im, axis=0):
 
     Parameters
     ----------
-    im : ND-image
+    im : ndarray
         The image for which geometrical tortuosity is found
     axis: int
         The axis across which to find the geometrical tortuosity
@@ -83,7 +83,7 @@ def geometrical_tortuosity_points(im, axis=0):
 
     Parameters
     ----------
-    im : ND-image
+    im : ndarray
         The image for which geometrical tortuosity is found
     axis: int
         The axis across which to find the geometrical tortuosity

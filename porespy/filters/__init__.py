@@ -27,9 +27,11 @@ image, but with altered values.
     filters.find_dt_artifacts
     filters.find_peaks
     filters.flood
+    filters.flood_func
     filters.hold_peaks
     filters.local_thickness
     filters.nphase_border
+    filters.nl_means_layered
     filters.porosimetry
     filters.prune_branches
     filters.reduce_peaks
@@ -87,3 +89,4 @@ from ._fftmorphology import fftmorphology
 from . import imagej
 from ._ibip import ibip
 from ._ibip import find_trapped_regions
+from ._ibip_gpu import ibip_gpu

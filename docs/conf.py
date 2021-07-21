@@ -87,6 +87,10 @@ html_sidebars = {
     "examples/*": []
 }
 
+# So that 'sphinx-copybutton' only copies the actual code, not the prompt
+copybutton_prompt_text = r">>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: "
+copybutton_prompt_is_regexp = True
+
 html_js_files = ['js/custom.js']
 
 html_css_files = ['css/custom.css']
