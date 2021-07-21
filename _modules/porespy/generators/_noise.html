@@ -169,8 +169,7 @@
               <div>
                 
   <h1>Source code for porespy.generators._noise</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">pyfastnoisesimd</span> <span class="k">as</span> <span class="nn">fns</span>
-<span class="kn">import</span> <span class="nn">multiprocessing</span>
+<span></span><span class="kn">import</span> <span class="nn">multiprocessing</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">norm_to_uniform</span>
 
@@ -245,24 +244,22 @@
 <span class="sd">    `here &lt;https://github.com/jobtalle/CubicNoise&gt;`__.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">pyfastnoisesimd</span> <span class="kn">import</span> <span class="n">Noise</span><span class="p">,</span> <span class="n">NoiseType</span><span class="p">,</span> <span class="n">PerturbType</span>
+    <span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ModuleNotFoundError</span><span class="p">(</span><span class="s2">&quot;You need to install `pyfastnoisesimd` using&quot;</span>
+                                  <span class="s2">&quot; `pip install pyfastnoisesimd`&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">cores</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">cores</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">seed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="mi">31</span><span class="p">)</span>
-    <span class="n">perlin</span> <span class="o">=</span> <span class="n">fns</span><span class="o">.</span><span class="n">Noise</span><span class="p">(</span><span class="n">numWorkers</span><span class="o">=</span><span class="n">cores</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;simplex&#39;</span><span class="p">:</span>
-        <span class="n">perlin</span><span class="o">.</span><span class="n">noiseType</span> <span class="o">=</span> <span class="n">fns</span><span class="o">.</span><span class="n">NoiseType</span><span class="o">.</span><span class="n">SimplexFractal</span>
-    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;perlin&#39;</span><span class="p">:</span>
-        <span class="n">perlin</span><span class="o">.</span><span class="n">noiseType</span> <span class="o">=</span> <span class="n">fns</span><span class="o">.</span><span class="n">NoiseType</span><span class="o">.</span><span class="n">PerlinFractal</span>
-    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;cubic&#39;</span><span class="p">:</span>
-        <span class="n">perlin</span><span class="o">.</span><span class="n">noiseType</span> <span class="o">=</span> <span class="n">fns</span><span class="o">.</span><span class="n">NoiseType</span><span class="o">.</span><span class="n">CubicFractal</span>
-    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;value&#39;</span><span class="p">:</span>
-        <span class="n">perlin</span><span class="o">.</span><span class="n">noiseType</span> <span class="o">=</span> <span class="n">fns</span><span class="o">.</span><span class="n">NoiseType</span><span class="o">.</span><span class="n">ValueFractal</span>
+    <span class="n">perlin</span> <span class="o">=</span> <span class="n">Noise</span><span class="p">(</span><span class="n">numWorkers</span><span class="o">=</span><span class="n">cores</span><span class="p">)</span>
+    <span class="n">perlin</span><span class="o">.</span><span class="n">noiseType</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">NoiseType</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">mode</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span><span class="si">}</span><span class="s1">Fractal&#39;</span><span class="p">)</span>
     <span class="n">perlin</span><span class="o">.</span><span class="n">frequency</span> <span class="o">=</span> <span class="n">frequency</span>
     <span class="n">perlin</span><span class="o">.</span><span class="n">fractal</span><span class="o">.</span><span class="n">octaves</span> <span class="o">=</span> <span class="n">octaves</span>
     <span class="n">perlin</span><span class="o">.</span><span class="n">fractal</span><span class="o">.</span><span class="n">gain</span> <span class="o">=</span> <span class="n">gain</span>
     <span class="n">perlin</span><span class="o">.</span><span class="n">fractal</span><span class="o">.</span><span class="n">lacunarity</span> <span class="o">=</span> <span class="mi">2</span>
-    <span class="n">perlin</span><span class="o">.</span><span class="n">perturb</span><span class="o">.</span><span class="n">perturbType</span> <span class="o">=</span> <span class="n">fns</span><span class="o">.</span><span class="n">PerturbType</span><span class="o">.</span><span class="n">NoPerturb</span>
+    <span class="n">perlin</span><span class="o">.</span><span class="n">perturb</span><span class="o">.</span><span class="n">perturbType</span> <span class="o">=</span> <span class="n">PerturbType</span><span class="o">.</span><span class="n">NoPerturb</span>
     <span class="n">perlin</span><span class="o">.</span><span class="n">seed</span> <span class="o">=</span> <span class="n">seed</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">perlin</span><span class="o">.</span><span class="n">genAsGrid</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">uniform</span><span class="p">:</span>
