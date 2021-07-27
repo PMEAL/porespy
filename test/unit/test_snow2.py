@@ -189,7 +189,7 @@ class Snow2Test:
         A = snow_1.network['throat.cross_sectional_area']
         assert np.all(A == 89.0)
 
-    def test_single_and_dual_phase_on_berea(self):
+    def test_single_and_dual_phase_on_blobs(self):
         im = ps.generators.blobs([200, 200, 200], porosity=0.6, blobiness=1.5)
 
         snow_1 = ps.networks.snow2(im,
