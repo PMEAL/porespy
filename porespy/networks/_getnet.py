@@ -166,11 +166,7 @@ def regions_to_network(regions, phases=None, voxel_size=1, accuracy='standard'):
                 vx = np.where(im_w_throats == (j + 1))
                 t_dia_inscribed.append(2*np.amax(sub_dt[vx]))
                 # The following is overwritten if accuracy is set to 'high'
-                if (accuracy == 'high') and (im.ndim == 3):
-                    temp = throat_perimeter(im_w_throats == j)*voxel_size
-                    t_perimeter.append(temp)
-                else:
-                    t_perimeter.append(np.sum(sub_dt[vx] < 2))
+                t_perimeter.append(np.sum(sub_dt[vx] < 2))
                 # The following is overwritten if accuracy is set to 'high'
                 t_area.append(np.size(vx[0]))
                 p_area_surf[pore] -= np.size(vx[0])
