@@ -172,10 +172,22 @@ class Snow2Test:
         assert (peaks2 > 0).sum() == 339
 
     def test_accuracy_high(self):
-        im = ps.generators.blobs([200, 200, 200], porosity=0.6, blobiness=1.5)
-        snow_1 = ps.networks.snow2(im,
+        im = ~ps.generators.lattice_spheres(shape=[100, 100, 100], r=15,
+                                            offset=22, spacing=28)
+        snow_1 = ps.networks.snow2(im, boundary_width=[0, 0, 0],
                                    accuracy='high',
                                    parallelization=None)
+        A = snow_1.network['throat.cross_sectional_area']
+        np.testing.assert_almost_equal(A, 99.163, decimal=3)
+
+    def test_accuracy_standard(self):
+        im = ~ps.generators.lattice_spheres(shape=[100, 100, 100], r=15,
+                                            offset=22, spacing=28)
+        snow_1 = ps.networks.snow2(im, boundary_width=[0, 0, 0],
+                                   accuracy='standard',
+                                   parallelization=None)
+        A = snow_1.network['throat.cross_sectional_area']
+        assert np.all(A == 89.0)
 
     def test_single_and_dual_phase_on_berea(self):
         im = ps.generators.blobs([200, 200, 200], porosity=0.6, blobiness=1.5)
