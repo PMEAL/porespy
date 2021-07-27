@@ -166,11 +166,7 @@ def regions_to_network(regions, phases=None, voxel_size=1, accuracy='standard'):
                 vx = np.where(im_w_throats == (j + 1))
                 t_dia_inscribed.append(2*np.amax(sub_dt[vx]))
                 # The following is overwritten if accuracy is set to 'high'
-                if (accuracy == 'high') and (im.ndim == 3):
-                    temp = throat_perimeter(im_w_throats == j)*voxel_size
-                    t_perimeter.append(temp)
-                else:
-                    t_perimeter.append(np.sum(sub_dt[vx] < 2))
+                t_perimeter.append(np.sum(sub_dt[vx] < 2))
                 # The following is overwritten if accuracy is set to 'high'
                 t_area.append(np.size(vx[0]))
                 p_area_surf[pore] -= np.size(vx[0])
@@ -224,11 +220,11 @@ def regions_to_network(regions, phases=None, voxel_size=1, accuracy='standard'):
         accuracy = 'standard'
     if (accuracy == 'high'):
         net['pore.volume'] = region_volumes(regions=im, mode='marching_cubes')
-        areas = region_surface_areas(regions=im)
-        net['pore.surface_area'] = areas*(voxel_size**2)
+        areas = region_surface_areas(regions=im, voxel_size=voxel_size)
+        net['pore.surface_area'] = areas
         interface_area = region_interface_areas(regions=im, areas=areas,
                                                 voxel_size=voxel_size)
-        A = interface_area.area*(voxel_size**2)
+        A = interface_area.area
         net['throat.cross_sectional_area'] = A
         net['throat.equivalent_diameter'] = (4*A/np.pi)**(1/2)
     else:
