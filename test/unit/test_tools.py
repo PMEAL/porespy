@@ -12,6 +12,7 @@ class ToolsTest():
 
     def setup_class(self):
         plt.close('all')
+        np.random.seed(0)
         self.im = np.random.randint(0, 10, 20)
         np.random.seed(0)
         self.blobs = ps.generators.blobs(shape=[101, 101])
@@ -97,20 +98,6 @@ class ToolsTest():
         assert np.all(y.shape == (51, 1, 51))
         assert np.all(z.shape == (51, 51, 1))
 
-    def test_get_border(self):
-        c = ps.tools.get_border(self.im2D.shape, thickness=1, mode='corners')
-        assert c.sum() == 4
-        c = ps.tools.get_border(self.im3D.shape, thickness=1, mode='corners')
-        assert c.sum() == 8
-        c = ps.tools.get_border(self.im2D.shape, thickness=1, mode='edges')
-        assert c.sum() == 200
-        c = ps.tools.get_border(self.im3D.shape, thickness=1, mode='edges')
-        assert c.sum() == 596
-        c = ps.tools.get_border(self.im2D.shape, thickness=1, mode='faces')
-        assert c.sum() == 200
-        c = ps.tools.get_border(self.im3D.shape, thickness=1, mode='faces')
-        assert c.sum() == 15002
-
     def test_align_image_w_openpnm(self):
         im = ps.tools.align_image_with_openpnm(np.ones([40, 50]))
         assert im.shape == (50, 40)
@@ -169,6 +156,16 @@ class ToolsTest():
         assert np.all(np.unique(im) == vals)
         assert counts[1] < counts[2]
 
+    def test_insert_cylinder(self):
+        im = np.zeros([100, 100, 100], dtype=bool)
+        im = ps.tools.insert_cylinder(im, [20, 20, 20], [80, 80, 80], r=30)
+        assert im.sum() == 356924
+
+    def test_insert_cylinder_outside_image(self):
+        im = np.zeros([50, 50, 50], dtype=bool)
+        with pytest.raises(Exception):
+            im = ps.tools.insert_cylinder(im, [20, 20, 20], [80, 80, 80], r=30)
+
     def test_subdivide_2D_with_vector_overlap(self):
         im = np.ones([150, 150])
         s = ps.tools.subdivide(im, divs=3, overlap=[10, 20])
@@ -213,7 +210,7 @@ class ToolsTest():
         im = np.random.rand(160, 160)
         s = ps.tools.subdivide(im, divs=2, overlap=[0, 0])
         ims = []
-        for i in range(len(s)):
+        for i, _ in enumerate(s):
             ims.append(im[s[i]])
         im2 = ps.tools.recombine(ims=ims, slices=s, overlap=[0, 0])
         assert np.all(im == im2)
@@ -222,7 +219,7 @@ class ToolsTest():
         im = np.random.rand(160, 160)
         s = ps.tools.subdivide(im, divs=2, overlap=[10, 10])
         ims = []
-        for i in range(len(s)):
+        for i, _ in enumerate(s):
             ims.append(im[s[i]])
         im2 = ps.tools.recombine(ims=ims, slices=s, overlap=10)
         assert np.all(im == im2)
@@ -233,7 +230,7 @@ class ToolsTest():
         im = np.random.rand(160, 160)
         s = ps.tools.subdivide(im, divs=2, overlap=10)
         ims = []
-        for i in range(len(s)):
+        for i, _ in enumerate(s):
             ims.append(im[s[i]])
         im2 = ps.tools.recombine(ims=ims, slices=s, overlap=10)
         assert np.all(im == im2)
@@ -242,7 +239,7 @@ class ToolsTest():
         im = np.random.rand(160, 160, 160)
         s = ps.tools.subdivide(im, divs=2, overlap=[0, 0, 0])
         ims = []
-        for i in range(len(s)):
+        for i, _ in enumerate(s):
             ims.append(im[s[i]])
         im2 = ps.tools.recombine(ims=ims, slices=s, overlap=[0, 0, 0])
         assert np.all(im == im2)
@@ -251,7 +248,7 @@ class ToolsTest():
         im = np.random.rand(160, 160, 160)
         s = ps.tools.subdivide(im, divs=2, overlap=[10, 10, 10])
         ims = []
-        for i in range(len(s)):
+        for i, _ in enumerate(s):
             ims.append(im[s[i]])
         im2 = ps.tools.recombine(ims=ims, slices=s, overlap=10)
         assert np.all(im == im2)
@@ -262,7 +259,7 @@ class ToolsTest():
         im = np.random.rand(143, 152)
         s = ps.tools.subdivide(im, divs=2, overlap=10)
         ims = []
-        for i in range(len(s)):
+        for i, _ in enumerate(s):
             ims.append(im[s[i]])
         im2 = ps.tools.recombine(ims=ims, slices=s, overlap=10)
         assert np.all(im == im2)
@@ -271,7 +268,7 @@ class ToolsTest():
         im = np.random.rand(143, 177)
         s = ps.tools.subdivide(im, divs=2, overlap=[10, 20])
         ims = []
-        for i in range(len(s)):
+        for i, _ in enumerate(s):
             ims.append(im[s[i]])
         im2 = ps.tools.recombine(ims=ims, slices=s, overlap=[10, 20])
         assert np.all(im == im2)
@@ -280,90 +277,10 @@ class ToolsTest():
         im = np.random.rand(143, 177, 111)
         s = ps.tools.subdivide(im, divs=3, overlap=[10, 20, 25])
         ims = []
-        for i in range(len(s)):
+        for i, _ in enumerate(s):
             ims.append(im[s[i]])
         im2 = ps.tools.recombine(ims=ims, slices=s, overlap=[10, 20, 25])
         assert np.all(im == im2)
-
-    def test_size_to_seq(self):
-        im = self.im2D
-        sz = ps.filters.porosimetry(im)
-        nsizes = np.size(np.unique(sz))
-        sq = ps.tools.size_to_seq(sz)
-        nsteps = np.size(np.unique(sq))
-        assert nsteps == nsizes
-
-    def test_size_to_seq_int_bins(self):
-        im = self.im2D
-        sz = ps.filters.porosimetry(im)
-        sq = ps.tools.size_to_seq(sz, bins=5)
-        nsteps = np.size(np.unique(sq))
-        assert nsteps == 5
-
-    def test_size_to_seq_too_many_bins(self):
-        im = self.im2D
-        sz = ps.filters.porosimetry(im)
-        sq = ps.tools.size_to_seq(sz, bins=20)
-        nsteps = np.size(np.unique(sq))
-        assert nsteps < 20
-
-    def test_seq_to_satn_fully_filled(self):
-        im = self.im2D
-        sz = ps.filters.porosimetry(im)
-        sq = ps.tools.size_to_seq(sz)
-        sat = ps.tools.seq_to_satn(sq)
-        assert sat.max() == 1
-
-    def test_seq_to_satn_partially_filled(self):
-        im = self.im2D
-        sz = ps.filters.porosimetry(im)
-        sq = ps.tools.size_to_seq(sz)
-        sq[sq == sq.max()] = -1
-        sat = ps.tools.seq_to_satn(sq)
-        assert sat.max() < 1
-
-    def test_size_to_satn(self):
-        im = self.im2D
-        sz = ps.filters.porosimetry(im)
-        satn = ps.tools.size_to_satn(sz)
-        assert satn.max() == 1.0
-        satn = ps.tools.size_to_satn(sz, bins=4)
-        assert satn.max() == 1.0
-
-    def test_compare_size_and_seq_to_satn(self):
-        im = ps.generators.blobs(shape=[250, 250])
-        dt = edt(im)
-        sizes = np.arange(int(dt.max())+1, 0, -1)
-        mio = ps.filters.porosimetry(im, sizes=sizes)
-        mio_satn = ps.tools.size_to_satn(size=mio, im=im)
-        mio_seq = ps.tools.size_to_seq(mio)
-        mio_seq[im*(mio_seq == 0)] = -1  # Adjust to set uninvaded to -1
-        mio_satn_2 = ps.tools.seq_to_satn(mio_seq)
-        assert np.all(mio_satn == mio_satn_2)
-
-    def test_zero_coners(self):
-        im = np.arange(1, 16).reshape(3, 5)
-        desired = np.array([[1, 2, 3, 4, 5],
-                            [0, 7, 0, 0, 0],
-                            [0, 12, 0, 0, 0]])
-        im1 = im.copy()
-        ps.tools.zero_corners(im1, [[0, 2], [1, 3]])
-        np.testing.assert_allclose(im1, desired)
-
-        with pytest.raises(Exception):
-            im2 = im.copy()
-            ps.tools.zero_corners(im2, [[0, 2], [1, 3], [0, 0]])
-
-        with pytest.raises(Exception):
-            im2 = im.copy()
-            ps.tools.zero_corners(im2, [[0, 2], [1, 3, 3]])
-
-        desired = np.array([[0, 2, 3, 4, 0],
-                            [6, 7, 8, 9, 10],
-                            [0, 12, 13, 14, 0]])
-        im3 = im.copy()
-        ps.tools.zero_corners(im3, 1)
-        np.testing.assert_allclose(im3, desired)
 
     def test_sanitize_filename(self):
         fname = "test.stl.stl"

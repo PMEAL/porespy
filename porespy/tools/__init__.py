@@ -21,14 +21,15 @@ ways do NOT return a modified version of the original image.
    tools.extract_regions
    tools.extract_cylinder
    tools.extract_subsection
-   tools.fftmorphology
    tools.find_outer_region
    tools.get_border
    tools.get_planes
    tools.insert_cylinder
    tools.insert_sphere
    tools.in_hull
+   tools.isolate_object
    tools.make_contiguous
+   tools.marching_map
    tools.mesh_region
    tools.norm_to_uniform
    tools.overlay
@@ -38,11 +39,8 @@ ways do NOT return a modified version of the original image.
    tools.ps_round
    tools.randomize_colors
    tools.recombine
-   tools.seq_to_satn
-   tools.size_to_seq
    tools.subdivide
    tools.unpad
-   tools.zero_corners
 
 """
 
@@ -53,14 +51,15 @@ __all__ = [
     "extract_cylinder",
     "extract_subsection",
     "extract_regions",
-    "fftmorphology",
     "find_outer_region",
     "get_border",
     "get_planes",
     "insert_cylinder",
     "insert_sphere",
     "in_hull",
+    "isolate_object",
     "make_contiguous",
+    "marching_map",
     "mesh_region",
     "norm_to_uniform",
     "overlay",
@@ -70,48 +69,40 @@ __all__ = [
     "ps_round",
     "randomize_colors",
     "recombine",
-    "seq_to_satn",
-    "size_to_seq",
     "subdivide",
     "unpad",
-    "zero_corners",
     "sanitize_filename",
     "get_tqdm",
     "show_docstring"]
 
-from .__funcs__ import align_image_with_openpnm
-from .__funcs__ import bbox_to_slices
-from .__funcs__ import _create_alias_map
-from .__funcs__ import extend_slice
-from .__funcs__ import extract_cylinder
-from .__funcs__ import extract_subsection
-from .__funcs__ import extract_regions
-from .__funcs__ import fftmorphology
-from .__funcs__ import find_outer_region
-from .__funcs__ import get_border
-from .__funcs__ import get_planes
-from .__funcs__ import insert_cylinder
-from .__funcs__ import insert_sphere
-from .__funcs__ import in_hull
-from .__funcs__ import isolate_object
-from .__funcs__ import marching_map
-from .__funcs__ import make_contiguous
-from .__funcs__ import mesh_region
-from .__funcs__ import norm_to_uniform
-from .__funcs__ import overlay
-from .__funcs__ import randomize_colors
-from .__funcs__ import recombine
-from .__funcs__ import ps_ball
-from .__funcs__ import ps_disk
-from .__funcs__ import ps_rect
-from .__funcs__ import ps_round
-from .__funcs__ import seq_to_satn
-from .__funcs__ import size_to_satn
-from .__funcs__ import size_to_seq
-from .__funcs__ import subdivide
-from .__funcs__ import zero_corners
-from .__funcs__ import sanitize_filename
-from .__utils__ import get_tqdm
-from .__utils__ import show_docstring
-from .__funcs__ import _check_for_singleton_axes
-from ._unpadfunc import unpad
+from ._funcs import align_image_with_openpnm
+from ._funcs import bbox_to_slices
+from ._funcs import extend_slice
+from ._funcs import extract_cylinder
+from ._funcs import extract_subsection
+from ._funcs import extract_regions
+from ._funcs import find_outer_region
+from ._funcs import get_border
+from ._funcs import get_planes
+from ._funcs import insert_cylinder
+from ._funcs import insert_sphere
+from ._funcs import in_hull
+from ._funcs import isolate_object
+from ._funcs import marching_map
+from ._funcs import make_contiguous
+from ._funcs import mesh_region
+from ._funcs import norm_to_uniform
+from ._funcs import overlay
+from ._funcs import randomize_colors
+from ._funcs import recombine
+from ._funcs import ps_ball
+from ._funcs import ps_disk
+from ._funcs import ps_rect
+from ._funcs import ps_round
+from ._funcs import subdivide
+from ._utils import sanitize_filename
+from ._utils import get_tqdm
+from ._utils import show_docstring
+from ._utils import Results
+from ._funcs import _check_for_singleton_axes
+from ._unpad import unpad

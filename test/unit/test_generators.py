@@ -25,12 +25,8 @@ class GeneratorTest():
         im = ps.generators.cylinders(shape=[50, 50, 50], r=1, ncylinders=20)
         assert np.shape(im.squeeze()) == (50, 50, 50)
         # Now, testing cylinders with porosity as input
-        # max_iter must at least be 3
-        with pytest.raises(Exception):
-            im = ps.generators.cylinders(
-                shape=[50, 50, 50], r=4, porosity=0.5, max_iter=2)
         im = ps.generators.cylinders(
-            shape=[50, 50, 50], r=3, porosity=0.5, max_iter=10)
+            shape=[50, 50, 50], r=3, porosity=0.5, maxiter=10)
         assert im.dtype == bool
         assert np.shape(im.squeeze()) == (50, 50, 50)
         porosity = im.sum() / im.size
@@ -255,7 +251,7 @@ class GeneratorTest():
         rsa = ps.generators.RSA(im_or_shape=[200, 200], r=10)
         assert np.all(rsa.shape == (200, 200))
 
-    def test_RSA_clearance(self):
+    def test_RSA_clearance_large_spheres(self):
         np.random.seed(0)
         rsa0 = ps.generators.RSA(im_or_shape=[200, 200], r=9, clearance=0)
         np.random.seed(0)
@@ -264,6 +260,13 @@ class GeneratorTest():
         np.random.seed(0)
         rsa1n = ps.generators.RSA(im_or_shape=[200, 200], r=9, clearance=-1)
         assert rsa0.sum() < rsa1n.sum()
+
+    def test_RSA_clearance_small_spheres(self):
+        np.random.seed(0)
+        rsa0 = ps.generators.RSA(im_or_shape=[200, 200], r=1, clearance=0)
+        np.random.seed(0)
+        rsa2p = ps.generators.RSA(im_or_shape=[200, 200], r=1, clearance=2)
+        assert rsa0.sum() > rsa2p.sum()
 
     def test_line_segment(self):
         X0 = [3, 4]
@@ -291,11 +294,11 @@ class GeneratorTest():
         assert e2 < e1
         im = np.ones([400, 400], dtype=bool)
         np.random.seed(0)
-        im = ps.generators.pseudo_gravity_packing(im=im, r=20, max_iter=10)
+        im = ps.generators.pseudo_gravity_packing(im=im, r=20, maxiter=10)
         e3 = im.sum()/im.size
         im = np.ones([400, 400], dtype=bool)
         np.random.seed(0)
-        im = ps.generators.pseudo_gravity_packing(im=im, r=50, max_iter=10)
+        im = ps.generators.pseudo_gravity_packing(im=im, r=50, maxiter=10)
         e4 = im.sum()/im.size
         assert e4 > e3
 
@@ -346,7 +349,7 @@ class GeneratorTest():
         with pytest.raises(Exception):
             ps.generators.faces(shape=[10, 10, 10])
 
-    def test_fractal_noise_2D(self):
+    def test_fractal_noise_2d(self):
         s = [100, 100]
         # Ensure identical images are returned if seed is same
         im1 = ps.generators.fractal_noise(shape=s, seed=0, cores=1)
@@ -393,6 +396,48 @@ class GeneratorTest():
         # Ensure the exact same image is produced each time
         im2D = ps.generators.sierpinski_foam(4, 2, 2)
         np.testing.assert_allclose(im2D.sum()/im2D.size, 0.7901234567901234)
+
+    def test_border_thickness_1(self):
+        s = (10, 10)
+        c = ps.generators.borders(shape=s, thickness=1, mode='corners')
+        assert c.sum() == 4
+        c = ps.generators.borders(shape=s, thickness=1, mode='edges')
+        assert c.sum() == 4
+        c = ps.generators.borders(shape=s, thickness=1, mode='faces')
+        assert c.sum() == 36
+        s = (10, 10, 10)
+        c = ps.generators.borders(shape=s, thickness=1, mode='corners')
+        assert c.sum() == 8
+        c = ps.generators.borders(shape=s, thickness=1, mode='edges')
+        assert c.sum() == 104
+        c = ps.generators.borders(shape=s, thickness=1, mode='faces')
+        assert c.sum() == 488
+
+    def test_border_thickness_2(self):
+        s = (10, 10)
+        c = ps.generators.borders(shape=s, thickness=2, mode='corners')
+        assert c.sum() == 16
+        c = ps.generators.borders(shape=s, thickness=2, mode='edges')
+        assert c.sum() == 16
+        c = ps.generators.borders(shape=s, thickness=2, mode='faces')
+        assert c.sum() == 64
+        s = (10, 10, 10)
+        c = ps.generators.borders(shape=s, thickness=2, mode='corners')
+        assert c.sum() == 64
+        c = ps.generators.borders(shape=s, thickness=2, mode='edges')
+        assert c.sum() == 352
+        c = ps.generators.borders(shape=s, thickness=2, mode='faces')
+        assert c.sum() == (1000 - 6*6*6)
+
+    def test_cylindrical_plug(self):
+        s = (50, 50)
+        p = ps.generators.cylindrical_plug(shape=s, r=21, axis=2)
+        assert np.all(p.shape == s)
+        assert p.sum() == 1369
+        s = (50, 50, 10)
+        p = ps.generators.cylindrical_plug(shape=s, r=21, axis=2)
+        assert np.all(p.shape == s)
+        assert p.sum() == 13690
 
 
 if __name__ == '__main__':

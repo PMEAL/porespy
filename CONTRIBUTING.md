@@ -22,11 +22,11 @@ Help fixing open [issues][link_issues] is always welcome; however, the learning 
 
 a) [Fork][link_fork] PoreSpy to your own Github account. This lets you work on the code since you are the owner of that forked copy.
 
-b) Pull the code to your local machine using some Git client.  We suggest [GitKraken][link_gitkraken]. For help using the Git version control system, see [these resources][link_using_git].
+b) Pull the code to your local machine using some Git client. We suggest [GitKraken][link_gitkraken]. For help using the Git version control system, see [these resources][link_using_git].
 
-c) Create a new branch, with a useful name like "fix_issues_011" or "add_awesome_filter", then checkout that branch.  
+c) Create a new branch, with a useful name like "fix_issues_011" or "add_awesome_filter", then checkout that branch.
 
-d) Edit the code as desired, either fixing or adding something.  You'll need to know Python and the various packages in the [Scipy][link_scipy] stack for this part.  
+d) Edit the code as desired, either fixing or adding something.  You'll need to know Python and the various packages in the [Scipy][link_scipy] stack for this part.
 
 e) Push the changes back to Github, to your own repo.
 

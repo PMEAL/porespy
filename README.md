@@ -1,26 +1,21 @@
+<p align="center">
+  <img src="https://github.com/PMEAL/porespy/raw/dev/docs/_static/images/porespy_logo.png" width="35%"></img>
+</p>
+
+-----
+
 [![image](https://github.com/PMEAL/porespy/workflows/Ubuntu/badge.svg)](https://github.com/PMEAL/porespy/actions)
 [![image](https://github.com/PMEAL/porespy/workflows/macOS/badge.svg)](https://github.com/PMEAL/porespy/actions)
 [![image](https://github.com/PMEAL/porespy/workflows/Windows/badge.svg)](https://github.com/PMEAL/porespy/actions)
 [![image](https://github.com/PMEAL/porespy/workflows/Examples/badge.svg)](https://github.com/PMEAL/porespy/actions)<br>
 [![image](https://codecov.io/gh/PMEAL/PoreSpy/branch/dev/graph/badge.svg)](https://codecov.io/gh/PMEAL/PoreSpy)
-[![image](https://img.shields.io/badge/ReadTheDocs-GO-blue.svg)](http://porespy.readthedocs.io/en/dev/)
 [![image](https://img.shields.io/pypi/v/porespy.svg)](https://pypi.python.org/pypi/porespy/)
+[![Pyversions](https://img.shields.io/pypi/pyversions/porespy.svg?style=flat-square&label=Python%20Versions)](https://pypi.python.org/pypi/porespy)
 [![image](https://img.shields.io/badge/DOI-10.21105/joss.01296-blue.svg)](https://doi.org/10.21105/joss.01296)
 
 -----
 
-# NOTE
-
-> As of February 12th, 2021, we are actively working on Version 2.0. The ``dev`` branch will no longer be backwards compatible with previous versions of PoreSpy. We expect this conversion to be complete by winter's end.
-
 # What is PoreSpy?
-
-**Cite as:**
-
-> *Gostick J, Khan ZA, Tranter TG, Kok MDR, Agnaou M, Sadeghi MA, Jervis
-> R.* **PoreSpy: A Python Toolkit for Quantitative Analysis of Porous Media
-> Images.** Journal of Open Source Software, 2019.
-> [doi:10.21105/joss.01296](https://doi.org/10.21105/joss.01296)
 
 **PoreSpy** is a collection of image analysis tools used to extract
 information from 3D images of porous materials (typically obtained from
@@ -59,34 +54,22 @@ necessary.
     common software
   - `tools`: Various useful tools for working with images
 
+## Gallery
+
+<p align="center">
+  <img src="https://github.com/PMEAL/porespy/raw/dev/docs/_static/images/montage.svg" width="85%"></img>
+</p>
+
+## Cite as
+
+> *Gostick J, Khan ZA, Tranter TG, Kok MDR, Agnaou M, Sadeghi MA, Jervis
+> R.* **PoreSpy: A Python Toolkit for Quantitative Analysis of Porous Media
+> Images.** Journal of Open Source Software, 2019.
+> [doi:10.21105/joss.01296](https://doi.org/10.21105/joss.01296)
+
 # Installation
 
-PoreSpy depends heavily on the Scipy Stack. The best way to get a fully
-functional environment is the [Anaconda
-distribution](https://www.anaconda.com/download/). Be sure to get the
-**Python 3.7+ version**.
-
-Once you've installed *Anaconda* you can then install **PoreSpy**. It is
-available on [Conda Forge](https://anaconda.org/conda-forge/porespy) and can be installed by typing the following at the *conda* prompt:
-
-    conda install -c conda-forge porespy
-
-It's possible to use ``pip install porespy``, but this will not result in a full installation and some features won't work (i.e. outputing to paraview and calling imagej functions).
-
-## Windows
-
-On Windows you should have a shortcut to the "Anaconda prompt" in the
-Anaconda program group in the start menu. This will open a Windows
-command console with access to the Python features added by *Conda*,
-such as installing things via `conda`.
-
-## Mac and Linux
-
-On Mac or Linux, you need to open a normal terminal window, then type
-`source activate {env}` where you replace `{env}` with the name of the
-environment you want to install PoreSpy. If you don't know what this
-means, then use `source activate root`, which will install PoreSpy in
-the root environment which is the default.
+For detailed and up to date installation instructions, [see here](https://porespy.org/user_guide/installation.html)
 
 # Contributing
 
@@ -104,12 +87,17 @@ guide](https://github.com/PMEAL/porespy/blob/dev/CONTRIBUTING.md)
 
 It's surprizingly hard to communicate with our users, since Github doesn't allow sending out email newsletters or announcements.  To address this gap, we have created a [Substack channel](https://porespy.substack.com/p/coming-soon?r=e02s8&utm_campaign=post&utm_medium=web&utm_source=copy), where you can subscribe to our feed to receive periodic news about important events and updates.
 
+# Acknowledgements
+
+PoreSpy is grateful to [CANARIE](https://canarie.ca) for their generous funding over the past few years.  We would also like to acknowledge the support of [NSERC of Canada](https://www.nserc-crsng.gc.ca/) for funding many of the student that have contributed to PoreSpy since it's inception in 2014.
+
 # Examples
 
 The following code snippets illustrate generating a 2D image, applying
 several filters, and calculating some common metrics. A set of examples
 is included in this repo, and can be [browsed
 here](https://github.com/PMEAL/porespy/tree/dev/examples).
+
 
 ## Generating an image
 

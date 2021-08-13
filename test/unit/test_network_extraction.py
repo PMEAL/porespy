@@ -6,6 +6,7 @@ import pytest
 import numpy as np
 from numpy.testing import assert_allclose
 import porespy as ps
+ps.settings.tqdm['disable'] = True
 
 
 class NetworkExtractionTest():
@@ -56,13 +57,10 @@ class NetworkExtractionTest():
         im = self.im
         snow = ps.filters.snow_partitioning(im)
         regions = snow.regions
-        values = np.random.rand(regions.max() + 1)
+        values = np.random.rand(regions.max())
         mapped = ps.networks.map_to_regions(regions, values)
         assert mapped.max() < 1
         # Some failures
-        values = np.random.rand(regions.max())
-        with pytest.raises(Exception):
-            mapped = ps.networks.map_to_regions(regions, values)
         values = np.random.rand(regions.max()+2)
         with pytest.raises(Exception):
             mapped = ps.networks.map_to_regions(regions, values)
@@ -117,8 +115,10 @@ class NetworkExtractionTest():
     def test_max_ball(self):
         path = Path(realpath(__file__), '../../fixtures/pnextract.exe')
         if system() == 'Windows':
-            ps.networks.maximal_ball(im=self.im3d, prefix='test_maxball',
-                                     path_to_exe=path, voxel_size=1e-6)
+            ps.networks.maximal_ball_wrapper(im=self.im3d,
+                                             prefix='test_maxball',
+                                             path_to_exe=path,
+                                             voxel_size=1e-6)
             assert os.path.isfile("test_maxball_link1.dat")
             assert os.path.isfile("test_maxball_link2.dat")
             assert os.path.isfile("test_maxball_node1.dat")

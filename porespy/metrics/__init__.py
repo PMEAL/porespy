@@ -15,11 +15,14 @@ but a few functions can be applied directly to the binary image.
    :template: mybase.rst
    :toctree: generated/
 
+    metrics.boxcount
     metrics.chord_counts
     metrics.chord_length_distribution
-    metrics.geometrical_tortuosity
     metrics.lineal_path_distribution
     metrics.mesh_surface_area
+    metrics.mesh_volume
+    metrics.pc_curve_from_ibip
+    metrics.pc_curve_from_mio
     metrics.phase_fraction
     metrics.pore_size_distribution
     metrics.porosity
@@ -29,31 +32,31 @@ but a few functions can be applied directly to the binary image.
     metrics.radial_density_distribution
     metrics.region_interface_areas
     metrics.region_surface_areas
+    metrics.region_volume
     metrics.regionprops_3D
     metrics.representative_elementary_volume
-    metrics.two_point_correlation_bf
-    metrics.two_point_correlation_fft
+    metrics.two_point_correlation
 
 """
 
-from .__regionprops__ import regionprops_3D
-from .__regionprops__ import props_to_DataFrame
-from .__regionprops__ import prop_to_image
-from .__funcs__ import chord_counts
-from .__funcs__ import chord_length_distribution
-from .__funcs__ import lineal_path_distribution
-from .__funcs__ import pore_size_distribution
-from .__funcs__ import radial_density_distribution
-from .__funcs__ import porosity
-from .__funcs__ import porosity_profile
-from .__funcs__ import representative_elementary_volume
-from .__funcs__ import two_point_correlation_bf
-from .__funcs__ import two_point_correlation_fft
-from .__funcs__ import region_surface_areas
-from .__funcs__ import region_interface_areas
-from .__funcs__ import mesh_surface_area
-from .__funcs__ import phase_fraction
-from ._geometrical_tortuosity import geometrical_tortuosity
-from .__funcs__ import pc_curve_from_ibip
-from .__funcs__ import pc_curve_from_mio
+from ._regionprops import regionprops_3D
+from ._regionprops import props_to_DataFrame
+from ._regionprops import prop_to_image
+from ._funcs import chord_counts
+from ._funcs import chord_length_distribution
+from ._funcs import lineal_path_distribution
+from ._funcs import pore_size_distribution
+from ._funcs import radial_density_distribution
+from ._funcs import porosity
+from ._funcs import porosity_profile
+from ._funcs import representative_elementary_volume
+from ._funcs import two_point_correlation
+from ._funcs import phase_fraction
+from ._funcs import pc_curve_from_ibip
+from ._funcs import pc_curve_from_mio
 from ._fractal_dims import boxcount
+from ._meshtools import mesh_surface_area
+from ._meshtools import region_interface_areas
+from ._meshtools import region_surface_areas
+from ._meshtools import region_volumes
+from ._meshtools import mesh_volume

@@ -34,19 +34,19 @@ debugging, and illustration purposes.
 
 """
 
-from .__imgen__ import blobs
-from .__imgen__ import bundle_of_tubes
-from .__imgen__ import cylinders
-from .__imgen__ import insert_shape
-from .__imgen__ import lattice_spheres
-from .__imgen__ import line_segment
-from .__imgen__ import overlapping_spheres
-from .__imgen__ import polydisperse_spheres
-from .__imgen__ import RSA
-from .__imgen__ import voronoi_edges
-from .__gravity__ import pseudo_gravity_packing
-from .__electrostatic__ import pseudo_electrostatic_packing
-from .__cylinder__ import cylindrical_plug
+from ._imgen import blobs
+from ._imgen import bundle_of_tubes
+from ._imgen import cylinders
+from ._imgen import insert_shape
+from ._imgen import lattice_spheres
+from ._imgen import line_segment
+from ._imgen import overlapping_spheres
+from ._imgen import polydisperse_spheres
+from ._imgen import RSA
+from ._imgen import voronoi_edges
+from ._pseudo_packings import pseudo_gravity_packing
+from ._pseudo_packings import pseudo_electrostatic_packing
+from ._cylinder import cylindrical_plug
 from ._noise import fractal_noise
 from ._borders import *
 from ._fractals import random_cantor_dust

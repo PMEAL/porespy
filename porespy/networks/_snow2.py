@@ -3,7 +3,7 @@ from porespy.networks import regions_to_network
 from porespy.networks import add_boundary_regions
 from porespy.networks import label_phases, label_boundaries
 from porespy.filters import snow_partitioning, snow_partitioning_parallel
-from collections import namedtuple, Iterable
+from porespy.tools import Results
 from loguru import logger
 
 
@@ -12,6 +12,8 @@ def snow2(phases,
           boundary_width=3,
           accuracy='standard',
           voxel_size=1,
+          sigma=0.4,
+          r_max=4,
           parallelization={},):
     r"""
     Applies the SNOW algorithm to each phase indicated in ``phases``.
@@ -21,61 +23,87 @@ def snow2(phases,
 
     Parameters
     ----------
-    phases : ND-image
-        An image indicating the phase(s) of interest. A watershed is produced
-        for each integer value in ``phases`` (except 0's). These are then
-        combined into a single image and one network is extracted using
-        ``regions_to_network``.
+    phases : ndarray
+        An image indicating the phase(s) of interest. A watershed is
+        produced for each integer value in ``phases`` (except 0's). These
+        are then combined into a single image and one network is extracted
+        using ``regions_to_network``.
     phase_alias : dict
-        A mapping between integer values in ``phases`` and phase name, used
-        to add labels to the network. For instance, asssuming a two-phase
-        image, ``{1: 'void', 2: 'solid'}`` will result in the labels
-        ``'pore.void'`` and ``'pore.solid'``, as well as
+        A mapping between integer values in ``phases`` and phase name
+        used to add labels to the network. For instance, asssuming a
+        two-phase image, ``{1: 'void', 2: 'solid'}`` will result in the
+        labels ``'pore.void'`` and ``'pore.solid'``, as well as
         ``'throat.solid_void'``, ``'throat.solid_solid'``, and
         ``'throat.void_void'``. If not provided, aliases are assumed to be
-        ``{1: 'phase1', 2: 'phase2, ...}``.  Phase labels can also be applied
-        afterward using ``label_phases``.
+        ``{1: 'phase1', 2: 'phase2, ...}``.  Phase labels can also be
+        applied afterward using ``label_phases``.
     boundary_width : depends
-        Number of voxels to add to the beginning and end of each axis. This
-        argument is handled the same as ``pad_width`` in the ``np.pad``
-        function. A scalar adds the same amount to the beginning and end of
-        each axis. ``[A, B]`` adds A to the beginning of each axis and B to the
-        ends.  ``[[A, B], ..., [C, D]]`` adds A to the beginning and B to the
-        end of the first axis, and so on. The default is to add 3 voxels on
-        both ends of all axes.  For each boundary width that is not 0, a label
-        will automatically be applied indicating which end of which axis (i.e.
-        ``'xmin'`` and ``'xmax'``).
+        Number of voxels to add to the beginning and end of each axis.
+        This argument can either be a scalar or a list. If a scalar is
+        passed, it will be applied to the beginning and end of all axes.
+        In case of a list, you can specify the number of voxels for each
+        axis individually. Here are some examples:
+
+            - [0, 3, 0]: 3 voxels only applied to the y-axis.
+
+            - [0, [0, 3], 0]: 3 voxels only applied to the end of y-axis.
+
+            - [0, [3, 0], 0]: 3 voxels only applied to the beginning of y-axis.
+
+        The default is to add 3 voxels on both ends of all axes. For each
+        boundary width that is not 0, a label will automatically be
+        applied indicating which end of which axis (i.e. ``'xmin'`` and
+        ``'xmax'``).
     accuracy : string
-        Controls how accurately certain properties are calculated during the
-        analysis of regions in the ``regions_to_network`` function.
+        Controls how accurately certain properties are calculated during
+        the analysis of regions in the ``regions_to_network`` function.
         Options are:
 
-        'standard' (default)
-            Computes the surface areas and perimeters by simply counting
-            voxels. This is *much* faster but does not properly account
-            for the rough voxelated nature of the surfaces.
-        'high'
-            Computes surface areas using the marching cube method, and
-            perimeters using the fast marching method. These are substantially
-            slower but better account for the voxelated nature of the images.
+            - 'standard' (default)
+                Computes the surface areas and perimeters by simply
+                counting voxels. This is *much* faster but does not
+                properly account for the rough voxelated nature
+                of the surfaces.
+
+            - 'high'
+                Computes surface areas using the marching cube
+                method, and perimeters using the fast marching method. These
+                are substantially slower but better account for the
+                voxelated nature of the images.
 
     voxel_size : scalar (default = 1)
-        The resolution of the image, expressed as the length of one side of a
-        voxel, so the volume of a voxel would be **voxel_size**-cubed.
+        The resolution of the image, expressed as the length of one side
+        of a voxel, so the volume of a voxel would be **voxel_size**-cubed.
+    r_max : int
+        The radius of the spherical structuring element to use in the
+        Maximum filter stage that is used to find peaks. The default is 4.
+    sigma : float
+        The standard deviation of the Gaussian filter used in step 1. The
+        default is 0.4.  If 0 is given then the filter is not applied.
     parallelization : dict
-        The arguments for controlling the parallization of the watershed
+        The arguments for controlling the parallelization of the watershed
         function are rolled into this dictionary, otherwise the function
         signature would become too complex. Refer to the docstring of
         ``snow_partitioning_parallel`` for complete details. If no values
-        are provided then the defaults for that function are used.
-        To disable parallelization pass ``parallel=None``, which will invoke
-        the standard ``snow_partitioning``.
+        are provided then the defaults for that function are used here.
+        To disable parallelization pass ``parallel=None``, which will
+        invoke the standard ``snow_partitioning`` or ``snow_partitioning_n``.
 
     Returns
     -------
-    network : dict or named-tuple
-        A *named-tuple* is returned with the padded ``phases`` image, the
-        watershed segmentated ``regions``, and the ``network`` dictionary.
+    network : Results object
+        A custom object is returned with the following data added as attributes:
+
+        - 'phases'
+            The original ``phases`` image with any padding applied
+
+        - 'regions'
+            The watershed segmentation of the image, including boundary
+            regions if padding was applied
+
+        - 'network'
+            A dictionary containing all the extracted network properties in
+            OpenPNM format ('pore.coords', 'throat.conns', etc).
 
     References
     ----------
@@ -84,26 +112,27 @@ def snow2(phases,
        023307 (2017)
     .. [2] Khan ZA, Tranter TG, Agnaou M, Elkamel A, and Gostick JT, Dual
        network extraction algorithm to investigate multiple transport
-       processes in porous materials: Image-based modeling of pore and grain-
-       scale processes. Computers and Chemical Engineering. 123(6), 64-77
-       (2019)
+       processes in porous materials: Image-based modeling of pore and
+       grain-scale processes. Computers and Chemical Engineering. 123(6),
+       64-77 (2019)
     .. [3] Khan ZA, García-Salaberri PA, Heenan T, Jervis R, Shearing P,
        Brett D, Elkamel A, Gostick JT, Probing the structure-performance
        relationship of lithium-ion battery cathodes using pore-networks
-       extracted from three-phase tomograms. Journal of the Electrochemical
-       Society. 167(4), 040528 (2020)
+       extracted from three-phase tomograms. Journal of the
+       Electrochemical Society. 167(4), 040528 (2020)
     .. [4] Khan ZA, Elkamel A, Gostick JT, Efficient extraction of pore
        networks from massive tomograms via geometric domain decomposition.
        Advances in Water Resources. 145(Nov), 103734 (2020)
+
     """
     regions = None
     for i in range(phases.max()):
         phase = phases == (i + 1)
         if parallelization is not None:
             snow = snow_partitioning_parallel(
-                im=phase, sigma=0.4, r_max=4, **parallelization)
+                im=phase, sigma=sigma, r_max=r_max, **parallelization)
         else:
-            snow = snow_partitioning(im=phase, sigma=0.4, r_max=4)
+            snow = snow_partitioning(im=phase, sigma=sigma, r_max=r_max)
         if regions is None:
             regions = np.zeros_like(snow.regions, dtype=int)
         # Note: Using snow.regions > 0 here instead of phase is needed to
@@ -135,7 +164,7 @@ def snow2(phases,
         L = [L[i]*int(W[i] > 0) for i in range(len(L))]
         L = np.reshape(L, newshape=boundary_width.shape)
         net = label_boundaries(net, labels=L)
-    result = namedtuple('snow2', ('network', 'regions', 'phases'))
+    result = Results()
     result.network = net
     result.regions = regions
     result.phases = phases
@@ -156,32 +185,21 @@ def _parse_phase_alias(alias, phases):
 def _parse_pad_width(pad_width, shape):
     r"""
     """
-    shape = np.array(shape)
-    # Case: int
-    if isinstance(pad_width, int):
-        pw = [[pad_width, pad_width]]*len(shape)
+    ndim = len(shape)
+    pad_width = np.atleast_1d(np.array(pad_width, dtype=object))
 
-    elif np.all([isinstance(i, int) for i in pad_width]):
-        # Case: (before, )
-        if (len(pad_width) == 1):
-            pad_width.extend(pad_width)
-            pw = [pad_width]*len(shape)
-        # Case: (before, after)
-        elif (len(pad_width) == 2):
-            pw = [pad_width]*len(shape)
+    if np.size(pad_width) == 1:
+        pad_width = np.tile(pad_width.item(), ndim).astype(object)
+    if len(pad_width) != ndim:
+        raise Exception(f"pad_width must be scalar or {ndim}-element list")
+
+    tmp = []
+    for elem in pad_width:
+        if np.size(elem) == 1:
+            tmp.append(np.tile(np.array(elem).item(), 2))
+        elif np.size(elem) == 2 and np.ndim(elem) == 1:
+            tmp.append(elem)
         else:
-            raise Exception('Incorrect number of values given')
-    # Case: (before, (before, after), ...) or ((before, after), before, ...)
-    elif np.any([isinstance(i, int) for i in pad_width]):  # some ints
-        pw = [[i, i] if isinstance(i, int) else i for i in pad_width]
-        # Catch case of [2, [2, 2], [2]]
-        pw = [i if len(i) == 2 else i*2 for i in pw]
-    # Case: ((before, after), ..., (before, after))
-    elif np.all([isinstance(i, Iterable) for i in pad_width]):
-        pw = [i if len(i) == 2 else i*2 for i in pad_width]
-    else:
-        raise Exception(f'Not sure how to interpret {pad_width}')
-    pw = np.array(pw)
-    if pw.shape[0] > len(shape):
-        raise Exception('Too many values given')
-    return pw.squeeze()
+            raise Exception("pad_width components can't have 2+ elements")
+
+    return np.array(tmp)

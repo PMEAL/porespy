@@ -3,7 +3,7 @@ name: Deploy Documentation
 on:
   push:
     branches:
-    - new_examples
+    - dev
 
 jobs:
   deploy-docs:
@@ -44,6 +44,7 @@ jobs:
       - name: Install dependencies (conda)
         run: |
           mamba install --file requirements/doc_requirements.txt
+          pip install -r requirements/pip_requirements.txt
 
       # Build the documentation
       - name: Build the documentation
