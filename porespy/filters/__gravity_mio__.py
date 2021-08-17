@@ -1,9 +1,11 @@
-import porespy as ps
 import numpy as np
 from edt import edt
 import numba
-from tqdm import tqdm
 import matplotlib.pyplot as plt
+from porespy.filters import trim_disconnected_blobs
+from porespy import settings
+from porespy.tools import get_tqdm
+tqdm = get_tqdm()
 
 
 @numba.jit(nopython=True, parallel=False)
@@ -102,11 +104,12 @@ def _make_ball(r, smooth=True):
     return s
 
 
-def gravity_mio(im, inlets, bins=25, sigma=0.072, rho=1000, g=9.81, voxel_size=1):
+def gravity_mio(im, inlets, bins=25, sigma=0.072, rho=1000, g=9.81, alpha=90, voxel_size=1):
     vx_res = voxel_size
     # Generate image for correcting entry pressure by gravitational effect
-    h = np.arange(0, im.shape[0])*vx_res
-    h = np.broadcast_to(np.atleast_2d(h).T, im.shape)
+    h = np.ones_like(im, dtype=bool)
+    h[0, ...] = False
+    h = edt(h)*vx_res*np.sin(np.deg2rad(alpha))
     rgh = rho*g*h
     dt = edt(im)
     pc = 2*sigma/(dt*vx_res)
@@ -125,23 +128,76 @@ def gravity_mio(im, inlets, bins=25, sigma=0.072, rho=1000, g=9.81, voxel_size=1
     # Initialize empty arrays to accumulate results of each loop
     inv = np.zeros_like(im, dtype=float)
     seeds = np.zeros_like(im, dtype=bool)
-    with tqdm(Ps) as pbar:
-        for p in Ps:
-            # Find all locations in image invadable at current pressure
-            temp = fn <= p
-            # Trim locations not connected to the inlets
-            new_seeds = ps.filters.trim_disconnected_blobs(temp, inlets=inlets)
-            # Isolate only newly found locations to speed up inserting
-            temp = new_seeds*(~seeds)
-            # Find i,j,k coordinates of new locations
-            coords = np.where(temp)
-            # Add new locations to list of invaded locations
-            seeds += new_seeds
-            # Extract the local size of sphere to insert at each new location
-            radii = dt[coords].astype(int)
-            # Convert pressure to corresponding radii for comparison to mio
-            R = int(2*sigma/p/vx_res)
-            # Insert spheres are new locations of given radii
-            inv = insert_disks_at_points(inv, np.vstack(coords), radii, R, smooth=True)
-            pbar.update()  # Increment progress bar
+    for p in tqdm(Ps, **settings.tqdm):
+        # Find all locations in image invadable at current pressure
+        temp = fn <= p
+        # Trim locations not connected to the inlets
+        new_seeds = trim_disconnected_blobs(temp, inlets=inlets)
+        # Isolate only newly found locations to speed up inserting
+        temp = new_seeds*(~seeds)
+        # Find i,j,k coordinates of new locations
+        coords = np.where(temp)
+        # Add new locations to list of invaded locations
+        seeds += new_seeds
+        # Extract the local size of sphere to insert at each new location
+        radii = dt[coords].astype(int)
+        # Convert pressure to corresponding radii for comparison to mio
+        R = int(2*sigma/p/vx_res)
+        # Insert spheres are new locations of given radii
+        inv = insert_disks_at_points(inv, np.vstack(coords), radii, p, smooth=True)
     return inv
+
+
+# %%
+if __name__ == '__main__':
+    import porespy as ps
+
+    if True:
+        im = ~ps.generators.RSA([2900, 2000, 20], r=10, clearance=1)
+        im = np.pad(im, pad_width=[[0, 0], [1, 1], [1, 1]], mode='constant',
+                    constant_values=False)
+    else:
+        im = np.load('packing.npz')['arr_0']
+        im = np.swapaxes(im, 0, 1)
+    inlets = np.zeros_like(im)
+    inlets[-1, :, :] = True
+    # mip = ps.filters.porosimetry(im=im, inlets=inlets)
+
+    sim1 = []
+    sim2 = []
+    for i, alpha in enumerate([0, 15, 30, 45, 60]):
+        # Enter parameters
+        voxel_size = 0.5e-4
+        delta_rho = -1205
+        sigma = 0.064
+        a = 0.001  # Average pore size, seems to be plate spacing?
+        g = 9.81*np.sin(np.deg2rad(alpha))
+        h = im.shape[0]*voxel_size
+        rgh = delta_rho*g*h*np.sin(np.deg2rad(alpha))
+        Bo = delta_rho*g*(a**2)/sigma
+        print(Bo)
+
+        temp = gravity_mio(im=im, inlets=inlets, sigma=sigma,
+                           rho=delta_rho, g=g, alpha=alpha,
+                           voxel_size=voxel_size)
+        sim1.append(temp)
+        outlets = np.zeros_like(im)
+        outlets[0, :, :] = True
+        trapped = ps.filters.find_trapped_regions(seq=sim1[i], outlets=outlets)
+        sim2.append(sim1[i] * ~trapped)
+
+# %%
+    c = ['tab:blue', 'tab:red', 'tab:orange', 'tab:purple', 'tab:green']
+    for i in range(5):
+        print(i)
+        pc = np.unique(sim1[i])[1:]
+        snwp_w_trapping = []
+        snwp = []
+        for p in pc:
+            snwp.append((sim1[i] == p).sum()/im.sum())
+            snwp_w_trapping.append((sim2[i] == p).sum()/im.sum())
+        snwp_w_trapping = np.cumsum(snwp_w_trapping)
+        snwp = np.cumsum(snwp)
+        plt.plot(snwp_w_trapping, pc, '-o', color=c[i])
+        plt.ylim([-1500, 1500])
+        # plt.plot(pc, snwp, 'b-o')
