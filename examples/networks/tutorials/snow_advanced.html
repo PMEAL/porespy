@@ -22,8 +22,8 @@
       
 
     
-    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/basic.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
@@ -31,15 +31,15 @@
     
   <link rel="preload" as="script" href="../../../_static/js/index.1c5a1a01449ed65a7b51.js">
 
-    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script src="../../../_static/js/custom.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -1011,24 +1011,55 @@ Peaks after trimming nearby peaks:  532
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">pn</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">GenericNetwork</span><span class="p">()</span>
-<span class="n">pn</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">net</span><span class="p">)</span>
-<span class="n">prj</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">project</span>
-<span class="n">prj</span><span class="o">.</span><span class="n">export_data</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s1">&#39;extracted_network&#39;</span><span class="p">,</span> <span class="n">filetype</span><span class="o">=</span><span class="s1">&#39;vtk&#39;</span><span class="p">)</span>
+<span></span><span class="n">prj</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">PoreSpy</span><span class="o">.</span><span class="n">import_data</span><span class="p">(</span><span class="n">net</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<p>In order to overlay both the network and the image in ParaView it is necessary to adjust the image and save it as a vtk image file.</p>
-<div class="nbinput nblast docutils container">
+<p>You can inspect the project and see that the network and geometry objects are present:</p>
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">ps</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">to_vtk</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;extracted_network&#39;</span><span class="p">)</span>
+<span></span><span class="nb">print</span><span class="p">(</span><span class="n">prj</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<p><img alt="47c4826368884856beb174e1ca2ddbcd" class="no-scaled-link" src="https://user-images.githubusercontent.com/14086031/113048590-b68d2480-9170-11eb-9c10-06e6d53ee95d.png" style="width: 350px;" /></p>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+ Object Name     Object ID
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+ net_01          &lt;openpnm.network.GenericNetwork object at 0x1efac42b180&gt;
+ geo_01          &lt;openpnm.geometry.Imported object at 0x1efac452950&gt;
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+</pre></div></div>
+</div>
+<p>Overlaying the network and the image is requires using paraview since the image is in 3D. The is one gotcha due to the differences in how paraview and numpy number axes: it is necessary to rotate the image using <code class="docutils literal notranslate"><span class="pre">ps.tools.align_image_with_openpnm</span></code>:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">align_image_with_openpnm</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+<span class="n">imageio</span><span class="o">.</span><span class="n">volsave</span><span class="p">(</span><span class="s1">&#39;image.tif&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">op</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">VTK</span><span class="o">.</span><span class="n">export_data</span><span class="p">(</span><span class="n">prj</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Finally, you can open both the tif image and the vtk file containing the network in paraview. After some fine tuning, you should be able to see something like the following:</p>
+<p><img alt="c0ad15b261a34813bc88b579d528b473" class="no-scaled-link" src="https://user-images.githubusercontent.com/14086031/113048590-b68d2480-9170-11eb-9c10-06e6d53ee95d.png" style="width: 350px;" /></p>
 </div>
 </div>
 
@@ -1055,7 +1086,7 @@ Peaks after trimming nearby peaks:  532
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.1.2.<br/>
 </p>
     </div>
     
