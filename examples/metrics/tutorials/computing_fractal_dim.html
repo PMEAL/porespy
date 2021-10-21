@@ -4,11 +4,12 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Measuring fractal dimension by box-counting &#8212; PoreSpy  documentation</title>
     
-  <link href="../../../_static/css/theme.css" rel="stylesheet" />
-  <link href="../../../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+  <link href="../../../_static/css/theme.css" rel="stylesheet">
+  <link href="../../../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
 
     
   <link rel="stylesheet"
@@ -23,13 +24,13 @@
 
     
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/basic.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/blank.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
     
-  <link rel="preload" as="script" href="../../../_static/js/index.1c5a1a01449ed65a7b51.js">
+  <link rel="preload" as="script" href="../../../_static/js/index.be7d3bbb2ef33a8344ce.js">
 
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
@@ -46,7 +47,10 @@
     <link rel="next" title="The lineal path function" href="lineal_path_function.html" />
     <link rel="prev" title="&lt;no title&gt;" href="../../filters/howtos/unpad.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="en" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
     
   </head>
   <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
@@ -891,19 +895,19 @@ div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
 </style>
-<div class="section" id="Measuring-fractal-dimension-by-box-counting">
+<section id="Measuring-fractal-dimension-by-box-counting">
 <h1>Measuring fractal dimension by box-counting<a class="headerlink" href="#Measuring-fractal-dimension-by-box-counting" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="Theory">
+<section id="Theory">
 <h2>Theory<a class="headerlink" href="#Theory" title="Permalink to this headline">¶</a></h2>
 <p>The term ‘fractal dimension’ was introduced by Benoit Mandelbrot in 1967 to explain self-similarity of a pattern. A fractal dimension is defined as a ratio of the change in detail to the change in scale. It is used as an index that quantifies the complexity of a fractal pattern (<a class="reference external" href="https://en.wikipedia.org/wiki/Fractal_dimension">https://en.wikipedia.org/wiki/Fractal_dimension</a>).</p>
 <p>Famously, fractal dimensions have been used to analyze the length of the British coastline. A coastline’s measured length is observed to change depending on the length of the measuring stick used. In 2-D and 3-D, this notion can be extended to the length of a measuring pixel or voxel, respectively.</p>
 <img alt="image" src="https://upload.wikimedia.org/wikipedia/commons/2/20/Britain-fractal-coastline-combined.jpg" />
-<div class="section" id="Box-Counting-Method">
+<section id="Box-Counting-Method">
 <h3>Box Counting Method<a class="headerlink" href="#Box-Counting-Method" title="Permalink to this headline">¶</a></h3>
 <p>One way to determine fractal dimension of an image is the box counting method. Boxes of various sizes are laid over the image in a fixed grid pattern. The number of boxes that span the edge of the pattern (i.e. partially 1 and partially 0) are tallied as a function of box size. This count is then used to calculate the fractal dimension (<a class="reference external" href="https://en.wikipedia.org/wiki/Box_counting">https://en.wikipedia.org/wiki/Box_counting</a>).</p>
-</div>
-</div>
-<div class="section" id="Mathematical-Definition">
+</section>
+</section>
+<section id="Mathematical-Definition">
 <h2>Mathematical Definition<a class="headerlink" href="#Mathematical-Definition" title="Permalink to this headline">¶</a></h2>
 <p>The relationship of a pattern’s fractal dimension and its measuring element can be expressed as:</p>
 <p><span class="math notranslate nohighlight">\(N \propto \frac{1}{D^F}\)</span></p>
@@ -913,8 +917,8 @@ div.rendered_html tbody tr:hover {
 <li><p>D: size of the boxes</p></li>
 <li><p>F: fractal dimension</p></li>
 </ul>
-</div>
-<div class="section" id="Example">
+</section>
+<section id="Example">
 <h2>Example<a class="headerlink" href="#Example" title="Permalink to this headline">¶</a></h2>
 <p>A Sierpinski carpet has a known fractal dimension of 1.8928. Performing the box counting method found its fractal dimension as approximately 1.8 ~ 1.9.</p>
 <p>First, import the needed packages.</p>
@@ -987,8 +991,8 @@ div.rendered_html tbody tr:hover {
 <img alt="../../../_images/examples_metrics_tutorials_computing_fractal_dim_9_0.svg" src="../../../_images/examples_metrics_tutorials_computing_fractal_dim_9_0.svg" /></div>
 </div>
 <p>The horizontal portion of the <code class="docutils literal notranslate"><span class="pre">slope</span> <span class="pre">vs</span> <span class="pre">box</span> <span class="pre">edge</span> <span class="pre">length</span></code> curve, between <span class="math notranslate nohighlight">\(10^1\)</span> and <span class="math notranslate nohighlight">\(10^2\)</span> is a flat line with a value of approximately 1.9. Beyond a box edge length of <span class="math notranslate nohighlight">\(10^2\)</span> the analysis becomes impacted by the finite image size so the result begins to diverge.</p>
-</div>
-</div>
+</section>
+</section>
 
 
               </div>
@@ -1000,20 +1004,19 @@ div.rendered_html tbody tr:hover {
       </div>
     </div>
   
-  <script src="../../../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
-
-  <footer class="footer mt-5 mt-md-0">
+  <script src="../../../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+<footer class="footer mt-5 mt-md-0">
   <div class="container">
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2021 PoreSpy Team.<br/>
+    &copy; Copyright 2021 PoreSpy Team.<br>
 </p>
     </div>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.1.2.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br>
 </p>
     </div>
     

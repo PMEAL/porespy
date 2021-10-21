@@ -4,11 +4,12 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Image-based invasion percoalation &#8212; PoreSpy  documentation</title>
     
-  <link href="../../../_static/css/theme.css" rel="stylesheet" />
-  <link href="../../../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+  <link href="../../../_static/css/theme.css" rel="stylesheet">
+  <link href="../../../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
 
     
   <link rel="stylesheet"
@@ -23,13 +24,13 @@
 
     
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/basic.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/blank.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
     
-  <link rel="preload" as="script" href="../../../_static/js/index.1c5a1a01449ed65a7b51.js">
+  <link rel="preload" as="script" href="../../../_static/js/index.be7d3bbb2ef33a8344ce.js">
 
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
@@ -46,7 +47,10 @@
     <link rel="next" title="apply_chords" href="../howtos/apply_chords.html" />
     <link rel="prev" title="SNOW partitioning parallel" href="snow_partitioning_parallel.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="en" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
     
   </head>
   <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
@@ -909,7 +913,7 @@ div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
 </style>
-<div class="section" id="Image-based-invasion-percoalation">
+<section id="Image-based-invasion-percoalation">
 <h1>Image-based invasion percoalation<a class="headerlink" href="#Image-based-invasion-percoalation" title="Permalink to this headline">¶</a></h1>
 <p>This notebook illustrates the use of the image-based invasion percolation algorithm decribed <a class="reference external" href="https://arxiv.org/abs/2101.03240">here</a>.</p>
 <p>Import necessary packages and functions</p>
@@ -928,7 +932,7 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
-<div class="section" id="Generate-test-image">
+<section id="Generate-test-image">
 <h2>Generate test image<a class="headerlink" href="#Generate-test-image" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
@@ -954,8 +958,8 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
-</div>
-<div class="section" id="Apply-IBIP-to-image">
+</section>
+<section id="Apply-IBIP-to-image">
 <h2>Apply IBIP to image<a class="headerlink" href="#Apply-IBIP-to-image" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
@@ -975,8 +979,8 @@ div.rendered_html tbody tr:hover {
 
 </pre></div></div>
 </div>
-</div>
-<div class="section" id="Do-some-post-processing">
+</section>
+<section id="Do-some-post-processing">
 <h2>Do some post-processing<a class="headerlink" href="#Do-some-post-processing" title="Permalink to this headline">¶</a></h2>
 <p>Convert invasion sequence values to saturation, and identify trapped regions:</p>
 <div class="nbinput docutils container">
@@ -999,8 +1003,8 @@ div.rendered_html tbody tr:hover {
 
 </pre></div></div>
 </div>
-</div>
-<div class="section" id="Run-standard-MIO-for-comparison:">
+</section>
+<section id="Run-standard-MIO-for-comparison:">
 <h2>Run standard MIO for comparison:<a class="headerlink" href="#Run-standard-MIO-for-comparison:" title="Permalink to this headline">¶</a></h2>
 <p>Compute the MIO result, convert to sequation and saturation using the functions in <code class="docutils literal notranslate"><span class="pre">porespy.tools</span></code>, and also find trapped regions.</p>
 <div class="nbinput docutils container">
@@ -1027,8 +1031,8 @@ div.rendered_html tbody tr:hover {
 </pre></div></div>
 </div>
 <p>Comparing the invasion configurations between the MIO and IBIP algorithms below suggests that the methods produce similar results when trapping is turned off. In fact, it can be shown that the MIO result is a subset of the IBIP result.</p>
-</div>
-<div class="section" id="Compare-MIO-and-IBIP-at-Equal-Saturations">
+</section>
+<section id="Compare-MIO-and-IBIP-at-Equal-Saturations">
 <h2>Compare MIO and IBIP at Equal Saturations<a class="headerlink" href="#Compare-MIO-and-IBIP-at-Equal-Saturations" title="Permalink to this headline">¶</a></h2>
 <p>The comparison between the two methods can only be done when trapping is neglected. The difference in the trapped defending phase from each method is discussed further below.</p>
 <p>The images below show the saturation fields for both IBIP and MIO.</p>
@@ -1091,8 +1095,8 @@ of a 500 x 500 image. The differences are due to the numerical precision of the 
 <div class="output_area docutils container">
 <img alt="../../../_images/examples_filters_tutorials_using_ibip_19_0.svg" src="../../../_images/examples_filters_tutorials_using_ibip_19_0.svg" /></div>
 </div>
-</div>
-<div class="section" id="Comparing-Capillary-Pressure-Curves">
+</section>
+<section id="Comparing-Capillary-Pressure-Curves">
 <h2>Comparing Capillary Pressure Curves<a class="headerlink" href="#Comparing-Capillary-Pressure-Curves" title="Permalink to this headline">¶</a></h2>
 <p>Converting the invasion configurations to capillary pressure curves is possible using functions provided in the <code class="docutils literal notranslate"><span class="pre">metrics</span></code> module.</p>
 <div class="nbinput docutils container">
@@ -1138,8 +1142,8 @@ of a 500 x 500 image. The differences are due to the numerical precision of the 
 <p>The red line corresponds to the normal ‘porosimetry’ experiment where increasingly high pressures are applied (x-axis) and larger fractions of the void space are filled (y-axis). Each verticle jump in the red curve corresponds to a new region of the image being penetrated because the breakthrough pressure of a constriction was exceed. All the void space beyond this constriction is then filled at once.</p>
 <p>The green line is the result of IBIP and corresponds to volume controlled injection, where fluid is injected at some constant rate. Every data point has a slightly higher saturation than the previous so there are no plateaus of constant saturation. However, the capillary pressure (x-axis) fluctuates up and down seemlingly randomly. This is because the advancing menisci squeeze through small constrictions (higher pressure), then enter into a larger region that was sheilded by the constriction to
 they expand (lower pressure). This process repeats itself through the entire simulation.</p>
-</div>
-<div class="section" id="Compare-results-with-trapping">
+</section>
+<section id="Compare-results-with-trapping">
 <h2>Compare results with trapping<a class="headerlink" href="#Compare-results-with-trapping" title="Permalink to this headline">¶</a></h2>
 <p>One of the key benefits of the IBIP algorithm is that the fluid invades incrememtally instead of in steps. This means the appearance of trapped defending phase is immediately noted. By contrast, the MIO approach computes large changes in saturation, so any trapping that may occur between these large jumps is not resolved. Therefore, only the IBIP method can correctly identify trapped defending phase. This is illustrated below:</p>
 <div class="nbinput docutils container">
@@ -1171,8 +1175,8 @@ they expand (lower pressure). This process repeats itself through the entire sim
 <img alt="../../../_images/examples_filters_tutorials_using_ibip_25_0.svg" src="../../../_images/examples_filters_tutorials_using_ibip_25_0.svg" /></div>
 </div>
 <p>The red color in the right image indicates regions that were invaded by the MIO algorithm, but not by the IBIP algorithm. The MIO will always underestimate trapping.</p>
-</div>
-<div class="section" id="Make-a-movie-of-the-invasion">
+</section>
+<section id="Make-a-movie-of-the-invasion">
 <h2>Make a movie of the invasion<a class="headerlink" href="#Make-a-movie-of-the-invasion" title="Permalink to this headline">¶</a></h2>
 <p>The image below is a sample of the animated output:</p>
 <img alt="https://cdn.substack.com/image/fetch/w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fbucketeer-e05bbc84-baa3-437e-9518-adb32be77984.s3.amazonaws.com%2Fpublic%2Fimages%2Ffdfb8881-2e28-410f-a36b-e0bcb906629b_500x501.gif" src="https://cdn.substack.com/image/fetch/w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fbucketeer-e05bbc84-baa3-437e-9518-adb32be77984.s3.amazonaws.com%2Fpublic%2Fimages%2Ffdfb8881-2e28-410f-a36b-e0bcb906629b_500x501.gif" />
@@ -1185,8 +1189,8 @@ they expand (lower pressure). This process repeats itself through the entire sim
 <span class="n">mov</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">satn_to_movie</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">satn</span><span class="o">=</span><span class="n">inv_satn</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
               </div>
@@ -1198,20 +1202,19 @@ they expand (lower pressure). This process repeats itself through the entire sim
       </div>
     </div>
   
-  <script src="../../../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
-
-  <footer class="footer mt-5 mt-md-0">
+  <script src="../../../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+<footer class="footer mt-5 mt-md-0">
   <div class="container">
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2021 PoreSpy Team.<br/>
+    &copy; Copyright 2021 PoreSpy Team.<br>
 </p>
     </div>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.1.2.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br>
 </p>
     </div>
     

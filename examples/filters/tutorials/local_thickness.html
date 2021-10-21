@@ -4,11 +4,12 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Local thickness &#8212; PoreSpy  documentation</title>
     
-  <link href="../../../_static/css/theme.css" rel="stylesheet" />
-  <link href="../../../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+  <link href="../../../_static/css/theme.css" rel="stylesheet">
+  <link href="../../../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
 
     
   <link rel="stylesheet"
@@ -23,13 +24,13 @@
 
     
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/basic.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/blank.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
     
-  <link rel="preload" as="script" href="../../../_static/js/index.1c5a1a01449ed65a7b51.js">
+  <link rel="preload" as="script" href="../../../_static/js/index.be7d3bbb2ef33a8344ce.js">
 
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
@@ -46,7 +47,10 @@
     <link rel="next" title="SNOW partitioning" href="snow_partitioning.html" />
     <link rel="prev" title="Applying chords to 2D and 3D images" href="adding_chords.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="en" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
     
   </head>
   <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
@@ -889,7 +893,7 @@ div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
 </style>
-<div class="section" id="Local-thickness">
+<section id="Local-thickness">
 <h1>Local thickness<a class="headerlink" href="#Local-thickness" title="Permalink to this headline">¶</a></h1>
 <p>This example explains how to use the <code class="docutils literal notranslate"><span class="pre">local_thickness</span></code> filter to get information about the pore size distribution from an image. The local thickness is probably the closest you can get to an actual pore size distribution. Unlike porosimetry experiments or simulations it is unaffected by artifacts such as edge effects. The implementation in PoreSpy is slightly different than the common approach done in ImageJ, as will be explained below.</p>
 <p>These notebooks were generated with a specific version of Python, PoreSpy, Numpy, etc. For reference to future viewers, the version information is given below. This notebook may or may not work with later versions, but we can assert it works with the version listed below:</p>
@@ -907,7 +911,7 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
-<div class="section" id="Generate-Test-Image">
+<section id="Generate-Test-Image">
 <h2>Generate Test Image<a class="headerlink" href="#Generate-Test-Image" title="Permalink to this headline">¶</a></h2>
 <p>Start by generating an image. We’ll use the RSA generator for fun:</p>
 <div class="nbinput docutils container">
@@ -931,8 +935,8 @@ div.rendered_html tbody tr:hover {
 <div class="output_area docutils container">
 <img alt="../../../_images/examples_filters_tutorials_local_thickness_5_0.svg" src="../../../_images/examples_filters_tutorials_local_thickness_5_0.svg" /></div>
 </div>
-</div>
-<div class="section" id="Apply-Local-Thickness-Filter">
+</section>
+<section id="Apply-Local-Thickness-Filter">
 <h2>Apply Local Thickness Filter<a class="headerlink" href="#Apply-Local-Thickness-Filter" title="Permalink to this headline">¶</a></h2>
 <p>The local thickness filter is called by simply passing in the image. Like all filters in PoreSpy it is applied to the foreground, indicated by 1’s or <code class="docutils literal notranslate"><span class="pre">True</span></code>:</p>
 <div class="nbinput docutils container">
@@ -985,8 +989,8 @@ div.rendered_html tbody tr:hover {
 <div class="output_area docutils container">
 <script type="application/vnd.jupyter.widget-view+json">{"model_id": "1d2f0f71e59f4c7e9f9e9e4ba04caf0d", "version_major": 2, "version_minor": 0}</script></div>
 </div>
-</div>
-<div class="section" id="Extracting-PSD-as-a-Histogram">
+</section>
+<section id="Extracting-PSD-as-a-Histogram">
 <h2>Extracting PSD as a Histogram<a class="headerlink" href="#Extracting-PSD-as-a-Histogram" title="Permalink to this headline">¶</a></h2>
 <p>Obtaining pore size distribution information from this image requires obtaining a histogram of voxel values. A function in the <code class="docutils literal notranslate"><span class="pre">metrics</span></code> module does this for us:</p>
 <div class="nbinput nblast docutils container">
@@ -1045,8 +1049,8 @@ bin_widths                Array of size (10,)
 <div class="output_area docutils container">
 <img alt="../../../_images/examples_filters_tutorials_local_thickness_14_0.svg" src="../../../_images/examples_filters_tutorials_local_thickness_14_0.svg" /></div>
 </div>
-</div>
-<div class="section" id="PoreSpy-Implementation">
+</section>
+<section id="PoreSpy-Implementation">
 <h2>PoreSpy Implementation<a class="headerlink" href="#PoreSpy-Implementation" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">local_thickness</span></code> filter in PoreSpy is implemented differently that the <em>normal</em> approach such as the ImageJ plugin, though the end result is comparible though not identical.</p>
 <p>In our approach, we use a form of image dilation and erosion. We start with a large spherical structuring element, and note all the places where this fits in the pore space. This gives a result like that below for a structuring element of radius R=10:</p>
@@ -1135,8 +1139,8 @@ bin_widths                Array of size (10,)
 <div class="output_area docutils container">
 <img alt="../../../_images/examples_filters_tutorials_local_thickness_26_0.svg" src="../../../_images/examples_filters_tutorials_local_thickness_26_0.svg" /></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
               </div>
@@ -1148,20 +1152,19 @@ bin_widths                Array of size (10,)
       </div>
     </div>
   
-  <script src="../../../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
-
-  <footer class="footer mt-5 mt-md-0">
+  <script src="../../../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+<footer class="footer mt-5 mt-md-0">
   <div class="container">
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2021 PoreSpy Team.<br/>
+    &copy; Copyright 2021 PoreSpy Team.<br>
 </p>
     </div>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.1.2.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br>
 </p>
     </div>
     

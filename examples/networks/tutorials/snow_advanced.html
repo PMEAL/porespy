@@ -4,11 +4,12 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>SNOW network extraction (advanced) &#8212; PoreSpy  documentation</title>
     
-  <link href="../../../_static/css/theme.css" rel="stylesheet" />
-  <link href="../../../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+  <link href="../../../_static/css/theme.css" rel="stylesheet">
+  <link href="../../../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
 
     
   <link rel="stylesheet"
@@ -23,13 +24,13 @@
 
     
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/basic.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/blank.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
     
-  <link rel="preload" as="script" href="../../../_static/js/index.1c5a1a01449ed65a7b51.js">
+  <link rel="preload" as="script" href="../../../_static/js/index.be7d3bbb2ef33a8344ce.js">
 
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
@@ -46,7 +47,10 @@
     <link rel="next" title="SNOW network extraction" href="snow_basic.html" />
     <link rel="prev" title="Adding boundary pores" href="adding_boundary_pores.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="en" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
     
   </head>
   <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
@@ -879,7 +883,7 @@ div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
 </style>
-<div class="section" id="SNOW-network-extraction-(advanced)">
+<section id="SNOW-network-extraction-(advanced)">
 <h1>SNOW network extraction (advanced)<a class="headerlink" href="#SNOW-network-extraction-(advanced)" title="Permalink to this headline">¶</a></h1>
 <p>The SNOW algorithm, <a class="reference external" href="https://doi.org/10.1103/PhysRevE.96.023307">published in Physical Review E</a>, uses a marker-based watershed segmentation algorithm to partition an image into regions belonging to each pore. The main contribution of the SNOW algorithm is to find a suitable set of initial markers in the image so that the watershed is not over-segmented. SNOW is an acronym for Sub-Network of an Over-segmented Watershed. PoreSpy includes a predefined function called <code class="docutils literal notranslate"><span class="pre">snow</span></code> that applies all
 the steps automatically, but this example will illustrate the individual steps explicitly on a 3D image.</p>
@@ -905,7 +909,7 @@ the steps automatically, but this example will illustrate the individual steps e
 </pre></div>
 </div>
 </div>
-<div class="section" id="Generate-artificial-image">
+<section id="Generate-artificial-image">
 <h2>Generate artificial image<a class="headerlink" href="#Generate-artificial-image" title="Permalink to this headline">¶</a></h2>
 <p>One of the main aims when developing the SNOW algorithm was to extract networks from images other than sandstone, which is the main material studied by geoscientists. For this demonstration we’ll use a high porosity (&gt;85%) image of fibrous media.</p>
 <div class="nbinput docutils container">
@@ -925,8 +929,8 @@ the steps automatically, but this example will illustrate the individual steps e
 <div class="output_area docutils container">
 <img alt="../../../_images/examples_networks_tutorials_snow_advanced_6_0.svg" src="../../../_images/examples_networks_tutorials_snow_advanced_6_0.svg" /></div>
 </div>
-</div>
-<div class="section" id="Step-by-step-application-of-the-SNOW-algorithm">
+</section>
+<section id="Step-by-step-application-of-the-SNOW-algorithm">
 <h2>Step-by-step application of the SNOW algorithm<a class="headerlink" href="#Step-by-step-application-of-the-SNOW-algorithm" title="Permalink to this headline">¶</a></h2>
 <p>Fist let’s find all the peaks of the distance transform which are theoretically suppose to lie at the center of each pore region. In reality this process finds too many peaks, but we’ll deal with this later.</p>
 <div class="nbinput nblast docutils container">
@@ -1059,9 +1063,9 @@ Peaks after trimming nearby peaks:  532
 </div>
 </div>
 <p>Finally, you can open both the tif image and the vtk file containing the network in paraview. After some fine tuning, you should be able to see something like the following:</p>
-<p><img alt="c0ad15b261a34813bc88b579d528b473" class="no-scaled-link" src="https://user-images.githubusercontent.com/14086031/113048590-b68d2480-9170-11eb-9c10-06e6d53ee95d.png" style="width: 350px;" /></p>
-</div>
-</div>
+<p><img alt="384a7cc746fa4eacbe2d135f6091864a" class="no-scaled-link" src="https://user-images.githubusercontent.com/14086031/113048590-b68d2480-9170-11eb-9c10-06e6d53ee95d.png" style="width: 350px;" /></p>
+</section>
+</section>
 
 
               </div>
@@ -1073,20 +1077,19 @@ Peaks after trimming nearby peaks:  532
       </div>
     </div>
   
-  <script src="../../../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
-
-  <footer class="footer mt-5 mt-md-0">
+  <script src="../../../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+<footer class="footer mt-5 mt-md-0">
   <div class="container">
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2021 PoreSpy Team.<br/>
+    &copy; Copyright 2021 PoreSpy Team.<br>
 </p>
     </div>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.1.2.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br>
 </p>
     </div>
     
