@@ -2,10 +2,14 @@ import os
 import sys
 import numpy as np
 import importlib
+from auto_all import start_all, end_all
 from dataclasses import dataclass
 from loguru import logger
 from tqdm import tqdm
 import psutil
+
+
+start_all()  # All functions below here, and above end_all() will be imported
 
 
 def _is_ipython_notebook():  # pragma: no cover
@@ -286,3 +290,6 @@ class Results:
                 lines.append("{0:<25s} {1}".format(item, self[item]))
         lines.append(header)
         return "\n".join(lines)
+
+
+end_all()  # All functions aove here, and below start_all() will be imported

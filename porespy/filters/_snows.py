@@ -1,6 +1,7 @@
 import dask.array as da
 import inspect as insp
 import numpy as np
+from auto_all import start_all, end_all
 from numba import njit, prange
 from edt import edt
 import scipy.ndimage as spim
@@ -13,6 +14,9 @@ from porespy.tools import Results
 from porespy.filters import chunked_func
 from porespy import settings
 from loguru import logger
+
+
+start_all()
 
 
 def snow_partitioning(im, dt=None, r_max=4, sigma=0.4):
@@ -942,3 +946,6 @@ def _snow_chunked(dt, r_max=5, sigma=0.4):
     peaks, N = spim.label(peaks)
     regions = watershed(image=-dt2, markers=peaks)
     return regions * (dt > 0)
+
+
+end_all()

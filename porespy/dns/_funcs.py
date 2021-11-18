@@ -1,11 +1,13 @@
 import numpy as np
 import openpnm as op
+from auto_all import start_all, end_all
 from porespy.filters import trim_nonpercolating_paths
 from porespy.tools import Results
 from loguru import logger
 from porespy.generators import faces
 
 ws = op.Workspace()
+start_all()  # All functions below here, and above end_all() will be imported
 
 
 def tortuosity(im, axis):
@@ -99,3 +101,6 @@ def tortuosity(im, axis):
     ws.close_project(net.project)
 
     return result
+
+
+end_all()  # All functions aove here, and below start_all() will be imported

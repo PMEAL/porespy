@@ -34,16 +34,7 @@ debugging, and illustration purposes.
 
 """
 
-from ._imgen import blobs
-from ._imgen import bundle_of_tubes
-from ._imgen import cylinders
-from ._imgen import insert_shape
-from ._imgen import lattice_spheres
-from ._imgen import line_segment
-from ._imgen import overlapping_spheres
-from ._imgen import polydisperse_spheres
-from ._imgen import RSA
-from ._imgen import voronoi_edges
+from ._imgen import *
 from ._pseudo_packings import pseudo_gravity_packing
 from ._pseudo_packings import pseudo_electrostatic_packing
 from ._cylinder import cylindrical_plug

@@ -1,6 +1,10 @@
 import numpy as np
+from auto_all import start_all, end_all
 from porespy.tools import make_contiguous
 from scipy.stats import rankdata
+
+
+start_all()
 
 
 def size_to_seq(size, im=None, bins=None):
@@ -133,3 +137,6 @@ def seq_to_satn(seq, im=None):
     satn[solid_mask] = 0
     satn[uninvaded_mask] = -1
     return satn
+
+
+end_all()

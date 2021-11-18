@@ -1,5 +1,6 @@
 import numpy as np
 import scipy.ndimage as spim
+from auto_all import start_all, end_all
 from trimesh import Trimesh
 from porespy.tools import extend_slice, ps_round
 from porespy.tools import _check_for_singleton_axes, Results
@@ -8,7 +9,10 @@ from skimage import measure
 from porespy.tools import get_tqdm
 from loguru import logger
 from porespy import settings
+
+
 tqdm = get_tqdm()
+start_all()  # All functions below here, and above end_all() will be imported
 
 
 def region_volumes(regions, mode='marching_cubes'):
@@ -255,3 +259,6 @@ def region_interface_areas(regions, areas, voxel_size=1, strel=None):
     result.conns = cn
     result.area = ia * voxel_size**2
     return result
+
+
+end_all()  # All functions aove here, and below start_all() will be imported

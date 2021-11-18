@@ -1,15 +1,20 @@
 import numpy as np
 import inspect as insp
 from edt import edt
-import porespy as ps
 from numba import njit
+from auto_all import start_all, end_all
 import scipy.spatial as sptl
 import scipy.ndimage as spim
 from porespy.tools import norm_to_uniform, ps_ball, ps_disk, get_border
+from porespy.tools import get_tqdm
+from porespy.metrics import porosity as _porosity
 from porespy import settings
 from typing import List
 from loguru import logger
-tqdm = ps.tools.get_tqdm()
+tqdm = get_tqdm()
+
+
+start_all()
 
 
 def insert_shape(im, element, center=None, corner=None, value=1, mode="overwrite"):
@@ -800,6 +805,7 @@ def blobs(shape: List[int], porosity: float = 0.5, blobiness: int = 1,
     to view online example.
 
     """
+    from porespy.filters import chunked_func
     if isinstance(shape, int):
         shape = [shape]*3
     if len(shape) == 1:
@@ -818,9 +824,9 @@ def blobs(shape: List[int], porosity: float = 0.5, blobiness: int = 1,
     im = np.random.random(shape)
     if parallel:
         overlap = max([int(s*4) for s in sigma])
-        im = ps.filters.chunked_func(func=spim.gaussian_filter,
-                                     input=im, sigma=sigma,
-                                     divs=divs, overlap=overlap)
+        im = chunked_func(func=spim.gaussian_filter,
+                          input=im, sigma=sigma,
+                          divs=divs, overlap=overlap)
     else:
         im = spim.gaussian_filter(im, sigma=sigma)
     im = norm_to_uniform(im, scale=[0, 1])
@@ -1066,7 +1072,7 @@ def cylinders(shape: List[int],
                                  verbose=False)
         n_fibers_added += n_fibers
         # Update parameters for next iteration
-        porosity = ps.metrics.porosity(im)
+        porosity = _porosity(im)
         vol_added = get_num_pixels(porosity)
         vol_fiber = vol_added / n_fibers_added
 
@@ -1113,3 +1119,6 @@ def line_segment(X0, X1):
         x = np.rint(np.linspace(X0[0], X1[0], L)).astype(int)
         y = np.rint(np.linspace(X0[1], X1[1], L)).astype(int)
         return [x, y]
+
+
+end_all()

@@ -1,5 +1,6 @@
 import numpy as np
 from edt import edt
+from auto_all import start_all, end_all
 from porespy.tools import get_tqdm
 import scipy.ndimage as spim
 from porespy.tools import get_border, make_contiguous
@@ -7,6 +8,8 @@ from porespy.tools import Results
 import numba
 from porespy import settings
 tqdm = get_tqdm()
+
+start_all()
 
 
 def ibip(im, inlets=None, dt=None, maxiter=10000):
@@ -309,3 +312,6 @@ def find_trapped_regions(seq, outlets=None, bins=25, return_mask=True):
         seq[trapped] = -1
         seq = make_contiguous(seq, mode='symmetric')
         return seq
+
+
+end_all()

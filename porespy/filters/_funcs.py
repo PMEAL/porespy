@@ -2,6 +2,7 @@ import inspect as insp
 import dask
 import numpy as np
 from edt import edt
+from auto_all import start_all, end_all
 import operator as op
 import scipy.ndimage as spim
 from skimage.morphology import reconstruction
@@ -15,6 +16,9 @@ from porespy import settings
 from porespy.tools import get_tqdm
 from loguru import logger
 tqdm = get_tqdm()
+
+
+start_all()
 
 
 def apply_padded(im, pad_width, func, pad_val=1, **kwargs):
@@ -1388,3 +1392,6 @@ def chunked_func(func,
     # Finally, put the pieces back together into a single master image, im2
     im2 = recombine(ims=ims, slices=slices, overlap=overlap)
     return im2
+
+
+end_all()
