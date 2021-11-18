@@ -35,10 +35,7 @@ debugging, and illustration purposes.
 """
 
 from ._imgen import *
-from ._pseudo_packings import pseudo_gravity_packing
-from ._pseudo_packings import pseudo_electrostatic_packing
-from ._cylinder import cylindrical_plug
+from ._pseudo_packings import *
 from ._noise import fractal_noise
 from ._borders import *
-from ._fractals import random_cantor_dust
-from ._fractals import sierpinski_foam
+from ._fractals import *

@@ -10,6 +10,12 @@ from loguru import logger
 tqdm = get_tqdm()
 
 
+__all__ = [
+    'pseudo_gravity_packing',
+    'pseudo_electrostatic_packing',
+    ]
+
+
 @numba.jit(nopython=True, parallel=False)
 def insert_disks_at_points(im, coords, radii, v, smooth=True):
     r"""
@@ -233,3 +239,6 @@ def pseudo_electrostatic_packing(im, r, sites=None,
         dt = insert_disks_at_points(dt, coords=cen,
                                     radii=np.array([2*r-clearance]), v=int(dtmax))
     return im_temp
+
+
+end_all()

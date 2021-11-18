@@ -1081,6 +1081,162 @@ def cylinders(shape: List[int],
     return im
 
 
+def cylindrical_plug(shape, r=None, axis=2):
+    r"""
+    Generates a cylindrical plug suitable for use as a mask on a tomogram
+
+    Parameters
+    ----------
+    shape : array_like
+        The shape of the image to create.  Can be 3D, or 2D in which case
+        a circle is returned.
+    r : int (optional)
+        The diameter of the cylinder to create. If not provided then the
+        largest possible radius is used to fit within the image.
+    axis : int
+        The direction along with the cylinder's axis of rotation should be
+        oriented.  The default is 2, which is the z-direction.
+
+    Returns
+    -------
+    cylinder : ndarray
+        A boolean image of the size given by ``shape`` with ``True``'s
+        inside the cylinder and ``False``'s outside.
+
+    """
+    shape = np.array(shape, dtype=int)
+    if len(shape) == 3:
+        axes = np.array(list(set([0, 1, 2]).difference(set([axis]))), dtype=int)
+        im2d = np.ones(shape=shape[axes])
+        im2d[int(shape[axes[0]]/2), int(shape[axes[1]]/2)] = 0
+        dt = edt(im2d)
+        if r is None:
+            r = int(min(shape[axes])/2)
+        circ = dt < r
+        tile_ax = [1, 1, 1]
+        tile_ax[axis] = shape[axis]
+        circ = np.expand_dims(circ, axis)
+        cyl = np.tile(circ, tile_ax)
+    if len(shape) == 2:
+        im2d = np.ones(shape=shape)
+        im2d[int(shape[0]/2), int(shape[1]/2)] = 0
+        dt = edt(im2d)
+        if r is None:
+            r = int(min(shape[axes])/2)
+        cyl = dt < r
+    return cyl
+
+
+def faces(shape, inlet=None, outlet=None):
+    r"""
+    Generate an image with ``True`` values on the specified ``inlet`` and
+    ``outlet`` faces
+
+    Parameters
+    ----------
+    shape : list
+        The ``[x, y, z (optional)]`` shape to generate. This will likely
+        be obtained from ``im.shape`` where ``im`` is the image for which
+        an array of faces is required.
+    inlet : int
+        The axis where the faces should be added (e.g. ``inlet=0`` will
+        put ``True`` values on the ``x=0`` face). A value of ``None``
+        (default) bypasses the addition of inlets.
+    outlet : int
+        Same as ``inlet`` except for the outlet face. This is optional. It
+        can be be applied at the same time as ``inlet``, instead of
+        ``inlet`` (if ``inlet`` is set to ``None``), or ignored
+        (if ``outlet = None``).
+
+    Returns
+    -------
+    faces : ndarray
+        A boolean image of the given ``shape`` with ``True`` values on the
+        specified ``inlet`` and/or ``outlet`` face(s).
+
+    """
+    im = np.zeros(shape, dtype=bool)
+    # Parse inlet and outlet
+    if inlet is not None:
+        im = np.swapaxes(im, 0, inlet)
+        im[0, ...] = True
+        im = np.swapaxes(im, 0, inlet)
+    if outlet is not None:
+        im = np.swapaxes(im, 0, outlet)
+        im[-1, ...] = True
+        im = np.swapaxes(im, 0, outlet)
+    if (inlet is None) and (outlet is None):
+        raise Exception('Both inlet and outlet were given as None')
+    return im
+
+
+def borders(shape, thickness=1, mode='edges'):
+    r"""
+    Creates an array of specified size with corners, edges or faces
+    labelled as ``True``.
+
+    This can be used as mask to manipulate values laying on the perimeter
+    of an image.
+
+    Parameters
+    ----------
+    shape : array_like
+        The shape of the array to return.  Can be either 2D or 3D.
+    thickness : scalar (default is 1)
+        The number of pixels/voxels layers to place along perimeter.
+    mode : string
+        The type of border to create.  Options are 'faces', 'edges'
+        (default) and 'corners'.  In 2D 'corners' and 'edges' give the
+        same result.
+
+    Returns
+    -------
+    image : ndarray
+        An ndarray of specified shape with ``True`` values at the
+        perimeter and ``False`` elsewhere
+
+    Examples
+    --------
+    >>> import porespy as ps
+    >>> mask = ps.tools.get_border(shape=[3, 3], mode='corners')
+    >>> print(mask)
+    [[ True False  True]
+     [False False False]
+     [ True False  True]]
+    >>> mask = ps.tools.get_border(shape=[3, 3], mode='faces')
+    >>> print(mask)
+    [[ True  True  True]
+     [ True False  True]
+     [ True  True  True]]
+
+    """
+    ndims = len(shape)
+    t = thickness
+    border = np.ones(shape, dtype=bool)
+    if mode == 'faces':
+        if ndims == 2:
+            border[t:-t, t:-t] = False
+        if ndims == 3:
+            border[t:-t, t:-t, t:-t] = False
+    elif mode == 'edges':
+        if ndims == 2:
+            border[t:-t, 0::] = False
+            border[0::, t:-t] = False
+        if ndims == 3:
+            border[0::, t:-t, t:-t] = False
+            border[t:-t, 0::, t:-t] = False
+            border[t:-t, t:-t, 0::] = False
+    elif mode == 'corners':
+        if ndims == 2:
+            border[t:-t, 0::] = False
+            border[0::, t:-t] = False
+        if ndims == 3:
+            border[t:-t, 0::, 0::] = False
+            border[0::, t:-t, 0::] = False
+            border[0::, 0::, t:-t] = False
+    return border
+
+
 def line_segment(X0, X1):
     r"""
     Calculate the voxel coordinates of a straight line between the two

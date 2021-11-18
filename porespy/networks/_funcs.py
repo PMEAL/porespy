@@ -1,6 +1,7 @@
 import numpy as np
 import openpnm as op
 import scipy.ndimage as spim
+from auto_all import start_all, end_all
 from skimage.segmentation import find_boundaries
 from skimage.morphology import ball, cube, disk, square
 from porespy.tools import make_contiguous
@@ -11,6 +12,9 @@ from porespy import settings
 from porespy.tools import get_tqdm
 from loguru import logger
 tqdm = get_tqdm()
+
+
+start_all()
 
 
 def map_to_regions(regions, values):
@@ -333,3 +337,6 @@ def label_boundaries(
                 network['pore.boundary'] += hits
                 network['pore.' + labels[i][j]] = hits
     return network
+
+
+end_all()

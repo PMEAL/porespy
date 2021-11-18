@@ -6,6 +6,12 @@ from loguru import logger
 tqdm = get_tqdm()
 
 
+__all__ = [
+    'random_cantor_dust',
+    'sierpinski_foam',
+    ]
+
+
 def random_cantor_dust(shape, n, p=2, f=0.8):
     r"""
     Generates an image of random cantor dust
