@@ -35,6 +35,6 @@ __all__ = [
     "show_mesh",
     "set_mpl_style"]
 
-from ._views import sem, show_planes, xray, show_3D
-from ._plots import imshow, bar, show_mesh
-from ._funcs import set_mpl_style, satn_to_movie
+from ._views import *
+from ._plots import *
+from ._funcs import *

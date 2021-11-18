@@ -1,10 +1,14 @@
 import porespy as ps
 import matplotlib.pyplot as plt
+from auto_all import start_all, end_all
 import numpy as np
 from tqdm import tqdm
 from matplotlib import animation
 from copy import copy
 from porespy import settings
+
+
+start_all()
 
 
 def set_mpl_style():  # pragma: no cover
@@ -88,3 +92,6 @@ def satn_to_movie(im, satn, cmap='viridis',
                                     blit=True, repeat=repeat,
                                     repeat_delay=1.0)
     return ani
+
+
+end_all()

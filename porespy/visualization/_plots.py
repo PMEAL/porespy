@@ -1,6 +1,10 @@
 import numpy as np
+from auto_all import start_all, end_all
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+
+
+start_all()
 
 
 def bar(results, h='pdf', **kwargs):  # pragma: no cover
@@ -124,3 +128,6 @@ def show_mesh(mesh):  # pragma: no cover
     ax.set_zlim(lim_min[2], lim_max[2])
 
     return fig
+
+
+end_all()

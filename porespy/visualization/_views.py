@@ -1,7 +1,11 @@
 import numpy as np
 import scipy.ndimage as spim
+from auto_all import start_all, end_all
 # import matplotlib.pyplot as plt
 # from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+
+
+start_all()
 
 
 def show_3D(im):  # pragma: no cover
@@ -153,3 +157,6 @@ def xray(im, axis=0):  # pragma: no cover
         im = np.transpose(im, axes=[2, 1, 0])
     im = np.sum(im, axis=0)
     return im
+
+
+end_all()

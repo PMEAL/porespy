@@ -2,6 +2,7 @@ import os
 import imageio
 import subprocess
 import numpy as np
+from auto_all import start_all, end_all
 from stl import mesh
 import scipy.ndimage as nd
 import skimage.measure as ms
@@ -11,6 +12,9 @@ from porespy.filters import reduce_peaks
 from pyevtk.hl import imageToVTK
 from skimage.morphology import ball
 from edt import edt
+
+
+start_all()
 
 
 def dict_to_vtk(data, filename, voxel_size=1, origin=(0, 0, 0)):
@@ -482,3 +486,6 @@ def spheres_to_comsol(filename, im=None, centers=None, radii=None):
         centers = np.vstack(np.where(peaks)).T
         radii = dt[tuple(centers.T)].astype(int)
     _save_to_comsol(filename, centers, radii)
+
+
+end_all()
