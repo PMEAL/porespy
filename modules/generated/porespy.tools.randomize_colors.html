@@ -4,7 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>randomize_colors &#8212; PoreSpy  documentation</title>
     
@@ -23,8 +23,8 @@
       
 
     
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/blank.css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/css/blank.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
@@ -32,7 +32,7 @@
     
   <link rel="preload" as="script" href="../../_static/js/index.be7d3bbb2ef33a8344ce.js">
 
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
@@ -884,8 +884,8 @@
   <section id="randomize-colors">
 <h1>randomize_colors<a class="headerlink" href="#randomize-colors" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="porespy.tools.randomize_colors">
-<span class="sig-name descname"><span class="pre">randomize_colors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_vals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/tools/_funcs.html#randomize_colors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.tools.randomize_colors" title="Permalink to this definition">¶</a></dt>
+<dt id="porespy.tools.randomize_colors">
+<code class="sig-name descname"><span class="pre">randomize_colors</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_vals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/tools/_funcs.html#randomize_colors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.tools.randomize_colors" title="Permalink to this definition">¶</a></dt>
 <dd><p>Takes a greyscale image and randomly shuffles the greyscale values, so that
 all voxels labeled X will be labelled Y, and all voxels labeled Y will be
 labeled Z, where X, Y, Z and so on are randomly selected from the values
@@ -894,7 +894,7 @@ in the input image.</p>
 neighboring regions that are only incrementally different from each other,
 such as that returned by <cite>scipy.ndimage.label</cite>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>im</strong> (<em>array_like</em>) – An ND image of greyscale values.</p></li>
 <li><p><strong>keep_vals</strong> (<em>array_like</em>) – Indicate which voxel values should NOT be altered.  The default is
@@ -902,12 +902,12 @@ such as that returned by <cite>scipy.ndimage.label</cite>.</p>
 untouched.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>image</strong> – An image the same size and type as <code class="docutils literal notranslate"><span class="pre">im</span></code> but with the greyscale values
 reassigned.  The unique values in both the input and output images will
 be identical.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>ndarray</p>
 </dd>
 </dl>
@@ -961,7 +961,7 @@ but this can be controlled using the <cite>keep_vals</cite> argument.</p>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br>
 </p>
     </div>
     

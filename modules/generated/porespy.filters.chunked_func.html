@@ -4,7 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>chunked_func &#8212; PoreSpy  documentation</title>
     
@@ -23,8 +23,8 @@
       
 
     
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/blank.css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/css/blank.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
@@ -32,7 +32,7 @@
     
   <link rel="preload" as="script" href="../../_static/js/index.be7d3bbb2ef33a8344ce.js">
 
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
@@ -884,8 +884,8 @@
   <section id="chunked-func">
 <h1>chunked_func<a class="headerlink" href="#chunked-func" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="porespy.filters.chunked_func">
-<span class="sig-name descname"><span class="pre">chunked_func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overlap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">divs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">im_arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['input',</span> <span class="pre">'image',</span> <span class="pre">'im']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strel_arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['strel',</span> <span class="pre">'structure',</span> <span class="pre">'footprint']</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/filters/_funcs.html#chunked_func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.chunked_func" title="Permalink to this definition">¶</a></dt>
+<dt id="porespy.filters.chunked_func">
+<code class="sig-name descname"><span class="pre">chunked_func</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overlap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">divs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">im_arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['input',</span> <span class="pre">'image',</span> <span class="pre">'im']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strel_arg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['strel',</span> <span class="pre">'structure',</span> <span class="pre">'footprint']</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/filters/_funcs.html#chunked_func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.chunked_func" title="Permalink to this definition">¶</a></dt>
 <dd><p>Performs the specfied operation “chunk-wise” in parallel using <code class="docutils literal notranslate"><span class="pre">dask</span></code>.</p>
 <p>This can be used to save memory by doing one chunk at a time
 (<code class="docutils literal notranslate"><span class="pre">cores=1</span></code>) or to increase computation speed by spreading the work
@@ -894,7 +894,7 @@ across multiple cores (e.g. <code class="docutils literal notranslate"><span cla
 structuring element of some sort, since this implies that the
 operation is local and can be chunked.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>func</strong> (<em>function handle</em>) – The function which should be applied to each chunk, such as
 <code class="docutils literal notranslate"><span class="pre">spipy.ndimage.binary_dilation</span></code>.</p></li>
@@ -924,12 +924,12 @@ Note that PoreSpy will fetch the image from this list of keywords
 using the value provided to <code class="docutils literal notranslate"><span class="pre">im_arg</span></code>.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>result</strong> – An image the same size as the input image, with the specified
 filter applied as though done on a single large image. There
 should be <em>no</em> difference.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>ndarray</p>
 </dd>
 </dl>
@@ -944,7 +944,7 @@ specify <code class="docutils literal notranslate"><span class="pre">overlap</sp
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><code class="xref py py-obj docutils literal notranslate"><span class="pre">scikit-image.util.apply_parallel</span></code></p>
-</div>
+</aside>
 <p class="rubric">Examples</p>
 <p><a class="reference external" href="https://porespy.org/examples/filters/howtos/chunked_func.html">Click here</a>
 to view online example.</p>
@@ -974,7 +974,7 @@ to view online example.</p>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br>
 </p>
     </div>
     

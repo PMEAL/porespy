@@ -4,7 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>apply_chords &#8212; PoreSpy  documentation</title>
     
@@ -23,8 +23,8 @@
       
 
     
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/blank.css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/css/blank.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
@@ -32,7 +32,7 @@
     
   <link rel="preload" as="script" href="../../_static/js/index.be7d3bbb2ef33a8344ce.js">
 
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
@@ -884,11 +884,11 @@
   <section id="apply-chords">
 <h1>apply_chords<a class="headerlink" href="#apply-chords" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="porespy.filters.apply_chords">
-<span class="sig-name descname"><span class="pre">apply_chords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spacing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trim_edges</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/filters/_funcs.html#apply_chords"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.apply_chords" title="Permalink to this definition">¶</a></dt>
+<dt id="porespy.filters.apply_chords">
+<code class="sig-name descname"><span class="pre">apply_chords</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spacing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trim_edges</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/filters/_funcs.html#apply_chords"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.apply_chords" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adds chords to the void space in the specified direction.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>im</strong> (<em>ndarray</em>) – An image of the porous material with void marked as <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
 <li><p><strong>spacing</strong> (<em>int</em>) – Separation between chords.  The default is 1 voxel.  This can be
@@ -904,17 +904,17 @@ the same value.  This is automatically set to <code class="docutils literal notr
 is 0, but is <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>image</strong> – A copy of <code class="docutils literal notranslate"><span class="pre">im</span></code> with non-zero values indicating the chords.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>ndarray</p>
 </dd>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><a class="reference internal" href="porespy.filters.apply_chords_3D.html#porespy.filters.apply_chords_3D" title="porespy.filters.apply_chords_3D"><code class="xref py py-obj docutils literal notranslate"><span class="pre">apply_chords_3D</span></code></a></p>
-</div>
+</aside>
 <p class="rubric">Examples</p>
 <p><a class="reference external" href="https://porespy.org/examples/filters/howtos/apply_chords.html">Click here</a>
 to view online example.</p>
@@ -944,7 +944,7 @@ to view online example.</p>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br>
 </p>
     </div>
     

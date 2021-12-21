@@ -4,7 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>radial_density_distribution &#8212; PoreSpy  documentation</title>
     
@@ -23,8 +23,8 @@
       
 
     
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/blank.css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/css/blank.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
@@ -32,15 +32,15 @@
     
   <link rel="preload" as="script" href="../../_static/js/index.be7d3bbb2ef33a8344ce.js">
 
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "tex2jax_ignore|mathjax_ignore|document", "processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <script src="../../_static/js/custom.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -886,8 +886,8 @@
   <section id="radial-density-distribution">
 <h1>radial_density_distribution<a class="headerlink" href="#radial-density-distribution" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="porespy.metrics.radial_density_distribution">
-<span class="sig-name descname"><span class="pre">radial_density_distribution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voxel_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/metrics/_funcs.html#radial_density_distribution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.metrics.radial_density_distribution" title="Permalink to this definition">¶</a></dt>
+<dt id="porespy.metrics.radial_density_distribution">
+<code class="sig-name descname"><span class="pre">radial_density_distribution</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voxel_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/metrics/_funcs.html#radial_density_distribution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.metrics.radial_density_distribution" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes radial density function by analyzing the histogram of voxel
 values in the distance transform.  This function is defined by
 Torquato [1] as:</p>
@@ -906,7 +906,7 @@ to a probability density function (<em>pdf</em>)</p>
 <p>which gives the fraction of pore-space with a radius larger than <em>r</em>. This
 is equivalent to the cumulative distribution function (<em>cdf</em>).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>dt</strong> (<em>ndarray</em>) – A distance transform of the pore space (the <code class="docutils literal notranslate"><span class="pre">edt</span></code> package is
 recommended).  Note that it is recommended to apply
@@ -926,7 +926,7 @@ Note that you should not anti-log the radii values in the retunred
 user can apply the scaling to the returned results after the fact.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><p><strong>result</strong> – A custom object with the following data added as named attributes:</p>
 <dl class="simple">
 <dt><em>R</em> or <em>LogR</em></dt><dd><p>Radius, equivalent to <code class="docutils literal notranslate"><span class="pre">bin_centers</span></code></p>
@@ -946,7 +946,7 @@ the number of bins</p>
 </dl>
 </p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Results object</p>
 </dd>
 </dl>
@@ -987,7 +987,7 @@ to view online example.</p>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br>
 </p>
     </div>
     

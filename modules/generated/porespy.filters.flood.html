@@ -4,7 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>flood &#8212; PoreSpy  documentation</title>
     
@@ -23,8 +23,8 @@
       
 
     
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/blank.css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/css/blank.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
@@ -32,7 +32,7 @@
     
   <link rel="preload" as="script" href="../../_static/js/index.be7d3bbb2ef33a8344ce.js">
 
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
@@ -884,15 +884,15 @@
   <section id="flood">
 <h1>flood<a class="headerlink" href="#flood" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="porespy.filters.flood">
-<span class="sig-name descname"><span class="pre">flood</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'max'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/filters/_funcs.html#flood"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.flood" title="Permalink to this definition">¶</a></dt>
+<dt id="porespy.filters.flood">
+<code class="sig-name descname"><span class="pre">flood</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'max'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/filters/_funcs.html#flood"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.flood" title="Permalink to this definition">¶</a></dt>
 <dd><p>Floods/fills each region in an image with a single value based on the
 specific values in that region.</p>
 <p>This function calls the various functions in <code class="docutils literal notranslate"><span class="pre">scipy.ndimage.measurements</span></code>
 but instead of returning a list of values, it fills each region with its
 value.  This is useful for visualization and statistics.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>im</strong> (<em>array_like</em>) – An image with the numerical values of interest in each voxel,
 and 0’s elsewhere.</p></li>
@@ -926,18 +926,18 @@ in <code class="docutils literal notranslate"><span class="pre">im</span></code>
 </p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>flooded</strong> – A copy of <code class="docutils literal notranslate"><span class="pre">im</span></code> with new values placed in each forground voxel
 based on the <code class="docutils literal notranslate"><span class="pre">mode</span></code>.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>ndarray</p>
 </dd>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><code class="xref py py-obj docutils literal notranslate"><span class="pre">prop_to_image</span></code>, <a class="reference internal" href="porespy.filters.flood_func.html#porespy.filters.flood_func" title="porespy.filters.flood_func"><code class="xref py py-obj docutils literal notranslate"><span class="pre">flood_func</span></code></a>, <a class="reference internal" href="porespy.filters.region_size.html#porespy.filters.region_size" title="porespy.filters.region_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">region_size</span></code></a></p>
-</div>
+</aside>
 <p class="rubric">Examples</p>
 <p><a class="reference external" href="https://porespy.org/examples/filters/howtos/flood.html">Click here</a>
 to view online example.</p>
@@ -967,7 +967,7 @@ to view online example.</p>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br>
 </p>
     </div>
     

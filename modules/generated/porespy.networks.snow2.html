@@ -4,7 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>snow2 &#8212; PoreSpy  documentation</title>
     
@@ -23,8 +23,8 @@
       
 
     
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/blank.css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/css/blank.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
@@ -32,7 +32,7 @@
     
   <link rel="preload" as="script" href="../../_static/js/index.be7d3bbb2ef33a8344ce.js">
 
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
@@ -884,13 +884,13 @@
   <section id="snow2">
 <h1>snow2<a class="headerlink" href="#snow2" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="porespy.networks.snow2">
-<span class="sig-name descname"><span class="pre">snow2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phases</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase_alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accuracy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'standard'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voxel_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parallelization</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/networks/_snow2.html#snow2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.networks.snow2" title="Permalink to this definition">¶</a></dt>
+<dt id="porespy.networks.snow2">
+<code class="sig-name descname"><span class="pre">snow2</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phases</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase_alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accuracy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'standard'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voxel_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parallelization</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/networks/_snow2.html#snow2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.networks.snow2" title="Permalink to this definition">¶</a></dt>
 <dd><p>Applies the SNOW algorithm to each phase indicated in <code class="docutils literal notranslate"><span class="pre">phases</span></code>.</p>
-<p>This function is a combination of <code class="docutils literal notranslate"><span class="pre">snow</span></code> <a class="footnote-reference brackets" href="#id5" id="id1">1</a>, <code class="docutils literal notranslate"><span class="pre">snow_dual</span></code> <a class="footnote-reference brackets" href="#id6" id="id2">2</a>,
-<code class="docutils literal notranslate"><span class="pre">snow_n</span></code> <a class="footnote-reference brackets" href="#id7" id="id3">3</a>, and <code class="docutils literal notranslate"><span class="pre">snow_parallel</span></code> <a class="footnote-reference brackets" href="#id8" id="id4">4</a> from previous versions.</p>
+<p>This function is a combination of <code class="docutils literal notranslate"><span class="pre">snow</span></code> <a class="footnote-reference brackets" href="#footnote-1" id="footnote-reference-1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>, <code class="docutils literal notranslate"><span class="pre">snow_dual</span></code> <a class="footnote-reference brackets" href="#footnote-2" id="footnote-reference-2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>,
+<code class="docutils literal notranslate"><span class="pre">snow_n</span></code> <a class="footnote-reference brackets" href="#footnote-3" id="footnote-reference-3" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>, and <code class="docutils literal notranslate"><span class="pre">snow_parallel</span></code> <a class="footnote-reference brackets" href="#footnote-4" id="footnote-reference-4" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a> from previous versions.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>phases</strong> (<em>ndarray</em>) – An image indicating the phase(s) of interest. A watershed is
 produced for each integer value in <code class="docutils literal notranslate"><span class="pre">phases</span></code> (except 0’s). These
@@ -960,7 +960,7 @@ To disable parallelization pass <code class="docutils literal notranslate"><span
 invoke the standard <code class="docutils literal notranslate"><span class="pre">snow_partitioning</span></code> or <code class="docutils literal notranslate"><span class="pre">snow_partitioning_n</span></code>.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><p><strong>network</strong> – A custom object is returned with the following data added as attributes:</p>
 <ul class="simple">
 <li><dl class="simple">
@@ -983,37 +983,39 @@ OpenPNM format (‘pore.coords’, ‘throat.conns’, etc).</p>
 </ul>
 </p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Results object</p>
 </dd>
 </dl>
 <p class="rubric">References</p>
-<dl class="footnote brackets">
-<dt class="label" id="id5"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
-<dd><p>Gostick JT. Versatile and efficient pore network extraction
+<aside class="footnote brackets" id="footnote-1" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#footnote-reference-1">1</a><span class="fn-bracket">]</span></span>
+<p>Gostick JT. Versatile and efficient pore network extraction
 method using marker-based watershed segmentation. Phys. Rev. E. 96,
 023307 (2017)</p>
-</dd>
-<dt class="label" id="id6"><span class="brackets"><a class="fn-backref" href="#id2">2</a></span></dt>
-<dd><p>Khan ZA, Tranter TG, Agnaou M, Elkamel A, and Gostick JT, Dual
+</aside>
+<aside class="footnote brackets" id="footnote-2" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#footnote-reference-2">2</a><span class="fn-bracket">]</span></span>
+<p>Khan ZA, Tranter TG, Agnaou M, Elkamel A, and Gostick JT, Dual
 network extraction algorithm to investigate multiple transport
 processes in porous materials: Image-based modeling of pore and
 grain-scale processes. Computers and Chemical Engineering. 123(6),
 64-77 (2019)</p>
-</dd>
-<dt class="label" id="id7"><span class="brackets"><a class="fn-backref" href="#id3">3</a></span></dt>
-<dd><p>Khan ZA, García-Salaberri PA, Heenan T, Jervis R, Shearing P,
+</aside>
+<aside class="footnote brackets" id="footnote-3" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#footnote-reference-3">3</a><span class="fn-bracket">]</span></span>
+<p>Khan ZA, García-Salaberri PA, Heenan T, Jervis R, Shearing P,
 Brett D, Elkamel A, Gostick JT, Probing the structure-performance
 relationship of lithium-ion battery cathodes using pore-networks
 extracted from three-phase tomograms. Journal of the
 Electrochemical Society. 167(4), 040528 (2020)</p>
-</dd>
-<dt class="label" id="id8"><span class="brackets"><a class="fn-backref" href="#id4">4</a></span></dt>
-<dd><p>Khan ZA, Elkamel A, Gostick JT, Efficient extraction of pore
+</aside>
+<aside class="footnote brackets" id="footnote-4" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#footnote-reference-4">4</a><span class="fn-bracket">]</span></span>
+<p>Khan ZA, Elkamel A, Gostick JT, Efficient extraction of pore
 networks from massive tomograms via geometric domain decomposition.
 Advances in Water Resources. 145(Nov), 103734 (2020)</p>
-</dd>
-</dl>
+</aside>
 </dd></dl>
 
 </section>
@@ -1040,7 +1042,7 @@ Advances in Water Resources. 145(Nov), 103734 (2020)</p>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br>
 </p>
     </div>
     

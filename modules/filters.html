@@ -4,7 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>Filters &#8212; PoreSpy  documentation</title>
     
@@ -23,8 +23,8 @@
       
 
     
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/blank.css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/css/blank.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
     <link rel="stylesheet" type="text/css" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
@@ -32,7 +32,7 @@
     
   <link rel="preload" as="script" href="../_static/js/index.be7d3bbb2ef33a8344ce.js">
 
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
@@ -881,30 +881,26 @@
               
               <div>
                 
-  <span class="target" id="module-porespy.filters"><span id="filters"></span></span><section id="id1">
-<h1>Filters<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+  <span class="target" id="module-porespy.filters"><span id="filters"></span></span><section id="filters-1">
+<h1>Filters<a class="headerlink" href="#filters-1" title="Permalink to this headline">¶</a></h1>
 <p><strong>Highlight Features of Interest</strong></p>
 <p>This module contains a variety of functions for altering images based on
 the structural characteristics, such as pore sizes.  A definition of a
 <em>filter</em> is a function that returns an image the shape as the original
 image, but with altered values.</p>
 <table class="longtable table autosummary">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.filters.apply_chords.html#porespy.filters.apply_chords" title="porespy.filters.apply_chords"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.apply_chords</span></code></a>(im[, spacing, axis, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.filters.apply_chords.html#porespy.filters.apply_chords" title="porespy.filters.apply_chords"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.apply_chords</span></code></a>(im[, spacing, axis, …])</p></td>
 <td><p>Adds chords to the void space in the specified direction.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.filters.apply_chords_3D.html#porespy.filters.apply_chords_3D" title="porespy.filters.apply_chords_3D"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.apply_chords_3D</span></code></a>(im[, spacing, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.filters.apply_chords_3D.html#porespy.filters.apply_chords_3D" title="porespy.filters.apply_chords_3D"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.apply_chords_3D</span></code></a>(im[, spacing, …])</p></td>
 <td><p>Adds chords to the void space in all three principle directions.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.filters.apply_padded.html#porespy.filters.apply_padded" title="porespy.filters.apply_padded"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.apply_padded</span></code></a>(im, pad_width, func[, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.filters.apply_padded.html#porespy.filters.apply_padded" title="porespy.filters.apply_padded"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.apply_padded</span></code></a>(im, pad_width, func[, …])</p></td>
 <td><p>Applies padding to an image before sending to <code class="docutils literal notranslate"><span class="pre">func</span></code>, then extracts the result corresponding to the original image shape.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.filters.chunked_func.html#porespy.filters.chunked_func" title="porespy.filters.chunked_func"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.chunked_func</span></code></a>(func[, overlap, divs, ...])</p></td>
-<td><p>Performs the specfied operation &quot;chunk-wise&quot; in parallel using <code class="docutils literal notranslate"><span class="pre">dask</span></code>.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.filters.chunked_func.html#porespy.filters.chunked_func" title="porespy.filters.chunked_func"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.chunked_func</span></code></a>(func[, overlap, divs, …])</p></td>
+<td><p>Performs the specfied operation “chunk-wise” in parallel using <code class="docutils literal notranslate"><span class="pre">dask</span></code>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.filters.distance_transform_lin.html#porespy.filters.distance_transform_lin" title="porespy.filters.distance_transform_lin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.distance_transform_lin</span></code></a>(im[, axis, mode])</p></td>
 <td><p>Replaces each void voxel with the linear distance to the nearest solid voxel along the specified axis.</p></td>
@@ -939,13 +935,13 @@ image, but with altered values.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.filters.nphase_border.html#porespy.filters.nphase_border" title="porespy.filters.nphase_border"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.nphase_border</span></code></a>(im[, include_diagonals])</p></td>
 <td><p>Identifies the voxels in regions that border <em>N</em> other regions.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.filters.nl_means_layered.html#porespy.filters.nl_means_layered" title="porespy.filters.nl_means_layered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.nl_means_layered</span></code></a>(im[, cores, axis, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.filters.nl_means_layered.html#porespy.filters.nl_means_layered" title="porespy.filters.nl_means_layered"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.nl_means_layered</span></code></a>(im[, cores, axis, …])</p></td>
 <td><p>Apply the non-local means filter to each 2D layer of a stack in parallel.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.filters.porosimetry.html#porespy.filters.porosimetry" title="porespy.filters.porosimetry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.porosimetry</span></code></a>(im[, sizes, inlets, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.filters.porosimetry.html#porespy.filters.porosimetry" title="porespy.filters.porosimetry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.porosimetry</span></code></a>(im[, sizes, inlets, …])</p></td>
 <td><p>Performs a porosimetry simulution on an image.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.filters.prune_branches.html#porespy.filters.prune_branches" title="porespy.filters.prune_branches"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.prune_branches</span></code></a>(skel[, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.filters.prune_branches.html#porespy.filters.prune_branches" title="porespy.filters.prune_branches"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.prune_branches</span></code></a>(skel[, …])</p></td>
 <td><p>Remove all dangling ends or tails of a skeleton</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.filters.reduce_peaks.html#porespy.filters.reduce_peaks" title="porespy.filters.reduce_peaks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.reduce_peaks</span></code></a>(peaks)</p></td>
@@ -969,7 +965,7 @@ image, but with altered values.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.filters.snow_partitioning_n.html#porespy.filters.snow_partitioning_n" title="porespy.filters.snow_partitioning_n"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.snow_partitioning_n</span></code></a>(im[, r_max, sigma])</p></td>
 <td><p>This function partitions an imaging oontain an arbitrary number of phases into regions using a marker-based watershed segmentation.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.filters.snow_partitioning_parallel.html#porespy.filters.snow_partitioning_parallel" title="porespy.filters.snow_partitioning_parallel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.snow_partitioning_parallel</span></code></a>(im[, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.filters.snow_partitioning_parallel.html#porespy.filters.snow_partitioning_parallel" title="porespy.filters.snow_partitioning_parallel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.snow_partitioning_parallel</span></code></a>(im[, …])</p></td>
 <td><p>Performs SNOW algorithm in parallel (or serial) to reduce time (or memory usage) by geomertirc domain decomposition of large images.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.filters.trim_disconnected_blobs.html#porespy.filters.trim_disconnected_blobs" title="porespy.filters.trim_disconnected_blobs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.trim_disconnected_blobs</span></code></a>(im, inlets)</p></td>
@@ -984,7 +980,7 @@ image, but with altered values.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.filters.trim_nearby_peaks.html#porespy.filters.trim_nearby_peaks" title="porespy.filters.trim_nearby_peaks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.trim_nearby_peaks</span></code></a>(peaks, dt[, f])</p></td>
 <td><p>Finds pairs of peaks that are nearer to each other than to the solid phase, and removes the peak that is closer to the solid.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.filters.trim_nonpercolating_paths.html#porespy.filters.trim_nonpercolating_paths" title="porespy.filters.trim_nonpercolating_paths"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.trim_nonpercolating_paths</span></code></a>(im, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.filters.trim_nonpercolating_paths.html#porespy.filters.trim_nonpercolating_paths" title="porespy.filters.trim_nonpercolating_paths"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.trim_nonpercolating_paths</span></code></a>(im, …[, …])</p></td>
 <td><p>Remove all nonpercolating paths between specified locations</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.filters.trim_saddle_points.html#porespy.filters.trim_saddle_points" title="porespy.filters.trim_saddle_points"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.trim_saddle_points</span></code></a>(peaks, dt[, maxiter])</p></td>
@@ -1019,7 +1015,7 @@ image, but with altered values.</p>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br>
 </p>
     </div>
     

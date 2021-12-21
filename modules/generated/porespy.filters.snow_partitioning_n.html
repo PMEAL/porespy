@@ -4,7 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>snow_partitioning_n &#8212; PoreSpy  documentation</title>
     
@@ -23,8 +23,8 @@
       
 
     
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/blank.css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/css/blank.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
@@ -32,7 +32,7 @@
     
   <link rel="preload" as="script" href="../../_static/js/index.be7d3bbb2ef33a8344ce.js">
 
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
@@ -884,14 +884,14 @@
   <section id="snow-partitioning-n">
 <h1>snow_partitioning_n<a class="headerlink" href="#snow-partitioning-n" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="porespy.filters.snow_partitioning_n">
-<span class="sig-name descname"><span class="pre">snow_partitioning_n</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.4</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/filters/_snows.html#snow_partitioning_n"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.snow_partitioning_n" title="Permalink to this definition">¶</a></dt>
+<dt id="porespy.filters.snow_partitioning_n">
+<code class="sig-name descname"><span class="pre">snow_partitioning_n</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.4</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/filters/_snows.html#snow_partitioning_n"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.snow_partitioning_n" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function partitions an imaging oontain an arbitrary number of
 phases into regions using a marker-based watershed segmentation. Its
 an extension of snow_partitioning function with all phases partitioned
 together.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>im</strong> (<em>ndarray</em>) – Image of porous material where each phase is represented by unique
 integer starting from 1 (0’s are ignored).</p></li>
@@ -901,7 +901,7 @@ Maximum filter stage that is used to find peaks. The default is 4.</p></li>
 0.4. If 0 is given then the filter is not applied.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><p><strong>results</strong> – A custom object with the follow data as attributes:</p>
 <ul class="simple">
 <li><dl class="simple">
@@ -929,7 +929,7 @@ based watershed with the peaks found by the SNOW algorithm</p>
 </ul>
 </p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Results object</p>
 </dd>
 </dl>
@@ -944,7 +944,7 @@ of pore and grain-scale processes”. Computers in Chemical Engineering.
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><a class="reference internal" href="porespy.filters.snow_partitioning.html#porespy.filters.snow_partitioning" title="porespy.filters.snow_partitioning"><code class="xref py py-obj docutils literal notranslate"><span class="pre">snow_partitioning</span></code></a></p>
-</div>
+</aside>
 <p class="rubric">Notes</p>
 <p>In principle it is possible to perform a distance transform on each
 phase separately, merge these into a single image, then apply the
@@ -979,7 +979,7 @@ then merges the segmented regions back into a single image.</p>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br>
 </p>
     </div>
     
