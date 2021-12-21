@@ -50,9 +50,9 @@ jobs:
             --nbval-lax examples/ \
             --store-durations \
             --durations-path test/fixtures/.test_durations_examples
-          pytest \
-            --store-durations \
-            --durations-path test/fixtures/.test_durations_unit
+          # pytest \
+          #   --store-durations \
+          #   --durations-path test/fixtures/.test_durations_unit
 
       - name: Committing test duration files
         uses: EndBug/add-and-commit@v7
