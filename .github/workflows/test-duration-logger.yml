@@ -38,7 +38,8 @@ jobs:
         run: |
           pip install wheel
           pip install -r requirements/min_requirements_pip.txt
-          pip install -r requirements/test_requirements.txt
+          # pip install -r requirements/test_requirements.txt
+          pip install git+https://github.com/jerry-git/pytest-split.git@master
           # Install porespy from the checked-out branch
           pip install -e . --no-deps
 
