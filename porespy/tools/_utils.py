@@ -87,7 +87,7 @@ class Settings:  # pragma: no cover
           '<level>{level: <8}</level> | ' \
           '<cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan>' \
           '\n--> <level>{message}</level>'
-    _loglevel = "ERROR" if _is_ipython_notebook() else "INFO"
+    _loglevel = "ERROR" if _is_ipython_notebook() else "WARNING"
     config_logger(_logger_fmt, _loglevel)
 
     def __init__(self, *args, **kwargs):

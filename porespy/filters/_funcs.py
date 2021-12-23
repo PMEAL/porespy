@@ -341,7 +341,7 @@ def trim_floating_solid(im, conn=None):
     return im
 
 
-def trim_nonpercolating_paths(im, inlets, outlets):
+def trim_nonpercolating_paths(im, inlets, outlets, strel=None):
     r"""
     Remove all nonpercolating paths between specified locations
 
@@ -356,6 +356,9 @@ def trim_nonpercolating_paths(im, inlets, outlets):
     outlets : ndarray
         A boolean mask indicating locations of outlets, such as produced by
         ``porespy.generators.faces``.
+    strel : ndarray
+        The structuring element to use when determining if regions are
+        connected.  This is passed to ``scipiy.ndimage.label``.
 
     Returns
     -------
@@ -381,7 +384,7 @@ def trim_nonpercolating_paths(im, inlets, outlets):
     to view online example.
 
     """
-    labels = spim.label(im)[0]
+    labels = spim.label(im, structure=strel)[0]
     IN = np.unique(labels * inlets)
     OUT = np.unique(labels * outlets)
     hits = np.array(list(set(IN).intersection(set(OUT))))
