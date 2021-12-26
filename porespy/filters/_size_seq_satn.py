@@ -64,7 +64,7 @@ def size_to_seq(size, im=None, bins=None):
     return vals
 
 
-def size_to_satn(size, im=None, bins=None):
+def size_to_satn(size, im=None, bins=None, ascending=False):
     r"""
     Converts an image of invasion size values into saturations.
 
@@ -84,12 +84,16 @@ def size_to_satn(size, im=None, bins=None):
         is supplied it is interpreted as the number of bins between 0 and the
         maximum value in ``size``.  If an array is supplied it is used as
         the bins directly.
+    ascending : bool
+        Indicates if the sizes are filled from large to small (the default,
+        corresponding to drainage), or small to large (if ``ascending=True``,
+        corresponding to imbibition.
 
     Returns
     -------
     satn : ndarray
-        An ndarray the same size as ``seq`` but with sequence values replaced
-        by the fraction of void space invaded at or below the sequence number.
+        An ndarray the same size as ``size`` but with size values replaced
+        by the fraction of void space invaded at each the size number.
         Solid voxels and uninvaded voxels are represented by 0 and -1,
         respectively.
 
@@ -107,10 +111,16 @@ def size_to_satn(size, im=None, bins=None):
         im = (size != 0)
     void_vol = im.sum()
     satn = -np.ones_like(size, dtype=float)
-    for r in bins[-1::-1]:
-        hits = (size >= r) * (size > 0)
-        temp = hits.sum()/void_vol
-        satn[hits * (satn == -1)] = temp
+    if ascending:
+        for r in bins:
+            hits = (size <= r) * (size > 0)
+            temp = hits.sum()/void_vol
+            satn[hits * (satn == -1)] = temp
+    else:
+        for r in bins[-1::-1]:
+            hits = (size >= r) * (size > 0)
+            temp = hits.sum()/void_vol
+            satn[hits * (satn == -1)] = temp
     satn *= (im > 0)
     return satn
 
