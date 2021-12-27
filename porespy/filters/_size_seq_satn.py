@@ -12,7 +12,7 @@ __all__ = [
 ]
 
 
-def size_to_seq(size, im=None, bins=None):
+def size_to_seq(size, im=None, bins=None, ascending=False):
     r"""
     Converts an image of invasion size values into sequence values
 
@@ -32,6 +32,10 @@ def size_to_seq(size, im=None, bins=None):
         is supplied it is interpreted as the number of bins between 0 and the
         maximum value in ``size``.  If an array is supplied it is used as
         the bins directly.
+    ascending : bool
+        Indicates if the sizes are filled from large to small (the default,
+        corresponding to drainage), or small to large (if ``ascending=True``,
+        corresponding to imbibition.
 
     Returns
     -------
@@ -57,8 +61,11 @@ def size_to_seq(size, im=None, bins=None):
     elif isinstance(bins, int):
         bins = np.linspace(0, size.max(), bins)
     vals = np.digitize(size, bins=bins, right=True)
-    # Invert the vals so smallest size has largest sequence
-    vals = -(vals - vals.max() - 1) * ~solid
+    if ascending is False:
+        # Invert the vals so smallest size has largest sequence
+        vals = -(vals - vals.max() - 1) * ~solid
+    else:
+        vals = vals
     # In case too many bins are given, remove empty ones
     vals = make_contiguous(vals, mode='keep_zeros')
     return vals
