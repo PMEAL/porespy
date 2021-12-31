@@ -76,7 +76,7 @@ PoreSpy consists of the following modules:
 Installation
 -------------------------------------------------------------------------------
 
-PoreSpy depends heavily on the Scipy Stack.  The best way to get a fully
+PoreSpy depends heavily on Scipy and its dependencies.  The best way to get a fully
 functional environment is the
 `Anaconda distribution <https://www.anaconda.com/download/>`_.
 Be sure to get the **Python 3.8+ version**.
