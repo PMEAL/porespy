@@ -79,7 +79,7 @@ Installation
 PoreSpy depends heavily on the Scipy Stack.  The best way to get a fully
 functional environment is the
 `Anaconda distribution <https://www.anaconda.com/download/>`_.
-Be sure to get the **Python 3.7+ version**.
+Be sure to get the **Python 3.8+ version**.
 
 
 Once you've installed *Conda*, you can then install PoreSpy.  It is available
