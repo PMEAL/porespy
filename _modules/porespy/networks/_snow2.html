@@ -324,7 +324,14 @@
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">boundary_width</span><span class="p">):</span>
         <span class="n">regions</span> <span class="o">=</span> <span class="n">add_boundary_regions</span><span class="p">(</span><span class="n">regions</span><span class="p">,</span> <span class="n">pad_width</span><span class="o">=</span><span class="n">boundary_width</span><span class="p">)</span>
         <span class="n">phases</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">phases</span><span class="p">,</span> <span class="n">pad_width</span><span class="o">=</span><span class="n">boundary_width</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;edge&#39;</span><span class="p">)</span>
-    <span class="c1"># Perform actual extractcion on all regions</span>
+
+    <span class="c1"># /--</span>
+    <span class="c1"># Manually ad Pt particles</span>
+    <span class="c1"># pt  = sp.ndimage.label(pt)</span>
+    <span class="c1"># regions[pt &gt; 0] = (pt + regions.max())[pt &gt; 0]  # maybe +1</span>
+    <span class="c1"># --/</span>
+
+    <span class="c1"># Perform actual extractcion on all</span>
     <span class="n">net</span> <span class="o">=</span> <span class="n">regions_to_network</span><span class="p">(</span>
         <span class="n">regions</span><span class="p">,</span> <span class="n">phases</span><span class="o">=</span><span class="n">phases</span><span class="p">,</span> <span class="n">accuracy</span><span class="o">=</span><span class="n">accuracy</span><span class="p">,</span> <span class="n">voxel_size</span><span class="o">=</span><span class="n">voxel_size</span><span class="p">)</span>
     <span class="c1"># If image is multiphase, label pores/throats accordingly</span>
