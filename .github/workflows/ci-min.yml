@@ -1,14 +1,11 @@
 name: Minimal
 
-on:
-  workflow_dispatch:
-  push:
+on: push
 
 jobs:
   build:
 
-    if: (  contains(github.event.head_commit.message, 'ci min')) &&
-        (! contains(github.event.head_commit.message, 'ci examples'))
+    if: (! contains(github.event.head_commit.message, 'ci examples'))
 
     runs-on: ${{ matrix.operating-system }}
     defaults:
@@ -43,7 +40,7 @@ jobs:
         with:
           use-mamba: true
           miniforge-variant: Mambaforge
-          miniforge-version: "4.10.0-0"
+          miniforge-version: latest
           allow-softlinks: true
           use-only-tar-bz2: true
           show-channel-urls: false
