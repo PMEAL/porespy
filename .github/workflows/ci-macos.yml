@@ -1,6 +1,6 @@
 name: macOS
 
-on: [push]
+on: pull_request
 
 jobs:
   build:
@@ -41,7 +41,7 @@ jobs:
         with:
           use-mamba: true
           miniforge-variant: Mambaforge
-          miniforge-version: "4.10.0-0"
+          miniforge-version: latest
           allow-softlinks: true
           use-only-tar-bz2: true
           show-channel-urls: false
