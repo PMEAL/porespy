@@ -150,7 +150,14 @@ def snow2(phases,
     if np.any(boundary_width):
         regions = add_boundary_regions(regions, pad_width=boundary_width)
         phases = np.pad(phases, pad_width=boundary_width, mode='edge')
-    # Perform actual extractcion on all regions
+
+    # /--
+    # Manually ad Pt particles
+    # pt  = sp.ndimage.label(pt)
+    # regions[pt > 0] = (pt + regions.max())[pt > 0]  # maybe +1
+    # --/
+
+    # Perform actual extractcion on all
     net = regions_to_network(
         regions, phases=phases, accuracy=accuracy, voxel_size=voxel_size)
     # If image is multiphase, label pores/throats accordingly
