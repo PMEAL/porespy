@@ -227,7 +227,7 @@ def find_disconnected_voxels(im, conn=None, surface=False):
         while for the 3D the options are 6 and 26, similarily for square
         and diagonal neighbors. The default is the maximum option.
     surface : bool
-        If ``True`` any isolated regions touch the edge of the image are
+        If ``True`` any isolated regions touching the edge of the image are
         considered disconnected.
 
     Returns
@@ -279,7 +279,7 @@ def find_disconnected_voxels(im, conn=None, surface=False):
     return holes
 
 
-def fill_blind_pores(im, conn=None, fill_surface=False):
+def fill_blind_pores(im, conn=None, surface=False):
     r"""
     Fills all blind pores that are isolated from the main void space.
 
@@ -296,10 +296,10 @@ def fill_blind_pores(im, conn=None, fill_surface=False):
         For 2D the options are 4 and 8 for square and diagonal neighbors,
         while for the 3D the options are 6 and 26, similarily for square
         and diagonal neighbors. The default is the maximum option.
-    fill_surface : bool
+    surface : bool
         If ``True``, any isolated pore regions that are connected to the
-        faces or edges of the image are also removed. When this is enabled,
-        only the voxels belonging to the largest region are kept. This can be
+        sufaces of the image are also removed. When this is enabled, only
+        the voxels belonging to the largest region are kept. This can be
         problematic if image contains non-intersecting tube-like structures,
         for instance, since only the largest tube will be preserved.
 
@@ -316,12 +316,12 @@ def fill_blind_pores(im, conn=None, fill_surface=False):
 
     """
     im = np.copy(im)
-    holes = find_disconnected_voxels(im, conn=conn, surface=fill_surface)
+    holes = find_disconnected_voxels(im, conn=conn, surface=surface)
     im[holes] = False
     return im
 
 
-def trim_floating_solid(im, conn=None, trim_surface=False):
+def trim_floating_solid(im, conn=None, surface=False):
     r"""
     Removes all solid that that is not attached to main solid structure.
 
@@ -333,12 +333,13 @@ def trim_floating_solid(im, conn=None, trim_surface=False):
         For 2D the options are 4 and 8 for square and diagonal neighbors,
         while for the 3D the options are 6 and 26, similarily for square
         and diagonal neighbors. The default is the maximum option.
-    trim_surface : bool
+    surface : bool
         If ``True``, any isolated solid regions that are connected to the
-        faces or edges of the image are also removed.  When this is enabled,
-        only the voxels belonging to the largest region are kept. This can be
-        problematic if image contains non-intersecting tube-like structures,
-        for instance, since only the largest tube will be preserved.
+        surfaces of the image are also removed.  When this is enabled,
+        only the voxels belonging to the largest region are kept. This can
+        be problematic if the image contains non-intersecting tube-like
+        structures, for instance, since only the largest tube will be
+        preserved.
 
     Returns
     -------
@@ -358,7 +359,7 @@ def trim_floating_solid(im, conn=None, trim_surface=False):
 
     """
     im = np.copy(im)
-    holes = find_disconnected_voxels(~im, conn=conn, surface=trim_surface)
+    holes = find_disconnected_voxels(~im, conn=conn, surface=surface)
     im[holes] = True
     return im
 
