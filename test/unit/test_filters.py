@@ -215,9 +215,25 @@ class FilterTest():
         h = ps.filters.find_disconnected_voxels(b)
         assert np.sum(h) == 0
 
+    def test_fill_blind_pores_w_surface(self):
+        im = ~ps.generators.lattice_spheres(shape=[101, 101], r=5,
+                                            offset=0, spacing=20)
+        im2 = ps.filters.fill_blind_pores(im, surface=False)
+        assert im2.sum() > 0
+        im3 = ps.filters.fill_blind_pores(im, surface=True)
+        assert im3.sum() == 0
+
     def test_trim_floating_solid(self):
         f = ps.filters.trim_floating_solid(~self.im)
         assert np.sum(f) > np.sum(~self.im)
+
+    def test_trim_floating_solid_w_surface(self):
+        im = ps.generators.lattice_spheres(shape=[101, 101], r=5,
+                                           offset=0, spacing=20)
+        im2 = ps.filters.trim_floating_solid(im, surface=False)
+        assert im2.sum() < im.size
+        im3 = ps.filters.trim_floating_solid(im, surface=True)
+        assert im3.sum() == im.size
 
     def test_trim_extrema_min(self):
         dt = self.im_dt[:, :, 45:55]

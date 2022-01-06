@@ -213,7 +213,7 @@ def distance_transform_lin(im, axis=0, mode="both"):
     return f
 
 
-def find_disconnected_voxels(im, conn=None):
+def find_disconnected_voxels(im, conn=None, surface=False):
     r"""
     Identifies all voxels that are not connected to the edge of the image.
 
@@ -226,12 +226,15 @@ def find_disconnected_voxels(im, conn=None):
         For 2D the options are 4 and 8 for square and diagonal neighbors,
         while for the 3D the options are 6 and 26, similarily for square
         and diagonal neighbors. The default is the maximum option.
+    surface : bool
+        If ``True`` any isolated regions touching the edge of the image are
+        considered disconnected.
 
     Returns
     -------
     image : ndarray
-        An ndarray the same size as ``im``, with True values indicating
-        voxels of the phase of interest (i.e. True values in the original
+        An ndarray the same size as ``im``, with ``True`` values indicating
+        voxels of the phase of interest (i.e. ``True`` values in the original
         image) that are not connected to the outer edges.
 
     See Also
@@ -267,13 +270,18 @@ def find_disconnected_voxels(im, conn=None):
         else:
             raise Exception("Received conn is not valid")
     labels, N = spim.label(input=im, structure=strel)
-    holes = clear_border(labels=labels) > 0
+    if surface == False:
+        holes = clear_border(labels=labels) > 0
+    else:
+        counts = np.bincount(labels.flatten())[1:]
+        keep = np.where(counts == counts.max())[0] + 1
+        holes = (labels != keep)*im
     return holes
 
 
-def fill_blind_pores(im, conn=None):
+def fill_blind_pores(im, conn=None, surface=False):
     r"""
-    Fills all pores that are not connected to the edges of the image.
+    Fills all blind pores that are isolated from the main void space.
 
     Parameters
     ----------
@@ -288,10 +296,17 @@ def fill_blind_pores(im, conn=None):
         For 2D the options are 4 and 8 for square and diagonal neighbors,
         while for the 3D the options are 6 and 26, similarily for square
         and diagonal neighbors. The default is the maximum option.
+    surface : bool
+        If ``True``, any isolated pore regions that are connected to the
+        sufaces of the image are also removed. When this is enabled, only
+        the voxels belonging to the largest region are kept. This can be
+        problematic if image contains non-intersecting tube-like structures,
+        for instance, since only the largest tube will be preserved.
 
     See Also
     --------
     find_disconnected_voxels
+    trim_nonpercolating_paths
 
     Examples
     --------
@@ -301,14 +316,14 @@ def fill_blind_pores(im, conn=None):
 
     """
     im = np.copy(im)
-    holes = find_disconnected_voxels(im, conn=conn)
+    holes = find_disconnected_voxels(im, conn=conn, surface=surface)
     im[holes] = False
     return im
 
 
-def trim_floating_solid(im, conn=None):
+def trim_floating_solid(im, conn=None, surface=False):
     r"""
-    Removes all solid that that is not attached to the edges of the image.
+    Removes all solid that that is not attached to main solid structure.
 
     Parameters
     ----------
@@ -318,6 +333,13 @@ def trim_floating_solid(im, conn=None):
         For 2D the options are 4 and 8 for square and diagonal neighbors,
         while for the 3D the options are 6 and 26, similarily for square
         and diagonal neighbors. The default is the maximum option.
+    surface : bool
+        If ``True``, any isolated solid regions that are connected to the
+        surfaces of the image are also removed.  When this is enabled,
+        only the voxels belonging to the largest region are kept. This can
+        be problematic if the image contains non-intersecting tube-like
+        structures, for instance, since only the largest tube will be
+        preserved.
 
     Returns
     -------
@@ -327,6 +349,7 @@ def trim_floating_solid(im, conn=None):
     See Also
     --------
     find_disconnected_voxels
+    trim_nonpercolating_paths
 
     Examples
     --------
@@ -336,7 +359,7 @@ def trim_floating_solid(im, conn=None):
 
     """
     im = np.copy(im)
-    holes = find_disconnected_voxels(~im, conn=conn)
+    holes = find_disconnected_voxels(~im, conn=conn, surface=surface)
     im[holes] = True
     return im
 
