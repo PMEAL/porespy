@@ -885,7 +885,7 @@
 <h1>find_disconnected_voxels<a class="headerlink" href="#find-disconnected-voxels" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="porespy.filters.find_disconnected_voxels">
-<code class="sig-name descname"><span class="pre">find_disconnected_voxels</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/filters/_funcs.html#find_disconnected_voxels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.find_disconnected_voxels" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">find_disconnected_voxels</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surface</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/filters/_funcs.html#find_disconnected_voxels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.find_disconnected_voxels" title="Permalink to this definition">¶</a></dt>
 <dd><p>Identifies all voxels that are not connected to the edge of the image.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -895,11 +895,13 @@ disconnected voxels are sought.</p></li>
 <li><p><strong>conn</strong> (<em>int</em>) – For 2D the options are 4 and 8 for square and diagonal neighbors,
 while for the 3D the options are 6 and 26, similarily for square
 and diagonal neighbors. The default is the maximum option.</p></li>
+<li><p><strong>surface</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> any isolated regions touching the edge of the image are
+considered disconnected.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>image</strong> – An ndarray the same size as <code class="docutils literal notranslate"><span class="pre">im</span></code>, with True values indicating
-voxels of the phase of interest (i.e. True values in the original
+<dd class="field-even"><p><strong>image</strong> – An ndarray the same size as <code class="docutils literal notranslate"><span class="pre">im</span></code>, with <code class="docutils literal notranslate"><span class="pre">True</span></code> values indicating
+voxels of the phase of interest (i.e. <code class="docutils literal notranslate"><span class="pre">True</span></code> values in the original
 image) that are not connected to the outer edges.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>

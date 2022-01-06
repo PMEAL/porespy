@@ -387,7 +387,7 @@
     <span class="k">return</span> <span class="n">f</span></div>
 
 
-<div class="viewcode-block" id="find_disconnected_voxels"><a class="viewcode-back" href="../../../modules/generated/porespy.filters.find_disconnected_voxels.html#porespy.filters.find_disconnected_voxels">[docs]</a><span class="k">def</span> <span class="nf">find_disconnected_voxels</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">conn</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="find_disconnected_voxels"><a class="viewcode-back" href="../../../modules/generated/porespy.filters.find_disconnected_voxels.html#porespy.filters.find_disconnected_voxels">[docs]</a><span class="k">def</span> <span class="nf">find_disconnected_voxels</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">conn</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">surface</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Identifies all voxels that are not connected to the edge of the image.</span>
 
@@ -400,12 +400,15 @@
 <span class="sd">        For 2D the options are 4 and 8 for square and diagonal neighbors,</span>
 <span class="sd">        while for the 3D the options are 6 and 26, similarily for square</span>
 <span class="sd">        and diagonal neighbors. The default is the maximum option.</span>
+<span class="sd">    surface : bool</span>
+<span class="sd">        If ``True`` any isolated regions touching the edge of the image are</span>
+<span class="sd">        considered disconnected.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    image : ndarray</span>
-<span class="sd">        An ndarray the same size as ``im``, with True values indicating</span>
-<span class="sd">        voxels of the phase of interest (i.e. True values in the original</span>
+<span class="sd">        An ndarray the same size as ``im``, with ``True`` values indicating</span>
+<span class="sd">        voxels of the phase of interest (i.e. ``True`` values in the original</span>
 <span class="sd">        image) that are not connected to the outer edges.</span>
 
 <span class="sd">    See Also</span>
@@ -441,13 +444,18 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Received conn is not valid&quot;</span><span class="p">)</span>
     <span class="n">labels</span><span class="p">,</span> <span class="n">N</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">structure</span><span class="o">=</span><span class="n">strel</span><span class="p">)</span>
-    <span class="n">holes</span> <span class="o">=</span> <span class="n">clear_border</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">surface</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="n">holes</span> <span class="o">=</span> <span class="n">clear_border</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">counts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span><span class="n">labels</span><span class="o">.</span><span class="n">flatten</span><span class="p">())[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="n">keep</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">counts</span> <span class="o">==</span> <span class="n">counts</span><span class="o">.</span><span class="n">max</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">holes</span> <span class="o">=</span> <span class="p">(</span><span class="n">labels</span> <span class="o">!=</span> <span class="n">keep</span><span class="p">)</span><span class="o">*</span><span class="n">im</span>
     <span class="k">return</span> <span class="n">holes</span></div>
 
 
-<div class="viewcode-block" id="fill_blind_pores"><a class="viewcode-back" href="../../../modules/generated/porespy.filters.fill_blind_pores.html#porespy.filters.fill_blind_pores">[docs]</a><span class="k">def</span> <span class="nf">fill_blind_pores</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">conn</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="fill_blind_pores"><a class="viewcode-back" href="../../../modules/generated/porespy.filters.fill_blind_pores.html#porespy.filters.fill_blind_pores">[docs]</a><span class="k">def</span> <span class="nf">fill_blind_pores</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">conn</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">surface</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Fills all pores that are not connected to the edges of the image.</span>
+<span class="sd">    Fills all blind pores that are isolated from the main void space.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -462,10 +470,17 @@
 <span class="sd">        For 2D the options are 4 and 8 for square and diagonal neighbors,</span>
 <span class="sd">        while for the 3D the options are 6 and 26, similarily for square</span>
 <span class="sd">        and diagonal neighbors. The default is the maximum option.</span>
+<span class="sd">    surface : bool</span>
+<span class="sd">        If ``True``, any isolated pore regions that are connected to the</span>
+<span class="sd">        sufaces of the image are also removed. When this is enabled, only</span>
+<span class="sd">        the voxels belonging to the largest region are kept. This can be</span>
+<span class="sd">        problematic if image contains non-intersecting tube-like structures,</span>
+<span class="sd">        for instance, since only the largest tube will be preserved.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    find_disconnected_voxels</span>
+<span class="sd">    trim_nonpercolating_paths</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -475,14 +490,14 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
-    <span class="n">holes</span> <span class="o">=</span> <span class="n">find_disconnected_voxels</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">conn</span><span class="o">=</span><span class="n">conn</span><span class="p">)</span>
+    <span class="n">holes</span> <span class="o">=</span> <span class="n">find_disconnected_voxels</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">conn</span><span class="o">=</span><span class="n">conn</span><span class="p">,</span> <span class="n">surface</span><span class="o">=</span><span class="n">surface</span><span class="p">)</span>
     <span class="n">im</span><span class="p">[</span><span class="n">holes</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="k">return</span> <span class="n">im</span></div>
 
 
-<div class="viewcode-block" id="trim_floating_solid"><a class="viewcode-back" href="../../../modules/generated/porespy.filters.trim_floating_solid.html#porespy.filters.trim_floating_solid">[docs]</a><span class="k">def</span> <span class="nf">trim_floating_solid</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">conn</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="trim_floating_solid"><a class="viewcode-back" href="../../../modules/generated/porespy.filters.trim_floating_solid.html#porespy.filters.trim_floating_solid">[docs]</a><span class="k">def</span> <span class="nf">trim_floating_solid</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">conn</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">surface</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Removes all solid that that is not attached to the edges of the image.</span>
+<span class="sd">    Removes all solid that that is not attached to main solid structure.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -492,6 +507,13 @@
 <span class="sd">        For 2D the options are 4 and 8 for square and diagonal neighbors,</span>
 <span class="sd">        while for the 3D the options are 6 and 26, similarily for square</span>
 <span class="sd">        and diagonal neighbors. The default is the maximum option.</span>
+<span class="sd">    surface : bool</span>
+<span class="sd">        If ``True``, any isolated solid regions that are connected to the</span>
+<span class="sd">        surfaces of the image are also removed.  When this is enabled,</span>
+<span class="sd">        only the voxels belonging to the largest region are kept. This can</span>
+<span class="sd">        be problematic if the image contains non-intersecting tube-like</span>
+<span class="sd">        structures, for instance, since only the largest tube will be</span>
+<span class="sd">        preserved.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -501,6 +523,7 @@
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    find_disconnected_voxels</span>
+<span class="sd">    trim_nonpercolating_paths</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -510,7 +533,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
-    <span class="n">holes</span> <span class="o">=</span> <span class="n">find_disconnected_voxels</span><span class="p">(</span><span class="o">~</span><span class="n">im</span><span class="p">,</span> <span class="n">conn</span><span class="o">=</span><span class="n">conn</span><span class="p">)</span>
+    <span class="n">holes</span> <span class="o">=</span> <span class="n">find_disconnected_voxels</span><span class="p">(</span><span class="o">~</span><span class="n">im</span><span class="p">,</span> <span class="n">conn</span><span class="o">=</span><span class="n">conn</span><span class="p">,</span> <span class="n">surface</span><span class="o">=</span><span class="n">surface</span><span class="p">)</span>
     <span class="n">im</span><span class="p">[</span><span class="n">holes</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">return</span> <span class="n">im</span></div>
 

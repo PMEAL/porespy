@@ -908,10 +908,10 @@ image, but with altered values.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.filters.fftmorphology.html#porespy.filters.fftmorphology" title="porespy.filters.fftmorphology"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.fftmorphology</span></code></a>(im, strel[, mode])</p></td>
 <td><p>Perform morphological operations on binary images using fft approach for improved performance</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.filters.fill_blind_pores.html#porespy.filters.fill_blind_pores" title="porespy.filters.fill_blind_pores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.fill_blind_pores</span></code></a>(im[, conn])</p></td>
-<td><p>Fills all pores that are not connected to the edges of the image.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.filters.fill_blind_pores.html#porespy.filters.fill_blind_pores" title="porespy.filters.fill_blind_pores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.fill_blind_pores</span></code></a>(im[, conn, surface])</p></td>
+<td><p>Fills all blind pores that are isolated from the main void space.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.filters.find_disconnected_voxels.html#porespy.filters.find_disconnected_voxels" title="porespy.filters.find_disconnected_voxels"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.find_disconnected_voxels</span></code></a>(im[, conn])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.filters.find_disconnected_voxels.html#porespy.filters.find_disconnected_voxels" title="porespy.filters.find_disconnected_voxels"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.find_disconnected_voxels</span></code></a>(im[, conn, …])</p></td>
 <td><p>Identifies all voxels that are not connected to the edge of the image.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.filters.find_dt_artifacts.html#porespy.filters.find_dt_artifacts" title="porespy.filters.find_dt_artifacts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.find_dt_artifacts</span></code></a>(dt)</p></td>
@@ -974,8 +974,8 @@ image, but with altered values.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.filters.trim_extrema.html#porespy.filters.trim_extrema" title="porespy.filters.trim_extrema"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.trim_extrema</span></code></a>(im, h[, mode])</p></td>
 <td><p>Trims local extrema in greyscale values by a specified amount.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.filters.trim_floating_solid.html#porespy.filters.trim_floating_solid" title="porespy.filters.trim_floating_solid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.trim_floating_solid</span></code></a>(im[, conn])</p></td>
-<td><p>Removes all solid that that is not attached to the edges of the image.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.filters.trim_floating_solid.html#porespy.filters.trim_floating_solid" title="porespy.filters.trim_floating_solid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.trim_floating_solid</span></code></a>(im[, conn, surface])</p></td>
+<td><p>Removes all solid that that is not attached to main solid structure.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.filters.trim_nearby_peaks.html#porespy.filters.trim_nearby_peaks" title="porespy.filters.trim_nearby_peaks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.trim_nearby_peaks</span></code></a>(peaks, dt[, f])</p></td>
 <td><p>Finds pairs of peaks that are nearer to each other than to the solid phase, and removes the peak that is closer to the solid.</p></td>

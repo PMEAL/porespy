@@ -885,8 +885,8 @@
 <h1>trim_floating_solid<a class="headerlink" href="#trim-floating-solid" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="porespy.filters.trim_floating_solid">
-<code class="sig-name descname"><span class="pre">trim_floating_solid</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/filters/_funcs.html#trim_floating_solid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.trim_floating_solid" title="Permalink to this definition">¶</a></dt>
-<dd><p>Removes all solid that that is not attached to the edges of the image.</p>
+<code class="sig-name descname"><span class="pre">trim_floating_solid</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surface</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/filters/_funcs.html#trim_floating_solid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.trim_floating_solid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes all solid that that is not attached to main solid structure.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -894,6 +894,12 @@
 <li><p><strong>conn</strong> (<em>int</em>) – For 2D the options are 4 and 8 for square and diagonal neighbors,
 while for the 3D the options are 6 and 26, similarily for square
 and diagonal neighbors. The default is the maximum option.</p></li>
+<li><p><strong>surface</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, any isolated solid regions that are connected to the
+surfaces of the image are also removed.  When this is enabled,
+only the voxels belonging to the largest region are kept. This can
+be problematic if the image contains non-intersecting tube-like
+structures, for instance, since only the largest tube will be
+preserved.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -905,7 +911,7 @@ and diagonal neighbors. The default is the maximum option.</p></li>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="porespy.filters.find_disconnected_voxels.html#porespy.filters.find_disconnected_voxels" title="porespy.filters.find_disconnected_voxels"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_disconnected_voxels</span></code></a></p>
+<p><a class="reference internal" href="porespy.filters.find_disconnected_voxels.html#porespy.filters.find_disconnected_voxels" title="porespy.filters.find_disconnected_voxels"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_disconnected_voxels</span></code></a>, <a class="reference internal" href="porespy.filters.trim_nonpercolating_paths.html#porespy.filters.trim_nonpercolating_paths" title="porespy.filters.trim_nonpercolating_paths"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trim_nonpercolating_paths</span></code></a></p>
 </aside>
 <p class="rubric">Examples</p>
 <p><a class="reference external" href="https://porespy.org/examples/filters/howtos/trim_floating_solid.html">Click here</a>
