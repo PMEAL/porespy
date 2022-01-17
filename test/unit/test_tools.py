@@ -98,20 +98,6 @@ class ToolsTest():
         assert np.all(y.shape == (51, 1, 51))
         assert np.all(z.shape == (51, 51, 1))
 
-    def test_get_border(self):
-        c = ps.tools.get_border(self.im2D.shape, thickness=1, mode='corners')
-        assert c.sum() == 4
-        c = ps.tools.get_border(self.im3D.shape, thickness=1, mode='corners')
-        assert c.sum() == 8
-        c = ps.tools.get_border(self.im2D.shape, thickness=1, mode='edges')
-        assert c.sum() == 200
-        c = ps.tools.get_border(self.im3D.shape, thickness=1, mode='edges')
-        assert c.sum() == 596
-        c = ps.tools.get_border(self.im2D.shape, thickness=1, mode='faces')
-        assert c.sum() == 200
-        c = ps.tools.get_border(self.im3D.shape, thickness=1, mode='faces')
-        assert c.sum() == 15002
-
     def test_align_image_w_openpnm(self):
         im = ps.tools.align_image_with_openpnm(np.ones([40, 50]))
         assert im.shape == (50, 40)

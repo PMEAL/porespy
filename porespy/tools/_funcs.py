@@ -733,37 +733,8 @@ def get_border(shape, thickness=1, mode='edges'):
     to view online example.
 
     """
-    # TODO: This function uses brute force to create an image then fills the
-    # edges using location-based logic, and if the user requests
-    # ``return_indices`` it finds them using ``np.where``.  Since these arrays
-    # are cubic it should be possible to use more elegant and efficient
-    # index-based logic to find the indices, then use them to fill an empty
-    # image with ``True`` using these indices.
-
-    ndims = len(shape)
-    t = thickness
-    border = np.ones(shape, dtype=bool)
-    if mode == 'faces':
-        if ndims == 2:
-            border[t:-t, t:-t] = False
-        if ndims == 3:
-            border[t:-t, t:-t, t:-t] = False
-    elif mode == 'edges':
-        if ndims == 2:
-            border[t:-t, t:-t] = False
-        if ndims == 3:
-            border[0::, t:-t, t:-t] = False
-            border[t:-t, 0::, t:-t] = False
-            border[t:-t, t:-t, 0::] = False
-    elif mode == 'corners':
-        if ndims == 2:
-            border[t:-t, 0::] = False
-            border[0::, t:-t] = False
-        if ndims == 3:
-            border[t:-t, 0::, 0::] = False
-            border[0::, t:-t, 0::] = False
-            border[0::, 0::, t:-t] = False
-    return border
+    from porespy.generators import borders
+    return borders(shape=shape, thickness=thickness, mode=mode)
 
 
 def in_hull(points, hull):

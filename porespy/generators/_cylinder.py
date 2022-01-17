@@ -44,5 +44,5 @@ def cylindrical_plug(shape, r=None, axis=2):
         dt = edt(im2d)
         if r is None:
             r = int(min(shape[axes])/2)
-        cyl = dt <= r
+        cyl = dt < r
     return cyl

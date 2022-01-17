@@ -127,6 +127,7 @@ def snow2(phases,
     """
     regions = None
     for i in range(phases.max()):
+        logger.info(f"Processing phase {i}...")
         phase = phases == (i + 1)
         if parallelization is not None:
             snow = snow_partitioning_parallel(

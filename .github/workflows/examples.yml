@@ -1,6 +1,6 @@
 name: Examples
 
-on: [push]
+on: pull_request
 
 jobs:
   build:
@@ -16,9 +16,9 @@ jobs:
       fail-fast: false
       max-parallel: 5
       matrix:
-        python-version: [3.8]
+        python-version: ['3.8']
         operating-system: [ubuntu-latest]
-        # Next line should be range(1, max-parallel + 1)
+        # Next line should be [1, 2, ..., max-parallel)
         test_group: [1, 2, 3, 4, 5]
 
     steps:
@@ -82,12 +82,11 @@ jobs:
       #     pip install -e . --no-deps
 
       - name: Install dependencies (pip)
-        # TODO: once https://github.com/jerry-git/pytest-split/pull/10
-        #   is merged, fix the custom pip install for pytest-split.
         run: |
           pip install wheel
           pip install -r requirements/min_requirements_pip.txt
-          pip install git+https://github.com/ma-sadeghi/pytest-split.git@fix_ipynb_bug
+          # pip install -r requirements/test_requirements.txt
+          pip install git+https://github.com/jerry-git/pytest-split.git@master
           # Install porespy from the checked-out branch
           pip install -e . --no-deps
 

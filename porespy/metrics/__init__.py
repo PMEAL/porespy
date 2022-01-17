@@ -55,7 +55,6 @@ from ._funcs import phase_fraction
 from ._funcs import pc_curve_from_ibip
 from ._funcs import pc_curve_from_mio
 from ._fractal_dims import boxcount
-# from ._geometrical_tortuosity import geometrical_tortuosity
 from ._meshtools import mesh_surface_area
 from ._meshtools import region_interface_areas
 from ._meshtools import region_surface_areas
