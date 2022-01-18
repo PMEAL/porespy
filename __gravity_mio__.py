@@ -174,7 +174,7 @@ def gravity_mio(im, inlets=None, bins=25,
     # Generate image for correcting entry pressure by gravitational effect
     h = np.ones_like(im, dtype=bool)
     h[0, ...] = False
-    h = edt(h)*vx_res  # This could be done quicker using clever logic
+    h = (edt(h) + 1)*vx_res  # This could be done quicker using clever logic
     rgh = rho*g*h
     if spacing is None:
         H = 2 if im.ndim == 3 else 1
@@ -211,124 +211,6 @@ def gravity_mio(im, inlets=None, bins=25,
         inv = insert_disks_at_points(inv, np.vstack(coords), radii, p, smooth=True)
     return inv
 
-
-# %%
-def pc_curve(pc, im):
-    tqdm = get_tqdm()
-    pressures = np.unique(pc[im])
-    pressures = pressures[pressures != 0]
-    y = []
-    Vp = im.sum()
-    temp = pc[im]
-    for p in tqdm(pressures, **settings.tqdm):
-        y.append(((temp <= p)*(temp != 0)).sum()/Vp)
-    pc_curve = Results()
-    pc_curve.pc = pressures
-    pc_curve.snwp = y
-    return pc_curve
-
-
-def find_trapped_wp(pc, outlets):
-    tqdm = get_tqdm()
-    trapped = np.zeros_like(outlets)
-    bins = np.unique(pc)
-    bins = bins[bins != 0]
-    for i in tqdm(bins, **settings.tqdm):
-        temp = pc > i
-        labels = label(temp)[0]
-        keep = np.unique(labels[outlets])
-        keep = keep[keep != 0]
-        trapped += temp*np.isin(labels, keep, invert=True)
-    return trapped
-
-
-def reload_images(f):
-    a = np.load(f)
-    d = {}
-    for i, angle in tqdm(enumerate(a['arr_1'])):
-        d[angle] = a['arr_0'][i]
-    return d
-
-
-def pc_to_satn(pc, im=None):
-    temp = ps.tools.make_contiguous(pc.astype(int))
-    satn = ps.filters.seq_to_satn(seq=temp, im=im)
-    return satn
-
-
-@numba.njit()
-def satn_profile(satn, s, axis=0, span=10, mode='tile'):
-    r"""
-    Computes a saturation profile from an invasion image
-
-    Parameters
-    ----------
-    satn : ndarray
-        An image with each voxel indicating the saturation upon its
-        invasion.  0's are treated a solid and -1's are treated as uninvaded
-        void space.
-    s : scalar
-        The saturation value to use when thresholding the ``satn`` image
-    axis : int
-        The axis along which to profile should be measured
-    span : int
-        The number of layers to include in the moving average saturation
-        calculation.
-    mode : str
-        How the moving average should be applied. Options are:
-
-        * 'tile'
-            The average is computed for discrete non-overlapping tiles of a
-            size given by ``span``.
-        * 'slide'
-            The average is computed in a moving window starting at ``span/2``
-            and sliding by a single voxel. This method provides more data
-            points but is slower.
-
-    Returns
-    -------
-    position : ndarray
-        The position along the given axis at which saturation values are
-        computed.  The units are in voxels.
-    saturation : ndarray
-        The computed saturation value at each position.
-    """
-    span = max(1, span)
-    satn = np.swapaxes(satn, 0, axis)
-    if mode == 'tile':
-        y = np.zeros(int(satn.shape[0]/span))
-        z = np.zeros_like(y)
-        for i in range(int(satn.shape[0]/span)):
-            void = satn[i*span:(i+1)*span, ...] != 0
-            nwp = (satn[i*span:(i+1)*span, ...] < s)*(satn[i*span:(i+1)*span, ...] > 0)
-            y[i] = nwp.sum()/void.sum()
-            z[i] = i*span + (span-1)/2
-    if mode == 'slide':
-        y = np.zeros(int(satn.shape[0]-span))
-        z = np.zeros_like(y)
-        for i in range(int(satn.shape[0]-span)):
-            void = satn[i:i+span, ...] != 0
-            nwp = (satn[i:i+span, ...] < s)*(satn[i:i+span, ...] > 0)
-            y[i] = nwp.sum()/void.sum()
-            z[i] = i + (span-1)/2
-    return (z, y)
-
-
-def find_H(satn_profile, smin=0.1, smax=0.9):
-    zmax = np.inf
-    zmin = np.inf
-    satn = satn_profile
-    L = len(satn)
-    for i, s in enumerate(satn):
-        if (zmax == np.inf) and (satn[i] < smax):
-            zmax = i
-            smax = satn[i]
-    satn = satn_profile[-1::-1]
-    for i, s in enumerate(satn):
-        if (zmin == np.inf) and (satn[i] > smin):
-            zmin = i
-            smin = satn[i]
-    return (L-zmin, zmax, smin, smax)
 
 
 # %%
@@ -398,12 +280,14 @@ if __name__ == '__main__':
             plt.figure(h, figsize=[6, 6])
         for i, s in enumerate(np.arange(0.2, 1.0, 0.1)):
             s_actual = np.sum((sim2[h] < s)*im)/im.sum()
-            pos, satn = satn_profile(satn=sim2[h], s=s, span=1, mode='slide')
+            pos, satn = ps.metrics.satn_profile(satn=sim2[h], s=s, span=1,
+                                                mode='slide')
             if plot:
                 plt.plot(pos/im.shape[0], satn, '-', c=str(s_actual/1.5))
                 plt.title("Bo = " + str(1/inv_Bo[h]))
             smin, smax = 0.01, 0.95
-            zmin, zmax, smin, smax = find_H(satn, smin=smin, smax=smax)
+            zmin, zmax, smin, smax = ps.metrics.find_h(satn, smin=smin,
+                                                       smax=smax)
             print(inv_Bo[h], s, zmin, zmax, smax-smin)
     # plt.plot([0, im.shape[0]], [smin, smin], 'k-')
     # plt.plot([0, im.shape[0]], [smax, smax], 'k-')

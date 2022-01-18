@@ -3,12 +3,8 @@ import scipy.ndimage as spim
 import scipy.spatial as sptl
 from scipy import fftpack as sp_ft
 from skimage.measure import regionprops
-from porespy.tools import extend_slice, mesh_region, ps_round
-from porespy.filters import find_dt_artifacts
-from porespy.tools import _check_for_singleton_axes
-from skimage import measure
-from loguru import logger
-from porespy.tools import extend_slice, mesh_region, ps_round
+from deprecated import deprecated
+from porespy.tools import extend_slice
 from porespy.tools import _check_for_singleton_axes
 from porespy.tools import Results
 from porespy import settings
@@ -88,6 +84,56 @@ def representative_elementary_volume(im, npoints=1000):
     profile.volume = volume
     profile.porosity = porosity
     return profile
+
+
+def porosity(im):
+    r"""
+    Calculates the porosity of an image assuming 1's are void space and 0's
+    are solid phase.
+
+    All other values are ignored, so this can also return the relative
+    fraction of a phase of interest in multiphase images.
+
+    Parameters
+    ----------
+    im : ndarray
+        Image of the void space with 1's indicating void phase (or ``True``)
+        and 0's indicating the solid phase (or ``False``). All other values
+        are ignored (see Notes).
+
+    Returns
+    -------
+    porosity : float
+        Calculated as the sum of all 1's divided by the sum of all 1's and 0's.
+
+    See Also
+    --------
+    phase_fraction
+    find_outer_region
+
+    Notes
+    -----
+    This function assumes void is represented by 1 and solid by 0, and all
+    other values are ignored.  This is useful, for example, for images of
+    cylindrical cores, where all voxels outside the core are labelled with 2.
+
+    Alternatively, images can be processed with ``find_disconnected_voxels``
+    to get an image of only blind pores.  This can then be added to the orignal
+    image such that blind pores have a value of 2, thus allowing the
+    calculation of accessible porosity, rather than overall porosity.
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/metrics/howtos/porosity.html>`_
+    to view online example.
+
+    """
+    im = np.array(im, dtype=int)
+    Vp = np.sum(im == 1)
+    Vs = np.sum(im == 0)
+    e = Vp / (Vs + Vp)
+    return e
 
 
 def porosity_profile(im, axis=0):
@@ -175,20 +221,18 @@ def radial_density_distribution(dt, bins=10, log=False, voxel_size=1):
     result : Results object
         A custom object with the following data added as named attributes:
 
-        *R* or *LogR*
-            Radius, equivalent to ``bin_centers``
-        *pdf*
-            Probability density function
-        *cdf*
-            Cumulative density function
-        *bin_centers*
-            The center point of each bin
-        *bin_edges*
-            Locations of bin divisions, including 1 more value than
-            the number of bins
-        *bin_widths*
-            Useful for passing to the ``width`` argument of
-            ``matplotlib.pyplot.bar``
+        ============== =======================================================
+        Attribute      Description
+        ============== =======================================================
+        *R* or *LogR*  Radius, equivalent to ``bin_centers``
+        *pdf*          Probability density function
+        *cdf*          Cumulative density function
+        *bin_centers*  The center point of each bin
+        *bin_edges*    Locations of bin divisions, including 1 more value than
+                       the number of bins
+        *bin_widths*   Useful for passing to the ``width`` argument of
+                       ``matplotlib.pyplot.bar``
+        ============== =======================================================
 
     Notes
     -----
@@ -813,10 +857,20 @@ def pc_curve_from_ibip(seq, sizes, im=None, sigma=0.072, theta=180, voxel_size=1
     return pc_curve
 
 
-def pc_curve_from_mio(sizes, im=None, sigma=0.072, theta=180, voxel_size=1,
+@deprecated ("This function is deprecated, use pc_curve_from_sizes instead")
+def pc_curve_from_mio(*args, **kwargs):
+    r"""
+    This function is deprecated.  Use ``pc_curve_from_sizes`` or
+    ``pc_curve_from_pressures`` instead.
+    """
+    return pc_curve_from_sizes(*args, **kwargs)
+
+
+def pc_curve_from_sizes(sizes, im=None, sigma=0.072, theta=180, voxel_size=1,
                       stepped=True):
     r"""
-    Produces a Pc-Snwp curve from the output of ``porosimetry``
+    Produces a Pc-Snwp curve given a map of sizes (capillary radii) at which
+    each voxel was invaded
 
     Parameters
     ----------
@@ -854,6 +908,7 @@ def pc_curve_from_mio(sizes, im=None, sigma=0.072, theta=180, voxel_size=1,
     if im is None:
         im = ~(sizes == 0)
     sz = np.unique(sizes)[:0:-1]
+    sz = np.hstack((sz[0]*2, sz))
     x = []
     y = []
     with tqdm(sz, **settings.tqdm) as pbar:
@@ -879,53 +934,162 @@ def pc_curve_from_mio(sizes, im=None, sigma=0.072, theta=180, voxel_size=1,
     return pc_curve
 
 
-def porosity(im):
+def pc_curve_from_pressures(pc, im):
     r"""
-    Calculates the porosity of an image assuming 1's are void space and 0's are
-    solid phase.
-
-    All other values are ignored, so this can also return the relative
-    fraction of a phase of interest in multiphase images.
+    Produces a Pc-Snwp curve given a map of the capillary pressure at which
+    each voxel was invaded
 
     Parameters
     ----------
+    pc : ndarray
+        An numpy array with each voxel indicating the applied capillary
+        pressure at which it was invaded.
     im : ndarray
-        Image of the void space with 1's indicating void phase (or ``True``)
-        and 0's indicating the solid phase (or ``False``).
+        An image of the porous materials with ``True`` indicating the void
+        space.
 
     Returns
     -------
-    porosity : float
-        Calculated as the sum of all 1's divided by the sum of all 1's and 0's.
-        Note that the denominator is *not* the total image size, so putting
-        values of 2 in some voxels, for instance, will remove those voxels
-        from consideration.
+    pc_curve : Results object
+        A custom object with the following data added as named attributes:
 
-    See Also
-    --------
-    phase_fraction
-    find_outer_region
-
-    Notes
-    -----
-    This function assumes void is represented by 1 and solid by 0, and all
-    other values are ignored.  This is useful, for example, for images of
-    cylindrical cores, where all voxels outside the core are labelled with 2.
-
-    Alternatively, images can be processed with ``find_disconnected_voxels``
-    to get an image of only blind pores.  This can then be added to the orignal
-    image such that blind pores have a value of 2, thus allowing the
-    calculation of accessible porosity, rather than overall porosity.
-
-    Examples
-    --------
-    `Click here
-    <https://porespy.org/examples/metrics/howtos/porosity.html>`_
-    to view online example.
+        =========  =========  =================================================
+        Attribute  Data Type  Description
+        =========  =========  =================================================
+        pc         ndarray    The capillary pressure, computed using the
+                              Washburn equation with the given fluid properties
+        snwp       ndarray    the fraction of void space filled by non-wetting
+                              phase at each pressure in ``pc``
+        =========  =========  =================================================
 
     """
-    im = np.array(im, dtype=int)
-    Vp = np.sum(im == 1)
-    Vs = np.sum(im == 0)
-    e = Vp / (Vs + Vp)
-    return e
+    tqdm = get_tqdm()
+    pressures = np.unique(pc[im])
+    pressures = pressures[pressures != 0]
+    pressures = np.hstack((pressures[0]/2, pressures))
+    y = []
+    Vp = im.sum()
+    temp = pc[im]
+    for p in tqdm(pressures, **settings.tqdm):
+        y.append(((temp <= p)*(temp > 0)).sum()/Vp)
+    pc_curve = Results()
+    pc_curve.pc = pressures
+    pc_curve.snwp = y
+    return pc_curve
+
+
+def satn_profile(satn, s, axis=0, span=10, mode='tile'):
+    r"""
+    Computes a saturation profile from an invasion image
+
+    Parameters
+    ----------
+    satn : ndarray
+        An image with each voxel indicating the saturation upon its
+        invasion.  0's are treated a solid and -1's are treated as uninvaded
+        void space.
+    s : scalar
+        The saturation value to use when thresholding the ``satn`` image
+    axis : int
+        The axis along which to profile should be measured
+    span : int
+        The number of layers to include in the moving average saturation
+        calculation.
+    mode : str
+        How the moving average should be applied. Options are:
+
+        ======== ==============================================================
+        mode     description
+        ======== ==============================================================
+        'tile'   The average is computed for discrete non-overlapping
+                 tiles of a size given by ``span``
+        'slide'  The average is computed in a moving window starting at
+                 ``span/2`` and sliding by a single voxel. This method
+                 provides more data points but is slower.
+        ======== ==============================================================
+
+    Returns
+    -------
+    results : dataclass
+        Results is a custom porespy class with the following attributes:
+        position : ndarray
+            The position along the given axis at which saturation values are
+            computed.  The units are in voxels.
+        saturation : ndarray
+            The computed saturation value at each position.
+    """
+    # @numba.njit()
+    def func(satn, s, axis, span, mode):
+        span = max(1, span)
+        satn = np.swapaxes(satn, 0, axis)
+        if mode == 'tile':
+            y = np.zeros(int(satn.shape[0]/span))
+            z = np.zeros_like(y)
+            for i in range(int(satn.shape[0]/span)):
+                void = satn[i*span:(i+1)*span, ...] != 0
+                nwp = (satn[i*span:(i+1)*span, ...] < s) \
+                    *(satn[i*span:(i+1)*span, ...] > 0)
+                y[i] = nwp.sum()/void.sum()
+                z[i] = i*span + (span-1)/2
+        if mode == 'slide':
+            y = np.zeros(int(satn.shape[0]-span))
+            z = np.zeros_like(y)
+            for i in range(int(satn.shape[0]-span)):
+                void = satn[i:i+span, ...] != 0
+                nwp = (satn[i:i+span, ...] < s)*(satn[i:i+span, ...] > 0)
+                y[i] = nwp.sum()/void.sum()
+                z[i] = i + (span-1)/2
+        return z, y
+
+    z, y = func(satn=satn, s=s, axis=axis, span=span, mode=mode)
+
+    class results(Results):
+        r"""
+
+        Attributes
+        ----------
+        position : ndarray
+            The position along the given axis at which saturation values are
+            computed.  The units are in voxels.
+        saturation : ndarray
+            The computed saturation value at each position
+
+        """
+        position = z
+        saturation = y
+
+    return results
+
+
+def find_h(profile, smin=0.1, smax=0.9):
+    r"""
+    Given a saturation profile, compute the height between given bounds
+
+    Parameters
+    ----------
+    profile : tuple
+        The profile and position values for the saturation profile
+    smin : float
+        The minimum value of saturation to consider as the end of the profile
+    smax : float
+        The maximum value of saturation to consider as the start of the profile
+
+    Returns
+    -------
+
+    """
+    zmax = np.inf
+    zmin = np.inf
+    satn = profile
+    L = len(satn)
+    for i, s in enumerate(satn):
+        if (zmax == np.inf) and (satn[i] < smax):
+            zmax = i
+            smax = satn[i]
+    satn = satn_profile[-1::-1]
+    for i, s in enumerate(satn):
+        if (zmin == np.inf) and (satn[i] > smin):
+            zmin = i
+            smin = satn[i]
+    return (L-zmin, zmax, smin, smax)
+

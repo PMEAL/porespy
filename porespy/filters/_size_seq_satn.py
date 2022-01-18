@@ -3,6 +3,14 @@ from porespy.tools import make_contiguous
 from scipy.stats import rankdata
 
 
+__all__ = [
+    'size_to_seq',
+    'size_to_satn',
+    'seq_to_satn',
+    'pc_to_satn',
+    ]
+
+
 def size_to_seq(size, im=None, bins=None):
     r"""
     Converts an image of invasion size values into sequence values
@@ -95,8 +103,6 @@ def seq_to_satn(seq, im=None):
     r"""
     Converts an image of invasion sequence values to saturation values.
 
-    This is meant to accept the output of the ``ibip`` function.
-
     Parameters
     ----------
     seq : ndarray
@@ -132,4 +138,30 @@ def seq_to_satn(seq, im=None):
     satn = c[seq]/(seq.size - solid_mask.sum())
     satn[solid_mask] = 0
     satn[uninvaded_mask] = -1
+    return satn
+
+
+def pc_to_satn(pc, im=None):
+    r"""
+    Converts an image of capillary entry pressures to saturation values
+
+    Parameters
+    ----------
+    pc : ndarray
+        A Numpy array with the value in each voxel indicating the capillary
+        pressure at which it was invaded
+    im : ndarray
+        A Numpy array with ``True`` values indicating the void space.  If not
+        provided then all 0 values in ``pc`` are assumed as solid and <0 are
+        assumed to be uninvaded.
+
+    Returns
+    -------
+    satn : ndarray
+        A Numpy array with each voxel value indicating the global saturation
+        at which it was invaded.
+
+    """
+    temp = make_contiguous(pc.astype(int))
+    satn = seq_to_satn(seq=temp, im=im)
     return satn
