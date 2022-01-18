@@ -212,7 +212,10 @@ def pseudo_electrostatic_packing(im, r, sites=None,
         sites = (spim.maximum_filter(dt2, footprint=strel) == dt2)*im
     dt = edt(sites == 0).astype(int)
     sites = (sites == 0)*(dt_im >= (r - protrusion))
-    dtmax = int(dt_im.max()*2)
+    if dt_im.max() < np.inf:
+        dtmax = int(dt_im.max()*2)
+    else:
+        dtmax = min(im.shape)
     dt[~sites] = dtmax
     r = r + clearance
     # Get initial options
