@@ -71,7 +71,8 @@ setup(
         'scikit-image',
         'scipy',
         'tqdm',
-        'trimesh'
+        'trimesh',
+        'deprecated',
     ],
     author='PoreSpy Team',
     author_email='jgostick@gmail.com',
