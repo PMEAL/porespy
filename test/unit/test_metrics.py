@@ -182,24 +182,21 @@ class MetricsTest():
         rev = ps.metrics.representative_elementary_volume(im)
         assert_allclose(np.average(rev.porosity), im.sum() / im.size, rtol=1e-1)
 
-    def test_geometric_tortuosity_2d(self):
-        pass
+    #def test_geometric_tortuosity_2d(self):
         # np.random.seed(0)
         # im = ps.generators.blobs(shape=[300, 300], porosity=0.6, blobiness=2)
         # out = ps.metrics.geometrical_tortuosity(im)
         # assert np.size(out) == 1
         # assert out >= 1
 
-    def test_geometric_tortuosity_3d(self):
-        pass
+    # def test_geometric_tortuosity_3d(self):
         # np.random.seed(0)
         # im = ps.generators.blobs(shape=[100, 100, 100], porosity=0.6, blobiness=2)
         # out = ps.metrics.geometrical_tortuosity(im)
         # assert np.size(out) == 1
         # assert out >= 1
 
-    def test_geometric_tortuosity_points_2d(self):
-        pass
+    # def test_geometric_tortuosity_points_2d(self):
         # This function is not quite ready yet
         # np.random.seed(0)
         # im = ps.generators.blobs(shape=[300, 300], porosity=0.6, blobiness=2)
@@ -208,8 +205,7 @@ class MetricsTest():
         # assert np.size(out[1]) ==1
         # assert out[1] >= 1
 
-    def test_geometric_tortuosity_points_3d(self):
-        pass
+    # def test_geometric_tortuosity_points_3d(self):
         # This function is not quite ready yet
         # np.random.seed(0)
         # im = ps.generators.blobs(shape=[50, 50, 50], porosity=0.6, blobiness=2)
@@ -221,7 +217,7 @@ class MetricsTest():
     def test_pc_curve_from_ibip_and_mio(self):
         im = ps.generators.blobs(shape=[100, 100], porosity=0.7)
         sizes = ps.filters.porosimetry(im=im)
-        pc1 = ps.metrics.pc_curve_from_mio(sizes=sizes)
+        pc1 = ps.metrics.pc_curve_from_sizes(sizes=sizes)
         seq, sizes = ps.filters.ibip(im=im)
         pc2 = ps.metrics.pc_curve_from_ibip(sizes=sizes, seq=seq)
         assert hasattr(pc1, 'pc')
