@@ -517,6 +517,13 @@ class FilterTest():
         hits = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 16, 17, 19, 31, 32, 37]
         assert np.all(hits == np.unique(s)[1:])
 
+    def test_drainage_with_gravity(self):
+        im = ps.generators.blobs(shape=[100, 100])
+        dt = edt(im)
+        pc = -2*0.072*np.cos(np.deg2rad(180))/dt
+        drn = ps.filters.drainage(pc=pc, im=im, voxel_size=1e-4)
+        assert drn.max() == 98.2439956665039
+
 
 if __name__ == '__main__':
     t = FilterTest()
