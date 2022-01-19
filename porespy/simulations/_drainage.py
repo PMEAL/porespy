@@ -3,7 +3,7 @@ from edt import edt
 import numba
 from skimage.morphology import skeletonize_3d
 from porespy.filters import trim_disconnected_blobs, find_trapped_regions
-from porespy.filters import pc_to_satn
+from porespy.filters import pc_to_satn, satn_to_seq, seq_to_satn
 from porespy import settings
 from porespy.tools import get_tqdm
 from porespy.tools import Results
@@ -230,11 +230,13 @@ def drainage(im, voxel_size, pc=None, inlets=None, outlets=None, bins=25,
     results.im_satn = pc_to_satn(pc=inv, im=im)
     results.pc = _pccurve.pc
     results.snwp = _pccurve.snwp
+    results.trapped = None
 
     if outlets is not None:
-        seq = np.digitize(results.im_satn, bins=np.linspace(0, 1, len(Ps)))
-        seq = (seq.astype(int) - 1)*im
+        seq = satn_to_seq(satn=results.im_satn, im=im)
         trapped = find_trapped_regions(seq=seq, outlets=outlets)
-        results.trapped = trapped
+        results.im_trapped = trapped
+        satn = seq_to_satn(seq=seq*trapped, im=im)
+        results.im_satn = satn
 
     return results

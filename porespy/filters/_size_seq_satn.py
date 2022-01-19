@@ -8,7 +8,8 @@ __all__ = [
     'size_to_satn',
     'seq_to_satn',
     'pc_to_satn',
-    ]
+    'satn_to_seq',
+]
 
 
 def size_to_seq(size, im=None, bins=None):
@@ -165,3 +166,30 @@ def pc_to_satn(pc, im=None):
     temp = make_contiguous(pc.astype(int))
     satn = seq_to_satn(seq=temp, im=im)
     return satn
+
+
+def satn_to_seq(satn, im):
+    r"""
+    Converts an image of nonwetting phase saturations to invasion sequence
+    values
+
+    Parameters
+    ----------
+    satn : ndarray
+        A Numpy array with the value in each voxel indicating the global
+        saturation at the point it was invaded
+    im : ndarray
+        A Numpy array with ``True`` values indicating the void space.
+
+    Returns
+    -------
+    satn : ndarray
+        A Numpy array with each voxel value indicating the global saturation
+        at which it was invaded. Solid voxels are indicated by 0 and
+        uninvaded by -1.
+
+    """
+    values = np.unique(satn)
+    seq = np.digitize(satn, bins=np.linspace(0, 1, len(values)))
+    seq = (seq.astype(int) - 1)*im
+    return seq
