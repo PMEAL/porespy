@@ -89,4 +89,3 @@ from ._ibip import ibip
 from ._ibip import find_trapped_regions
 from ._ibip_gpu import ibip_gpu
 from ._ibip_gpu import ibip_gpu
-from .__drainage__ import drainage

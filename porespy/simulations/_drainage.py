@@ -2,6 +2,7 @@ import numpy as np
 from edt import edt
 import numba
 import matplotlib.pyplot as plt
+from skimage.morphology import skeletonize_3d
 from porespy.filters import trim_disconnected_blobs
 from porespy import settings
 from porespy.tools import get_tqdm
@@ -106,56 +107,60 @@ def _make_ball(r, smooth=True):  # pragma: no cover
     return s
 
 
-def drainage(pc, im, inlets=None, bins=25, rho=1000, g=9.81, voxel_size=1):
+def drainage(im, voxel_size, pc=None, inlets=None, bins=25,
+             delta_rho=1000, g=9.81, sigma=0.072, theta=180):
     r"""
     Simulate drainage using image-based sphere insertion, optionally including
     gravity
 
     Parameters
     ----------
-    pc : ndarray
-        An array containing precomputed capillary pressure values in each
-        voxel. These values are typically obtained using the Washburn
-        equation with user-specified surface tension and contact angle,
-        along with the distance transform values for the radius.
-    im : ndarray, optional
+    im : ndarray
         The image of the porous media with ``True`` values indicating the
         void space.
+    voxel_size : float
+        The resolution of the image in meters per voxel edge.
+    pc : ndarray, optional
+        An array containing precomputed capillary pressure values in each
+        voxel. If not provided then the Washburn equation is used with the
+        provided values of ``sigma`` and ``theta``. If the image is 2D only
+        1 principle radii of curvature is included.
     inlets : ndarray (default = x0)
         A boolean image the same shape as ``im``, with ``True`` values
-        indicating the inlet locations. See Notes.  If not specified it is
+        indicating the inlet locations. See NotesIf not specified it is
         assumed that the invading phase enters from the bottom (x=0)
     bins : int or array_like (default = 25)
         The range of pressures to apply. If an integer is given
         then bins will be created between the lowest and highest pressures
-        in the invasion pressure map, given by
-        :math:`P = \frac{-2 \sigma}{r} + \rho g h` where :math:`r` is the
-        local radius determined from a distance transform on ``im`` and
-        :math:`h` is the x-dimension of the image. If a list is given, each
-        value in the list is used directly in order.
-    rho : float (default = 997)
+        in the ``pc``.  If a list is given, each value in the list is used
+        directly in order.
+    delta_rho : float (default = 997)
         The density difference between the invading and defending phases.
-        e.g. If air is displacing water this value should be -997 (1-998).
+        Note that if air is displacing water this value should be -997 (1-998).
     g : float (default = 9.81)
         The gravitational constant prevailing for the simulation. The default
         is 9.81. If the domain is on an angle, such as a tilted micromodel,
         this value should be scaled appropriately by the user
         (i.e. g = 9.81 sin(alpha) where alpha is the angle relative to the
-        horizonal).  Setting this value to removes any gravity effects.
-    voxel_size : float
-        The resolution of the image in meters per voxel edge
+        horizonal).  Setting this value to zeor removes any gravity effects.
+    sigma : float (default = 0.072)
+        The surface tension of the fluid pair. If ``pc`` is provided this is
+        ignored.
+    theta : float (defaut = 180)
+        The contact angle of the sytem in degrees.  If ``pc`` is provded this
+        is ignored.
 
     Returns
     -------
     results : Results object
         A dataclass-like object with the following attributes:
 
-        ========== ========= ==================================================
-        Attribute  Datatype  Description
-        ========== ========= ==================================================
-        pc_inv     ndarray   A numpy array with each voxel value indicating
-                             the capillary pressure at which it was invaded
-        ========== ========= ==================================================
+    ========== ========= ======================================================
+    Attribute  Datatype  Description
+    ========== ========= ======================================================
+    pc_inv     ndarray   A numpy array with each voxel value indicating the
+                         capillary pressure at which it was invaded
+    ========== ========= ======================================================
 
     Notes
     -----
@@ -166,14 +171,16 @@ def drainage(pc, im, inlets=None, bins=25, rho=1000, g=9.81, voxel_size=1):
 
     """
     im = np.array(im, dtype=bool)
-    pc[~im] = 0
     dt = edt(im)
+    if pc is None:
+        pc = -(im.ndim-1)*sigma*np.cos(np.deg2rad(theta))/(dt*voxel_size)
+    pc[~im] = 0  # Remove any infs or nans from pc computation
 
     # Generate image for correcting entry pressure by gravitational effects
     h = np.ones_like(im, dtype=bool)
     h[0, ...] = False
     h = (edt(h) + 1)*voxel_size   # This could be done quicker using clever logic
-    rgh = rho*g*h
+    rgh = delta_rho*g*h
     fn = pc + rgh
 
     if inlets is None:
@@ -181,7 +188,9 @@ def drainage(pc, im, inlets=None, bins=25, rho=1000, g=9.81, voxel_size=1):
         inlets[0, ...] = True
 
     if isinstance(bins, int):  # Use values fn for invasion steps
-        Ps = np.linspace(fn[~np.isinf(fn)].min(), fn[~np.isinf(fn)].max(), bins)
+        sk = skeletonize_3d(im) > 0
+        temp = fn[sk]
+        Ps = np.linspace(temp.min(), temp.max(), bins)
     else:
         Ps = bins
 

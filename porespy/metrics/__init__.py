@@ -54,10 +54,9 @@ from ._funcs import representative_elementary_volume
 from ._funcs import satn_profile
 from ._funcs import two_point_correlation
 from ._funcs import phase_fraction
+from ._funcs import pc_curve
 from ._funcs import pc_curve_from_ibip
 from ._funcs import pc_curve_from_mio
-from ._funcs import pc_curve_from_sizes
-from ._funcs import pc_curve_from_pressures
 from ._fractal_dims import boxcount
 from ._meshtools import mesh_surface_area
 from ._meshtools import region_interface_areas

@@ -863,90 +863,41 @@ def pc_curve_from_mio(*args, **kwargs):
     This function is deprecated.  Use ``pc_curve_from_sizes`` or
     ``pc_curve_from_pressures`` instead.
     """
-    return pc_curve_from_sizes(*args, **kwargs)
+    return pc_curve(*args, **kwargs)
 
 
-def pc_curve_from_sizes(sizes, im=None, sigma=0.072, theta=180, voxel_size=1,
-                      stepped=True):
+def pc_curve(im, sizes=None, pressures=None,
+             sigma=0.072, theta=180, voxel_size=1):
     r"""
-    Produces a Pc-Snwp curve given a map of sizes (capillary radii) at which
-    each voxel was invaded
+    Produces a Pc-Snwp curve given a map of meniscus radii or capillary
+    pressures at which each voxel was invaded
 
     Parameters
     ----------
-    sizes : ndarray
-        The image of invasion sizes returned from ``porosimetry``
     im : ndarray
-        The voxel image of the porous media.  It not provided then the void
-        space is assumed to be ``im = ~(sizes == 0)``.
-    sigma : float
-        The surface tension of the fluid-fluid system of interest
+        The voxel image of the porous media with ``True`` values indicating
+        the void space
+    sizes : ndarray, optional
+        An image containing the sphere radii at which each voxel was invaded
+        during an invasion experiment.
+    pressures : ndarray, optional
+        An image containing the capillary pressures  at which each voxel was
+        invaded during an invasion experiment.
+    sigma : float, optional
+        The surface tension of the fluid-fluid system of interest.
+        This argument is ignored if ``pressures`` are specified, otherwise it
+        is used in the Washburn equation to convert ``sizes`` to capillary
+        pressures.
     theta : float
-        The contact angle measured through the invading phase in degrees
+        The contact angle measured through the invading phase in degrees.
+        This argument is ignored if ``pressures`` are specified, otherwise it
+        is used in the Washburn equation to convert ``sizes`` to capillary
+        pressures.
     voxel_size : float
-        The voxel resolution of the image
-    stepped : boolean
-        If ``True`` (default) the returned data has steps between each point
-        instead of connecting points directly with sloped lines.
-
-    Returns
-    -------
-    pc_curve : Results object
-        A custom object with the following data added as named attributes:
-
-        'pc'
-            The capillary pressure, computed using the Washburn equation with
-            the given fluid properties
-
-        'snwp'
-            the fraction of void space filled by non-wetting phase.
-
-        If ``stepped`` was set to ``True`` then the values include the corners
-        of the steps, which may be helpful for plotting.
-
-    """
-    if im is None:
-        im = ~(sizes == 0)
-    sz = np.unique(sizes)[:0:-1]
-    sz = np.hstack((sz[0]*2, sz))
-    x = []
-    y = []
-    with tqdm(sz, **settings.tqdm) as pbar:
-        for n in sz:
-            pbar.update()
-            r = n*voxel_size
-            pc = -2*sigma*np.cos(np.deg2rad(theta))/r
-            x.append(pc)
-            snwp = ((sizes >= n)*(im == 1)).sum()/im.sum()
-            y.append(snwp)
-    if stepped:
-        pc = x.copy()
-        snwp = y.copy()
-        for i in range(0, len(x)-1):
-            j = 2*i + 1
-            pc.insert(j, x[i+1])
-            snwp.insert(j, y[i])
-        x = pc
-        y = snwp
-    pc_curve = Results()
-    pc_curve.pc = x
-    pc_curve.snwp = y
-    return pc_curve
-
-
-def pc_curve_from_pressures(pc, im):
-    r"""
-    Produces a Pc-Snwp curve given a map of the capillary pressure at which
-    each voxel was invaded
-
-    Parameters
-    ----------
-    pc : ndarray
-        An numpy array with each voxel indicating the applied capillary
-        pressure at which it was invaded.
-    im : ndarray
-        An image of the porous materials with ``True`` indicating the void
-        space.
+        The voxel resolution of the image.
+        This argument is ignored if ``pressures`` are specified, otherwise it
+        is used in the Washburn equation to convert ``sizes`` to capillary
+        pressures.
 
     Returns
     -------
@@ -956,40 +907,72 @@ def pc_curve_from_pressures(pc, im):
         =========  =========  =================================================
         Attribute  Data Type  Description
         =========  =========  =================================================
-        pc         ndarray    The capillary pressure, computed using the
-                              Washburn equation with the given fluid properties
-        snwp       ndarray    the fraction of void space filled by non-wetting
+        pc         ndarray    The capillary pressure, either as given in
+                              ``pressures`` or computed from ``sizes`` (see
+                              Notes).
+        snwp       ndarray    The fraction of void space filled by non-wetting
                               phase at each pressure in ``pc``
         =========  =========  =================================================
 
+    Notes
+    -----
+    If ``sizes`` is provided, then the Washburn equation is used to convert
+    the radii to capillary pressures, using the given ``sigma`` and ``theta``
+    values, along with the ``voxel_size`` if the values are in voxel radii.
+    For more control over how capillary pressure model, it can be computed by
+    hand, for example:
+
+        $$ p = \frac{-2*0.072*np.cos(np.deg2rad(180))}{sizes \cdot voxel_size} $$
+
+    then passed in as the ``pressures`` argument.
+
     """
     tqdm = get_tqdm()
-    pressures = np.unique(pc[im])
-    pressures = pressures[pressures != 0]
-    pressures = np.hstack((pressures[0]/2, pressures))
-    y = []
-    Vp = im.sum()
-    temp = pc[im]
-    for p in tqdm(pressures, **settings.tqdm):
-        y.append(((temp <= p)*(temp > 0)).sum()/Vp)
-    pc_curve = Results()
-    pc_curve.pc = pressures
-    pc_curve.snwp = y
+    if sizes is not None:
+        if im is None:
+            im = ~(sizes == 0)
+        sz = np.unique(sizes)[:0:-1]
+        sz = np.hstack((sz[0]*2, sz))
+        x = []
+        y = []
+        with tqdm(sz, **settings.tqdm) as pbar:
+            for n in sz:
+                pbar.update()
+                r = n*voxel_size
+                pc = -2*sigma*np.cos(np.deg2rad(theta))/r
+                x.append(pc)
+                snwp = ((sizes >= n)*(im == 1)).sum()/im.sum()
+                y.append(snwp)
+        pc_curve = Results()
+        pc_curve.pc = x
+        pc_curve.snwp = y
+    elif pressures is not None:
+        pressures = np.unique(pc[im])
+        pressures = pressures[pressures != 0]
+        pressures = np.hstack((pressures[0]/2, pressures))
+        y = []
+        Vp = im.sum()
+        temp = pc[im]
+        for p in tqdm(pressures, **settings.tqdm):
+            y.append(((temp <= p)*(temp > 0)).sum()/Vp)
+        pc_curve = Results()
+        pc_curve.pc = pressures
+        pc_curve.snwp = y
     return pc_curve
 
 
 def satn_profile(satn, s, axis=0, span=10, mode='tile'):
     r"""
-    Computes a saturation profile from an invasion image
+    Computes a saturation profile from an image of fluid invasion
 
     Parameters
     ----------
     satn : ndarray
         An image with each voxel indicating the saturation upon its
-        invasion.  0's are treated a solid and -1's are treated as uninvaded
+        invasion.  0's are treated as solid and -1's are treated as uninvaded
         void space.
     s : scalar
-        The saturation value to use when thresholding the ``satn`` image
+        The global saturation value for which the profile is desired
     axis : int
         The axis along which to profile should be measured
     span : int
@@ -1012,11 +995,15 @@ def satn_profile(satn, s, axis=0, span=10, mode='tile'):
     -------
     results : dataclass
         Results is a custom porespy class with the following attributes:
-        position : ndarray
-            The position along the given axis at which saturation values are
-            computed.  The units are in voxels.
-        saturation : ndarray
-            The computed saturation value at each position.
+
+        ========== =========  =================================================
+        Attribute  Data Type  Description
+        ========== =========  =================================================
+        position   ndarray    The position along the given axis at which
+                              saturation values are computed.  The units are
+                              in voxels.
+        saturation ndarray    The local saturation value at each position.
+        ========== =========  =================================================
     """
     # @numba.njit()
     def func(satn, s, axis, span, mode):
@@ -1061,7 +1048,7 @@ def satn_profile(satn, s, axis=0, span=10, mode='tile'):
     return results
 
 
-def find_h(profile, smin=0.1, smax=0.9):
+def find_h(profile, smin=0.01, smax=0.99):
     r"""
     Given a saturation profile, compute the height between given bounds
 
@@ -1076,6 +1063,8 @@ def find_h(profile, smin=0.1, smax=0.9):
 
     Returns
     -------
+    h : scalar
+        The height of the two-phase zone in ``profile``
 
     """
     zmax = np.inf
@@ -1092,4 +1081,3 @@ def find_h(profile, smin=0.1, smax=0.9):
             zmin = i
             smin = satn[i]
     return (L-zmin, zmax, smin, smax)
-

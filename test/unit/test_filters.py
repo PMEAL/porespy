@@ -518,11 +518,15 @@ class FilterTest():
         assert np.all(hits == np.unique(s)[1:])
 
     def test_drainage_with_gravity(self):
+        np.random.seed(0)
         im = ps.generators.blobs(shape=[100, 100])
         dt = edt(im)
         pc = -2*0.072*np.cos(np.deg2rad(180))/dt
-        drn = ps.filters.drainage(pc=pc, im=im, voxel_size=1e-4)
-        assert drn.max() == 98.2439956665039
+        np.testing.assert_approx_equal(pc[im].max(), 0.144)
+        drn = ps.filters.drainage(pc=pc, im=im, voxel_size=1e-5, g=9.81)
+        np.testing.assert_approx_equal(drn.max(), 9.953999)
+        drn2 = ps.filters.drainage(pc=pc, im=im, voxel_size=1e-4, g=0)
+        np.testing.assert_approx_equal(drn2[im].max(), 0.144)
 
 
 if __name__ == '__main__':

@@ -67,9 +67,11 @@ from . import filters
 from . import metrics
 from . import networks
 from . import generators
-from . import dns
+from . import simulations
 from . import visualization
 from . import io
+# The dns module will be deprecated in V3, in favor of simulations
+from . import dns
 
 from .visualization import imshow
 

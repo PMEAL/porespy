@@ -202,7 +202,7 @@ class MetricsTest():
         # im = ps.generators.blobs(shape=[300, 300], porosity=0.6, blobiness=2)
         # out = ps.metrics.geometrical_tortuosity_points(im)
         # assert np.shape(out[0])[0] ==np.shape(out[0])[1]
-        # assert np.size(out[1]) ==1
+        # assert np.size(out[1]) == 1
         # assert out[1] >= 1
 
     # def test_geometric_tortuosity_points_3d(self):
@@ -211,19 +211,26 @@ class MetricsTest():
         # im = ps.generators.blobs(shape=[50, 50, 50], porosity=0.6, blobiness=2)
         # out = ps.metrics.geometrical_tortuosity_points(im)
         # assert np.shape(out[0])[0] ==np.shape(out[0])[1]
-        # assert np.size(out[1]) ==1
+        # assert np.size(out[1]) == 1
         # assert out[1] >= 1
 
-    def test_pc_curve_from_ibip_and_mio(self):
+    def test_pc_curve_from_sizes(self):
         im = ps.generators.blobs(shape=[100, 100], porosity=0.7)
         sizes = ps.filters.porosimetry(im=im)
-        pc1 = ps.metrics.pc_curve_from_sizes(sizes=sizes)
+        pc = ps.metrics.pc_curve_from_sizes(sizes=sizes)
+        assert hasattr(pc, 'pc')
+        assert hasattr(pc, 'snwp')
+
+    def test_pc_curve_from_ibib(self):
+        im = ps.generators.blobs(shape=[100, 100], porosity=0.7)
         seq, sizes = ps.filters.ibip(im=im)
-        pc2 = ps.metrics.pc_curve_from_ibip(sizes=sizes, seq=seq)
-        assert hasattr(pc1, 'pc')
-        assert hasattr(pc1, 'snwp')
-        assert hasattr(pc2, 'pc')
-        assert hasattr(pc2, 'snwp')
+        pc = ps.metrics.pc_curve_from_ibip(sizes=sizes, seq=seq)
+        assert hasattr(pc, 'pc')
+        assert hasattr(pc, 'snwp')
+
+    def test_pc_curve_from_pressures(self):
+        im = ps.generators.blobs(shape=[100, 100], porosity=0.7)
+
 
 
 if __name__ == '__main__':
