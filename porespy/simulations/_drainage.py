@@ -1,13 +1,13 @@
 import numpy as np
 from edt import edt
 import numba
-import matplotlib.pyplot as plt
 from skimage.morphology import skeletonize_3d
-from porespy.filters import trim_disconnected_blobs
+from porespy.filters import trim_disconnected_blobs, find_trapped_regions
+from porespy.filters import pc_to_satn
 from porespy import settings
 from porespy.tools import get_tqdm
 from porespy.tools import Results
-from scipy.ndimage import label
+from porespy.metrics import pc_curve
 tqdm = get_tqdm()
 
 
@@ -107,7 +107,7 @@ def _make_ball(r, smooth=True):  # pragma: no cover
     return s
 
 
-def drainage(im, voxel_size, pc=None, inlets=None, bins=25,
+def drainage(im, voxel_size, pc=None, inlets=None, outlets=None, bins=25,
              delta_rho=1000, g=9.81, sigma=0.072, theta=180):
     r"""
     Simulate drainage using image-based sphere insertion, optionally including
@@ -127,8 +127,13 @@ def drainage(im, voxel_size, pc=None, inlets=None, bins=25,
         1 principle radii of curvature is included.
     inlets : ndarray (default = x0)
         A boolean image the same shape as ``im``, with ``True`` values
-        indicating the inlet locations. See NotesIf not specified it is
-        assumed that the invading phase enters from the bottom (x=0)
+        indicating the inlet locations. See Notes. If not specified it is
+        assumed that the invading phase enters from the bottom (x=0).
+    outlets : ndarray, optional
+        Similar to ``inlets`` except defining the outlets. This image is used
+        to assess trapping.  \If not provided then trapping is ignored,
+        otherwise a mask indicating which voxels were trapped is included
+        amoung the returned data.
     bins : int or array_like (default = 25)
         The range of pressures to apply. If an integer is given
         then bins will be created between the lowest and highest pressures
@@ -155,12 +160,17 @@ def drainage(im, voxel_size, pc=None, inlets=None, bins=25,
     results : Results object
         A dataclass-like object with the following attributes:
 
-    ========== ========= ======================================================
-    Attribute  Datatype  Description
-    ========== ========= ======================================================
-    pc_inv     ndarray   A numpy array with each voxel value indicating the
-                         capillary pressure at which it was invaded
-    ========== ========= ======================================================
+    ========== ================================================================
+    Attribute  Description
+    ========== ================================================================
+    im_pc      A numpy array with each voxel value indicating the
+               capillary pressure at which it was invaded
+    im_satn    A numpy array with each voxel value indicating the global
+               saturation value at the point it was invaded
+    pc         1D array of capillary pressure values that were applied
+    swnp       1D array of non-wetting phase saturations for each applied
+               value of capillary pressure (``pc``).
+    ========== ===============================================================
 
     Notes
     -----
@@ -188,9 +198,9 @@ def drainage(im, voxel_size, pc=None, inlets=None, bins=25,
         inlets[0, ...] = True
 
     if isinstance(bins, int):  # Use values fn for invasion steps
-        sk = skeletonize_3d(im) > 0
+        sk = skeletonize_3d(im) > 0  # This is need to mask meaningful values
         temp = fn[sk]
-        Ps = np.linspace(temp.min(), temp.max(), bins)
+        Ps = np.logspace(np.log10(temp.min()), np.log10(temp.max()), bins)
     else:
         Ps = bins
 
@@ -212,4 +222,19 @@ def drainage(im, voxel_size, pc=None, inlets=None, bins=25,
         radii = dt[coords].astype(int)
         # Insert spheres are new locations of given radii
         inv = insert_disks_at_points(inv, np.vstack(coords), radii, p, smooth=True)
-    return inv
+
+    _pccurve = pc_curve(im=im, pressures=inv)
+
+    results = Results()
+    results.im_pc = inv
+    results.im_satn = pc_to_satn(pc=inv, im=im)
+    results.pc = _pccurve.pc
+    results.snwp = _pccurve.snwp
+
+    if outlets is not None:
+        seq = np.digitize(results.im_satn, bins=np.linspace(0, 1, len(Ps)))
+        seq = (seq.astype(int) - 1)*im
+        trapped = find_trapped_regions(seq=seq, outlets=outlets)
+        results.trapped = trapped
+
+    return results

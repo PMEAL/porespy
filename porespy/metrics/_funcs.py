@@ -947,16 +947,16 @@ def pc_curve(im, sizes=None, pressures=None,
         pc_curve.pc = x
         pc_curve.snwp = y
     elif pressures is not None:
-        pressures = np.unique(pc[im])
-        pressures = pressures[pressures != 0]
-        pressures = np.hstack((pressures[0]/2, pressures))
+        pc = np.unique(pressures[im])
+        pc = pc[pc != 0]
+        pc = np.hstack((pc[0]/2, pc))
         y = []
         Vp = im.sum()
-        temp = pc[im]
-        for p in tqdm(pressures, **settings.tqdm):
+        temp = pressures[im]
+        for p in tqdm(pc, **settings.tqdm):
             y.append(((temp <= p)*(temp > 0)).sum()/Vp)
         pc_curve = Results()
-        pc_curve.pc = pressures
+        pc_curve.pc = pc
         pc_curve.snwp = y
     return pc_curve
 
