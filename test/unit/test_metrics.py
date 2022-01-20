@@ -217,7 +217,7 @@ class MetricsTest():
     def test_pc_curve(self):
         im = ps.generators.blobs(shape=[100, 100], porosity=0.7)
         sizes = ps.filters.porosimetry(im=im)
-        pc = ps.metrics.pc_curve(sizes=sizes)
+        pc = ps.metrics.pc_curve(sizes=sizes, im=im)
         assert hasattr(pc, 'pc')
         assert hasattr(pc, 'snwp')
 
