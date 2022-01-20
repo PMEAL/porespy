@@ -1,5 +1,10 @@
 from deprecated import deprecated
-from porespy.simulations import tortuosity as _tortuosity
+from porespy.simulations import tortuosity_df as _tortuosity
+
+
+__all__ = [
+    'tortuosity',
+]
 
 
 @deprecated("The dns module has been renamed simulations and tortuosity was moved there")

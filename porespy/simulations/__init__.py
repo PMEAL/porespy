@@ -18,5 +18,5 @@ This module contains routines for performing simulations directly on images
 
 """
 
-from ._drainage import drainage
-from ._dns import tortuosity
+from ._drainage import *
+from ._dns import *

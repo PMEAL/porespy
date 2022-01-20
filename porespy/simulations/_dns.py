@@ -8,7 +8,12 @@ from porespy.generators import faces
 ws = op.Workspace()
 
 
-def tortuosity(im, axis):
+__all_ = [
+    'tortuosity_fd',
+]
+
+
+def tortuosity_fd(im, axis):
     r"""
     Calculates the tortuosity of image in the specified direction.
 

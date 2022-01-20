@@ -11,6 +11,11 @@ from porespy.metrics import pc_curve
 tqdm = get_tqdm()
 
 
+__all__ = [
+    'drainage',
+]
+
+
 @numba.jit(nopython=True, parallel=False)
 def insert_disks_at_points(im, coords, radii, v, smooth=True):  # pragma: no cover
     r"""
