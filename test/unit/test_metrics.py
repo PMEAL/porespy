@@ -214,10 +214,10 @@ class MetricsTest():
         # assert np.size(out[1]) == 1
         # assert out[1] >= 1
 
-    def test_pc_curve_from_sizes(self):
+    def test_pc_curve(self):
         im = ps.generators.blobs(shape=[100, 100], porosity=0.7)
         sizes = ps.filters.porosimetry(im=im)
-        pc = ps.metrics.pc_curve_from_sizes(sizes=sizes)
+        pc = ps.metrics.pc_curve(sizes=sizes)
         assert hasattr(pc, 'pc')
         assert hasattr(pc, 'snwp')
 
@@ -227,10 +227,6 @@ class MetricsTest():
         pc = ps.metrics.pc_curve_from_ibip(sizes=sizes, seq=seq)
         assert hasattr(pc, 'pc')
         assert hasattr(pc, 'snwp')
-
-    def test_pc_curve_from_pressures(self):
-        im = ps.generators.blobs(shape=[100, 100], porosity=0.7)
-
 
 
 if __name__ == '__main__':
