@@ -112,8 +112,8 @@ def _make_ball(r, smooth=True):  # pragma: no cover
     return s
 
 
-def drainage(im, voxel_size, pc=None, inlets=None, outlets=None, bins=25,
-             delta_rho=1000, g=9.81, sigma=0.072, theta=180):
+def drainage(im, voxel_size, pc=None, inlets=None, outlets=None, residual=None,
+             bins=25, delta_rho=1000, g=9.81, sigma=0.072, theta=180):
     r"""
     Simulate drainage using image-based sphere insertion, optionally including
     gravity
@@ -139,6 +139,13 @@ def drainage(im, voxel_size, pc=None, inlets=None, outlets=None, bins=25,
         to assess trapping.  \If not provided then trapping is ignored,
         otherwise a mask indicating which voxels were trapped is included
         amoung the returned data.
+    residual : ndarray, optional
+        A boolean array indicating the locations of any residual defending
+        phase. This is added to the intermediate image prior to trimming
+        disconnected clusters, so will create connections to some clusters
+        that would otherwise be removed. The residual phase is indicated
+        in the final image by ``-np.inf`` values, since there are invaded at
+        all applied capillary pressures.
     bins : int or array_like (default = 25)
         The range of pressures to apply. If an integer is given
         then bins will be created between the lowest and highest pressures
@@ -169,13 +176,13 @@ def drainage(im, voxel_size, pc=None, inlets=None, outlets=None, bins=25,
     Attribute  Description
     ========== ================================================================
     im_pc      A numpy array with each voxel value indicating the
-               capillary pressure at which it was invaded
+               capillary pressure at which it was invaded.
     im_satn    A numpy array with each voxel value indicating the global
                saturation value at the point it was invaded
     pc         1D array of capillary pressure values that were applied
     swnp       1D array of non-wetting phase saturations for each applied
                value of capillary pressure (``pc``).
-    ========== ===============================================================
+    ========== ================================================================
 
     Notes
     -----
@@ -227,6 +234,14 @@ def drainage(im, voxel_size, pc=None, inlets=None, outlets=None, bins=25,
         radii = dt[coords].astype(int)
         # Insert spheres are new locations of given radii
         inv = insert_disks_at_points(inv, np.vstack(coords), radii, p, smooth=True)
+
+    # # Set uninvaded voxels to inf
+    inv[inv == 0] = np.inf
+    inv[~im] = 0
+
+    # Add residual if given
+    if residual is not None:
+        inv[residual] = -np.inf
 
     _pccurve = pc_curve(im=im, pressures=inv)
 

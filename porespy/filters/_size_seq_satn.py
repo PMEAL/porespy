@@ -142,7 +142,7 @@ def seq_to_satn(seq, im=None):
     return satn
 
 
-def pc_to_satn(pc, im=None):
+def pc_to_satn(pc, im):
     r"""
     Converts an image of capillary entry pressures to saturation values
 
@@ -163,7 +163,20 @@ def pc_to_satn(pc, im=None):
         at which it was invaded.
 
     """
-    temp = make_contiguous(pc.astype(int))
+    temp = np.copy(pc)
+    # See if pc has any +/- infs
+    if np.any(temp == -np.inf):
+        vmin = temp[im][temp[im] > -np.inf].min()
+        inds = np.where(temp == -np.inf)
+        temp[inds] = vmin/2  # Give -inf locs some value less than the min
+    if np.any(temp == np.inf):
+        vmax = temp[temp < np.inf].max()
+        inds = np.where(temp == np.inf)
+        temp[inds] = vmax*2  # Give inf locs some value above the max
+    if temp[im].min() < 0:
+        temp[im] = temp[im] + np.abs(temp[im].min()) + 1
+
+    temp = make_contiguous(temp.astype(int))
     satn = seq_to_satn(seq=temp, im=im)
     return satn
 
