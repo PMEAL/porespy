@@ -172,21 +172,10 @@ def pc_to_satn(pc, im):
     wetting phase was displaced.
 
     """
-    temp = np.copy(pc)
-    # See if pc has any +/- infs
-    posinf = temp == np.inf
-    neginf = temp == -np.inf
-    vmin = pc[im*~neginf].min()
-    vmax = pc[im*~posinf].max()
-    # Deal with negative infinities
-    if vmin < 0:
-        temp = temp + im*np.abs(vmin) + 1  # Ensure all a greater than zero
-    temp[posinf] = vmax*2
-    temp[neginf] = vmin/2
-
-    temp = make_contiguous(temp.astype(int))
-    temp[posinf] = -1
-    satn = seq_to_satn(seq=temp, im=im)
+    a = np.digitize(pc, bins=np.unique(pc))
+    a[~im] = 0
+    a[np.where(pc == np.inf)] = -1
+    satn = seq_to_satn(seq=a, im=im)
     return satn
 
 
