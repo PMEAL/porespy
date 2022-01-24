@@ -18,8 +18,8 @@ __all__ = [
 
 def invasion_steps(satn, im, bins=None):
     r"""
-    Produces a panel of images at each saturation 
-    
+    Produces a panel of images at each saturation
+
     Parameters
     ----------
     satn : ndarray
@@ -29,11 +29,11 @@ def invasion_steps(satn, im, bins=None):
         A boolean image with ``True`` values indicating the void voxels and
         ``False`` for solid
     bins : int or array_like
-        Indicates for which saturations images should be made. If a ``list`` 
-        then each value in the list is used as a threshold. If an ``int`` 
-        then a list of equally space values between 0 and 1 is generated.  
+        Indicates for which saturations images should be made. If a ``list``
+        then each value in the list is used as a threshold. If an ``int``
+        then a list of equally space values between 0 and 1 is generated.
         If ``None`` (default) than all saturation values in the image are used.
-        
+
     Returns
     -------
     fig, ax : Matplotlib figure and axis objects
@@ -49,7 +49,7 @@ def invasion_steps(satn, im, bins=None):
     temp_old = np.zeros_like(im)
     for i, p in enumerate(Ps):
         temp = ((satn <= p)*(satn > 0))/im
-        ax[i//n][i%n].imshow(temp*2.0 - temp_old*1.0, 
+        ax[i//n][i%n].imshow(temp*2.0 - temp_old*1.0,
                              origin='lower', interpolation='none')
         ax[i//n][i%n].set_title(str(p))
         temp_old = np.copy(temp)
@@ -262,6 +262,7 @@ def drainage(im, voxel_size, pc=None, inlets=None, outlets=None, residual=None,
     # Initialize empty arrays to accumulate results of each loop
     inv = np.zeros_like(im, dtype=float)
     seeds = np.zeros_like(im, dtype=bool)
+    # Deal with any void space trapped behind residual blobs
     mask = None
     if (residual is not None) and (outlets is not None):
         mask = im * (~residual)
@@ -295,7 +296,7 @@ def drainage(im, voxel_size, pc=None, inlets=None, outlets=None, residual=None,
     if residual is not None:
         inv[residual] = -np.inf
 
-
+    # Initialize results object
     results = Results()
     trapped = None
     satn = pc_to_satn(pc=inv, im=im)
@@ -303,9 +304,11 @@ def drainage(im, voxel_size, pc=None, inlets=None, outlets=None, residual=None,
     if outlets is not None:
         seq = satn_to_seq(satn=satn, im=im)
         trapped = find_trapped_regions(seq=seq, outlets=outlets)
-        seq[trapped] = -1
-        satn = seq_to_satn(seq=seq, im=im)
+        trapped[seq == -1] = True
         inv[trapped] = np.inf
+        if residual is not None:
+            inv[residual] = -np.inf
+        satn = pc_to_satn(pc=inv, im=im)
 
     results.im_satn = satn
     results.im_pc = inv
@@ -340,17 +343,17 @@ if __name__ == "__main__":
     theta = 180
     delta_rho = 1000
     g = 0
-    
-    
+
+
 # %%
-    if 0:
-        drn4 = ps.simulations.drainage(im=im, voxel_size=voxel_size,
-                                       inlets=inlets, outlets=outlets,
+    if 1:
+        drn5 = ps.simulations.drainage(im=im, voxel_size=voxel_size,
+                                       inlets=inlets,
                                        residual=residual,
                                        g=g)
-        plt.imshow(drn4.im_satn/im, origin='lower')
-        fig, ax = invasion_steps(drn4.im_satn, im)
-    
+        plt.imshow(drn5.im_satn/im, origin='lower')
+        # fig, ax = invasion_steps(drn5.im_satn, im)
+
 
     # %% Run 4 different drainage simulations
     if 1:
@@ -381,8 +384,8 @@ if __name__ == "__main__":
         ax[1][0].set_title("No trapping, with residual")
         ax[1][1].imshow(drn4.im_satn/im, origin='lower')
         ax[1][1].set_title("With trapping, with residual")
-    
-   
+
+
     # %% Plot the capillary pressure curves for each scenario
     if 1:
         plt.figure(facecolor=bg)
