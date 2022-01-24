@@ -7,6 +7,13 @@ from copy import copy
 from porespy import settings
 
 
+__all__ = [
+    'set_mpl_style',
+    'satn_to_movie',
+    'satn_to_panels',
+]
+
+
 def set_mpl_style():  # pragma: no cover
     r"""
     Prettifies matplotlib's output by adjusting fonts, markersize etc.
@@ -88,3 +95,43 @@ def satn_to_movie(im, satn, cmap='viridis',
                                     blit=True, repeat=repeat,
                                     repeat_delay=1.0)
     return ani
+
+
+def satn_to_panels(satn, im, bins=None):  # pragma: no cover
+    r"""
+    Produces a set of images with each panel containing one saturation
+
+    Parameters
+    ----------
+    satn : ndarray
+        An image with each voxel indicating the global saturation at which
+        it was invaded.  0 indicates solid and -1 indicates uninvaded.
+    im : ndarray
+        A boolean image with ``True`` values indicating the void voxels and
+        ``False`` for solid.
+    bins : int or array_like
+        Indicates for which saturations images should be made. If a ``list``
+        then each value in the list is used as a threshold. If an ``int``
+        then a list of equally space values between 0 and 1 is generated.
+        If ``None`` (default) than all saturation values in the image are used.
+
+    Returns
+    -------
+    fig, ax : Matplotlib figure and axis objects
+        The same things as ``plt.subplots``.
+    """
+    if bins is None:
+        Ps = np.unique(satn)
+    elif isinstance(bins, int):
+        Ps = np.linspace(0, 1, bins+1)[1:]
+    Ps = Ps[Ps > 0]
+    n = np.ceil(np.sqrt(len(Ps))).astype(int)
+    fig, ax = plt.subplots(n, n)
+    temp_old = np.zeros_like(im)
+    for i, p in enumerate(Ps):
+        temp = ((satn <= p)*(satn > 0))/im
+        ax[i//n][i%n].imshow(temp*2.0 - temp_old*1.0,
+                             origin='lower', interpolation='none')
+        ax[i//n][i%n].set_title(str(p))
+        temp_old = np.copy(temp)
+    return fig, ax

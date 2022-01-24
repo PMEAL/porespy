@@ -16,46 +16,6 @@ __all__ = [
 ]
 
 
-def invasion_steps(satn, im, bins=None):
-    r"""
-    Produces a panel of images at each saturation
-
-    Parameters
-    ----------
-    satn : ndarray
-        An image with each voxel indicating the global saturation at which
-        it was invaded.  0 indicates solid and -1 indicates uninvaded.
-    im : ndarray
-        A boolean image with ``True`` values indicating the void voxels and
-        ``False`` for solid
-    bins : int or array_like
-        Indicates for which saturations images should be made. If a ``list``
-        then each value in the list is used as a threshold. If an ``int``
-        then a list of equally space values between 0 and 1 is generated.
-        If ``None`` (default) than all saturation values in the image are used.
-
-    Returns
-    -------
-    fig, ax : Matplotlib figure and axis objects
-        The same things as ``plt.subplots``.
-    """
-    if bins is None:
-        Ps = np.unique(satn)
-    elif isinstance(bins, int):
-        Ps = np.linspace(0, 1, bins+1)[1:]
-    Ps = Ps[Ps > 0]
-    n = np.ceil(np.sqrt(len(Ps))).astype(int)
-    fig, ax = plt.subplots(n, n)
-    temp_old = np.zeros_like(im)
-    for i, p in enumerate(Ps):
-        temp = ((satn <= p)*(satn > 0))/im
-        ax[i//n][i%n].imshow(temp*2.0 - temp_old*1.0,
-                             origin='lower', interpolation='none')
-        ax[i//n][i%n].set_title(str(p))
-        temp_old = np.copy(temp)
-    return fig, ax
-
-
 @numba.jit(nopython=True, parallel=False)
 def insert_disks_at_points(im, coords, radii, v, smooth=True):  # pragma: no cover
     r"""
@@ -306,7 +266,7 @@ def drainage(im, voxel_size, pc=None, inlets=None, outlets=None, residual=None,
         trapped = find_trapped_regions(seq=seq, outlets=outlets)
         trapped[seq == -1] = True
         inv[trapped] = np.inf
-        if residual is not None:
+        if residual is not None:  # Re-add residual to inv
             inv[residual] = -np.inf
         satn = pc_to_satn(pc=inv, im=im)
 
@@ -328,7 +288,7 @@ if __name__ == "__main__":
 
     # %% Run this cell to regenerate the variables in drainage
     np.random.seed(6)
-    bg = 'dimgray'
+    bg = 'white'
     im = ps.generators.blobs(shape=[500, 500], porosity=0.7, blobiness=1.5)
     inlets = np.zeros_like(im)
     inlets[0, :] = True
@@ -346,7 +306,7 @@ if __name__ == "__main__":
 
 
 # %%
-    if 1:
+    if 0:
         drn5 = ps.simulations.drainage(im=im, voxel_size=voxel_size,
                                        inlets=inlets,
                                        residual=residual,
