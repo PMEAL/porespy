@@ -209,13 +209,10 @@ def drainage(im, voxel_size, pc=None, inlets=None, outlets=None, residual=None,
         inlets = np.zeros_like(im)
         inlets[0, ...] = True
 
-    if outlets is not None:
-        outlets = outlets * im
-
     if isinstance(bins, int):  # Use values fn for invasion steps
         vmax = pc[pc < np.inf].max()
         vmin = pc[im][pc[im] > -np.inf].min()
-        Ps = np.logspace(np.log10(vmin), np.log10(vmax), bins)
+        Ps = np.logspace(np.log10(vmin), np.log10(vmax*2), bins)
     else:
         Ps = bins
 
@@ -303,16 +300,6 @@ if __name__ == "__main__":
     theta = 180
     delta_rho = 1000
     g = 0
-
-
-# %%
-    if 0:
-        drn5 = ps.simulations.drainage(im=im, voxel_size=voxel_size,
-                                       inlets=inlets,
-                                       residual=residual,
-                                       g=g)
-        plt.imshow(drn5.im_satn/im, origin='lower')
-        # fig, ax = invasion_steps(drn5.im_satn, im)
 
 
     # %% Run 4 different drainage simulations
