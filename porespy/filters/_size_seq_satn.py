@@ -150,11 +150,13 @@ def pc_to_satn(pc, im):
     ----------
     pc : ndarray
         A Numpy array with the value in each voxel indicating the capillary
-        pressure at which it was invaded
+        pressure at which it was invaded. In order to accomodateh the
+        possibility of positive and negative capillary pressure values,
+        uninvaded voxels should be indicated by ``+inf`` and residual phase
+        by ``-inf``. Solid vs void phase is defined by ``im`` which is
+        mandatory.
     im : ndarray
-        A Numpy array with ``True`` values indicating the void space.  If not
-        provided then all 0 values in ``pc`` are assumed as solid and <0 are
-        assumed to be uninvaded.
+        A Numpy array with ``True`` values indicating the void space
 
     Returns
     -------
@@ -162,21 +164,28 @@ def pc_to_satn(pc, im):
         A Numpy array with each voxel value indicating the global saturation
         at which it was invaded.
 
+    Notes
+    -----
+    If any ``-inf`` values are present the minimum saturation will start at
+    a value greater than 0 since residual was present. If any ``+inf`` values
+    are present the maximum saturation will be less than 1.0 since not all
+    wetting phase was displaced.
+
     """
     temp = np.copy(pc)
     # See if pc has any +/- infs
-    if np.any(temp == -np.inf):
-        vmin = temp[im][temp[im] > -np.inf].min()
-        inds = np.where(temp == -np.inf)
-        temp[inds] = vmin/2  # Give -inf locs some value less than the min
-    if np.any(temp == np.inf):
-        vmax = temp[temp < np.inf].max()
-        inds = np.where(temp == np.inf)
-        temp[inds] = vmax*2  # Give inf locs some value above the max
-    if temp[im].min() < 0:
-        temp[im] = temp[im] + np.abs(temp[im].min()) + 1
+    posinf = temp == np.inf
+    neginf = temp == -np.inf
+    vmin = pc[im*~neginf].min()
+    vmax = pc[im*~posinf].max()
+    # Deal with negative infinities
+    if vmin < 0:
+        temp = temp + im*np.abs(vmin) + 1  # Ensure all a greater than zero
+    temp[posinf] = vmax*2
+    temp[neginf] = vmin/2
 
     temp = make_contiguous(temp.astype(int))
+    temp[posinf] = -1
     satn = seq_to_satn(seq=temp, im=im)
     return satn
 
@@ -190,7 +199,8 @@ def satn_to_seq(satn, im):
     ----------
     satn : ndarray
         A Numpy array with the value in each voxel indicating the global
-        saturation at the point it was invaded
+        saturation at the point it was invaded. -1 indicates a voxel that
+        not invaded.
     im : ndarray
         A Numpy array with ``True`` values indicating the void space.
 
@@ -203,6 +213,11 @@ def satn_to_seq(satn, im):
 
     """
     values = np.unique(satn)
-    seq = np.digitize(satn, bins=np.linspace(0, 1, len(values)))
-    seq = (seq.astype(int) - 1)*im
+    seq = np.digitize(satn, bins=values)
+    # Set uninvaded by to -1
+    seq[satn == -1] = -1
+    # Set solids back to 0
+    seq[~im] = 0
+    # Ensure values are contiguous while keeping -1 and 0
+    seq = make_contiguous(im=seq, mode='symmetric')
     return seq

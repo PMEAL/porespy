@@ -1,7 +1,6 @@
 import numpy as np
 from edt import edt
 import numba
-from skimage.morphology import skeletonize_3d
 from porespy.filters import trim_disconnected_blobs, find_trapped_regions
 from porespy.filters import pc_to_satn, satn_to_seq, seq_to_satn
 from porespy import settings
@@ -176,7 +175,7 @@ def drainage(im, voxel_size, pc=None, inlets=None, outlets=None, residual=None,
     Attribute  Description
     ========== ================================================================
     im_pc      A numpy array with each voxel value indicating the
-               capillary pressure at which it was invaded.
+               capillary pressure at which it was invaded
     im_satn    A numpy array with each voxel value indicating the global
                saturation value at the point it was invaded
     pc         1D array of capillary pressure values that were applied
@@ -209,10 +208,13 @@ def drainage(im, voxel_size, pc=None, inlets=None, outlets=None, residual=None,
         inlets = np.zeros_like(im)
         inlets[0, ...] = True
 
+    if outlets is not None:
+        outlets = outlets * im
+
     if isinstance(bins, int):  # Use values fn for invasion steps
-        sk = skeletonize_3d(im) > 0  # This is need to mask meaningful values
-        temp = fn[sk]
-        Ps = np.logspace(np.log10(temp.min()), np.log10(temp.max()), bins)
+        vmax = pc[pc < np.inf].max()
+        vmin = pc[im][pc[im] > -np.inf].min()
+        Ps = np.logspace(np.log10(vmin), np.log10(vmax), bins)
     else:
         Ps = bins
 
@@ -221,7 +223,9 @@ def drainage(im, voxel_size, pc=None, inlets=None, outlets=None, residual=None,
     seeds = np.zeros_like(im, dtype=bool)
     for p in tqdm(Ps, **settings.tqdm):
         # Find all locations in image invadable at current pressure
-        temp = fn <= p
+        temp = (fn <= p)*im
+        if residual is not None:
+            temp = temp + residual
         # Trim locations not connected to the inlets
         new_seeds = trim_disconnected_blobs(temp, inlets=inlets)
         # Isolate only newly found locations to speed up inserting
@@ -235,28 +239,104 @@ def drainage(im, voxel_size, pc=None, inlets=None, outlets=None, residual=None,
         # Insert spheres are new locations of given radii
         inv = insert_disks_at_points(inv, np.vstack(coords), radii, p, smooth=True)
 
-    # # Set uninvaded voxels to inf
-    inv[inv == 0] = np.inf
-    inv[~im] = 0
+    # Set uninvaded voxels to inf
+    inv[(inv == 0)*im] = np.inf
 
     # Add residual if given
     if residual is not None:
         inv[residual] = -np.inf
 
-    _pccurve = pc_curve(im=im, pressures=inv)
 
     results = Results()
-    results.im_pc = inv
-    results.im_satn = pc_to_satn(pc=inv, im=im)
-    results.pc = _pccurve.pc
-    results.snwp = _pccurve.snwp
-    results.trapped = None
+    trapped = None
+    satn = pc_to_satn(pc=inv, im=im)
 
     if outlets is not None:
-        seq = satn_to_seq(satn=results.im_satn, im=im)
-        trapped = find_trapped_regions(seq=seq, outlets=outlets)
-        results.im_trapped = trapped
-        satn = seq_to_satn(seq=seq*trapped, im=im)
-        results.im_satn = satn
+        seq = satn_to_seq(satn=satn, im=im)
+        if residual is not None:
+            temp = seq[residual]
+            seq[residual] = seq.max() + 1
+        trapped = find_trapped_regions(seq=seq,
+                                       outlets=outlets,
+                                       bins=None)
+        seq[trapped] = -1
+        if residual is not None:
+            seq[residual] = temp
+        satn = seq_to_satn(seq=seq, im=im)
+        inv[trapped] = np.inf
+
+    results.im_satn = satn
+    results.im_pc = inv
+    results.im_trapped = trapped
+
+    _pccurve = pc_curve(im=im, pressures=inv)
+    results.pc = _pccurve.pc
+    results.snwp = _pccurve.snwp
 
     return results
+
+
+if __name__ == "__main__":
+    import numpy as np
+    import porespy as ps
+    import matplotlib.pyplot as plt
+
+    # %% Run this cell to regenerate the variables in drainage
+    np.random.seed(6)
+    im = ps.generators.blobs(shape=[500, 500], porosity=0.7, blobiness=1.5)
+    inlets = np.zeros_like(im)
+    inlets[0, :] = True
+    outlets = np.zeros_like(im)
+    outlets[-1, :] = True
+    pc = None
+    lt = ps.filters.local_thickness(im)
+    residual = lt > 25
+    bins = 25
+    voxel_size = 1e-4
+    sigma = 0.072
+    theta = 180
+    delta_rho = 1000
+    g = 0
+
+    # %% Run 4 different drainage simulations
+    drn = ps.simulations.drainage(im=im, voxel_size=voxel_size,
+                                  inlets=inlets,
+                                  g=g)
+    drn2 = ps.simulations.drainage(im=im, voxel_size=voxel_size,
+                                   inlets=inlets, outlets=outlets,
+                                   g=g)
+    drn3 = ps.simulations.drainage(im=im, voxel_size=voxel_size,
+                                   inlets=inlets,
+                                   residual=residual,
+                                   g=g)
+    drn4 = ps.simulations.drainage(im=im, voxel_size=voxel_size,
+                                   inlets=inlets, outlets=outlets,
+                                   residual=residual,
+                                   g=g)
+
+    # %%
+    fig, ax = plt.subplots(2, 2, facecolor='dimgrey')
+    ax[0][0].imshow(drn.im_satn/im, origin='lower')
+    ax[0][0].set_title("No trapping, no residual")
+    ax[0][1].imshow(drn2.im_satn/im, origin='lower')
+    ax[0][1].set_title("With trapping, no residual")
+    ax[1][0].imshow(drn3.im_satn/im, origin='lower')
+    ax[1][0].set_title("No trapping, with residual")
+    ax[1][1].imshow(drn4.im_satn/im, origin='lower')
+    ax[1][1].set_title("With trapping, with residual")
+    plt.figure(facecolor='dimgrey')
+    ax = plt.axes()
+    ax.set_facecolor('dimgrey')
+    plt.step(np.log10(drn.pc), drn.snwp, 'b-o', where='post',
+             label="No trapping, no residual")
+    plt.step(np.log10(drn2.pc), drn2.snwp, 'r--o', where='post',
+             label="With trapping, no residual")
+    plt.step(np.log10(drn3.pc), drn3.snwp, 'g--o', where='post',
+             label="No trapping, with residual")
+    plt.step(np.log10(drn4.pc), drn4.snwp, 'm--o', where='post',
+             label="With trapping, with residual")
+    plt.legend()
+
+
+
+

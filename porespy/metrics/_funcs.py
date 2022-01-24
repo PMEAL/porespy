@@ -881,7 +881,7 @@ def pc_curve(im, sizes=None, pressures=None,
         An image containing the sphere radii at which each voxel was invaded
         during an invasion experiment.
     pressures : ndarray, optional
-        An image containing the capillary pressures  at which each voxel was
+        An image containing the capillary pressures at which each voxel was
         invaded during an invasion experiment.
     sigma : float, optional
         The surface tension of the fluid-fluid system of interest.
@@ -947,16 +947,22 @@ def pc_curve(im, sizes=None, pressures=None,
         pc_curve.pc = x
         pc_curve.snwp = y
     elif pressures is not None:
-        pc = np.unique(pressures[im])
-        pc = pc[pc != 0]
-        pc = np.hstack((pc[0]/2, pc))
+        Ps = np.unique(pressures[im])
+        # Utilize the fact that -inf and +inf will be at locations 0 & -1 in Ps
+        if Ps[-1] == np.inf:
+            Ps[-1] = Ps[-2]*2
+        if Ps[0] == -np.inf:
+            Ps[0] = Ps[1]/2
+        else:
+            # A a point at begining to ensure curve starts a 0, if no residual
+            Ps = np.hstack((Ps[0]/2, Ps))
         y = []
         Vp = im.sum()
         temp = pressures[im]
-        for p in tqdm(pc, **settings.tqdm):
-            y.append(((temp <= p)*(temp > 0)).sum()/Vp)
+        for p in tqdm(Ps, **settings.tqdm):
+            y.append((temp <= p).sum()/Vp)
         pc_curve = Results()
-        pc_curve.pc = pc
+        pc_curve.pc = Ps
         pc_curve.snwp = y
     return pc_curve
 
