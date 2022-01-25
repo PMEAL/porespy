@@ -9,6 +9,7 @@ from porespy.tools import _check_for_singleton_axes
 from porespy.tools import Results
 from porespy import settings
 from porespy.tools import get_tqdm
+from loguru import logger
 tqdm = get_tqdm()
 
 
@@ -954,8 +955,8 @@ def pc_curve(im, sizes=None, pressures=None,
         if Ps[0] == -np.inf:
             Ps[0] = Ps[1]/2
         else:
-            # A a point at begining to ensure curve starts a 0, if no residual
-            Ps = np.hstack((Ps[0]/2, Ps))
+            # Add a point at begining to ensure curve starts a 0, if no residual
+            Ps = np.hstack((Ps[0] - np.abs(Ps[0]/2), Ps))
         y = []
         Vp = im.sum()
         temp = pressures[im]
@@ -1002,14 +1003,13 @@ def satn_profile(satn, s, axis=0, span=10, mode='tile'):
     results : dataclass
         Results is a custom porespy class with the following attributes:
 
-        ========== =========  =================================================
-        Attribute  Data Type  Description
-        ========== =========  =================================================
-        position   ndarray    The position along the given axis at which
-                              saturation values are computed.  The units are
-                              in voxels.
-        saturation ndarray    The local saturation value at each position.
-        ========== =========  =================================================
+        ============  =========================================================
+        Attribute     Description
+        ============= =========================================================
+        position      The position along the given axis at which saturation
+                      values are computed.  The units are in voxels.
+        saturation    The local saturation value at each position.
+        ============= =========================================================
     """
     # @numba.njit()
     def func(satn, s, axis, span, mode):
@@ -1054,36 +1054,61 @@ def satn_profile(satn, s, axis=0, span=10, mode='tile'):
     return results
 
 
-def find_h(profile, smin=0.01, smax=0.99):
+def find_h(saturation, position=None, srange=[0.01, 0.99]):
     r"""
     Given a saturation profile, compute the height between given bounds
 
     Parameters
     ----------
-    profile : tuple
-        The profile and position values for the saturation profile
-    smin : float
-        The minimum value of saturation to consider as the end of the profile
-    smax : float
-        The maximum value of saturation to consider as the start of the profile
+    saturation : array_like
+        A list of saturation values as function of ``position`
+    position : array_like, optional
+        A list of positions corresponding to each saturation.  If not provided
+        then each value in ``saturation`` is assumed to be separated by 1 voxel.
+    srange : list
+        The minimum and maximum value of saturation to consider as the start
+        and end of the profile
 
     Returns
     -------
     h : scalar
-        The height of the two-phase zone in ``profile``
+        The height of the two-phase zone
+
+    See Also
+    --------
+    satn_profile
+
+    Notes
+    -----
+    The ``satn_profile`` function can be used to obtain the ``saturation``
+    and ``position`` from an image.
 
     """
-    zmax = np.inf
-    zmin = np.inf
-    satn = profile
-    L = len(satn)
-    for i, s in enumerate(satn):
-        if (zmax == np.inf) and (satn[i] < smax):
-            zmax = i
-            smax = satn[i]
-    satn = satn_profile[-1::-1]
-    for i, s in enumerate(satn):
-        if (zmin == np.inf) and (satn[i] > smin):
-            zmin = i
-            smin = satn[i]
-    return (L-zmin, zmax, smin, smax)
+    r = Results()
+    r.valid = True
+    # First ensure saturation generally descends from left to right
+    if np.mean(saturation[:10]) < np.mean(saturation[-10:]):
+        saturation = np.flip(saturation, axis=0)
+    # Ensure requested saturation limits actually exist
+    if (min(srange) < min(saturation)) or (max(srange) > max(saturation)):
+        srange = max(min(srange), min(saturation)), min(max(srange), max(saturation))
+        r.valid = False
+        logger.warning(f'The requested saturation range was adjusted to {srange} to accomodate data')
+    # Find zmax
+    x = saturation >= max(srange)
+    zmax = np.where(x)[0][-1]
+    y = saturation <= min(srange)
+    zmin = np.where(y)[0][0]
+    # If position array was given, index into it
+    if position is not None:
+        zmax = position(zmax)
+        zmin = position(zmin)
+
+    # Add remaining data to results object
+    r.zmax = zmax
+    r.zmin = zmin
+    r.smax = max(srange)
+    r.smin = min(srange)
+    r.h = abs(zmax-zmin)
+
+    return r

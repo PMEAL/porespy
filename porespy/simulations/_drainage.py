@@ -210,9 +210,9 @@ def drainage(im, voxel_size, pc=None, inlets=None, outlets=None, residual=None,
         inlets[0, ...] = True
 
     if isinstance(bins, int):  # Use values fn for invasion steps
-        vmax = pc[pc < np.inf].max()
-        vmin = pc[im][pc[im] > -np.inf].min()
-        Ps = np.logspace(np.log10(vmin), np.log10(vmax*2), bins)
+        vmax = fn[fn < np.inf].max()
+        vmin = fn[im][fn[im] > -np.inf].min()
+        Ps = np.linspace(vmin, vmax*1.1, bins)
     else:
         Ps = bins
 
@@ -288,9 +288,9 @@ if __name__ == "__main__":
     bg = 'white'
     im = ps.generators.blobs(shape=[500, 500], porosity=0.7, blobiness=1.5)
     inlets = np.zeros_like(im)
-    inlets[0, :] = True
+    inlets[-1, :] = True
     outlets = np.zeros_like(im)
-    outlets[-1, :] = True
+    outlets[0, :] = True
     pc = None
     lt = ps.filters.local_thickness(im)
     residual = lt > 25
@@ -298,38 +298,42 @@ if __name__ == "__main__":
     voxel_size = 1e-4
     sigma = 0.072
     theta = 180
-    delta_rho = 1000
-    g = 0
+    delta_rho = -1000
+    g = 9.81
 
 
     # %% Run 4 different drainage simulations
     if 1:
         drn = ps.simulations.drainage(im=im, voxel_size=voxel_size,
                                       inlets=inlets,
+                                      delta_rho=delta_rho,
                                       g=g)
         drn2 = ps.simulations.drainage(im=im, voxel_size=voxel_size,
                                        inlets=inlets, outlets=outlets,
+                                       delta_rho=delta_rho,
                                        g=g)
         drn3 = ps.simulations.drainage(im=im, voxel_size=voxel_size,
                                        inlets=inlets,
                                        residual=residual,
+                                       delta_rho=delta_rho,
                                        g=g)
         drn4 = ps.simulations.drainage(im=im, voxel_size=voxel_size,
                                        inlets=inlets, outlets=outlets,
                                        residual=residual,
+                                       delta_rho=delta_rho,
                                        g=g)
 
 
     # %% Visualize the invasion configurations for each scenario
     if 1:
         fig, ax = plt.subplots(2, 2, facecolor=bg)
-        ax[0][0].imshow(drn.im_satn/im, origin='lower')
+        ax[0][0].imshow(drn.im_pc/im, origin='lower')
         ax[0][0].set_title("No trapping, no residual")
-        ax[0][1].imshow(drn2.im_satn/im, origin='lower')
+        ax[0][1].imshow(drn2.im_pc/im, origin='lower')
         ax[0][1].set_title("With trapping, no residual")
-        ax[1][0].imshow(drn3.im_satn/im, origin='lower')
+        ax[1][0].imshow(drn3.im_pc/im, origin='lower')
         ax[1][0].set_title("No trapping, with residual")
-        ax[1][1].imshow(drn4.im_satn/im, origin='lower')
+        ax[1][1].imshow(drn4.im_pc/im, origin='lower')
         ax[1][1].set_title("With trapping, with residual")
 
 
@@ -338,13 +342,13 @@ if __name__ == "__main__":
         plt.figure(facecolor=bg)
         ax = plt.axes()
         ax.set_facecolor(bg)
-        plt.step(np.log10(drn.pc), drn.snwp, 'b-o', where='post',
+        plt.step(drn.pc, drn.snwp, 'b-o', where='post',
                  label="No trapping, no residual")
-        plt.step(np.log10(drn2.pc), drn2.snwp, 'r--o', where='post',
+        plt.step(drn2.pc, drn2.snwp, 'r--o', where='post',
                  label="With trapping, no residual")
-        plt.step(np.log10(drn3.pc), drn3.snwp, 'g--o', where='post',
+        plt.step(drn3.pc, drn3.snwp, 'g--o', where='post',
                  label="No trapping, with residual")
-        plt.step(np.log10(drn4.pc), drn4.snwp, 'm--o', where='post',
+        plt.step(drn4.pc, drn4.snwp, 'm--o', where='post',
                  label="With trapping, with residual")
         plt.legend()
 
