@@ -958,7 +958,7 @@ def pc_curve(im, sizes=None, pressures=None,
         if Ps[-1] == np.inf:
             Ps[-1] = Ps[-2]*2
         if Ps[0] == -np.inf:
-            Ps[0] = Ps[1]/2
+            Ps[0] = Ps[1] - np.abs(Ps[1]/2)
         else:
             # Add a point at begining to ensure curve starts a 0, if no residual
             Ps = np.hstack((Ps[0] - np.abs(Ps[0]/2), Ps))
