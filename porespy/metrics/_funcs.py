@@ -1106,8 +1106,8 @@ def find_h(saturation, position=None, srange=[0.01, 0.99]):
     zmin = np.where(y)[0][0]
     # If position array was given, index into it
     if position is not None:
-        zmax = position(zmax)
-        zmin = position(zmin)
+        zmax = position[zmax]
+        zmin = position[zmin]
 
     # Add remaining data to results object
     r.zmax = zmax

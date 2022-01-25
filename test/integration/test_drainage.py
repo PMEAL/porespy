@@ -51,9 +51,9 @@ assert drn4.snwp[0] == 0.34427115020497745
 
 # Ensure final saturations correspond to trapping
 assert drn1.snwp[-1] == 1
-assert drn2.snwp[-1] == 0.7989685739141312
+assert drn2.snwp[-1] == 0.9352828461446612
 assert drn3.snwp[-1] == 1
-assert drn4.snwp[-1] == 0.6365388661136161
+assert drn4.snwp[-1] == 0.830593667021089
 
 
 # %% Visualize the invasion configurations for each scenario
@@ -117,6 +117,6 @@ assert drn4.snwp[0] == 0.34427115020497745
 
 # Ensure final saturations correspond to trapping
 assert drn1.snwp[-1] == 1
-assert drn2.snwp[-1] == 0.9429758973804961
+assert drn2.snwp[-1] == 0.943675265674663
 assert drn3.snwp[-1] == 1
-assert drn4.snwp[-1] == 0.8320776924257846
+assert drn4.snwp[-1] == 0.836364876928238
