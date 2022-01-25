@@ -787,8 +787,8 @@ def phase_fraction(im, normed=True):
     return results
 
 
-def pc_curve_from_ibip(seq, sizes, im=None, sigma=0.072, theta=180, voxel_size=1,
-                       stepped=True):
+def pc_curve_from_ibip(seq, sizes, im=None, sigma=0.072, theta=180,
+                       voxel_size=1, stepped=True):
     r"""
     Produces a Pc-Snwp curve from the output of ``ibip``
 
@@ -817,15 +817,20 @@ def pc_curve_from_ibip(seq, sizes, im=None, sigma=0.072, theta=180, voxel_size=1
     pc_curve : Results object
         A custom object with the following data added as named attributes:
 
-        'pc'
-            The capillary pressure, computed using the Washburn equation with
-            the given fluid properties
+        ==================  ===================================================
+        Attribute           Description
+        ==================  ===================================================
+        pc                  The capillary pressure, either as given in
+                            ``pressures`` or computed from ``sizes`` (see
+                            Notes).
+        snwp                The fraction of void space filled by non-wetting
+                            phase at each pressure in ``pc``
+        ==================  ===================================================
 
-        'snwp'
-            the fraction of void space filled by non-wetting phase.
-
-        If ``stepped`` was set to ``True`` then the values include the corners
-        of the steps, which may be helpful for plotting.
+    Notes
+    -----
+    If ``stepped`` was set to ``True`` then the values include the corners
+    of the steps, which may be helpful for plotting.
 
     """
     if im is None:
@@ -905,15 +910,15 @@ def pc_curve(im, sizes=None, pressures=None,
     pc_curve : Results object
         A custom object with the following data added as named attributes:
 
-        =========  =========  =================================================
-        Attribute  Data Type  Description
-        =========  =========  =================================================
-        pc         ndarray    The capillary pressure, either as given in
-                              ``pressures`` or computed from ``sizes`` (see
-                              Notes).
-        snwp       ndarray    The fraction of void space filled by non-wetting
-                              phase at each pressure in ``pc``
-        =========  =========  =================================================
+        ==================  ===================================================
+        Attribute           Description
+        ==================  ===================================================
+        pc                  The capillary pressure, either as given in
+                            ``pressures`` or computed from ``sizes`` (see
+                            Notes).
+        snwp                The fraction of void space filled by non-wetting
+                            phase at each pressure in ``pc``
+        ==================  ===================================================
 
     Notes
     -----
