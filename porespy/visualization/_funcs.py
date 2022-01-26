@@ -11,6 +11,7 @@ __all__ = [
     'set_mpl_style',
     'satn_to_movie',
     'satn_to_panels',
+    'prep_for_imshow',
 ]
 
 
@@ -97,7 +98,7 @@ def satn_to_movie(im, satn, cmap='viridis',
     return ani
 
 
-def satn_to_panels(satn, im, bins=None):  # pragma: no cover
+def satn_to_panels(satn, im, bins=None, axis=0, slice=None):  # pragma: no cover
     r"""
     Produces a set of images with each panel containing one saturation
 
@@ -114,24 +115,116 @@ def satn_to_panels(satn, im, bins=None):  # pragma: no cover
         then each value in the list is used as a threshold. If an ``int``
         then a list of equally space values between 0 and 1 is generated.
         If ``None`` (default) than all saturation values in the image are used.
+    axis : int, optional
+        If the image is 3D, a 2D image is extracted at the specified
+        ``slice`` taken along this axis. If the image is 2D this is ignored.
+    slice : int, optional
+        If the image is 3D, a 2D image is extracted from this slice
+        along the given ``axis``.  If ``None``, then a slice at the mid-point
+        of the axis is returned.  If 2D this is ignored.
 
     Returns
     -------
     fig, ax : Matplotlib figure and axis objects
-        The same things as ``plt.subplots``.
+        The same things as returned by ``plt.subplots``
     """
+    def factors(n):
+        return sorted(list(set(
+            factor for i in range(1, int(n**0.5) + 1) if n % i == 0
+            for factor in (i, n//i)
+        )))
+
     if bins is None:
         Ps = np.unique(satn)
     elif isinstance(bins, int):
         Ps = np.linspace(0, 1, bins+1)[1:]
     Ps = Ps[Ps > 0]
-    n = np.ceil(np.sqrt(len(Ps))).astype(int)
-    fig, ax = plt.subplots(n, n)
+    f = factors(len(Ps))
+    if len(Ps) < 4:
+        m = 1
+        n = len(Ps)
+    elif len(f) % 2 == 0:
+        m, n = f[int(len(f)/2-1)], f[int(len(f)/2)]
+    else:
+        m = f[int(len(f)/2)]
+        n = m
+    fig, ax = plt.subplots(m, n)
+    ax = np.atleast_2d(ax)
     temp_old = np.zeros_like(im)
     for i, p in enumerate(Ps):
-        temp = ((satn <= p)*(satn > 0))/im
-        ax[i//n][i%n].imshow(temp*2.0 - temp_old*1.0,
-                             origin='lower', interpolation='none')
-        ax[i//n][i%n].set_title(str(p))
+        temp = (satn <= p)*(satn > 0)
+        im_data = prep_for_imshow(values=temp*2.0 - temp_old*1.0, im=im,
+                                  axis=axis, slice=slice)
+        im_data.pop('vmax')
+        ax[i // n][i % n].imshow(**im_data, vmax=2)
+        ax[i // n][i % n].set_title(str(np.around(temp.sum()/im.sum(),
+                                                  decimals=5)))
         temp_old = np.copy(temp)
     return fig, ax
+
+
+def prep_for_imshow(values, im, axis=None, slice=None):
+    r"""
+    Adjusts the range of greyscale values in an image to improve visualization
+    by ``matplotlib.pyplot.imshow``
+
+    Parameters
+    ----------
+    values : ndimage
+        An image with greyscale values such as capillary pressures or
+        invasion sequences.  Can include both ``+inf`` and ``-inf`` values.
+    im : ndimage
+        An image of the porous material with ``True`` indicating void and
+        ``False`` indicating solid.
+    axis : int, optional
+        If the image is 3D, a 2D image can be returned with the specified
+        ``slice`` taken along this axis.  If ``None`` (default) then a 3D
+        image is returned. If the image is 2D this is ignored.
+    slice : int, optional
+        If the image is 3D, a 2D image can be returned showing this slice
+        along the given ``axis``.  If ``None``, then a slice at the mid-point
+        of the axis is returned.  If 2D this is ignored.
+
+    Returns
+    -------
+    data : dict
+        A python dicionary designed to be passed directly to
+        ``matplotlib.pyplot.imshow`` using the "**kwargs" features (i.e.
+        ``plt.imshow(**data)``).  It contains the following key-value pairs:
+
+        =============== =======================================================
+        key               value
+        =============== =======================================================
+        'X'             The adjusted image with ``+inf`` replaced by
+                        ``vmax + 1``, and all solid voxels replacd by
+                        ``np.nan`` to show as white in ``imshow``
+        'vmax'          The maximum of ``values`` not including ``+inf``
+        'vmin'          The minimum of ``values`` not including ``-inf``
+        'interpolation' Set to 'none' to avoid artifacts in ``imshow``
+        'origin'        Set to 'lower' to put (0, 0) on the bottom-left corner
+        =============== =======================================================
+
+    Notes
+    -----
+    If any of the *extra* items are unwanted they can be removed with
+    ``del data['interpolation']`` or ``data.pop('interpolation')``.
+
+    """
+    if (im.ndim == 3) and (axis is not None):
+        if slice is None:
+            slice = int(im.shape[axis]/2)
+        values = np.swap_axes(values, 0, axis)[slice, ...]
+        im = np.swap_axes(im, 0, axis)[slice, ...]
+    if values.dtype == bool:
+        temp = values
+        vmax = 1
+        vmin = 0
+    else:
+        temp = np.copy(values)
+        vmax = temp[temp < np.inf].max()
+        temp[temp == np.inf] = vmax + 1
+        vmin = temp[temp > -np.inf].min()
+        temp[temp == -np.inf] = vmin - 1
+    data = {'X': temp/im, 'vmin': vmin, 'vmax': vmax,
+            'interpolation': 'none', 'origin': 'lower'}
+    return data
