@@ -50,14 +50,14 @@ drn4 = ps.simulations.drainage(im=im,
 # Ensure initial saturations correspond to amount of residual present
 assert drn1.snwp[0] == 0
 assert drn2.snwp[0] == 0
-assert drn3.snwp[0] == 0.5236847043036736
-assert drn4.snwp[0] == 0.44698731471004644
+assert drn3.snwp[0] > 0
+assert drn3.snwp[0] == drn4.snwp[0]
 
 # Ensure final saturations correspond to trapping
 assert drn1.snwp[-1] == 1
-assert drn2.snwp[-1] == 0.925673639501231
+assert drn2.snwp[-1] < 1
 assert drn3.snwp[-1] == 1
-assert drn4.snwp[-1] == 0.7995542237864823
+assert drn4.snwp[-1] < drn2.snwp[-1]
 
 
 # %% Visualize the invasion configurations for each scenario
