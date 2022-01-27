@@ -18,11 +18,13 @@ but a few functions can be applied directly to the binary image.
     metrics.boxcount
     metrics.chord_counts
     metrics.chord_length_distribution
+    metrics.find_h
     metrics.lineal_path_distribution
     metrics.mesh_surface_area
     metrics.mesh_volume
     metrics.pc_curve_from_ibip
     metrics.pc_curve_from_mio
+    metrics.pc_curve
     metrics.phase_fraction
     metrics.pore_size_distribution
     metrics.porosity
@@ -32,9 +34,10 @@ but a few functions can be applied directly to the binary image.
     metrics.radial_density_distribution
     metrics.region_interface_areas
     metrics.region_surface_areas
-    metrics.region_volume
+    metrics.region_volumes
     metrics.regionprops_3D
     metrics.representative_elementary_volume
+    metrics.satn_profile
     metrics.two_point_correlation
 
 """
@@ -59,7 +62,7 @@ from ._funcs import pc_curve_from_ibip
 from ._funcs import pc_curve_from_mio
 from ._fractal_dims import boxcount
 from ._meshtools import mesh_surface_area
+from ._meshtools import mesh_volume
 from ._meshtools import region_interface_areas
 from ._meshtools import region_surface_areas
 from ._meshtools import region_volumes
-from ._meshtools import mesh_volume

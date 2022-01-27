@@ -1008,7 +1008,7 @@ def satn_profile(satn, s, axis=0, span=10, mode='tile'):
     results : dataclass
         Results is a custom porespy class with the following attributes:
 
-        ============  =========================================================
+        ============= =========================================================
         Attribute     Description
         ============= =========================================================
         position      The position along the given axis at which saturation

@@ -3,7 +3,7 @@ r"""
 Simulations
 ###########
 
-**Simulation**
+**Simulations**
 
 This module contains routines for performing simulations directly on images
 
@@ -13,8 +13,8 @@ This module contains routines for performing simulations directly on images
    :template: mybase.rst
    :toctree: generated/
 
-   simulations.drainge
-   simulations.tortuosity
+   simulations.drainage
+   simulations.tortuosity_fd
 
 """
 

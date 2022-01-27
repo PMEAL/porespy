@@ -44,37 +44,6 @@ ways do NOT return a modified version of the original image.
 
 """
 
-__all__ = [
-    "align_image_with_openpnm",
-    "bbox_to_slices",
-    "extend_slice",
-    "extract_cylinder",
-    "extract_subsection",
-    "extract_regions",
-    "find_outer_region",
-    "get_border",
-    "get_planes",
-    "insert_cylinder",
-    "insert_sphere",
-    "in_hull",
-    "isolate_object",
-    "make_contiguous",
-    "marching_map",
-    "mesh_region",
-    "norm_to_uniform",
-    "overlay",
-    "ps_ball",
-    "ps_disk",
-    "ps_rect",
-    "ps_round",
-    "randomize_colors",
-    "recombine",
-    "subdivide",
-    "unpad",
-    "sanitize_filename",
-    "get_tqdm",
-    "show_docstring"]
-
 from ._funcs import align_image_with_openpnm
 from ._funcs import bbox_to_slices
 from ._funcs import extend_slice

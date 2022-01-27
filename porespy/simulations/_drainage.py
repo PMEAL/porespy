@@ -172,17 +172,17 @@ def drainage(im, voxel_size, pc=None, inlets=None, outlets=None, residual=None,
     results : Results object
         A dataclass-like object with the following attributes:
 
-    ========== ================================================================
-    Attribute  Description
-    ========== ================================================================
-    im_pc      A numpy array with each voxel value indicating the
-               capillary pressure at which it was invaded
-    im_satn    A numpy array with each voxel value indicating the global
-               saturation value at the point it was invaded
-    pc         1D array of capillary pressure values that were applied
-    swnp       1D array of non-wetting phase saturations for each applied
-               value of capillary pressure (``pc``).
-    ========== ================================================================
+        ========== ============================================================
+        Attribute  Description
+        ========== ============================================================
+        im_pc      A numpy array with each voxel value indicating the
+                   capillary pressure at which it was invaded
+        im_satn    A numpy array with each voxel value indicating the global
+                   saturation value at the point it was invaded
+        pc         1D array of capillary pressure values that were applied
+        swnp       1D array of non-wetting phase saturations for each applied
+                   value of capillary pressure (``pc``).
+        ========== ============================================================
 
     Notes
     -----

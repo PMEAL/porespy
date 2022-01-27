@@ -27,26 +27,25 @@ def tortuosity_fd(im, axis):
     Returns
     -------
     results : Results object
-
         The following values are computed and returned as attributes:
 
-    =================== ===================================================
-    Attribute           Description
-    =================== ===================================================
-    tortuosity          Calculated using the ``effective_porosity`` as
-                        :math:`\tau = \frac{D_{AB}}{D_{eff}} \cdot
-                        \varepsilon`.
-    effective_porosity  Porosity of the image after applying
-                        ``trim_nonpercolating_paths``.  This removes
-                        disconnected voxels which cause singular matrices.
+        =================== ===================================================
+        Attribute           Description
+        =================== ===================================================
+        tortuosity          Calculated using the ``effective_porosity`` as
+                            :math:`\tau = \frac{D_{AB}}{D_{eff}} \cdot
+                            \varepsilon`.
+        effective_porosity  Porosity of the image after applying
+                            ``trim_nonpercolating_paths``.  This removes
+                            disconnected voxels which cause singular matrices.
 
-    original_porosity   Porosity of the as-received the image
+        original_porosity   Porosity of the as-received the image
 
-    formation_factor    Found as :math:`D_{AB}/D_{eff}`.
+        formation_factor    Found as :math:`D_{AB}/D_{eff}`.
 
-    concentration       An image containing the concentration values from
-                        the simulation.
-    =================== ===================================================
+        concentration       An image containing the concentration values from
+                            the simulation.
+        =================== ===================================================
 
     """
     if axis > (im.ndim - 1):
