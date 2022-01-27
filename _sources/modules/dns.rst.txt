@@ -1,3 +1,3 @@
-.. _filters:
+.. _dns:
 
 .. automodule:: porespy.dns
