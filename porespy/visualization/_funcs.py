@@ -98,7 +98,7 @@ def satn_to_movie(im, satn, cmap='viridis',
     return ani
 
 
-def satn_to_panels(satn, im, bins=None, axis=0, slice=None):  # pragma: no cover
+def satn_to_panels(satn, im, bins=None, axis=0, slice=None, **kwargs):
     r"""
     Produces a set of images with each panel containing one saturation
 
@@ -122,6 +122,9 @@ def satn_to_panels(satn, im, bins=None, axis=0, slice=None):  # pragma: no cover
         If the image is 3D, a 2D image is extracted from this slice
         along the given ``axis``.  If ``None``, then a slice at the mid-point
         of the axis is returned.  If 2D this is ignored.
+    **kwargs : various
+        Additional keyword arguments are sent to the ``imshow`` function,
+        such as ``cmap`` and ``interpolation``.
 
     Returns
     -------
@@ -156,14 +159,15 @@ def satn_to_panels(satn, im, bins=None, axis=0, slice=None):  # pragma: no cover
         im_data = prep_for_imshow(values=temp*2.0 - temp_old*1.0, im=im,
                                   axis=axis, slice=slice)
         im_data.pop('vmax')
-        ax[i // n][i % n].imshow(**im_data, vmax=2)
+        [im_data.pop(i) for i in kwargs]
+        ax[i // n][i % n].imshow(**im_data, vmax=2, **kwargs)
         ax[i // n][i % n].set_title(str(np.around(temp.sum()/im.sum(),
                                                   decimals=5)))
         temp_old = np.copy(temp)
     return fig, ax
 
 
-def prep_for_imshow(values, im, axis=None, slice=None):
+def prep_for_imshow(values, im, axis=0, slice=None):
     r"""
     Adjusts the range of greyscale values in an image to improve visualization
     by ``matplotlib.pyplot.imshow``
@@ -178,7 +182,7 @@ def prep_for_imshow(values, im, axis=None, slice=None):
         ``False`` indicating solid.
     axis : int, optional
         If the image is 3D, a 2D image can be returned with the specified
-        ``slice`` taken along this axis.  If ``None`` (default) then a 3D
+        ``slice`` taken along this axis.  If ``None`` then a 3D
         image is returned. If the image is 2D this is ignored.
     slice : int, optional
         If the image is 3D, a 2D image can be returned showing this slice
@@ -213,8 +217,8 @@ def prep_for_imshow(values, im, axis=None, slice=None):
     if (im.ndim == 3) and (axis is not None):
         if slice is None:
             slice = int(im.shape[axis]/2)
-        values = np.swap_axes(values, 0, axis)[slice, ...]
-        im = np.swap_axes(im, 0, axis)[slice, ...]
+        values = np.swapaxes(values, 0, axis)[slice, ...]
+        im = np.swapaxes(im, 0, axis)[slice, ...]
     if values.dtype == bool:
         temp = values
         vmax = 1
