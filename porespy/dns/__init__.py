@@ -18,6 +18,4 @@ simulations.
 
 """
 
-__all__ = ["tortuosity"]
-
-from ._funcs import tortuosity
+from ._funcs import *

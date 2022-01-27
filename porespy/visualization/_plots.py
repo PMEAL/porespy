@@ -3,6 +3,13 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
 
+__all__ = [
+    'bar',
+    'imshow',
+    'show_mesh',
+]
+
+
 def bar(results, h='pdf', **kwargs):  # pragma: no cover
     r"""
     Convenience wrapper for matplotlib's ``bar``.

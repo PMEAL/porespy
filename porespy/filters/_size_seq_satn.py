@@ -3,6 +3,15 @@ from porespy.tools import make_contiguous
 from scipy.stats import rankdata
 
 
+__all__ = [
+    'size_to_seq',
+    'size_to_satn',
+    'seq_to_satn',
+    'pc_to_satn',
+    'satn_to_seq',
+]
+
+
 def size_to_seq(size, im=None, bins=None):
     r"""
     Converts an image of invasion size values into sequence values
@@ -95,8 +104,6 @@ def seq_to_satn(seq, im=None):
     r"""
     Converts an image of invasion sequence values to saturation values.
 
-    This is meant to accept the output of the ``ibip`` function.
-
     Parameters
     ----------
     seq : ndarray
@@ -133,3 +140,73 @@ def seq_to_satn(seq, im=None):
     satn[solid_mask] = 0
     satn[uninvaded_mask] = -1
     return satn
+
+
+def pc_to_satn(pc, im):
+    r"""
+    Converts an image of capillary entry pressures to saturation values
+
+    Parameters
+    ----------
+    pc : ndarray
+        A Numpy array with the value in each voxel indicating the capillary
+        pressure at which it was invaded. In order to accomodateh the
+        possibility of positive and negative capillary pressure values,
+        uninvaded voxels should be indicated by ``+inf`` and residual phase
+        by ``-inf``. Solid vs void phase is defined by ``im`` which is
+        mandatory.
+    im : ndarray
+        A Numpy array with ``True`` values indicating the void space
+
+    Returns
+    -------
+    satn : ndarray
+        A Numpy array with each voxel value indicating the global saturation
+        at which it was invaded.
+
+    Notes
+    -----
+    If any ``-inf`` values are present the minimum saturation will start at
+    a value greater than 0 since residual was present. If any ``+inf`` values
+    are present the maximum saturation will be less than 1.0 since not all
+    wetting phase was displaced.
+
+    """
+    a = np.digitize(pc, bins=np.unique(pc))
+    a[~im] = 0
+    a[np.where(pc == np.inf)] = -1
+    satn = seq_to_satn(seq=a, im=im)
+    return satn
+
+
+def satn_to_seq(satn, im):
+    r"""
+    Converts an image of nonwetting phase saturations to invasion sequence
+    values
+
+    Parameters
+    ----------
+    satn : ndarray
+        A Numpy array with the value in each voxel indicating the global
+        saturation at the point it was invaded. -1 indicates a voxel that
+        not invaded.
+    im : ndarray
+        A Numpy array with ``True`` values indicating the void space.
+
+    Returns
+    -------
+    satn : ndarray
+        A Numpy array with each voxel value indicating the global saturation
+        at which it was invaded. Solid voxels are indicated by 0 and
+        uninvaded by -1.
+
+    """
+    values = np.unique(satn)
+    seq = np.digitize(satn, bins=values)
+    # Set uninvaded by to -1
+    seq[satn == -1] = -1
+    # Set solids back to 0
+    seq[~im] = 0
+    # Ensure values are contiguous while keeping -1 and 0
+    seq = make_contiguous(im=seq, mode='symmetric')
+    return seq

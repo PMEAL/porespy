@@ -1,7 +1,15 @@
 import numpy as np
 import scipy.ndimage as spim
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 # from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+
+
+__all__ = [
+    'show_3D',
+    'show_planes',
+    'sem',
+    'xray',
+]
 
 
 def show_3D(im):  # pragma: no cover
@@ -19,7 +27,7 @@ def show_3D(im):  # pragma: no cover
     Returns
     -------
     image : ndarray
-        A 2D veiw of the given 3D image
+        A 2D view of the given 3D image
 
     Notes
     -----
@@ -92,7 +100,7 @@ def show_planes(im, spacing=10):  # pragma: no cover
 
 def sem(im, axis=0):  # pragma: no cover
     r"""
-    Simulates an SEM photograph looking into the porous material.
+    Simulates an SEM image looking into the porous material.
 
     Features are colored according to their depth into the image, so
     darker features are further away.
