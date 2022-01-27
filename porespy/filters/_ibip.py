@@ -2,6 +2,7 @@ import numpy as np
 from edt import edt
 from porespy.tools import get_tqdm
 import scipy.ndimage as spim
+from porespy.filters import trim_disconnected_blobs
 from porespy.tools import get_border, make_contiguous
 from porespy.tools import Results
 import numba
@@ -256,12 +257,11 @@ def find_trapped_regions(seq, outlets=None, bins=25, return_mask=True):
 
     Parameters
     ----------
-    seq : ND-array
+    seq : ndarray
         An image with invasion sequence values in each voxel.  Regions
         labelled -1 are considered uninvaded, and regions labelled 0 are
-        considered solid. Such an image is returned from the
-        ``invaded_region`` function.
-    outlets : ND-array
+        considered solid.
+    outlets : ndarray, optional
         An image the same size as ``seq`` with ``True`` indicating outlets
         and ``False`` elsewhere.  If not given then all image boundaries
         are considered outlets.
@@ -287,19 +287,17 @@ def find_trapped_regions(seq, outlets=None, bins=25, return_mask=True):
         trapped voxels set to 0.
 
     """
-    if seq.max() <= 1.0:
-        raise Exception('seq appears to be saturations, not invasion steps')
     seq = np.copy(seq)
     if outlets is None:
         outlets = get_border(seq.shape, mode='faces')
     trapped = np.zeros_like(outlets)
     if bins is None:
-        bins = np.unique(seq)
+        bins = np.unique(seq)[-1::-1]
         bins = bins[bins > 0]
-    else:
+    elif isinstance(bins, int):
         bins = np.linspace(seq.max(), 1, bins)
     for i in tqdm(bins, **settings.tqdm):
-        temp = seq > i
+        temp = seq >= i
         labels = spim.label(temp)[0]
         keep = np.unique(labels[outlets])[1:]
         trapped += temp*np.isin(labels, keep, invert=True)

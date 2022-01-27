@@ -38,10 +38,10 @@ class IBIPTest():
         assert inv.max() == 391
         inv_w_trapping = ps.filters.find_trapped_regions(seq=inv,
                                                          return_mask=True)
-        assert inv_w_trapping.sum() == 461
+        assert inv_w_trapping.sum() == 467
         inv_w_trapping = ps.filters.find_trapped_regions(seq=inv,
                                                          return_mask=False)
-        assert (inv_w_trapping == -1).sum() == 461
+        assert (inv_w_trapping == -1).sum() == 467
 
     def test_mio_w_trapping(self):
         np.random.seed(0)

@@ -11,7 +11,7 @@ tqdm = get_tqdm()
 
 
 @numba.jit(nopython=True, parallel=False)
-def insert_disks_at_points(im, coords, radii, v, smooth=True):
+def insert_disks_at_points(im, coords, radii, v, smooth=True):  # pragma: no cover
     r"""
     Insert spheres of specified radii into an ndarray at given locations.
 
@@ -67,7 +67,7 @@ def insert_disks_at_points(im, coords, radii, v, smooth=True):
 
 
 @numba.jit(nopython=True, parallel=False)
-def _make_disk(r, smooth=True):
+def _make_disk(r, smooth=True):  # pragma: no cover
     r"""
     Generate a strel suitable for use in numba nojit function.
 
@@ -87,7 +87,7 @@ def _make_disk(r, smooth=True):
 
 
 @numba.jit(nopython=True, parallel=False)
-def _make_ball(r, smooth=True):
+def _make_ball(r, smooth=True):  # pragma: no cover
     r"""
     Generate a strel suitable for use in numba nojit function.
 
@@ -212,7 +212,10 @@ def pseudo_electrostatic_packing(im, r, sites=None,
         sites = (spim.maximum_filter(dt2, footprint=strel) == dt2)*im
     dt = edt(sites == 0).astype(int)
     sites = (sites == 0)*(dt_im >= (r - protrusion))
-    dtmax = int(dt_im.max()*2)
+    if dt_im.max() < np.inf:
+        dtmax = int(dt_im.max()*2)
+    else:
+        dtmax = min(im.shape)
     dt[~sites] = dtmax
     r = r + clearance
     # Get initial options

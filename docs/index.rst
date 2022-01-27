@@ -41,6 +41,8 @@ PoreSpy consists of the following modules:
    image
 -  ``io``: Functions for outputting image data in various formats for
    use in common software
+-  ``simulations``: Functions for performing physics-based simulations on
+   images
 -  ``tools``: Various useful tools for working with images
 
 .. toctree::

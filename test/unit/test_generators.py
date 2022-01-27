@@ -439,6 +439,38 @@ class GeneratorTest():
         assert np.all(p.shape == s)
         assert p.sum() == 13690
 
+    def test_pseudo_gravity_packing_2D(self):
+        np.random.seed(0)
+        im = np.ones([100, 100], dtype=bool)
+        im = ps.generators.pseudo_gravity_packing(im=im, r=8, clearance=1)
+        assert im.sum() == 4578
+
+    def test_pseudo_gravity_packing_3D(self):
+        np.random.seed(0)
+        im = np.ones([100, 100, 100], dtype=bool)
+        im = ps.generators.pseudo_gravity_packing(im=im, r=8, clearance=1)
+        assert im.sum() == 279240
+
+    def test_pseudo_electrostatic_packing_2D(self):
+        np.random.seed(0)
+        im = np.ones([100, 100], dtype=bool)
+        sites = np.zeros_like(im)
+        sites[50, 50] = True
+        im = ps.generators.pseudo_electrostatic_packing(im=im, r=8,
+                                                        sites=sites,
+                                                        maxiter=10)
+        assert im.sum() == 1930
+
+    def test_pseudo_electrostatic_packing_3D(self):
+        np.random.seed(0)
+        im = np.ones([100, 100, 100], dtype=bool)
+        sites = np.zeros_like(im)
+        sites[50, 50, 50] = True
+        im = ps.generators.pseudo_electrostatic_packing(im=im, r=8,
+                                                        sites=sites,
+                                                        maxiter=10)
+        assert im.sum() == 21030
+
 
 if __name__ == '__main__':
     t = GeneratorTest()

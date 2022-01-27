@@ -16,9 +16,9 @@ Contains functions for analysing images as pore networks.
    networks.add_boundary_regions
    networks.generate_voxel_image
    networks.label_phases
-   network.label_boundaries
+   networks.label_boundaries
    networks.map_to_regions
-   networks.maximal_ball
+   networks.maximal_ball_wrapper
    networks.regions_to_network
    networks.snow2
 

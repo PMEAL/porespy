@@ -17,7 +17,7 @@ sub-module are provided below.
     Filters <filters>
     Metrics <metrics>
     Networks <networks>
-    DNS <dns>
+    Simulations <simulations>
     Tools <tools>
     Visualization <visualization>
     IO <io>
