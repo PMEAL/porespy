@@ -86,7 +86,6 @@ if 0:
     ax[1][1].set_title("With trapping, with residual")
 
 
-
 # %% Plot the capillary pressure curves for each scenario
 if 0:
     plt.figure(facecolor=bg)

@@ -77,7 +77,7 @@ class VisualizationTest():
         # mov.save('image_based_ip.gif', writer='pillow', fps=10)
 
     def test_satn_to_panels(self):
-        fig, ax = ps.visualization.satn_to_panels(self.lt, im=self.im)
+        fig, ax = ps.visualization.satn_to_panels(self.lt, im=self.im, bins=13)
         assert ax.shape == (1, 13)
         fig, ax = ps.visualization.satn_to_panels(self.lt, im=self.im, bins=16)
         assert ax.shape == (4, 4)

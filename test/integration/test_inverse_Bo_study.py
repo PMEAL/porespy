@@ -24,12 +24,12 @@ for i, dr in enumerate(inv_Bo):
     Bo = 1/inv_Bo[i]
     delta_rho = Bo*sigma/(g*a**2)  # delta_rho is found given the Bo
     sim1[i] = ps.simulations.drainage(im=im,
-                                   voxel_size=vx,
-                                   inlets=inlets,
-                                   delta_rho=delta_rho,
-                                   sigma=sigma,
-                                   g=g,
-                                   bins=25)
+                                      voxel_size=vx,
+                                      inlets=inlets,
+                                      delta_rho=delta_rho,
+                                      sigma=sigma,
+                                      g=g,
+                                      bins=25)
 
 
 # %%  Process data to make 1/Bo vs H plot

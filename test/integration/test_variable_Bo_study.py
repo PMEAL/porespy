@@ -86,7 +86,7 @@ if 0:
     s = 0.09
     angle = 30
     satn = sim1[angle].im_satn
-    fig, ax = plt.subplots(1,1)
+    fig, ax = plt.subplots(1, 1)
     temp = (satn < s)*(satn > 0)
     ax.imshow(~temp, cmap=plt.cm.bone, origin='lower')
     ax.axis('off')
