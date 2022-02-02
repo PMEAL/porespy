@@ -13,6 +13,35 @@ except ImportError:
     from skimage.measure import marching_cubes_lewiner as marching_cubes
 
 
+__all__ = [
+    'align_image_with_openpnm',
+    'bbox_to_slices',
+    'extend_slice',
+    'extract_cylinder',
+    'extract_subsection',
+    'extract_regions',
+    'find_outer_region',
+    'get_border',
+    'get_planes',
+    'insert_cylinder',
+    'insert_sphere',
+    'in_hull',
+    'isolate_object',
+    'marching_map',
+    'make_contiguous',
+    'mesh_region',
+    'norm_to_uniform',
+    'overlay',
+    'randomize_colors',
+    'recombine',
+    'ps_ball',
+    'ps_disk',
+    'ps_rect',
+    'ps_round',
+    'subdivide',
+]
+
+
 def isolate_object(region, i, s=None):
     r"""
     Given an image containing labels, removes all labels except the specified

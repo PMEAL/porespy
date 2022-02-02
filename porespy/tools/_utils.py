@@ -8,6 +8,14 @@ from tqdm import tqdm
 import psutil
 
 
+__all__ = [
+    'sanitize_filename',
+    'get_tqdm',
+    'show_docstring',
+    'Results',
+]
+
+
 def _is_ipython_notebook():  # pragma: no cover
     try:
         shell = get_ipython().__class__.__name__

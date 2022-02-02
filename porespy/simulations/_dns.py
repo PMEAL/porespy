@@ -8,7 +8,7 @@ from porespy.generators import faces
 ws = op.Workspace()
 
 
-__all_ = [
+__all__ = [
     'tortuosity_fd',
 ]
 

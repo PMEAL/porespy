@@ -13,14 +13,14 @@ Contains functions for analysing images as pore networks.
    :template: mybase.rst
    :toctree: generated/
 
-   networks.add_boundary_regions
-   networks.generate_voxel_image
-   networks.label_phases
-   networks.label_boundaries
-   networks.map_to_regions
-   networks.maximal_ball_wrapper
-   networks.regions_to_network
-   networks.snow2
+    networks.add_boundary_regions
+    networks.generate_voxel_image
+    networks.label_boundaries
+    networks.label_phases
+    networks.map_to_regions
+    networks.maximal_ball_wrapper
+    networks.regions_to_network
+    networks.snow2
 
 """
 

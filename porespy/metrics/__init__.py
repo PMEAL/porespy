@@ -22,9 +22,9 @@ but a few functions can be applied directly to the binary image.
     metrics.lineal_path_distribution
     metrics.mesh_surface_area
     metrics.mesh_volume
+    metrics.pc_curve
     metrics.pc_curve_from_ibip
     metrics.pc_curve_from_mio
-    metrics.pc_curve
     metrics.phase_fraction
     metrics.pore_size_distribution
     metrics.porosity
