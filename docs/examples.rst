@@ -21,13 +21,13 @@ Generators
 
       examples/generators/tutorials/*
 
-.. tabbed:: How-to guides
+.. tabbed:: Reference
 
    .. toctree::
       :maxdepth: 1
       :glob:
 
-      examples/generators/howtos/*
+      examples/generators/reference/*
 
 Filters
 -------
@@ -40,13 +40,13 @@ Filters
 
       examples/filters/tutorials/*
 
-.. tabbed:: How-to guides
+.. tabbed:: Reference
 
    .. toctree::
       :maxdepth: 1
       :glob:
 
-      examples/filters/howtos/*
+      examples/filters/reference/*
 
 Metrics
 -------
@@ -59,13 +59,13 @@ Metrics
 
       examples/metrics/tutorials/*
 
-.. tabbed:: How-to guides
+.. tabbed:: Reference
 
    .. toctree::
       :maxdepth: 1
       :glob:
 
-      examples/metrics/howtos/*
+      examples/metrics/reference/*
 
 Networks
 --------
@@ -78,13 +78,33 @@ Networks
 
       examples/networks/tutorials/*
 
-.. tabbed:: How-to guides
+.. tabbed:: Reference
 
    .. toctree::
       :maxdepth: 1
       :glob:
 
-      examples/networks/howtos/*
+      examples/networks/reference/*
+
+
+Simulations
+-----------
+
+.. tabbed:: Tutorials
+
+   .. toctree::
+      :maxdepth: 1
+      :glob:
+
+      examples/simulations/tutorials/*
+
+.. tabbed:: Reference
+
+   .. toctree::
+      :maxdepth: 1
+      :glob:
+
+      examples/filters/reference/*
 
 Tools
 -----
@@ -97,13 +117,13 @@ Tools
 
       examples/tools/tutorials/*
 
-.. tabbed:: How-to guides
+.. tabbed:: Reference
 
    .. toctree::
       :maxdepth: 1
       :glob:
 
-      examples/tools/howtos/*
+      examples/tools/reference/*
 
 Visualization
 -------------
@@ -116,10 +136,10 @@ Visualization
 
       examples/visualization/tutorials/*
 
-.. tabbed:: How-to guides
+.. tabbed:: Reference
 
    .. toctree::
       :maxdepth: 1
       :glob:
 
-      examples/visualization/howtos/*
+      examples/visualization/reference/*
