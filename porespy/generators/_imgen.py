@@ -51,7 +51,7 @@ def insert_shape(im, element, center=None, corner=None, value=1, mode="overwrite
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/generators/howtos/insert_shape.html>`_
+    <https://porespy.org/examples/generators/reference/insert_shape.html>`_
     to view online example.
 
     """
@@ -177,7 +177,7 @@ def RSA(im_or_shape: np.array,
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/generators/howtos/RSA.html>`_
+    <https://porespy.org/examples/generators/reference/RSA.html>`_
     to view online example.
 
     """
@@ -340,7 +340,7 @@ def bundle_of_tubes(shape: List[int], spacing: int):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/generators/howtos/bundle_of_tubes.html>`_
+    <https://porespy.org/examples/generators/reference/bundle_of_tubes.html>`_
     to view online example.
 
     """
@@ -412,7 +412,7 @@ def polydisperse_spheres(
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/generators/howtos/polydisperse_spheres.html>`_
+    <https://porespy.org/examples/generators/reference/polydisperse_spheres.html>`_
     to view online example.
 
     """
@@ -460,7 +460,7 @@ def voronoi_edges(shape: List[int], r: int, ncells: int, flat_faces: bool = True
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/generators/howtos/voronoi_edges.html>`_
+    <https://porespy.org/examples/generators/reference/voronoi_edges.html>`_
     to view online example.
 
     """
@@ -582,7 +582,7 @@ def lattice_spheres(shape: List[int],
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/generators/howtos/lattice_spheres.html>`_
+    <https://porespy.org/examples/generators/reference/lattice_spheres.html>`_
     to view online example.
 
     """
@@ -698,7 +698,7 @@ def overlapping_spheres(shape: List[int],
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/generators/howtos/overlapping_spheres.html>`_
+    <https://porespy.org/examples/generators/reference/overlapping_spheres.html>`_
     to view online example.
 
     """
@@ -796,7 +796,7 @@ def blobs(shape: List[int], porosity: float = 0.5, blobiness: int = 1,
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/generators/howtos/blobs.html>`_
+    <https://porespy.org/examples/generators/reference/blobs.html>`_
     to view online example.
 
     """
@@ -1012,7 +1012,7 @@ def cylinders(shape: List[int],
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/generators/howtos/cylinders.html>`_
+    <https://porespy.org/examples/generators/reference/cylinders.html>`_
     to view online example.
 
     """
@@ -1096,7 +1096,7 @@ def line_segment(X0, X1):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/generators/howtos/line_segment.html>`_
+    <https://porespy.org/examples/generators/reference/line_segment.html>`_
     to view online example.
 
     """

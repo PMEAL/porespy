@@ -13,6 +13,35 @@ except ImportError:
     from skimage.measure import marching_cubes_lewiner as marching_cubes
 
 
+__all__ = [
+    'align_image_with_openpnm',
+    'bbox_to_slices',
+    'extend_slice',
+    'extract_cylinder',
+    'extract_subsection',
+    'extract_regions',
+    'find_outer_region',
+    'get_border',
+    'get_planes',
+    'insert_cylinder',
+    'insert_sphere',
+    'in_hull',
+    'isolate_object',
+    'marching_map',
+    'make_contiguous',
+    'mesh_region',
+    'norm_to_uniform',
+    'overlay',
+    'randomize_colors',
+    'recombine',
+    'ps_ball',
+    'ps_disk',
+    'ps_rect',
+    'ps_round',
+    'subdivide',
+]
+
+
 def isolate_object(region, i, s=None):
     r"""
     Given an image containing labels, removes all labels except the specified
@@ -99,7 +128,7 @@ def align_image_with_openpnm(im):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/tools/howtos/align_image_with_openpnm.html>`_
+    <https://porespy.org/examples/tools/reference/align_image_with_openpnm.html>`_
     to view online example.
 
     """
@@ -157,7 +186,7 @@ def subdivide(im, divs=2, overlap=0):
     4
 
     `Click here
-    <https://porespy.org/examples/tools/howtos/subdivide.html>`_
+    <https://porespy.org/examples/tools/reference/subdivide.html>`_
     to view online example.
 
     """
@@ -276,7 +305,7 @@ def bbox_to_slices(bbox):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/tools/howtos/bbox_to_slices.html>`_
+    <https://porespy.org/examples/tools/reference/bbox_to_slices.html>`_
     to view online example.
 
     """
@@ -363,7 +392,7 @@ def extract_cylinder(im, r=None, axis=0):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/tools/howtos/extract_cylinder.html>`_
+    <https://porespy.org/examples/tools/reference/extract_cylinder.html>`_
     to view online example.
 
     """
@@ -419,7 +448,7 @@ def extract_subsection(im, shape):
      [2 3]]
 
     `Click here
-    <https://porespy.org/examples/tools/howtos/extract_subsection.html>`_
+    <https://porespy.org/examples/tools/reference/extract_subsection.html>`_
     to view online example.
 
     """
@@ -659,7 +688,7 @@ def make_contiguous(im, mode='keep_zeros'):
      [3 4 2]]
 
     `Click here
-    <https://porespy.org/examples/tools/howtos/make_contiguous.html>`_
+    <https://porespy.org/examples/tools/reference/make_contiguous.html>`_
     to view online example.
 
     """
@@ -729,7 +758,7 @@ def get_border(shape, thickness=1, mode='edges'):
      [ True  True  True]]
 
     `Click here
-    <https://porespy.org/examples/tools/howtos/get_border.html>`_
+    <https://porespy.org/examples/tools/reference/get_border.html>`_
     to view online example.
 
     """
@@ -788,7 +817,7 @@ def norm_to_uniform(im, scale=None):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/tools/howtos/norm_to_uniform.html>`_
+    <https://porespy.org/examples/tools/reference/norm_to_uniform.html>`_
     to view online example.
 
     """
@@ -910,7 +939,7 @@ def ps_disk(r, smooth=True):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/tools/howtos/ps_disk.html>`_
+    <https://porespy.org/examples/tools/reference/ps_disk.html>`_
     to view online example.
 
     """
@@ -938,7 +967,7 @@ def ps_ball(r, smooth=True):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/tools/howtos/ps_ball.html>`_
+    <https://porespy.org/examples/tools/reference/ps_ball.html>`_
     to view online example.
 
     """
@@ -968,7 +997,7 @@ def ps_round(r, ndim, smooth=True):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/tools/howtos/ps_round.html>`_
+    <https://porespy.org/examples/tools/reference/ps_round.html>`_
     to view online example.
 
     """
@@ -1002,7 +1031,7 @@ def ps_rect(w, ndim):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/tools/howtos/ps_rect.html>`_
+    <https://porespy.org/examples/tools/reference/ps_rect.html>`_
     to view online example.
 
     """
@@ -1038,7 +1067,7 @@ def overlay(im1, im2, c):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/tools/howtos/overlay.html>`_
+    <https://porespy.org/examples/tools/reference/overlay.html>`_
     to view online example.
 
     """
@@ -1085,7 +1114,7 @@ def insert_sphere(im, c, r, v=True, overwrite=True):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/tools/howtos/insert_sphere.html>`_
+    <https://porespy.org/examples/tools/reference/insert_sphere.html>`_
     to view online example.
 
     """
@@ -1144,7 +1173,7 @@ def insert_cylinder(im, xyz0, xyz1, r):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/tools/howtos/insert_cylinder.html>`_
+    <https://porespy.org/examples/tools/reference/insert_cylinder.html>`_
     to view online example.
 
     """
@@ -1214,7 +1243,7 @@ def extract_regions(regions, labels: list, trim=True):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/tools/howtos/extract_regions.html>`_
+    <https://porespy.org/examples/tools/reference/extract_regions.html>`_
     to view online example.
 
     """

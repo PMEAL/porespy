@@ -14,17 +14,17 @@ views.
    :template: mybase.rst
    :toctree: generated/
 
-   visualization.sem
-   visualization.show_3D
-   visualization.show_planes
-   visualization.xray
-   visualization.imshow
-   visualization.bar
-   visualization.show_mesh
-   visualization.set_mpl_style
-   visualization.satn_to_movie,
-   visualization.satn_to_panels,
-   visualization.prep_for_imshow,
+    visualization.bar
+    visualization.imshow
+    visualization.prep_for_imshow
+    visualization.satn_to_movie
+    visualization.satn_to_panels
+    visualization.sem
+    visualization.set_mpl_style
+    visualization.show_3D
+    visualization.show_mesh
+    visualization.show_planes
+    visualization.xray
 
 """
 

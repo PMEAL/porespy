@@ -78,21 +78,33 @@ def regions_to_network(regions, phases=None, voxel_size=1, accuracy='standard'):
         The volume of the pore found by as volume of a mesh obtained from the
         marching cubes algorithm
     'pore.surface_area'
-        The surface area of the pore region as calculated by ?
+        The surface area of the pore region as calculated by either counting
+        voxels or using the fast marching method to generate a tetramesh (if
+        ``accuracy`` is set to ``'high'``.)
     'throat.cross_sectional_area'
-        The cross-sectional area of the throat found by ?
+        The cross-sectional area of the throat found by either counting
+        voxels or using the fast marching method to generate a tetramesh (if
+        ``accuracy`` is set to ``'high'``.)
     'throat.perimeter'
-        The perimeter of the throat found by ?
+        The perimeter of the throat found by counting voxels on the edge of
+        the region defined by the intersection of two regions.
     'pore.inscribed_diameter'
-        The diameter of the largest sphere inscribed in the pore region
+        The diameter of the largest sphere inscribed in the pore region. This
+        is found as the maximum of the distance transform on the region in
+        isolation.
     'pore.extended_diameter'
-        ?
+        The diamter of the largest sphere inscribed in overal image, which
+        can extend outside the pore region. This is found as the local maximum
+        of the distance transform on the full image.
     'throat.inscribed_diameter'
-        The diameter of the largest sphere inscribed the throat region
+        The diameter of the largest sphere inscribed in the throat.  This
+        is found as the local maximum of the distance transform in the area
+        where to regions meet.
     'throat.total_length'
-        ?
+        The length between pore centered via the throat center
     'throat.direct_length'
-        ?
+        The length between two pore centers on a straight line between them
+        that does not pass through the throat centroid.
 
     """
     logger.trace('Extracting pore/throat information')

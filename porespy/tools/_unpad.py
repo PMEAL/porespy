@@ -23,7 +23,7 @@ def unpad(im, pad_width):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/tools/howtos/unpad.html>`_
+    <https://porespy.org/examples/tools/reference/unpad.html>`_
     to view online example.
 
     """

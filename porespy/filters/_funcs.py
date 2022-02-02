@@ -45,7 +45,7 @@ def apply_padded(im, pad_width, func, pad_val=1, **kwargs):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/filters/howtos/apply_padded.html>`_
+    <https://porespy.org/examples/filters/reference/apply_padded.html>`_
     to view online example.
 
     """
@@ -78,7 +78,7 @@ def trim_small_clusters(im, size=1):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/filters/howtos/trim_small_clusters.html>`_
+    <https://porespy.org/examples/filters/reference/trim_small_clusters.html>`_
     to view online example.
 
     """
@@ -121,7 +121,7 @@ def hold_peaks(im, axis=-1):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/filters/howtos/hold_peaks.html>`_
+    <https://porespy.org/examples/filters/reference/hold_peaks.html>`_
     to view online example.
 
     """
@@ -179,7 +179,7 @@ def distance_transform_lin(im, axis=0, mode="both"):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/filters/howtos/distance_transform_lin.html>`_
+    <https://porespy.org/examples/filters/reference/distance_transform_lin.html>`_
     to view online example.
 
     """
@@ -249,7 +249,7 @@ def find_disconnected_voxels(im, conn=None, surface=False):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/filters/howtos/find_disconnected_voxels.html>`_
+    <https://porespy.org/examples/filters/reference/find_disconnected_voxels.html>`_
     to view online example.
 
     """
@@ -311,7 +311,7 @@ def fill_blind_pores(im, conn=None, surface=False):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/filters/howtos/fill_blind_pores.html>`_
+    <https://porespy.org/examples/filters/reference/fill_blind_pores.html>`_
     to view online example.
 
     """
@@ -354,7 +354,7 @@ def trim_floating_solid(im, conn=None, surface=False):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/filters/howtos/trim_floating_solid.html>`_
+    <https://porespy.org/examples/filters/reference/trim_floating_solid.html>`_
     to view online example.
 
     """
@@ -403,7 +403,7 @@ def trim_nonpercolating_paths(im, inlets, outlets, strel=None):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/filters/howtos/trim_nonpercolating_paths.html>`_
+    <https://porespy.org/examples/filters/reference/trim_nonpercolating_paths.html>`_
     to view online example.
 
     """
@@ -446,7 +446,7 @@ def trim_extrema(im, h, mode="maxima"):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/filters/howtos/trim_extrema.html>`_
+    <https://porespy.org/examples/filters/reference/trim_extrema.html>`_
     to view online example.
 
     """
@@ -516,7 +516,7 @@ def flood(im, labels, mode="max"):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/filters/howtos/flood.html>`_
+    <https://porespy.org/examples/filters/reference/flood.html>`_
     to view online example.
 
     """
@@ -574,7 +574,7 @@ def flood_func(im, labels, func):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/filters/howtos/flood_func.html>`_
+    <https://porespy.org/examples/filters/reference/flood_func.html>`_
     to view online example.
 
     """
@@ -615,7 +615,7 @@ def find_dt_artifacts(dt):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/filters/howtos/find_dt_artifacts.html>`_
+    <https://porespy.org/examples/filters/reference/find_dt_artifacts.html>`_
     to view online example.
 
     """
@@ -659,7 +659,7 @@ def region_size(im):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/filters/howtos/region_size.html>`_
+    <https://porespy.org/examples/filters/reference/region_size.html>`_
     to view online example.
 
     """
@@ -706,7 +706,7 @@ def apply_chords(im, spacing=1, axis=0, trim_edges=True, label=False):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/filters/howtos/apply_chords.html>`_
+    <https://porespy.org/examples/filters/reference/apply_chords.html>`_
     to view online example.
 
     """
@@ -771,7 +771,7 @@ def apply_chords_3D(im, spacing=0, trim_edges=True):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/filters/howtos/apply_chords_3D.html>`_
+    <https://porespy.org/examples/filters/reference/apply_chords_3D.html>`_
     to view online example.
 
     """
@@ -862,7 +862,7 @@ def local_thickness(im, sizes=25, mode="hybrid", divs=1):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/filters/howtos/local_thickness.html>`_
+    <https://porespy.org/examples/filters/reference/local_thickness.html>`_
     to view online example.
 
     """
@@ -952,7 +952,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/filters/howtos/porosimetry.html>`_
+    <https://porespy.org/examples/filters/reference/porosimetry.html>`_
     to view online example.
 
     """
@@ -1080,7 +1080,7 @@ def trim_disconnected_blobs(im, inlets, strel=None):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/filters/howtos/trim_disconnected_blobs.html>`_
+    <https://porespy.org/examples/filters/reference/trim_disconnected_blobs.html>`_
     to view online example.
 
     """
@@ -1240,7 +1240,7 @@ def prune_branches(skel, branch_points=None, iterations=1):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/filters/howtos/prune_branches.html>`_
+    <https://porespy.org/examples/filters/reference/prune_branches.html>`_
     to view online example.
 
     """
@@ -1365,7 +1365,7 @@ def chunked_func(func,
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/filters/howtos/chunked_func.html>`_
+    <https://porespy.org/examples/filters/reference/chunked_func.html>`_
     to view online example.
 
     """
