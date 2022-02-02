@@ -25,5 +25,6 @@ if plot:
     inv_satn = ps.filters.seq_to_satn(inv_seq)
     cmap = copy(plt.cm.viridis)
     cmap.set_under(color='black')
-    plt.imshow(inv_seq, cmap=cmap, vmin=1e-3, interpolation='none', origin='lower')
+    plt.imshow(inv_seq, cmap=cmap, vmin=1e-3,
+               interpolation='none', origin='lower')
     mov = ps.visualization.satn_to_movie(im, inv_satn)

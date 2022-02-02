@@ -17,10 +17,12 @@ snow_n = ps.networks.snow2(phases,
 
 assert snow_n.regions.max() == 211
 # remove all but 1 pixel-width of boundary regions
-temp = ps.tools.extract_subsection(im=snow_n.regions, shape=np.array(snow_n.regions.shape)-8)
+temp = ps.tools.extract_subsection(im=snow_n.regions,
+                                   shape=np.array(snow_n.regions.shape)-8)
 assert temp.max() == 211
 # remove complete bounadry region
-temp = ps.tools.extract_subsection(im=snow_n.regions, shape=np.array(snow_n.regions.shape)-10)
+temp = ps.tools.extract_subsection(im=snow_n.regions,
+                                   shape=np.array(snow_n.regions.shape)-10)
 assert temp.max() == 164
 
 
