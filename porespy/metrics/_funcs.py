@@ -58,7 +58,7 @@ def representative_elementary_volume(im, npoints=1000):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/metrics/howtos/representative_elementary_volume.html>`_
+    <https://porespy.org/examples/metrics/reference/representative_elementary_volume.html>`_
     to view online example.
 
     """
@@ -126,7 +126,7 @@ def porosity(im):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/metrics/howtos/porosity.html>`_
+    <https://porespy.org/examples/metrics/reference/porosity.html>`_
     to view online example.
 
     """
@@ -158,7 +158,7 @@ def porosity_profile(im, axis=0):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/metrics/howtos/porosity_profile.html>`_
+    <https://porespy.org/examples/metrics/reference/porosity_profile.html>`_
     to view online example.
 
     """
@@ -250,7 +250,7 @@ def radial_density_distribution(dt, bins=10, log=False, voxel_size=1):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/metrics/howtos/radial_density.html>`_
+    <https://porespy.org/examples/metrics/reference/radial_density.html>`_
     to view online example.
 
     """
@@ -333,7 +333,7 @@ def lineal_path_distribution(im, bins=10, voxel_size=1, log=False):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/metrics/howtos/linear_density.html>`_
+    <https://porespy.org/examples/metrics/reference/linear_density.html>`_
     to view online example.
 
     """
@@ -425,7 +425,7 @@ def chord_length_distribution(im, bins=10, log=False, voxel_size=1,
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/metrics/howtos/chord_length_distribution.html>`_
+    <https://porespy.org/examples/metrics/reference/chord_length_distribution.html>`_
     to view online example.
 
     """
@@ -512,7 +512,7 @@ def pore_size_distribution(im, bins=10, log=True, voxel_size=1):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/metrics/howtos/pore_size_distribution.html>`_
+    <https://porespy.org/examples/metrics/reference/pore_size_distribution.html>`_
     to view online example.
 
     """
@@ -571,7 +571,7 @@ def two_point_correlation_bf(im, spacing=10):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/metrics/howtos/two_point_correlation_bf.html>`_
+    <https://porespy.org/examples/metrics/reference/two_point_correlation_bf.html>`_
     to view online example.
 
     """
@@ -679,7 +679,7 @@ def two_point_correlation(im):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/metrics/howtos/two_point_correlation_fft.html>`_
+    <https://porespy.org/examples/metrics/reference/two_point_correlation_fft.html>`_
     to view online example.
 
     """
@@ -738,7 +738,7 @@ def chord_counts(im):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/howtos/metrics/chord_counts.html>`_
+    <https://porespy.org/examples/reference/metrics/chord_counts.html>`_
     to view online example.
 
     """
@@ -774,7 +774,7 @@ def phase_fraction(im, normed=True):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/metrics/howtos/phase_fraction.html>`_
+    <https://porespy.org/examples/metrics/reference/phase_fraction.html>`_
     to view online example.
 
     """
