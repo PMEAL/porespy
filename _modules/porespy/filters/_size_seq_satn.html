@@ -314,7 +314,7 @@
     <span class="k">return</span> <span class="n">satn</span></div>
 
 
-<span class="k">def</span> <span class="nf">pc_to_satn</span><span class="p">(</span><span class="n">pc</span><span class="p">,</span> <span class="n">im</span><span class="p">):</span>
+<div class="viewcode-block" id="pc_to_satn"><a class="viewcode-back" href="../../../modules/generated/porespy.filters.pc_to_satn.html#porespy.filters.pc_to_satn">[docs]</a><span class="k">def</span> <span class="nf">pc_to_satn</span><span class="p">(</span><span class="n">pc</span><span class="p">,</span> <span class="n">im</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts an image of capillary entry pressures to saturation values</span>
 
@@ -348,10 +348,10 @@
     <span class="n">a</span><span class="p">[</span><span class="o">~</span><span class="n">im</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">a</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">pc</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
     <span class="n">satn</span> <span class="o">=</span> <span class="n">seq_to_satn</span><span class="p">(</span><span class="n">seq</span><span class="o">=</span><span class="n">a</span><span class="p">,</span> <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">satn</span>
+    <span class="k">return</span> <span class="n">satn</span></div>
 
 
-<span class="k">def</span> <span class="nf">satn_to_seq</span><span class="p">(</span><span class="n">satn</span><span class="p">,</span> <span class="n">im</span><span class="p">):</span>
+<div class="viewcode-block" id="satn_to_seq"><a class="viewcode-back" href="../../../modules/generated/porespy.filters.satn_to_seq.html#porespy.filters.satn_to_seq">[docs]</a><span class="k">def</span> <span class="nf">satn_to_seq</span><span class="p">(</span><span class="n">satn</span><span class="p">,</span> <span class="n">im</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts an image of nonwetting phase saturations to invasion sequence</span>
 <span class="sd">    values</span>
@@ -381,7 +381,7 @@
     <span class="n">seq</span><span class="p">[</span><span class="o">~</span><span class="n">im</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="c1"># Ensure values are contiguous while keeping -1 and 0</span>
     <span class="n">seq</span> <span class="o">=</span> <span class="n">make_contiguous</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">seq</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;symmetric&#39;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">seq</span>
+    <span class="k">return</span> <span class="n">seq</span></div>
 </pre></div>
 
               </div>

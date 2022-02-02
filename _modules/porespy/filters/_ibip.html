@@ -1,0 +1,512 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>porespy.filters._ibip &#8212; PoreSpy  documentation</title>
+    
+    <link href="../../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+  
+    
+    <link rel="stylesheet"
+      href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+    <link rel="preload" as="font" type="font/woff2" crossorigin
+      href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+    <link rel="preload" as="font" type="font/woff2" crossorigin
+      href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+  
+    
+      
+  
+    
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/styles/pydata-sphinx-theme.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
+    
+    <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+  
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/custom.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="https://www.porespy.org">
+  <img src="../../../_static/porespy_logo.png" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../user_guide/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../modules/index.html">
+  Module and Function Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../examples.html">
+  Examples
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/porespy/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/porespy/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/PMEAL/porespy" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://porespy.substack.com/" rel="noopener" target="_blank" title="Substack"><span><i class="fas fa-envelope-square"></i></span>
+            <label class="sr-only">Substack</label></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/porespy" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar">
+              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+              </div>
+              <div class="sidebar-end-items">
+              </div>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <h1>Source code for porespy.filters._ibip</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">edt</span> <span class="kn">import</span> <span class="n">edt</span>
+<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">get_tqdm</span>
+<span class="kn">import</span> <span class="nn">scipy.ndimage</span> <span class="k">as</span> <span class="nn">spim</span>
+<span class="kn">from</span> <span class="nn">porespy.filters</span> <span class="kn">import</span> <span class="n">trim_disconnected_blobs</span>
+<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">get_border</span><span class="p">,</span> <span class="n">make_contiguous</span>
+<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">Results</span>
+<span class="kn">import</span> <span class="nn">numba</span>
+<span class="kn">from</span> <span class="nn">porespy</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="n">tqdm</span> <span class="o">=</span> <span class="n">get_tqdm</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="ibip"><a class="viewcode-back" href="../../../modules/generated/porespy.filters.ibip.html#porespy.filters.ibip">[docs]</a><span class="k">def</span> <span class="nf">ibip</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">inlets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">maxiter</span><span class="o">=</span><span class="mi">10000</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Performs invasion percolation on given image using iterative image dilation</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    im : ND-array</span>
+<span class="sd">        Boolean array with ``True`` values indicating void voxels</span>
+<span class="sd">    inlets : ND-array</span>
+<span class="sd">        Boolean array with ``True`` values indicating where the invading fluid</span>
+<span class="sd">        is injected from.  If ``None``, all faces will be used.</span>
+<span class="sd">    dt : ND-array (optional)</span>
+<span class="sd">        The distance transform of ``im``.  If not provided it will be</span>
+<span class="sd">        calculated, so supplying it saves time.</span>
+<span class="sd">    maxiter : scalar</span>
+<span class="sd">        The number of steps to apply before stopping.  The default is to run</span>
+<span class="sd">        for 10,000 steps which is almost certain to reach completion if the</span>
+<span class="sd">        image is smaller than about 250-cubed.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    results : Results object</span>
+<span class="sd">        A custom object with the following two arrays as attributes:</span>
+
+<span class="sd">        &#39;inv_sequence&#39;</span>
+<span class="sd">            An ndarray the same shape as ``im`` with each voxel labelled by</span>
+<span class="sd">            the sequence at which it was invaded.</span>
+
+<span class="sd">        &#39;inv_size&#39;</span>
+<span class="sd">            An ndarray the same shape as ``im`` with each voxel labelled by</span>
+<span class="sd">            the ``inv_size`` at which was filled.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    porosimetry</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Process the boundary image</span>
+    <span class="k">if</span> <span class="n">inlets</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">inlets</span> <span class="o">=</span> <span class="n">get_border</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;faces&#39;</span><span class="p">)</span>
+    <span class="n">bd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">inlets</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># Find dt if not given</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>  <span class="c1"># Conert the dt to nearest integer</span>
+    <span class="c1"># Initialize inv image with -1 in the solid, and 0&#39;s in the void</span>
+    <span class="n">inv</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">*</span><span class="p">(</span><span class="o">~</span><span class="n">im</span><span class="p">)</span>
+    <span class="n">sizes</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">*</span><span class="p">(</span><span class="o">~</span><span class="n">im</span><span class="p">)</span>
+    <span class="n">scratch</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">bd</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">maxiter</span><span class="p">),</span> <span class="o">**</span><span class="n">settings</span><span class="o">.</span><span class="n">tqdm</span><span class="p">):</span>
+        <span class="n">pt</span> <span class="o">=</span> <span class="n">_where</span><span class="p">(</span><span class="n">bd</span><span class="p">)</span>
+        <span class="n">scratch</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">bd</span><span class="p">)</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">_insert_disks_at_points</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">scratch</span><span class="p">,</span> <span class="n">coords</span><span class="o">=</span><span class="n">pt</span><span class="p">,</span>
+                                       <span class="n">r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">v</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="c1"># Reduce to only the &#39;new&#39; boundary</span>
+        <span class="n">edge</span> <span class="o">=</span> <span class="n">temp</span><span class="o">*</span><span class="p">(</span><span class="n">dt</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="o">~</span><span class="n">edge</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+            <span class="k">break</span>
+        <span class="c1"># Find the maximum value of the dt underlaying the new edge</span>
+        <span class="n">r_max</span> <span class="o">=</span> <span class="p">(</span><span class="n">dt</span><span class="o">*</span><span class="n">edge</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        <span class="c1"># Find all values of the dt with that size</span>
+        <span class="n">dt_thresh</span> <span class="o">=</span> <span class="n">dt</span> <span class="o">&gt;=</span> <span class="n">r_max</span>
+        <span class="c1"># Extract the actual coordinates of the insertion sites</span>
+        <span class="n">pt</span> <span class="o">=</span> <span class="n">_where</span><span class="p">(</span><span class="n">edge</span><span class="o">*</span><span class="n">dt_thresh</span><span class="p">)</span>
+        <span class="n">inv</span> <span class="o">=</span> <span class="n">_insert_disks_at_points</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">inv</span><span class="p">,</span> <span class="n">coords</span><span class="o">=</span><span class="n">pt</span><span class="p">,</span>
+                                      <span class="n">r</span><span class="o">=</span><span class="n">r_max</span><span class="p">,</span> <span class="n">v</span><span class="o">=</span><span class="n">step</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">sizes</span> <span class="o">=</span> <span class="n">_insert_disks_at_points</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">sizes</span><span class="p">,</span> <span class="n">coords</span><span class="o">=</span><span class="n">pt</span><span class="p">,</span>
+                                        <span class="n">r</span><span class="o">=</span><span class="n">r_max</span><span class="p">,</span> <span class="n">v</span><span class="o">=</span><span class="n">r_max</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">dt</span><span class="p">,</span> <span class="n">bd</span> <span class="o">=</span> <span class="n">_update_dt_and_bd</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">bd</span><span class="p">,</span> <span class="n">pt</span><span class="p">)</span>
+    <span class="c1"># Convert inv image so that uninvaded voxels are set to -1 and solid to 0</span>
+    <span class="n">temp</span> <span class="o">=</span> <span class="n">inv</span> <span class="o">==</span> <span class="mi">0</span>  <span class="c1"># Uninvaded voxels are set to -1 after _ibip</span>
+    <span class="n">inv</span><span class="p">[</span><span class="o">~</span><span class="n">im</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">inv</span><span class="p">[</span><span class="n">temp</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="n">inv</span> <span class="o">=</span> <span class="n">make_contiguous</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">inv</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;symmetric&#39;</span><span class="p">)</span>
+    <span class="c1"># Deal with invasion sizes similarly</span>
+    <span class="n">temp</span> <span class="o">=</span> <span class="n">sizes</span> <span class="o">==</span> <span class="mi">0</span>
+    <span class="n">sizes</span><span class="p">[</span><span class="o">~</span><span class="n">im</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">sizes</span><span class="p">[</span><span class="n">temp</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">Results</span><span class="p">()</span>
+    <span class="n">results</span><span class="o">.</span><span class="n">inv_sequence</span> <span class="o">=</span> <span class="n">inv</span>
+    <span class="n">results</span><span class="o">.</span><span class="n">inv_sizes</span> <span class="o">=</span> <span class="n">sizes</span>
+    <span class="k">return</span> <span class="n">results</span></div>
+
+
+<span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">_where</span><span class="p">(</span><span class="n">arr</span><span class="p">):</span>
+    <span class="n">inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">inds</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span>
+
+
+<span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">_update_dt_and_bd</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">bd</span><span class="p">,</span> <span class="n">pt</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">dt</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">pt</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="n">bd</span><span class="p">[</span><span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="p">],</span> <span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">dt</span><span class="p">[</span><span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="p">],</span> <span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">pt</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="n">bd</span><span class="p">[</span><span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="p">],</span> <span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">],</span> <span class="n">pt</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">dt</span><span class="p">[</span><span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="p">],</span> <span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">],</span> <span class="n">pt</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">return</span> <span class="n">dt</span><span class="p">,</span> <span class="n">bd</span>
+
+
+<span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">_make_disks</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a list of disks from size 0 to ``r``</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    r : int</span>
+<span class="sd">        The size of the largest disk to generate</span>
+<span class="sd">    smooth : bool</span>
+<span class="sd">        Indicates whether the disks should include the nibs (``False``) on</span>
+<span class="sd">        the surface or not (``True``).  The default is ``True``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    disks : list of ND-arrays</span>
+<span class="sd">        A list containing the disk images, with the disk of radius R at index</span>
+<span class="sd">        R of the list, meaning it can be accessed as ``disks[R]``.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">disks</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([]))]</span>
+    <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span>
+        <span class="n">disk</span> <span class="o">=</span> <span class="n">_make_disk</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">smooth</span><span class="p">)</span>
+        <span class="n">disks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">disk</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">disks</span>
+
+
+<span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">_make_balls</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a list of balls from size 0 to ``r``</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    r : int</span>
+<span class="sd">        The size of the largest ball to generate</span>
+<span class="sd">    smooth : bool</span>
+<span class="sd">        Indicates whether the balls should include the nibs (``False``) on</span>
+<span class="sd">        the surface or not (``True``).  The default is ``True``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    balls : list of ND-arrays</span>
+<span class="sd">        A list containing the ball images, with the ball of radius R at index</span>
+<span class="sd">        R of the list, meaning it can be accessed as ``balls[R]``.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">balls</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">atleast_3d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([]))]</span>
+    <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span>
+        <span class="n">ball</span> <span class="o">=</span> <span class="n">_make_ball</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">smooth</span><span class="p">)</span>
+        <span class="n">balls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ball</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">balls</span>
+
+
+<span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">_insert_disks_at_points</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Insert spheres (or disks) into the given ND-image at given locations</span>
+
+<span class="sd">    This function uses numba to accelerate the process, and does not</span>
+<span class="sd">    overwrite any existing values (i.e. only writes to locations containing</span>
+<span class="sd">    zeros).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    im : ND-array</span>
+<span class="sd">        The image into which the spheres/disks should be inserted. This is an</span>
+<span class="sd">        &#39;in-place&#39; operation.</span>
+<span class="sd">    coords : ND-array</span>
+<span class="sd">        The center point of each sphere/disk in an array of shape</span>
+<span class="sd">        ``ndim by npts``</span>
+<span class="sd">    r : int</span>
+<span class="sd">        The radius of all the spheres/disks to add. It is assumed that they</span>
+<span class="sd">        are all the same radius.</span>
+<span class="sd">    v : scalar</span>
+<span class="sd">        The value to insert</span>
+<span class="sd">    smooth : boolean</span>
+<span class="sd">        If ``True`` (default) then the spheres/disks will not have the litte</span>
+<span class="sd">        nibs on the surfaces.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">npts</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">xlim</span><span class="p">,</span> <span class="n">ylim</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">_make_disk</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">smooth</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">npts</span><span class="p">):</span>
+            <span class="n">pt</span> <span class="o">=</span> <span class="n">coords</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">r</span><span class="p">,</span> <span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">r</span><span class="o">+</span><span class="mi">1</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">x</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">x</span> <span class="o">&lt;</span> <span class="n">xlim</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">b</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">r</span><span class="p">,</span> <span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">r</span><span class="o">+</span><span class="mi">1</span><span class="p">)):</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">y</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">y</span> <span class="o">&lt;</span> <span class="n">ylim</span><span class="p">):</span>
+                            <span class="k">if</span> <span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">im</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+                                <span class="n">im</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+    <span class="k">elif</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="n">xlim</span><span class="p">,</span> <span class="n">ylim</span><span class="p">,</span> <span class="n">zlim</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">_make_ball</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">smooth</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">npts</span><span class="p">):</span>
+            <span class="n">pt</span> <span class="o">=</span> <span class="n">coords</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">r</span><span class="p">,</span> <span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">r</span><span class="o">+</span><span class="mi">1</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">x</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">x</span> <span class="o">&lt;</span> <span class="n">xlim</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">b</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">r</span><span class="p">,</span> <span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">r</span><span class="o">+</span><span class="mi">1</span><span class="p">)):</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">y</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">y</span> <span class="o">&lt;</span> <span class="n">ylim</span><span class="p">):</span>
+                            <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">z</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">pt</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">-</span><span class="n">r</span><span class="p">,</span> <span class="n">pt</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">+</span><span class="n">r</span><span class="o">+</span><span class="mi">1</span><span class="p">)):</span>
+                                <span class="k">if</span> <span class="p">(</span><span class="n">z</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">z</span> <span class="o">&lt;</span> <span class="n">zlim</span><span class="p">):</span>
+                                    <span class="k">if</span> <span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">im</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+                                        <span class="n">im</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+    <span class="k">return</span> <span class="n">im</span>
+
+
+<span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">_make_disk</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="o">*</span><span class="n">r</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">r</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">type</span><span class="p">(</span><span class="n">r</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">smooth</span><span class="p">:</span>
+        <span class="n">thresh</span> <span class="o">=</span> <span class="n">r</span> <span class="o">-</span> <span class="mf">0.001</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">thresh</span> <span class="o">=</span> <span class="n">r</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">r</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">r</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+            <span class="k">if</span> <span class="p">((</span><span class="n">i</span> <span class="o">-</span> <span class="n">r</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">j</span> <span class="o">-</span> <span class="n">r</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mf">0.5</span> <span class="o">&lt;=</span> <span class="n">thresh</span><span class="p">:</span>
+                <span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">s</span>
+
+
+<span class="nd">@numba</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span><span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">_make_ball</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="o">*</span><span class="n">r</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">r</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">r</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">type</span><span class="p">(</span><span class="n">r</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">smooth</span><span class="p">:</span>
+        <span class="n">thresh</span> <span class="o">=</span> <span class="n">r</span> <span class="o">-</span> <span class="mf">0.001</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">thresh</span> <span class="o">=</span> <span class="n">r</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">r</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">r</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">r</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+                <span class="k">if</span> <span class="p">((</span><span class="n">i</span> <span class="o">-</span> <span class="n">r</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">j</span> <span class="o">-</span> <span class="n">r</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">k</span> <span class="o">-</span> <span class="n">r</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mf">0.5</span> <span class="o">&lt;=</span> <span class="n">thresh</span><span class="p">:</span>
+                    <span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">s</span>
+
+
+<div class="viewcode-block" id="find_trapped_regions"><a class="viewcode-back" href="../../../modules/generated/porespy.filters.find_trapped_regions.html#porespy.filters.find_trapped_regions">[docs]</a><span class="k">def</span> <span class="nf">find_trapped_regions</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span> <span class="n">outlets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">return_mask</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Find the trapped regions given an invasion sequence image</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    seq : ndarray</span>
+<span class="sd">        An image with invasion sequence values in each voxel.  Regions</span>
+<span class="sd">        labelled -1 are considered uninvaded, and regions labelled 0 are</span>
+<span class="sd">        considered solid.</span>
+<span class="sd">    outlets : ndarray, optional</span>
+<span class="sd">        An image the same size as ``seq`` with ``True`` indicating outlets</span>
+<span class="sd">        and ``False`` elsewhere.  If not given then all image boundaries</span>
+<span class="sd">        are considered outlets.</span>
+<span class="sd">    bins : int</span>
+<span class="sd">        The resolution to use when thresholding the ``seq`` image.  By default</span>
+<span class="sd">        the invasion sequence will be broken into 25 discrete steps and</span>
+<span class="sd">        trapping will be identified at each step. A higher value of ``bins``</span>
+<span class="sd">        will provide a more accurate trapping analysis, but is more time</span>
+<span class="sd">        consuming. If ``None`` is specified, then *all* the steps will</span>
+<span class="sd">        analyzed, providing the highest accuracy.</span>
+<span class="sd">    return_mask : bool</span>
+<span class="sd">        If ``True`` (default) then the returned image is a boolean mask</span>
+<span class="sd">        indicating which voxels are trapped.  If ``False``, then a copy of</span>
+<span class="sd">        ``seq`` is returned with the trapped voxels set to uninvaded and</span>
+<span class="sd">        the invasion sequence values adjusted accordingly.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    trapped : ND-image</span>
+<span class="sd">        An image, the same size as ``seq``.  If ``return_mask`` is ``True``,</span>
+<span class="sd">        then the image has ``True`` values indicating the trapped voxels.  If</span>
+<span class="sd">        ``return_mask`` is ``False``, then a copy of ``seq`` is returned with</span>
+<span class="sd">        trapped voxels set to 0.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">seq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">outlets</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">outlets</span> <span class="o">=</span> <span class="n">get_border</span><span class="p">(</span><span class="n">seq</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;faces&#39;</span><span class="p">)</span>
+    <span class="n">trapped</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">outlets</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">bins</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">seq</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">bins</span> <span class="o">=</span> <span class="n">bins</span><span class="p">[</span><span class="n">bins</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">seq</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="mi">1</span><span class="p">,</span> <span class="n">bins</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="o">**</span><span class="n">settings</span><span class="o">.</span><span class="n">tqdm</span><span class="p">):</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">seq</span> <span class="o">&gt;=</span> <span class="n">i</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">temp</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">keep</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">labels</span><span class="p">[</span><span class="n">outlets</span><span class="p">])[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="n">trapped</span> <span class="o">+=</span> <span class="n">temp</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">keep</span><span class="p">,</span> <span class="n">invert</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">return_mask</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">trapped</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">seq</span><span class="p">[</span><span class="n">trapped</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">seq</span> <span class="o">=</span> <span class="n">make_contiguous</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;symmetric&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">seq</span></div>
+</pre></div>
+
+              </div>
+              
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+    <script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+  <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2022 PoreSpy Team.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

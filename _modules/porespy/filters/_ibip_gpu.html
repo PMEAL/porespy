@@ -1,0 +1,431 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>porespy.filters._ibip_gpu &#8212; PoreSpy  documentation</title>
+    
+    <link href="../../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+  
+    
+    <link rel="stylesheet"
+      href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+    <link rel="preload" as="font" type="font/woff2" crossorigin
+      href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+    <link rel="preload" as="font" type="font/woff2" crossorigin
+      href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+  
+    
+      
+  
+    
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/styles/pydata-sphinx-theme.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
+    
+    <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+  
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/custom.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="https://www.porespy.org">
+  <img src="../../../_static/porespy_logo.png" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../user_guide/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../modules/index.html">
+  Module and Function Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../examples.html">
+  Examples
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/porespy/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/porespy/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/PMEAL/porespy" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://porespy.substack.com/" rel="noopener" target="_blank" title="Substack"><span><i class="fas fa-envelope-square"></i></span>
+            <label class="sr-only">Substack</label></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/porespy" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar">
+              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+              </div>
+              <div class="sidebar-end-items">
+              </div>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <h1>Source code for porespy.filters._ibip_gpu</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">loguru</span> <span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">edt</span> <span class="kn">import</span> <span class="n">edt</span>
+<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">get_tqdm</span><span class="p">,</span> <span class="n">get_border</span>
+<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">Results</span>
+<span class="n">tqdm</span> <span class="o">=</span> <span class="n">get_tqdm</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="ibip_gpu"><a class="viewcode-back" href="../../../modules/generated/porespy.filters.ibip_gpu.html#porespy.filters.ibip_gpu">[docs]</a><span class="k">def</span> <span class="nf">ibip_gpu</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">inlets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">maxiter</span><span class="o">=</span><span class="mi">10000</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Performs invasion percolation on given image using iterative image</span>
+<span class="sd">    dilation on GPU.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    im : array_like</span>
+<span class="sd">        Boolean array with ``True`` values indicating void voxels. If a</span>
+<span class="sd">        standard numpy array is passed, it is converted to a cupy array.</span>
+<span class="sd">    dt : array_like, optional</span>
+<span class="sd">        The distance transform of ``im``. If a standard numpy array is</span>
+<span class="sd">        passed, it is converted to a cupy array.</span>
+<span class="sd">    inlets : array_like, optional</span>
+<span class="sd">        Boolean array with ``True`` values indicating where the invading</span>
+<span class="sd">        fluid is injected from.  If ``None``, all faces will be used.</span>
+<span class="sd">        If a standard numpy array is passed, it is converted to a cupy</span>
+<span class="sd">        array.</span>
+<span class="sd">    maxiter : int, optional</span>
+<span class="sd">        The number of steps to apply before stopping.  The default is to</span>
+<span class="sd">        run for 10,000 steps which is almost certain to reach completion</span>
+<span class="sd">        if the image is smaller than about 250-cubed.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    results : Results object</span>
+<span class="sd">        A custom object with the following two arrays as attributes:</span>
+
+<span class="sd">        &#39;inv_sequence&#39;</span>
+<span class="sd">            An ndarray the same shape as ``im`` with each voxel labelled by</span>
+<span class="sd">            the sequence at which it was invaded.</span>
+
+<span class="sd">        &#39;inv_size&#39;</span>
+<span class="sd">            An ndarray the same shape as ``im`` with each voxel labelled by</span>
+<span class="sd">            the ``inv_size`` at which was filled.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">cupy</span> <span class="k">as</span> <span class="nn">cp</span>
+    <span class="kn">from</span> <span class="nn">cupyx.scipy</span> <span class="kn">import</span> <span class="n">ndimage</span> <span class="k">as</span> <span class="n">cndi</span>
+
+    <span class="n">im_gpu</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="n">cp</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">im</span><span class="p">))</span> <span class="k">if</span> <span class="n">dt</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">dt</span>
+    <span class="n">dt_gpu</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+    <span class="n">inlets</span> <span class="o">=</span> <span class="n">get_border</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="k">if</span> <span class="n">inlets</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">inlets</span>
+    <span class="n">inlets_gpu</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">inlets</span><span class="p">)</span>
+    <span class="n">bd_gpu</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">inlets_gpu</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">dt_gpu</span> <span class="o">=</span> <span class="n">dt_gpu</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+    <span class="c1"># Alternative to _ibip</span>
+    <span class="n">inv_gpu</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">*</span><span class="p">((</span><span class="o">~</span><span class="n">im_gpu</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">))</span>
+    <span class="n">sizes_gpu</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">*</span><span class="p">((</span><span class="o">~</span><span class="n">im_gpu</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">))</span>
+    <span class="n">strel_gpu</span> <span class="o">=</span> <span class="n">ball_gpu</span> <span class="k">if</span> <span class="n">im_gpu</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span> <span class="k">else</span> <span class="n">disk_gpu</span>
+
+    <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">maxiter</span><span class="p">)):</span>
+        <span class="n">temp_gpu</span> <span class="o">=</span> <span class="n">cndi</span><span class="o">.</span><span class="n">binary_dilation</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">bd_gpu</span><span class="p">,</span>
+                                        <span class="n">structure</span><span class="o">=</span><span class="n">strel_gpu</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+        <span class="n">edge_gpu</span> <span class="o">=</span> <span class="n">temp_gpu</span> <span class="o">*</span> <span class="p">(</span><span class="n">dt_gpu</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="o">~</span><span class="n">cp</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">edge_gpu</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;No more accessible invasion sites found&#39;</span><span class="p">)</span>
+            <span class="k">break</span>
+        <span class="c1"># Find the maximum value of the dt underlaying the new edge</span>
+        <span class="n">r_max_gpu</span> <span class="o">=</span> <span class="n">dt_gpu</span><span class="p">[</span><span class="n">edge_gpu</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        <span class="c1"># Find all values of the dt with that size</span>
+        <span class="n">dt_thresh_gpu</span> <span class="o">=</span> <span class="n">dt_gpu</span> <span class="o">&gt;=</span> <span class="n">r_max_gpu</span>
+        <span class="c1"># Insert the disk/sphere</span>
+        <span class="n">pt_gpu</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">edge_gpu</span> <span class="o">*</span> <span class="n">dt_thresh_gpu</span><span class="p">)</span>  <span class="c1"># will be used later in updating bd</span>
+        <span class="c1"># Update inv image</span>
+        <span class="n">bi_dial_gpu</span> <span class="o">=</span> <span class="n">cndi</span><span class="o">.</span><span class="n">binary_dilation</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">edge_gpu</span><span class="o">*</span><span class="n">dt_thresh_gpu</span><span class="p">,</span>
+                                           <span class="n">structure</span><span class="o">=</span><span class="n">strel_gpu</span><span class="p">(</span><span class="n">r_max_gpu</span><span class="o">.</span><span class="n">item</span><span class="p">()))</span>
+        <span class="n">bi_dial_step_gpu</span> <span class="o">=</span> <span class="n">bi_dial_gpu</span> <span class="o">*</span> <span class="n">step</span>
+        <span class="n">inv_prev_gpu</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">inv_gpu</span><span class="p">)</span>
+        <span class="n">mask_inv_prev_gpu</span> <span class="o">=</span> <span class="o">~</span><span class="p">(</span><span class="n">inv_prev_gpu</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">dial_single_gpu</span> <span class="o">=</span> <span class="n">mask_inv_prev_gpu</span> <span class="o">*</span> <span class="n">bi_dial_step_gpu</span>
+        <span class="n">inv_gpu</span> <span class="o">=</span> <span class="n">inv_prev_gpu</span> <span class="o">+</span> <span class="n">dial_single_gpu</span>
+        <span class="c1"># Update size image</span>
+        <span class="n">bi_dial_size_gpu</span> <span class="o">=</span> <span class="n">bi_dial_gpu</span> <span class="o">*</span> <span class="n">r_max_gpu</span>
+        <span class="n">sizes_prev_gpu</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">sizes_gpu</span><span class="p">)</span>
+        <span class="n">mask_sizes_prev_gpu</span> <span class="o">=</span> <span class="o">~</span><span class="p">(</span><span class="n">sizes_prev_gpu</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">dial_single_size_gpu</span> <span class="o">=</span> <span class="n">mask_sizes_prev_gpu</span> <span class="o">*</span> <span class="n">bi_dial_size_gpu</span>
+        <span class="n">sizes_gpu</span> <span class="o">=</span> <span class="n">sizes_prev_gpu</span> <span class="o">+</span> <span class="n">dial_single_size_gpu</span>
+        <span class="c1"># Update boundary image with newly invaded points</span>
+        <span class="n">bd_gpu</span><span class="p">[</span><span class="n">pt_gpu</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">dt_gpu</span><span class="p">[</span><span class="n">pt_gpu</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">step</span> <span class="o">==</span> <span class="p">(</span><span class="n">maxiter</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>  <span class="c1"># If max_iters reached, end loop</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Maximum number of iterations reached&#39;</span><span class="p">)</span>
+            <span class="k">break</span>
+
+    <span class="n">temp_gpu</span> <span class="o">=</span> <span class="n">inv_gpu</span> <span class="o">==</span> <span class="mi">0</span>
+    <span class="n">inv_gpu</span><span class="p">[</span><span class="o">~</span><span class="n">im_gpu</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">inv_gpu</span><span class="p">[</span><span class="n">temp_gpu</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="n">inv_seq_gpu</span> <span class="o">=</span> <span class="n">make_contiguous_gpu</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">inv_gpu</span><span class="p">)</span>
+    <span class="n">temp_gpu</span> <span class="o">=</span> <span class="n">sizes_gpu</span> <span class="o">==</span> <span class="mi">0</span>
+    <span class="n">sizes_gpu</span><span class="p">[</span><span class="o">~</span><span class="n">im_gpu</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">sizes_gpu</span><span class="p">[</span><span class="n">temp_gpu</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="n">inv_sequence</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">inv_seq_gpu</span><span class="p">)</span>
+    <span class="n">inv_size</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">sizes_gpu</span><span class="p">)</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">Results</span><span class="p">()</span>
+    <span class="n">results</span><span class="o">.</span><span class="n">inv_sequence</span> <span class="o">=</span> <span class="n">inv_sequence</span>
+    <span class="n">results</span><span class="o">.</span><span class="n">inv_size</span> <span class="o">=</span> <span class="n">inv_size</span>
+    <span class="k">return</span> <span class="n">results</span></div>
+
+
+<span class="k">def</span> <span class="nf">rankdata_gpu</span><span class="p">(</span><span class="n">im_arr</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    GPU alternative to scipy&#39;s rankdata using &#39;dense&#39; method.</span>
+<span class="sd">    Assign ranks to data, dealing with ties appropriately.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    im_arr : cupy ndarray</span>
+<span class="sd">        Input image.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dense : cupy ndarray</span>
+<span class="sd">        An array of length equal to the size of im_arr, containing rank</span>
+<span class="sd">        scores.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">cupy</span> <span class="k">as</span> <span class="nn">cp</span>
+    <span class="n">arr</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">im_arr</span><span class="p">)</span>
+    <span class="n">sorter</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
+    <span class="n">inv</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">sorter</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">cp</span><span class="o">.</span><span class="n">intp</span><span class="p">)</span>
+    <span class="n">inv</span><span class="p">[</span><span class="n">sorter</span><span class="p">]</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">sorter</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">cp</span><span class="o">.</span><span class="n">intp</span><span class="p">)</span>
+    <span class="n">arr</span> <span class="o">=</span> <span class="n">arr</span><span class="p">[</span><span class="n">sorter</span><span class="p">]</span>
+    <span class="n">obs</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">r_</span><span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="n">arr</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">!=</span> <span class="n">arr</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+    <span class="n">dense</span> <span class="o">=</span> <span class="n">obs</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()[</span><span class="n">inv</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">dense</span>
+
+
+<span class="k">def</span> <span class="nf">make_contiguous_gpu</span><span class="p">(</span><span class="n">im</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Take an image with arbitrary greyscale values and adjust them to</span>
+<span class="sd">    ensure all values fall in a contiguous range starting at 0.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    im : cupy ndarray</span>
+<span class="sd">        Input array containing greyscale values</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    im_new : cupy ndarray</span>
+<span class="sd">        Array the same size as ``im`` but with all values in contiguous</span>
+<span class="sd">        order.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">shape</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">im_flat</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+    <span class="n">mask_neg</span> <span class="o">=</span> <span class="n">im_flat</span> <span class="o">&lt;</span> <span class="mi">0</span>
+    <span class="n">im_neg</span> <span class="o">=</span> <span class="o">-</span><span class="n">rankdata_gpu</span><span class="p">(</span><span class="o">-</span><span class="n">im_flat</span><span class="p">[</span><span class="n">mask_neg</span><span class="p">])</span>
+    <span class="n">mask_pos</span> <span class="o">=</span> <span class="n">im_flat</span> <span class="o">&gt;</span> <span class="mi">0</span>
+    <span class="n">im_pos</span> <span class="o">=</span> <span class="n">rankdata_gpu</span><span class="p">(</span><span class="n">im_flat</span><span class="p">[</span><span class="n">mask_pos</span><span class="p">])</span>
+    <span class="n">im_flat</span><span class="p">[</span><span class="n">mask_pos</span><span class="p">]</span> <span class="o">=</span> <span class="n">im_pos</span>
+    <span class="n">im_flat</span><span class="p">[</span><span class="n">mask_neg</span><span class="p">]</span> <span class="o">=</span> <span class="n">im_neg</span>
+    <span class="n">im_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">im_flat</span><span class="p">,</span> <span class="n">shape</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">im_new</span>
+
+
+<span class="k">def</span> <span class="nf">ball_gpu</span><span class="p">(</span><span class="n">radius</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generates a ball-shaped structuring element.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    radius : int</span>
+<span class="sd">        The radius of the ball-shaped structuring element.</span>
+<span class="sd">    smooth : bool, optional</span>
+<span class="sd">        Indicates whether the balls should include the nibs (``False``) on</span>
+<span class="sd">        the surface or not (``True``).  The default is ``True``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    cupy ndarray</span>
+<span class="sd">        The structuring element where elements of the neighborhood</span>
+<span class="sd">        are 1 and 0 otherwise.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">cupy</span> <span class="k">as</span> <span class="nn">cp</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">radius</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">Z</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">X</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">mgrid</span><span class="p">[</span><span class="o">-</span><span class="n">radius</span><span class="p">:</span><span class="n">radius</span><span class="p">:</span><span class="n">n</span> <span class="o">*</span> <span class="mi">1</span><span class="n">j</span><span class="p">,</span>
+                       <span class="o">-</span><span class="n">radius</span><span class="p">:</span><span class="n">radius</span><span class="p">:</span><span class="n">n</span> <span class="o">*</span> <span class="mi">1</span><span class="n">j</span><span class="p">,</span>
+                       <span class="o">-</span><span class="n">radius</span><span class="p">:</span><span class="n">radius</span><span class="p">:</span><span class="n">n</span> <span class="o">*</span> <span class="mi">1</span><span class="n">j</span><span class="p">]</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">X</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">Y</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">Z</span> <span class="o">**</span> <span class="mi">2</span>
+    <span class="k">if</span> <span class="n">smooth</span><span class="p">:</span>
+        <span class="n">radius</span> <span class="o">=</span> <span class="n">radius</span> <span class="o">-</span> <span class="mf">0.001</span>
+    <span class="k">return</span> <span class="n">s</span> <span class="o">&lt;=</span> <span class="n">radius</span> <span class="o">*</span> <span class="n">radius</span>
+
+
+<span class="k">def</span> <span class="nf">disk_gpu</span><span class="p">(</span><span class="n">radius</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generates a flat, disk-shaped structuring element.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    radius : int</span>
+<span class="sd">        The radius of the disk-shaped structuring element.</span>
+<span class="sd">    smooth : bool, optional</span>
+<span class="sd">        Indicates whether the disks should include the nibs (``False``) on</span>
+<span class="sd">        the surface or not (``True``).  The default is ``True``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    cupy ndarray</span>
+<span class="sd">        The structuring element where elements of the neighborhood are</span>
+<span class="sd">        1 and 0 otherwise.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">cupy</span> <span class="k">as</span> <span class="nn">cp</span>
+    <span class="n">L</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="n">radius</span><span class="p">,</span> <span class="n">radius</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">L</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">smooth</span><span class="p">:</span>
+        <span class="n">radius</span> <span class="o">=</span> <span class="n">radius</span> <span class="o">-</span> <span class="mf">0.001</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">X</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">Y</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">radius</span> <span class="o">**</span> <span class="mi">2</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">porespy</span> <span class="k">as</span> <span class="nn">ps</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">blobs</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">200</span><span class="p">])</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">ibip_gpu</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">)</span>
+</pre></div>
+
+              </div>
+              
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+    <script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+  <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2022 PoreSpy Team.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>
