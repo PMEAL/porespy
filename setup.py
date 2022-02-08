@@ -48,6 +48,7 @@ setup(
         'porespy.filters.imagej',
         'porespy.networks',
         'porespy.dns',
+        'porespy.simulations',
         'porespy.visualization',
         'porespy.io'
     ],
