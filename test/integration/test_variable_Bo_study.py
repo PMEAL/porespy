@@ -5,13 +5,14 @@ import matplotlib.pyplot as plt
 
 # Input domain and fluid properties
 vx = 5e-5
-L = int(0.145/vx)
-W = int(0.1/vx)
-t = int(0.001/vx)  # 2D test for speed so this is not used
-D = int(0.001/vx)
+L = int(0.02/vx)
+W = int(0.01/vx)
+t = int(0.0001/vx)  # 2D test for speed so this is not used
+D = int(0.0005/vx)
 delta_rho = -1205  # Negative since air is displacing water
 sigma = 0.064
 a = 0.001  # Average pore size, seems to be plate spacing in Ayaz paper
+plot = False
 
 # Generate image
 im = ~ps.generators.RSA([L, W], r=int(D/2), clearance=2, volume_fraction=0.5)
@@ -55,7 +56,7 @@ for i, alpha in enumerate(angles):
 
 
 # %%  Plot pseudo capillary pressure curves for each angle/Bo
-if 0:
+if plot:
     c = ['tab:blue', 'tab:orange', 'tab:olive', 'tab:purple', 'tab:green']
     for i, angle in enumerate(angles):
         plt.plot(sim1[angle].snwp, sim1[angle].pc, '-o', color=c[i])
@@ -64,7 +65,7 @@ if 0:
 
 
 # %%  Plot saturation map for a given angle
-if 0:
+if plot:
     angle = 30
     from copy import copy
     cmap = copy(plt.cm.viridis)
@@ -82,7 +83,7 @@ if 0:
 
 
 # %%  Plot non-wetting phase configuration for a given angle and saturation
-if 0:
+if plot:
     s = 0.09
     angle = 30
     satn = sim1[angle].im_satn

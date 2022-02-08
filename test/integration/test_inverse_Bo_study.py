@@ -6,11 +6,12 @@ import pandas as pd
 
 
 # Generate image
+plot = False
 vx = 0.0001
 sigma = 0.072
 g = 9.81
 np.random.seed(0)
-im = ps.generators.overlapping_spheres(shape=[1200, 600], r=10, porosity=0.65)
+im = ps.generators.overlapping_spheres(shape=[600, 200], r=8, porosity=0.65)
 inlets = np.zeros_like(im, dtype=bool)
 inlets[0, ...] = True
 outlets = np.zeros_like(im, dtype=bool)
@@ -44,7 +45,7 @@ for h in range(len(inv_Bo)):
         data.append((inv_Bo[h], s, H.zmin, H.zmax, H.h))
 df = pd.DataFrame(data, columns=['1/Bo', 's', 'zmin', 'zmax', 'h'])
 
-if 0:
+if plot:
     plt.loglog(df['1/Bo'], df['h'], 'bo')
     plt.loglog((inv_Bo[0], inv_Bo[-1]), (a/vx, a/vx), 'k-')
     plt.loglog((inv_Bo[0], inv_Bo[-1]), (im.shape[0], im.shape[0]), 'k-')
