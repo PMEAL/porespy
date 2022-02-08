@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 
 np.random.seed(6)
-im = ps.generators.blobs(shape=[500, 500], porosity=0.7, blobiness=1.5)
+im = ps.generators.blobs(shape=[300, 300], porosity=0.7, blobiness=1.5)
 inlets = np.zeros_like(im)
 inlets[-1, :] = True
 outlets = np.zeros_like(im)
@@ -20,6 +20,7 @@ theta = 180
 delta_rho = -1000
 g = 9.81
 bg = 'grey'
+plot = False
 
 
 drn1 = ps.simulations.drainage(im=im,
@@ -61,7 +62,7 @@ assert drn4.snwp[-1] < drn2.snwp[-1]
 
 
 # %% Visualize the invasion configurations for each scenario
-if 0:
+if plot:
     fig, ax = plt.subplots(2, 2, facecolor=bg)
     ax[0][0].imshow(drn1.im_satn/im, origin='lower')
     ax[0][0].set_title("No trapping, no residual")
@@ -74,7 +75,7 @@ if 0:
 
 
 # %% Visualize the capillary pressure map for each scenario
-if 0:
+if plot:
     fig, ax = plt.subplots(2, 2, facecolor=bg)
     ax[0][0].imshow(drn1.im_pc/im, origin='lower')
     ax[0][0].set_title("No trapping, no residual")
@@ -87,7 +88,7 @@ if 0:
 
 
 # %% Plot the capillary pressure curves for each scenario
-if 0:
+if plot:
     plt.figure(facecolor=bg)
     ax = plt.axes()
     ax.set_facecolor(bg)
