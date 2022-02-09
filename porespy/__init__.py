@@ -57,7 +57,6 @@ Use some filters from PoreSpy:
 
 """
 
-from .__version__ import __version__
 from .tools._utils import Settings as _Settings
 
 settings = _Settings()
@@ -77,3 +76,5 @@ from .visualization import imshow
 
 import numpy as _np
 _np.seterr(divide='ignore', invalid='ignore')
+
+__version__ = tools._get_version()
