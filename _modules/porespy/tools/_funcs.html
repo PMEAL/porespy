@@ -22,8 +22,8 @@
       
   
     
-    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../../_static/styles/pydata-sphinx-theme.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/pydata-sphinx-theme.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
@@ -31,7 +31,7 @@
     
     <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
   
-    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
@@ -353,7 +353,7 @@
 <span class="sd">    &gt;&gt;&gt; import porespy as ps</span>
 <span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
 <span class="sd">    &gt;&gt;&gt; im = ps.generators.blobs(shape=[200, 200])</span>
-<span class="sd">    &gt;&gt;&gt; s = ps.tools.subdivide(im, divs=[2, 2], flatten=True)</span>
+<span class="sd">    &gt;&gt;&gt; s = ps.tools.subdivide(im, divs=[2, 2])</span>
 <span class="sd">    &gt;&gt;&gt; print(len(s))</span>
 <span class="sd">    4</span>
 
@@ -923,7 +923,7 @@
 <span class="sd">    [[ True False  True]</span>
 <span class="sd">     [False False False]</span>
 <span class="sd">     [ True False  True]]</span>
-<span class="sd">    &gt;&gt;&gt; mask = ps.tools.get_border(shape=[3, 3], mode=&#39;edges&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; mask = ps.tools.get_border(shape=[3, 3], mode=&#39;faces&#39;)</span>
 <span class="sd">    &gt;&gt;&gt; print(mask)</span>
 <span class="sd">    [[ True  True  True]</span>
 <span class="sd">     [ True False  True]</span>
@@ -1478,7 +1478,7 @@
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.4.0.<br>
 </p>
     </div>
     

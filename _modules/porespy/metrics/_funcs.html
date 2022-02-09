@@ -1,0 +1,1323 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>porespy.metrics._funcs &#8212; PoreSpy  documentation</title>
+    
+    <link href="../../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+  
+    
+    <link rel="stylesheet"
+      href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+    <link rel="preload" as="font" type="font/woff2" crossorigin
+      href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+    <link rel="preload" as="font" type="font/woff2" crossorigin
+      href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+  
+    
+      
+  
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/pydata-sphinx-theme.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
+    
+    <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+  
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/custom.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="https://www.porespy.org">
+  <img src="../../../_static/porespy_logo.png" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../user_guide/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../modules/index.html">
+  Module and Function Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../examples.html">
+  Examples
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/porespy/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/porespy/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/PMEAL/porespy" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://porespy.substack.com/" rel="noopener" target="_blank" title="Substack"><span><i class="fas fa-envelope-square"></i></span>
+            <label class="sr-only">Substack</label></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/porespy" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar">
+              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+              </div>
+              <div class="sidebar-end-items">
+              </div>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <h1>Source code for porespy.metrics._funcs</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy.ndimage</span> <span class="k">as</span> <span class="nn">spim</span>
+<span class="kn">import</span> <span class="nn">scipy.spatial</span> <span class="k">as</span> <span class="nn">sptl</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">fftpack</span> <span class="k">as</span> <span class="n">sp_ft</span>
+<span class="kn">from</span> <span class="nn">skimage.measure</span> <span class="kn">import</span> <span class="n">regionprops</span>
+<span class="kn">from</span> <span class="nn">deprecated</span> <span class="kn">import</span> <span class="n">deprecated</span>
+<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">extend_slice</span>
+<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">_check_for_singleton_axes</span>
+<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">Results</span>
+<span class="kn">from</span> <span class="nn">porespy</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">get_tqdm</span>
+<span class="kn">from</span> <span class="nn">loguru</span> <span class="kn">import</span> <span class="n">logger</span>
+<span class="n">tqdm</span> <span class="o">=</span> <span class="n">get_tqdm</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="representative_elementary_volume"><a class="viewcode-back" href="../../../modules/generated/porespy.metrics.representative_elementary_volume.html#porespy.metrics.representative_elementary_volume">[docs]</a><span class="k">def</span> <span class="nf">representative_elementary_volume</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">npoints</span><span class="o">=</span><span class="mi">1000</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the porosity of an image as a function subdomain size.</span>
+
+<span class="sd">    This function extracts a specified number of subdomains of random size,</span>
+<span class="sd">    then finds their porosity.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    im : ndarray</span>
+<span class="sd">        The image of the porous material</span>
+<span class="sd">    npoints : int</span>
+<span class="sd">        The number of randomly located and sized boxes to sample.  The default</span>
+<span class="sd">        is 1000.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    result : Results object</span>
+<span class="sd">        A custom object with the following data added as named attributes:</span>
+
+<span class="sd">        &#39;volume&#39;</span>
+<span class="sd">            The total volume of each cubic subdomain tested</span>
+<span class="sd">        &#39;porosity&#39;</span>
+<span class="sd">            The porosity of each subdomain tested</span>
+
+<span class="sd">        These attributes can be conveniently plotted by passing the Results</span>
+<span class="sd">        object to matplotlib&#39;s ``plot`` function using the</span>
+<span class="sd">        \* notation: ``plt.plot(*result, &#39;b.&#39;)``.  The resulting plot is</span>
+<span class="sd">        similar to the sketch given by Bachmat and Bear [1]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function is frustratingly slow.  Profiling indicates that all the time</span>
+<span class="sd">    is spent on scipy&#39;s ``sum`` function which is needed to sum the number of</span>
+<span class="sd">    void voxels (1&#39;s) in each subdomain.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Bachmat and Bear. On the Concept and Size of a Representative</span>
+<span class="sd">    Elementary Volume (Rev), Advances in Transport Phenomena in Porous Media</span>
+<span class="sd">    (1987)</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here</span>
+<span class="sd">    &lt;https://porespy.org/examples/metrics/reference/representative_elementary_volume.html&gt;`_</span>
+<span class="sd">    to view online example.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># TODO: this function is a prime target for parallelization since the</span>
+    <span class="c1"># ``npoints`` are calculated independenlty.</span>
+    <span class="n">im_temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+    <span class="n">crds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">npoints</span><span class="p">,</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span> <span class="o">*</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">pads</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">npoints</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">amin</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">10</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">im_temp</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">crds</span><span class="o">.</span><span class="n">T</span><span class="p">)]</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">labels</span><span class="p">,</span> <span class="n">N</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">im_temp</span><span class="p">)</span>
+    <span class="n">slices</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">find_objects</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">labels</span><span class="p">)</span>
+    <span class="n">porosity</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">N</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">volume</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">N</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">N</span><span class="p">),</span> <span class="o">**</span><span class="n">settings</span><span class="o">.</span><span class="n">tqdm</span><span class="p">):</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">slices</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">pads</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">new_s</span> <span class="o">=</span> <span class="n">extend_slice</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="n">p</span><span class="p">)</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">im</span><span class="p">[</span><span class="n">new_s</span><span class="p">]</span>
+        <span class="n">Vp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>
+        <span class="n">Vt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>
+        <span class="n">porosity</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">Vp</span> <span class="o">/</span> <span class="n">Vt</span>
+        <span class="n">volume</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">Vt</span>
+    <span class="n">profile</span> <span class="o">=</span> <span class="n">Results</span><span class="p">()</span>
+    <span class="n">profile</span><span class="o">.</span><span class="n">volume</span> <span class="o">=</span> <span class="n">volume</span>
+    <span class="n">profile</span><span class="o">.</span><span class="n">porosity</span> <span class="o">=</span> <span class="n">porosity</span>
+    <span class="k">return</span> <span class="n">profile</span></div>
+
+
+<div class="viewcode-block" id="porosity"><a class="viewcode-back" href="../../../modules/generated/porespy.metrics.porosity.html#porespy.metrics.porosity">[docs]</a><span class="k">def</span> <span class="nf">porosity</span><span class="p">(</span><span class="n">im</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the porosity of an image assuming 1&#39;s are void space and 0&#39;s</span>
+<span class="sd">    are solid phase.</span>
+
+<span class="sd">    All other values are ignored, so this can also return the relative</span>
+<span class="sd">    fraction of a phase of interest in multiphase images.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    im : ndarray</span>
+<span class="sd">        Image of the void space with 1&#39;s indicating void phase (or ``True``)</span>
+<span class="sd">        and 0&#39;s indicating the solid phase (or ``False``). All other values</span>
+<span class="sd">        are ignored (see Notes).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    porosity : float</span>
+<span class="sd">        Calculated as the sum of all 1&#39;s divided by the sum of all 1&#39;s and 0&#39;s.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    phase_fraction</span>
+<span class="sd">    find_outer_region</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function assumes void is represented by 1 and solid by 0, and all</span>
+<span class="sd">    other values are ignored.  This is useful, for example, for images of</span>
+<span class="sd">    cylindrical cores, where all voxels outside the core are labelled with 2.</span>
+
+<span class="sd">    Alternatively, images can be processed with ``find_disconnected_voxels``</span>
+<span class="sd">    to get an image of only blind pores.  This can then be added to the orignal</span>
+<span class="sd">    image such that blind pores have a value of 2, thus allowing the</span>
+<span class="sd">    calculation of accessible porosity, rather than overall porosity.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here</span>
+<span class="sd">    &lt;https://porespy.org/examples/metrics/reference/porosity.html&gt;`_</span>
+<span class="sd">    to view online example.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">Vp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">im</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">Vs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">im</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">e</span> <span class="o">=</span> <span class="n">Vp</span> <span class="o">/</span> <span class="p">(</span><span class="n">Vs</span> <span class="o">+</span> <span class="n">Vp</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">e</span></div>
+
+
+<div class="viewcode-block" id="porosity_profile"><a class="viewcode-back" href="../../../modules/generated/porespy.metrics.porosity_profile.html#porespy.metrics.porosity_profile">[docs]</a><span class="k">def</span> <span class="nf">porosity_profile</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the porosity profile along the specified axis</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    im : ndarray</span>
+<span class="sd">        The volumetric image for which to calculate the porosity profile</span>
+<span class="sd">    axis : int</span>
+<span class="sd">        The axis (0, 1, or 2) along which to calculate the profile.  For</span>
+<span class="sd">        instance, if `axis` is 0, then the porosity in each YZ plane is</span>
+<span class="sd">        calculated and returned as 1D array with 1 value for each X position.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    result : 1D-array</span>
+<span class="sd">        A 1D-array of porosity along the specified axis</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here</span>
+<span class="sd">    &lt;https://porespy.org/examples/metrics/reference/porosity_profile.html&gt;`_</span>
+<span class="sd">    to view online example.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">axis</span> <span class="o">&gt;=</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;axis out of range&#39;</span><span class="p">)</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_3d</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">ndim</span><span class="p">))</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="n">axis</span><span class="p">]))</span>
+    <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span> <span class="o">=</span> <span class="n">a</span>
+    <span class="n">prof</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">a2</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="n">a1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">a2</span><span class="p">]</span> <span class="o">*</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">a1</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">prof</span></div>
+
+
+<div class="viewcode-block" id="radial_density_distribution"><a class="viewcode-back" href="../../../modules/generated/porespy.metrics.radial_density_distribution.html#porespy.metrics.radial_density_distribution">[docs]</a><span class="k">def</span> <span class="nf">radial_density_distribution</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">voxel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes radial density function by analyzing the histogram of voxel</span>
+<span class="sd">    values in the distance transform.  This function is defined by</span>
+<span class="sd">    Torquato [1] as:</span>
+
+<span class="sd">        .. math::</span>
+
+<span class="sd">            \int_0^\infty P(r)dr = 1.0</span>
+
+<span class="sd">    where *P(r)dr* is the probability of finding a voxel at a lying at a radial</span>
+<span class="sd">    distance between *r* and *dr* from the solid interface.  This is equivalent</span>
+<span class="sd">    to a probability density function (*pdf*)</span>
+
+<span class="sd">    The cumulative distribution is defined as:</span>
+
+<span class="sd">        .. math::</span>
+
+<span class="sd">            F(r) = \int_r^\infty P(r)dr</span>
+
+<span class="sd">    which gives the fraction of pore-space with a radius larger than *r*. This</span>
+<span class="sd">    is equivalent to the cumulative distribution function (*cdf*).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dt : ndarray</span>
+<span class="sd">        A distance transform of the pore space (the ``edt`` package is</span>
+<span class="sd">        recommended).  Note that it is recommended to apply</span>
+<span class="sd">        ``find_dt_artifacts`` to this image first, and set potentially</span>
+<span class="sd">        erroneous values to 0 with ``dt[mask] = 0`` where</span>
+<span class="sd">        ``mask = porespy.filters.find_dt_artifaces(dt)``.</span>
+<span class="sd">    bins : int or array_like</span>
+<span class="sd">        This number of bins (if int) or the location of the bins (if array).</span>
+<span class="sd">        This argument is passed directly to Scipy&#39;s ``histogram`` function so</span>
+<span class="sd">        see that docstring for more information.  The default is 10 bins, which</span>
+<span class="sd">        reduces produces a relatively smooth distribution.</span>
+<span class="sd">    log : boolean</span>
+<span class="sd">        If ``True`` the size data is converted to log (base-10)</span>
+<span class="sd">        values before processing.  This can help to plot wide size</span>
+<span class="sd">        distributions or to better visualize the in the small size region.</span>
+<span class="sd">        Note that you should not anti-log the radii values in the retunred</span>
+<span class="sd">        ``tuple``, since the binning is performed on the logged radii values.</span>
+<span class="sd">    voxel_size : scalar</span>
+<span class="sd">        The size of a voxel side in preferred units.  The default is 1, so the</span>
+<span class="sd">        user can apply the scaling to the returned results after the fact.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    result : Results object</span>
+<span class="sd">        A custom object with the following data added as named attributes:</span>
+
+<span class="sd">        ============== =======================================================</span>
+<span class="sd">        Attribute      Description</span>
+<span class="sd">        ============== =======================================================</span>
+<span class="sd">        *R* or *LogR*  Radius, equivalent to ``bin_centers``</span>
+<span class="sd">        *pdf*          Probability density function</span>
+<span class="sd">        *cdf*          Cumulative density function</span>
+<span class="sd">        *bin_centers*  The center point of each bin</span>
+<span class="sd">        *bin_edges*    Locations of bin divisions, including 1 more value than</span>
+<span class="sd">                       the number of bins</span>
+<span class="sd">        *bin_widths*   Useful for passing to the ``width`` argument of</span>
+<span class="sd">                       ``matplotlib.pyplot.bar``</span>
+<span class="sd">        ============== =======================================================</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Torquato refers to this as the *pore-size density function*, and mentions</span>
+<span class="sd">    that it is also known as the *pore-size distribution function*.  These</span>
+<span class="sd">    terms are avoided here since they have specific connotations in porous</span>
+<span class="sd">    media analysis.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Torquato, S. Random Heterogeneous Materials: Mircostructure and</span>
+<span class="sd">    Macroscopic Properties. Springer, New York (2002) - See page 48 &amp; 292</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here</span>
+<span class="sd">    &lt;https://porespy.org/examples/metrics/reference/radial_density.html&gt;`_</span>
+<span class="sd">    to view online example.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">im</span><span class="p">[</span><span class="n">im</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">log</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="n">_parse_histogram</span><span class="p">(</span><span class="n">h</span><span class="o">=</span><span class="n">h</span><span class="p">,</span> <span class="n">voxel_size</span><span class="o">=</span><span class="n">voxel_size</span><span class="p">)</span>
+    <span class="n">rdf</span> <span class="o">=</span> <span class="n">Results</span><span class="p">()</span>
+    <span class="n">rdf</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">log</span><span class="o">*</span><span class="s1">&#39;Log&#39;</span> <span class="o">+</span> <span class="s1">&#39;R&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">bin_centers</span>
+    <span class="n">rdf</span><span class="o">.</span><span class="n">pdf</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">pdf</span>
+    <span class="n">rdf</span><span class="o">.</span><span class="n">cdf</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">cdf</span>
+    <span class="n">rdf</span><span class="o">.</span><span class="n">relfreq</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">relfreq</span>
+    <span class="n">rdf</span><span class="o">.</span><span class="n">bin_centers</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">bin_centers</span>
+    <span class="n">rdf</span><span class="o">.</span><span class="n">bin_edges</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">bin_edges</span>
+    <span class="n">rdf</span><span class="o">.</span><span class="n">bin_widths</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">bin_widths</span>
+    <span class="k">return</span> <span class="n">rdf</span></div>
+
+
+<div class="viewcode-block" id="lineal_path_distribution"><a class="viewcode-back" href="../../../modules/generated/porespy.metrics.lineal_path_distribution.html#porespy.metrics.lineal_path_distribution">[docs]</a><span class="k">def</span> <span class="nf">lineal_path_distribution</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">voxel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Determines the probability that a point lies within a certain distance</span>
+<span class="sd">    of the opposite phase *along a specified direction*</span>
+
+<span class="sd">    This relates directly the radial density function defined by Torquato [1],</span>
+<span class="sd">    but instead of reporting the probability of lying within a stated distance</span>
+<span class="sd">    to the nearest solid in any direciton, it considers only linear distances</span>
+<span class="sd">    along orthogonal directions.The benefit of this is that anisotropy can be</span>
+<span class="sd">    detected in materials by performing the analysis in multiple orthogonal</span>
+<span class="sd">    directions.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    im : ndarray</span>
+<span class="sd">        An image with each voxel containing the distance to the nearest solid</span>
+<span class="sd">        along a linear path, as produced by ``distance_transform_lin``.</span>
+<span class="sd">    bins : int or array_like</span>
+<span class="sd">        The number of bins or a list of specific bins to use</span>
+<span class="sd">    voxel_size : scalar</span>
+<span class="sd">        The side length of a voxel.  This is used to scale the chord lengths</span>
+<span class="sd">        into real units.  Note this is applied *after* the binning, so</span>
+<span class="sd">        ``bins``, if supplied, should be in terms of voxels, not length units.</span>
+<span class="sd">    log : boolean</span>
+<span class="sd">        If ``True`` (default) the size data is converted to log (base-10)</span>
+<span class="sd">        values before processing.  This can help to plot wide size</span>
+<span class="sd">        distributions or to better visualize data in the small size region.</span>
+<span class="sd">        Note that you should not anti-log the radii values in the retunred</span>
+<span class="sd">        ``results``, since the binning is performed on the logged radii values.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    result : Results object</span>
+<span class="sd">        A custom object with the following data added as named attributes:</span>
+
+<span class="sd">        *L* or *LogL*</span>
+<span class="sd">            Length, equivalent to ``bin_centers``</span>
+<span class="sd">        *pdf*</span>
+<span class="sd">            Probability density function</span>
+<span class="sd">        *cdf*</span>
+<span class="sd">            Cumulative density function</span>
+<span class="sd">        *relfreq*</span>
+<span class="sd">            Relative frequency chords in each bin.  The sum of all bin</span>
+<span class="sd">            heights is 1.0.  For the cumulative relativce, use *cdf* which is</span>
+<span class="sd">            already normalized to 1.</span>
+<span class="sd">        *bin_centers*</span>
+<span class="sd">            The center point of each bin</span>
+<span class="sd">        *bin_edges*</span>
+<span class="sd">            Locations of bin divisions, including 1 more value than</span>
+<span class="sd">            the number of bins</span>
+<span class="sd">        *bin_widths*</span>
+<span class="sd">            Useful for passing to the ``width`` argument of</span>
+<span class="sd">            ``matplotlib.pyplot.bar``</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Torquato, S. Random Heterogeneous Materials: Mircostructure and</span>
+<span class="sd">    Macroscopic Properties. Springer, New York (2002)</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here</span>
+<span class="sd">    &lt;https://porespy.org/examples/metrics/reference/linear_density.html&gt;`_</span>
+<span class="sd">    to view online example.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">im</span><span class="p">[</span><span class="n">im</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">log</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="n">_parse_histogram</span><span class="p">(</span><span class="n">h</span><span class="o">=</span><span class="n">h</span><span class="p">,</span> <span class="n">voxel_size</span><span class="o">=</span><span class="n">voxel_size</span><span class="p">)</span>
+    <span class="n">cld</span> <span class="o">=</span> <span class="n">Results</span><span class="p">()</span>
+    <span class="n">cld</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">log</span><span class="o">*</span><span class="s1">&#39;Log&#39;</span> <span class="o">+</span> <span class="s1">&#39;L&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">bin_centers</span>
+    <span class="n">cld</span><span class="o">.</span><span class="n">pdf</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">pdf</span>
+    <span class="n">cld</span><span class="o">.</span><span class="n">cdf</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">cdf</span>
+    <span class="n">cld</span><span class="o">.</span><span class="n">relfreq</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">relfreq</span>
+    <span class="n">cld</span><span class="o">.</span><span class="n">bin_centers</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">bin_centers</span>
+    <span class="n">cld</span><span class="o">.</span><span class="n">bin_edges</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">bin_edges</span>
+    <span class="n">cld</span><span class="o">.</span><span class="n">bin_widths</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">bin_widths</span>
+    <span class="k">return</span> <span class="n">cld</span></div>
+
+
+<div class="viewcode-block" id="chord_length_distribution"><a class="viewcode-back" href="../../../modules/generated/porespy.metrics.chord_length_distribution.html#porespy.metrics.chord_length_distribution">[docs]</a><span class="k">def</span> <span class="nf">chord_length_distribution</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">voxel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                              <span class="n">normalization</span><span class="o">=</span><span class="s1">&#39;count&#39;</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Determines the distribution of chord lengths in an image containing chords.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    im : ndarray</span>
+<span class="sd">        An image with chords drawn in the pore space, as produced by</span>
+<span class="sd">        ``apply_chords`` or ``apply_chords_3d``.  ``im`` can be either boolean,</span>
+<span class="sd">        in which case each chord will be identified using ``scipy.ndimage.label``,</span>
+<span class="sd">        or numerical values in case it is assumed that chords have already been</span>
+<span class="sd">        identifed and labeled. In both cases, the size of each chord will be</span>
+<span class="sd">        computed as the number of voxels belonging to each labelled region.</span>
+<span class="sd">    bins : scalar or array_like</span>
+<span class="sd">        If a scalar is given it is interpreted as the number of bins to use,</span>
+<span class="sd">        and if an array is given they are used as the bins directly.</span>
+<span class="sd">    log : boolean</span>
+<span class="sd">        If ``True`` (default) the size data is converted to log (base-10)</span>
+<span class="sd">        values before processing.  This can help to plot wide size</span>
+<span class="sd">        distributions or to better visualize the in the small size region.</span>
+<span class="sd">        Note that you should not anti-log the radii values in the retunred</span>
+<span class="sd">        ``tuple``, since the binning is performed on the logged radii values.</span>
+<span class="sd">    normalization : string</span>
+<span class="sd">        Indicates how to normalize the bin heights.  Options are:</span>
+
+<span class="sd">        *&#39;count&#39; or &#39;number&#39;*</span>
+<span class="sd">            (default) This simply counts the number of chords in each bin in</span>
+<span class="sd">            the normal sense of a histogram.  This is the rigorous definition</span>
+<span class="sd">            according to Torquato [1].</span>
+<span class="sd">        *&#39;length&#39;*</span>
+<span class="sd">            This multiplies the number of chords in each bin by the</span>
+<span class="sd">            chord length (i.e. bin size).  The normalization scheme accounts for</span>
+<span class="sd">            the fact that long chords are less frequent than shorert chords,</span>
+<span class="sd">            thus giving a more balanced distribution.</span>
+
+<span class="sd">    voxel_size : scalar</span>
+<span class="sd">        The size of a voxel side in preferred units.  The default is 1, so the</span>
+<span class="sd">        user can apply the scaling to the returned results after the fact.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    result : Results object</span>
+<span class="sd">        A custom object with the following data added as named attributes:</span>
+
+<span class="sd">        *L* or *LogL*</span>
+<span class="sd">            Chord length, equivalent to ``bin_centers``</span>
+<span class="sd">        *pdf*</span>
+<span class="sd">            Probability density function</span>
+<span class="sd">        *cdf*</span>
+<span class="sd">            Cumulative density function</span>
+<span class="sd">        *relfreq*</span>
+<span class="sd">            Relative frequency chords in each bin.  The sum of all bin</span>
+<span class="sd">            heights is 1.0.  For the cumulative relativce, use *cdf* which is</span>
+<span class="sd">            already normalized to 1.</span>
+<span class="sd">        *bin_centers*</span>
+<span class="sd">            The center point of each bin</span>
+<span class="sd">        *bin_edges*</span>
+<span class="sd">            Locations of bin divisions, including 1 more value than</span>
+<span class="sd">            the number of bins</span>
+<span class="sd">        *bin_widths*</span>
+<span class="sd">            Useful for passing to the ``width`` argument of</span>
+<span class="sd">            ``matplotlib.pyplot.bar``</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Torquato, S. Random Heterogeneous Materials: Mircostructure and</span>
+<span class="sd">    Macroscopic Properties. Springer, New York (2002) - See page 45 &amp; 292</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here</span>
+<span class="sd">    &lt;https://porespy.org/examples/metrics/reference/chord_length_distribution.html&gt;`_</span>
+<span class="sd">    to view online example.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">chord_counts</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">bins</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="mi">2</span><span class="p">))</span> <span class="o">*</span> <span class="n">voxel_size</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="n">voxel_size</span>
+    <span class="k">if</span> <span class="n">log</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">normalization</span> <span class="o">==</span> <span class="s1">&#39;length&#39;</span><span class="p">:</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+        <span class="n">h</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">h</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">h</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">:]</span> <span class="o">+</span> <span class="n">h</span><span class="p">[</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span>  <span class="c1"># Scale bin heigths by length</span>
+        <span class="n">h</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">h</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">h</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="p">(</span><span class="n">h</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">h</span><span class="p">[</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>  <span class="c1"># Normalize h[0] manually</span>
+    <span class="k">elif</span> <span class="n">normalization</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;number&#39;</span><span class="p">,</span> <span class="s1">&#39;count&#39;</span><span class="p">]:</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Unsupported normalization:&#39;</span><span class="p">,</span> <span class="n">normalization</span><span class="p">)</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="n">_parse_histogram</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+    <span class="n">cld</span> <span class="o">=</span> <span class="n">Results</span><span class="p">()</span>
+    <span class="n">cld</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">log</span><span class="o">*</span><span class="s1">&#39;Log&#39;</span> <span class="o">+</span> <span class="s1">&#39;L&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">bin_centers</span>
+    <span class="n">cld</span><span class="o">.</span><span class="n">pdf</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">pdf</span>
+    <span class="n">cld</span><span class="o">.</span><span class="n">cdf</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">cdf</span>
+    <span class="n">cld</span><span class="o">.</span><span class="n">relfreq</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">relfreq</span>
+    <span class="n">cld</span><span class="o">.</span><span class="n">bin_centers</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">bin_centers</span>
+    <span class="n">cld</span><span class="o">.</span><span class="n">bin_edges</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">bin_edges</span>
+    <span class="n">cld</span><span class="o">.</span><span class="n">bin_widths</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">bin_widths</span>
+    <span class="k">return</span> <span class="n">cld</span></div>
+
+
+<div class="viewcode-block" id="pore_size_distribution"><a class="viewcode-back" href="../../../modules/generated/porespy.metrics.pore_size_distribution.html#porespy.metrics.pore_size_distribution">[docs]</a><span class="k">def</span> <span class="nf">pore_size_distribution</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">voxel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate a pore-size distribution based on the image produced by the</span>
+<span class="sd">    ``porosimetry`` or ``local_thickness`` functions.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    im : ndarray</span>
+<span class="sd">        The array of containing the sizes of the largest sphere that overlaps</span>
+<span class="sd">        each voxel.  Obtained from either ``porosimetry`` or</span>
+<span class="sd">        ``local_thickness``.</span>
+<span class="sd">    bins : scalar or array_like</span>
+<span class="sd">        Either an array of bin sizes to use, or the number of bins that should</span>
+<span class="sd">        be automatically generated that span the data range.</span>
+<span class="sd">    log : boolean</span>
+<span class="sd">        If ``True`` (default) the size data is converted to log (base-10)</span>
+<span class="sd">        values before processing.  This can help to plot wide size</span>
+<span class="sd">        distributions or to better visualize the in the small size region.</span>
+<span class="sd">        Note that you should not anti-log the radii values in the retunred</span>
+<span class="sd">        ``tuple``, since the binning is performed on the logged radii values.</span>
+<span class="sd">    voxel_size : scalar</span>
+<span class="sd">        The size of a voxel side in preferred units.  The default is 1, so the</span>
+<span class="sd">        user can apply the scaling to the returned results after the fact.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    result : Results object</span>
+<span class="sd">        A custom object with the following data added as named attributes:</span>
+
+<span class="sd">        *R* or *logR*</span>
+<span class="sd">            Radius, equivalent to ``bin_centers``</span>
+<span class="sd">        *pdf*</span>
+<span class="sd">            Probability density function</span>
+<span class="sd">        *cdf*</span>
+<span class="sd">            Cumulative density function</span>
+<span class="sd">        *satn*</span>
+<span class="sd">            Phase saturation in differential form.  For the cumulative</span>
+<span class="sd">            saturation, just use *cfd* which is already normalized to 1.</span>
+<span class="sd">        *bin_centers*</span>
+<span class="sd">            The center point of each bin</span>
+<span class="sd">        *bin_edges*</span>
+<span class="sd">            Locations of bin divisions, including 1 more value than</span>
+<span class="sd">            the number of bins</span>
+<span class="sd">        *bin_widths*</span>
+<span class="sd">            Useful for passing to the ``width`` argument of</span>
+<span class="sd">            ``matplotlib.pyplot.bar``</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    (1) To ensure the returned values represent actual sizes you can manually</span>
+<span class="sd">    scale the input image by the voxel size first (``im *= voxel_size``)</span>
+
+<span class="sd">    plt.bar(psd.R, psd.satn, width=psd.bin_widths, edgecolor=&#39;k&#39;)</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here</span>
+<span class="sd">    &lt;https://porespy.org/examples/metrics/reference/pore_size_distribution.html&gt;`_</span>
+<span class="sd">    to view online example.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+    <span class="n">vals</span> <span class="o">=</span> <span class="n">im</span><span class="p">[</span><span class="n">im</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">voxel_size</span>
+    <span class="k">if</span> <span class="n">log</span><span class="p">:</span>
+        <span class="n">vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="n">_parse_histogram</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+    <span class="n">cld</span> <span class="o">=</span> <span class="n">Results</span><span class="p">()</span>
+    <span class="n">cld</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">log</span><span class="o">*</span><span class="s1">&#39;Log&#39;</span> <span class="o">+</span> <span class="s1">&#39;R&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">bin_centers</span>
+    <span class="n">cld</span><span class="o">.</span><span class="n">pdf</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">pdf</span>
+    <span class="n">cld</span><span class="o">.</span><span class="n">cdf</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">cdf</span>
+    <span class="n">cld</span><span class="o">.</span><span class="n">satn</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">relfreq</span>
+    <span class="n">cld</span><span class="o">.</span><span class="n">bin_centers</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">bin_centers</span>
+    <span class="n">cld</span><span class="o">.</span><span class="n">bin_edges</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">bin_edges</span>
+    <span class="n">cld</span><span class="o">.</span><span class="n">bin_widths</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">bin_widths</span>
+    <span class="k">return</span> <span class="n">cld</span></div>
+
+
+<span class="k">def</span> <span class="nf">two_point_correlation_bf</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">spacing</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the two-point correlation function using brute-force (see Notes)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    im : ndarray</span>
+<span class="sd">        The image of the void space on which the 2-point correlation is</span>
+<span class="sd">        desired.</span>
+<span class="sd">    spacing : int</span>
+<span class="sd">        The space between points on the regular grid that is used to</span>
+<span class="sd">        generate the correlation (see Notes).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    result : Results object</span>
+<span class="sd">        A custom object with the following data added as named attributes:</span>
+
+<span class="sd">        &#39;distance&#39;</span>
+<span class="sd">            The distance between two points. The distance values are binned</span>
+<span class="sd">            as:</span>
+<span class="sd">        $$ bins = range(start=0, stop=np.amin(im.shape)/2, stride=spacing) $$</span>
+
+<span class="sd">        &#39;probability&#39;</span>
+<span class="sd">            The probability that two points of the stated separation distance</span>
+<span class="sd">            are within the same phase</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The brute-force approach means overlaying a grid of equally spaced points</span>
+<span class="sd">    onto the image, calculating the distance between each and every pair of</span>
+<span class="sd">    points, then counting the instances where both pairs lie in the void space.</span>
+
+<span class="sd">    This approach uses a distance matrix so can consume memory very quickly for</span>
+<span class="sd">    large 3D images and/or close spacing.  It is recommended to avoid this.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here</span>
+<span class="sd">    &lt;https://porespy.org/examples/metrics/reference/two_point_correlation_bf.html&gt;`_</span>
+<span class="sd">    to view online example.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_check_for_singleton_axes</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">pts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">spacing</span><span class="p">),</span>
+                          <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">spacing</span><span class="p">))</span>
+        <span class="n">crds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">pts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span>
+                          <span class="n">pts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()])</span><span class="o">.</span><span class="n">T</span>
+    <span class="k">elif</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="n">pts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">spacing</span><span class="p">),</span>
+                          <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">spacing</span><span class="p">),</span>
+                          <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">spacing</span><span class="p">))</span>
+        <span class="n">crds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">pts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span>
+                          <span class="n">pts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span>
+                          <span class="n">pts</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()])</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">dmat</span> <span class="o">=</span> <span class="n">sptl</span><span class="o">.</span><span class="n">distance</span><span class="o">.</span><span class="n">cdist</span><span class="p">(</span><span class="n">XA</span><span class="o">=</span><span class="n">crds</span><span class="p">,</span> <span class="n">XB</span><span class="o">=</span><span class="n">crds</span><span class="p">)</span>
+    <span class="n">hits</span> <span class="o">=</span> <span class="n">im</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">pts</span><span class="p">)]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+    <span class="n">dmat</span> <span class="o">=</span> <span class="n">dmat</span><span class="p">[</span><span class="n">hits</span><span class="p">,</span> <span class="p">:]</span>
+    <span class="n">h1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">dmat</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">amin</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span> <span class="n">spacing</span><span class="p">))</span>
+    <span class="n">dmat</span> <span class="o">=</span> <span class="n">dmat</span><span class="p">[:,</span> <span class="n">hits</span><span class="p">]</span>
+    <span class="n">h2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">dmat</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">h1</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">tpcf</span> <span class="o">=</span> <span class="n">Results</span><span class="p">()</span>
+    <span class="n">tpcf</span><span class="o">.</span><span class="n">distance</span> <span class="o">=</span> <span class="n">h2</span><span class="p">[</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">tpcf</span><span class="o">.</span><span class="n">probability</span> <span class="o">=</span> <span class="n">h2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">h1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">tpcf</span>
+
+
+<span class="k">def</span> <span class="nf">_radial_profile</span><span class="p">(</span><span class="n">autocorr</span><span class="p">,</span> <span class="n">r_max</span><span class="p">,</span> <span class="n">nbins</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Helper functions to calculate the radial profile of the autocorrelation</span>
+
+<span class="sd">    Masks the image in radial segments from the center and averages the values</span>
+<span class="sd">    The distance values are normalized and 100 bins are used as default.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    autocorr : ndarray</span>
+<span class="sd">        The image of autocorrelation produced by FFT</span>
+<span class="sd">    r_max : int or float</span>
+<span class="sd">        The maximum radius in pixels to sum the image over</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    result : named_tuple</span>
+<span class="sd">        A named tupling containing an array of ``bins`` of radial position</span>
+<span class="sd">        and an array of ``counts`` in each bin.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">autocorr</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">adj</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">autocorr</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="n">inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="n">autocorr</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">-</span> <span class="n">adj</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">inds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">inds</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">autocorr</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="n">adj</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">autocorr</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="n">inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="n">autocorr</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">-</span> <span class="n">adj</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">inds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">inds</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">inds</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Image dimensions must be 2 or 3&#39;</span><span class="p">)</span>
+    <span class="n">bin_size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">r_max</span> <span class="o">/</span> <span class="n">nbins</span><span class="p">))</span>
+    <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">bin_size</span><span class="p">,</span> <span class="n">r_max</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="n">bin_size</span><span class="p">)</span>
+    <span class="n">radial_sum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">bins</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bins</span><span class="p">):</span>
+        <span class="c1"># Generate Radial Mask from dt using bins</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">dt</span> <span class="o">&lt;=</span> <span class="n">r</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">dt</span> <span class="o">&gt;</span> <span class="p">(</span><span class="n">r</span> <span class="o">-</span> <span class="n">bin_size</span><span class="p">))</span>
+        <span class="n">radial_sum</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">autocorr</span><span class="p">[</span><span class="n">mask</span><span class="p">])</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+    <span class="c1"># Return normalized bin and radially summed autoc</span>
+    <span class="n">norm_autoc_radial</span> <span class="o">=</span> <span class="n">radial_sum</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">autocorr</span><span class="p">)</span>
+    <span class="n">tpcf</span> <span class="o">=</span> <span class="n">Results</span><span class="p">()</span>
+    <span class="n">tpcf</span><span class="o">.</span><span class="n">distance</span> <span class="o">=</span> <span class="n">bins</span>
+    <span class="n">tpcf</span><span class="o">.</span><span class="n">probability</span> <span class="o">=</span> <span class="n">norm_autoc_radial</span>
+    <span class="k">return</span> <span class="n">tpcf</span>
+
+
+<div class="viewcode-block" id="two_point_correlation"><a class="viewcode-back" href="../../../modules/generated/porespy.metrics.two_point_correlation.html#porespy.metrics.two_point_correlation">[docs]</a><span class="k">def</span> <span class="nf">two_point_correlation</span><span class="p">(</span><span class="n">im</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the two-point correlation function using Fourier transforms</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    im : ndarray</span>
+<span class="sd">        The image of the void space on which the 2-point correlation is</span>
+<span class="sd">        desired.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    result : Results object</span>
+<span class="sd">        A custom object with the following data added as named attributes:</span>
+
+<span class="sd">        &#39;distance&#39;</span>
+<span class="sd">            The distance between two points.</span>
+
+<span class="sd">        &#39;probability&#39;</span>
+<span class="sd">            The probability that two points of the stated separation distance</span>
+<span class="sd">            are within the same phase</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The fourier transform approach utilizes the fact that the</span>
+<span class="sd">    autocorrelation function is the inverse FT of the power spectrum</span>
+<span class="sd">    density. For background read the Scipy fftpack docs and for a good</span>
+<span class="sd">    explanation `see this thesis</span>
+<span class="sd">    &lt;https://www.ucl.ac.uk/~ucapikr/projects/KamilaSuankulova_BSc_Project.pdf&gt;`_</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here</span>
+<span class="sd">    &lt;https://porespy.org/examples/metrics/reference/two_point_correlation_fft.html&gt;`_</span>
+<span class="sd">    to view online example.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Calculate half lengths of the image</span>
+    <span class="n">hls</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">im</span><span class="p">))</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="c1"># Fourier Transform and shift image</span>
+    <span class="n">F</span> <span class="o">=</span> <span class="n">sp_ft</span><span class="o">.</span><span class="n">ifftshift</span><span class="p">(</span><span class="n">sp_ft</span><span class="o">.</span><span class="n">fftn</span><span class="p">(</span><span class="n">sp_ft</span><span class="o">.</span><span class="n">fftshift</span><span class="p">(</span><span class="n">im</span><span class="p">)))</span>
+    <span class="c1"># Compute Power Spectrum</span>
+    <span class="n">P</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">absolute</span><span class="p">(</span><span class="n">F</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="c1"># Auto-correlation is inverse of Power Spectrum</span>
+    <span class="n">autoc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">absolute</span><span class="p">(</span><span class="n">sp_ft</span><span class="o">.</span><span class="n">ifftshift</span><span class="p">(</span><span class="n">sp_ft</span><span class="o">.</span><span class="n">ifftn</span><span class="p">(</span><span class="n">sp_ft</span><span class="o">.</span><span class="n">fftshift</span><span class="p">(</span><span class="n">P</span><span class="p">))))</span>
+    <span class="n">tpcf</span> <span class="o">=</span> <span class="n">_radial_profile</span><span class="p">(</span><span class="n">autoc</span><span class="p">,</span> <span class="n">r_max</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">hls</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">tpcf</span></div>
+
+
+<span class="k">def</span> <span class="nf">_parse_histogram</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">voxel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="n">delta_x</span> <span class="o">=</span> <span class="n">h</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">P</span> <span class="o">=</span> <span class="n">h</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">temp</span> <span class="o">=</span> <span class="n">P</span> <span class="o">*</span> <span class="p">(</span><span class="n">delta_x</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">delta_x</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">temp</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">])[</span><span class="o">-</span><span class="mi">1</span><span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">S</span> <span class="o">=</span> <span class="n">P</span> <span class="o">*</span> <span class="p">(</span><span class="n">delta_x</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">delta_x</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">bin_edges</span> <span class="o">=</span> <span class="n">delta_x</span> <span class="o">*</span> <span class="n">voxel_size</span>
+    <span class="n">bin_widths</span> <span class="o">=</span> <span class="p">(</span><span class="n">delta_x</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">delta_x</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">*</span> <span class="n">voxel_size</span>
+    <span class="n">bin_centers</span> <span class="o">=</span> <span class="p">((</span><span class="n">delta_x</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">+</span> <span class="n">delta_x</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">voxel_size</span>
+    <span class="n">hist</span> <span class="o">=</span> <span class="n">Results</span><span class="p">()</span>
+    <span class="n">hist</span><span class="o">.</span><span class="n">pdf</span> <span class="o">=</span> <span class="n">P</span>
+    <span class="n">hist</span><span class="o">.</span><span class="n">cdf</span> <span class="o">=</span> <span class="n">C</span>
+    <span class="n">hist</span><span class="o">.</span><span class="n">relfreq</span> <span class="o">=</span> <span class="n">S</span>
+    <span class="n">hist</span><span class="o">.</span><span class="n">bin_centers</span> <span class="o">=</span> <span class="n">bin_centers</span>
+    <span class="n">hist</span><span class="o">.</span><span class="n">bin_edges</span> <span class="o">=</span> <span class="n">bin_edges</span>
+    <span class="n">hist</span><span class="o">.</span><span class="n">bin_widths</span> <span class="o">=</span> <span class="n">bin_widths</span>
+    <span class="k">return</span> <span class="n">hist</span>
+
+
+<div class="viewcode-block" id="chord_counts"><a class="viewcode-back" href="../../../modules/generated/porespy.metrics.chord_counts.html#porespy.metrics.chord_counts">[docs]</a><span class="k">def</span> <span class="nf">chord_counts</span><span class="p">(</span><span class="n">im</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Find the length of each chord in the supplied image</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    im : ndarray</span>
+<span class="sd">        An image containing chords drawn in the void space.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    result : 1D-array</span>
+<span class="sd">        A 1D array with one element for each chord, containing its length.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    ----</span>
+<span class="sd">    The returned array can be passed to ``plt.hist`` to plot the histogram,</span>
+<span class="sd">    or to ``np.histogram`` to get the histogram data directly. Another useful</span>
+<span class="sd">    function is ``np.bincount`` which gives the number of chords of each</span>
+<span class="sd">    length in a format suitable for ``plt.plot``.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here</span>
+<span class="sd">    &lt;https://porespy.org/examples/reference/metrics/chord_counts.html&gt;`_</span>
+<span class="sd">    to view online example.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">labels</span><span class="p">,</span> <span class="n">N</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">im</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">props</span> <span class="o">=</span> <span class="n">regionprops</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
+    <span class="n">chord_lens</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">filled_area</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">props</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">chord_lens</span></div>
+
+
+<div class="viewcode-block" id="phase_fraction"><a class="viewcode-back" href="../../../modules/generated/porespy.metrics.phase_fraction.html#porespy.metrics.phase_fraction">[docs]</a><span class="k">def</span> <span class="nf">phase_fraction</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">normed</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the fraction of each phase in an image</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    im : ndarray</span>
+<span class="sd">        An ndarray containing integer values</span>
+<span class="sd">    normed : boolean</span>
+<span class="sd">        If ``True`` (default) the returned values are normalized by the total</span>
+<span class="sd">        number of voxels in image, otherwise the voxel count of each phase is</span>
+<span class="sd">        returned.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    result : 1D-array</span>
+<span class="sd">        A array of length max(im) with each element containing the number of</span>
+<span class="sd">        voxels found with the corresponding label.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    porosity</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here</span>
+<span class="sd">    &lt;https://porespy.org/examples/metrics/reference/phase_fraction.html&gt;`_</span>
+<span class="sd">    to view online example.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">:</span>
+        <span class="n">results</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">im</span> <span class="o">==</span> <span class="n">label</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">im</span><span class="o">.</span><span class="n">size</span> <span class="k">if</span> <span class="n">normed</span> <span class="k">else</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">results</span></div>
+
+
+<div class="viewcode-block" id="pc_curve_from_ibip"><a class="viewcode-back" href="../../../modules/generated/porespy.metrics.pc_curve_from_ibip.html#porespy.metrics.pc_curve_from_ibip">[docs]</a><span class="k">def</span> <span class="nf">pc_curve_from_ibip</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span> <span class="n">sizes</span><span class="p">,</span> <span class="n">im</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">0.072</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="mi">180</span><span class="p">,</span>
+                       <span class="n">voxel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">stepped</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Produces a Pc-Snwp curve from the output of ``ibip``</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    seq : ndarray</span>
+<span class="sd">        The image containing the invasion sequence values returned from the</span>
+<span class="sd">        ``ibip`` function.</span>
+<span class="sd">    sizes : ndarray</span>
+<span class="sd">        The image containing the invasion size values returned from ``ibip``</span>
+<span class="sd">    im : ndarray</span>
+<span class="sd">        The voxel image of the porous media.  It not provided then the void</span>
+<span class="sd">        space is assumed to be ``im = ~(seq == 0)``.</span>
+<span class="sd">    sigma : float</span>
+<span class="sd">        The surface tension of the fluid-fluid system of interest</span>
+<span class="sd">    theta : float</span>
+<span class="sd">        The contact angle measured through the invading phase in degrees</span>
+<span class="sd">    voxel_size : float</span>
+<span class="sd">        The voxel resolution of the image</span>
+<span class="sd">    stepped : boolean</span>
+<span class="sd">        If ``True`` (default) the returned data has steps between each point</span>
+<span class="sd">        instead of connecting points directly with sloped lines.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pc_curve : Results object</span>
+<span class="sd">        A custom object with the following data added as named attributes:</span>
+
+<span class="sd">        ==================  ===================================================</span>
+<span class="sd">        Attribute           Description</span>
+<span class="sd">        ==================  ===================================================</span>
+<span class="sd">        pc                  The capillary pressure, either as given in</span>
+<span class="sd">                            ``pressures`` or computed from ``sizes`` (see</span>
+<span class="sd">                            Notes).</span>
+<span class="sd">        snwp                The fraction of void space filled by non-wetting</span>
+<span class="sd">                            phase at each pressure in ``pc``</span>
+<span class="sd">        ==================  ===================================================</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    If ``stepped`` was set to ``True`` then the values include the corners</span>
+<span class="sd">    of the steps, which may be helpful for plotting.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">im</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="o">~</span><span class="p">(</span><span class="n">seq</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">seqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">seq</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">with</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">seqs</span><span class="p">,</span> <span class="o">**</span><span class="n">settings</span><span class="o">.</span><span class="n">tqdm</span><span class="p">)</span> <span class="k">as</span> <span class="n">pbar</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">seqs</span><span class="p">:</span>
+            <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">seq</span> <span class="o">==</span> <span class="n">n</span>
+            <span class="c1"># The following assumes only one size found, which was confirmed</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">sizes</span><span class="p">[</span><span class="n">mask</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">voxel_size</span>
+            <span class="n">pc</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">sigma</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">theta</span><span class="p">))</span><span class="o">/</span><span class="n">r</span>
+            <span class="n">x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pc</span><span class="p">)</span>
+            <span class="n">snwp</span> <span class="o">=</span> <span class="p">((</span><span class="n">seq</span> <span class="o">&lt;=</span> <span class="n">n</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">seq</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">im</span> <span class="o">==</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">/</span><span class="n">im</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+            <span class="n">y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">snwp</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">stepped</span><span class="p">:</span>
+        <span class="n">pc</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">snwp</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">j</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">pc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">snwp</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">pc</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">snwp</span>
+    <span class="n">pc_curve</span> <span class="o">=</span> <span class="n">Results</span><span class="p">()</span>
+    <span class="n">pc_curve</span><span class="o">.</span><span class="n">pc</span> <span class="o">=</span> <span class="n">x</span>
+    <span class="n">pc_curve</span><span class="o">.</span><span class="n">snwp</span> <span class="o">=</span> <span class="n">y</span>
+    <span class="k">return</span> <span class="n">pc_curve</span></div>
+
+
+<div class="viewcode-block" id="pc_curve_from_mio"><a class="viewcode-back" href="../../../modules/generated/porespy.metrics.pc_curve_from_mio.html#porespy.metrics.pc_curve_from_mio">[docs]</a><span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;This function is deprecated, use pc_curve_from_sizes instead&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">pc_curve_from_mio</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function is deprecated.  Use ``pc_curve_from_sizes`` or</span>
+<span class="sd">    ``pc_curve_from_pressures`` instead.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">pc_curve</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="pc_curve"><a class="viewcode-back" href="../../../modules/generated/porespy.metrics.pc_curve.html#porespy.metrics.pc_curve">[docs]</a><span class="k">def</span> <span class="nf">pc_curve</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">sizes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pressures</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+             <span class="n">sigma</span><span class="o">=</span><span class="mf">0.072</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="mi">180</span><span class="p">,</span> <span class="n">voxel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Produces a Pc-Snwp curve given a map of meniscus radii or capillary</span>
+<span class="sd">    pressures at which each voxel was invaded</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    im : ndarray</span>
+<span class="sd">        The voxel image of the porous media with ``True`` values indicating</span>
+<span class="sd">        the void space</span>
+<span class="sd">    sizes : ndarray, optional</span>
+<span class="sd">        An image containing the sphere radii at which each voxel was invaded</span>
+<span class="sd">        during an invasion experiment.</span>
+<span class="sd">    pressures : ndarray, optional</span>
+<span class="sd">        An image containing the capillary pressures at which each voxel was</span>
+<span class="sd">        invaded during an invasion experiment.</span>
+<span class="sd">    sigma : float, optional</span>
+<span class="sd">        The surface tension of the fluid-fluid system of interest.</span>
+<span class="sd">        This argument is ignored if ``pressures`` are specified, otherwise it</span>
+<span class="sd">        is used in the Washburn equation to convert ``sizes`` to capillary</span>
+<span class="sd">        pressures.</span>
+<span class="sd">    theta : float</span>
+<span class="sd">        The contact angle measured through the invading phase in degrees.</span>
+<span class="sd">        This argument is ignored if ``pressures`` are specified, otherwise it</span>
+<span class="sd">        is used in the Washburn equation to convert ``sizes`` to capillary</span>
+<span class="sd">        pressures.</span>
+<span class="sd">    voxel_size : float</span>
+<span class="sd">        The voxel resolution of the image.</span>
+<span class="sd">        This argument is ignored if ``pressures`` are specified, otherwise it</span>
+<span class="sd">        is used in the Washburn equation to convert ``sizes`` to capillary</span>
+<span class="sd">        pressures.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pc_curve : Results object</span>
+<span class="sd">        A custom object with the following data added as named attributes:</span>
+
+<span class="sd">        ==================  ===================================================</span>
+<span class="sd">        Attribute           Description</span>
+<span class="sd">        ==================  ===================================================</span>
+<span class="sd">        pc                  The capillary pressure, either as given in</span>
+<span class="sd">                            ``pressures`` or computed from ``sizes`` (see</span>
+<span class="sd">                            Notes).</span>
+<span class="sd">        snwp                The fraction of void space filled by non-wetting</span>
+<span class="sd">                            phase at each pressure in ``pc``</span>
+<span class="sd">        ==================  ===================================================</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    If ``sizes`` is provided, then the Washburn equation is used to convert</span>
+<span class="sd">    the radii to capillary pressures, using the given ``sigma`` and ``theta``</span>
+<span class="sd">    values, along with the ``voxel_size`` if the values are in voxel radii.</span>
+<span class="sd">    For more control over how capillary pressure model, it can be computed by</span>
+<span class="sd">    hand, for example:</span>
+
+<span class="sd">        $$ p = \frac{-2*0.072*np.cos(np.deg2rad(180))}{sizes \cdot voxel_size} $$</span>
+
+<span class="sd">    then passed in as the ``pressures`` argument.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">tqdm</span> <span class="o">=</span> <span class="n">get_tqdm</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">sizes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">im</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">im</span> <span class="o">=</span> <span class="o">~</span><span class="p">(</span><span class="n">sizes</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">sz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">sizes</span><span class="p">)[:</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">sz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">sz</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="n">sz</span><span class="p">))</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">with</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">sz</span><span class="p">,</span> <span class="o">**</span><span class="n">settings</span><span class="o">.</span><span class="n">tqdm</span><span class="p">)</span> <span class="k">as</span> <span class="n">pbar</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">sz</span><span class="p">:</span>
+                <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+                <span class="n">r</span> <span class="o">=</span> <span class="n">n</span><span class="o">*</span><span class="n">voxel_size</span>
+                <span class="n">pc</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">sigma</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">theta</span><span class="p">))</span><span class="o">/</span><span class="n">r</span>
+                <span class="n">x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pc</span><span class="p">)</span>
+                <span class="n">snwp</span> <span class="o">=</span> <span class="p">((</span><span class="n">sizes</span> <span class="o">&gt;=</span> <span class="n">n</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">im</span> <span class="o">==</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">/</span><span class="n">im</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+                <span class="n">y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">snwp</span><span class="p">)</span>
+        <span class="n">pc_curve</span> <span class="o">=</span> <span class="n">Results</span><span class="p">()</span>
+        <span class="n">pc_curve</span><span class="o">.</span><span class="n">pc</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="n">pc_curve</span><span class="o">.</span><span class="n">snwp</span> <span class="o">=</span> <span class="n">y</span>
+    <span class="k">elif</span> <span class="n">pressures</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">Ps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">pressures</span><span class="p">[</span><span class="n">im</span><span class="p">])</span>
+        <span class="c1"># Utilize the fact that -inf and +inf will be at locations 0 &amp; -1 in Ps</span>
+        <span class="k">if</span> <span class="n">Ps</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">:</span>
+            <span class="n">Ps</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">Ps</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span>
+        <span class="k">if</span> <span class="n">Ps</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">:</span>
+            <span class="n">Ps</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">Ps</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">Ps</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Add a point at begining to ensure curve starts a 0, if no residual</span>
+            <span class="n">Ps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">Ps</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">Ps</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span> <span class="n">Ps</span><span class="p">))</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">Vp</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">pressures</span><span class="p">[</span><span class="n">im</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">Ps</span><span class="p">,</span> <span class="o">**</span><span class="n">settings</span><span class="o">.</span><span class="n">tqdm</span><span class="p">):</span>
+            <span class="n">y</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">temp</span> <span class="o">&lt;=</span> <span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">/</span><span class="n">Vp</span><span class="p">)</span>
+        <span class="n">pc_curve</span> <span class="o">=</span> <span class="n">Results</span><span class="p">()</span>
+        <span class="n">pc_curve</span><span class="o">.</span><span class="n">pc</span> <span class="o">=</span> <span class="n">Ps</span>
+        <span class="n">pc_curve</span><span class="o">.</span><span class="n">snwp</span> <span class="o">=</span> <span class="n">y</span>
+    <span class="k">return</span> <span class="n">pc_curve</span></div>
+
+
+<div class="viewcode-block" id="satn_profile"><a class="viewcode-back" href="../../../modules/generated/porespy.metrics.satn_profile.html#porespy.metrics.satn_profile">[docs]</a><span class="k">def</span> <span class="nf">satn_profile</span><span class="p">(</span><span class="n">satn</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">span</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;tile&#39;</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes a saturation profile from an image of fluid invasion</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    satn : ndarray</span>
+<span class="sd">        An image with each voxel indicating the saturation upon its</span>
+<span class="sd">        invasion.  0&#39;s are treated as solid and -1&#39;s are treated as uninvaded</span>
+<span class="sd">        void space.</span>
+<span class="sd">    s : scalar</span>
+<span class="sd">        The global saturation value for which the profile is desired</span>
+<span class="sd">    axis : int</span>
+<span class="sd">        The axis along which to profile should be measured</span>
+<span class="sd">    span : int</span>
+<span class="sd">        The number of layers to include in the moving average saturation</span>
+<span class="sd">        calculation.</span>
+<span class="sd">    mode : str</span>
+<span class="sd">        How the moving average should be applied. Options are:</span>
+
+<span class="sd">        ======== ==============================================================</span>
+<span class="sd">        mode     description</span>
+<span class="sd">        ======== ==============================================================</span>
+<span class="sd">        &#39;tile&#39;   The average is computed for discrete non-overlapping</span>
+<span class="sd">                 tiles of a size given by ``span``</span>
+<span class="sd">        &#39;slide&#39;  The average is computed in a moving window starting at</span>
+<span class="sd">                 ``span/2`` and sliding by a single voxel. This method</span>
+<span class="sd">                 provides more data points but is slower.</span>
+<span class="sd">        ======== ==============================================================</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    results : dataclass</span>
+<span class="sd">        Results is a custom porespy class with the following attributes:</span>
+
+<span class="sd">        ============= =========================================================</span>
+<span class="sd">        Attribute     Description</span>
+<span class="sd">        ============= =========================================================</span>
+<span class="sd">        position      The position along the given axis at which saturation</span>
+<span class="sd">                      values are computed.  The units are in voxels.</span>
+<span class="sd">        saturation    The local saturation value at each position.</span>
+<span class="sd">        ============= =========================================================</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># @numba.njit()</span>
+    <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">satn</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">span</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
+        <span class="n">span</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">span</span><span class="p">)</span>
+        <span class="n">satn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">satn</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;tile&#39;</span><span class="p">:</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">satn</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="n">span</span><span class="p">))</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">satn</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="n">span</span><span class="p">)):</span>
+                <span class="n">void</span> <span class="o">=</span> <span class="n">satn</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="n">span</span><span class="p">:(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">span</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span>
+                <span class="n">nwp</span> <span class="o">=</span> <span class="p">(</span><span class="n">satn</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="n">span</span><span class="p">:(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">span</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">s</span><span class="p">)</span> \
+                    <span class="o">*</span><span class="p">(</span><span class="n">satn</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="n">span</span><span class="p">:(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">span</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">nwp</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">/</span><span class="n">void</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+                <span class="n">z</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span><span class="o">*</span><span class="n">span</span> <span class="o">+</span> <span class="p">(</span><span class="n">span</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;slide&#39;</span><span class="p">:</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">satn</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">span</span><span class="p">))</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">satn</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">span</span><span class="p">)):</span>
+                <span class="n">void</span> <span class="o">=</span> <span class="n">satn</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">span</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span>
+                <span class="n">nwp</span> <span class="o">=</span> <span class="p">(</span><span class="n">satn</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">span</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">s</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">satn</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">span</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">nwp</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">/</span><span class="n">void</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+                <span class="n">z</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="p">(</span><span class="n">span</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
+        <span class="k">return</span> <span class="n">z</span><span class="p">,</span> <span class="n">y</span>
+
+    <span class="n">z</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">satn</span><span class="o">=</span><span class="n">satn</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="n">s</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">span</span><span class="o">=</span><span class="n">span</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">results</span><span class="p">(</span><span class="n">Results</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Attributes</span>
+<span class="sd">        ----------</span>
+<span class="sd">        position : ndarray</span>
+<span class="sd">            The position along the given axis at which saturation values are</span>
+<span class="sd">            computed.  The units are in voxels.</span>
+<span class="sd">        saturation : ndarray</span>
+<span class="sd">            The computed saturation value at each position</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">position</span> <span class="o">=</span> <span class="n">z</span>
+        <span class="n">saturation</span> <span class="o">=</span> <span class="n">y</span>
+
+    <span class="k">return</span> <span class="n">results</span></div>
+
+
+<div class="viewcode-block" id="find_h"><a class="viewcode-back" href="../../../modules/generated/porespy.metrics.find_h.html#porespy.metrics.find_h">[docs]</a><span class="k">def</span> <span class="nf">find_h</span><span class="p">(</span><span class="n">saturation</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">srange</span><span class="o">=</span><span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.99</span><span class="p">]):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given a saturation profile, compute the height between given bounds</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    saturation : array_like</span>
+<span class="sd">        A list of saturation values as function of ``position`</span>
+<span class="sd">    position : array_like, optional</span>
+<span class="sd">        A list of positions corresponding to each saturation.  If not provided</span>
+<span class="sd">        then each value in ``saturation`` is assumed to be separated by 1 voxel.</span>
+<span class="sd">    srange : list</span>
+<span class="sd">        The minimum and maximum value of saturation to consider as the start</span>
+<span class="sd">        and end of the profile</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    h : scalar</span>
+<span class="sd">        The height of the two-phase zone</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    satn_profile</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The ``satn_profile`` function can be used to obtain the ``saturation``</span>
+<span class="sd">    and ``position`` from an image.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">Results</span><span class="p">()</span>
+    <span class="n">r</span><span class="o">.</span><span class="n">valid</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="c1"># First ensure saturation generally descends from left to right</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">saturation</span><span class="p">[:</span><span class="mi">10</span><span class="p">])</span> <span class="o">&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">saturation</span><span class="p">[</span><span class="o">-</span><span class="mi">10</span><span class="p">:]):</span>
+        <span class="n">saturation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flip</span><span class="p">(</span><span class="n">saturation</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="c1"># Ensure requested saturation limits actually exist</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">srange</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">min</span><span class="p">(</span><span class="n">saturation</span><span class="p">))</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">srange</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">max</span><span class="p">(</span><span class="n">saturation</span><span class="p">)):</span>
+        <span class="n">srange</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">srange</span><span class="p">),</span> <span class="nb">min</span><span class="p">(</span><span class="n">saturation</span><span class="p">)),</span> <span class="nb">min</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">srange</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">saturation</span><span class="p">))</span>
+        <span class="n">r</span><span class="o">.</span><span class="n">valid</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;The requested saturation range was adjusted to </span><span class="si">{</span><span class="n">srange</span><span class="si">}</span><span class="s1">&#39;</span>
+                        <span class="s1">&#39; to accomodate data&#39;</span><span class="p">)</span>
+    <span class="c1"># Find zmax</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">saturation</span> <span class="o">&gt;=</span> <span class="nb">max</span><span class="p">(</span><span class="n">srange</span><span class="p">)</span>
+    <span class="n">zmax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">x</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">saturation</span> <span class="o">&lt;=</span> <span class="nb">min</span><span class="p">(</span><span class="n">srange</span><span class="p">)</span>
+    <span class="n">zmin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">y</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="c1"># If position array was given, index into it</span>
+    <span class="k">if</span> <span class="n">position</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">zmax</span> <span class="o">=</span> <span class="n">position</span><span class="p">[</span><span class="n">zmax</span><span class="p">]</span>
+        <span class="n">zmin</span> <span class="o">=</span> <span class="n">position</span><span class="p">[</span><span class="n">zmin</span><span class="p">]</span>
+
+    <span class="c1"># Add remaining data to results object</span>
+    <span class="n">r</span><span class="o">.</span><span class="n">zmax</span> <span class="o">=</span> <span class="n">zmax</span>
+    <span class="n">r</span><span class="o">.</span><span class="n">zmin</span> <span class="o">=</span> <span class="n">zmin</span>
+    <span class="n">r</span><span class="o">.</span><span class="n">smax</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">srange</span><span class="p">)</span>
+    <span class="n">r</span><span class="o">.</span><span class="n">smin</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">srange</span><span class="p">)</span>
+    <span class="n">r</span><span class="o">.</span><span class="n">h</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">zmax</span><span class="o">-</span><span class="n">zmin</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">r</span></div>
+</pre></div>
+
+              </div>
+              
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+    <script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+  <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2022 PoreSpy Team.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.4.0.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

@@ -1,0 +1,309 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>porespy.simulations._dns &#8212; PoreSpy  documentation</title>
+    
+    <link href="../../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+  
+    
+    <link rel="stylesheet"
+      href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+    <link rel="preload" as="font" type="font/woff2" crossorigin
+      href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+    <link rel="preload" as="font" type="font/woff2" crossorigin
+      href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+  
+    
+      
+  
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/pydata-sphinx-theme.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
+    
+    <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+  
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/custom.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="https://www.porespy.org">
+  <img src="../../../_static/porespy_logo.png" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../user_guide/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../modules/index.html">
+  Module and Function Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../examples.html">
+  Examples
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/porespy/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/porespy/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/PMEAL/porespy" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://porespy.substack.com/" rel="noopener" target="_blank" title="Substack"><span><i class="fas fa-envelope-square"></i></span>
+            <label class="sr-only">Substack</label></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/porespy" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar">
+              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+              </div>
+              <div class="sidebar-end-items">
+              </div>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <h1>Source code for porespy.simulations._dns</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="kn">from</span> <span class="nn">porespy.filters</span> <span class="kn">import</span> <span class="n">trim_nonpercolating_paths</span>
+<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">Results</span>
+<span class="kn">from</span> <span class="nn">loguru</span> <span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">porespy.generators</span> <span class="kn">import</span> <span class="n">faces</span>
+
+<span class="n">ws</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">Workspace</span><span class="p">()</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;tortuosity_fd&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="tortuosity_fd"><a class="viewcode-back" href="../../../modules/generated/porespy.simulations.tortuosity_fd.html#porespy.simulations.tortuosity_fd">[docs]</a><span class="k">def</span> <span class="nf">tortuosity_fd</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the tortuosity of image in the specified direction.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    im : ndarray</span>
+<span class="sd">        The binary image to analyze with ``True`` indicating phase of interest</span>
+<span class="sd">    axis : int</span>
+<span class="sd">        The axis along which to apply boundary conditions</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    results : Results object</span>
+<span class="sd">        The following values are computed and returned as attributes:</span>
+
+<span class="sd">        =================== ===================================================</span>
+<span class="sd">        Attribute           Description</span>
+<span class="sd">        =================== ===================================================</span>
+<span class="sd">        tortuosity          Calculated using the ``effective_porosity`` as</span>
+<span class="sd">                            :math:`\tau = \frac{D_{AB}}{D_{eff}} \cdot</span>
+<span class="sd">                            \varepsilon`.</span>
+<span class="sd">        effective_porosity  Porosity of the image after applying</span>
+<span class="sd">                            ``trim_nonpercolating_paths``.  This removes</span>
+<span class="sd">                            disconnected voxels which cause singular matrices.</span>
+
+<span class="sd">        original_porosity   Porosity of the as-received the image</span>
+
+<span class="sd">        formation_factor    Found as :math:`D_{AB}/D_{eff}`.</span>
+
+<span class="sd">        concentration       An image containing the concentration values from</span>
+<span class="sd">                            the simulation.</span>
+<span class="sd">        =================== ===================================================</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">axis</span> <span class="o">&gt;</span> <span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">ndim</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;axis&#39; must be &lt;= </span><span class="si">{</span><span class="n">im</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Obtain original porosity</span>
+    <span class="n">eps0</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">im</span><span class="o">.</span><span class="n">size</span>
+    <span class="c1"># Remove floating pores</span>
+    <span class="n">inlets</span> <span class="o">=</span> <span class="n">faces</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">inlet</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
+    <span class="n">outlets</span> <span class="o">=</span> <span class="n">faces</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">outlet</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">trim_nonpercolating_paths</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">inlets</span><span class="o">=</span><span class="n">inlets</span><span class="p">,</span> <span class="n">outlets</span><span class="o">=</span><span class="n">outlets</span><span class="p">)</span>
+    <span class="c1"># Check if prosity is changed after trimmimg floating pores</span>
+    <span class="n">eps</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">im</span><span class="o">.</span><span class="n">size</span>
+    <span class="k">if</span> <span class="n">eps</span> <span class="o">&lt;</span> <span class="n">eps0</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;True porosity is </span><span class="si">{</span><span class="n">eps</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">, filled </span><span class="si">{</span><span class="n">eps0</span> <span class="o">-</span> <span class="n">eps</span><span class="si">:</span><span class="s1">.5f</span><span class="si">}</span><span class="s1">&#39;</span>
+                       <span class="s1">&#39; volume fraction of the image for it to percolate.&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Generate a Cubic network to be used as an orthogonal grid</span>
+    <span class="n">net</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">CubicTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">spacing</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+    <span class="c1"># Create a dummy phase</span>
+    <span class="n">phase</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">phases</span><span class="o">.</span><span class="n">GenericPhase</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">)</span>
+    <span class="n">phase</span><span class="p">[</span><span class="s1">&#39;throat.diffusive_conductance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="c1"># Run Fickian Diffusion on the image</span>
+    <span class="n">fd</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">FickianDiffusion</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">phase</span><span class="p">)</span>
+    <span class="c1"># Choose axis of concentration gradient</span>
+    <span class="n">inlets</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">coords</span><span class="p">[:,</span> <span class="n">axis</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">1</span>
+    <span class="n">outlets</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">coords</span><span class="p">[:,</span> <span class="n">axis</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="c1"># Boundary conditions on concentration</span>
+    <span class="n">cL</span><span class="p">,</span> <span class="n">cR</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span>
+    <span class="n">fd</span><span class="o">.</span><span class="n">set_value_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">inlets</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">cL</span><span class="p">)</span>
+    <span class="n">fd</span><span class="o">.</span><span class="n">set_value_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">outlets</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">cR</span><span class="p">)</span>
+    <span class="n">fd</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;solver_family&#39;</span><span class="p">:</span> <span class="s1">&#39;scipy&#39;</span><span class="p">,</span> <span class="s1">&#39;solver_type&#39;</span><span class="p">:</span> <span class="s1">&#39;cg&#39;</span><span class="p">})</span>
+    <span class="n">fd</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+    <span class="c1"># Calculate molar flow rate, effective diffusivity and tortuosity</span>
+    <span class="n">rate_in</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">rate</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">inlets</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">rate_out</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">rate</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">outlets</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="o">-</span><span class="n">rate_out</span><span class="p">,</span> <span class="n">rate_in</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Something went wrong, inlet and outlet rates do not match!&#39;</span><span class="p">)</span>
+    <span class="n">dC</span> <span class="o">=</span> <span class="n">cL</span> <span class="o">-</span> <span class="n">cR</span>
+    <span class="n">L</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">/</span> <span class="n">L</span>
+    <span class="c1"># L-1 because BCs are put inside the domain, see issue #495</span>
+    <span class="n">Deff</span> <span class="o">=</span> <span class="n">rate_in</span> <span class="o">*</span> <span class="p">(</span><span class="n">L</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="n">A</span> <span class="o">/</span> <span class="n">dC</span>
+    <span class="n">tau</span> <span class="o">=</span> <span class="n">eps</span> <span class="o">/</span> <span class="n">Deff</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">Results</span><span class="p">()</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">tortuosity</span> <span class="o">=</span> <span class="n">tau</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">formation_factor</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">Deff</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">original_porosity</span> <span class="o">=</span> <span class="n">eps0</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">effective_porosity</span> <span class="o">=</span> <span class="n">eps</span>
+    <span class="n">conc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">conc</span><span class="p">[</span><span class="n">net</span><span class="p">[</span><span class="s1">&#39;pore.template_indices&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">fd</span><span class="p">[</span><span class="s1">&#39;pore.concentration&#39;</span><span class="p">]</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">concentration</span> <span class="o">=</span> <span class="n">conc</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+    <span class="c1"># Free memory</span>
+    <span class="n">ws</span><span class="o">.</span><span class="n">close_project</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">project</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">result</span></div>
+</pre></div>
+
+              </div>
+              
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+    <script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+  <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2022 PoreSpy Team.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.4.0.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

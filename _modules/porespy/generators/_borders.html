@@ -1,0 +1,317 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>porespy.generators._borders &#8212; PoreSpy  documentation</title>
+    
+    <link href="../../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+  
+    
+    <link rel="stylesheet"
+      href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+    <link rel="preload" as="font" type="font/woff2" crossorigin
+      href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+    <link rel="preload" as="font" type="font/woff2" crossorigin
+      href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+  
+    
+      
+  
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/pydata-sphinx-theme.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
+    
+    <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+  
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/custom.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="https://www.porespy.org">
+  <img src="../../../_static/porespy_logo.png" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../user_guide/index.html">
+  User Guide
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../modules/index.html">
+  Module and Function Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../examples.html">
+  Examples
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/porespy/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/porespy/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/PMEAL/porespy" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://porespy.substack.com/" rel="noopener" target="_blank" title="Substack"><span><i class="fas fa-envelope-square"></i></span>
+            <label class="sr-only">Substack</label></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/porespy" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar">
+              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+              </div>
+              <div class="sidebar-end-items">
+              </div>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <h1>Source code for porespy.generators._borders</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;faces&#39;</span><span class="p">,</span> <span class="s1">&#39;borders&#39;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="faces"><a class="viewcode-back" href="../../../modules/generated/porespy.generators.faces.html#porespy.generators.faces">[docs]</a><span class="k">def</span> <span class="nf">faces</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">inlet</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">outlet</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate an image with ``True`` values on the specified ``inlet`` and</span>
+<span class="sd">    ``outlet`` faces</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    shape : list</span>
+<span class="sd">        The ``[x, y, z (optional)]`` shape to generate. This will likely</span>
+<span class="sd">        be obtained from ``im.shape`` where ``im`` is the image for which</span>
+<span class="sd">        an array of faces is required.</span>
+<span class="sd">    inlet : int</span>
+<span class="sd">        The axis where the faces should be added (e.g. ``inlet=0`` will</span>
+<span class="sd">        put ``True`` values on the ``x=0`` face). A value of ``None``</span>
+<span class="sd">        (default) bypasses the addition of inlets.</span>
+<span class="sd">    outlet : int</span>
+<span class="sd">        Same as ``inlet`` except for the outlet face. This is optional. It</span>
+<span class="sd">        can be be applied at the same time as ``inlet``, instead of</span>
+<span class="sd">        ``inlet`` (if ``inlet`` is set to ``None``), or ignored</span>
+<span class="sd">        (if ``outlet = None``).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    faces : ndarray</span>
+<span class="sd">        A boolean image of the given ``shape`` with ``True`` values on the</span>
+<span class="sd">        specified ``inlet`` and/or ``outlet`` face(s).</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="c1"># Parse inlet and outlet</span>
+    <span class="k">if</span> <span class="n">inlet</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">inlet</span><span class="p">)</span>
+        <span class="n">im</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">inlet</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">outlet</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">outlet</span><span class="p">)</span>
+        <span class="n">im</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">outlet</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">inlet</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">outlet</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Both inlet and outlet were given as None&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">im</span></div>
+
+
+<div class="viewcode-block" id="borders"><a class="viewcode-back" href="../../../modules/generated/porespy.generators.borders.html#porespy.generators.borders">[docs]</a><span class="k">def</span> <span class="nf">borders</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">thickness</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;edges&#39;</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates an array of specified size with corners, edges or faces</span>
+<span class="sd">    labelled as ``True``.</span>
+
+<span class="sd">    This can be used as mask to manipulate values laying on the perimeter</span>
+<span class="sd">    of an image.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    shape : array_like</span>
+<span class="sd">        The shape of the array to return.  Can be either 2D or 3D.</span>
+<span class="sd">    thickness : scalar (default is 1)</span>
+<span class="sd">        The number of pixels/voxels layers to place along perimeter.</span>
+<span class="sd">    mode : string</span>
+<span class="sd">        The type of border to create.  Options are &#39;faces&#39;, &#39;edges&#39;</span>
+<span class="sd">        (default) and &#39;corners&#39;.  In 2D &#39;corners&#39; and &#39;edges&#39; give the</span>
+<span class="sd">        same result.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    image : ndarray</span>
+<span class="sd">        An ndarray of specified shape with ``True`` values at the</span>
+<span class="sd">        perimeter and ``False`` elsewhere</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import porespy as ps</span>
+<span class="sd">    &gt;&gt;&gt; mask = ps.tools.get_border(shape=[3, 3], mode=&#39;corners&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; print(mask)</span>
+<span class="sd">    [[ True False  True]</span>
+<span class="sd">     [False False False]</span>
+<span class="sd">     [ True False  True]]</span>
+<span class="sd">    &gt;&gt;&gt; mask = ps.tools.get_border(shape=[3, 3], mode=&#39;faces&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; print(mask)</span>
+<span class="sd">    [[ True  True  True]</span>
+<span class="sd">     [ True False  True]</span>
+<span class="sd">     [ True  True  True]]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ndims</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">thickness</span>
+    <span class="n">border</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;faces&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ndims</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">border</span><span class="p">[</span><span class="n">t</span><span class="p">:</span><span class="o">-</span><span class="n">t</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span><span class="o">-</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">ndims</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">border</span><span class="p">[</span><span class="n">t</span><span class="p">:</span><span class="o">-</span><span class="n">t</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span><span class="o">-</span><span class="n">t</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span><span class="o">-</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;edges&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ndims</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">border</span><span class="p">[</span><span class="n">t</span><span class="p">:</span><span class="o">-</span><span class="n">t</span><span class="p">,</span> <span class="mi">0</span><span class="p">::]</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">border</span><span class="p">[</span><span class="mi">0</span><span class="p">::,</span> <span class="n">t</span><span class="p">:</span><span class="o">-</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">ndims</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">border</span><span class="p">[</span><span class="mi">0</span><span class="p">::,</span> <span class="n">t</span><span class="p">:</span><span class="o">-</span><span class="n">t</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span><span class="o">-</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">border</span><span class="p">[</span><span class="n">t</span><span class="p">:</span><span class="o">-</span><span class="n">t</span><span class="p">,</span> <span class="mi">0</span><span class="p">::,</span> <span class="n">t</span><span class="p">:</span><span class="o">-</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">border</span><span class="p">[</span><span class="n">t</span><span class="p">:</span><span class="o">-</span><span class="n">t</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span><span class="o">-</span><span class="n">t</span><span class="p">,</span> <span class="mi">0</span><span class="p">::]</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;corners&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ndims</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">border</span><span class="p">[</span><span class="n">t</span><span class="p">:</span><span class="o">-</span><span class="n">t</span><span class="p">,</span> <span class="mi">0</span><span class="p">::]</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">border</span><span class="p">[</span><span class="mi">0</span><span class="p">::,</span> <span class="n">t</span><span class="p">:</span><span class="o">-</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">ndims</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">border</span><span class="p">[</span><span class="n">t</span><span class="p">:</span><span class="o">-</span><span class="n">t</span><span class="p">,</span> <span class="mi">0</span><span class="p">::,</span> <span class="mi">0</span><span class="p">::]</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">border</span><span class="p">[</span><span class="mi">0</span><span class="p">::,</span> <span class="n">t</span><span class="p">:</span><span class="o">-</span><span class="n">t</span><span class="p">,</span> <span class="mi">0</span><span class="p">::]</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">border</span><span class="p">[</span><span class="mi">0</span><span class="p">::,</span> <span class="mi">0</span><span class="p">::,</span> <span class="n">t</span><span class="p">:</span><span class="o">-</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="n">border</span></div>
+</pre></div>
+
+              </div>
+              
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+    <script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+  <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2022 PoreSpy Team.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.4.0.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>
