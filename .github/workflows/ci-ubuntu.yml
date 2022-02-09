@@ -51,6 +51,8 @@ jobs:
 
       - name: Install dependencies (conda)
         run: |
+          conda config --add channels conda-forge
+          conda config --set channel_priority strict
           conda install mamba
           # mamba install \
           #   --file requirements/conda_requirements.txt \
