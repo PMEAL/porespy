@@ -5,12 +5,10 @@ on: pull_request
 jobs:
   build:
 
-    if: (contains(github.event.head_commit.message, 'ci examples'))
-
     runs-on: ${{ matrix.operating-system }}
     defaults:
       run:
-        shell: bash -l {0}
+        shell: bash
 
     strategy:
       fail-fast: false
@@ -34,59 +32,15 @@ jobs:
           # This path is specific to Ubuntu
           path: ~/.cache/pip
           # Look to see if there is a cache hit for the corresponding requirements file
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements/min_requirements_pip.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements/pip_requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
             ${{ runner.os }}-
 
-      # Currently, setting up Python and installing requirements using pip
-      #   takes ~ 1 min. On the other hand, doing the same using conda (mamba)
-      #   takes ~ 4.5 mins! When setup-miniconda/issues/89 is fixed, it might be
-      #   worth going back to conda. Anyway, in testing, we're not really using
-      #   any library that's only on conda. So, it's all good.
-
-      # We disabled caching until setup-miniconda/issues/169 is fixed.
-
-      # - name: Cache conda
-      #   uses: actions/cache@v2
-      #   env:
-      #     CACHE_NUMBER: 0  # increase value -> force reset cache
-      #   with:
-      #     path: ~/conda_pkgs_dir
-      #     key: ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{ hashFiles('**/conda_requirements.txt') }}
-
-      # - name: Set up conda/mamba
-      #   uses: conda-incubator/setup-miniconda@v2
-      #   with:
-      #     mamba-version: "*"
-      #     allow-softlinks: true
-      #     use-only-tar-bz2: true
-      #     show-channel-urls: false
-      #     auto-activate-base: true
-      #     channel-priority: strict
-      #     channels: conda-forge
-      #     condarc-file: requirements/.condarc
-      #     python-version: ${{ matrix.python-version }}
-
-      # - name: Install dependencies (conda)
-      #   # TODO: once https://github.com/jerry-git/pytest-split/pull/10
-      #   #   is merged, fix the custom pip install for pytest-split.
-      #   run: |
-      #     cat requirements/conda_requirements.txt >> requirements.txt
-      #     cat requirements/test_requirements.txt >> requirements.txt
-      #     cat requirements/optional_requirements.txt >> requirements.txt
-      #     mamba install --file requirements.txt
-      #     pip install git+https://github.com/ma-sadeghi/pytest-split.git@fix_ipynb_bug
-      #     pip install -r requirements/pip_requirements.txt
-      #     # Install porespy from the checked-out branch
-      #     pip install -e . --no-deps
-
       - name: Install dependencies (pip)
         run: |
-          pip install wheel
-          pip install -r requirements/min_requirements_pip.txt
-          # pip install -r requirements/test_requirements.txt
-          pip install git+https://github.com/jerry-git/pytest-split.git@master
+          pip install -r requirements/pip_requirements.txt
+          pip install -r requirements/test_requirements.txt
           # Install porespy from the checked-out branch
           pip install -e . --no-deps
 
