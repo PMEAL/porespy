@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        shell: bash -l {0}
+        shell: bash
 
     steps:
       - name: Cache pip
@@ -33,6 +33,7 @@ jobs:
             -r requirements/pip_requirements.txt \
             -r requirements/doc_requirements.txt
           conda install -c conda-forge pandoc
+          pip install --upgrade pandoc
           # Install porespy from the checked-out branch
           pip install -e . --no-deps
 
