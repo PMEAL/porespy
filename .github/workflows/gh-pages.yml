@@ -32,6 +32,7 @@ jobs:
           pip install \
             -r requirements/pip_requirements.txt \
             -r requirements/doc_requirements.txt
+          conda install -c conda-forge pandoc --no-deps
           # Install porespy from the checked-out branch
           pip install -e . --no-deps
 
