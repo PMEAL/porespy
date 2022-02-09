@@ -1098,8 +1098,8 @@ def find_h(saturation, position=None, srange=[0.01, 0.99]):
     if (min(srange) < min(saturation)) or (max(srange) > max(saturation)):
         srange = max(min(srange), min(saturation)), min(max(srange), max(saturation))
         r.valid = False
-        msg = f'The requested saturation range was adjusted to {srange} to accomodate data'
-        logger.warning(msg)
+        logger.warning(f'The requested saturation range was adjusted to {srange}'
+                        ' to accomodate data')
     # Find zmax
     x = saturation >= max(srange)
     zmax = np.where(x)[0][-1]
