@@ -1,12 +1,9 @@
 name: Ubuntu
 
-on: pull_request
+on: push
 
 jobs:
   build:
-
-    if: (! contains(github.event.head_commit.message, 'ci min')) &&
-        (! contains(github.event.head_commit.message, 'ci examples'))
 
     runs-on: ${{ matrix.operating-system }}
     defaults:
@@ -17,7 +14,7 @@ jobs:
       max-parallel: 4
       matrix:
         # Add '3.10' to the list once #611 is addressed
-        python-version: ['3.8', '3.9']
+        python-version: ['3.8']
         operating-system: [ubuntu-latest]
 
     steps:
@@ -37,44 +34,45 @@ jobs:
       #     path: ~/conda_pkgs_dir
       #     key: ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{ hashFiles('**/conda_requirements.txt') }}
 
-      - name: Set up conda/mamba
-        uses: conda-incubator/setup-miniconda@v2
-        with:
-          use-mamba: true
-          miniforge-variant: Mambaforge
-          miniforge-version: latest
-          allow-softlinks: true
-          use-only-tar-bz2: true
-          show-channel-urls: false
-          auto-activate-base: true
-          channels: conda-forge
-          channel-priority: strict
-          condarc-file: requirements/.condarc
-          python-version: ${{ matrix.python-version }}
+      # - name: Set up conda/mamba
+      #   uses: conda-incubator/setup-miniconda@v2
+      #   with:
+      #     use-mamba: true
+      #     miniforge-variant: Mambaforge
+      #     miniforge-version: latest
+      #     allow-softlinks: true
+      #     use-only-tar-bz2: true
+      #     show-channel-urls: false
+      #     auto-activate-base: true
+      #     channels: conda-forge
+      #     channel-priority: strict
+      #     condarc-file: requirements/.condarc
+      #     python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies (conda)
         run: |
-          mamba install \
-            --file requirements/conda_requirements.txt \
-            --file requirements/test_requirements.txt
-          pip install \
-            -r requirements/pip_requirements.txt
-          # Install porespy from the checked-out branch
-          pip install -e . --no-deps
+          conda intall mamba
+          # mamba install \
+          #   --file requirements/conda_requirements.txt \
+          #   --file requirements/test_requirements.txt
+          # pip install \
+          #   -r requirements/pip_requirements.txt
+          # # Install porespy from the checked-out branch
+          # pip install -e . --no-deps
 
-      - name: Disable numba JIT for codecov to include jitted methods
-        run: |
-          echo "NUMBA_DISABLE_JIT=1" >> $GITHUB_ENV
+      # - name: Disable numba JIT for codecov to include jitted methods
+      #   run: |
+      #     echo "NUMBA_DISABLE_JIT=1" >> $GITHUB_ENV
 
-      - name: Running tests
-        run: |
-          pytest --cov=./ --cov-report=xml --pycodestyle
+      # - name: Running tests
+      #   run: |
+      #     pytest --cov=./ --cov-report=xml --pycodestyle
 
-      - name: Upload coverage to Codecov
-        if: matrix.python-version == 3.8
-        uses: codecov/codecov-action@v1
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./coverage.xml
-          flags: unittests
-          name: codecov-umbrella
+      # - name: Upload coverage to Codecov
+      #   if: matrix.python-version == 3.8
+      #   uses: codecov/codecov-action@v1
+      #   with:
+      #     token: ${{ secrets.CODECOV_TOKEN }}
+      #     file: ./coverage.xml
+      #     flags: unittests
+      #     name: codecov-umbrella
