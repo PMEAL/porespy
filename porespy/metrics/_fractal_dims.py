@@ -42,9 +42,12 @@ def boxcount(im, bins=10, d_min=1, d_max=None):
     >>> dust = ps.generators.random_cantor_dust([1024, 1024], n=8)
     >>> f = ps.metrics.boxcount(dust)
     >>> fig, ax = plt.subplots(1, 2)
-    >>> ax[0].loglog(f.size, f.count, 'bo-')    # doctest:+ELLIPSIS
-    >>> ax[1].semilogx(f.size, f.slope, 'ro-')  # doctest:+ELLIPSIS
-    >>> ax[1].set_ylim([0, 4])                  # doctest:+ELLIPSIS
+    >>> ax[0].loglog(f.size, f.count, 'bo-')
+    [...]
+    >>> ax[1].semilogx(f.size, f.slope, 'ro-')
+    [...]
+    >>> ax[1].set_ylim([0, 4])
+    (0.0, 4.0)
 
     """
     im = np.array(im, dtype=bool)
