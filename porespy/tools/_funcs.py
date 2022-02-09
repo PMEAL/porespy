@@ -181,7 +181,7 @@ def subdivide(im, divs=2, overlap=0):
     >>> import porespy as ps
     >>> import matplotlib.pyplot as plt
     >>> im = ps.generators.blobs(shape=[200, 200])
-    >>> s = ps.tools.subdivide(im, divs=[2, 2], flatten=True)
+    >>> s = ps.tools.subdivide(im, divs=[2, 2])
     >>> print(len(s))
     4
 
@@ -751,7 +751,7 @@ def get_border(shape, thickness=1, mode='edges'):
     [[ True False  True]
      [False False False]
      [ True False  True]]
-    >>> mask = ps.tools.get_border(shape=[3, 3], mode='edges')
+    >>> mask = ps.tools.get_border(shape=[3, 3], mode='faces')
     >>> print(mask)
     [[ True  True  True]
      [ True False  True]

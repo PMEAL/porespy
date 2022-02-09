@@ -43,8 +43,11 @@ def boxcount(im, bins=10, d_min=1, d_max=None):
     >>> f = ps.metrics.boxcount(dust)
     >>> fig, ax = plt.subplots(1, 2)
     >>> ax[0].loglog(f.size, f.count, 'bo-')
+    [...]
     >>> ax[1].semilogx(f.size, f.slope, 'ro-')
+    [...]
     >>> ax[1].set_ylim([0, 4])
+    (0.0, 4.0)
 
     """
     im = np.array(im, dtype=bool)

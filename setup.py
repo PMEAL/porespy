@@ -54,9 +54,9 @@ setup(
     ],
     install_requires=[
         'dask',
+        'deprecated',
         'edt',
         'imageio',
-        'jupyterlab_widgets',
         'loguru',
         'matplotlib',
         'numba',
@@ -72,7 +72,6 @@ setup(
         'scipy',
         'tqdm',
         'trimesh',
-        'deprecated',
     ],
     author='PoreSpy Team',
     author_email='jgostick@gmail.com',
@@ -84,24 +83,3 @@ setup(
         'Tracker': 'https://github.com/PMEAL/porespy/issues',
     },
 )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
