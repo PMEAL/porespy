@@ -45,10 +45,11 @@ jobs:
           # Install porespy from the checked-out branch
           pip install -e . --no-deps
 
-      - name: Disable numba JIT for codecov to include jitted methods
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          echo "NUMBA_DISABLE_JIT=1" >> $GITHUB_ENV
+      # TODO: uncomment this step when integration tests are fixed
+      # - name: Disable numba JIT for codecov to include jitted methods
+      #   if: (matrix.python-version == 3.8) && (matrix.os == 'ubuntu-latest')
+      #   run: |
+      #     echo "NUMBA_DISABLE_JIT=1" >> $GITHUB_ENV
 
       - name: Running tests
         run:
