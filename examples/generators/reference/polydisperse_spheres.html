@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>polydisperse _spheres &#8212; PoreSpy  documentation</title>
+    <title>polydisperse_spheres &#8212; PoreSpy  documentation</title>
     
     <link href="../../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
 <link href="../../../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -200,7 +200,11 @@
  </li>
  <li class="toctree-l1 current active">
   <a class="current reference internal" href="#">
-   polydisperse _spheres
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     polydisperse_spheres
+    </span>
+   </code>
   </a>
  </li>
  <li class="toctree-l1">
@@ -742,13 +746,13 @@
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Create-variables:">
-   Create variables:
+  <a class="reference internal nav-link" href="#Create-variables">
+   Create variables
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#Apply-generator-function:">
-   Apply generator function:
+  <a class="reference internal nav-link" href="#Apply-generator-function">
+   Apply generator function
   </a>
   <ul class="nav section-nav flex-column">
    <li class="toc-h3 nav-item toc-entry">
@@ -1042,8 +1046,8 @@ div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
 </style>
-<section id="polydisperse-_spheres">
-<h1>polydisperse _spheres<a class="headerlink" href="#polydisperse-_spheres" title="Permalink to this headline">¶</a></h1>
+<section id="polydisperse_spheres">
+<h1><code class="docutils literal notranslate"><span class="pre">polydisperse_spheres</span></code><a class="headerlink" href="#polydisperse_spheres" title="Permalink to this headline">¶</a></h1>
 <p>polydisperse_spheres creates a 3 dimensional array of overlapping spheres. The size of the array is controlled by shape, and the porosity of the substance is input as the porosity vabribale the and size distribution of the spheres is input in dist and nbins. The minimum radius of the spheres is controlled by the r_min variable.</p>
 <section id="Import-packages">
 <h2>Import packages<a class="headerlink" href="#Import-packages" title="Permalink to this headline">¶</a></h2>
@@ -1062,25 +1066,25 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 </section>
-<section id="Create-variables:">
-<h2>Create variables:<a class="headerlink" href="#Create-variables:" title="Permalink to this headline">¶</a></h2>
+<section id="Create-variables">
+<h2>Create variables<a class="headerlink" href="#Create-variables" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">shape</span> <span class="o">=</span> <span class="p">[</span><span class="mi">300</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="mi">300</span><span class="p">]</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">shape</span> <span class="o">=</span> <span class="p">[</span><span class="mi">150</span><span class="p">,</span> <span class="mi">150</span><span class="p">,</span> <span class="mi">150</span><span class="p">]</span>
 <span class="n">porosity</span> <span class="o">=</span> <span class="mf">0.5</span>
 <span class="n">dist</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 
-<span class="c1">#Default Values:</span>
+<span class="c1"># Default values</span>
 <span class="n">nbins</span> <span class="o">=</span> <span class="mi">5</span>
 <span class="n">r_min</span> <span class="o">=</span> <span class="mi">5</span>
 </pre></div>
 </div>
 </div>
 </section>
-<section id="Apply-generator-function:">
-<h2>Apply generator function:<a class="headerlink" href="#Apply-generator-function:" title="Permalink to this headline">¶</a></h2>
+<section id="Apply-generator-function">
+<h2>Apply generator function<a class="headerlink" href="#Apply-generator-function" title="Permalink to this headline">¶</a></h2>
 <p>With different parameters</p>
 <section id="porosity">
 <h3>porosity<a class="headerlink" href="#porosity" title="Permalink to this headline">¶</a></h3>
@@ -1099,7 +1103,7 @@ div.rendered_html tbody tr:hover {
 <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;porosity = 0.5&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;porosity = .25&#39;</span><span class="p">);</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;porosity = 0.25&#39;</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -1165,8 +1169,8 @@ div.rendered_html tbody tr:hover {
 </section>
 <section id="r_min">
 <h3>r_min<a class="headerlink" href="#r_min" title="Permalink to this headline">¶</a></h3>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">xx</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">polydisperse_spheres</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">porosity</span><span class="p">,</span> <span class="n">dist</span><span class="p">,</span> <span class="n">nbins</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
@@ -1181,6 +1185,12 @@ div.rendered_html tbody tr:hover {
 <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;r_min = 10&#39;</span><span class="p">);</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../_images/examples_generators_reference_polydisperse_spheres_14_0.svg" src="../../../_images/examples_generators_reference_polydisperse_spheres_14_0.svg" /></div>
 </div>
 </section>
 </section>
