@@ -51,10 +51,10 @@ jobs:
 
       - name: Install dependencies (conda)
         run: |
-          conda remove --all
           conda config --add channels conda-forge
           conda config --set channel_priority strict
-          conda install mamba
+          conda create -n test mamba
+          conda activate test
           # pip install \
           #   -r requirements/pip_requirements.txt
           # # Install porespy from the checked-out branch
