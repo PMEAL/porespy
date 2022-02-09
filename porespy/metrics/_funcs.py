@@ -863,7 +863,7 @@ def pc_curve_from_ibip(seq, sizes, im=None, sigma=0.072, theta=180,
     return pc_curve
 
 
-@deprecated ("This function is deprecated, use pc_curve_from_sizes instead")
+@deprecated("This function is deprecated, use pc_curve_from_sizes instead")
 def pc_curve_from_mio(*args, **kwargs):
     r"""
     This function is deprecated.  Use ``pc_curve_from_sizes`` or
@@ -1098,7 +1098,8 @@ def find_h(saturation, position=None, srange=[0.01, 0.99]):
     if (min(srange) < min(saturation)) or (max(srange) > max(saturation)):
         srange = max(min(srange), min(saturation)), min(max(srange), max(saturation))
         r.valid = False
-        logger.warning(f'The requested saturation range was adjusted to {srange} to accomodate data')
+        msg = f'The requested saturation range was adjusted to {srange} to accomodate data'
+        logger.warning(msg)
     # Find zmax
     x = saturation >= max(srange)
     zmax = np.where(x)[0][-1]

@@ -270,7 +270,7 @@ def find_disconnected_voxels(im, conn=None, surface=False):
         else:
             raise Exception("Received conn is not valid")
     labels, N = spim.label(input=im, structure=strel)
-    if surface == False:
+    if not surface:
         holes = clear_border(labels=labels) > 0
     else:
         counts = np.bincount(labels.flatten())[1:]
