@@ -37,7 +37,7 @@ function get_most_recent_tag {
 # -------------------------------------------------------------------------- #
 function get_version {
     local version_loc=$1
-    local temp=$(grep -E -o "([0-9]{1,}\.)+[0-9]{1,}" $version_loc)
+    local temp=$(grep -E -o "([0-9]{1,}\.)+[0-9]{1,}(.dev[0-9]{1,})?" $version_loc)
     echo "$temp"
 }
 

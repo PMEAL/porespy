@@ -51,3 +51,8 @@ from ._funcs import *
 from ._utils import *
 from ._funcs import _check_for_singleton_axes
 from ._unpad import unpad
+
+
+def _get_version():
+    from porespy.__version__ import __version__
+    return __version__.strip(".dev0")
