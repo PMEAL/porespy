@@ -5,7 +5,9 @@ import porespy as ps
 from numba import njit
 import scipy.spatial as sptl
 import scipy.ndimage as spim
+from deprecated import deprecated
 from porespy.tools import norm_to_uniform, ps_ball, ps_disk, get_border
+from porespy.tools import extract_subsection
 from porespy import settings
 from typing import List
 from loguru import logger
@@ -97,7 +99,12 @@ def insert_shape(im, element, center=None, corner=None, value=1, mode="overwrite
     return im
 
 
-def RSA(im_or_shape: np.array,
+@deprecated("This function has been renamed to rsa (lowercase to meet pep8")
+def RSA(*args, **kwargs):
+    return rsa(*args, **kwargs)
+
+
+def rsa(im_or_shape: np.array,
         r: int,
         volume_fraction: int = 1,
         clearance: int = 0,
@@ -433,20 +440,21 @@ def polydisperse_spheres(
     return im
 
 
-def voronoi_edges(shape: List[int], r: int, ncells: int, flat_faces: bool = True):
+def voronoi_edges(shape: List[int], ncells: int, r: int = 0, flat_faces: bool = True):
     r"""
     Create an image from the edges of a Voronoi tessellation.
 
     Parameters
     ----------
     shape : array_like
-        The size of the image to generate in [Nx, Ny, Nz] where Ni is the
-        number of voxels in each direction.
-    radius : int
-        The radius to which Voronoi edges should be dilated in the final
-        image.
+        The size of the image to generate in [Nx, Ny, <Nz>] where Ni is the
+        number of voxels in each direction.  If Nz is not given a 2D image
+        is returned.
     ncells : int
         The number of Voronoi cells to include in the tesselation.
+    radius : int, optional
+        The radius to which Voronoi edges should be dilated in the final
+        image.  If not given then edges are a single pixel/voxel thick.
     flat_faces : bool
         Whether the Voronoi edges should lie on the boundary of the
         image (``True``), or if edges outside the image should be removed
@@ -469,26 +477,25 @@ def voronoi_edges(shape: List[int], r: int, ncells: int, flat_faces: bool = True
     if np.size(shape) == 1:
         shape = np.full((3,), int(shape))
     im = np.zeros(shape, dtype=bool)
-    base_pts = np.random.rand(ncells, 3) * shape
+    base_pts = tuple(np.around(np.random.rand(ncells, im.ndim) * shape-1, decimals=0).T.astype(int))
+    im[tuple(base_pts)] = True
+    pw = [(s, s) for s in im.shape]
     if flat_faces:
-        # Reflect base points
-        Nx, Ny, Nz = shape
-        orig_pts = base_pts
-        base_pts = np.vstack((base_pts, [-1, 1, 1] * orig_pts + [2.0 * Nx, 0, 0]))
-        base_pts = np.vstack((base_pts, [1, -1, 1] * orig_pts + [0, 2.0 * Ny, 0]))
-        base_pts = np.vstack((base_pts, [1, 1, -1] * orig_pts + [0, 0, 2.0 * Nz]))
-        base_pts = np.vstack((base_pts, [-1, 1, 1] * orig_pts))
-        base_pts = np.vstack((base_pts, [1, -1, 1] * orig_pts))
-        base_pts = np.vstack((base_pts, [1, 1, -1] * orig_pts))
-    vor = sptl.Voronoi(points=base_pts)
+        im = np.pad(im, pad_width=pw, mode='symmetric')
+    else:
+        im = np.pad(im, pad_width=pw, mode='constant', constant_values=0)
+    base_pts = np.where(im)
+    vor = sptl.Voronoi(points=np.vstack(base_pts).T)
     vor.vertices = np.around(vor.vertices)
     vor.vertices *= (np.array(im.shape) - 1) / np.array(im.shape)
     vor.edges = _get_Voronoi_edges(vor)
+    im = np.zeros_like(im)
     for row in vor.edges:
-        pts = vor.vertices[row].astype(int)
+        pts = np.around(vor.vertices[row], decimals=0).astype(int)
         if np.all(pts >= 0) and np.all(pts < im.shape):
             line_pts = line_segment(pts[0], pts[1])
             im[tuple(line_pts)] = True
+    im = extract_subsection(im=im, shape=shape)
     im = edt(~im) > r
     return im
 
@@ -562,12 +569,14 @@ def lattice_spheres(shape: List[int],
     lattice : str
         Specifies the type of lattice to create. Options are:
 
-        'sc'
-            Simple Cubic (default)
-        'fcc'
-            Face Centered Cubic
-        'bcc'
-            Body Centered Cubic
+        ======= ===============================================================
+        option  description
+        ======= ===============================================================
+        'sc'    Simple cubic (default), works in both 2D and 3D.
+        'tri'   Triangular, only works in 2D
+        'fcc'   Face centered cubic, only works in 3D
+        'bcc'   Body centered cubic, only works on 3D
+        ======= ===============================================================
 
     Returns
     -------
