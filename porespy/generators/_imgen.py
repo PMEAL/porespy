@@ -5,9 +5,11 @@ import porespy as ps
 from numba import njit
 import scipy.spatial as sptl
 import scipy.ndimage as spim
+import scipy.stats as spst
 from deprecated import deprecated
 from porespy.tools import norm_to_uniform, ps_ball, ps_disk, get_border
 from porespy.tools import extract_subsection
+from porespy.tools import insert_sphere
 from porespy import settings
 from typing import List
 from loguru import logger
@@ -324,7 +326,7 @@ def _make_choice(options_im, free_sites):
     return coords, count
 
 
-def bundle_of_tubes(shape: List[int], spacing: int):
+def bundle_of_tubes(shape: List[int], spacing: int, distribution=None):
     r"""
     Create a 3D image of a bundle of tubes, in the form of a rectangular
     plate with randomly sized holes through it.
@@ -338,6 +340,9 @@ def bundle_of_tubes(shape: List[int], spacing: int):
     spacing : int
         The center to center distance of the holes.  The hole sizes will
         be randomly distributed between this values down to 3 voxels.
+    distribution : scipy.stats object
+        A handle to a scipy stats object with the desired parameters.
+
 
     Returns
     -------
@@ -351,33 +356,22 @@ def bundle_of_tubes(shape: List[int], spacing: int):
     to view online example.
 
     """
-    shape = np.array(shape)
-    if np.size(shape) == 1:
-        shape = np.full((3,), int(shape))
-    if np.size(shape) == 2:
-        shape = np.hstack((shape, [1]))
-    temp = np.zeros(shape=shape[:2])
-    Xi = np.ceil(
-        np.linspace(spacing / 2, shape[0] - (spacing / 2) - 1, int(shape[0] / spacing))
-    )
-    Xi = np.array(Xi, dtype=int)
-    Yi = np.ceil(
-        np.linspace(spacing / 2, shape[1] - (spacing / 2) - 1, int(shape[1] / spacing))
-    )
-    Yi = np.array(Yi, dtype=int)
-    temp[tuple(np.meshgrid(Xi, Yi))] = 1
-    inds = np.where(temp)
+    if distribution is None:
+        distribution = spst.randint(low=3, high=spacing)
+    else:
+        pass
+    im = ~lattice_spheres(shape=shape,
+                          r=1,
+                          offset=spacing,
+                          spacing=2*spacing,
+                          lattice='sc')
+    temp = np.zeros_like(im)
+    inds = np.where(im)
     for i in range(len(inds[0])):
-        r = np.random.randint(1, (spacing / 2))
-        try:
-            s1 = slice(inds[0][i] - r, inds[0][i] + r + 1)
-            s2 = slice(inds[1][i] - r, inds[1][i] + r + 1)
-            temp[s1, s2] = ps_disk(r)
-        except ValueError:
-            odd_shape = np.shape(temp[s1, s2])
-            temp[s1, s2] = ps_disk(r)[: odd_shape[0], : odd_shape[1]]
-    im = np.broadcast_to(array=np.atleast_3d(temp), shape=shape)
-    return im
+        c = np.hstack([j[i] for j in inds])
+        r = distribution.rvs(1)
+        temp = insert_sphere(im=temp, c=c, r=r)
+    return temp
 
 
 def polydisperse_spheres(
