@@ -326,7 +326,7 @@ def _make_choice(options_im, free_sites):
     return coords, count
 
 
-def bundle_of_tubes(shape: List[int], spacing: int, distribution=None):
+def bundle_of_tubes(shape: List[int], spacing: int, distribution=None, smooth=True):
     r"""
     Create a 3D image of a bundle of tubes, in the form of a rectangular
     plate with randomly sized holes through it.
@@ -343,7 +343,6 @@ def bundle_of_tubes(shape: List[int], spacing: int, distribution=None):
     distribution : scipy.stats object
         A handle to a scipy stats object with the desired parameters.
 
-
     Returns
     -------
     image : ndarray
@@ -356,27 +355,34 @@ def bundle_of_tubes(shape: List[int], spacing: int, distribution=None):
     to view online example.
 
     """
-    if distribution is None:
-        distribution = spst.randint(low=3, high=spacing)
-    else:
-        pass
     im = ~lattice_spheres(shape=shape,
                           r=1,
                           offset=spacing,
                           spacing=2*spacing,
                           lattice='sc')
+    N = im.sum()
+    if distribution is None:
+        distribution = spst.randint(low=3, high=spacing-1)
+        Rs = distribution.rvs(N)
+    else:
+        Rs = distribution.rvs(N)
+        Rs = np.around(np.clip(Rs, a_min=1, a_max=spacing-1), decimals=0).astype(int)
+        # Rs = Rs/Rs.max()*(spacing - 4) + 3
     temp = np.zeros_like(im)
     inds = np.where(im)
     for i in range(len(inds[0])):
         c = np.hstack([j[i] for j in inds])
-        r = distribution.rvs(1)
-        temp = insert_sphere(im=temp, c=c, r=r)
+        temp = insert_sphere(im=temp, c=c, r=Rs[i])
     return temp
 
 
 def polydisperse_spheres(
-    shape: List[int], porosity: float, dist, nbins: int = 5, r_min: int = 5
-):
+    shape: List[int],
+    porosity: float,
+    dist,
+    nbins: int = 5,
+    r_min: int = 5,
+    ):
     r"""
     Create an image of randomly placed, overlapping spheres with a
     distribution of radii.
