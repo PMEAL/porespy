@@ -20,7 +20,7 @@ assert snow_n.regions.max() == 211
 temp = ps.tools.extract_subsection(im=snow_n.regions,
                                    shape=np.array(snow_n.regions.shape)-8)
 assert temp.max() == 211
-# remove complete bounadry region
+# remove complete boundary region
 temp = ps.tools.extract_subsection(im=snow_n.regions,
                                    shape=np.array(snow_n.regions.shape)-10)
 assert temp.max() == 164
@@ -31,7 +31,7 @@ plot = False
 
 if plot:
     fig, ax = plt.subplots(1, 1)
-    ax.imshow(snow_n.regions.T)
+    ax.imshow(ps.tools.randomize_colors(snow_n.regions.T))
 
     pn, geo = op.io.from_porespy(snow_n.network)
     op.topotools.plot_connections(network=pn, ax=ax)
