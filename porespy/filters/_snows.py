@@ -341,7 +341,7 @@ def trim_saddle_points(peaks, dt, maxiter=20):
         from skimage.morphology import square as cube
     else:
         from skimage.morphology import cube
-    labels, N = spim.label(peaks > 0)
+    labels, N = spim.label(peaks > 0, structure=cube(3))
     slices = spim.find_objects(labels)
     hits = 0
     for i, s in enumerate(slices):
@@ -358,20 +358,22 @@ def trim_saddle_points(peaks, dt, maxiter=20):
             peak_dil = spim.binary_dilation(peak_orig, structure=cube(3))
             rim = peak_dil * dt_i * (~peak_orig)
             check_1 = rim >= R
+            # If all neighboring values are less than R, a true peak was found
             if check_1.sum() == 0:
                 break  # True peak
             L, check_2 = spim.label(check_1, structure=cube(3))
+            # If 2 or more separate neighbors are larger than R, a saddle was found
             if check_2 >= 2:
                 hits += 1
                 peaks[sx] = peaks[sx]*(~peak_i)
                 logger.debug("Saddle point found")
                 break  # Saddle point
-            peak_dil = (peak_dil*dt_i) == R
-            if peak_dil.sum() == peak_orig.sum():
+            # peak_dil = (peak_dil*dt_i) == R
+            # if peak_dil.sum() == peak_orig.sum():
                 # hits += 1
                 # peaks[sx] = peaks[sx]*(~peak_i)
                 # logger.debug("Ridge point found")
-                break  # Ridge point
+                # break  # Ridge point
         if iters >= maxiter:
             logger.warning(f"{iters} iterations reached on point {i+1}")
     if hits > 0:
