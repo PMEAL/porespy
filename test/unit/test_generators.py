@@ -171,10 +171,11 @@ class GeneratorTest():
 
     def test_voronoi_edges(self):
         np.random.seed(0)
-        im = ps.generators.voronoi_edges(
-            shape=[50, 50, 50], r=2, ncells=25, flat_faces=True)
+        im = ps.generators.voronoi_edges(shape=[50, 50, 50],
+                                         r=2, ncells=25,
+                                         flat_faces=True)
         top_slice = im[:, :, 0]
-        assert np.sum(top_slice) == 1409
+        assert np.sum(top_slice) == 1398
 
     def test_lattice_spheres_square(self):
         im = ps.generators.lattice_spheres(
