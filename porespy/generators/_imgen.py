@@ -339,7 +339,7 @@ def bundle_of_tubes(shape: List[int], spacing: int, distribution=None, smooth=Tr
         1 voxel is assumed.
     spacing : int
         The center to center distance of the holes.  The hole sizes will
-        be randomly distributed between this values down to 3 voxels.
+        be distributed between this values down to 3 voxels.
     distribution : scipy.stats object
         A handle to a scipy stats object with the desired parameters.
 
@@ -355,24 +355,30 @@ def bundle_of_tubes(shape: List[int], spacing: int, distribution=None, smooth=Tr
     to view online example.
 
     """
-    im = ~lattice_spheres(shape=shape,
+    shape = np.array(shape)
+    if len(shape) == 2:
+        shape = np.hstack((shape, [1]))
+    shape2 = shape[shape > 1]
+    im = ~lattice_spheres(shape=shape2,
                           r=1,
-                          offset=spacing,
-                          spacing=2*spacing,
+                          offset=0.5*spacing,
+                          spacing=spacing,
                           lattice='sc')
     N = im.sum()
     if distribution is None:
-        distribution = spst.randint(low=3, high=spacing-1)
+        # +1 below is because randint 4.X gives a max of 3
+        distribution = spst.randint(low=3, high=spacing/2 + 1)
         Rs = distribution.rvs(N)
     else:
         Rs = distribution.rvs(N)
-        Rs = np.around(np.clip(Rs, a_min=1, a_max=spacing-1), decimals=0).astype(int)
-        # Rs = Rs/Rs.max()*(spacing - 4) + 3
+        Rs = np.around(np.clip(Rs, a_min=1, a_max=spacing/2), decimals=0).astype(int)
     temp = np.zeros_like(im)
     inds = np.where(im)
     for i in range(len(inds[0])):
         c = np.hstack([j[i] for j in inds])
         temp = insert_sphere(im=temp, c=c, r=Rs[i])
+    # Add 3rd dimension back
+    temp = np.tile(np.atleast_3d(temp), [1, 1, shape[2]])
     return temp
 
 
@@ -477,7 +483,7 @@ def voronoi_edges(shape: List[int], ncells: int, r: int = 0, flat_faces: bool = 
     if np.size(shape) == 1:
         shape = np.full((3,), int(shape))
     im = np.zeros(shape, dtype=bool)
-    base_pts = tuple(np.around(np.random.rand(ncells, im.ndim) * shape-1, decimals=0).T.astype(int))
+    base_pts = tuple(np.around(np.random.rand(ncells, im.ndim) * (shape-1), decimals=0).T.astype(int))
     im[tuple(base_pts)] = True
     pw = [(s, s) for s in im.shape]
     if flat_faces:
@@ -621,12 +627,16 @@ def lattice_spheres(shape: List[int],
     # Parse offset and spacing args
     if spacing is None:
         spacing = 2*r
-    if isinstance(spacing, int):
+    if isinstance(spacing, (int, float)):
+        spacing = int(spacing)
         spacing = [spacing]*im.ndim
+    spacing = np.array(spacing, dtype=int)
     if offset is None:
         offset = r
-    if isinstance(offset, int):
+    if isinstance(offset, (int, float)):
+        offset = int(offset)
         offset = [offset]*im.ndim
+    offset = np.array(offset, dtype=int)
 
     if lattice == 'sq':
         im[offset[0]::spacing[0],

@@ -131,6 +131,19 @@ class GeneratorTest():
         labels, N = spim.label(input=im)
         assert N == 100
 
+    def test_bundle_of_tubes_with_distribution(self):
+        dist = spst.norm(loc=10, scale=4)
+        im = ps.generators.bundle_of_tubes(shape=[301, 301, 1], spacing=30,
+                                           distribution=dist)
+        labels, N = spim.label(input=im)
+        assert N == 100
+
+    def test_bundle_of_tubes_2D(self):
+        im = ps.generators.bundle_of_tubes(shape=[101, 101], spacing=10)
+        labels, N = spim.label(input=im)
+        assert N == 100
+        assert im.shape == (101, 101, 1)
+
     def test_overlapping_spheres_2d(self):
         phis = np.arange(0.1, 0.9, 0.2)
         for phi in phis:
@@ -158,10 +171,11 @@ class GeneratorTest():
 
     def test_voronoi_edges(self):
         np.random.seed(0)
-        im = ps.generators.voronoi_edges(
-            shape=[50, 50, 50], r=2, ncells=25, flat_faces=True)
+        im = ps.generators.voronoi_edges(shape=[50, 50, 50],
+                                         r=2, ncells=25,
+                                         flat_faces=True)
         top_slice = im[:, :, 0]
-        assert np.sum(top_slice) == 1409
+        assert np.sum(top_slice) == 1398
 
     def test_lattice_spheres_square(self):
         im = ps.generators.lattice_spheres(
