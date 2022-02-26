@@ -382,13 +382,11 @@ def bundle_of_tubes(shape: List[int], spacing: int, distribution=None, smooth=Tr
     return temp
 
 
-def polydisperse_spheres(
-    shape: List[int],
-    porosity: float,
-    dist,
-    nbins: int = 5,
-    r_min: int = 5,
-    ):
+def polydisperse_spheres(shape: List[int],
+                         porosity: float,
+                         dist,
+                         nbins: int = 5,
+                         r_min: int = 5):
     r"""
     Create an image of randomly placed, overlapping spheres with a
     distribution of radii.
@@ -446,7 +444,8 @@ def polydisperse_spheres(
     return im
 
 
-def voronoi_edges(shape: List[int], ncells: int, r: int = 0, flat_faces: bool = True):
+def voronoi_edges(shape: List[int], ncells: int, r: int = 0,
+                  flat_faces: bool = True):
     r"""
     Create an image from the edges of a Voronoi tessellation.
 
