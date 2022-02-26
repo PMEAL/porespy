@@ -382,13 +382,11 @@ def bundle_of_tubes(shape: List[int], spacing: int, distribution=None, smooth=Tr
     return temp
 
 
-def polydisperse_spheres(
-    shape: List[int],
-    porosity: float,
-    dist,
-    nbins: int = 5,
-    r_min: int = 5,
-    ):
+def polydisperse_spheres(shape: List[int],
+                         porosity: float,
+                         dist,
+                         nbins: int = 5,
+                         r_min: int = 5):
     r"""
     Create an image of randomly placed, overlapping spheres with a
     distribution of radii.
@@ -446,7 +444,8 @@ def polydisperse_spheres(
     return im
 
 
-def voronoi_edges(shape: List[int], ncells: int, r: int = 0, flat_faces: bool = True):
+def voronoi_edges(shape: List[int], ncells: int, r: int = 0,
+                  flat_faces: bool = True):
     r"""
     Create an image from the edges of a Voronoi tessellation.
 
@@ -483,7 +482,8 @@ def voronoi_edges(shape: List[int], ncells: int, r: int = 0, flat_faces: bool = 
     if np.size(shape) == 1:
         shape = np.full((3,), int(shape))
     im = np.zeros(shape, dtype=bool)
-    base_pts = tuple(np.around(np.random.rand(ncells, im.ndim) * (shape-1), decimals=0).T.astype(int))
+    base_pts = tuple(np.around(np.random.rand(ncells, im.ndim) * (shape-1),
+                               decimals=0).T.astype(int))
     im[tuple(base_pts)] = True
     pw = [(s, s) for s in im.shape]
     if flat_faces:
