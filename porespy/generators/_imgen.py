@@ -483,7 +483,8 @@ def voronoi_edges(shape: List[int], ncells: int, r: int = 0, flat_faces: bool = 
     if np.size(shape) == 1:
         shape = np.full((3,), int(shape))
     im = np.zeros(shape, dtype=bool)
-    base_pts = tuple(np.around(np.random.rand(ncells, im.ndim) * (shape-1), decimals=0).T.astype(int))
+    base_pts = tuple(np.around(np.random.rand(ncells, im.ndim) * (shape-1),
+                               decimals=0).T.astype(int))
     im[tuple(base_pts)] = True
     pw = [(s, s) for s in im.shape]
     if flat_faces:
