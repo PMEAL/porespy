@@ -96,7 +96,7 @@ def trim_small_clusters(im, size=1):
     return filtered_array
 
 
-def hold_peaks(im, axis=-1):
+def hold_peaks(im, axis=-1, ascending=True):
     r"""
     Replaces each voxel with the highest value along the given axis.
 
@@ -106,6 +106,9 @@ def hold_peaks(im, axis=-1):
         A greyscale image whose peaks are to be found.
     axis : int
         The axis along which the operation is to be applied.
+    ascending : bool
+        If ``True`` (default) the given ``axis`` is scanned from 0 to end.
+        If ``False``, it is scanned in reverse order from end to 0.
 
     Returns
     -------
@@ -116,7 +119,7 @@ def hold_peaks(im, axis=-1):
     Notes
     -----
     "im" must be a greyscale image. In case a Boolean image is fed into this
-    method, it will be first converted to float values [0.0,1.0] before proceeding.
+    method, it will be converted to float values [0.0,1.0] before proceeding.
 
     Examples
     --------
@@ -125,9 +128,10 @@ def hold_peaks(im, axis=-1):
     to view online example.
 
     """
-
     A = im.astype(float)
     B = np.swapaxes(A, axis, -1)
+    if ascending is False:  # Flip the axis of interest (-1)
+        B = np.flip(B, axis=-1)
     updown = np.empty((*B.shape[:-1], B.shape[-1] + 1), B.dtype)
     updown[..., 0], updown[..., -1] = -1, -1
     np.subtract(B[..., 1:], B[..., :-1], out=updown[..., 1:-1])
@@ -140,6 +144,8 @@ def hold_peaks(im, axis=-1):
     aux[(*map(op.itemgetter(slice(1, None)), pkidx),)] = np.diff(B[pkidx])
     aux[..., 0] = B[..., 0]
     result = out.cumsum(axis=axis)
+    if ascending is False:  # Flip it back
+        result = np.flip(result, axis=-1)
     return result
 
 
