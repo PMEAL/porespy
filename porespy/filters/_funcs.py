@@ -538,7 +538,7 @@ def flood(im, labels, mode="max"):
     return flooded
 
 
-def flood_func(im, labels, func):
+def flood_func(im, func, labels):
     r"""
     Flood each isolated region in an image with a constant value calculated by
     the given function.
@@ -548,14 +548,14 @@ def flood_func(im, labels, func):
     im : ndarray
         An image with the numerical values of interest in each voxel,
         and 0's elsewhere.
-    labels : ndarray
-        An array containing labels identify each individual region to be
-        flooded. If not provided then ``scipy.ndimage.label`` is applied to
-        ``im > 0``.
     func : Numpy function handle
         The function to be applied to each region in the image.  Any Numpy
         function that returns a scalar value can be passed, such as ``amin``,
         ``amax``, ``sum``, ``mean``, ``median``, etc.
+    labels : ndarray
+        An array containing labels identifying each individual region to be
+        flooded. If not provided then ``scipy.ndimage.label`` is applied to
+        ``im > 0``.
 
     Returns
     -------
@@ -571,10 +571,10 @@ def flood_func(im, labels, func):
     Notes
     -----
     Many of the functions in ``scipy.ndimage`` can be applied to
-    individual regions using the ``index`` argument.  This function extend
+    individual regions using the ``index`` argument.  This function extends
     that behavior to all numpy function, in the event you wanted to compute
     the cosine of the values in each region for some reason. This function
-    also floods the original image instead of return a list of values for
+    also floods the original image instead of returning a list of values for
     each region.
 
     Examples
