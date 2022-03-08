@@ -7,6 +7,7 @@ __all__ = [
     'make_disks',
     '_make_ball',
     'make_balls',
+    'insert_disk_at_points',
     'insert_disks_at_points',
 ]
 
@@ -66,7 +67,7 @@ def make_balls(r, smooth=True):  # pragma: no cover
 
 
 @numba.jit(nopython=True, parallel=False)
-def insert_disks_at_points(im, coords, r, v, smooth=True):  # pragma: no cover
+def insert_disk_at_points(im, coords, r, v, smooth=True):  # pragma: no cover
     r"""
     Insert spheres (or disks) into the given ND-image at given locations
 
@@ -95,7 +96,7 @@ def insert_disks_at_points(im, coords, r, v, smooth=True):  # pragma: no cover
     npts = len(coords[0])
     if im.ndim == 2:
         xlim, ylim = im.shape
-        s = make_disk(r, smooth)
+        s = _make_disk(r, smooth)
         for i in range(npts):
             pt = coords[:, i]
             for a, x in enumerate(range(pt[0]-r, pt[0]+r+1)):
@@ -106,8 +107,63 @@ def insert_disks_at_points(im, coords, r, v, smooth=True):  # pragma: no cover
                                 im[x, y] = v
     elif im.ndim == 3:
         xlim, ylim, zlim = im.shape
-        s = make_ball(r, smooth)
+        s = _make_ball(r, smooth)
         for i in range(npts):
+            pt = coords[:, i]
+            for a, x in enumerate(range(pt[0]-r, pt[0]+r+1)):
+                if (x >= 0) and (x < xlim):
+                    for b, y in enumerate(range(pt[1]-r, pt[1]+r+1)):
+                        if (y >= 0) and (y < ylim):
+                            for c, z in enumerate(range(pt[2]-r, pt[2]+r+1)):
+                                if (z >= 0) and (z < zlim):
+                                    if (s[a, b, c] == 1) and (im[x, y, z] == 0):
+                                        im[x, y, z] = v
+    return im
+
+
+@numba.jit(nopython=True, parallel=False)
+def insert_disks_at_points(im, coords, radii, v, smooth=True):  # pragma: no cover
+    r"""
+    Insert spheres (or disks) of specified radii into an ND-image at given locations.
+
+    This function uses numba to accelerate the process, and does not overwrite
+    any existing values (i.e. only writes to locations containing zeros).
+
+    Parameters
+    ----------
+    im : ND-array
+        The image into which the spheres/disks should be inserted. This is an
+        'in-place' operation.
+    coords : ND-array
+        The center point of each sphere/disk in an array of shape
+        ``ndim by npts``
+    radii : array_like
+        The radii of the spheres/disks to add.
+    v : scalar
+        The value to insert
+    smooth : boolean
+        If ``True`` (default) then the spheres/disks will not have the litte
+        nibs on the surfaces.
+
+    """
+    npts = len(coords[0])
+    if im.ndim == 2:
+        xlim, ylim = im.shape
+        for i in range(npts):
+            r = radii[i]
+            s = _make_disk(r, smooth)
+            pt = coords[:, i]
+            for a, x in enumerate(range(pt[0]-r, pt[0]+r+1)):
+                if (x >= 0) and (x < xlim):
+                    for b, y in enumerate(range(pt[1]-r, pt[1]+r+1)):
+                        if (y >= 0) and (y < ylim):
+                            if (s[a, b] == 1) and (im[x, y] == 0):
+                                im[x, y] = v
+    elif im.ndim == 3:
+        xlim, ylim, zlim = im.shape
+        for i in range(npts):
+            r = radii[i]
+            s = _make_ball(r, smooth)
             pt = coords[:, i]
             for a, x in enumerate(range(pt[0]-r, pt[0]+r+1)):
                 if (x >= 0) and (x < xlim):

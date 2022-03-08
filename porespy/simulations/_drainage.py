@@ -5,6 +5,7 @@ from porespy.filters import trim_disconnected_blobs, find_trapped_regions
 from porespy.filters import find_disconnected_voxels
 from porespy.filters import pc_to_satn, satn_to_seq, seq_to_satn
 from porespy import settings
+from porespy.tools import insert_disks_at_points
 from porespy.tools import get_tqdm
 from porespy.tools import Results
 from porespy.metrics import pc_curve
@@ -14,102 +15,6 @@ tqdm = get_tqdm()
 __all__ = [
     'drainage',
 ]
-
-
-@numba.jit(nopython=True, parallel=False)
-def insert_disks_at_points(im, coords, radii, v, smooth=True):  # pragma: no cover
-    r"""
-    Insert spheres (or disks) of specified radii into an ND-image at given locations.
-
-    This function uses numba to accelerate the process, and does not overwrite
-    any existing values (i.e. only writes to locations containing zeros).
-
-    Parameters
-    ----------
-    im : ND-array
-        The image into which the spheres/disks should be inserted. This is an
-        'in-place' operation.
-    coords : ND-array
-        The center point of each sphere/disk in an array of shape
-        ``ndim by npts``
-    radii : array_like
-        The radii of the spheres/disks to add.
-    v : scalar
-        The value to insert
-    smooth : boolean
-        If ``True`` (default) then the spheres/disks will not have the litte
-        nibs on the surfaces.
-
-    """
-    npts = len(coords[0])
-    if im.ndim == 2:
-        xlim, ylim = im.shape
-        for i in range(npts):
-            r = radii[i]
-            s = _make_disk(r, smooth)
-            pt = coords[:, i]
-            for a, x in enumerate(range(pt[0]-r, pt[0]+r+1)):
-                if (x >= 0) and (x < xlim):
-                    for b, y in enumerate(range(pt[1]-r, pt[1]+r+1)):
-                        if (y >= 0) and (y < ylim):
-                            if (s[a, b] == 1) and (im[x, y] == 0):
-                                im[x, y] = v
-    elif im.ndim == 3:
-        xlim, ylim, zlim = im.shape
-        for i in range(npts):
-            r = radii[i]
-            s = _make_ball(r, smooth)
-            pt = coords[:, i]
-            for a, x in enumerate(range(pt[0]-r, pt[0]+r+1)):
-                if (x >= 0) and (x < xlim):
-                    for b, y in enumerate(range(pt[1]-r, pt[1]+r+1)):
-                        if (y >= 0) and (y < ylim):
-                            for c, z in enumerate(range(pt[2]-r, pt[2]+r+1)):
-                                if (z >= 0) and (z < zlim):
-                                    if (s[a, b, c] == 1) and (im[x, y, z] == 0):
-                                        im[x, y, z] = v
-    return im
-
-
-@numba.jit(nopython=True, parallel=False)
-def _make_disk(r, smooth=True):  # pragma: no cover
-    r"""
-    Generate a strel suitable for use in numba nojit function.
-
-    Numba won't allow calls to skimage strel generators so this function
-    makes one, also using njit.
-    """
-    s = np.zeros((2*r+1, 2*r+1), dtype=type(r))
-    if smooth:
-        thresh = r - 0.001
-    else:
-        thresh = r
-    for i in range(2*r+1):
-        for j in range(2*r+1):
-            if ((i - r)**2 + (j - r)**2)**0.5 <= thresh:
-                s[i, j] = 1
-    return s
-
-
-@numba.jit(nopython=True, parallel=False)
-def _make_ball(r, smooth=True):  # pragma: no cover
-    r"""
-    Generate a strel suitable for use in numba nojit function.
-
-    Numba won't allow calls to skimage strel generators so this function
-    makes one, also using njit.
-    """
-    s = np.zeros((2*r+1, 2*r+1, 2*r+1), dtype=type(r))
-    if smooth:
-        thresh = r - 0.001
-    else:
-        thresh = r
-    for i in range(2*r+1):
-        for j in range(2*r+1):
-            for k in range(2*r+1):
-                if ((i - r)**2 + (j - r)**2 + (k - r)**2)**0.5 <= thresh:
-                    s[i, j, k] = 1
-    return s
 
 
 def drainage(im, voxel_size, pc=None, inlets=None, outlets=None, residual=None,
@@ -244,7 +149,8 @@ def drainage(im, voxel_size, pc=None, inlets=None, outlets=None, residual=None,
         # Extract the local size of sphere to insert at each new location
         radii = dt[coords].astype(int)
         # Insert spheres are new locations of given radii
-        inv = insert_disks_at_points(inv, np.vstack(coords), radii, p, smooth=True)
+        inv = insert_disks_at_points(im=inv, coords=np.vstack(coords),
+                                     radii=radii, v=p, smooth=True)
 
     # Set uninvaded voxels to inf
     inv[(inv == 0)*im] = np.inf
@@ -330,19 +236,19 @@ if __name__ == "__main__":
         cmap.set_over(color='grey')
         fig, ax = plt.subplots(2, 2, facecolor=bg)
 
-        kw = prep_for_imshow(drn1.im_pc, im)
+        kw = ps.visualization.prep_for_imshow(drn1.im_pc, im)
         ax[0][0].imshow(**kw, cmap=cmap)
         ax[0][0].set_title("No trapping, no residual")
 
-        kw = prep_for_imshow(drn2.im_pc, im)
+        kw = ps.visualization.prep_for_imshow(drn2.im_pc, im)
         ax[0][1].imshow(**kw, cmap=cmap)
         ax[0][1].set_title("With trapping, no residual")
 
-        kw = prep_for_imshow(drn3.im_pc, im)
+        kw = ps.visualization.prep_for_imshow(drn3.im_pc, im)
         ax[1][0].imshow(**kw, cmap=cmap)
         ax[1][0].set_title("No trapping, with residual")
 
-        kw = prep_for_imshow(drn4.im_pc, im)
+        kw = ps.visualization. prep_for_imshow(drn4.im_pc, im)
         ax[1][1].imshow(**kw, cmap=cmap)
         ax[1][1].set_title("With trapping, with residual")
 
