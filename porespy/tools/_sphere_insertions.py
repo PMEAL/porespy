@@ -3,9 +3,9 @@ import numba
 
 
 __all__ = [
-    'make_disk',
+    '_make_disk',
     'make_disks',
-    'make_ball',
+    '_make_ball',
     'make_balls',
     'insert_disks_at_points',
 ]
@@ -31,9 +31,9 @@ def make_disks(r, smooth=True):  # pragma: no cover
         R of the list, meaning it can be accessed as ``disks[R]``.
 
     """
-    disks = [np.atleast_2d(np.array([]))]
-    for val in range(1, r):
-        disk = make_disk(val, smooth)
+    disks = []
+    for val in range(0, r):
+        disk = _make_disk(val, smooth)
         disks.append(disk)
     return disks
 
@@ -58,9 +58,9 @@ def make_balls(r, smooth=True):  # pragma: no cover
         R of the list, meaning it can be accessed as ``balls[R]``.
 
     """
-    balls = [np.atleast_3d(np.array([]))]
-    for val in range(1, r):
-        ball = make_ball(val, smooth)
+    balls = []
+    for val in range(0, r):
+        ball = _make_ball(val, smooth)
         balls.append(ball)
     return balls
 
@@ -121,7 +121,7 @@ def insert_disks_at_points(im, coords, r, v, smooth=True):  # pragma: no cover
 
 
 @numba.jit(nopython=True, parallel=False)
-def make_disk(r, smooth=True):  # pragma: no cover
+def _make_disk(r, smooth=True):  # pragma: no cover
     r"""
     Generate a circular structuring element of the given radius
 
@@ -151,7 +151,7 @@ def make_disk(r, smooth=True):  # pragma: no cover
 
 
 @numba.jit(nopython=True, parallel=False)
-def make_ball(r, smooth=True):  # pragma: no cover
+def _make_ball(r, smooth=True):  # pragma: no cover
     r"""
     Generate a spherical structuring element of the given radius
 
