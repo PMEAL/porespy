@@ -186,10 +186,12 @@ if __name__ == "__main__":
     inlets[0, :] = True
     ip = ps.filters.ibip(im=im, inlets=inlets)
 
-    cmap = copy(plt.cm.plasma)
-    cmap.set_under(color='black')
-    cmap.set_over(color='grey')
-    fig, ax = plt.subplots(1, 1)
-    kw = ps.visualization.prep_for_imshow(ip.inv_sequence, im)
-    kw['vmin'] = 0
-    ax.imshow(**kw, cmap=cmap)
+    # %% Generate some plots
+    if plots:
+        cmap = copy(plt.cm.plasma)
+        cmap.set_under(color='black')
+        cmap.set_over(color='grey')
+        fig, ax = plt.subplots(1, 1)
+        kw = ps.visualization.prep_for_imshow(ip.inv_sequence, im)
+        kw['vmin'] = 0
+        ax.imshow(**kw, cmap=cmap)

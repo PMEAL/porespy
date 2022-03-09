@@ -103,8 +103,9 @@ def insert_disk_at_points(im, coords, r, v, smooth=True, overwrite=False):  # pr
                 if (x >= 0) and (x < xlim):
                     for b, y in enumerate(range(pt[1]-r, pt[1]+r+1)):
                         if (y >= 0) and (y < ylim):
-                            if (s[a, b] == 1) and (im[x, y] == 0):
-                                im[x, y] = v
+                            if s[a, b] == 1:
+                                if overwrite or (im[x, y] == 0):
+                                    im[x, y] = v
     elif im.ndim == 3:
         xlim, ylim, zlim = im.shape
         s = _make_ball(r, smooth)
@@ -116,8 +117,9 @@ def insert_disk_at_points(im, coords, r, v, smooth=True, overwrite=False):  # pr
                         if (y >= 0) and (y < ylim):
                             for c, z in enumerate(range(pt[2]-r, pt[2]+r+1)):
                                 if (z >= 0) and (z < zlim):
-                                    if (s[a, b, c] == 1) and (im[x, y, z] == 0):
-                                        im[x, y, z] = v
+                                    if (s[a, b, c] == 1):
+                                        if overwrite or (im[x, y, z] == 0):
+                                            im[x, y, z] = v
     return im
 
 
