@@ -5,106 +5,10 @@ from edt import edt
 from skimage.morphology import disk, ball
 from porespy import settings
 from porespy.tools import get_tqdm, ps_round
+from porespy.tools import insert_disks_at_points
 from porespy.filters import trim_disconnected_blobs, fftmorphology
 from loguru import logger
 tqdm = get_tqdm()
-
-
-@numba.jit(nopython=True, parallel=False)
-def insert_disks_at_points(im, coords, radii, v, smooth=True):  # pragma: no cover
-    r"""
-    Insert spheres of specified radii into an ndarray at given locations.
-
-    Parameters
-    ----------
-    im : ndarray
-        The image into which the spheres/disks should be inserted. This is an
-        'in-place' operation.
-    coords : ndarray
-        The center point of each sphere/disk in an array of shape
-        ``ndim by npts``
-    radii : array_like
-        The radii of the spheres/disks to add.
-    v : scalar
-        The value to insert
-    smooth : boolean
-        If ``True`` (default) then the spheres/disks will not have the litte
-        nibs on the surfaces.
-
-    Notes
-    -----
-    This function uses numba to accelerate the process.
-
-    """
-    npts = len(coords[0])
-    if im.ndim == 2:
-        xlim, ylim = im.shape
-        for i in range(npts):
-            r = radii[i]
-            s = _make_disk(r, smooth)
-            pt = coords[:, i]
-            for a, x in enumerate(range(pt[0]-r, pt[0]+r+1)):
-                if (x >= 0) and (x < xlim):
-                    for b, y in enumerate(range(pt[1]-r, pt[1]+r+1)):
-                        if (y >= 0) and (y < ylim):
-                            if (s[a, b] == 1):  # and (im[x, y] == 0):
-                                im[x, y] = v
-    elif im.ndim == 3:
-        xlim, ylim, zlim = im.shape
-        for i in range(npts):
-            r = radii[i]
-            s = _make_ball(r, smooth)
-            pt = coords[:, i]
-            for a, x in enumerate(range(pt[0]-r, pt[0]+r+1)):
-                if (x >= 0) and (x < xlim):
-                    for b, y in enumerate(range(pt[1]-r, pt[1]+r+1)):
-                        if (y >= 0) and (y < ylim):
-                            for c, z in enumerate(range(pt[2]-r, pt[2]+r+1)):
-                                if (z >= 0) and (z < zlim):
-                                    if (s[a, b, c] == 1):  # and (im[x, y, z] == 0):
-                                        im[x, y, z] = v
-    return im
-
-
-@numba.jit(nopython=True, parallel=False)
-def _make_disk(r, smooth=True):  # pragma: no cover
-    r"""
-    Generate a strel suitable for use in numba nojit function.
-
-    Numba won't allow calls to skimage strel generators so this function
-    makes one, also using njit.
-    """
-    s = np.zeros((2*r+1, 2*r+1), dtype=type(r))
-    if smooth:
-        thresh = r - 0.001
-    else:
-        thresh = r
-    for i in range(2*r+1):
-        for j in range(2*r+1):
-            if ((i - r)**2 + (j - r)**2)**0.5 <= thresh:
-                s[i, j] = 1
-    return s
-
-
-@numba.jit(nopython=True, parallel=False)
-def _make_ball(r, smooth=True):  # pragma: no cover
-    r"""
-    Generate a strel suitable for use in numba nojit function.
-
-    Numba won't allow calls to skimage strel generators so this function
-    makes one, also using njit.
-    """
-    s = np.zeros((2*r+1, 2*r+1, 2*r+1), dtype=type(r))
-    if smooth:
-        thresh = r - 0.001
-    else:
-        thresh = r
-    for i in range(2*r+1):
-        for j in range(2*r+1):
-            for k in range(2*r+1):
-                if ((i - r)**2 + (j - r)**2 + (k - r)**2)**0.5 <= thresh:
-                    s[i, j, k] = 1
-    return s
 
 
 def pseudo_gravity_packing(im, r, clearance=0, axis=0, maxiter=1000):
@@ -164,9 +68,12 @@ def pseudo_gravity_packing(im, r, clearance=0, axis=0, maxiter=1000):
                              y[options[choice]],
                              z[options[choice]]])
         im_temp = insert_disks_at_points(im_temp, coords=cen,
-                                         radii=np.array([r - clearance]), v=True)
+                                         radii=np.array([r - clearance]),
+                                         v=True, overwrite=True)
         sites = insert_disks_at_points(sites, coords=cen,
-                                       radii=np.array([2*r]), v=0)
+                                       radii=np.array([2*r]),
+                                       v=0,
+                                       overwrite=True)
         x_min += x.min()
     logger.debug(f'A total of {n} spheres were added')
     im_temp = np.swapaxes(im_temp, 0, axis)
@@ -232,7 +139,19 @@ def pseudo_electrostatic_packing(im, r, sites=None,
         choice = np.where(hits)[0][0]
         cen = np.vstack([options[i][choice] for i in range(im.ndim)])
         im_temp = insert_disks_at_points(im_temp, coords=cen,
-                                         radii=np.array([r-clearance]), v=True)
+                                         radii=np.array([r-clearance]),
+                                         v=True,
+                                         overwrite=True)
         dt = insert_disks_at_points(dt, coords=cen,
-                                    radii=np.array([2*r-clearance]), v=int(dtmax))
+                                    radii=np.array([2*r-clearance]),
+                                    v=int(dtmax),
+                                    overwrite=True)
     return im_temp
+
+
+if __name__ == "__main__":
+    import porespy as ps
+    import matplotlib.pyplot as plt
+    im = ps.generators.pseudo_gravity_packing(im=np.ones([200, 200]), r=10)
+    plt.imshow(im)
+

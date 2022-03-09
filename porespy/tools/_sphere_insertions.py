@@ -67,7 +67,7 @@ def make_balls(r, smooth=True):  # pragma: no cover
 
 
 @numba.jit(nopython=True, parallel=False)
-def insert_disk_at_points(im, coords, r, v, smooth=True):  # pragma: no cover
+def insert_disk_at_points(im, coords, r, v, smooth=True, overwrite=False):  # pragma: no cover
     r"""
     Insert spheres (or disks) into the given ND-image at given locations
 
@@ -122,7 +122,7 @@ def insert_disk_at_points(im, coords, r, v, smooth=True):  # pragma: no cover
 
 
 @numba.jit(nopython=True, parallel=False)
-def insert_disks_at_points(im, coords, radii, v, smooth=True):  # pragma: no cover
+def insert_disks_at_points(im, coords, radii, v, smooth=True, overwrite=False):  # pragma: no cover
     r"""
     Insert spheres (or disks) of specified radii into an ND-image at given locations.
 
@@ -141,9 +141,12 @@ def insert_disks_at_points(im, coords, radii, v, smooth=True):  # pragma: no cov
         The radii of the spheres/disks to add.
     v : scalar
         The value to insert
-    smooth : boolean
+    smooth : boolean, optional
         If ``True`` (default) then the spheres/disks will not have the litte
         nibs on the surfaces.
+    overwrite : boolean, optional
+        If ``True`` then the inserted spheres overwrite existing values.  The
+        default is ``False``.
 
     """
     npts = len(coords[0])
@@ -157,8 +160,9 @@ def insert_disks_at_points(im, coords, radii, v, smooth=True):  # pragma: no cov
                 if (x >= 0) and (x < xlim):
                     for b, y in enumerate(range(pt[1]-r, pt[1]+r+1)):
                         if (y >= 0) and (y < ylim):
-                            if (s[a, b] == 1) and (im[x, y] == 0):
-                                im[x, y] = v
+                            if s[a, b] == 1:
+                                if overwrite or (im[x, y] == 0):
+                                    im[x, y] = v
     elif im.ndim == 3:
         xlim, ylim, zlim = im.shape
         for i in range(npts):
@@ -171,8 +175,9 @@ def insert_disks_at_points(im, coords, radii, v, smooth=True):  # pragma: no cov
                         if (y >= 0) and (y < ylim):
                             for c, z in enumerate(range(pt[2]-r, pt[2]+r+1)):
                                 if (z >= 0) and (z < zlim):
-                                    if (s[a, b, c] == 1) and (im[x, y, z] == 0):
-                                        im[x, y, z] = v
+                                    if s[a, b, c] == 1:
+                                        if overwrite or (im[x, y, z] == 0):
+                                            im[x, y, z] = v
     return im
 
 
