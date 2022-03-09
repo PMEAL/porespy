@@ -323,15 +323,16 @@ class GeneratorTest():
     def test_pseudo_electrostatic_packing_values(self):
         np.random.seed(0)
         # 2d
-        im = ps.generators.blobs(shape=[100, 100])
-        im = ps.generators.pseudo_electrostatic_packing(
-            im=im, r=3, clearance=1, protrusion=1)
-        assert_allclose(np.linalg.norm(im), 46.2276, rtol=1e-5)
+        im1 = ps.generators.blobs(shape=[100, 100])
+        im2 = ps.generators.pseudo_electrostatic_packing(
+            im=im1, r=3, clearance=1, protrusion=1)
+        assert_allclose(np.linalg.norm(im2), 46.604721, rtol=1e-5)
         # 3d
-        im = ps.generators.blobs(shape=[50, 50, 50])
-        im = ps.generators.pseudo_electrostatic_packing(
-            im=im, r=3, clearance=1, protrusion=1)
-        assert_allclose(np.linalg.norm(im), 135.3403, rtol=1e-5)
+        np.random.seed(0)
+        im1 = ps.generators.blobs(shape=[50, 50, 50])
+        im2 = ps.generators.pseudo_electrostatic_packing(
+            im=im1, r=3, clearance=1, protrusion=1)
+        assert_allclose(np.linalg.norm(im2), 130.16528, rtol=1e-5)
 
     def test_faces(self):
         im = ps.generators.faces(shape=[10, 10], inlet=0)

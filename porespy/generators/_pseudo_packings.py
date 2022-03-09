@@ -53,14 +53,43 @@ def pseudo_gravity_packing(im, r, clearance=0, axis=0, maxiter=1000,
 
     """
     logger.debug(f'Adding spheres of radius {r}')
-    sites = np.zeros_like(im)
-    sites = np.swapaxes(sites, 0, axis)
-    sites[0, ...] = True
-    sites = np.swapaxes(sites, 0, axis)
-    im_temp = pseudo_electrostatic_packing(im=im,
-                                           r=r, sites=sites,
-                                           clearance=clearance,
-                                           edges=edges)
+
+    im = np.swapaxes(im, 0, axis)
+    im_temp = np.zeros_like(im, dtype=bool)
+    r = r - 1
+    strel = disk if im.ndim == 2 else ball
+    sites = fftmorphology(im == 1, strel=strel(r), mode='erosion')
+    inlets = np.zeros_like(im)
+    inlets[-(r+1), ...] = True
+    sites = trim_disconnected_blobs(im=sites, inlets=inlets)
+    x_min = np.where(sites)[0].min()
+    n = None
+    for n in tqdm(range(maxiter), **settings.tqdm):
+        if im.ndim == 2:
+            x, y = np.where(sites[x_min:x_min+2*r, ...])
+        else:
+            x, y, z = np.where(sites[x_min:x_min+2*r, ...])
+        if len(x) == 0:
+            break
+        options = np.where(x == x.min())[0]
+        choice = np.random.randint(len(options))
+        if im.ndim == 2:
+            cen = np.vstack([x[options[choice]] + x_min,
+                             y[options[choice]]])
+        else:
+            cen = np.vstack([x[options[choice]] + x_min,
+                             y[options[choice]],
+                             z[options[choice]]])
+        im_temp = insert_disks_at_points(im_temp, coords=cen,
+                                         radii=np.array([r - clearance]),
+                                         v=True, overwrite=True)
+        sites = insert_disks_at_points(sites, coords=cen,
+                                       radii=np.array([2*r]),
+                                       v=0,
+                                       overwrite=True)
+        x_min += x.min()
+    logger.debug(f'A total of {n} spheres were added')
+    im_temp = np.swapaxes(im_temp, 0, axis)
     return im_temp
 
 
@@ -106,6 +135,7 @@ def pseudo_electrostatic_packing(im, r, sites=None,
         An image with inserted spheres indicated by ``True``
 
     """
+    random.seed(0)
     im_temp = np.zeros_like(im, dtype=bool)
     dt_im = edt(im)
     if sites is None:
