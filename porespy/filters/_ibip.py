@@ -169,3 +169,27 @@ def find_trapped_regions(seq, outlets=None, bins=25, return_mask=True):
         seq[trapped] = -1
         seq = make_contiguous(seq, mode='symmetric')
         return seq
+
+
+if __name__ == "__main__":
+    import numpy as np
+    import porespy as ps
+    import matplotlib.pyplot as plt
+    from copy import copy
+
+    # %% Run this cell to regenerate the variables in drainage
+    np.random.seed(6)
+    bg = 'white'
+    plots = True
+    im = ps.generators.blobs(shape=[300, 300], porosity=0.7, blobiness=2)
+    inlets = np.zeros_like(im)
+    inlets[0, :] = True
+    ip = ps.filters.ibip(im=im, inlets=inlets)
+
+    cmap = copy(plt.cm.plasma)
+    cmap.set_under(color='black')
+    cmap.set_over(color='grey')
+    fig, ax = plt.subplots(1, 1)
+    kw = ps.visualization.prep_for_imshow(ip.inv_sequence, im)
+    kw['vmin'] = 0
+    ax.imshow(**kw, cmap=cmap)
