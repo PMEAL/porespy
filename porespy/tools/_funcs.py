@@ -1,6 +1,6 @@
-import scipy as sp
 import numpy as np
 import scipy.ndimage as spim
+from scipy.special import erfc
 from skimage.segmentation import relabel_sequential
 from edt import edt
 from loguru import logger
@@ -434,7 +434,7 @@ def extract_subsection(im, shape):
 
     Examples
     --------
-    >>> import scipy as sp
+    >>> numpy as sp
     >>> from porespy.tools import extract_subsection
     >>> im = np.array([[1, 1, 1, 1], [1, 2, 2, 2], [1, 2, 3, 3], [1, 2, 3, 4]])
     >>> print(im)
@@ -605,9 +605,9 @@ def randomize_colors(im, keep_vals=[0]):
     Examples
     --------
     >>> import porespy as ps
-    >>> import scipy as sp
-    >>> sp.random.seed(0)
-    >>> im = sp.random.randint(low=0, high=5, size=[4, 4])
+    >>> import numpy as np
+    >>> np.random.seed(0)
+    >>> im = np.random.randint(low=0, high=5, size=[4, 4])
     >>> print(im)
     [[4 0 3 3]
      [3 1 3 2]
@@ -629,7 +629,7 @@ def randomize_colors(im, keep_vals=[0]):
     keep_vals = np.array(keep_vals)
     swap_vals = ~np.in1d(im_flat, keep_vals)
     im_vals = np.unique(im_flat[swap_vals])
-    new_vals = sp.random.permutation(im_vals)
+    new_vals = np.random.permutation(im_vals)
     im_map = np.zeros(shape=[np.amax(im_vals) + 1, ], dtype=int)
     im_map[im_vals] = new_vals
     im_new = im_map[im_flat]
@@ -680,7 +680,7 @@ def make_contiguous(im, mode='keep_zeros'):
     Examples
     --------
     >>> import porespy as ps
-    >>> import scipy as sp
+    >>> import numpy as np
     >>> im = np.array([[0, 2, 9], [6, 8, 3]])
     >>> im = ps.tools.make_contiguous(im)
     >>> print(im)
@@ -745,7 +745,7 @@ def get_border(shape, thickness=1, mode='edges'):
     Examples
     --------
     >>> import porespy as ps
-    >>> import scipy as sp
+    >>> import numpy as np
     >>> mask = ps.tools.get_border(shape=[3, 3], mode='corners')
     >>> print(mask)
     [[ True False  True]
@@ -824,7 +824,7 @@ def norm_to_uniform(im, scale=None):
     if scale is None:
         scale = [im.min(), im.max()]
     im = (im - np.mean(im)) / np.std(im)
-    im = 1 / 2 * sp.special.erfc(-im / np.sqrt(2))
+    im = 1 / 2 * erfc(-im / np.sqrt(2))
     im = (im - im.min()) / (im.max() - im.min())
     im = im * (scale[1] - scale[0]) + scale[0]
     return im
@@ -1122,12 +1122,10 @@ def insert_sphere(im, c, r, v=True, overwrite=True):
     if im.dtype != type(v):
         im = im.astype(type(v))
     # Parse the arugments
-    r = int(sp.around(r, decimals=0))
+    r = int(np.around(r, decimals=0))
     if r == 0:
         return im
     c = np.array(c, dtype=int)
-    if c.size != im.ndim:
-        raise Exception('Coordinates do not match dimensionality of image')
     # Define a bounding box around inserted sphere, minding imaage boundaries
     bbox = []
     [bbox.append(np.clip(c[i] - r, 0, im.shape[i])) for i in range(im.ndim)]
@@ -1251,7 +1249,7 @@ def extract_regions(regions, labels: list, trim=True):
         labels = [labels]
     s = spim.find_objects(regions)
     im_new = np.zeros_like(regions)
-    x_min, y_min, z_min = sp.inf, sp.inf, sp.inf
+    x_min, y_min, z_min = np.inf, np.inf, np.inf
     x_max, y_max, z_max = 0, 0, 0
     for i in labels:
         im_new[s[i - 1]] = regions[s[i - 1]] == i
