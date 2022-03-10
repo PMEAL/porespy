@@ -5,7 +5,7 @@ from edt import edt
 from skimage.morphology import disk, ball
 from porespy import settings
 from porespy.tools import get_tqdm, ps_round, get_border
-from porespy.tools import insert_disks_at_points
+from porespy.tools import _insert_disks_at_points
 from porespy.filters import trim_disconnected_blobs, fftmorphology
 from loguru import logger
 import random
@@ -80,13 +80,13 @@ def pseudo_gravity_packing(im, r, clearance=0, axis=0, maxiter=1000,
             cen = np.vstack([x[options[choice]] + x_min,
                              y[options[choice]],
                              z[options[choice]]])
-        im_temp = insert_disks_at_points(im_temp, coords=cen,
-                                         radii=np.array([r - clearance]),
-                                         v=True, overwrite=True)
-        sites = insert_disks_at_points(sites, coords=cen,
-                                       radii=np.array([2*r]),
-                                       v=0,
-                                       overwrite=True)
+        im_temp = _insert_disks_at_points(im_temp, coords=cen,
+                                          radii=np.array([r - clearance]),
+                                          v=True, overwrite=True)
+        sites = _insert_disks_at_points(sites, coords=cen,
+                                        radii=np.array([2*r]),
+                                        v=0,
+                                        overwrite=True)
         x_min += x.min()
     logger.debug(f'A total of {n} spheres were added')
     im_temp = np.swapaxes(im_temp, 0, axis)
@@ -167,14 +167,14 @@ def pseudo_electrostatic_packing(im, r, sites=None,
             break
         choice = random.choice(np.where(hits)[0])
         cen = np.vstack([options[i][choice] for i in range(im.ndim)])
-        im_temp = insert_disks_at_points(im_temp, coords=cen,
-                                         radii=np.array([r-clearance]),
-                                         v=True,
-                                         overwrite=True)
-        dt = insert_disks_at_points(dt, coords=cen,
-                                    radii=np.array([2*r-clearance]),
-                                    v=int(dtmax),
-                                    overwrite=True)
+        im_temp = _insert_disks_at_points(im_temp, coords=cen,
+                                          radii=np.array([r-clearance]),
+                                          v=True,
+                                          overwrite=True)
+        dt = _insert_disks_at_points(dt, coords=cen,
+                                     radii=np.array([2*r-clearance]),
+                                     v=int(dtmax),
+                                     overwrite=True)
     return im_temp
 
 

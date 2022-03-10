@@ -4,16 +4,16 @@ import numba
 
 __all__ = [
     '_make_disk',
-    'make_disks',
+    '_make_disks',
     '_make_ball',
-    'make_balls',
-    'insert_disk_at_points',
-    'insert_disks_at_points',
+    '_make_balls',
+    '_insert_disk_at_points',
+    '_insert_disks_at_points',
 ]
 
 
 @numba.jit(nopython=True, parallel=False)
-def make_disks(r, smooth=True):  # pragma: no cover
+def _make_disks(r, smooth=True):  # pragma: no cover
     r"""
     Returns a list of disks from size 0 to ``r``
 
@@ -40,7 +40,7 @@ def make_disks(r, smooth=True):  # pragma: no cover
 
 
 @numba.jit(nopython=True, parallel=False)
-def make_balls(r, smooth=True):  # pragma: no cover
+def _make_balls(r, smooth=True):  # pragma: no cover
     r"""
     Returns a list of balls from size 0 to ``r``
 
@@ -67,8 +67,8 @@ def make_balls(r, smooth=True):  # pragma: no cover
 
 
 @numba.jit(nopython=True, parallel=False)
-def insert_disk_at_points(im, coords, r, v,
-                          smooth=True, overwrite=False):  # pragma: no cover
+def _insert_disk_at_points(im, coords, r, v,
+                           smooth=True, overwrite=False):  # pragma: no cover
     r"""
     Insert spheres (or disks) into the given ND-image at given locations
 
@@ -125,8 +125,8 @@ def insert_disk_at_points(im, coords, r, v,
 
 
 @numba.jit(nopython=True, parallel=False)
-def insert_disks_at_points(im, coords, radii, v, smooth=True,
-                           overwrite=False):  # pragma: no cover
+def _insert_disks_at_points(im, coords, radii, v, smooth=True,
+                            overwrite=False):  # pragma: no cover
     r"""
     Insert spheres (or disks) of specified radii into an ND-image at given locations.
 

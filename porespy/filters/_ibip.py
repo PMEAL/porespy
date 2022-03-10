@@ -3,7 +3,7 @@ from edt import edt
 from porespy.tools import get_tqdm
 import scipy.ndimage as spim
 from porespy.tools import get_border, make_contiguous
-from porespy.tools import insert_disk_at_points
+from porespy.tools import _insert_disk_at_points
 from porespy.tools import Results
 import numba
 from porespy import settings
@@ -61,8 +61,8 @@ def ibip(im, inlets=None, dt=None, maxiter=10000):
     for step in tqdm(range(1, maxiter), **settings.tqdm):
         pt = _where(bd)
         scratch = np.copy(bd)
-        temp = insert_disk_at_points(im=scratch, coords=pt,
-                                      r=1, v=1, smooth=False)
+        temp = _insert_disk_at_points(im=scratch, coords=pt,
+                                       r=1, v=1, smooth=False)
         # Reduce to only the 'new' boundary
         edge = temp*(dt > 0)
         if ~edge.any():
@@ -73,10 +73,10 @@ def ibip(im, inlets=None, dt=None, maxiter=10000):
         dt_thresh = dt >= r_max
         # Extract the actual coordinates of the insertion sites
         pt = _where(edge*dt_thresh)
-        inv = insert_disk_at_points(im=inv, coords=pt,
-                                     r=r_max, v=step, smooth=True)
-        sizes = insert_disk_at_points(im=sizes, coords=pt,
-                                       r=r_max, v=r_max, smooth=True)
+        inv = _insert_disk_at_points(im=inv, coords=pt,
+                                      r=r_max, v=step, smooth=True)
+        sizes = _insert_disk_at_points(im=sizes, coords=pt,
+                                        r=r_max, v=r_max, smooth=True)
         dt, bd = _update_dt_and_bd(dt, bd, pt)
     # Convert inv image so that uninvaded voxels are set to -1 and solid to 0
     temp = inv == 0  # Uninvaded voxels are set to -1 after _ibip

@@ -5,7 +5,7 @@ from porespy.filters import trim_disconnected_blobs, find_trapped_regions
 from porespy.filters import find_disconnected_voxels
 from porespy.filters import pc_to_satn, satn_to_seq, seq_to_satn
 from porespy import settings
-from porespy.tools import insert_disks_at_points
+from porespy.tools import _insert_disks_at_points
 from porespy.tools import get_tqdm
 from porespy.tools import Results
 from porespy.metrics import pc_curve
@@ -149,8 +149,8 @@ def drainage(im, voxel_size, pc=None, inlets=None, outlets=None, residual=None,
         # Extract the local size of sphere to insert at each new location
         radii = dt[coords].astype(int)
         # Insert spheres are new locations of given radii
-        inv = insert_disks_at_points(im=inv, coords=np.vstack(coords),
-                                     radii=radii, v=p, smooth=True)
+        inv = _insert_disks_at_points(im=inv, coords=np.vstack(coords),
+                                      radii=radii, v=p, smooth=True)
 
     # Set uninvaded voxels to inf
     inv[(inv == 0)*im] = np.inf
