@@ -322,6 +322,76 @@ class ToolsTest():
         outer = ps.tools.find_outer_region(self.im2D)
         assert outer.sum() == 64
 
+    def test_numba_insert_disk_2D(self):
+        im = np.zeros([50, 50], dtype=int)
+        c = np.vstack([[10, 10], [30, 40]]).T
+        im = ps.tools._insert_disk_at_points(im=im, coords=c, r=10, v=2)
+        assert im.max() == 2
+        assert im.sum() == 1220
+        im = ps.tools._insert_disk_at_points(im=im, coords=c, r=10, v=2.4,
+                                             smooth=False)
+        assert im.max() == 2
+        assert im.sum() == 1266
+        im = ps.tools._insert_disk_at_points(im=im, coords=c, r=10, v=3,
+                                             overwrite=False)
+        assert im.max() == 2
+        im = ps.tools._insert_disk_at_points(im=im, coords=c, r=10, v=3,
+                                             overwrite=True)
+        assert im.max() == 3
+
+    def test_numba_insert_disk_3D(self):
+        im = np.zeros([50, 50, 50], dtype=int)
+        c = np.vstack([[10, 10, 10], [30, 40, 20]]).T
+        im = ps.tools._insert_disk_at_points(im=im, coords=c, r=10, v=2)
+        assert im.max() == 2
+        assert im.sum() == 16556
+        im = ps.tools._insert_disk_at_points(im=im, coords=c, r=10, v=2.4,
+                                             smooth=False)
+        assert im.max() == 2
+        assert im.sum() == 16674
+        im = ps.tools._insert_disk_at_points(im=im, coords=c, r=10, v=3,
+                                             overwrite=False)
+        assert im.max() == 2
+        im = ps.tools._insert_disk_at_points(im=im, coords=c, r=10, v=3,
+                                             overwrite=True)
+        assert im.max() == 3
+
+    def test_numba_insert_disks_2D(self):
+        im = np.zeros([50, 50], dtype=int)
+        c = np.vstack([[10, 10], [30, 40]]).T
+        r = np.array([10, 10], dtype=int)
+        im = ps.tools._insert_disks_at_points(im=im, coords=c, radii=r, v=2)
+        assert im.max() == 2
+        assert im.sum() == 1220
+        im = ps.tools._insert_disks_at_points(im=im, coords=c, radii=r, v=2.4,
+                                              smooth=False)
+        assert im.max() == 2
+        assert im.sum() == 1266
+        im = ps.tools._insert_disks_at_points(im=im, coords=c, radii=r, v=3,
+                                              overwrite=False)
+        assert im.max() == 2
+        im = ps.tools._insert_disks_at_points(im=im, coords=c, radii=r, v=3,
+                                              overwrite=True)
+        assert im.max() == 3
+
+    def test_numba_insert_disks_3D(self):
+        im = np.zeros([50, 50, 50], dtype=int)
+        c = np.vstack([[10, 10, 10], [30, 40, 20]]).T
+        r = np.array([10, 10], dtype=int)
+        im = ps.tools._insert_disks_at_points(im=im, coords=c, radii=r, v=2)
+        assert im.max() == 2
+        assert im.sum() == 16556
+        im = ps.tools._insert_disks_at_points(im=im, coords=c, radii=r, v=2.4,
+                                              smooth=False)
+        assert im.max() == 2
+        assert im.sum() == 16674
+        im = ps.tools._insert_disks_at_points(im=im, coords=c, radii=r, v=3,
+                                              overwrite=False)
+        assert im.max() == 2
+        im = ps.tools._insert_disks_at_points(im=im, coords=c, radii=r, v=3,
+                                              overwrite=True)
+        assert im.max() == 3
+
 
 if __name__ == '__main__':
     t = ToolsTest()
