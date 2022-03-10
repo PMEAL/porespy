@@ -109,7 +109,8 @@ def pseudo_electrostatic_packing(im, r, sites=None,
     r : int
         Radius of spheres to insert.
     sites : ndarray (optional)
-        An image with ``True`` values indicating the electrostatic attraction points.
+        An image with ``True`` values indicating the electrostatic attraction
+        points.
         If this is not given then the peaks in the distance transform are used.
     clearance : int (optional, default=0)
         The amount of space to put between each sphere. Negative values are
@@ -190,7 +191,8 @@ if __name__ == "__main__":
 
     sites = np.zeros(shape, dtype=bool)
     sites[100, 100] = True
-    im = ps.generators.pseudo_electrostatic_packing(im=np.ones(shape, dtype=bool),
+    im = ps.generators.pseudo_electrostatic_packing(im=np.ones(shape,
+                                                               dtype=bool),
                                                     r=5, sites=sites,
                                                     clearance=4,
                                                     maxiter=50)
