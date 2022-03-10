@@ -197,4 +197,3 @@ if __name__ == "__main__":
                                                     clearance=4,
                                                     maxiter=50)
     ax[1].imshow(im, origin='lower')
-
