@@ -4,7 +4,7 @@ import scipy.ndimage as spim
 from skimage.segmentation import find_boundaries
 from skimage.morphology import ball, cube, disk, square
 from porespy.tools import make_contiguous
-from porespy.tools import overlay
+from porespy.tools import overlay, extend_slice
 from porespy.tools import insert_cylinder
 from porespy.generators import borders
 from porespy import settings
@@ -357,3 +357,69 @@ def label_boundaries(
                 network['pore.boundary'] += hits
                 network['pore.' + labels[i][j]] = hits
     return network
+
+
+def trim_saddle_points_legacy(peaks, dt, max_iters=10, verbose=1):
+    r"""
+    Removes peaks that were mistakenly identified because they lied on a
+    saddle or ridge in the distance transform that was not actually a true
+    local peak.
+
+    Parameters
+    ----------
+    peaks : ND-array
+        A boolean image containing True values to mark peaks in the distance
+        transform (``dt``)
+
+    dt : ND-array
+        The distance transform of the pore space for which the true peaks are
+        sought.
+
+    max_iters : int
+        The maximum number of iterations to run while eroding the saddle
+        points.  The default is 10, which is usually not reached; however,
+        a warning is issued if the loop ends prior to removing all saddle
+        points.
+
+    Returns
+    -------
+    image : ND-array
+        An image with fewer peaks than the input image
+
+    References
+    ----------
+    [1] Gostick, J. "A versatile and efficient network extraction algorithm
+    using marker-based watershed segmenation".  Physical Review E. (2017)
+
+    """
+    peaks = np.copy(peaks)
+    if dt.ndim == 2:
+        from skimage.morphology import square as cube
+    else:
+        from skimage.morphology import cube
+    labels, N = spim.label(peaks)
+    slices = spim.find_objects(labels)
+    for i in range(N):
+        s = extend_slice(slices[i], shape=peaks.shape, pad=10)
+        peaks_i = labels[s] == i + 1
+        dt_i = dt[s]
+        im_i = dt_i > 0
+        peaks_dil = np.copy(peaks_i)
+        iters = 0
+        while iters < max_iters:
+            iters += 1
+            peaks_dil = spim.binary_dilation(input=peaks_dil, structure=cube(3))
+            peaks_max = peaks_dil * np.amax(dt_i * peaks_dil)
+            peaks_extended = (peaks_max == dt_i) * im_i
+            if np.all(peaks_extended == peaks_i):
+                break  # Found a true peak
+            elif np.sum(peaks_extended * peaks_i) == 0:
+                peaks_i = False
+                break  # Found a saddle point
+        peaks[s] += peaks_i  # This used to be =, not +=...so overwrote other peaks!
+        if iters >= max_iters and verbose:
+            print(
+                "Maximum number of iterations reached, consider "
+                + "running again with a larger value of max_iters"
+            )
+    return peaks

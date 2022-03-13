@@ -8,11 +8,15 @@ import scipy.spatial as sptl
 from skimage.segmentation import watershed
 from skimage.morphology import ball, disk, square, cube
 from porespy.tools import _check_for_singleton_axes
-from porespy.tools import extend_slice
+from porespy.tools import extend_slice, ps_rect, ps_round
 from porespy.tools import Results
-from porespy.filters import chunked_func
+from porespy.tools import get_tqdm
+from porespy.filters import chunked_func, local_thickness
 from porespy import settings
 from loguru import logger
+
+
+tqdm = get_tqdm()
 
 
 def snow_partitioning(im, dt=None, r_max=4, sigma=0.4):
@@ -244,12 +248,7 @@ def find_peaks(dt, r_max=4, strel=None, divs=1):
     _check_for_singleton_axes(im)
 
     if strel is None:
-        if im.ndim == 2:
-            strel = disk
-        elif im.ndim == 3:
-            strel = ball
-        else:  # pragma: no cover
-            raise Exception("Only 2d and 3d images are supported")
+        strel = ps_round(r=r_max, ndim=im.ndim)
     parallel = False
     if isinstance(divs, int):
         divs = [divs]*len(im.shape)
@@ -257,15 +256,31 @@ def find_peaks(dt, r_max=4, strel=None, divs=1):
         parallel = True
         logger.info(f'Performing {insp.currentframe().f_code.co_name} in parallel')
     if parallel:
-        overlap = max(strel(r_max).shape)
+        overlap = max(strel.shape)
         mx = chunked_func(func=spim.maximum_filter, overlap=overlap,
                           im_arg='input', input=dt + 2 * (~im),
-                          footprint=strel(r_max),
+                          footprint=strel,
                           cores=settings.ncores, divs=divs)
     else:
-        mx = spim.maximum_filter(dt + 2 * (~im), footprint=strel(r_max))
+        mx = spim.maximum_filter(dt + 2 * (~im), footprint=strel)
     peaks = (dt == mx) * im
     return peaks
+
+
+def find_peaks_2(im, bins=5):
+    dt = edt(im)
+    sizes = np.logspace(np.log10(dt.max()), 0, bins)
+    sizes = np.linspace(dt.max(), 1, bins)
+    a = np.digitize(dt, bins=sizes)
+    peaks = np.zeros_like(im)
+    for i in range(len(sizes)-1):
+        hi = (dt <= sizes[i]) * im
+        lo = dt > sizes[i + 1]
+        temp[dt > sizes[i]] = sizes[i]
+        temp[im == 0] = np.inf
+        mx = spim.maximum_filter(temp*dt, footprint=ps_round(int(sizes[i+1] + 1), ndim=im.ndim))
+        peaks += (mx == dt)*im
+    plt.imshow(peaks/im)
 
 
 def reduce_peaks(peaks):
@@ -336,49 +351,34 @@ def trim_saddle_points(peaks, dt, maxiter=20):
     using marker-based watershed segmentation".  Physical Review E. (2017)
 
     """
-    peaks = np.copy(peaks).astype(int)
-    if dt.ndim == 2:
-        from skimage.morphology import square as cube
-    else:
-        from skimage.morphology import cube
-    labels, N = spim.label(peaks > 0, structure=cube(3))
+    new_peaks = np.zeros_like(peaks)
+    strel = ps_rect(w=3, ndim=peaks.ndim)
+    labels, N = spim.label(peaks > 0, structure=strel)
     slices = spim.find_objects(labels)
     hits = 0
-    for i, s in enumerate(slices):
-        peak_i = labels[s] == (i + 1)
-        R = (dt[s] * peak_i).max()
-        sx = extend_slice(slices[i], shape=peaks.shape, pad=max(10, int(R)))
-        peak_i = labels[sx] == (i + 1)
+    for i, s in tqdm(enumerate(slices)):
+        sx = extend_slice(s, shape=peaks.shape, pad=maxiter)
+        pk_i = labels[sx] == (i + 1)
         dt_i = dt[sx]
-        peak_dil = np.copy(peak_i)
+        d = dt_i[pk_i].max()
         iters = 0
         while iters < maxiter:
             iters += 1
-            peak_orig = np.copy(peak_dil)
-            peak_dil = spim.binary_dilation(peak_orig, structure=cube(3))
-            rim = peak_dil * dt_i * (~peak_orig)
-            check_1 = rim >= R
-            # If all neighboring values are less than R, a true peak was found
-            if check_1.sum() == 0:
-                break  # True peak
-            L, check_2 = spim.label(check_1, structure=cube(3))
-            # If 2 or more separate neighbors are larger than R, a saddle was found
-            if check_2 >= 2:
-                hits += 1
-                peaks[sx] = peaks[sx]*(~peak_i)
-                logger.debug("Saddle point found")
-                break  # Saddle point
-            # peak_dil = (peak_dil*dt_i) == R
-            # if peak_dil.sum() == peak_orig.sum():
-                # hits += 1
-                # peaks[sx] = peaks[sx]*(~peak_i)
-                # logger.debug("Ridge point found")
-                # break  # Ridge point
+            # If any voxels on current peak are larger, stop and skip
+            if np.any(dt_i[pk_i] > d):
+                print(f'Ridge or saddle point found on peak {i+1}')
+                break  # saddle or ridge found
+            dil = spim.binary_dilation(pk_i, structure=strel)
+            pk_j = (dt_i * dil) >= d
+            # If dilated peak is larger than current peak, update and continue
+            if pk_j.sum() > pk_i.sum():
+                pk_i += pk_j  # extend peak and repeat
+            else:  # If peak did not grow then all neighbors are smaller
+                new_peaks[sx] += pk_i
+                break  # peak found
         if iters >= maxiter:
-            logger.warning(f"{iters} iterations reached on point {i+1}")
-    if hits > 0:
-        logger.info(f"Found {hits} saddle points")
-    return peaks
+            print(f'maxiter reached on peak {i+1}')
+    return new_peaks
 
 
 def trim_nearby_peaks(peaks, dt, f=1.0):
