@@ -450,6 +450,53 @@ def trim_nearby_peaks(peaks, dt, f=1.0):
     return peaks > 0
 
 
+def trim_nearby_peaks_2(peaks, dt, f=1, mode='kdtree'):
+    peaks = np.copy(peaks)
+    if dt.ndim == 2:
+        from skimage.morphology import square as cube
+    else:
+        from skimage.morphology import cube
+    peaks, N = spim.label(peaks, structure=cube(3))
+    crds = spim.measurements.center_of_mass(peaks, labels=peaks,
+                                            index=np.arange(1, N + 1))
+    crds = np.vstack(crds).astype(int)  # Convert to numpy array of ints
+
+    if mode.startswith('kd'):
+        # Get distance between each peak as kdtree
+        tree = sptl.cKDTree(data=crds)
+        keep = -np.ones(tree.n, dtype=int)
+        for i in range(tree.n):
+            temp = tree.query_ball_point(crds[i, :], r=f*dt[tuple(crds[i, :])])
+            if len(temp) == 1:
+                keep[i] = temp[0]
+            else:
+                L = dt[tuple(crds[temp, :].T)]
+                j = np.where(L == L.max())[0][0]
+                keep[i] = temp[j]
+
+    elif mode.startswith('dist'):
+        # Get distance between each point as a distance map
+        dmap = sptl.distance_matrix(x=crds, y=crds)
+        keep = -np.ones(dmap.shape[0], dtype=int)
+        for i in range(dmap.shape[0]):
+            temp = np.where(dmap[i, :] < f*dt[tuple(crds[i, :])])[0]
+            L = dt[tuple(crds[temp, :].T)]
+            j = np.where(L == L.max())[0][0]
+            keep[i] = temp[j]
+    else:
+        raise Exception(f'Unrecognized mode {mode}')
+
+    temp = np.zeros_like(peaks)
+    temp[tuple(crds[keep].T)] = True
+
+    # Retain original peak shapes
+    dil = spim.binary_dilation(temp, structure=ps_rect(3, dt.ndim))
+    temp = np.isin(peaks, np.unique(peaks*dil))
+    final_peaks = peaks*temp
+
+    return final_peaks
+
+
 def _estimate_overlap(im, mode='dt', zoom=0.25):
     logger.trace('Calculating overlap thickness')
     if mode == 'watershed':
