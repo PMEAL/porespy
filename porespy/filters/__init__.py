@@ -86,6 +86,7 @@ from ._snows import snow_partitioning_parallel
 from ._snows import find_peaks
 from ._snows import reduce_peaks
 from ._snows import trim_nearby_peaks
+from ._snows import trim_nearby_peaks_2
 from ._snows import trim_saddle_points
 from ._size_seq_satn import *
 from ._nlmeans import nl_means_layered
@@ -93,5 +94,4 @@ from ._fftmorphology import fftmorphology
 from . import imagej
 from ._ibip import ibip
 from ._ibip import find_trapped_regions
-from ._ibip_gpu import ibip_gpu
 from ._ibip_gpu import ibip_gpu
