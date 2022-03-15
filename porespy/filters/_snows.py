@@ -19,10 +19,10 @@ from loguru import logger
 tqdm = get_tqdm()
 
 
-def snow_partitioning(im, dt=None, r_max=4, sigma=0.4):
+def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, peaks=None):
     r"""
     Partition the void space into pore regions using a marker-based
-    watershed algorithm, with specially filtered peaks as markers.
+    watershed algorithm
 
     Parameters
     ----------
@@ -41,25 +41,31 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4):
         default is 0.4.  If 0 is given then the filter is not applied,
         which is useful if a distance transform is supplied as the ``im``
         argument that has already been processed.
+    peaks : ndarray, optional
+        Optionally, it is possible to supply an array containing peaks, which
+        are used as markers in the watershed segmentation. If a boolean array
+        is received (``True`` indicating peaks), then ``scipy.ndimage.label``
+        with cubic connectivity is used to label them. If an integer array is
+        received then it is assumed the peaks have already been labelled.
+        This allows for comparison of peak finding algorithms for instance.
+        If this argument is provided, then ``r_max`` and ``sigma`` are ignored
+        since these are specfically used in the peak finding process.
 
     Returns
     -------
     results : Results object
-        A custom object with the follow data as attributes:
+        A custom object with the following data as attributes:
 
-        - 'im'
-            The binary image of the void space
-
-        - 'dt'
-            The distance transform of the image
-
-        - 'peaks'
-            The peaks of the distance transform after applying the steps
-            of the SNOW algorithm
-
-        - 'regions'
-            The void space partitioned into pores using a marker
-            based watershed with the peaks found by the SNOW algorithm
+        ============ ==========================================================
+        Item         Description
+        ============ ==========================================================
+        ``im``       The binary image of the void space
+        ``dt``       The distance transform of the image
+        ``peaks``    The peaks of the distance transform after applying the
+                     steps of the SNOW algorithm
+        ``regions``  The void space partitioned into pores using a marker
+                     based watershed with the peaks found by the SNOW algorithm
+        ============ ==========================================================
 
     Notes
     -----
@@ -88,18 +94,21 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4):
         else:
             dt = edt(im)
 
-    if sigma > 0:
-        logger.trace(f"Applying Gaussian blur with sigma = {sigma}")
-        dt = spim.gaussian_filter(input=dt, sigma=sigma)
+    if peaks is None:
+        if sigma > 0:
+            logger.trace(f"Applying Gaussian blur with sigma = {sigma}")
+            dt = spim.gaussian_filter(input=dt, sigma=sigma)
 
-    peaks = find_peaks(dt=dt, r_max=r_max, divs=1)
-    logger.debug(f"Initial number of peaks: {spim.label(peaks)[1]}")
-    peaks = trim_saddle_points(peaks=peaks, dt=dt)
-    logger.debug(f"Peaks after trimming saddle points: {spim.label(peaks)[1]}")
-    peaks = trim_nearby_peaks(peaks=peaks, dt=dt)
-    peaks, N = spim.label(peaks)
-    logger.debug(f"Peaks after trimming nearby peaks: {N}")
-    # Note that the mask argument results in some void voxels left unlabeled
+        peaks = find_peaks(dt=dt, r_max=r_max, divs=1)
+        logger.debug(f"Initial number of peaks: {spim.label(peaks)[1]}")
+        peaks = trim_saddle_points(peaks=peaks, dt=dt)
+        logger.debug(f"Peaks after trimming saddle points: {spim.label(peaks)[1]}")
+        peaks = trim_nearby_peaks(peaks=peaks, dt=dt)
+        peaks, N = spim.label(peaks, structure=ps_rect(3, im.ndim))
+        logger.debug(f"Peaks after trimming nearby peaks: {N}")
+        # Note that the mask argument results in some void voxels left unlabeled
+    if peaks.dtype != bool:
+        peaks, N = spim.label(peaks, structure=ps_rect(3, im.ndim))
     regions = watershed(image=-dt, markers=peaks)
     regions = regions * (im > 0)
     tup = Results()
@@ -110,12 +119,10 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4):
     return tup
 
 
-def snow_partitioning_n(im, r_max=4, sigma=0.4):
+def snow_partitioning_n(im, r_max=4, sigma=0.4, peaks=None):
     r"""
     This function partitions an imaging oontain an arbitrary number of
-    phases into regions using a marker-based watershed segmentation. Its
-    an extension of snow_partitioning function with all phases partitioned
-    together.
+    phases into regions using a marker-based watershed segmentation.
 
     Parameters
     ----------
@@ -128,11 +135,18 @@ def snow_partitioning_n(im, r_max=4, sigma=0.4):
     sigma : scalar
         The standard deviation of the Gaussian filter used. The default is
         0.4. If 0 is given then the filter is not applied.
+    peaks : ndarray, optional
+        Optionally, it is possible to supply an array containing peaks, which
+        are used as markers in the watershed segmentation. Must be a boolean
+        array with ``True`` indicating peaks; ``scipy.ndimage.label``
+        with cubic connectivity is used to label them. If this argument is
+        provided then ``r_max`` and ``sigma`` are ignored, since these are
+        specfically used in the peak finding process.
 
     Returns
     -------
     results : Results object
-        A custom object with the follow data as attributes:
+        A custom object with the following data as attributes:
 
         - 'im'
             The original image of the porous material
@@ -179,18 +193,23 @@ def snow_partitioning_n(im, r_max=4, sigma=0.4):
     phases_num = np.trim_zeros(phases_num)
     combined_dt = 0
     combined_region = 0
-    peaks = np.zeros_like(im, dtype=int)
+    _peaks = np.zeros_like(im, dtype=int)
     num = [0]
     for i, j in enumerate(phases_num):
         logger.trace(f"Processing Phase {j}")
-        phase_snow = snow_partitioning(im == j, dt=None, r_max=r_max, sigma=sigma)
+        # Isolate active phase from image
+        phase = im == j
+        # Limit peaks to active phase only
+        temp = peaks*phase if peaks is not None else None
+        phase_snow = snow_partitioning(phase, dt=None, r_max=r_max,
+                                       sigma=sigma, peaks=temp)
         combined_dt += phase_snow.dt
         phase_snow.regions *= phase_snow.im
         phase_snow.regions += num[i]
         phase_ws = phase_snow.regions * phase_snow.im
         phase_ws[phase_ws == num[i]] = 0
         combined_region += phase_ws
-        peaks = peaks + phase_snow.peaks + (phase_snow.peaks > 0)*num[i]
+        _peaks = _peaks + phase_snow.peaks + (phase_snow.peaks > 0)*num[i]
         num.append(np.amax(combined_region))
 
     tup = Results()
@@ -198,7 +217,7 @@ def snow_partitioning_n(im, r_max=4, sigma=0.4):
     tup.dt = combined_dt
     tup.phase_max_label = num[1:]
     tup.regions = combined_region
-    tup.peaks = peaks
+    tup.peaks = _peaks
     return tup
 
 
@@ -366,7 +385,7 @@ def trim_saddle_points(peaks, dt, maxiter=20):
             iters += 1
             # If any voxels on current peak are larger, stop and skip
             if np.any(dt_i[pk_i] > d):
-                print(f'Ridge or saddle point found on peak {i+1}')
+                logger.trace(f'Saddle point found on peak {i+1}')
                 break  # saddle or ridge found
             dil = spim.binary_dilation(pk_i, structure=strel)
             pk_j = (dt_i * dil) >= d
@@ -377,7 +396,7 @@ def trim_saddle_points(peaks, dt, maxiter=20):
                 new_peaks[sx] += pk_i
                 break  # peak found
         if iters >= maxiter:
-            print(f'maxiter reached on peak {i+1}')
+            logger.trace(f'maxiter reached on peak {i+1}')
     return new_peaks
 
 
@@ -519,7 +538,8 @@ def snow_partitioning_parallel(im,
                                sigma=0.4,
                                divs=2,
                                overlap=None,
-                               cores=None):
+                               cores=None,
+                               peaks=None):
     r"""
     Performs SNOW algorithm in parallel (or serial) to reduce time
     (or memory usage) by geomertirc domain decomposition of large images.

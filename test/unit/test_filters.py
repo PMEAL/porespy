@@ -506,13 +506,25 @@ class FilterTest():
         p2 = (im[0, ...]).sum()
         np.testing.assert_approx_equal(np.around(p1 / p2, decimals=1), 1)
 
-    def test_trim_nearby_peaks_threshold(self):
-        np.random.seed(10)
-        dist = norm(loc=7, scale=5)
-        im = ps.generators.polydisperse_spheres([100, 100, 100],
-                                                porosity=0.8, dist=dist)
+    def test_trim_nearby_peaks(self):
+        np.random.seed(0)
+        im = ps.generators.blobs(shape=[400, 400],
+                                 blobiness=[2, 1],
+                                 porosity=0.6)
         im_dt = edt(im)
-        im_dt = im_dt
+        dt = spim.gaussian_filter(input=im_dt, sigma=0.4)
+        peaks = ps.filters.find_peaks(dt=dt, r_max=4)
+        peaks = ps.filters.trim_saddle_points(peaks=peaks, dt=dt)
+        peaks = ps.filters.trim_nearby_peaks_2(peaks=peaks, dt=dt)
+        labels, N = spim.label(peaks, structure=ps.tools.ps_rect(3, 2))
+        assert N == 117
+
+    def test_trim_nearby_peaks_threshold(self):
+        np.random.seed(0)
+        im = ps.generators.blobs(shape=[400, 400],
+                                 blobiness=[2, 1],
+                                 porosity=0.6)
+        im_dt = edt(im)
         dt = spim.gaussian_filter(input=im_dt, sigma=0.4)
         peaks = ps.filters.find_peaks(dt=dt)
         peaks_far = ps.filters.trim_nearby_peaks(peaks=peaks, dt=dt)
