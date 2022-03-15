@@ -11,7 +11,7 @@ from porespy.tools import _check_for_singleton_axes
 from porespy.tools import extend_slice, ps_rect, ps_round
 from porespy.tools import Results
 from porespy.tools import get_tqdm
-from porespy.filters import chunked_func, local_thickness
+from porespy.filters import chunked_func
 from porespy import settings
 from loguru import logger
 
@@ -286,22 +286,6 @@ def find_peaks(dt, r_max=4, strel=None, divs=1):
     return peaks
 
 
-def find_peaks_2(im, bins=5):
-    dt = edt(im)
-    sizes = np.logspace(np.log10(dt.max()), 0, bins)
-    sizes = np.linspace(dt.max(), 1, bins)
-    a = np.digitize(dt, bins=sizes)
-    peaks = np.zeros_like(im)
-    for i in range(len(sizes)-1):
-        hi = (dt <= sizes[i]) * im
-        lo = dt > sizes[i + 1]
-        temp[dt > sizes[i]] = sizes[i]
-        temp[im == 0] = np.inf
-        mx = spim.maximum_filter(temp*dt, footprint=ps_round(int(sizes[i+1] + 1), ndim=im.ndim))
-        peaks += (mx == dt)*im
-    plt.imshow(peaks/im)
-
-
 def reduce_peaks(peaks):
     r"""
     Any peaks that are broad or elongated are replaced with a single voxel
@@ -374,7 +358,6 @@ def trim_saddle_points(peaks, dt, maxiter=20):
     strel = ps_rect(w=3, ndim=peaks.ndim)
     labels, N = spim.label(peaks > 0, structure=strel)
     slices = spim.find_objects(labels)
-    hits = 0
     for i, s in tqdm(enumerate(slices)):
         sx = extend_slice(s, shape=peaks.shape, pad=maxiter)
         pk_i = labels[sx] == (i + 1)
@@ -400,23 +383,36 @@ def trim_saddle_points(peaks, dt, maxiter=20):
     return new_peaks
 
 
-def trim_nearby_peaks(peaks, dt, f=1.0):
+def trim_nearby_peaks(peaks, dt, f=1, mode='legacy'):
     r"""
-    Finds pairs of peaks that are nearer to each other than to the solid
-    phase, and removes the peak that is closer to the solid.
+    Removes peaks that are nearer to another peak than to solid
 
     Parameters
     ----------
     peaks : ndarray
-        A boolean image containing True values to mark peaks in the
+        A boolean image containing ``True`` values indicating peaks in the
         distance transform (``dt``)
     dt : ndarray
-        The distance transform of the pore space for which the true peaks
-        are sought.
+        The distance transform of the pore space
     f : scalar
         Controls how close peaks must be before they are considered near
-        to each other. Sets of peaks are tagged as near if
+        to each other. Sets of peaks are tagged as too near if
         ``d_neighbor < f * d_solid``.
+    mode : str
+        Controls which method is used to find peaks.  Options are:
+
+        ========= =============================================================
+        Mode      Description
+        ========= =============================================================
+        'kdtree'  Uses ``scipy.spatial.kdtree`` to find distances between
+                  peaks. This method may be slow but will use less memory
+        'dist'    Uses ``scipy.spatial.distance_matrix`` to find distances
+                  between peaks. This method is faster but could consume a lot
+                  of memory if the network is large
+        'legacy'  Uses ``scipy.spatial.kdtree`` but in a slighlty different
+                  approach than ``'kdtree'``.  This method may incorrectly
+                  trim too many peaks. If both
+        ========= =============================================================
 
     Returns
     -------
@@ -437,52 +433,53 @@ def trim_nearby_peaks(peaks, dt, f=1.0):
     E. (2017)
 
     """
-    peaks = np.copy(peaks)
     if dt.ndim == 2:
         from skimage.morphology import square as cube
     else:
         from skimage.morphology import cube
-    peaks, N = spim.label(peaks, structure=cube(3))
-    crds = spim.measurements.center_of_mass(peaks, labels=peaks,
-                                            index=np.arange(1, N + 1))
-    crds = np.vstack(crds).astype(int)  # Convert to numpy array of ints
-    # Get distance between each peak as a distance map
-    tree = sptl.cKDTree(data=crds)
-    temp = tree.query(x=crds, k=2)
-    nearest_neighbor = temp[1][:, 1]
-    dist_to_neighbor = temp[0][:, 1]
-    del temp, tree  # Free-up memory
-    dist_to_solid = dt[tuple(crds.T)]  # Get distance to solid for each peak
-    hits = np.where(dist_to_neighbor < f * dist_to_solid)[0]
-    # Drop peak that is closer to the solid than it's neighbor
-    drop_peaks = []
-    for peak in hits:
-        if dist_to_solid[peak] < dist_to_solid[nearest_neighbor[peak]]:
-            drop_peaks.append(peak)
-        else:
-            drop_peaks.append(nearest_neighbor[peak])
-    drop_peaks = np.unique(drop_peaks)
-    # Remove peaks from image
-    slices = spim.find_objects(input=peaks)
-    for s in drop_peaks:
-        peaks[slices[s]] = 0
-    return peaks > 0
 
-
-def trim_nearby_peaks_2(peaks, dt, f=1, mode='kdtree'):
     peaks = np.copy(peaks)
-    if dt.ndim == 2:
-        from skimage.morphology import square as cube
-    else:
-        from skimage.morphology import cube
     peaks, N = spim.label(peaks, structure=cube(3))
     crds = spim.measurements.center_of_mass(peaks, labels=peaks,
                                             index=np.arange(1, N + 1))
     crds = np.vstack(crds).astype(int)  # Convert to numpy array of ints
 
-    if mode.startswith('kd'):
+    if mode.startswith('leg'):
+        tree = sptl.KDTree(data=crds)
+        # Find list of nearest peak to each peak
+        temp = tree.query(x=crds, k=2)
+        nearest_neighbor = temp[1][:, 1]
+        dist_to_neighbor = temp[0][:, 1]
+        del temp, tree  # Free-up memory
+        dist_to_solid = dt[tuple(crds.T)]  # Get distance to solid for each peak
+        hits = np.where(dist_to_neighbor < f * dist_to_solid)[0]
+        # Drop peak that is closer to the solid than it's neighbor
+        drop_peaks = []
+        for peak in hits:
+            # print(peak, nearest_neighbor[peak], dist_to_neighbor[peak], dist_to_solid[peak], dist_to_solid[nearest_neighbor[peak]])
+            # Catch case of peaks with same distance to solid, and nudge
+            # one of them to a higher value to trigger following
+            # checks properly
+            if dist_to_solid[peak] == dist_to_solid[nearest_neighbor[peak]]:
+                # print(peak, nearest_neighbor[peak])
+                dist_to_solid[peak] *= 1.001
+            if dist_to_solid[peak] < dist_to_solid[nearest_neighbor[peak]]:
+                drop_peaks.append(peak)
+            else:
+                drop_peaks.append(nearest_neighbor[peak])
+        drop_peaks = np.unique(drop_peaks)
+        # Remove peaks from image
+        slices = spim.find_objects(input=peaks)
+        for s in drop_peaks:
+            # The following line is a bug!  Setting entire slice to 0 will
+            # overwrite some peaks that should not be. It is kept for legacy
+            # reasons.
+            peaks[slices[s]] = 0
+        return peaks
+
+    elif mode.startswith('kd'):
         # Get distance between each peak as kdtree
-        tree = sptl.cKDTree(data=crds)
+        tree = sptl.KDTree(data=crds)
         keep = -np.ones(tree.n, dtype=int)
         for i in range(tree.n):
             temp = tree.query_ball_point(crds[i, :], r=f*dt[tuple(crds[i, :])])
