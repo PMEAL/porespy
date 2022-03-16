@@ -514,10 +514,28 @@ class FilterTest():
         im_dt = edt(im)
         dt = spim.gaussian_filter(input=im_dt, sigma=0.4)
         peaks = ps.filters.find_peaks(dt=dt, r_max=4)
-        peaks = ps.filters.trim_saddle_points(peaks=peaks, dt=dt)
-        peaks = ps.filters.trim_nearby_peaks_2(peaks=peaks, dt=dt)
         labels, N = spim.label(peaks, structure=ps.tools.ps_rect(3, 2))
-        assert N == 117
+        assert N == 148
+        peaks = ps.filters.trim_saddle_points(peaks=peaks, dt=dt)
+        labels, N = spim.label(peaks, structure=ps.tools.ps_rect(3, 2))
+        assert N == 140
+        peaks = ps.filters.trim_nearby_peaks(peaks=peaks, dt=dt)
+        labels, N = spim.label(peaks, structure=ps.tools.ps_rect(3, 2))
+        assert N == 116
+
+    def test_trim_nearby_peaks_mode(self):
+        np.random.seed(0)
+        im = ps.generators.blobs([150, 150], porosity=0.7, blobiness=1)
+        dt = edt(im)
+        peaks = ps.filters.find_peaks(dt=dt, r_max=3)
+        peaks1 = ps.filters.trim_nearby_peaks(peaks=peaks, dt=dt, mode='kdtree')
+        labels, N1 = spim.label(peaks1, structure=ps.tools.ps_rect(3, 2))
+        peaks2 = ps.filters.trim_nearby_peaks(peaks=peaks, dt=dt, mode='dist')
+        labels, N2 = spim.label(peaks2, structure=ps.tools.ps_rect(3, 2))
+        assert N1 == N2
+        peaks3 = ps.filters.trim_nearby_peaks(peaks=peaks, dt=dt, mode='legacy')
+        labels, N3 = spim.label(peaks3, structure=ps.tools.ps_rect(3, 2))
+        assert N1 == N3
 
     def test_trim_nearby_peaks_threshold(self):
         np.random.seed(0)

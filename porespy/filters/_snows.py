@@ -467,23 +467,23 @@ def trim_nearby_peaks(peaks, dt, f=1, mode='legacy'):
         # Remove peaks from image
         slices = spim.find_objects(input=peaks)
         for s in drop_peaks:
-            # The following line is a bit buggy!  Setting entire slice to 0
-            # will overwrite some peaks that should not be. It is kept for
-            # legacy reasons.
+            # The following line is a bit buggy. Setting entire slice to 0
+            # will VERY occassionally overwrite some peaks that should not be.
+            # It is kept as is for legacy reasons.
             peaks[slices[s]] = 0
         return peaks
 
     elif mode.startswith('kd'):
         # Get distance between each peak as kdtree
         tree = sptl.KDTree(data=crds)
-        keep = -np.ones(tree.n, dtype=int)
+        keep = np.zeros(tree.n)
         for i in range(tree.n):
-            temp = tree.query_ball_point(crds[i, :], r=f*dt[tuple(crds[i, :])])
+            temp = tree.query_ball_point(crds[i, :], r=f*L[i])
             if len(temp) == 1:
-                keep[i] = temp[0]
+                pass
             else:
-                j = np.where(L[temp] == L[temp].max())[0][0]
-                keep[i] = temp[j]
+                j = np.where(L[temp] < L[temp].max())[0]
+                keep[j] = -1
         keep = np.unique(keep)
 
     elif mode.startswith('dist'):
