@@ -399,7 +399,9 @@ def trim_nearby_peaks(peaks, dt, f=1, mode='legacy'):
         to each other. Sets of peaks are tagged as too near if
         ``d_neighbor < f * d_solid``.
     mode : str
-        Controls which method is used to find peaks.  Options are:
+        Controls which method is used to find peaks.  All of the following
+        options should give the same result but with different speed and
+        memory requirements:
 
         ========= =============================================================
         Mode      Description
@@ -410,8 +412,7 @@ def trim_nearby_peaks(peaks, dt, f=1, mode='legacy'):
                   between peaks. This method is faster but could consume a lot
                   of memory if the network is large
         'legacy'  Uses ``scipy.spatial.kdtree`` but in a slighlty different
-                  approach than ``'kdtree'``.  This method may incorrectly
-                  trim too many peaks. If both
+                  approach than ``'kdtree'``.
         ========= =============================================================
 
     Returns
@@ -443,6 +444,9 @@ def trim_nearby_peaks(peaks, dt, f=1, mode='legacy'):
     crds = spim.measurements.center_of_mass(peaks, labels=peaks,
                                             index=np.arange(1, N + 1))
     crds = np.vstack(crds).astype(int)  # Convert to numpy array of ints
+    L = dt[tuple(crds.T)]  # Get distance to solid for each peak
+    # Add tiny amount to joggle points to avoid equal distances to solid
+    L = L + np.arange(len(L))*1e-12
 
     if mode.startswith('leg'):
         tree = sptl.KDTree(data=crds)
@@ -451,19 +455,11 @@ def trim_nearby_peaks(peaks, dt, f=1, mode='legacy'):
         nearest_neighbor = temp[1][:, 1]
         dist_to_neighbor = temp[0][:, 1]
         del temp, tree  # Free-up memory
-        dist_to_solid = dt[tuple(crds.T)]  # Get distance to solid for each peak
-        hits = np.where(dist_to_neighbor < f * dist_to_solid)[0]
+        hits = np.where(dist_to_neighbor < f * L)[0]
         # Drop peak that is closer to the solid than it's neighbor
         drop_peaks = []
         for peak in hits:
-            # print(peak, nearest_neighbor[peak], dist_to_neighbor[peak], dist_to_solid[peak], dist_to_solid[nearest_neighbor[peak]])
-            # Catch case of peaks with same distance to solid, and nudge
-            # one of them to a higher value to trigger following
-            # checks properly
-            if dist_to_solid[peak] == dist_to_solid[nearest_neighbor[peak]]:
-                # print(peak, nearest_neighbor[peak])
-                dist_to_solid[peak] *= 1.001
-            if dist_to_solid[peak] < dist_to_solid[nearest_neighbor[peak]]:
+            if L[peak] < L[nearest_neighbor[peak]]:
                 drop_peaks.append(peak)
             else:
                 drop_peaks.append(nearest_neighbor[peak])
@@ -471,9 +467,9 @@ def trim_nearby_peaks(peaks, dt, f=1, mode='legacy'):
         # Remove peaks from image
         slices = spim.find_objects(input=peaks)
         for s in drop_peaks:
-            # The following line is a bug!  Setting entire slice to 0 will
-            # overwrite some peaks that should not be. It is kept for legacy
-            # reasons.
+            # The following line is a bit buggy!  Setting entire slice to 0
+            # will overwrite some peaks that should not be. It is kept for
+            # legacy reasons.
             peaks[slices[s]] = 0
         return peaks
 
@@ -486,19 +482,19 @@ def trim_nearby_peaks(peaks, dt, f=1, mode='legacy'):
             if len(temp) == 1:
                 keep[i] = temp[0]
             else:
-                L = dt[tuple(crds[temp, :].T)]
-                j = np.where(L == L.max())[0][0]
+                j = np.where(L[temp] == L[temp].max())[0][0]
                 keep[i] = temp[j]
+        keep = np.unique(keep)
 
     elif mode.startswith('dist'):
         # Get distance between each point as a distance map
         dmap = sptl.distance_matrix(x=crds, y=crds)
         keep = -np.ones(dmap.shape[0], dtype=int)
         for i in range(dmap.shape[0]):
-            temp = np.where(dmap[i, :] < f*dt[tuple(crds[i, :])])[0]
-            L = dt[tuple(crds[temp, :].T)]
-            j = np.where(L == L.max())[0][0]
+            temp = np.where(dmap[i, :] <= f*dt[tuple(crds[i, :])])[0]
+            j = np.where(L[temp] == L[temp].max())[0][0]
             keep[i] = temp[j]
+        keep = np.unique(keep)
     else:
         raise Exception(f'Unrecognized mode {mode}')
 
