@@ -170,7 +170,7 @@ class Snow2Test:
         peaks1 = ps.filters.find_peaks(dt=dt, r_max=4)
         peaks2 = ps.filters.trim_saddle_points(peaks=peaks1, dt=dt)
         assert (peaks1 > 0).sum() > (peaks2 > 0).sum()
-        assert (peaks2 > 0).sum() == 255
+        assert (peaks2 > 0).sum() == 242
 
     def test_accuracy_high(self):
         im = ~ps.generators.lattice_spheres(shape=[100, 100, 100], r=15,
@@ -191,7 +191,7 @@ class Snow2Test:
         assert np.all(A == 89.0)
 
     def test_single_and_dual_phase_on_blobs(self):
-        im = ps.generators.blobs([200, 200, 200], porosity=0.6, blobiness=1.5)
+        im = ps.generators.blobs([100, 100, 100], porosity=0.6, blobiness=1.5)
 
         snow_1 = ps.networks.snow2(im,
                                    accuracy='standard',
