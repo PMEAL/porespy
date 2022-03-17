@@ -369,10 +369,10 @@ def trim_saddle_points(peaks, dt, maxiter=20):
         from skimage.morphology import cube
     labels, N = spim.label(peaks > 0)
     slices = spim.find_objects(labels)
-    for i in tqdm(range(N)):
-        s = extend_slice(s, shape=peaks.shape, pad=maxiter)
-        peaks_i = labels[s] == i + 1
-        dt_i = dt[s]
+    for i, s in tqdm(enumerate(slices)):
+        sx = extend_slice(s, shape=peaks.shape, pad=maxiter)
+        peaks_i = labels[sx] == i + 1
+        dt_i = dt[sx]
         im_i = dt_i > 0
         iters = 0
         while iters < maxiter:
@@ -381,7 +381,7 @@ def trim_saddle_points(peaks, dt, maxiter=20):
             peaks_max = peaks_dil * np.amax(dt_i * peaks_dil)
             peaks_extended = (peaks_max == dt_i) * im_i
             if np.all(peaks_extended == peaks_i):
-                new_peaks[s] += peaks_i
+                new_peaks[sx] += peaks_i
                 break  # Found a true peak
             elif np.sum(peaks_extended * peaks_i) == 0:
                 break  # Found a saddle point
