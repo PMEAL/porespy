@@ -362,74 +362,37 @@ def trim_saddle_points(peaks, dt, maxiter=20):
     using marker-based watershed segmentation".  Physical Review E. (2017)
 
     """
-    new_peaks = np.zeros_like(peaks)
-    strel = ps_rect(w=3, ndim=peaks.ndim)
-    labels, N = spim.label(peaks > 0, structure=strel)
-    slices = spim.find_objects(labels)
-    for i, s in tqdm(enumerate(slices)):
-        sx = extend_slice(s, shape=peaks.shape, pad=maxiter)
-        pk_i = labels[sx] == (i + 1)
-        dt_i = dt[sx]
-        d = dt_i[pk_i].max()
-        iters = 0
-        while iters < maxiter:
-            iters += 1
-            # If any voxels on current peak are larger, stop and skip
-            if np.any(dt_i[pk_i] > d):
-                logger.trace(f'Saddle point found on peak {i+1}')
-                break  # saddle or ridge found
-            dil = spim.binary_dilation(pk_i, structure=strel)
-            pk_j = (dt_i * dil) >= d
-            # If peak did not grow then all neighbors are smaller
-            if pk_j.sum() == pk_i.sum():
-                new_peaks[sx] += pk_i
-                break  # peak found
-            # Otherwise, update and continue
-            else:
-                pk_i += pk_j  # extend peak and repeat
-        if iters >= maxiter:
-            logger.trace(f'maxiter reached on peak {i+1}')
-    return new_peaks*peaks
-
-
-def trim_saddle_points_V2(peaks, dt, maxiter=10):
-    peaks = peaks > 0
-    new_peaks = np.zeros_like(peaks)
+    new_peaks = np.zeros_like(peaks, dtype=bool)
     if dt.ndim == 2:
         from skimage.morphology import square as cube
     else:
         from skimage.morphology import cube
     labels, N = spim.label(peaks > 0)
     slices = spim.find_objects(labels)
-    hits = 0
-    for i, s in tqdm(enumerate(slices)):
-        peak_i = labels[s] == (i + 1)
-        R = (dt[s] * peak_i).max()
-        sx = extend_slice(s, shape=peaks.shape, pad=max(10, int(R)))
-        peak_i = labels[sx] == (i + 1)
-        dt_i = dt[sx]
-        peak_dil = np.copy(peak_i)
+    for i in tqdm(range(N)):
+        s = extend_slice(s, shape=peaks.shape, pad=maxiter)
+        peaks_i = labels[s] == i + 1
+        dt_i = dt[s]
+        im_i = dt_i > 0
         iters = 0
         while iters < maxiter:
             iters += 1
-            peak_orig = np.copy(peak_dil)
-            peak_dil = spim.binary_dilation(peak_orig, structure=cube(3))
-            rim = peak_dil * dt_i * (~peak_orig)
-            check_1 = rim >= R
-            if check_1.sum() == 0:
-                new_peaks[sx] += peak_i
-                break  # True peak
-            L, check_2 = spim.label(check_1, structure=cube(3))
-            if check_2 > 1:
-                hits += 1
-                logger.debug("Saddle point found")
-                break  # Saddle point
-            peak_dil = (peak_dil*dt_i) == R
-        if iters >= maxiter:
-            logger.warning(f"{iters} iterations reached on point {i+1}")
-    if hits > 0:
-        logger.info(f"Found {hits} saddle points")
-    return new_peaks
+            peaks_dil = spim.binary_dilation(input=peaks_i, structure=cube(3))
+            peaks_max = peaks_dil * np.amax(dt_i * peaks_dil)
+            peaks_extended = (peaks_max == dt_i) * im_i
+            if np.all(peaks_extended == peaks_i):
+                new_peaks[s] += peaks_i
+                break  # Found a true peak
+            elif np.sum(peaks_extended * peaks_i) == 0:
+                break  # Found a saddle point
+            peaks_i = peaks_extended
+        if iters >= maxiter and verbose:
+            print(
+                "Maximum number of iterations reached, consider "
+                + "running again with a larger value of max_iters"
+            )
+    return new_peaks*peaks
+
 
 
 def trim_nearby_peaks(peaks, dt, f=1):
