@@ -390,8 +390,10 @@ def trim_nearby_peaks(peaks, dt, f=1):
     Parameters
     ----------
     peaks : ndarray
-        A boolean image containing ``True`` values indicating peaks in the
-        distance transform (``dt``)
+        A image containing nonzeros values indicating peaks in the distance
+        transform (``dt``).  If ``peaks`` is boolean, a boolean is returned;
+        if ``peaks`` have already been labelled, then the original labels
+        are returned, missing the trimmed peaks.
     dt : ndarray
         The distance transform of the pore space
     f : scalar
@@ -402,13 +404,13 @@ def trim_nearby_peaks(peaks, dt, f=1):
     Returns
     -------
     image : ndarray
-        An array the same size as ``peaks`` containing a subset of the
-        peaks in the original image.
+        An array the same size and type as ``peaks`` containing a subset of
+        the peaks in the original image.
 
     Notes
     -----
-    Each pair of peaks is considered simultaneously, so for a triplet of
-    peaks each pair is considered.  This ensures that only the single peak
+    Each pair of peaks is considered simultaneously, so for a triplet of nearby
+    peaks, each pair is considered.  This ensures that only the single peak
     that is furthest from the solid is kept.  No iteration is required.
 
     References
@@ -423,13 +425,13 @@ def trim_nearby_peaks(peaks, dt, f=1):
     else:
         from skimage.morphology import cube
 
-    peaks = np.copy(peaks > 0)
-    peaks, N = spim.label(peaks, structure=cube(3))
-    crds = spim.measurements.center_of_mass(peaks, labels=peaks,
+    labels, N = spim.label(peaks > 0, structure=cube(3))
+    crds = spim.measurements.center_of_mass(peaks > 0, labels=labels,
                                             index=np.arange(1, N + 1))
     crds = np.vstack(crds).astype(int)  # Convert to numpy array of ints
     L = dt[tuple(crds.T)]  # Get distance to solid for each peak
     # Add tiny amount to joggle points to avoid equal distances to solid
+    # arange was added instead of random values so the results are repeatable
     L = L + np.arange(len(L))*1e-6
 
     tree = sptl.KDTree(data=crds)
