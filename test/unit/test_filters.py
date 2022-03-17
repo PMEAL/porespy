@@ -516,12 +516,15 @@ class FilterTest():
         peaks = ps.filters.find_peaks(dt=dt, r_max=4)
         labels, N = spim.label(peaks, structure=ps.tools.ps_rect(3, 2))
         assert N == 148
-        peaks = ps.filters.trim_saddle_points(peaks=peaks, dt=dt)
-        labels, N = spim.label(peaks, structure=ps.tools.ps_rect(3, 2))
+        peaks1 = ps.filters.trim_saddle_points(peaks=peaks, dt=dt)
+        labels, N = spim.label(peaks1, structure=ps.tools.ps_rect(3, 2))
         assert N == 140
-        peaks = ps.filters.trim_nearby_peaks(peaks=peaks, dt=dt)
-        labels, N = spim.label(peaks, structure=ps.tools.ps_rect(3, 2))
+        peaks2 = ps.filters.trim_nearby_peaks(peaks=peaks1, dt=dt)
+        labels, N = spim.label(peaks2, structure=ps.tools.ps_rect(3, 2))
         assert N == 116
+        peaks3 = ps.filters.trim_nearby_peaks(peaks=peaks1, dt=dt, f=0.8)
+        labels, N = spim.label(peaks3, structure=ps.tools.ps_rect(3, 2))
+        assert N == 124
 
     def test_trim_nearby_peaks_threshold(self):
         np.random.seed(0)
