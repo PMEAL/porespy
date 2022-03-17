@@ -383,7 +383,7 @@ def trim_saddle_points(peaks, dt, maxiter=20):
     return new_peaks
 
 
-def trim_nearby_peaks(peaks, dt, f=1, mode='legacy'):
+def trim_nearby_peaks(peaks, dt, f=1):
     r"""
     Removes peaks that are nearer to another peak than to solid
 
@@ -398,22 +398,6 @@ def trim_nearby_peaks(peaks, dt, f=1, mode='legacy'):
         Controls how close peaks must be before they are considered near
         to each other. Sets of peaks are tagged as too near if
         ``d_neighbor < f * d_solid``.
-    mode : str
-        Controls which method is used to find peaks.  All of the following
-        options should give the same result but with different speed and
-        memory requirements:
-
-        ========= =============================================================
-        Mode      Description
-        ========= =============================================================
-        'kdtree'  Uses ``scipy.spatial.kdtree`` to find distances between
-                  peaks. This method may be slow but will use less memory
-        'dist'    Uses ``scipy.spatial.distance_matrix`` to find distances
-                  between peaks. This method is faster but could consume a lot
-                  of memory if the network is large
-        'legacy'  Uses ``scipy.spatial.kdtree`` but in a slighlty different
-                  approach than ``'kdtree'``.
-        ========= =============================================================
 
     Returns
     -------
@@ -439,74 +423,33 @@ def trim_nearby_peaks(peaks, dt, f=1, mode='legacy'):
     else:
         from skimage.morphology import cube
 
-    peaks = np.copy(peaks)
+    peaks = np.copy(peaks > 0)
     peaks, N = spim.label(peaks, structure=cube(3))
     crds = spim.measurements.center_of_mass(peaks, labels=peaks,
                                             index=np.arange(1, N + 1))
     crds = np.vstack(crds).astype(int)  # Convert to numpy array of ints
     L = dt[tuple(crds.T)]  # Get distance to solid for each peak
     # Add tiny amount to joggle points to avoid equal distances to solid
-    L = L + np.arange(len(L))*1e-12
+    L = L + np.arange(len(L))*1e-6
 
-    if mode.startswith('leg'):
-        tree = sptl.KDTree(data=crds)
-        # Find list of nearest peak to each peak
-        temp = tree.query(x=crds, k=2)
-        nearest_neighbor = temp[1][:, 1]
-        dist_to_neighbor = temp[0][:, 1]
-        del temp, tree  # Free-up memory
-        hits = np.where(dist_to_neighbor < f * L)[0]
-        # Drop peak that is closer to the solid than it's neighbor
-        drop_peaks = []
-        for peak in hits:
-            if L[peak] < L[nearest_neighbor[peak]]:
-                drop_peaks.append(peak)
-            else:
-                drop_peaks.append(nearest_neighbor[peak])
-        drop_peaks = np.unique(drop_peaks)
-        # Remove peaks from image
-        slices = spim.find_objects(input=peaks)
-        for s in drop_peaks:
-            # The following line is a bit buggy. Setting entire slice to 0
-            # will VERY occassionally overwrite some peaks that should not be.
-            # It is kept as is for legacy reasons.
-            peaks[slices[s]] = 0
-        return peaks
+    tree = sptl.KDTree(data=crds)
+    # Find list of nearest peak to each peak
+    temp = tree.query(x=crds, k=2)
+    nearest_neighbor = temp[1][:, 1]
+    dist_to_neighbor = temp[0][:, 1]
+    del temp, tree  # Free-up memory
+    hits = np.where(dist_to_neighbor <= f * L)[0]
+    # Drop peak that is closer to the solid than it's neighbor
+    drop_peaks = []
+    for i in hits:
+        if L[i] < L[nearest_neighbor[i]]:
+            drop_peaks.append(i)
+        else:
+            drop_peaks.append(nearest_neighbor[i])
+    drop_peaks = np.unique(drop_peaks)
 
-    elif mode.startswith('kd'):
-        # Get distance between each peak as kdtree
-        tree = sptl.KDTree(data=crds)
-        keep = np.zeros(tree.n)
-        for i in range(tree.n):
-            temp = tree.query_ball_point(crds[i, :], r=f*L[i])
-            if len(temp) == 1:
-                pass
-            else:
-                j = np.where(L[temp] < L[temp].max())[0]
-                keep[j] = -1
-        keep = np.unique(keep)
-
-    elif mode.startswith('dist'):
-        # Get distance between each point as a distance map
-        dmap = sptl.distance_matrix(x=crds, y=crds)
-        keep = -np.ones(dmap.shape[0], dtype=int)
-        for i in range(dmap.shape[0]):
-            temp = np.where(dmap[i, :] <= f*dt[tuple(crds[i, :])])[0]
-            j = np.where(L[temp] == L[temp].max())[0][0]
-            keep[i] = temp[j]
-        keep = np.unique(keep)
-    else:
-        raise Exception(f'Unrecognized mode {mode}')
-
-    temp = np.zeros_like(peaks)
-    temp[tuple(crds[keep].T)] = True
-
-    # Retain original peak shapes
-    dil = spim.binary_dilation(temp, structure=ps_rect(3, dt.ndim))
-    temp = np.isin(peaks, np.unique(peaks*dil))
-    final_peaks = peaks*temp
-
-    return final_peaks
+    new_peaks = ~np.isin(peaks, drop_peaks+1)*peaks
+    return new_peaks
 
 
 def _estimate_overlap(im, mode='dt', zoom=0.25):
