@@ -359,7 +359,7 @@ def label_boundaries(
     return network
 
 
-def trim_saddle_points_legacy(peaks, dt, max_iters=10, verbose=1):
+def trim_saddle_points_legacy(peaks, dt, maxiter=10, verbose=1):
     r"""
     Removes peaks that were mistakenly identified because they lied on a
     saddle or ridge in the distance transform that was not actually a true
@@ -375,7 +375,7 @@ def trim_saddle_points_legacy(peaks, dt, max_iters=10, verbose=1):
         The distance transform of the pore space for which the true peaks are
         sought.
 
-    max_iters : int
+    maxiter : int
         The maximum number of iterations to run while eroding the saddle
         points.  The default is 10, which is usually not reached; however,
         a warning is issued if the loop ends prior to removing all saddle
@@ -393,33 +393,34 @@ def trim_saddle_points_legacy(peaks, dt, max_iters=10, verbose=1):
 
     """
     peaks = np.copy(peaks)
+    new_peaks = np.zeros_like(peaks)
     if dt.ndim == 2:
         from skimage.morphology import square as cube
     else:
         from skimage.morphology import cube
     labels, N = spim.label(peaks)
     slices = spim.find_objects(labels)
-    for i in range(N):
-        s = extend_slice(slices[i], shape=peaks.shape, pad=10)
+    for i in tqdm(range(N)):
+        s = extend_slice(slices[i], shape=peaks.shape, pad=maxiter)
         peaks_i = labels[s] == i + 1
         dt_i = dt[s]
         im_i = dt_i > 0
-        peaks_dil = np.copy(peaks_i)
         iters = 0
-        while iters < max_iters:
+        peaks_dil = np.copy(peaks_i)
+        while iters < maxiter:
             iters += 1
             peaks_dil = spim.binary_dilation(input=peaks_dil, structure=cube(3))
             peaks_max = peaks_dil * np.amax(dt_i * peaks_dil)
             peaks_extended = (peaks_max == dt_i) * im_i
             if np.all(peaks_extended == peaks_i):
+                new_peaks[s] += peaks_i
                 break  # Found a true peak
             elif np.sum(peaks_extended * peaks_i) == 0:
-                peaks_i = False
                 break  # Found a saddle point
-        peaks[s] += peaks_i  # This used to be =, not +=...so overwrote other peaks!
-        if iters >= max_iters and verbose:
+            peaks_i = peaks_extended
+        if iters >= maxiter and verbose:
             print(
                 "Maximum number of iterations reached, consider "
                 + "running again with a larger value of max_iters"
             )
-    return peaks
+    return new_peaks*peaks

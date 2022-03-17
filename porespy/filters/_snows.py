@@ -90,22 +90,24 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, peaks=None):
         logger.trace("Peforming distance transform")
         if np.any(im_shape == 1):
             dt = edt(im.squeeze())
-            dt = dt.reshape(im.shape)
+            dt = dt.reshape(im_shape)
         else:
             dt = edt(im)
 
     if peaks is None:
         if sigma > 0:
             logger.trace(f"Applying Gaussian blur with sigma = {sigma}")
-            dt = spim.gaussian_filter(input=dt, sigma=sigma)
+            dt_blurred = spim.gaussian_filter(input=dt, sigma=sigma)*im
+        else:
+            dt_blurred = np.copy(dt)
+        peaks = find_peaks(dt=dt_blurred, r_max=r_max, divs=1)
 
-        peaks = find_peaks(dt=dt, r_max=r_max, divs=1)
-        logger.debug(f"Initial number of peaks: {spim.label(peaks)[1]}")
-        peaks = trim_saddle_points(peaks=peaks, dt=dt)
-        logger.debug(f"Peaks after trimming saddle points: {spim.label(peaks)[1]}")
-        peaks = trim_nearby_peaks(peaks=peaks, dt=dt)
-        peaks, N = spim.label(peaks, structure=ps_rect(3, im.ndim))
-        logger.debug(f"Peaks after trimming nearby peaks: {N}")
+    logger.debug(f"Initial number of peaks: {spim.label(peaks)[1]}")
+    peaks = trim_saddle_points(peaks=peaks, dt=dt)
+    logger.debug(f"Peaks after trimming saddle points: {spim.label(peaks)[1]}")
+    peaks = trim_nearby_peaks(peaks=peaks, dt=dt)
+    peaks, N = spim.label(peaks, structure=ps_rect(3, im.ndim))
+    logger.debug(f"Peaks after trimming nearby peaks: {N}")
         # Note that the mask argument results in some void voxels left unlabeled
     if peaks.dtype != bool:
         peaks, N = spim.label(peaks, structure=ps_rect(3, im.ndim))
@@ -221,7 +223,7 @@ def snow_partitioning_n(im, r_max=4, sigma=0.4, peaks=None):
     return tup
 
 
-def find_peaks(dt, r_max=4, strel=None, divs=1):
+def find_peaks(dt, r_max=4, strel=None, sigma=None, divs=1):
     r"""
     Finds local maxima in the distance transform
 
@@ -231,12 +233,15 @@ def find_peaks(dt, r_max=4, strel=None, divs=1):
         The distance transform of the pore space.  This may be calculated
         and filtered using any means desired.
     r_max : scalar
-        The size of the structuring element used in the maximum filter.
+        The radius of the spherical element used in the maximum filter.
         This controls the localness of any maxima. The default is 4 voxels.
     strel : ndarray
-        Specifies the shape of the structuring element used to define the
-        neighborhood when looking for peaks.  If ``None`` (the default) is
-        specified then a spherical shape is used (or circular in 2D).
+        Instead of supplying ``r_max``, this argument allows a custom
+        structuring element allowing control over both size and shape.
+    sigma : float or list of floats
+        If given, then a gaussian filter is applied to the distance transform
+        using this value for the kernel
+        (i.e. ``scipy.ndimage.gaussian_filter(dt, sigma)``)
     divs : int or array_like
         The number of times to divide the image for parallel processing.
         If ``1`` then parallel processing does not occur.  ``2`` is
@@ -265,9 +270,10 @@ def find_peaks(dt, r_max=4, strel=None, divs=1):
     """
     im = dt > 0
     _check_for_singleton_axes(im)
-
     if strel is None:
         strel = ps_round(r=r_max, ndim=im.ndim)
+    if sigma is not None:
+        dt = spim.gaussian_filter(dt, sigma=sigma)
     parallel = False
     if isinstance(divs, int):
         divs = [divs]*len(im.shape)
@@ -277,11 +283,13 @@ def find_peaks(dt, r_max=4, strel=None, divs=1):
     if parallel:
         overlap = max(strel.shape)
         mx = chunked_func(func=spim.maximum_filter, overlap=overlap,
-                          im_arg='input', input=dt + 2 * (~im),
+                          im_arg='input', input=dt,
                           footprint=strel,
                           cores=settings.ncores, divs=divs)
     else:
-        mx = spim.maximum_filter(dt + 2 * (~im), footprint=strel)
+        # The "2 * (~im)" sets solid voxels to 2 so peaks are not found
+        # at the void/solid interface
+        mx = spim.maximum_filter(dt + 2.0 * (~im), footprint=strel)
     peaks = (dt == mx) * im
     return peaks
 
@@ -372,14 +380,55 @@ def trim_saddle_points(peaks, dt, maxiter=20):
                 break  # saddle or ridge found
             dil = spim.binary_dilation(pk_i, structure=strel)
             pk_j = (dt_i * dil) >= d
-            # If dilated peak is larger than current peak, update and continue
-            if pk_j.sum() > pk_i.sum():
-                pk_i += pk_j  # extend peak and repeat
-            else:  # If peak did not grow then all neighbors are smaller
+            # If peak did not grow then all neighbors are smaller
+            if pk_j.sum() == pk_i.sum():
                 new_peaks[sx] += pk_i
                 break  # peak found
+            # Otherwise, update and continue
+            else:
+                pk_i += pk_j  # extend peak and repeat
         if iters >= maxiter:
             logger.trace(f'maxiter reached on peak {i+1}')
+    return new_peaks*peaks
+
+
+def trim_saddle_points_V2(peaks, dt, maxiter=10):
+    peaks = peaks > 0
+    new_peaks = np.zeros_like(peaks)
+    if dt.ndim == 2:
+        from skimage.morphology import square as cube
+    else:
+        from skimage.morphology import cube
+    labels, N = spim.label(peaks > 0)
+    slices = spim.find_objects(labels)
+    hits = 0
+    for i, s in tqdm(enumerate(slices)):
+        peak_i = labels[s] == (i + 1)
+        R = (dt[s] * peak_i).max()
+        sx = extend_slice(s, shape=peaks.shape, pad=max(10, int(R)))
+        peak_i = labels[sx] == (i + 1)
+        dt_i = dt[sx]
+        peak_dil = np.copy(peak_i)
+        iters = 0
+        while iters < maxiter:
+            iters += 1
+            peak_orig = np.copy(peak_dil)
+            peak_dil = spim.binary_dilation(peak_orig, structure=cube(3))
+            rim = peak_dil * dt_i * (~peak_orig)
+            check_1 = rim >= R
+            if check_1.sum() == 0:
+                new_peaks[sx] += peak_i
+                break  # True peak
+            L, check_2 = spim.label(check_1, structure=cube(3))
+            if check_2 > 1:
+                hits += 1
+                logger.debug("Saddle point found")
+                break  # Saddle point
+            peak_dil = (peak_dil*dt_i) == R
+        if iters >= maxiter:
+            logger.warning(f"{iters} iterations reached on point {i+1}")
+    if hits > 0:
+        logger.info(f"Found {hits} saddle points")
     return new_peaks
 
 

@@ -87,6 +87,7 @@ from ._snows import find_peaks
 from ._snows import reduce_peaks
 from ._snows import trim_nearby_peaks
 from ._snows import trim_saddle_points
+from ._snows import trim_saddle_points_V2
 from ._size_seq_satn import *
 from ._nlmeans import nl_means_layered
 from ._fftmorphology import fftmorphology
