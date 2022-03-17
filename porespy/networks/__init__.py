@@ -29,7 +29,6 @@ from ._funcs import generate_voxel_image
 from ._funcs import label_phases
 from ._funcs import label_boundaries
 from ._funcs import map_to_regions
-from ._funcs import trim_saddle_points_legacy
 from ._maximal_ball import maximal_ball_wrapper
 from ._getnet import regions_to_network
 from ._snow2 import snow2

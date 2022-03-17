@@ -394,6 +394,81 @@ def trim_saddle_points(peaks, dt, maxiter=20):
     return new_peaks*peaks
 
 
+def trim_saddle_points_legacy(peaks, dt, maxiter=10):
+    r"""
+    Removes peaks that were mistakenly identified because they lied on a
+    saddle or ridge in the distance transform that was not actually a true
+    local peak.
+
+    Parameters
+    ----------
+    peaks : ND-array
+        A boolean image containing True values to mark peaks in the distance
+        transform (``dt``)
+    dt : ND-array
+        The distance transform of the pore space for which the true peaks are
+        sought.
+    maxiter : int
+        The maximum number of iterations to run while eroding the saddle
+        points.  The default is 10, which is usually not reached; however,
+        a warning is issued if the loop ends prior to removing all saddle
+        points.
+
+    Returns
+    -------
+    image : ND-array
+        An image with fewer peaks than the input image
+
+    Notes
+    -----
+    This version of the function was included in versions of PoreSpy < 2. It
+    is too aggressive in trimming peaks, so was rewritten for PoreSpy >= 2.
+    This is included here for legacy reasons
+
+    References
+    ----------
+    [1] Gostick, J. "A versatile and efficient network extraction algorithm
+    using marker-based watershed segmenation".  Physical Review E. (2017)
+    """
+    new_peaks = np.zeros_like(peaks, dtype=bool)
+    if dt.ndim == 2:
+        from skimage.morphology import square as cube
+    else:
+        from skimage.morphology import cube
+    labels, N = spim.label(peaks > 0)
+    slices = spim.find_objects(labels)
+    for i, s in tqdm(enumerate(slices)):
+        sx = extend_slice(s, shape=peaks.shape, pad=10)
+        peaks_i = labels[sx] == i + 1
+        dt_i = dt[sx]
+        im_i = dt_i > 0
+        iters = 0
+        while iters < maxiter:
+            iters += 1
+            peaks_dil = spim.binary_dilation(input=peaks_i, structure=cube(3))
+            peaks_max = peaks_dil * np.amax(dt_i * peaks_dil)
+            peaks_extended = (peaks_max == dt_i) * im_i
+            if np.all(peaks_extended == peaks_i):
+                break  # Found a true peak
+            elif np.sum(peaks_extended * peaks_i) == 0:
+                peaks_i = False
+                break  # Found a saddle point
+            # The following line was also missing from the original.  It has
+            # no effect on the result but without this the "maxiters" is
+            # reached very often.
+            peaks_i = peaks_extended
+        # The following line is essentially a bug.  It should be:
+        # peaks[s] += peaks_i. Without the += the peaks_i image overwrites
+        # the entire slice s, which may include other peaks that are within
+        # 10 voxels due to the padding of s with extend_slice.
+        new_peaks[sx] = peaks_i
+        if iters >= maxiter:
+            logger.debug(
+                "Maximum number of iterations reached, consider "
+                + "running again with a larger value of max_iters"
+            )
+    return new_peaks*peaks
+
 
 def trim_nearby_peaks(peaks, dt, f=1):
     r"""
