@@ -91,7 +91,8 @@ def snow2(phases,
         If this argument is provided, then ``r_max`` and ``sigma`` are ignored
         since these are specfically used in the peak finding process. This
         array should contain peaks for all phases, and they are masked by
-        the ``phases`` argument.
+        the ``phases`` argument. If ``peaks`` are provided the parallelization
+        is disabled.
     parallelization : dict
         The arguments for controlling the parallelization of the watershed
         function are rolled into this dictionary, otherwise the function
@@ -100,6 +101,7 @@ def snow2(phases,
         are provided then the defaults for that function are used here.
         To disable parallelization pass ``parallel=None``, which will
         invoke the standard ``snow_partitioning`` or ``snow_partitioning_n``.
+        If ``peaks`` are provided the parallelization is disabled.
 
     Returns
     -------
@@ -137,6 +139,10 @@ def snow2(phases,
        Advances in Water Resources. 145(Nov), 103734 (2020)
 
     """
+    # Parallel snow does not accept peaks, so if they are provided,
+    # disable parallelization
+    if peaks is not None:
+        parallelization = None
     regions = None
     for i in range(phases.max()):
         logger.info(f"Processing phase {i}...")

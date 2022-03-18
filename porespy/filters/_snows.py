@@ -564,7 +564,7 @@ def snow_partitioning_parallel(im,
                                divs=2,
                                overlap=None,
                                cores=None,
-                               peaks=None):
+                               ):
     r"""
     Performs SNOW algorithm in parallel (or serial) to reduce time
     (or memory usage) by geomertirc domain decomposition of large images.
@@ -634,7 +634,8 @@ def snow_partitioning_parallel(im,
     # Applying SNOW to image chunks
     regions = da.from_array(dt, chunks=chunk_shape)
     regions = da.overlap.overlap(regions, depth=depth, boundary='none')
-    regions = regions.map_blocks(_snow_chunked, r_max=r_max, sigma=sigma, dtype=dt.dtype)
+    regions = regions.map_blocks(_snow_chunked, r_max=r_max,
+                                 sigma=sigma, dtype=dt.dtype)
     regions = da.overlap.trim_internal(regions, trim_depth, boundary='none')
     # TODO: use dask ProgressBar once compatible w/ logging.
     logger.trace('Applying snow to image chunks')
@@ -1026,13 +1027,12 @@ def _resequence_labels(array):
 
 def _snow_chunked(dt, r_max=5, sigma=0.4):
     r"""
-    This private version of snow is called during snow_parallel. Dask does
-    not all the calls to the logger between each step apparently.
+    This private version of snow is called during snow_parallel.
     """
     dt2 = spim.gaussian_filter(input=dt, sigma=sigma)
     peaks = find_peaks(dt=dt2, r_max=r_max)
-    peaks = trim_saddle_points(peaks=peaks, dt=dt2)
-    peaks = trim_nearby_peaks(peaks=peaks, dt=dt2)
-    peaks, N = spim.label(peaks)
-    regions = watershed(image=-dt2, markers=peaks)
+    peaks = trim_saddle_points(peaks=peaks, dt=dt)
+    peaks = trim_nearby_peaks(peaks=peaks, dt=dt)
+    peaks, N = spim.label(peaks > 0)
+    regions = watershed(image=-dt, markers=peaks)
     return regions * (dt > 0)

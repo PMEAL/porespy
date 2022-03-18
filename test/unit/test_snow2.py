@@ -226,6 +226,48 @@ class Snow2Test:
         assert pn3.num_pores('all') == pn2.num_pores('solid')
         assert pn3.num_throats('all') == pn2.num_throats('solid_solid')
 
+    def test_send_peaks_to_snow_partitioning(self):
+        np.random.seed(0)
+        im = ps.generators.blobs([200, 200], porosity=0.7, blobiness=1.5)
+        snow1 = ps.filters.snow_partitioning(im, sigma=0.4, r_max=5)
+        assert snow1.regions.max() == 102
+        dt1 = edt(im)
+        dt2 = spim.gaussian_filter(dt1, sigma=0.4)*im
+        pk = ps.filters.find_peaks(dt2, r_max=5)
+        pk = ps.filters.trim_saddle_points(peaks=pk, dt=dt1)
+        snow2 = ps.filters.snow_partitioning(im, peaks=pk)
+        assert snow2.regions.max() == 102
+
+    def test_send_peaks_to_snow_partitioning_n(self):
+        np.random.seed(0)
+        im = ps.generators.blobs([200, 200], porosity=0.7, blobiness=0.5)
+        sph = im*ps.generators.lattice_spheres(shape=im.shape, r=12, offset=20, spacing=40)
+        im = im + sph*1.0
+        snow1 = ps.filters.snow_partitioning_n(im, sigma=0.4, r_max=5)
+        assert snow1.regions.max() == 56
+        dt1 = edt(im == 1)
+        dt2 = edt(im == 2)
+        dt3 = spim.gaussian_filter(dt1, sigma=0.4)*im
+        dt4 = spim.gaussian_filter(dt2, sigma=0.4)*im
+        pk1 = ps.filters.find_peaks(dt3, r_max=5)
+        pk2 = ps.filters.find_peaks(dt4, r_max=5)
+        pk3 = ps.filters.trim_saddle_points(peaks=pk1, dt=dt1)
+        pk4 = ps.filters.trim_saddle_points(peaks=pk2, dt=dt2)
+        snow2 = ps.filters.snow_partitioning_n(im, peaks=pk3 + pk4)
+        assert snow2.regions.max() == 56
+
+    def test_snow2_with_peaks(self):
+        np.random.seed(0)
+        im = ps.generators.blobs([200, 200], porosity=0.7, blobiness=1.5)
+        snow1 = ps.networks.snow2(im, sigma=0.4, r_max=5, boundary_width=0)
+        assert snow1.regions.max() == 102
+        dt1 = edt(im)
+        dt2 = spim.gaussian_filter(dt1, sigma=0.4)*im
+        pk = ps.filters.find_peaks(dt2, r_max=5)
+        pk = ps.filters.trim_saddle_points(peaks=pk, dt=dt1)
+        snow2 = ps.networks.snow2(im, boundary_width=0, peaks=pk)
+        assert snow2.regions.max() == 102
+
 
 if __name__ == '__main__':
     t = Snow2Test()
