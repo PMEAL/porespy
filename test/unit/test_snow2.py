@@ -21,7 +21,10 @@ class Snow2Test:
     def test_single_phase_2d_serial(self):
         im = ps.generators.blobs(shape=[200, 200])
         snow2 = ps.networks.snow2(im, phase_alias={1: 'phase1'}, parallelization=None)
-        pn, geo = op.io.from_porespy(snow2.network)
+        try:
+            pn, geo = op.io.from_porespy(snow2.network)
+        except AttributeError:
+            pn, geo = op.io.PoreSpy.import_data(snow2.network)
         # Ensure phase_alias was ignored since only single phase
         assert 'pore.phase1' not in pn.keys()
 
@@ -210,9 +213,9 @@ class Snow2Test:
                                    accuracy='standard',
                                    parallelization=None)
         try:
-            pn1, geo1 = op.io.from_porespy(snow2.network)
+            pn1, geo1 = op.io.from_porespy(snow_1.network)
         except AttributeError:
-            pn1, geo1 = op.io.PoreSpy.import_data(snow2.network)
+            pn1, geo1 = op.io.PoreSpy.import_data(snow_1.network)
         Ps1 = pn1.find_neighbor_pores(pores=pn1.pores('boundary'))
         Ps1 = pn1.to_mask(pores=Ps1)
 
@@ -221,9 +224,9 @@ class Snow2Test:
                                    accuracy='standard',
                                    parallelization=None)
         try:
-            pn2, geo2 = op.io.from_porespy(snow2.network)
+            pn2, geo2 = op.io.from_porespy(snow_2.network)
         except AttributeError:
-            pn2, geo2 = op.io.PoreSpy.import_data(snow2.network)
+            pn2, geo2 = op.io.PoreSpy.import_data(snow_2.network)
         Ps2 = pn2.find_neighbor_pores(pores=pn2.pores('boundary'))
         Ps2 = pn2.to_mask(pores=Ps2)*pn2['pore.void']
 
@@ -235,9 +238,9 @@ class Snow2Test:
                                    accuracy='standard',
                                    parallelization=None)
         try:
-            pn3, geo3 = op.io.from_porespy(snow2.network)
+            pn3, geo3 = op.io.from_porespy(snow_3.network)
         except AttributeError:
-            pn3, geo3 = op.io.PoreSpy.import_data(snow2.network)
+            pn3, geo3 = op.io.PoreSpy.import_data(snow_3.network)
         Ps3 = pn3.find_neighbor_pores(pores=pn3.pores('boundary'))
         Ps3 = pn3.to_mask(pores=Ps3)
 
@@ -263,7 +266,8 @@ class Snow2Test:
     def test_send_peaks_to_snow_partitioning_n(self):
         np.random.seed(0)
         im = ps.generators.blobs([200, 200], porosity=0.7, blobiness=0.5)
-        sph = im*ps.generators.lattice_spheres(shape=im.shape, r=12, offset=20, spacing=40)
+        sph = im*ps.generators.lattice_spheres(shape=im.shape, r=12,
+                                               offset=20, spacing=40)
         im = im + sph*1.0
         snow1 = ps.filters.snow_partitioning_n(im, sigma=0.4, r_max=5)
         assert snow1.regions.max() == 56
