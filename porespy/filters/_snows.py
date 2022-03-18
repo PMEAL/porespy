@@ -103,7 +103,7 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, peaks=None):
         peaks = find_peaks(dt=dt_blurred, r_max=r_max)
 
         logger.debug(f"Initial number of peaks: {spim.label(peaks)[1]}")
-        peaks = trim_saddle_points(peaks=peaks, dt=dt_blurred)
+        peaks = trim_saddle_points(peaks=peaks, dt=dt)
         logger.debug(f"Peaks after trimming saddle points: {spim.label(peaks)[1]}")
         peaks = trim_nearby_peaks(peaks=peaks, dt=dt)
         logger.debug(f"Peaks after trimming nearby points: {spim.label(peaks)[1]}")

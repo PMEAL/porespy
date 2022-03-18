@@ -255,14 +255,14 @@ class Snow2Test:
         np.random.seed(0)
         im = ps.generators.blobs([200, 200], porosity=0.7, blobiness=1.5)
         snow1 = ps.filters.snow_partitioning(im, sigma=0.4, r_max=5)
-        assert snow1.regions.max() == 102
+        assert snow1.regions.max() == 97
         dt1 = edt(im)
         dt2 = spim.gaussian_filter(dt1, sigma=0.4)*im
         pk = ps.filters.find_peaks(dt2, r_max=5)
         pk = ps.filters.trim_saddle_points(peaks=pk, dt=dt1)
         pk = ps.filters.trim_nearby_peaks(peaks=pk, dt=dt1)
         snow2 = ps.filters.snow_partitioning(im, peaks=pk)
-        assert snow2.regions.max() == 102
+        assert snow2.regions.max() == 97
 
     def test_send_peaks_to_snow_partitioning_n(self):
         np.random.seed(0)
@@ -287,14 +287,42 @@ class Snow2Test:
         np.random.seed(0)
         im = ps.generators.blobs([200, 200], porosity=0.7, blobiness=1.5)
         snow1 = ps.networks.snow2(im, sigma=0.4, r_max=5, boundary_width=0)
-        assert snow1.regions.max() == 102
+        assert snow1.regions.max() == 97
         dt1 = edt(im)
         dt2 = spim.gaussian_filter(dt1, sigma=0.4)*im
         pk = ps.filters.find_peaks(dt2, r_max=5)
-        pk = ps.filters.trim_saddle_points(peaks=pk, dt=dt2)
+        pk = ps.filters.trim_saddle_points(peaks=pk, dt=dt1)
         pk = ps.filters.trim_nearby_peaks(peaks=pk, dt=dt1)
         snow2 = ps.networks.snow2(im, boundary_width=0, peaks=pk)
-        assert snow2.regions.max() == 102
+        assert snow2.regions.max() == 97
+
+    def test_two_phases_and_boundary_nodes:
+        np.random.seed(0)
+        im1 = ps.generators.blobs(shape=[600, 400],
+                                  porosity=None, blobiness=1) < 0.4
+        im2 = ps.generators.blobs(shape=[600, 400],
+                                  porosity=None, blobiness=1) < 0.7
+        phases = im1 + (im2 * ~im1)*2
+        # phases = phases > 0
+
+        snow_n = ps.networks.snow2(phases,
+                                   phase_alias={1: 'solid',
+                                                2: 'void'},
+                                   boundary_width=5,
+                                   accuracy='high',
+                                   parallelization=None)
+
+        assert snow_n.regions.max() == 210
+        # remove all but 1 pixel-width of boundary regions
+        temp = ps.tools.extract_subsection(
+            im=snow_n.regions,
+            shape=np.array(snow_n.regions.shape)-8)
+        assert temp.max() == 210
+        # remove complete boundary region
+        temp = ps.tools.extract_subsection(
+            im=snow_n.regions,
+            shape=np.array(snow_n.regions.shape)-10)
+        assert temp.max() == 163
 
 
 if __name__ == '__main__':

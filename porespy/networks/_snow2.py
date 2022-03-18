@@ -141,6 +141,7 @@ def snow2(phases,
     """
     # Parallel snow does not accept peaks, so if they are provided,
     # disable parallelization
+    phases = phases.astype(int)
     if peaks is not None:
         parallelization = None
     regions = None
