@@ -217,7 +217,10 @@ class Snow2Test:
         except AttributeError:
             pn1, geo1 = op.io.PoreSpy.import_data(snow_1.network)
         Ps1 = pn1.find_neighbor_pores(pores=pn1.pores('boundary'))
-        Ps1 = pn1.to_mask(pores=Ps1)
+        try:
+            Ps1 = pn1.to_mask(pores=Ps1)
+        except AttributeError:
+            Ps1 = pn1.tomask(pores=Ps1)
 
         snow_2 = ps.networks.snow2(im.astype(int) + 1,
                                    phase_alias={1: 'solid', 2: 'void'},
@@ -228,7 +231,10 @@ class Snow2Test:
         except AttributeError:
             pn2, geo2 = op.io.PoreSpy.import_data(snow_2.network)
         Ps2 = pn2.find_neighbor_pores(pores=pn2.pores('boundary'))
-        Ps2 = pn2.to_mask(pores=Ps2)*pn2['pore.void']
+        try:
+            Ps2 = pn2.to_mask(pores=Ps2)*pn2['pore.void']
+        except AttributeError:
+            Ps2 = pn2.tomask(pores=Ps2)*pn2['pore.void']
 
         assert Ps1.sum() == Ps2.sum()
         assert pn1.num_pores('all') == pn2.num_pores('void')
@@ -242,10 +248,16 @@ class Snow2Test:
         except AttributeError:
             pn3, geo3 = op.io.PoreSpy.import_data(snow_3.network)
         Ps3 = pn3.find_neighbor_pores(pores=pn3.pores('boundary'))
-        Ps3 = pn3.to_mask(pores=Ps3)
+        try:
+            Ps3 = pn3.to_mask(pores=Ps3)
+        except AttributeError:
+            Ps3 = pn3.tomask(pores=Ps3)
 
         Ps4 = pn2.find_neighbor_pores(pores=pn2.pores('boundary'))
-        Ps4 = pn2.to_mask(pores=Ps4)*pn2['pore.solid']
+        try:
+            Ps4 = pn2.to_mask(pores=Ps4)*pn2['pore.solid']
+        except AttributeError:
+            Ps4 = pn2.tomask(pores=Ps4)*pn2['pore.solid']
 
         assert Ps3.sum() == Ps4.sum()
         assert pn3.num_pores('all') == pn2.num_pores('solid')
