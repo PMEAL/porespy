@@ -260,6 +260,7 @@ class Snow2Test:
         dt2 = spim.gaussian_filter(dt1, sigma=0.4)*im
         pk = ps.filters.find_peaks(dt2, r_max=5)
         pk = ps.filters.trim_saddle_points(peaks=pk, dt=dt1)
+        pk = ps.filters.trim_nearby_peaks(peaks=pk, dt=dt1)
         snow2 = ps.filters.snow_partitioning(im, peaks=pk)
         assert snow2.regions.max() == 102
 
@@ -290,7 +291,8 @@ class Snow2Test:
         dt1 = edt(im)
         dt2 = spim.gaussian_filter(dt1, sigma=0.4)*im
         pk = ps.filters.find_peaks(dt2, r_max=5)
-        pk = ps.filters.trim_saddle_points(peaks=pk, dt=dt1)
+        pk = ps.filters.trim_saddle_points(peaks=pk, dt=dt2)
+        pk = ps.filters.trim_nearby_peaks(peaks=pk, dt=dt1)
         snow2 = ps.networks.snow2(im, boundary_width=0, peaks=pk)
         assert snow2.regions.max() == 102
 

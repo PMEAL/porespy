@@ -100,24 +100,20 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, peaks=None):
             dt_blurred = spim.gaussian_filter(input=dt, sigma=sigma)*im
         else:
             dt_blurred = np.copy(dt)
-        peaks = find_peaks(dt=dt_blurred, r_max=r_max, divs=1)
+        peaks = find_peaks(dt=dt_blurred, r_max=r_max)
 
-    logger.debug(f"Initial number of peaks: {spim.label(peaks)[1]}")
-    peaks = trim_saddle_points(peaks=peaks, dt=dt)
-    logger.debug(f"Peaks after trimming saddle points: {spim.label(peaks)[1]}")
-    peaks = trim_nearby_peaks(peaks=peaks, dt=dt)
-    peaks, N = spim.label(peaks, structure=ps_rect(3, im.ndim))
-    logger.debug(f"Peaks after trimming nearby peaks: {N}")
-        # Note that the mask argument results in some void voxels left unlabeled
-    if peaks.dtype != bool:
-        peaks, N = spim.label(peaks, structure=ps_rect(3, im.ndim))
+        logger.debug(f"Initial number of peaks: {spim.label(peaks)[1]}")
+        peaks = trim_saddle_points(peaks=peaks, dt=dt_blurred)
+        logger.debug(f"Peaks after trimming saddle points: {spim.label(peaks)[1]}")
+        peaks = trim_nearby_peaks(peaks=peaks, dt=dt)
+        logger.debug(f"Peaks after trimming nearby points: {spim.label(peaks)[1]}")
+    peaks, N = spim.label(peaks > 0, structure=ps_rect(3, im.ndim))
     regions = watershed(image=-dt, markers=peaks)
-    regions = regions * (im > 0)
     tup = Results()
     tup.im = im
     tup.dt = dt
     tup.peaks = peaks
-    tup.regions = regions
+    tup.regions = regions * (im > 0)
     return tup
 
 
