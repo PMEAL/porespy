@@ -283,7 +283,7 @@ def find_peaks(dt, r_max=4, strel=None, sigma=None, divs=1):
     if parallel:
         overlap = max(strel.shape)
         mx = chunked_func(func=spim.maximum_filter, overlap=overlap,
-                          im_arg='input', input=dt,
+                          im_arg='input', input=dt + 2.0 * (~im),
                           footprint=strel,
                           cores=settings.ncores, divs=divs)
     else:
