@@ -296,7 +296,7 @@ class Snow2Test:
         snow2 = ps.networks.snow2(im, boundary_width=0, peaks=pk)
         assert snow2.regions.max() == 97
 
-    def test_two_phases_and_boundary_nodes:
+    def test_two_phases_and_boundary_nodes(self):
         np.random.seed(0)
         im1 = ps.generators.blobs(shape=[600, 400],
                                   porosity=None, blobiness=1) < 0.4
