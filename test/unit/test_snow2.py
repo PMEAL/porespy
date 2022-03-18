@@ -1,6 +1,7 @@
 import pytest
 import numpy as np
 from scipy import stats as spst
+import scipy.ndimage as spim
 import porespy as ps
 import openpnm as op
 from edt import edt
@@ -27,7 +28,10 @@ class Snow2Test:
     def test_return_all_serial(self):
         im = ps.generators.blobs(shape=[200, 200])
         snow2 = ps.networks.snow2(im, parallelization=None)
-        pn, geo = op.io.from_porespy(snow2.network)
+        try:
+            pn, geo = op.io.from_porespy(snow2.network)
+        except AttributeError:
+            pn, geo = op.io.PoreSpy.import_data(snow2.network)
         assert hasattr(snow2, 'regions')
         assert hasattr(snow2, 'phases')
 
@@ -36,7 +40,10 @@ class Snow2Test:
         im2 = ps.generators.blobs(shape=[200, 200], porosity=0.7)
         phases = im1 + (im2 * ~im1)*2
         snow2 = ps.networks.snow2(phases, phase_alias={1: 'phase1', 2: 'test2'})
-        pn, geo = op.io.from_porespy(snow2.network)
+        try:
+            pn, geo = op.io.from_porespy(snow2.network)
+        except AttributeError:
+            pn, geo = op.io.PoreSpy.import_data(snow2.network)
         # Ensure phase_alias was interpreted correctly
         assert 'pore.phase1' in pn.keys()
         assert 'pore.test2' in pn.keys()
@@ -45,7 +52,10 @@ class Snow2Test:
     def test_single_phase_3d(self):
         im = ps.generators.blobs(shape=[100, 100, 100], porosity=0.6)
         snow2 = ps.networks.snow2(im, phase_alias={1: 'phase1'})
-        pn, geo = op.io.from_porespy(snow2.network)
+        try:
+            pn, geo = op.io.from_porespy(snow2.network)
+        except AttributeError:
+            pn, geo = op.io.PoreSpy.import_data(snow2.network)
         # Ensure phase_alias was ignored since only single phase
         assert 'pore.phase1' not in pn.keys()
 
@@ -54,7 +64,10 @@ class Snow2Test:
         im2 = ps.generators.blobs(shape=[100, 100, 100], porosity=0.7)
         phases = im1 + (im2 * ~im1)*2
         snow2 = ps.networks.snow2(phases, phase_alias={1: 'phase1'})
-        pn, geo = op.io.from_porespy(snow2.network)
+        try:
+            pn, geo = op.io.from_porespy(snow2.network)
+        except AttributeError:
+            pn, geo = op.io.PoreSpy.import_data(snow2.network)
         # Ensure phase_alias was was updated since only 1 phases was spec'd
         assert 'pore.phase1' in pn.keys()
         assert 'pore.phase2' in pn.keys()
@@ -196,7 +209,10 @@ class Snow2Test:
         snow_1 = ps.networks.snow2(im,
                                    accuracy='standard',
                                    parallelization=None)
-        pn1, geo1 = op.io.from_porespy(snow_1.network)
+        try:
+            pn1, geo1 = op.io.from_porespy(snow2.network)
+        except AttributeError:
+            pn1, geo1 = op.io.PoreSpy.import_data(snow2.network)
         Ps1 = pn1.find_neighbor_pores(pores=pn1.pores('boundary'))
         Ps1 = pn1.to_mask(pores=Ps1)
 
@@ -204,7 +220,10 @@ class Snow2Test:
                                    phase_alias={1: 'solid', 2: 'void'},
                                    accuracy='standard',
                                    parallelization=None)
-        pn2, geo2 = op.io.from_porespy(snow_2.network)
+        try:
+            pn2, geo2 = op.io.from_porespy(snow2.network)
+        except AttributeError:
+            pn2, geo2 = op.io.PoreSpy.import_data(snow2.network)
         Ps2 = pn2.find_neighbor_pores(pores=pn2.pores('boundary'))
         Ps2 = pn2.to_mask(pores=Ps2)*pn2['pore.void']
 
@@ -215,7 +234,10 @@ class Snow2Test:
         snow_3 = ps.networks.snow2(im == 0,
                                    accuracy='standard',
                                    parallelization=None)
-        pn3, geo3 = op.io.from_porespy(snow_3.network)
+        try:
+            pn3, geo3 = op.io.from_porespy(snow2.network)
+        except AttributeError:
+            pn3, geo3 = op.io.PoreSpy.import_data(snow2.network)
         Ps3 = pn3.find_neighbor_pores(pores=pn3.pores('boundary'))
         Ps3 = pn3.to_mask(pores=Ps3)
 

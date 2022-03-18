@@ -386,8 +386,8 @@ def trim_saddle_points(peaks, dt, maxiter=20):
             elif np.sum(peaks_extended * peaks_i) == 0:
                 break  # Found a saddle point
             peaks_i = peaks_extended
-        if iters >= maxiter and verbose:
-            print(
+        if iters >= maxiter:
+            logger.debug(
                 "Maximum number of iterations reached, consider "
                 + "running again with a larger value of max_iters"
             )
@@ -537,7 +537,7 @@ def trim_nearby_peaks(peaks, dt, f=1):
             drop_peaks.append(nearest_neighbor[i])
     drop_peaks = np.unique(drop_peaks)
 
-    new_peaks = ~np.isin(peaks, drop_peaks+1)*peaks
+    new_peaks = ~np.isin(labels, drop_peaks+1)*peaks
     return new_peaks
 
 

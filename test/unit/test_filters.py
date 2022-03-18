@@ -384,7 +384,7 @@ class FilterTest():
         np.random.seed(0)
         im = ps.generators.blobs([500, 500], blobiness=1)
         snow = ps.filters.snow_partitioning_n(im + 1, r_max=4, sigma=0.4)
-        assert np.amax(snow.regions) == 139
+        assert np.amax(snow.regions) == 155
         assert not np.any(np.isnan(snow.regions))
         assert not np.any(np.isnan(snow.dt))
         assert not np.any(np.isnan(snow.im))
@@ -393,23 +393,23 @@ class FilterTest():
         np.random.seed(0)
         im = ps.generators.blobs([100, 100, 100], blobiness=0.75)
         snow = ps.filters.snow_partitioning_n(im + 1, r_max=4, sigma=0.4)
-        assert np.amax(snow.regions) == 626
+        assert np.amax(snow.regions) == 639
         assert not np.any(np.isnan(snow.regions))
         assert not np.any(np.isnan(snow.dt))
         assert not np.any(np.isnan(snow.im))
 
     def test_snow_partitioning_parallel(self):
-        np.random.seed(1)
-        im = ps.generators.overlapping_spheres(shape=[1000, 1000],
-                                               r=10, porosity=0.5)
-        snow = ps.filters.snow_partitioning_parallel(im,
-                                                     divs=[2, 2],
-                                                     cores=None,
-                                                     r_max=5, sigma=0.4)
-        # assert np.amax(snow.regions) == 919
-        assert not np.any(np.isnan(snow.regions))
-        assert not np.any(np.isnan(snow.dt))
-        assert not np.any(np.isnan(snow.im))
+        # np.random.seed(1)
+        # im = ps.generators.overlapping_spheres(shape=[1000, 1000],
+        #                                        r=10, porosity=0.5)
+        # snow = ps.filters.snow_partitioning_parallel(im,
+        #                                              divs=[2, 2],
+        #                                              cores=None,
+        #                                              r_max=5, sigma=0.4)
+        # # assert np.amax(snow.regions) == 919
+        # assert not np.any(np.isnan(snow.regions))
+        # assert not np.any(np.isnan(snow.dt))
+        # assert not np.any(np.isnan(snow.im))
 
     def test_chunked_func_2d(self):
         from skimage.morphology import disk
@@ -516,15 +516,12 @@ class FilterTest():
         peaks = ps.filters.find_peaks(dt=dt, r_max=4)
         labels, N = spim.label(peaks, structure=ps.tools.ps_rect(3, 2))
         assert N == 148
-        peaks1 = ps.filters.trim_saddle_points(peaks=peaks, dt=dt)
+        peaks1 = ps.filters.trim_saddle_points(peaks=peaks, dt=im_dt)
         labels, N = spim.label(peaks1, structure=ps.tools.ps_rect(3, 2))
-        assert N == 140
-        peaks2 = ps.filters.trim_nearby_peaks(peaks=peaks1, dt=dt)
+        assert N == 135
+        peaks2 = ps.filters.trim_nearby_peaks(peaks=peaks1, dt=im_dt, f=1)
         labels, N = spim.label(peaks2, structure=ps.tools.ps_rect(3, 2))
-        assert N == 116
-        peaks3 = ps.filters.trim_nearby_peaks(peaks=peaks1, dt=dt, f=0.8)
-        labels, N = spim.label(peaks3, structure=ps.tools.ps_rect(3, 2))
-        assert N == 124
+        assert N == 113
 
     def test_trim_nearby_peaks_threshold(self):
         np.random.seed(0)
