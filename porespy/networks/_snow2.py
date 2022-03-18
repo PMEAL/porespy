@@ -145,7 +145,9 @@ def snow2(phases,
     if peaks is not None:
         parallelization = None
     regions = None
-    for i in range(phases.max()):
+    vals = np.unique(phases.astype(int))
+    vals = vals[vals > 0]
+    for i in vals:
         logger.info(f"Processing phase {i}...")
         phase = phases == (i + 1)
         pk = None if peaks is None else peaks*phase

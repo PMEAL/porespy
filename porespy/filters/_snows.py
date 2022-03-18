@@ -187,8 +187,8 @@ def snow_partitioning_n(im, r_max=4, sigma=0.4, peaks=None):
 
     """
     # Perform snow on each phase and merge all segmentation and dt together
-    phases_num = np.unique(im * 1)
-    phases_num = np.trim_zeros(phases_num)
+    phases_num = np.unique(im).astype(int)
+    phases_num = phases_num[phases_num > 0]
     combined_dt = 0
     combined_region = 0
     _peaks = np.zeros_like(im, dtype=int)
