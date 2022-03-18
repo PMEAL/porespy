@@ -142,14 +142,17 @@ def snow2(phases,
     # Parallel snow does not accept peaks, so if they are provided,
     # disable parallelization
     phases = phases.astype(int)
+    if phase_alias is not None:
+        vals = phase_alias.keys()
+    else:
+        vals = np.unique(phases)
+        vals = vals[vals > 0]
     if peaks is not None:
         parallelization = None
     regions = None
-    vals = np.unique(phases.astype(int))
-    vals = vals[vals > 0]
     for i in vals:
         logger.info(f"Processing phase {i}...")
-        phase = phases == (i + 1)
+        phase = phases == i
         pk = None if peaks is None else peaks*phase
         if parallelization is not None:
             snow = snow_partitioning_parallel(
