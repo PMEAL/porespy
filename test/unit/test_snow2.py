@@ -173,7 +173,7 @@ class Snow2Test:
         mode = spst.mode(snow.network['pore.extended_diameter'])
         assert mode[0] == 30
         D = np.unique(snow.network['pore.extended_diameter'].astype(int))
-        assert np.all(D == np.array([ 7, 12, 17, 19, 20, 22, 24, 25, 26,
+        assert np.all(D == np.array([7, 12, 17, 19, 20, 22, 24, 25, 26,
                                      29, 30, 32, 34, 35, 38, 43, 46]))
 
     def test_trim_saddle_points(self):
