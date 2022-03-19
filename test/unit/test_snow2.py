@@ -12,9 +12,9 @@ ps.settings.tqdm['disable'] = True
 
 class Snow2Test:
     def setup_class(self):
-        self.spheres3D = ~ps.generators.lattice_spheres(shape=[220, 220, 220],
-                                                        r=30, spacing=56,
-                                                        offset=25)
+        self.spheres3D = ~ps.generators.lattice_spheres(shape=[110, 110, 110],
+                                                        r=15, spacing=27,
+                                                        offset=20)
         self.spheres2D = ~ps.generators.lattice_spheres(shape=[500, 500], r=30,
                                                         spacing=56, offset=25)
 
@@ -162,18 +162,19 @@ class Snow2Test:
         im = self.spheres3D
         snow = ps.networks.snow2(phases=im, parallelization=None)
         mode = spst.mode(snow.network['pore.extended_diameter'])
-        assert mode[0] == 60
+        assert mode[0] == 30
         D = np.unique(snow.network['pore.extended_diameter'].astype(int))
-        assert np.all(D == np.array([30, 33, 60]))
+        assert np.all(D == np.array([25, 30, 38]))
 
     def test_ensure_correct_sizes_are_returned_dual_phase_3d(self):
         im = self.spheres3D
         phases = im.astype(int) + 1
         snow = ps.networks.snow2(phases=phases, parallelization=None)
         mode = spst.mode(snow.network['pore.extended_diameter'])
-        assert mode[0] == 60
+        assert mode[0] == 30
         D = np.unique(snow.network['pore.extended_diameter'].astype(int))
-        assert np.all(D == np.array([30, 33, 34, 35, 36, 38, 39, 60]))
+        assert np.all(D == np.array([ 7, 12, 17, 19, 20, 22, 24, 25, 26,
+                                     29, 30, 32, 34, 35, 38, 43, 46]))
 
     def test_trim_saddle_points(self):
         np.random.seed(0)
