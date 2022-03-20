@@ -805,7 +805,7 @@ def pc_curve_from_mio(*args, **kwargs):
     return pc_curve(*args, **kwargs)
 
 
-def pc_curve(im, sizes=None, pressures=None, seq=None,
+def pc_curve(im, sizes=None, pc=None, seq=None,
              sigma=0.072, theta=180, voxel_size=1):
     r"""
     Produces a Pc-Snwp curve given a map of meniscus radii or capillary
@@ -819,7 +819,7 @@ def pc_curve(im, sizes=None, pressures=None, seq=None,
     sizes : ndarray, optional
         An image containing the sphere radii at which each voxel was invaded
         during an invasion experiment.
-    pressures : ndarray, optional
+    pc : ndarray, optional
         An image containing the capillary pressures at which each voxel was
         invaded during an invasion experiment.
     seq : ndarray, optional
@@ -827,17 +827,17 @@ def pc_curve(im, sizes=None, pressures=None, seq=None,
         from the ``ibip`` function.
     sigma : float, optional
         The surface tension of the fluid-fluid system of interest.
-        This argument is ignored if ``pressures`` are specified, otherwise it
+        This argument is ignored if ``pc`` are specified, otherwise it
         is used in the Washburn equation to convert ``sizes`` to capillary
-        pressures.
+        pc.
     theta : float
         The contact angle measured through the invading phase in degrees.
-        This argument is ignored if ``pressures`` are specified, otherwise it
+        This argument is ignored if ``pc`` are specified, otherwise it
         is used in the Washburn equation to convert ``sizes`` to capillary
         pressures.
     voxel_size : float
         The voxel resolution of the image.
-        This argument is ignored if ``pressures`` are specified, otherwise it
+        This argument is ignored if ``pc`` are specified, otherwise it
         is used in the Washburn equation to convert ``sizes`` to capillary
         pressures.
 
@@ -850,7 +850,7 @@ def pc_curve(im, sizes=None, pressures=None, seq=None,
         Attribute           Description
         ==================  ===================================================
         pc                  The capillary pressure, either as given in
-                            ``pressures`` or computed from ``sizes`` (see
+                            ``pc`` or computed from ``sizes`` (see
                             Notes).
         snwp                The fraction of void space filled by non-wetting
                             phase at each pressure in ``pc``
@@ -864,9 +864,9 @@ def pc_curve(im, sizes=None, pressures=None, seq=None,
     For more control over how capillary pressure model, it can be computed by
     hand, for example:
 
-        $$ p = \frac{-2*0.072*np.cos(np.deg2rad(180))}{sizes \cdot voxel_size} $$
+        $$ pc = \frac{-2*0.072*np.cos(np.deg2rad(180))}{sizes \cdot voxel_size} $$
 
-    then passed in as the ``pressures`` argument.
+    then passed in as the ``pc`` argument.
 
     """
     tqdm = get_tqdm()
@@ -905,8 +905,8 @@ def pc_curve(im, sizes=None, pressures=None, seq=None,
         pc_curve = Results()
         pc_curve.pc = x
         pc_curve.snwp = y
-    elif pressures is not None:
-        Ps = np.unique(pressures[im])
+    elif pc is not None:
+        Ps = np.unique(pc[im])
         # Utilize the fact that -inf and +inf will be at locations 0 & -1 in Ps
         if Ps[-1] == np.inf:
             Ps[-1] = Ps[-2]*2
@@ -917,7 +917,7 @@ def pc_curve(im, sizes=None, pressures=None, seq=None,
             Ps = np.hstack((Ps[0] - np.abs(Ps[0]/2), Ps))
         y = []
         Vp = im.sum()
-        temp = pressures[im]
+        temp = pc[im]
         for p in tqdm(Ps, **settings.tqdm):
             y.append((temp <= p).sum()/Vp)
         pc_curve = Results()
