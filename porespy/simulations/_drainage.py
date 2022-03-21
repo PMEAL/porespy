@@ -271,7 +271,7 @@ def drainage(im, voxel_size, pc=None, inlets=None, outlets=None, residual=None,
     results.im_pc = inv
     results.im_trapped = trapped
 
-    _pccurve = pc_curve(im=im, pressures=inv)
+    _pccurve = pc_curve(im=im, pc=inv)
     results.pc = _pccurve.pc
     results.snwp = _pccurve.snwp
 
