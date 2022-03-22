@@ -988,18 +988,20 @@
 <h1>find_peaks<a class="headerlink" href="#find-peaks" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="porespy.filters.find_peaks">
-<span class="sig-name descname"><span class="pre">find_peaks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">divs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/filters/_snows.html#find_peaks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.find_peaks" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">find_peaks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">divs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/filters/_snows.html#find_peaks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.find_peaks" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds local maxima in the distance transform</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>dt</strong> (<em>ndarray</em>) – The distance transform of the pore space.  This may be calculated
 and filtered using any means desired.</p></li>
-<li><p><strong>r_max</strong> (<em>scalar</em>) – The size of the structuring element used in the maximum filter.
+<li><p><strong>r_max</strong> (<em>scalar</em>) – The radius of the spherical element used in the maximum filter.
 This controls the localness of any maxima. The default is 4 voxels.</p></li>
-<li><p><strong>strel</strong> (<em>ndarray</em>) – Specifies the shape of the structuring element used to define the
-neighborhood when looking for peaks.  If <code class="docutils literal notranslate"><span class="pre">None</span></code> (the default) is
-specified then a spherical shape is used (or circular in 2D).</p></li>
+<li><p><strong>strel</strong> (<em>ndarray</em>) – Instead of supplying <code class="docutils literal notranslate"><span class="pre">r_max</span></code>, this argument allows a custom
+structuring element allowing control over both size and shape.</p></li>
+<li><p><strong>sigma</strong> (<em>float</em><em> or </em><em>list of floats</em>) – If given, then a gaussian filter is applied to the distance transform
+using this value for the kernel
+(i.e. <code class="docutils literal notranslate"><span class="pre">scipy.ndimage.gaussian_filter(dt,</span> <span class="pre">sigma)</span></code>)</p></li>
 <li><p><strong>divs</strong> (<em>int</em><em> or </em><em>array_like</em>) – The number of times to divide the image for parallel processing.
 If <code class="docutils literal notranslate"><span class="pre">1</span></code> then parallel processing does not occur.  <code class="docutils literal notranslate"><span class="pre">2</span></code> is
 equivalent to <code class="docutils literal notranslate"><span class="pre">[2,</span> <span class="pre">2,</span> <span class="pre">2]</span></code> for a 3D image. The number of cores

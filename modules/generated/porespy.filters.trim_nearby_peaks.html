@@ -988,32 +988,32 @@
 <h1>trim_nearby_peaks<a class="headerlink" href="#trim-nearby-peaks" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="porespy.filters.trim_nearby_peaks">
-<span class="sig-name descname"><span class="pre">trim_nearby_peaks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">peaks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/filters/_snows.html#trim_nearby_peaks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.trim_nearby_peaks" title="Permalink to this definition">¶</a></dt>
-<dd><p>Finds pairs of peaks that are nearer to each other than to the solid
-phase, and removes the peak that is closer to the solid.</p>
+<span class="sig-name descname"><span class="pre">trim_nearby_peaks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">peaks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/filters/_snows.html#trim_nearby_peaks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.trim_nearby_peaks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes peaks that are nearer to another peak than to solid</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>peaks</strong> (<em>ndarray</em>) – A boolean image containing True values to mark peaks in the
-distance transform (<code class="docutils literal notranslate"><span class="pre">dt</span></code>)</p></li>
-<li><p><strong>dt</strong> (<em>ndarray</em>) – The distance transform of the pore space for which the true peaks
-are sought.</p></li>
+<li><p><strong>peaks</strong> (<em>ndarray</em>) – A image containing nonzeros values indicating peaks in the distance
+transform (<code class="docutils literal notranslate"><span class="pre">dt</span></code>).  If <code class="docutils literal notranslate"><span class="pre">peaks</span></code> is boolean, a boolean is returned;
+if <code class="docutils literal notranslate"><span class="pre">peaks</span></code> have already been labelled, then the original labels
+are returned, missing the trimmed peaks.</p></li>
+<li><p><strong>dt</strong> (<em>ndarray</em>) – The distance transform of the pore space</p></li>
 <li><p><strong>f</strong> (<em>scalar</em>) – Controls how close peaks must be before they are considered near
-to each other. Sets of peaks are tagged as near if
+to each other. Sets of peaks are tagged as too near if
 <code class="docutils literal notranslate"><span class="pre">d_neighbor</span> <span class="pre">&lt;</span> <span class="pre">f</span> <span class="pre">*</span> <span class="pre">d_solid</span></code>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>image</strong> – An array the same size as <code class="docutils literal notranslate"><span class="pre">peaks</span></code> containing a subset of the
-peaks in the original image.</p>
+<dd class="field-even"><p><strong>image</strong> – An array the same size and type as <code class="docutils literal notranslate"><span class="pre">peaks</span></code> containing a subset of
+the peaks in the original image.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>ndarray</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>Each pair of peaks is considered simultaneously, so for a triplet of
-peaks each pair is considered.  This ensures that only the single peak
+<p>Each pair of peaks is considered simultaneously, so for a triplet of nearby
+peaks, each pair is considered.  This ensures that only the single peak
 that is furthest from the solid is kept.  No iteration is required.</p>
 <p class="rubric">References</p>
 <p>[1] Gostick, J. “A versatile and efficient network extraction

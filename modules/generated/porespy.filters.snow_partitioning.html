@@ -988,9 +988,9 @@
 <h1>snow_partitioning<a class="headerlink" href="#snow-partitioning" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="porespy.filters.snow_partitioning">
-<span class="sig-name descname"><span class="pre">snow_partitioning</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.4</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/filters/_snows.html#snow_partitioning"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.snow_partitioning" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">snow_partitioning</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">peaks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/filters/_snows.html#snow_partitioning"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.snow_partitioning" title="Permalink to this definition">¶</a></dt>
 <dd><p>Partition the void space into pore regions using a marker-based
-watershed algorithm, with specially filtered peaks as markers.</p>
+watershed algorithm</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -1005,34 +1005,45 @@ Maximum filter stage that is used to find peaks. The default is 4.</p></li>
 default is 0.4.  If 0 is given then the filter is not applied,
 which is useful if a distance transform is supplied as the <code class="docutils literal notranslate"><span class="pre">im</span></code>
 argument that has already been processed.</p></li>
+<li><p><strong>peaks</strong> (<em>ndarray</em><em>, </em><em>optional</em>) – Optionally, it is possible to supply an array containing peaks, which
+are used as markers in the watershed segmentation. If a boolean array
+is received (<code class="docutils literal notranslate"><span class="pre">True</span></code> indicating peaks), then <code class="docutils literal notranslate"><span class="pre">scipy.ndimage.label</span></code>
+with cubic connectivity is used to label them. If an integer array is
+received then it is assumed the peaks have already been labelled.
+This allows for comparison of peak finding algorithms for instance.
+If this argument is provided, then <code class="docutils literal notranslate"><span class="pre">r_max</span></code> and <code class="docutils literal notranslate"><span class="pre">sigma</span></code> are ignored
+since these are specfically used in the peak finding process.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><strong>results</strong> – A custom object with the follow data as attributes:</p>
-<ul class="simple">
-<li><dl class="simple">
-<dt>’im’</dt><dd><p>The binary image of the void space</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>’dt’</dt><dd><p>The distance transform of the image</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>’peaks’</dt><dd><p>The peaks of the distance transform after applying the steps
-of the SNOW algorithm</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>’regions’</dt><dd><p>The void space partitioned into pores using a marker
-based watershed with the peaks found by the SNOW algorithm</p>
-</dd>
-</dl>
-</li>
-</ul>
+<dd class="field-even"><p><p><strong>results</strong> – A custom object with the following data as attributes:</p>
+<table class="table">
+<colgroup>
+<col style="width: 17%" />
+<col style="width: 83%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Item</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">im</span></code></p></td>
+<td><p>The binary image of the void space</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">dt</span></code></p></td>
+<td><p>The distance transform of the image</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">peaks</span></code></p></td>
+<td><p>The peaks of the distance transform after applying the
+steps of the SNOW algorithm</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">regions</span></code></p></td>
+<td><p>The void space partitioned into pores using a marker
+based watershed with the peaks found by the SNOW algorithm</p></td>
+</tr>
+</tbody>
+</table>
 </p>
 </dd>
 <dt class="field-odd">Return type</dt>

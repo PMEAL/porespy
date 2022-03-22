@@ -988,7 +988,7 @@
 <h1>snow2<a class="headerlink" href="#snow2" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="porespy.networks.snow2">
-<span class="sig-name descname"><span class="pre">snow2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phases</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase_alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accuracy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'standard'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voxel_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parallelization</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/networks/_snow2.html#snow2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.networks.snow2" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">snow2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phases</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase_alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accuracy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'standard'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voxel_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">peaks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parallelization</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/networks/_snow2.html#snow2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.networks.snow2" title="Permalink to this definition">¶</a></dt>
 <dd><p>Applies the SNOW algorithm to each phase indicated in <code class="docutils literal notranslate"><span class="pre">phases</span></code>.</p>
 <p>This function is a combination of <code class="docutils literal notranslate"><span class="pre">snow</span></code> <a class="footnote-reference brackets" href="#id5" id="id1">1</a>, <code class="docutils literal notranslate"><span class="pre">snow_dual</span></code> <a class="footnote-reference brackets" href="#id6" id="id2">2</a>,
 <code class="docutils literal notranslate"><span class="pre">snow_n</span></code> <a class="footnote-reference brackets" href="#id7" id="id3">3</a>, and <code class="docutils literal notranslate"><span class="pre">snow_parallel</span></code> <a class="footnote-reference brackets" href="#id8" id="id4">4</a> from previous versions.</p>
@@ -1010,8 +1010,8 @@ applied afterward using <code class="docutils literal notranslate"><span class="
 <li><p><strong>boundary_width</strong> (<em>depends</em>) – <p>Number of voxels to add to the beginning and end of each axis.
 This argument can either be a scalar or a list. If a scalar is
 passed, it will be applied to the beginning and end of all axes.
-In case of a list, you can specify the number of voxels for each
-axis individually. Here are some examples:</p>
+If a list, you can specify the number of voxels for each axis
+individually. Here are some examples:</p>
 <blockquote>
 <div><ul>
 <li><p>[0, 3, 0]: 3 voxels only applied to the y-axis.</p></li>
@@ -1054,13 +1054,25 @@ of a voxel, so the volume of a voxel would be <strong>voxel_size</strong>-cubed.
 Maximum filter stage that is used to find peaks. The default is 4.</p></li>
 <li><p><strong>sigma</strong> (<em>float</em>) – The standard deviation of the Gaussian filter used in step 1. The
 default is 0.4.  If 0 is given then the filter is not applied.</p></li>
+<li><p><strong>peaks</strong> (<em>ndarray</em><em>, </em><em>optional</em>) – Optionally, it is possible to supply an array containing peaks, which
+are used as markers in the watershed segmentation. If a boolean array
+is received (<code class="docutils literal notranslate"><span class="pre">True</span></code> indicating peaks), then <code class="docutils literal notranslate"><span class="pre">scipy.ndimage.label</span></code>
+with cubic connectivity is used to label them. If an integer array is
+received then it is assumed the peaks have already been labelled.
+This allows for comparison of peak finding algorithms for instance.
+If this argument is provided, then <code class="docutils literal notranslate"><span class="pre">r_max</span></code> and <code class="docutils literal notranslate"><span class="pre">sigma</span></code> are ignored
+since these are specfically used in the peak finding process. This
+array should contain peaks for all phases, and they are masked by
+the <code class="docutils literal notranslate"><span class="pre">phases</span></code> argument. If <code class="docutils literal notranslate"><span class="pre">peaks</span></code> are provided the parallelization
+is disabled.</p></li>
 <li><p><strong>parallelization</strong> (<em>dict</em>) – The arguments for controlling the parallelization of the watershed
 function are rolled into this dictionary, otherwise the function
 signature would become too complex. Refer to the docstring of
 <code class="docutils literal notranslate"><span class="pre">snow_partitioning_parallel</span></code> for complete details. If no values
 are provided then the defaults for that function are used here.
 To disable parallelization pass <code class="docutils literal notranslate"><span class="pre">parallel=None</span></code>, which will
-invoke the standard <code class="docutils literal notranslate"><span class="pre">snow_partitioning</span></code> or <code class="docutils literal notranslate"><span class="pre">snow_partitioning_n</span></code>.</p></li>
+invoke the standard <code class="docutils literal notranslate"><span class="pre">snow_partitioning</span></code> or <code class="docutils literal notranslate"><span class="pre">snow_partitioning_n</span></code>.
+If <code class="docutils literal notranslate"><span class="pre">peaks</span></code> are provided the parallelization is disabled.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>

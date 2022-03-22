@@ -180,17 +180,21 @@
 <span class="kn">from</span> <span class="nn">skimage.segmentation</span> <span class="kn">import</span> <span class="n">watershed</span>
 <span class="kn">from</span> <span class="nn">skimage.morphology</span> <span class="kn">import</span> <span class="n">ball</span><span class="p">,</span> <span class="n">disk</span><span class="p">,</span> <span class="n">square</span><span class="p">,</span> <span class="n">cube</span>
 <span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">_check_for_singleton_axes</span>
-<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">extend_slice</span>
+<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">extend_slice</span><span class="p">,</span> <span class="n">ps_rect</span><span class="p">,</span> <span class="n">ps_round</span>
 <span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">Results</span>
+<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">get_tqdm</span>
 <span class="kn">from</span> <span class="nn">porespy.filters</span> <span class="kn">import</span> <span class="n">chunked_func</span>
 <span class="kn">from</span> <span class="nn">porespy</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">loguru</span> <span class="kn">import</span> <span class="n">logger</span>
 
 
-<div class="viewcode-block" id="snow_partitioning"><a class="viewcode-back" href="../../../modules/generated/porespy.filters.snow_partitioning.html#porespy.filters.snow_partitioning">[docs]</a><span class="k">def</span> <span class="nf">snow_partitioning</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">r_max</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">0.4</span><span class="p">):</span>
+<span class="n">tqdm</span> <span class="o">=</span> <span class="n">get_tqdm</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="snow_partitioning"><a class="viewcode-back" href="../../../modules/generated/porespy.filters.snow_partitioning.html#porespy.filters.snow_partitioning">[docs]</a><span class="k">def</span> <span class="nf">snow_partitioning</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">r_max</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">peaks</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Partition the void space into pore regions using a marker-based</span>
-<span class="sd">    watershed algorithm, with specially filtered peaks as markers.</span>
+<span class="sd">    watershed algorithm</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -209,25 +213,31 @@
 <span class="sd">        default is 0.4.  If 0 is given then the filter is not applied,</span>
 <span class="sd">        which is useful if a distance transform is supplied as the ``im``</span>
 <span class="sd">        argument that has already been processed.</span>
+<span class="sd">    peaks : ndarray, optional</span>
+<span class="sd">        Optionally, it is possible to supply an array containing peaks, which</span>
+<span class="sd">        are used as markers in the watershed segmentation. If a boolean array</span>
+<span class="sd">        is received (``True`` indicating peaks), then ``scipy.ndimage.label``</span>
+<span class="sd">        with cubic connectivity is used to label them. If an integer array is</span>
+<span class="sd">        received then it is assumed the peaks have already been labelled.</span>
+<span class="sd">        This allows for comparison of peak finding algorithms for instance.</span>
+<span class="sd">        If this argument is provided, then ``r_max`` and ``sigma`` are ignored</span>
+<span class="sd">        since these are specfically used in the peak finding process.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    results : Results object</span>
-<span class="sd">        A custom object with the follow data as attributes:</span>
+<span class="sd">        A custom object with the following data as attributes:</span>
 
-<span class="sd">        - &#39;im&#39;</span>
-<span class="sd">            The binary image of the void space</span>
-
-<span class="sd">        - &#39;dt&#39;</span>
-<span class="sd">            The distance transform of the image</span>
-
-<span class="sd">        - &#39;peaks&#39;</span>
-<span class="sd">            The peaks of the distance transform after applying the steps</span>
-<span class="sd">            of the SNOW algorithm</span>
-
-<span class="sd">        - &#39;regions&#39;</span>
-<span class="sd">            The void space partitioned into pores using a marker</span>
-<span class="sd">            based watershed with the peaks found by the SNOW algorithm</span>
+<span class="sd">        ============ ==========================================================</span>
+<span class="sd">        Item         Description</span>
+<span class="sd">        ============ ==========================================================</span>
+<span class="sd">        ``im``       The binary image of the void space</span>
+<span class="sd">        ``dt``       The distance transform of the image</span>
+<span class="sd">        ``peaks``    The peaks of the distance transform after applying the</span>
+<span class="sd">                     steps of the SNOW algorithm</span>
+<span class="sd">        ``regions``  The void space partitioned into pores using a marker</span>
+<span class="sd">                     based watershed with the peaks found by the SNOW algorithm</span>
+<span class="sd">        ============ ==========================================================</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -252,38 +262,37 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="s2">&quot;Peforming distance transform&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">im_shape</span> <span class="o">==</span> <span class="mi">1</span><span class="p">):</span>
             <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">squeeze</span><span class="p">())</span>
-            <span class="n">dt</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+            <span class="n">dt</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">im_shape</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">sigma</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Applying Gaussian blur with sigma = </span><span class="si">{</span><span class="n">sigma</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">dt</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">gaussian_filter</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">peaks</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">sigma</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Applying Gaussian blur with sigma = </span><span class="si">{</span><span class="n">sigma</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">dt_blurred</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">gaussian_filter</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">)</span><span class="o">*</span><span class="n">im</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dt_blurred</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+        <span class="n">peaks</span> <span class="o">=</span> <span class="n">find_peaks</span><span class="p">(</span><span class="n">dt</span><span class="o">=</span><span class="n">dt_blurred</span><span class="p">,</span> <span class="n">r_max</span><span class="o">=</span><span class="n">r_max</span><span class="p">)</span>
 
-    <span class="n">peaks</span> <span class="o">=</span> <span class="n">find_peaks</span><span class="p">(</span><span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">r_max</span><span class="o">=</span><span class="n">r_max</span><span class="p">,</span> <span class="n">divs</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Initial number of peaks: </span><span class="si">{</span><span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">peaks</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">peaks</span> <span class="o">=</span> <span class="n">trim_saddle_points</span><span class="p">(</span><span class="n">peaks</span><span class="o">=</span><span class="n">peaks</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Peaks after trimming saddle points: </span><span class="si">{</span><span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">peaks</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">peaks</span> <span class="o">=</span> <span class="n">trim_nearby_peaks</span><span class="p">(</span><span class="n">peaks</span><span class="o">=</span><span class="n">peaks</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
-    <span class="n">peaks</span><span class="p">,</span> <span class="n">N</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">peaks</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Peaks after trimming nearby peaks: </span><span class="si">{</span><span class="n">N</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="c1"># Note that the mask argument results in some void voxels left unlabeled</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Initial number of peaks: </span><span class="si">{</span><span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">peaks</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">peaks</span> <span class="o">=</span> <span class="n">trim_saddle_points</span><span class="p">(</span><span class="n">peaks</span><span class="o">=</span><span class="n">peaks</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Peaks after trimming saddle points: </span><span class="si">{</span><span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">peaks</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">peaks</span> <span class="o">=</span> <span class="n">trim_nearby_peaks</span><span class="p">(</span><span class="n">peaks</span><span class="o">=</span><span class="n">peaks</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Peaks after trimming nearby points: </span><span class="si">{</span><span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">peaks</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">peaks</span><span class="p">,</span> <span class="n">N</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">peaks</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">structure</span><span class="o">=</span><span class="n">ps_rect</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span><span class="p">))</span>
     <span class="n">regions</span> <span class="o">=</span> <span class="n">watershed</span><span class="p">(</span><span class="n">image</span><span class="o">=-</span><span class="n">dt</span><span class="p">,</span> <span class="n">markers</span><span class="o">=</span><span class="n">peaks</span><span class="p">)</span>
-    <span class="n">regions</span> <span class="o">=</span> <span class="n">regions</span> <span class="o">*</span> <span class="p">(</span><span class="n">im</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
     <span class="n">tup</span> <span class="o">=</span> <span class="n">Results</span><span class="p">()</span>
     <span class="n">tup</span><span class="o">.</span><span class="n">im</span> <span class="o">=</span> <span class="n">im</span>
     <span class="n">tup</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="n">dt</span>
     <span class="n">tup</span><span class="o">.</span><span class="n">peaks</span> <span class="o">=</span> <span class="n">peaks</span>
-    <span class="n">tup</span><span class="o">.</span><span class="n">regions</span> <span class="o">=</span> <span class="n">regions</span>
+    <span class="n">tup</span><span class="o">.</span><span class="n">regions</span> <span class="o">=</span> <span class="n">regions</span> <span class="o">*</span> <span class="p">(</span><span class="n">im</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">tup</span></div>
 
 
-<div class="viewcode-block" id="snow_partitioning_n"><a class="viewcode-back" href="../../../modules/generated/porespy.filters.snow_partitioning_n.html#porespy.filters.snow_partitioning_n">[docs]</a><span class="k">def</span> <span class="nf">snow_partitioning_n</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">r_max</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">0.4</span><span class="p">):</span>
+<div class="viewcode-block" id="snow_partitioning_n"><a class="viewcode-back" href="../../../modules/generated/porespy.filters.snow_partitioning_n.html#porespy.filters.snow_partitioning_n">[docs]</a><span class="k">def</span> <span class="nf">snow_partitioning_n</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">r_max</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">peaks</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function partitions an imaging oontain an arbitrary number of</span>
-<span class="sd">    phases into regions using a marker-based watershed segmentation. Its</span>
-<span class="sd">    an extension of snow_partitioning function with all phases partitioned</span>
-<span class="sd">    together.</span>
+<span class="sd">    phases into regions using a marker-based watershed segmentation.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -296,11 +305,18 @@
 <span class="sd">    sigma : scalar</span>
 <span class="sd">        The standard deviation of the Gaussian filter used. The default is</span>
 <span class="sd">        0.4. If 0 is given then the filter is not applied.</span>
+<span class="sd">    peaks : ndarray, optional</span>
+<span class="sd">        Optionally, it is possible to supply an array containing peaks, which</span>
+<span class="sd">        are used as markers in the watershed segmentation. Must be a boolean</span>
+<span class="sd">        array with ``True`` indicating peaks; ``scipy.ndimage.label``</span>
+<span class="sd">        with cubic connectivity is used to label them. If this argument is</span>
+<span class="sd">        provided then ``r_max`` and ``sigma`` are ignored, since these are</span>
+<span class="sd">        specfically used in the peak finding process.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    results : Results object</span>
-<span class="sd">        A custom object with the follow data as attributes:</span>
+<span class="sd">        A custom object with the following data as attributes:</span>
 
 <span class="sd">        - &#39;im&#39;</span>
 <span class="sd">            The original image of the porous material</span>
@@ -343,22 +359,27 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Perform snow on each phase and merge all segmentation and dt together</span>
-    <span class="n">phases_num</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">im</span> <span class="o">*</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="n">phases_num</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trim_zeros</span><span class="p">(</span><span class="n">phases_num</span><span class="p">)</span>
+    <span class="n">phases_num</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">im</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">phases_num</span> <span class="o">=</span> <span class="n">phases_num</span><span class="p">[</span><span class="n">phases_num</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
     <span class="n">combined_dt</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">combined_region</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">peaks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">_peaks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
     <span class="n">num</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">phases_num</span><span class="p">):</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Processing Phase </span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">phase_snow</span> <span class="o">=</span> <span class="n">snow_partitioning</span><span class="p">(</span><span class="n">im</span> <span class="o">==</span> <span class="n">j</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">r_max</span><span class="o">=</span><span class="n">r_max</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">)</span>
+        <span class="c1"># Isolate active phase from image</span>
+        <span class="n">phase</span> <span class="o">=</span> <span class="n">im</span> <span class="o">==</span> <span class="n">j</span>
+        <span class="c1"># Limit peaks to active phase only</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">peaks</span><span class="o">*</span><span class="n">phase</span> <span class="k">if</span> <span class="n">peaks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">phase_snow</span> <span class="o">=</span> <span class="n">snow_partitioning</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">r_max</span><span class="o">=</span><span class="n">r_max</span><span class="p">,</span>
+                                       <span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">,</span> <span class="n">peaks</span><span class="o">=</span><span class="n">temp</span><span class="p">)</span>
         <span class="n">combined_dt</span> <span class="o">+=</span> <span class="n">phase_snow</span><span class="o">.</span><span class="n">dt</span>
         <span class="n">phase_snow</span><span class="o">.</span><span class="n">regions</span> <span class="o">*=</span> <span class="n">phase_snow</span><span class="o">.</span><span class="n">im</span>
         <span class="n">phase_snow</span><span class="o">.</span><span class="n">regions</span> <span class="o">+=</span> <span class="n">num</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
         <span class="n">phase_ws</span> <span class="o">=</span> <span class="n">phase_snow</span><span class="o">.</span><span class="n">regions</span> <span class="o">*</span> <span class="n">phase_snow</span><span class="o">.</span><span class="n">im</span>
         <span class="n">phase_ws</span><span class="p">[</span><span class="n">phase_ws</span> <span class="o">==</span> <span class="n">num</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">combined_region</span> <span class="o">+=</span> <span class="n">phase_ws</span>
-        <span class="n">peaks</span> <span class="o">=</span> <span class="n">peaks</span> <span class="o">+</span> <span class="n">phase_snow</span><span class="o">.</span><span class="n">peaks</span> <span class="o">+</span> <span class="p">(</span><span class="n">phase_snow</span><span class="o">.</span><span class="n">peaks</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">*</span><span class="n">num</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">_peaks</span> <span class="o">=</span> <span class="n">_peaks</span> <span class="o">+</span> <span class="n">phase_snow</span><span class="o">.</span><span class="n">peaks</span> <span class="o">+</span> <span class="p">(</span><span class="n">phase_snow</span><span class="o">.</span><span class="n">peaks</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">*</span><span class="n">num</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
         <span class="n">num</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">combined_region</span><span class="p">))</span>
 
     <span class="n">tup</span> <span class="o">=</span> <span class="n">Results</span><span class="p">()</span>
@@ -366,11 +387,11 @@
     <span class="n">tup</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="n">combined_dt</span>
     <span class="n">tup</span><span class="o">.</span><span class="n">phase_max_label</span> <span class="o">=</span> <span class="n">num</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
     <span class="n">tup</span><span class="o">.</span><span class="n">regions</span> <span class="o">=</span> <span class="n">combined_region</span>
-    <span class="n">tup</span><span class="o">.</span><span class="n">peaks</span> <span class="o">=</span> <span class="n">peaks</span>
+    <span class="n">tup</span><span class="o">.</span><span class="n">peaks</span> <span class="o">=</span> <span class="n">_peaks</span>
     <span class="k">return</span> <span class="n">tup</span></div>
 
 
-<div class="viewcode-block" id="find_peaks"><a class="viewcode-back" href="../../../modules/generated/porespy.filters.find_peaks.html#porespy.filters.find_peaks">[docs]</a><span class="k">def</span> <span class="nf">find_peaks</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">r_max</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">strel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">divs</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<div class="viewcode-block" id="find_peaks"><a class="viewcode-back" href="../../../modules/generated/porespy.filters.find_peaks.html#porespy.filters.find_peaks">[docs]</a><span class="k">def</span> <span class="nf">find_peaks</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">r_max</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">strel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">divs</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Finds local maxima in the distance transform</span>
 
@@ -380,12 +401,15 @@
 <span class="sd">        The distance transform of the pore space.  This may be calculated</span>
 <span class="sd">        and filtered using any means desired.</span>
 <span class="sd">    r_max : scalar</span>
-<span class="sd">        The size of the structuring element used in the maximum filter.</span>
+<span class="sd">        The radius of the spherical element used in the maximum filter.</span>
 <span class="sd">        This controls the localness of any maxima. The default is 4 voxels.</span>
 <span class="sd">    strel : ndarray</span>
-<span class="sd">        Specifies the shape of the structuring element used to define the</span>
-<span class="sd">        neighborhood when looking for peaks.  If ``None`` (the default) is</span>
-<span class="sd">        specified then a spherical shape is used (or circular in 2D).</span>
+<span class="sd">        Instead of supplying ``r_max``, this argument allows a custom</span>
+<span class="sd">        structuring element allowing control over both size and shape.</span>
+<span class="sd">    sigma : float or list of floats</span>
+<span class="sd">        If given, then a gaussian filter is applied to the distance transform</span>
+<span class="sd">        using this value for the kernel</span>
+<span class="sd">        (i.e. ``scipy.ndimage.gaussian_filter(dt, sigma)``)</span>
 <span class="sd">    divs : int or array_like</span>
 <span class="sd">        The number of times to divide the image for parallel processing.</span>
 <span class="sd">        If ``1`` then parallel processing does not occur.  ``2`` is</span>
@@ -414,14 +438,10 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">im</span> <span class="o">=</span> <span class="n">dt</span> <span class="o">&gt;</span> <span class="mi">0</span>
     <span class="n">_check_for_singleton_axes</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
-
     <span class="k">if</span> <span class="n">strel</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="n">strel</span> <span class="o">=</span> <span class="n">disk</span>
-        <span class="k">elif</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-            <span class="n">strel</span> <span class="o">=</span> <span class="n">ball</span>
-        <span class="k">else</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Only 2d and 3d images are supported&quot;</span><span class="p">)</span>
+        <span class="n">strel</span> <span class="o">=</span> <span class="n">ps_round</span><span class="p">(</span><span class="n">r</span><span class="o">=</span><span class="n">r_max</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="n">im</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">sigma</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">gaussian_filter</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">)</span>
     <span class="n">parallel</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">divs</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
         <span class="n">divs</span> <span class="o">=</span> <span class="p">[</span><span class="n">divs</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
@@ -429,13 +449,15 @@
         <span class="n">parallel</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Performing </span><span class="si">{</span><span class="n">insp</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span><span class="si">}</span><span class="s1"> in parallel&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">parallel</span><span class="p">:</span>
-        <span class="n">overlap</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">strel</span><span class="p">(</span><span class="n">r_max</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">overlap</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">strel</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
         <span class="n">mx</span> <span class="o">=</span> <span class="n">chunked_func</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">spim</span><span class="o">.</span><span class="n">maximum_filter</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">,</span>
-                          <span class="n">im_arg</span><span class="o">=</span><span class="s1">&#39;input&#39;</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="n">dt</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="o">~</span><span class="n">im</span><span class="p">),</span>
-                          <span class="n">footprint</span><span class="o">=</span><span class="n">strel</span><span class="p">(</span><span class="n">r_max</span><span class="p">),</span>
+                          <span class="n">im_arg</span><span class="o">=</span><span class="s1">&#39;input&#39;</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="n">dt</span> <span class="o">+</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="p">(</span><span class="o">~</span><span class="n">im</span><span class="p">),</span>
+                          <span class="n">footprint</span><span class="o">=</span><span class="n">strel</span><span class="p">,</span>
                           <span class="n">cores</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">ncores</span><span class="p">,</span> <span class="n">divs</span><span class="o">=</span><span class="n">divs</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">mx</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">maximum_filter</span><span class="p">(</span><span class="n">dt</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="o">~</span><span class="n">im</span><span class="p">),</span> <span class="n">footprint</span><span class="o">=</span><span class="n">strel</span><span class="p">(</span><span class="n">r_max</span><span class="p">))</span>
+        <span class="c1"># The &quot;2 * (~im)&quot; sets solid voxels to 2 so peaks are not found</span>
+        <span class="c1"># at the void/solid interface</span>
+        <span class="n">mx</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">maximum_filter</span><span class="p">(</span><span class="n">dt</span> <span class="o">+</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="p">(</span><span class="o">~</span><span class="n">im</span><span class="p">),</span> <span class="n">footprint</span><span class="o">=</span><span class="n">strel</span><span class="p">)</span>
     <span class="n">peaks</span> <span class="o">=</span> <span class="p">(</span><span class="n">dt</span> <span class="o">==</span> <span class="n">mx</span><span class="p">)</span> <span class="o">*</span> <span class="n">im</span>
     <span class="k">return</span> <span class="n">peaks</span></div>
 
@@ -508,77 +530,142 @@
 <span class="sd">    using marker-based watershed segmentation&quot;.  Physical Review E. (2017)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">peaks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">peaks</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">new_peaks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">peaks</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">dt</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
         <span class="kn">from</span> <span class="nn">skimage.morphology</span> <span class="kn">import</span> <span class="n">square</span> <span class="k">as</span> <span class="n">cube</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="kn">from</span> <span class="nn">skimage.morphology</span> <span class="kn">import</span> <span class="n">cube</span>
     <span class="n">labels</span><span class="p">,</span> <span class="n">N</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">peaks</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
     <span class="n">slices</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">find_objects</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
-    <span class="n">hits</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">slices</span><span class="p">):</span>
-        <span class="n">peak_i</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">==</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="n">R</span> <span class="o">=</span> <span class="p">(</span><span class="n">dt</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">*</span> <span class="n">peak_i</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
-        <span class="n">sx</span> <span class="o">=</span> <span class="n">extend_slice</span><span class="p">(</span><span class="n">slices</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">shape</span><span class="o">=</span><span class="n">peaks</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="nb">max</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">R</span><span class="p">)))</span>
-        <span class="n">peak_i</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[</span><span class="n">sx</span><span class="p">]</span> <span class="o">==</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">enumerate</span><span class="p">(</span><span class="n">slices</span><span class="p">),</span> <span class="o">**</span><span class="n">settings</span><span class="o">.</span><span class="n">tqdm</span><span class="p">):</span>
+        <span class="n">sx</span> <span class="o">=</span> <span class="n">extend_slice</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">peaks</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="n">maxiter</span><span class="p">)</span>
+        <span class="n">peaks_i</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[</span><span class="n">sx</span><span class="p">]</span> <span class="o">==</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
         <span class="n">dt_i</span> <span class="o">=</span> <span class="n">dt</span><span class="p">[</span><span class="n">sx</span><span class="p">]</span>
-        <span class="n">peak_dil</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">peak_i</span><span class="p">)</span>
+        <span class="n">im_i</span> <span class="o">=</span> <span class="n">dt_i</span> <span class="o">&gt;</span> <span class="mi">0</span>
         <span class="n">iters</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">while</span> <span class="n">iters</span> <span class="o">&lt;</span> <span class="n">maxiter</span><span class="p">:</span>
             <span class="n">iters</span> <span class="o">+=</span> <span class="mi">1</span>
-            <span class="n">peak_orig</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">peak_dil</span><span class="p">)</span>
-            <span class="n">peak_dil</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">binary_dilation</span><span class="p">(</span><span class="n">peak_orig</span><span class="p">,</span> <span class="n">structure</span><span class="o">=</span><span class="n">cube</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
-            <span class="n">rim</span> <span class="o">=</span> <span class="n">peak_dil</span> <span class="o">*</span> <span class="n">dt_i</span> <span class="o">*</span> <span class="p">(</span><span class="o">~</span><span class="n">peak_orig</span><span class="p">)</span>
-            <span class="n">check_1</span> <span class="o">=</span> <span class="n">rim</span> <span class="o">&gt;=</span> <span class="n">R</span>
-            <span class="k">if</span> <span class="n">check_1</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="k">break</span>  <span class="c1"># True peak</span>
-            <span class="n">L</span><span class="p">,</span> <span class="n">check_2</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">check_1</span><span class="p">,</span> <span class="n">structure</span><span class="o">=</span><span class="n">cube</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
-            <span class="k">if</span> <span class="n">check_2</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
-                <span class="n">hits</span> <span class="o">+=</span> <span class="mi">1</span>
-                <span class="n">peaks</span><span class="p">[</span><span class="n">sx</span><span class="p">]</span> <span class="o">=</span> <span class="n">peaks</span><span class="p">[</span><span class="n">sx</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="o">~</span><span class="n">peak_i</span><span class="p">)</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Saddle point found&quot;</span><span class="p">)</span>
-                <span class="k">break</span>  <span class="c1"># Saddle point</span>
-            <span class="n">peak_dil</span> <span class="o">=</span> <span class="p">(</span><span class="n">peak_dil</span><span class="o">*</span><span class="n">dt_i</span><span class="p">)</span> <span class="o">==</span> <span class="n">R</span>
-            <span class="k">if</span> <span class="n">peak_dil</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">==</span> <span class="n">peak_orig</span><span class="o">.</span><span class="n">sum</span><span class="p">():</span>
-                <span class="c1"># hits += 1</span>
-                <span class="c1"># peaks[sx] = peaks[sx]*(~peak_i)</span>
-                <span class="c1"># logger.debug(&quot;Ridge point found&quot;)</span>
-                <span class="k">break</span>  <span class="c1"># Ridge point</span>
+            <span class="n">peaks_dil</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">binary_dilation</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">peaks_i</span><span class="p">,</span> <span class="n">structure</span><span class="o">=</span><span class="n">cube</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+            <span class="n">peaks_max</span> <span class="o">=</span> <span class="n">peaks_dil</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">dt_i</span> <span class="o">*</span> <span class="n">peaks_dil</span><span class="p">)</span>
+            <span class="n">peaks_extended</span> <span class="o">=</span> <span class="p">(</span><span class="n">peaks_max</span> <span class="o">==</span> <span class="n">dt_i</span><span class="p">)</span> <span class="o">*</span> <span class="n">im_i</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">peaks_extended</span> <span class="o">==</span> <span class="n">peaks_i</span><span class="p">):</span>
+                <span class="n">new_peaks</span><span class="p">[</span><span class="n">sx</span><span class="p">]</span> <span class="o">+=</span> <span class="n">peaks_i</span>
+                <span class="k">break</span>  <span class="c1"># Found a true peak</span>
+            <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">peaks_extended</span> <span class="o">*</span> <span class="n">peaks_i</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">break</span>  <span class="c1"># Found a saddle point</span>
+            <span class="n">peaks_i</span> <span class="o">=</span> <span class="n">peaks_extended</span>
         <span class="k">if</span> <span class="n">iters</span> <span class="o">&gt;=</span> <span class="n">maxiter</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">iters</span><span class="si">}</span><span class="s2"> iterations reached on point </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">hits</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="n">hits</span><span class="si">}</span><span class="s2"> saddle points&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">peaks</span></div>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="s2">&quot;Maximum number of iterations reached, consider &quot;</span>
+                <span class="o">+</span> <span class="s2">&quot;running again with a larger value of max_iters&quot;</span>
+            <span class="p">)</span>
+    <span class="k">return</span> <span class="n">new_peaks</span><span class="o">*</span><span class="n">peaks</span></div>
 
 
-<div class="viewcode-block" id="trim_nearby_peaks"><a class="viewcode-back" href="../../../modules/generated/porespy.filters.trim_nearby_peaks.html#porespy.filters.trim_nearby_peaks">[docs]</a><span class="k">def</span> <span class="nf">trim_nearby_peaks</span><span class="p">(</span><span class="n">peaks</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">f</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">trim_saddle_points_legacy</span><span class="p">(</span><span class="n">peaks</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">maxiter</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Finds pairs of peaks that are nearer to each other than to the solid</span>
-<span class="sd">    phase, and removes the peak that is closer to the solid.</span>
+<span class="sd">    Removes peaks that were mistakenly identified because they lied on a</span>
+<span class="sd">    saddle or ridge in the distance transform that was not actually a true</span>
+<span class="sd">    local peak.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    peaks : ND-array</span>
+<span class="sd">        A boolean image containing True values to mark peaks in the distance</span>
+<span class="sd">        transform (``dt``)</span>
+<span class="sd">    dt : ND-array</span>
+<span class="sd">        The distance transform of the pore space for which the true peaks are</span>
+<span class="sd">        sought.</span>
+<span class="sd">    maxiter : int</span>
+<span class="sd">        The maximum number of iterations to run while eroding the saddle</span>
+<span class="sd">        points.  The default is 10, which is usually not reached; however,</span>
+<span class="sd">        a warning is issued if the loop ends prior to removing all saddle</span>
+<span class="sd">        points.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    image : ND-array</span>
+<span class="sd">        An image with fewer peaks than the input image</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This version of the function was included in versions of PoreSpy &lt; 2. It</span>
+<span class="sd">    is too aggressive in trimming peaks, so was rewritten for PoreSpy &gt;= 2.</span>
+<span class="sd">    This is included here for legacy reasons</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Gostick, J. &quot;A versatile and efficient network extraction algorithm</span>
+<span class="sd">    using marker-based watershed segmenation&quot;.  Physical Review E. (2017)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">new_peaks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">peaks</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dt</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">skimage.morphology</span> <span class="kn">import</span> <span class="n">square</span> <span class="k">as</span> <span class="n">cube</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">skimage.morphology</span> <span class="kn">import</span> <span class="n">cube</span>
+    <span class="n">labels</span><span class="p">,</span> <span class="n">N</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">peaks</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">slices</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">find_objects</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">enumerate</span><span class="p">(</span><span class="n">slices</span><span class="p">),</span> <span class="o">**</span><span class="n">settings</span><span class="o">.</span><span class="n">tqdm</span><span class="p">):</span>
+        <span class="n">sx</span> <span class="o">=</span> <span class="n">extend_slice</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">peaks</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="n">peaks_i</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[</span><span class="n">sx</span><span class="p">]</span> <span class="o">==</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">dt_i</span> <span class="o">=</span> <span class="n">dt</span><span class="p">[</span><span class="n">sx</span><span class="p">]</span>
+        <span class="n">im_i</span> <span class="o">=</span> <span class="n">dt_i</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="n">iters</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="n">iters</span> <span class="o">&lt;</span> <span class="n">maxiter</span><span class="p">:</span>
+            <span class="n">iters</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">peaks_dil</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">binary_dilation</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">peaks_i</span><span class="p">,</span> <span class="n">structure</span><span class="o">=</span><span class="n">cube</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+            <span class="n">peaks_max</span> <span class="o">=</span> <span class="n">peaks_dil</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">dt_i</span> <span class="o">*</span> <span class="n">peaks_dil</span><span class="p">)</span>
+            <span class="n">peaks_extended</span> <span class="o">=</span> <span class="p">(</span><span class="n">peaks_max</span> <span class="o">==</span> <span class="n">dt_i</span><span class="p">)</span> <span class="o">*</span> <span class="n">im_i</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">peaks_extended</span> <span class="o">==</span> <span class="n">peaks_i</span><span class="p">):</span>
+                <span class="k">break</span>  <span class="c1"># Found a true peak</span>
+            <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">peaks_extended</span> <span class="o">*</span> <span class="n">peaks_i</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">peaks_i</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">break</span>  <span class="c1"># Found a saddle point</span>
+            <span class="c1"># The following line was also missing from the original.  It has</span>
+            <span class="c1"># no effect on the result but without this the &quot;maxiters&quot; is</span>
+            <span class="c1"># reached very often.</span>
+            <span class="n">peaks_i</span> <span class="o">=</span> <span class="n">peaks_extended</span>
+        <span class="c1"># The following line is essentially a bug.  It should be:</span>
+        <span class="c1"># peaks[s] += peaks_i. Without the += the peaks_i image overwrites</span>
+        <span class="c1"># the entire slice s, which may include other peaks that are within</span>
+        <span class="c1"># 10 voxels due to the padding of s with extend_slice.</span>
+        <span class="n">new_peaks</span><span class="p">[</span><span class="n">sx</span><span class="p">]</span> <span class="o">=</span> <span class="n">peaks_i</span>
+        <span class="k">if</span> <span class="n">iters</span> <span class="o">&gt;=</span> <span class="n">maxiter</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="s2">&quot;Maximum number of iterations reached, consider &quot;</span>
+                <span class="o">+</span> <span class="s2">&quot;running again with a larger value of max_iters&quot;</span>
+            <span class="p">)</span>
+    <span class="k">return</span> <span class="n">new_peaks</span><span class="o">*</span><span class="n">peaks</span>
+
+
+<div class="viewcode-block" id="trim_nearby_peaks"><a class="viewcode-back" href="../../../modules/generated/porespy.filters.trim_nearby_peaks.html#porespy.filters.trim_nearby_peaks">[docs]</a><span class="k">def</span> <span class="nf">trim_nearby_peaks</span><span class="p">(</span><span class="n">peaks</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">f</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Removes peaks that are nearer to another peak than to solid</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    peaks : ndarray</span>
-<span class="sd">        A boolean image containing True values to mark peaks in the</span>
-<span class="sd">        distance transform (``dt``)</span>
+<span class="sd">        A image containing nonzeros values indicating peaks in the distance</span>
+<span class="sd">        transform (``dt``).  If ``peaks`` is boolean, a boolean is returned;</span>
+<span class="sd">        if ``peaks`` have already been labelled, then the original labels</span>
+<span class="sd">        are returned, missing the trimmed peaks.</span>
 <span class="sd">    dt : ndarray</span>
-<span class="sd">        The distance transform of the pore space for which the true peaks</span>
-<span class="sd">        are sought.</span>
+<span class="sd">        The distance transform of the pore space</span>
 <span class="sd">    f : scalar</span>
 <span class="sd">        Controls how close peaks must be before they are considered near</span>
-<span class="sd">        to each other. Sets of peaks are tagged as near if</span>
+<span class="sd">        to each other. Sets of peaks are tagged as too near if</span>
 <span class="sd">        ``d_neighbor &lt; f * d_solid``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    image : ndarray</span>
-<span class="sd">        An array the same size as ``peaks`` containing a subset of the</span>
-<span class="sd">        peaks in the original image.</span>
+<span class="sd">        An array the same size and type as ``peaks`` containing a subset of</span>
+<span class="sd">        the peaks in the original image.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    Each pair of peaks is considered simultaneously, so for a triplet of</span>
-<span class="sd">    peaks each pair is considered.  This ensures that only the single peak</span>
+<span class="sd">    Each pair of peaks is considered simultaneously, so for a triplet of nearby</span>
+<span class="sd">    peaks, each pair is considered.  This ensures that only the single peak</span>
 <span class="sd">    that is furthest from the solid is kept.  No iteration is required.</span>
 
 <span class="sd">    References</span>
@@ -588,36 +675,38 @@
 <span class="sd">    E. (2017)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">peaks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">peaks</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">dt</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
         <span class="kn">from</span> <span class="nn">skimage.morphology</span> <span class="kn">import</span> <span class="n">square</span> <span class="k">as</span> <span class="n">cube</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="kn">from</span> <span class="nn">skimage.morphology</span> <span class="kn">import</span> <span class="n">cube</span>
-    <span class="n">peaks</span><span class="p">,</span> <span class="n">N</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">peaks</span><span class="p">,</span> <span class="n">structure</span><span class="o">=</span><span class="n">cube</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
-    <span class="n">crds</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">measurements</span><span class="o">.</span><span class="n">center_of_mass</span><span class="p">(</span><span class="n">peaks</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">peaks</span><span class="p">,</span>
+
+    <span class="n">labels</span><span class="p">,</span> <span class="n">N</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">peaks</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">structure</span><span class="o">=</span><span class="n">cube</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+    <span class="n">crds</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">measurements</span><span class="o">.</span><span class="n">center_of_mass</span><span class="p">(</span><span class="n">peaks</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span>
                                             <span class="n">index</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">N</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
     <span class="n">crds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">crds</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>  <span class="c1"># Convert to numpy array of ints</span>
-    <span class="c1"># Get distance between each peak as a distance map</span>
-    <span class="n">tree</span> <span class="o">=</span> <span class="n">sptl</span><span class="o">.</span><span class="n">cKDTree</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">crds</span><span class="p">)</span>
+    <span class="n">L</span> <span class="o">=</span> <span class="n">dt</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">crds</span><span class="o">.</span><span class="n">T</span><span class="p">)]</span>  <span class="c1"># Get distance to solid for each peak</span>
+    <span class="c1"># Add tiny amount to joggle points to avoid equal distances to solid</span>
+    <span class="c1"># arange was added instead of random values so the results are repeatable</span>
+    <span class="n">L</span> <span class="o">=</span> <span class="n">L</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">L</span><span class="p">))</span><span class="o">*</span><span class="mf">1e-6</span>
+
+    <span class="n">tree</span> <span class="o">=</span> <span class="n">sptl</span><span class="o">.</span><span class="n">KDTree</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">crds</span><span class="p">)</span>
+    <span class="c1"># Find list of nearest peak to each peak</span>
     <span class="n">temp</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">crds</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
     <span class="n">nearest_neighbor</span> <span class="o">=</span> <span class="n">temp</span><span class="p">[</span><span class="mi">1</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">]</span>
     <span class="n">dist_to_neighbor</span> <span class="o">=</span> <span class="n">temp</span><span class="p">[</span><span class="mi">0</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">]</span>
     <span class="k">del</span> <span class="n">temp</span><span class="p">,</span> <span class="n">tree</span>  <span class="c1"># Free-up memory</span>
-    <span class="n">dist_to_solid</span> <span class="o">=</span> <span class="n">dt</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">crds</span><span class="o">.</span><span class="n">T</span><span class="p">)]</span>  <span class="c1"># Get distance to solid for each peak</span>
-    <span class="n">hits</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">dist_to_neighbor</span> <span class="o">&lt;</span> <span class="n">f</span> <span class="o">*</span> <span class="n">dist_to_solid</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">hits</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">dist_to_neighbor</span> <span class="o">&lt;=</span> <span class="n">f</span> <span class="o">*</span> <span class="n">L</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
     <span class="c1"># Drop peak that is closer to the solid than it&#39;s neighbor</span>
     <span class="n">drop_peaks</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">peak</span> <span class="ow">in</span> <span class="n">hits</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">dist_to_solid</span><span class="p">[</span><span class="n">peak</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">dist_to_solid</span><span class="p">[</span><span class="n">nearest_neighbor</span><span class="p">[</span><span class="n">peak</span><span class="p">]]:</span>
-            <span class="n">drop_peaks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">peak</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">hits</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">L</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">L</span><span class="p">[</span><span class="n">nearest_neighbor</span><span class="p">[</span><span class="n">i</span><span class="p">]]:</span>
+            <span class="n">drop_peaks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">drop_peaks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nearest_neighbor</span><span class="p">[</span><span class="n">peak</span><span class="p">])</span>
+            <span class="n">drop_peaks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nearest_neighbor</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
     <span class="n">drop_peaks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">drop_peaks</span><span class="p">)</span>
-    <span class="c1"># Remove peaks from image</span>
-    <span class="n">slices</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">find_objects</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">peaks</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">drop_peaks</span><span class="p">:</span>
-        <span class="n">peaks</span><span class="p">[</span><span class="n">slices</span><span class="p">[</span><span class="n">s</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">return</span> <span class="n">peaks</span> <span class="o">&gt;</span> <span class="mi">0</span></div>
+
+    <span class="n">new_peaks</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">drop_peaks</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">peaks</span>
+    <span class="k">return</span> <span class="n">new_peaks</span></div>
 
 
 <span class="k">def</span> <span class="nf">_estimate_overlap</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;dt&#39;</span><span class="p">,</span> <span class="n">zoom</span><span class="o">=</span><span class="mf">0.25</span><span class="p">):</span>
@@ -642,7 +731,8 @@
                                <span class="n">sigma</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span>
                                <span class="n">divs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
                                <span class="n">overlap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                               <span class="n">cores</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+                               <span class="n">cores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                               <span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Performs SNOW algorithm in parallel (or serial) to reduce time</span>
 <span class="sd">    (or memory usage) by geomertirc domain decomposition of large images.</span>
@@ -712,7 +802,8 @@
     <span class="c1"># Applying SNOW to image chunks</span>
     <span class="n">regions</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">from_array</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">chunks</span><span class="o">=</span><span class="n">chunk_shape</span><span class="p">)</span>
     <span class="n">regions</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">overlap</span><span class="o">.</span><span class="n">overlap</span><span class="p">(</span><span class="n">regions</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="n">depth</span><span class="p">,</span> <span class="n">boundary</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">)</span>
-    <span class="n">regions</span> <span class="o">=</span> <span class="n">regions</span><span class="o">.</span><span class="n">map_blocks</span><span class="p">(</span><span class="n">_snow_chunked</span><span class="p">,</span> <span class="n">r_max</span><span class="o">=</span><span class="n">r_max</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dt</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="n">regions</span> <span class="o">=</span> <span class="n">regions</span><span class="o">.</span><span class="n">map_blocks</span><span class="p">(</span><span class="n">_snow_chunked</span><span class="p">,</span> <span class="n">r_max</span><span class="o">=</span><span class="n">r_max</span><span class="p">,</span>
+                                 <span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dt</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
     <span class="n">regions</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">overlap</span><span class="o">.</span><span class="n">trim_internal</span><span class="p">(</span><span class="n">regions</span><span class="p">,</span> <span class="n">trim_depth</span><span class="p">,</span> <span class="n">boundary</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">)</span>
     <span class="c1"># TODO: use dask ProgressBar once compatible w/ logging.</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="s1">&#39;Applying snow to image chunks&#39;</span><span class="p">)</span>
@@ -1104,15 +1195,14 @@
 
 <span class="k">def</span> <span class="nf">_snow_chunked</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">r_max</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">0.4</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This private version of snow is called during snow_parallel. Dask does</span>
-<span class="sd">    not all the calls to the logger between each step apparently.</span>
+<span class="sd">    This private version of snow is called during snow_parallel.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">dt2</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">gaussian_filter</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">)</span>
     <span class="n">peaks</span> <span class="o">=</span> <span class="n">find_peaks</span><span class="p">(</span><span class="n">dt</span><span class="o">=</span><span class="n">dt2</span><span class="p">,</span> <span class="n">r_max</span><span class="o">=</span><span class="n">r_max</span><span class="p">)</span>
-    <span class="n">peaks</span> <span class="o">=</span> <span class="n">trim_saddle_points</span><span class="p">(</span><span class="n">peaks</span><span class="o">=</span><span class="n">peaks</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt2</span><span class="p">)</span>
-    <span class="n">peaks</span> <span class="o">=</span> <span class="n">trim_nearby_peaks</span><span class="p">(</span><span class="n">peaks</span><span class="o">=</span><span class="n">peaks</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt2</span><span class="p">)</span>
-    <span class="n">peaks</span><span class="p">,</span> <span class="n">N</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">peaks</span><span class="p">)</span>
-    <span class="n">regions</span> <span class="o">=</span> <span class="n">watershed</span><span class="p">(</span><span class="n">image</span><span class="o">=-</span><span class="n">dt2</span><span class="p">,</span> <span class="n">markers</span><span class="o">=</span><span class="n">peaks</span><span class="p">)</span>
+    <span class="n">peaks</span> <span class="o">=</span> <span class="n">trim_saddle_points</span><span class="p">(</span><span class="n">peaks</span><span class="o">=</span><span class="n">peaks</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
+    <span class="n">peaks</span> <span class="o">=</span> <span class="n">trim_nearby_peaks</span><span class="p">(</span><span class="n">peaks</span><span class="o">=</span><span class="n">peaks</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
+    <span class="n">peaks</span><span class="p">,</span> <span class="n">N</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">peaks</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">regions</span> <span class="o">=</span> <span class="n">watershed</span><span class="p">(</span><span class="n">image</span><span class="o">=-</span><span class="n">dt</span><span class="p">,</span> <span class="n">markers</span><span class="o">=</span><span class="n">peaks</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">regions</span> <span class="o">*</span> <span class="p">(</span><span class="n">dt</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
 </pre></div>
 
