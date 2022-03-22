@@ -1,6 +1,7 @@
 import pytest
 import numpy as np
 from scipy import stats as spst
+import scipy.ndimage as spim
 import porespy as ps
 import openpnm as op
 from edt import edt
@@ -11,23 +12,29 @@ ps.settings.tqdm['disable'] = True
 
 class Snow2Test:
     def setup_class(self):
-        self.spheres3D = ~ps.generators.lattice_spheres(shape=[220, 220, 220],
-                                                        r=30, spacing=56,
-                                                        offset=25)
+        self.spheres3D = ~ps.generators.lattice_spheres(shape=[110, 110, 110],
+                                                        r=15, spacing=27,
+                                                        offset=20)
         self.spheres2D = ~ps.generators.lattice_spheres(shape=[500, 500], r=30,
                                                         spacing=56, offset=25)
 
     def test_single_phase_2d_serial(self):
         im = ps.generators.blobs(shape=[200, 200])
         snow2 = ps.networks.snow2(im, phase_alias={1: 'phase1'}, parallelization=None)
-        pn, geo = op.io.PoreSpy.import_data(snow2.network)
+        try:
+            pn, geo = op.io.from_porespy(snow2.network)
+        except AttributeError:
+            pn, geo = op.io.PoreSpy.import_data(snow2.network)
         # Ensure phase_alias was ignored since only single phase
         assert 'pore.phase1' not in pn.keys()
 
     def test_return_all_serial(self):
         im = ps.generators.blobs(shape=[200, 200])
         snow2 = ps.networks.snow2(im, parallelization=None)
-        pn, geo = op.io.PoreSpy.import_data(snow2.network)
+        try:
+            pn, geo = op.io.from_porespy(snow2.network)
+        except AttributeError:
+            pn, geo = op.io.PoreSpy.import_data(snow2.network)
         assert hasattr(snow2, 'regions')
         assert hasattr(snow2, 'phases')
 
@@ -36,7 +43,10 @@ class Snow2Test:
         im2 = ps.generators.blobs(shape=[200, 200], porosity=0.7)
         phases = im1 + (im2 * ~im1)*2
         snow2 = ps.networks.snow2(phases, phase_alias={1: 'phase1', 2: 'test2'})
-        pn, geo = op.io.PoreSpy.import_data(snow2.network)
+        try:
+            pn, geo = op.io.from_porespy(snow2.network)
+        except AttributeError:
+            pn, geo = op.io.PoreSpy.import_data(snow2.network)
         # Ensure phase_alias was interpreted correctly
         assert 'pore.phase1' in pn.keys()
         assert 'pore.test2' in pn.keys()
@@ -45,7 +55,10 @@ class Snow2Test:
     def test_single_phase_3d(self):
         im = ps.generators.blobs(shape=[100, 100, 100], porosity=0.6)
         snow2 = ps.networks.snow2(im, phase_alias={1: 'phase1'})
-        pn, geo = op.io.PoreSpy.import_data(snow2.network)
+        try:
+            pn, geo = op.io.from_porespy(snow2.network)
+        except AttributeError:
+            pn, geo = op.io.PoreSpy.import_data(snow2.network)
         # Ensure phase_alias was ignored since only single phase
         assert 'pore.phase1' not in pn.keys()
 
@@ -54,7 +67,10 @@ class Snow2Test:
         im2 = ps.generators.blobs(shape=[100, 100, 100], porosity=0.7)
         phases = im1 + (im2 * ~im1)*2
         snow2 = ps.networks.snow2(phases, phase_alias={1: 'phase1'})
-        pn, geo = op.io.PoreSpy.import_data(snow2.network)
+        try:
+            pn, geo = op.io.from_porespy(snow2.network)
+        except AttributeError:
+            pn, geo = op.io.PoreSpy.import_data(snow2.network)
         # Ensure phase_alias was was updated since only 1 phases was spec'd
         assert 'pore.phase1' in pn.keys()
         assert 'pore.phase2' in pn.keys()
@@ -146,22 +162,22 @@ class Snow2Test:
         im = self.spheres3D
         snow = ps.networks.snow2(phases=im, parallelization=None)
         mode = spst.mode(snow.network['pore.extended_diameter'])
-        assert mode[0] == 60
+        assert mode[0] == 30
         D = np.unique(snow.network['pore.extended_diameter'].astype(int))
-        assert np.all(D == np.array([30, 33, 60]))
+        assert np.all(D == np.array([25, 30, 38]))
 
     def test_ensure_correct_sizes_are_returned_dual_phase_3d(self):
         im = self.spheres3D
         phases = im.astype(int) + 1
         snow = ps.networks.snow2(phases=phases, parallelization=None)
         mode = spst.mode(snow.network['pore.extended_diameter'])
-        assert mode[0] == 60
+        assert mode[0] == 30
         D = np.unique(snow.network['pore.extended_diameter'].astype(int))
-        assert np.all(D == np.array([30, 33, 34, 35, 36, 38, 39, 60]))
+        assert np.all(D == np.array([7, 12, 17, 19, 20, 22, 24, 25, 26,
+                                     29, 30, 32, 34, 35, 38, 43, 46]))
 
     def test_trim_saddle_points(self):
         np.random.seed(0)
-        ps.settings.loglevel = 20
         im = ps.generators.blobs(shape=[400, 400],
                                  blobiness=[2, 1],
                                  porosity=0.6)
@@ -169,7 +185,18 @@ class Snow2Test:
         peaks1 = ps.filters.find_peaks(dt=dt, r_max=4)
         peaks2 = ps.filters.trim_saddle_points(peaks=peaks1, dt=dt)
         assert (peaks1 > 0).sum() > (peaks2 > 0).sum()
-        assert (peaks2 > 0).sum() == 339
+        assert (peaks2 > 0).sum() == 242
+
+    def test_trim_saddle_points_legacy(self):
+        np.random.seed(0)
+        im = ps.generators.blobs(shape=[400, 400],
+                                 blobiness=[2, 1],
+                                 porosity=0.6)
+        dt = edt(im)
+        peaks1 = ps.filters.find_peaks(dt=dt, r_max=4)
+        peaks2 = ps.filters.trim_saddle_points_legacy(peaks=peaks1, dt=dt)
+        assert (peaks1 > 0).sum() > (peaks2 > 0).sum()
+        assert (peaks2 > 0).sum() == 180
 
     def test_accuracy_high(self):
         im = ~ps.generators.lattice_spheres(shape=[100, 100, 100], r=15,
@@ -190,22 +217,34 @@ class Snow2Test:
         assert np.all(A == 89.0)
 
     def test_single_and_dual_phase_on_blobs(self):
-        im = ps.generators.blobs([200, 200, 200], porosity=0.6, blobiness=1.5)
+        im = ps.generators.blobs([100, 100, 100], porosity=0.6, blobiness=1.5)
 
         snow_1 = ps.networks.snow2(im,
                                    accuracy='standard',
                                    parallelization=None)
-        pn1, geo1 = op.io.PoreSpy.import_data(snow_1.network)
+        try:
+            pn1, geo1 = op.io.from_porespy(snow_1.network)
+        except AttributeError:
+            pn1, geo1 = op.io.PoreSpy.import_data(snow_1.network)
         Ps1 = pn1.find_neighbor_pores(pores=pn1.pores('boundary'))
-        Ps1 = pn1.tomask(pores=Ps1)
+        try:
+            Ps1 = pn1.to_mask(pores=Ps1)
+        except AttributeError:
+            Ps1 = pn1.tomask(pores=Ps1)
 
         snow_2 = ps.networks.snow2(im.astype(int) + 1,
                                    phase_alias={1: 'solid', 2: 'void'},
                                    accuracy='standard',
                                    parallelization=None)
-        pn2, geo2 = op.io.PoreSpy.import_data(snow_2.network)
+        try:
+            pn2, geo2 = op.io.from_porespy(snow_2.network)
+        except AttributeError:
+            pn2, geo2 = op.io.PoreSpy.import_data(snow_2.network)
         Ps2 = pn2.find_neighbor_pores(pores=pn2.pores('boundary'))
-        Ps2 = pn2.tomask(pores=Ps2)*pn2['pore.void']
+        try:
+            Ps2 = pn2.to_mask(pores=Ps2)*pn2['pore.void']
+        except AttributeError:
+            Ps2 = pn2.tomask(pores=Ps2)*pn2['pore.void']
 
         assert Ps1.sum() == Ps2.sum()
         assert pn1.num_pores('all') == pn2.num_pores('void')
@@ -214,16 +253,98 @@ class Snow2Test:
         snow_3 = ps.networks.snow2(im == 0,
                                    accuracy='standard',
                                    parallelization=None)
-        pn3, geo3 = op.io.PoreSpy.import_data(snow_3.network)
+        try:
+            pn3, geo3 = op.io.from_porespy(snow_3.network)
+        except AttributeError:
+            pn3, geo3 = op.io.PoreSpy.import_data(snow_3.network)
         Ps3 = pn3.find_neighbor_pores(pores=pn3.pores('boundary'))
-        Ps3 = pn3.tomask(pores=Ps3)
+        try:
+            Ps3 = pn3.to_mask(pores=Ps3)
+        except AttributeError:
+            Ps3 = pn3.tomask(pores=Ps3)
 
         Ps4 = pn2.find_neighbor_pores(pores=pn2.pores('boundary'))
-        Ps4 = pn2.tomask(pores=Ps4)*pn2['pore.solid']
+        try:
+            Ps4 = pn2.to_mask(pores=Ps4)*pn2['pore.solid']
+        except AttributeError:
+            Ps4 = pn2.tomask(pores=Ps4)*pn2['pore.solid']
 
         assert Ps3.sum() == Ps4.sum()
         assert pn3.num_pores('all') == pn2.num_pores('solid')
         assert pn3.num_throats('all') == pn2.num_throats('solid_solid')
+
+    def test_send_peaks_to_snow_partitioning(self):
+        np.random.seed(0)
+        im = ps.generators.blobs([200, 200], porosity=0.7, blobiness=1.5)
+        snow1 = ps.filters.snow_partitioning(im, sigma=0.4, r_max=5)
+        assert snow1.regions.max() == 97
+        dt1 = edt(im)
+        dt2 = spim.gaussian_filter(dt1, sigma=0.4)*im
+        pk = ps.filters.find_peaks(dt2, r_max=5)
+        pk = ps.filters.trim_saddle_points(peaks=pk, dt=dt1)
+        pk = ps.filters.trim_nearby_peaks(peaks=pk, dt=dt1)
+        snow2 = ps.filters.snow_partitioning(im, peaks=pk)
+        assert snow2.regions.max() == 97
+
+    def test_send_peaks_to_snow_partitioning_n(self):
+        np.random.seed(0)
+        im = ps.generators.blobs([200, 200], porosity=0.7, blobiness=0.5)
+        sph = im*ps.generators.lattice_spheres(shape=im.shape, r=12,
+                                               offset=20, spacing=40)
+        im = im + sph*1.0
+        snow1 = ps.filters.snow_partitioning_n(im, sigma=0.4, r_max=5)
+        assert snow1.regions.max() == 56
+        dt1 = edt(im == 1)
+        dt2 = edt(im == 2)
+        dt3 = spim.gaussian_filter(dt1, sigma=0.4)*im
+        dt4 = spim.gaussian_filter(dt2, sigma=0.4)*im
+        pk1 = ps.filters.find_peaks(dt3, r_max=5)
+        pk2 = ps.filters.find_peaks(dt4, r_max=5)
+        pk3 = ps.filters.trim_saddle_points(peaks=pk1, dt=dt1)
+        pk4 = ps.filters.trim_saddle_points(peaks=pk2, dt=dt2)
+        snow2 = ps.filters.snow_partitioning_n(im, peaks=pk3 + pk4)
+        assert snow2.regions.max() == 56
+
+    def test_snow2_with_peaks(self):
+        np.random.seed(0)
+        im = ps.generators.blobs([200, 200], porosity=0.7, blobiness=1.5)
+        snow1 = ps.networks.snow2(im, sigma=0.4, r_max=5, boundary_width=0)
+        assert snow1.regions.max() == 97
+        dt1 = edt(im)
+        dt2 = spim.gaussian_filter(dt1, sigma=0.4)*im
+        pk = ps.filters.find_peaks(dt2, r_max=5)
+        pk = ps.filters.trim_saddle_points(peaks=pk, dt=dt1)
+        pk = ps.filters.trim_nearby_peaks(peaks=pk, dt=dt1)
+        snow2 = ps.networks.snow2(im, boundary_width=0, peaks=pk)
+        assert snow2.regions.max() == 97
+
+    def test_two_phases_and_boundary_nodes(self):
+        np.random.seed(0)
+        im1 = ps.generators.blobs(shape=[600, 400],
+                                  porosity=None, blobiness=1) < 0.4
+        im2 = ps.generators.blobs(shape=[600, 400],
+                                  porosity=None, blobiness=1) < 0.7
+        phases = im1 + (im2 * ~im1)*2
+        # phases = phases > 0
+
+        snow_n = ps.networks.snow2(phases,
+                                   phase_alias={1: 'solid',
+                                                2: 'void'},
+                                   boundary_width=5,
+                                   accuracy='high',
+                                   parallelization=None)
+
+        assert snow_n.regions.max() == 210
+        # remove all but 1 pixel-width of boundary regions
+        temp = ps.tools.extract_subsection(
+            im=snow_n.regions,
+            shape=np.array(snow_n.regions.shape)-8)
+        assert temp.max() == 210
+        # remove complete boundary region
+        temp = ps.tools.extract_subsection(
+            im=snow_n.regions,
+            shape=np.array(snow_n.regions.shape)-10)
+        assert temp.max() == 163
 
 
 if __name__ == '__main__':

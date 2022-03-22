@@ -4,7 +4,7 @@ import scipy.ndimage as spim
 from skimage.segmentation import find_boundaries
 from skimage.morphology import ball, cube, disk, square
 from porespy.tools import make_contiguous
-from porespy.tools import overlay
+from porespy.tools import overlay, extend_slice
 from porespy.tools import insert_cylinder
 from porespy.generators import borders
 from porespy import settings

@@ -14,6 +14,7 @@ def snow2(phases,
           voxel_size=1,
           sigma=0.4,
           r_max=4,
+          peaks=None,
           parallelization={},):
     r"""
     Applies the SNOW algorithm to each phase indicated in ``phases``.
@@ -41,8 +42,8 @@ def snow2(phases,
         Number of voxels to add to the beginning and end of each axis.
         This argument can either be a scalar or a list. If a scalar is
         passed, it will be applied to the beginning and end of all axes.
-        In case of a list, you can specify the number of voxels for each
-        axis individually. Here are some examples:
+        If a list, you can specify the number of voxels for each axis
+        individually. Here are some examples:
 
             - [0, 3, 0]: 3 voxels only applied to the y-axis.
 
@@ -80,6 +81,18 @@ def snow2(phases,
     sigma : float
         The standard deviation of the Gaussian filter used in step 1. The
         default is 0.4.  If 0 is given then the filter is not applied.
+    peaks : ndarray, optional
+        Optionally, it is possible to supply an array containing peaks, which
+        are used as markers in the watershed segmentation. If a boolean array
+        is received (``True`` indicating peaks), then ``scipy.ndimage.label``
+        with cubic connectivity is used to label them. If an integer array is
+        received then it is assumed the peaks have already been labelled.
+        This allows for comparison of peak finding algorithms for instance.
+        If this argument is provided, then ``r_max`` and ``sigma`` are ignored
+        since these are specfically used in the peak finding process. This
+        array should contain peaks for all phases, and they are masked by
+        the ``phases`` argument. If ``peaks`` are provided the parallelization
+        is disabled.
     parallelization : dict
         The arguments for controlling the parallelization of the watershed
         function are rolled into this dictionary, otherwise the function
@@ -88,6 +101,7 @@ def snow2(phases,
         are provided then the defaults for that function are used here.
         To disable parallelization pass ``parallel=None``, which will
         invoke the standard ``snow_partitioning`` or ``snow_partitioning_n``.
+        If ``peaks`` are provided the parallelization is disabled.
 
     Returns
     -------
@@ -125,15 +139,27 @@ def snow2(phases,
        Advances in Water Resources. 145(Nov), 103734 (2020)
 
     """
+    # Parallel snow does not accept peaks, so if they are provided,
+    # disable parallelization
+    phases = phases.astype(int)
+    if phase_alias is not None:
+        vals = phase_alias.keys()
+    else:
+        vals = np.unique(phases)
+        vals = vals[vals > 0]
+    if peaks is not None:
+        parallelization = None
     regions = None
-    for i in range(phases.max()):
+    for i in vals:
         logger.info(f"Processing phase {i}...")
-        phase = phases == (i + 1)
+        phase = phases == i
+        pk = None if peaks is None else peaks*phase
         if parallelization is not None:
             snow = snow_partitioning_parallel(
                 im=phase, sigma=sigma, r_max=r_max, **parallelization)
         else:
-            snow = snow_partitioning(im=phase, sigma=sigma, r_max=r_max)
+            snow = snow_partitioning(im=phase, sigma=sigma, r_max=r_max,
+                                     peaks=pk)
         if regions is None:
             regions = np.zeros_like(snow.regions, dtype=int)
         # Note: Using snow.regions > 0 here instead of phase is needed to
