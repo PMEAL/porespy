@@ -679,7 +679,7 @@ def two_point_correlation(im):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/metrics/reference/two_point_correlation_fft.html>`_
+    <https://porespy.org/examples/metrics/reference/two_point_correlation.html>`_
     to view online example.
 
     """
