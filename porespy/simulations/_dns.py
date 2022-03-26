@@ -8,9 +8,7 @@ from porespy.generators import faces
 ws = op.Workspace()
 
 
-__all__ = [
-    'tortuosity_fd',
-]
+__all__ = ['tortuosity_fd']
 
 
 def tortuosity_fd(im, axis):
@@ -53,11 +51,12 @@ def tortuosity_fd(im, axis):
 
     # Obtain original porosity
     eps0 = im.sum() / im.size
+
     # Remove floating pores
     inlets = faces(im.shape, inlet=axis)
     outlets = faces(im.shape, outlet=axis)
     im = trim_nonpercolating_paths(im, inlets=inlets, outlets=outlets)
-    # Check if prosity is changed after trimmimg floating pores
+    # Check if porosity is changed after trimmimg floating pores
     eps = im.sum() / im.size
     if eps < eps0:  # pragma: no cover
         logger.warning(f'True porosity is {eps:.2f}, filled {eps0 - eps:.5f}'
@@ -65,8 +64,11 @@ def tortuosity_fd(im, axis):
 
     # Generate a Cubic network to be used as an orthogonal grid
     net = op.network.CubicTemplate(template=im, spacing=1.0)
-    # Create a dummy phase
-    phase = op.phases.GenericPhase(network=net)
+    # Create a dummy phase, FIXME: once openpnm v3 is out, remove try/except
+    try:
+        phase = op.phases.GenericPhase(network=net)
+    except AttributeError:
+        phase = op.phase.GenericPhase(network=net)
     phase['throat.diffusive_conductance'] = 1.0
     # Run Fickian Diffusion on the image
     fd = op.algorithms.FickianDiffusion(network=net, phase=phase)
@@ -77,8 +79,14 @@ def tortuosity_fd(im, axis):
     cL, cR = 1.0, 0.0
     fd.set_value_BC(pores=inlets, values=cL)
     fd.set_value_BC(pores=outlets, values=cR)
-    fd.settings.update({'solver_family': 'scipy', 'solver_type': 'cg'})
-    fd.run()
+    # FIXME: get rid of try/except once openpnm v3 is out
+    try:
+        pardiso = op.solvers.PardisoSpsolve()
+        fd.run(solver=pardiso)
+    except AttributeError:
+        fd.settings.update({'solver_family': 'scipy', 'solver_type': 'cg'})
+        fd.run()
+
     # Calculate molar flow rate, effective diffusivity and tortuosity
     rate_in = fd.rate(pores=inlets)[0]
     rate_out = fd.rate(pores=outlets)[0]
@@ -91,6 +99,7 @@ def tortuosity_fd(im, axis):
     Deff = rate_in * (L-1)/A / dC
     tau = eps / Deff
 
+    # Attach useful parameters to Results object
     result = Results()
     result.tortuosity = tau
     result.formation_factor = 1 / Deff
