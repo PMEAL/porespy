@@ -96,7 +96,7 @@ def trim_small_clusters(im, size=1):
     return filtered_array
 
 
-def hold_peaks(im, axis=-1):
+def hold_peaks(im, axis=-1, ascending=True):
     r"""
     Replaces each voxel with the highest value along the given axis.
 
@@ -106,6 +106,9 @@ def hold_peaks(im, axis=-1):
         A greyscale image whose peaks are to be found.
     axis : int
         The axis along which the operation is to be applied.
+    ascending : bool
+        If ``True`` (default) the given ``axis`` is scanned from 0 to end.
+        If ``False``, it is scanned in reverse order from end to 0.
 
     Returns
     -------
@@ -116,7 +119,7 @@ def hold_peaks(im, axis=-1):
     Notes
     -----
     "im" must be a greyscale image. In case a Boolean image is fed into this
-    method, it will be first converted to float values [0.0,1.0] before proceeding.
+    method, it will be converted to float values [0.0,1.0] before proceeding.
 
     Examples
     --------
@@ -125,9 +128,10 @@ def hold_peaks(im, axis=-1):
     to view online example.
 
     """
-
     A = im.astype(float)
     B = np.swapaxes(A, axis, -1)
+    if ascending is False:  # Flip the axis of interest (-1)
+        B = np.flip(B, axis=-1)
     updown = np.empty((*B.shape[:-1], B.shape[-1] + 1), B.dtype)
     updown[..., 0], updown[..., -1] = -1, -1
     np.subtract(B[..., 1:], B[..., :-1], out=updown[..., 1:-1])
@@ -140,6 +144,8 @@ def hold_peaks(im, axis=-1):
     aux[(*map(op.itemgetter(slice(1, None)), pkidx),)] = np.diff(B[pkidx])
     aux[..., 0] = B[..., 0]
     result = out.cumsum(axis=axis)
+    if ascending is False:  # Flip it back
+        result = np.flip(result, axis=-1)
     return result
 
 
@@ -532,7 +538,7 @@ def flood(im, labels, mode="max"):
     return flooded
 
 
-def flood_func(im, labels, func):
+def flood_func(im, func, labels):
     r"""
     Flood each isolated region in an image with a constant value calculated by
     the given function.
@@ -542,14 +548,14 @@ def flood_func(im, labels, func):
     im : ndarray
         An image with the numerical values of interest in each voxel,
         and 0's elsewhere.
-    labels : ndarray
-        An array containing labels identify each individual region to be
-        flooded. If not provided then ``scipy.ndimage.label`` is applied to
-        ``im > 0``.
     func : Numpy function handle
         The function to be applied to each region in the image.  Any Numpy
         function that returns a scalar value can be passed, such as ``amin``,
         ``amax``, ``sum``, ``mean``, ``median``, etc.
+    labels : ndarray
+        An array containing labels identifying each individual region to be
+        flooded. If not provided then ``scipy.ndimage.label`` is applied to
+        ``im > 0``.
 
     Returns
     -------
@@ -565,10 +571,10 @@ def flood_func(im, labels, func):
     Notes
     -----
     Many of the functions in ``scipy.ndimage`` can be applied to
-    individual regions using the ``index`` argument.  This function extend
+    individual regions using the ``index`` argument.  This function extends
     that behavior to all numpy function, in the event you wanted to compute
     the cosine of the values in each region for some reason. This function
-    also floods the original image instead of return a list of values for
+    also floods the original image instead of returning a list of values for
     each region.
 
     Examples

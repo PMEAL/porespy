@@ -223,10 +223,10 @@ class MetricsTest():
         assert hasattr(pc, 'pc')
         assert hasattr(pc, 'snwp')
 
-    def test_pc_curve_from_ibib(self):
+    def test_pc_curve_from_ibip(self):
         im = ps.generators.blobs(shape=[100, 100], porosity=0.7)
         seq, sizes = ps.filters.ibip(im=im)
-        pc = ps.metrics.pc_curve_from_ibip(sizes=sizes, seq=seq)
+        pc = ps.metrics.pc_curve(im=im, sizes=sizes, seq=seq)
         assert hasattr(pc, 'pc')
         assert hasattr(pc, 'snwp')
 

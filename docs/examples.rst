@@ -104,7 +104,7 @@ Simulations
       :maxdepth: 1
       :glob:
 
-      examples/filters/reference/*
+      examples/simulations/reference/*
 
 Tools
 -----

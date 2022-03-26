@@ -22,7 +22,6 @@ def test_drainage():
     g = 0
     bg = 'grey'
 
-
     drn1 = ps.simulations.drainage(im=im, voxel_size=voxel_size, inlets=inlets, g=g)
     drn2 = ps.simulations.drainage(im=im,
                                    voxel_size=voxel_size,
@@ -53,7 +52,6 @@ def test_drainage():
     assert drn3.snwp[-1] == 1
     assert drn4.snwp[-1] == 0.830593667021089
 
-
     # %% Visualize the invasion configurations for each scenario
     if 0:
         fig, ax = plt.subplots(2, 2, facecolor=bg)
@@ -65,7 +63,6 @@ def test_drainage():
         ax[1][0].set_title("No trapping, with residual")
         ax[1][1].imshow(drn4.im_satn/im, origin='lower')
         ax[1][1].set_title("With trapping, with residual")
-
 
     # %% Plot the capillary pressure curves for each scenario
     if 0:
@@ -81,7 +78,6 @@ def test_drainage():
         plt.step(np.log10(drn4.pc), drn4.snwp, 'm--o', where='post',
                 label="With trapping, with residual")
         plt.legend()
-
 
     # %% Now repeat with some gravity
     g = 9.81

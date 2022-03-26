@@ -5,7 +5,7 @@ np.random.seed(6)
 
 
 def test_drainage_from_top():
-    im = ps.generators.blobs(shape=[500, 500], porosity=0.7, blobiness=1.5)
+    im = ps.generators.blobs(shape=[300, 300], porosity=0.7, blobiness=1.5)
     inlets = np.zeros_like(im)
     inlets[-1, :] = True
     outlets = np.zeros_like(im)
@@ -21,32 +21,32 @@ def test_drainage_from_top():
     delta_rho = -1000
     g = 9.81
     bg = 'grey'
-
+    plot = False
 
     drn1 = ps.simulations.drainage(im=im,
-                                voxel_size=voxel_size,
-                                inlets=inlets,
-                                delta_rho=delta_rho,
-                                g=g)
+                                   voxel_size=voxel_size,
+                                   inlets=inlets,
+                                   delta_rho=delta_rho,
+                                   g=g)
     drn2 = ps.simulations.drainage(im=im,
-                                voxel_size=voxel_size,
-                                inlets=inlets,
-                                outlets=outlets,
-                                delta_rho=delta_rho,
-                                g=g)
+                                   voxel_size=voxel_size,
+                                   inlets=inlets,
+                                   outlets=outlets,
+                                   delta_rho=delta_rho,
+                                   g=g)
     drn3 = ps.simulations.drainage(im=im,
-                                voxel_size=voxel_size,
-                                inlets=inlets,
-                                residual=residual,
-                                delta_rho=delta_rho,
-                                g=g)
+                                   voxel_size=voxel_size,
+                                   inlets=inlets,
+                                   residual=residual,
+                                   delta_rho=delta_rho,
+                                   g=g)
     drn4 = ps.simulations.drainage(im=im,
-                                voxel_size=voxel_size,
-                                inlets=inlets,
-                                outlets=outlets,
-                                residual=residual,
-                                delta_rho=delta_rho,
-                                g=g)
+                                   voxel_size=voxel_size,
+                                   inlets=inlets,
+                                   outlets=outlets,
+                                   residual=residual,
+                                   delta_rho=delta_rho,
+                                   g=g)
 
     # Ensure initial saturations correspond to amount of residual present
     assert drn1.snwp[0] == 0
@@ -60,9 +60,8 @@ def test_drainage_from_top():
     assert drn3.snwp[-1] == 1
     assert drn4.snwp[-1] < drn2.snwp[-1]
 
-
     # %% Visualize the invasion configurations for each scenario
-    if 0:
+    if plot:
         fig, ax = plt.subplots(2, 2, facecolor=bg)
         ax[0][0].imshow(drn1.im_satn/im, origin='lower')
         ax[0][0].set_title("No trapping, no residual")
@@ -73,9 +72,8 @@ def test_drainage_from_top():
         ax[1][1].imshow(drn4.im_satn/im, origin='lower')
         ax[1][1].set_title("With trapping, with residual")
 
-
     # %% Visualize the capillary pressure map for each scenario
-    if 0:
+    if plot:
         fig, ax = plt.subplots(2, 2, facecolor=bg)
         ax[0][0].imshow(drn1.im_pc/im, origin='lower')
         ax[0][0].set_title("No trapping, no residual")
@@ -86,9 +84,8 @@ def test_drainage_from_top():
         ax[1][1].imshow(drn4.im_pc/im, origin='lower')
         ax[1][1].set_title("With trapping, with residual")
 
-
     # %% Plot the capillary pressure curves for each scenario
-    if 0:
+    if plot:
         plt.figure(facecolor=bg)
         ax = plt.axes()
         ax.set_facecolor(bg)

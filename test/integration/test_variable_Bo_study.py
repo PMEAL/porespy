@@ -6,19 +6,19 @@ import matplotlib.pyplot as plt
 def test_variable_Bo_study():
     # Input domain and fluid properties
     vx = 5e-5
-    L = int(0.145/vx)
-    W = int(0.1/vx)
-    t = int(0.001/vx)  # 2D test for speed so this is not used
-    D = int(0.001/vx)
+    L = int(0.02/vx)
+    W = int(0.01/vx)
+    t = int(0.0001/vx)  # 2D test for speed so this is not used
+    D = int(0.0005/vx)
     delta_rho = -1205  # Negative since air is displacing water
     sigma = 0.064
     a = 0.001  # Average pore size, seems to be plate spacing in Ayaz paper
+    plot = False
 
     # Generate image
     im = ~ps.generators.RSA([L, W], r=int(D/2), clearance=2, volume_fraction=0.5)
     inlets = np.zeros_like(im)
     inlets[-1, ...] = True
-
 
     # %% Run simulaiton at different angles, therefore different effective g values
     angles = [0, 15, 30, 45, 60]  # Degrees of incline
@@ -35,7 +35,6 @@ def test_variable_Bo_study():
                                               delta_rho=delta_rho,
                                               g=g,
                                               bins=25)
-
 
     # %%  Repeat with trapping
     outlets = np.zeros_like(im)
@@ -54,18 +53,16 @@ def test_variable_Bo_study():
                                               g=g,
                                               bins=25)
 
-
     # %%  Plot pseudo capillary pressure curves for each angle/Bo
-    if 0:
+    if plot:
         c = ['tab:blue', 'tab:orange', 'tab:olive', 'tab:purple', 'tab:green']
         for i, angle in enumerate(angles):
             plt.plot(sim1[angle].snwp, sim1[angle].pc, '-o', color=c[i])
             plt.ylim([-1500, 1500])
             plt.xlim([0, 1])
 
-
     # %%  Plot saturation map for a given angle
-    if 0:
+    if plot:
         angle = 30
         from copy import copy
         cmap = copy(plt.cm.viridis)
@@ -81,9 +78,8 @@ def test_variable_Bo_study():
         ax.axis('off')
         plt.colorbar(ax.imshow(temp, vmax=vmax, vmin=vmin, cmap=cmap, origin='lower'))
 
-
     # %%  Plot non-wetting phase configuration for a given angle and saturation
-    if 0:
+    if plot:
         s = 0.09
         angle = 30
         satn = sim1[angle].im_satn
