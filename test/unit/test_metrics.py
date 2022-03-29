@@ -156,8 +156,8 @@ class MetricsTest():
         regions = self.regions[:50, :50, :50]
         vols_march = ps.metrics.region_volumes(regions=regions)
         vols_vox = ps.metrics.region_volumes(regions=regions, mode='voxel')
-        assert_allclose(vols_march[:5], [1498.85320453, 2597.90798652, 
-                                         2158.34548652, 1281.17978573, 1172.39853573] )
+        assert_allclose(vols_march[:5], [1498.85320453, 2597.90798652,
+                                         2158.34548652, 1281.17978573, 1172.39853573])
         assert_allclose(vols_vox[:5], [1540., 2648., 2206., 1320., 1210.])
         assert_allclose(np.mean(vols_march), 1907.8062788852674)
         assert_allclose(np.mean(vols_vox), 1952.125)
