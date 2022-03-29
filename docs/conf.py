@@ -95,6 +95,8 @@ html_css_files = ['css/custom.css']
 
 nbsphinx_prompt_width = "0"
 
+nbsphinx_execute = 'always'
+
 panels_add_bootstrap_css = False  # to fix narrow width
 
 exclude_patterns = ['_build', '_templates']
