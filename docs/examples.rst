@@ -98,24 +98,9 @@ Simulations
 
       examples/simulations/tutorials/*
 
-.. tabbed:: Reference
-
-   .. toctree::
-      :maxdepth: 1
-      :glob:
-
-      examples/filters/reference/*
 
 Tools
 -----
-
-.. tabbed:: Tutorials
-
-   .. toctree::
-      :maxdepth: 1
-      :glob:
-
-      examples/tools/tutorials/*
 
 .. tabbed:: Reference
 
