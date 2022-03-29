@@ -8,7 +8,7 @@ im = ps.generators.blobs(shape=[500, 500], porosity=0.7, blobiness=1)
 plt.figure(1)
 plt.imshow(im)
 
-# Chord length distributions
+# Chord length distribution
 chords = ps.filters.apply_chords(im=im, trim_edges=False)
 colored_chords = ps.filters.region_size(chords)
 h = ps.metrics.chord_length_distribution(chords, bins=25)
