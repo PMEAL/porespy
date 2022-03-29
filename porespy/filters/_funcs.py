@@ -538,7 +538,7 @@ def flood(im, labels, mode="max"):
     return flooded
 
 
-def flood_func(im, func, labels):
+def flood_func(im, func, labels=None):
     r"""
     Flood each isolated region in an image with a constant value calculated by
     the given function.
@@ -584,6 +584,8 @@ def flood_func(im, func, labels):
     to view online example.
 
     """
+    if labels is None:
+        labels = spim.label(im > 0)[0]
     slices = spim.find_objects(labels)
     flooded = np.zeros_like(im, dtype=float)
     for i, s in enumerate(slices):
