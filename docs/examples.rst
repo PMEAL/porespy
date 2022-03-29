@@ -98,13 +98,6 @@ Simulations
 
       examples/simulations/tutorials/*
 
-.. tabbed:: Reference
-
-   .. toctree::
-      :maxdepth: 1
-      :glob:
-
-      examples/simulations/reference/*
 
 Tools
 -----
