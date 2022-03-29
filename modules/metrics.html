@@ -8,30 +8,27 @@
 
     <title>Metrics &#8212; PoreSpy  documentation</title>
     
-    <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
-  
+
     
-    <link rel="stylesheet"
-      href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
-    <link rel="preload" as="font" type="font/woff2" crossorigin
-      href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
-    <link rel="preload" as="font" type="font/woff2" crossorigin
-      href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
-  
-    
-      
-  
-    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/pydata-sphinx-theme.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
     <link rel="stylesheet" type="text/css" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css" />
     
-    <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
-  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
@@ -39,6 +36,7 @@
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.1/dist/embed-amd.js"></script>
     <script src="../_static/js/custom.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -51,7 +49,7 @@
     <!-- Google Analytics -->
     
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
     
     <div class="container-fluid" id="banner"></div>
 
@@ -985,18 +983,18 @@
               <div>
                 
   <span class="target" id="module-porespy.metrics"><span id="metrics"></span></span><section id="id1">
-<h1>Metrics<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<h1>Metrics<a class="headerlink" href="#id1" title="Permalink to this headline">#</a></h1>
 <p><strong>Extract Quantitative Information</strong></p>
 <p>This submodule contains functions for determining key metrics about an
 image. Typically these are applied to an image after applying a filter,
 but a few functions can be applied directly to the binary image.</p>
-<table class="longtable table autosummary">
+<table class="autosummary longtable table autosummary">
 <colgroup>
 <col style="width: 10%" />
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.metrics.boxcount.html#porespy.metrics.boxcount" title="porespy.metrics.boxcount"><code class="xref py py-obj docutils literal notranslate"><span class="pre">metrics.boxcount</span></code></a>(im[, bins, d_min, d_max])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.metrics.boxcount.html#porespy.metrics.boxcount" title="porespy.metrics.boxcount"><code class="xref py py-obj docutils literal notranslate"><span class="pre">metrics.boxcount</span></code></a>(im[, bins])</p></td>
 <td><p>Calculates fractal dimension of an image using the tiled box counting method <a href="#id3"><span class="problematic" id="id2">[1]_</span></a></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.metrics.chord_counts.html#porespy.metrics.chord_counts" title="porespy.metrics.chord_counts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">metrics.chord_counts</span></code></a>(im)</p></td>
@@ -1017,11 +1015,11 @@ but a few functions can be applied directly to the binary image.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.metrics.mesh_volume.html#porespy.metrics.mesh_volume" title="porespy.metrics.mesh_volume"><code class="xref py py-obj docutils literal notranslate"><span class="pre">metrics.mesh_volume</span></code></a>(region)</p></td>
 <td><p>Compute the volume of a single region by meshing it</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.metrics.pc_curve.html#porespy.metrics.pc_curve" title="porespy.metrics.pc_curve"><code class="xref py py-obj docutils literal notranslate"><span class="pre">metrics.pc_curve</span></code></a>(im[, sizes, pressures, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.metrics.pc_curve.html#porespy.metrics.pc_curve" title="porespy.metrics.pc_curve"><code class="xref py py-obj docutils literal notranslate"><span class="pre">metrics.pc_curve</span></code></a>(im[, sizes, pc, seq, ...])</p></td>
 <td><p>Produces a Pc-Snwp curve given a map of meniscus radii or capillary pressures at which each voxel was invaded</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.metrics.pc_curve_from_ibip.html#porespy.metrics.pc_curve_from_ibip" title="porespy.metrics.pc_curve_from_ibip"><code class="xref py py-obj docutils literal notranslate"><span class="pre">metrics.pc_curve_from_ibip</span></code></a>(seq, sizes[, im, ...])</p></td>
-<td><p>Produces a Pc-Snwp curve from the output of <code class="docutils literal notranslate"><span class="pre">ibip</span></code></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.metrics.pc_curve_from_ibip.html#porespy.metrics.pc_curve_from_ibip" title="porespy.metrics.pc_curve_from_ibip"><code class="xref py py-obj docutils literal notranslate"><span class="pre">metrics.pc_curve_from_ibip</span></code></a>(*args, **kwargs)</p></td>
+<td><p>This function is deprecated.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.metrics.pc_curve_from_mio.html#porespy.metrics.pc_curve_from_mio" title="porespy.metrics.pc_curve_from_mio"><code class="xref py py-obj docutils literal notranslate"><span class="pre">metrics.pc_curve_from_mio</span></code></a>(*args, **kwargs)</p></td>
 <td><p>This function is deprecated.</p></td>
@@ -1082,19 +1080,20 @@ but a few functions can be applied directly to the binary image.</p>
       </div>
     </div>
   
-    <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
-  <footer class="footer mt-5 mt-md-0">
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+<footer class="footer mt-5 mt-md-0">
   <div class="container">
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2022 PoreSpy Team.<br>
+    &copy; Copyright 2022, PMEAL.<br>
 </p>
     </div>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.4.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
 </p>
     </div>
     

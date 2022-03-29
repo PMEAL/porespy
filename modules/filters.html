@@ -8,30 +8,27 @@
 
     <title>Filters &#8212; PoreSpy  documentation</title>
     
-    <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
-  
+
     
-    <link rel="stylesheet"
-      href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
-    <link rel="preload" as="font" type="font/woff2" crossorigin
-      href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
-    <link rel="preload" as="font" type="font/woff2" crossorigin
-      href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
-  
-    
-      
-  
-    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/pydata-sphinx-theme.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
     <link rel="stylesheet" type="text/css" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css" />
     
-    <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
-  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
@@ -39,6 +36,7 @@
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.1/dist/embed-amd.js"></script>
     <script src="../_static/js/custom.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -51,7 +49,7 @@
     <!-- Google Analytics -->
     
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
     
     <div class="container-fluid" id="banner"></div>
 
@@ -985,13 +983,13 @@
               <div>
                 
   <span class="target" id="module-porespy.filters"><span id="filters"></span></span><section id="id1">
-<h1>Filters<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<h1>Filters<a class="headerlink" href="#id1" title="Permalink to this headline">#</a></h1>
 <p><strong>Highlight Features of Interest</strong></p>
 <p>This module contains a variety of functions for altering images based on
 the structural characteristics, such as pore sizes.  A definition of a
 <em>filter</em> is a function that returns an image the shape as the original
 image, but with altered values.</p>
-<table class="longtable table autosummary">
+<table class="autosummary longtable table autosummary">
 <colgroup>
 <col style="width: 10%" />
 <col style="width: 90%" />
@@ -1033,10 +1031,10 @@ image, but with altered values.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.filters.flood.html#porespy.filters.flood" title="porespy.filters.flood"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.flood</span></code></a>(im, labels[, mode])</p></td>
 <td><p>Floods/fills each region in an image with a single value based on the specific values in that region.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.filters.flood_func.html#porespy.filters.flood_func" title="porespy.filters.flood_func"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.flood_func</span></code></a>(im, labels, func)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.filters.flood_func.html#porespy.filters.flood_func" title="porespy.filters.flood_func"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.flood_func</span></code></a>(im, func[, labels])</p></td>
 <td><p>Flood each isolated region in an image with a constant value calculated by the given function.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.filters.hold_peaks.html#porespy.filters.hold_peaks" title="porespy.filters.hold_peaks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.hold_peaks</span></code></a>(im[, axis])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.filters.hold_peaks.html#porespy.filters.hold_peaks" title="porespy.filters.hold_peaks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.hold_peaks</span></code></a>(im[, axis, ascending])</p></td>
 <td><p>Replaces each voxel with the highest value along the given axis.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.filters.ibip.html#porespy.filters.ibip" title="porespy.filters.ibip"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.ibip</span></code></a>(im[, inlets, dt, maxiter])</p></td>
@@ -1072,7 +1070,7 @@ image, but with altered values.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.filters.region_size.html#porespy.filters.region_size" title="porespy.filters.region_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.region_size</span></code></a>(im)</p></td>
 <td><p>Replace each voxel with the size of the region to which it belongs</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.filters.satn_to_seq.html#porespy.filters.satn_to_seq" title="porespy.filters.satn_to_seq"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.satn_to_seq</span></code></a>(satn, im)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.filters.satn_to_seq.html#porespy.filters.satn_to_seq" title="porespy.filters.satn_to_seq"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.satn_to_seq</span></code></a>(satn[, im])</p></td>
 <td><p>Converts an image of nonwetting phase saturations to invasion sequence values</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.filters.seq_to_satn.html#porespy.filters.seq_to_satn" title="porespy.filters.seq_to_satn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.seq_to_satn</span></code></a>(seq[, im])</p></td>
@@ -1128,19 +1126,20 @@ image, but with altered values.</p>
       </div>
     </div>
   
-    <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
-  <footer class="footer mt-5 mt-md-0">
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+<footer class="footer mt-5 mt-md-0">
   <div class="container">
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2022 PoreSpy Team.<br>
+    &copy; Copyright 2022, PMEAL.<br>
 </p>
     </div>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.4.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
 </p>
     </div>
     

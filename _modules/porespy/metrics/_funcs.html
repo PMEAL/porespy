@@ -7,30 +7,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>porespy.metrics._funcs &#8212; PoreSpy  documentation</title>
     
-    <link href="../../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
 <link href="../../../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
-  
+
     
-    <link rel="stylesheet"
-      href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
-    <link rel="preload" as="font" type="font/woff2" crossorigin
-      href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
-    <link rel="preload" as="font" type="font/woff2" crossorigin
-      href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
-  
-    
-      
-  
-    
+  <link rel="stylesheet"
+    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/pydata-sphinx-theme.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
     
-    <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
-  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
@@ -38,6 +35,7 @@
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.1/dist/embed-amd.js"></script>
     <script src="../../../_static/js/custom.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -48,7 +46,7 @@
     <!-- Google Analytics -->
     
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
     
     <div class="container-fluid" id="banner"></div>
 
@@ -316,7 +314,8 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    im : ndarray</span>
-<span class="sd">        The volumetric image for which to calculate the porosity profile</span>
+<span class="sd">        The volumetric image for which to calculate the porosity profile.  All</span>
+<span class="sd">        voxels with a value of 1 (or ``True``) are considered as void.</span>
 <span class="sd">    axis : int</span>
 <span class="sd">        The axis (0, 1, or 2) along which to calculate the profile.  For</span>
 <span class="sd">        instance, if `axis` is 0, then the porosity in each YZ plane is</span>
@@ -339,7 +338,7 @@
     <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_3d</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
     <span class="n">a</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">ndim</span><span class="p">))</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="n">axis</span><span class="p">]))</span>
     <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span> <span class="o">=</span> <span class="n">a</span>
-    <span class="n">prof</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">a2</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="n">a1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">a2</span><span class="p">]</span> <span class="o">*</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">a1</span><span class="p">])</span>
+    <span class="n">prof</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">im</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">a2</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="n">a1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">a2</span><span class="p">]</span> <span class="o">*</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">a1</span><span class="p">])</span>
     <span class="k">return</span> <span class="n">prof</span></div>
 
 
@@ -851,7 +850,7 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    `Click here</span>
-<span class="sd">    &lt;https://porespy.org/examples/metrics/reference/two_point_correlation_fft.html&gt;`_</span>
+<span class="sd">    &lt;https://porespy.org/examples/metrics/reference/two_point_correlation.html&gt;`_</span>
 <span class="sd">    to view online example.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -958,93 +957,26 @@
         <span class="n">results</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">im</span> <span class="o">==</span> <span class="n">label</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">im</span><span class="o">.</span><span class="n">size</span> <span class="k">if</span> <span class="n">normed</span> <span class="k">else</span> <span class="mi">1</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">results</span></div>
 
-
-<div class="viewcode-block" id="pc_curve_from_ibip"><a class="viewcode-back" href="../../../modules/generated/porespy.metrics.pc_curve_from_ibip.html#porespy.metrics.pc_curve_from_ibip">[docs]</a><span class="k">def</span> <span class="nf">pc_curve_from_ibip</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span> <span class="n">sizes</span><span class="p">,</span> <span class="n">im</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">0.072</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="mi">180</span><span class="p">,</span>
-                       <span class="n">voxel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">stepped</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="pc_curve_from_ibip"><a class="viewcode-back" href="../../../modules/generated/porespy.metrics.pc_curve_from_ibip.html#porespy.metrics.pc_curve_from_ibip">[docs]</a><span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;This function is deprecated, use pc_curve instead&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">pc_curve_from_ibip</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Produces a Pc-Snwp curve from the output of ``ibip``</span>
+<span class="sd">    This function is deprecated.  Use ``pc_curve`` instead.  Note that the</span>
+<span class="sd">    ``stepped`` argument is no longer supported since this can be done</span>
+<span class="sd">    directly in matplotlib with ``plt.step(...)``.</span>
 
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    seq : ndarray</span>
-<span class="sd">        The image containing the invasion sequence values returned from the</span>
-<span class="sd">        ``ibip`` function.</span>
-<span class="sd">    sizes : ndarray</span>
-<span class="sd">        The image containing the invasion size values returned from ``ibip``</span>
-<span class="sd">    im : ndarray</span>
-<span class="sd">        The voxel image of the porous media.  It not provided then the void</span>
-<span class="sd">        space is assumed to be ``im = ~(seq == 0)``.</span>
-<span class="sd">    sigma : float</span>
-<span class="sd">        The surface tension of the fluid-fluid system of interest</span>
-<span class="sd">    theta : float</span>
-<span class="sd">        The contact angle measured through the invading phase in degrees</span>
-<span class="sd">    voxel_size : float</span>
-<span class="sd">        The voxel resolution of the image</span>
-<span class="sd">    stepped : boolean</span>
-<span class="sd">        If ``True`` (default) the returned data has steps between each point</span>
-<span class="sd">        instead of connecting points directly with sloped lines.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    pc_curve : Results object</span>
-<span class="sd">        A custom object with the following data added as named attributes:</span>
-
-<span class="sd">        ==================  ===================================================</span>
-<span class="sd">        Attribute           Description</span>
-<span class="sd">        ==================  ===================================================</span>
-<span class="sd">        pc                  The capillary pressure, either as given in</span>
-<span class="sd">                            ``pressures`` or computed from ``sizes`` (see</span>
-<span class="sd">                            Notes).</span>
-<span class="sd">        snwp                The fraction of void space filled by non-wetting</span>
-<span class="sd">                            phase at each pressure in ``pc``</span>
-<span class="sd">        ==================  ===================================================</span>
-
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    If ``stepped`` was set to ``True`` then the values include the corners</span>
-<span class="sd">    of the steps, which may be helpful for plotting.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">im</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">im</span> <span class="o">=</span> <span class="o">~</span><span class="p">(</span><span class="n">seq</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
-    <span class="n">seqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">seq</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span>
-    <span class="n">x</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">y</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">with</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">seqs</span><span class="p">,</span> <span class="o">**</span><span class="n">settings</span><span class="o">.</span><span class="n">tqdm</span><span class="p">)</span> <span class="k">as</span> <span class="n">pbar</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">seqs</span><span class="p">:</span>
-            <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
-            <span class="n">mask</span> <span class="o">=</span> <span class="n">seq</span> <span class="o">==</span> <span class="n">n</span>
-            <span class="c1"># The following assumes only one size found, which was confirmed</span>
-            <span class="n">r</span> <span class="o">=</span> <span class="n">sizes</span><span class="p">[</span><span class="n">mask</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">voxel_size</span>
-            <span class="n">pc</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">sigma</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">theta</span><span class="p">))</span><span class="o">/</span><span class="n">r</span>
-            <span class="n">x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pc</span><span class="p">)</span>
-            <span class="n">snwp</span> <span class="o">=</span> <span class="p">((</span><span class="n">seq</span> <span class="o">&lt;=</span> <span class="n">n</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">seq</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">im</span> <span class="o">==</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">/</span><span class="n">im</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-            <span class="n">y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">snwp</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">stepped</span><span class="p">:</span>
-        <span class="n">pc</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-        <span class="n">snwp</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
-            <span class="n">j</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
-            <span class="n">pc</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>
-            <span class="n">snwp</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="n">pc</span>
-        <span class="n">y</span> <span class="o">=</span> <span class="n">snwp</span>
-    <span class="n">pc_curve</span> <span class="o">=</span> <span class="n">Results</span><span class="p">()</span>
-    <span class="n">pc_curve</span><span class="o">.</span><span class="n">pc</span> <span class="o">=</span> <span class="n">x</span>
-    <span class="n">pc_curve</span><span class="o">.</span><span class="n">snwp</span> <span class="o">=</span> <span class="n">y</span>
-    <span class="k">return</span> <span class="n">pc_curve</span></div>
-
-
-<div class="viewcode-block" id="pc_curve_from_mio"><a class="viewcode-back" href="../../../modules/generated/porespy.metrics.pc_curve_from_mio.html#porespy.metrics.pc_curve_from_mio">[docs]</a><span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;This function is deprecated, use pc_curve_from_sizes instead&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">pc_curve_from_mio</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This function is deprecated.  Use ``pc_curve_from_sizes`` or</span>
-<span class="sd">    ``pc_curve_from_pressures`` instead.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">pc_curve</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="pc_curve"><a class="viewcode-back" href="../../../modules/generated/porespy.metrics.pc_curve.html#porespy.metrics.pc_curve">[docs]</a><span class="k">def</span> <span class="nf">pc_curve</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">sizes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pressures</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<div class="viewcode-block" id="pc_curve_from_mio"><a class="viewcode-back" href="../../../modules/generated/porespy.metrics.pc_curve_from_mio.html#porespy.metrics.pc_curve_from_mio">[docs]</a><span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;This function is deprecated, use pc_curve instead&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">pc_curve_from_mio</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function is deprecated.  Use ``pc_curve`` instead.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">pc_curve</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="pc_curve"><a class="viewcode-back" href="../../../modules/generated/porespy.metrics.pc_curve.html#porespy.metrics.pc_curve">[docs]</a><span class="k">def</span> <span class="nf">pc_curve</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">sizes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">seq</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
              <span class="n">sigma</span><span class="o">=</span><span class="mf">0.072</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="mi">180</span><span class="p">,</span> <span class="n">voxel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Produces a Pc-Snwp curve given a map of meniscus radii or capillary</span>
@@ -1058,22 +990,25 @@
 <span class="sd">    sizes : ndarray, optional</span>
 <span class="sd">        An image containing the sphere radii at which each voxel was invaded</span>
 <span class="sd">        during an invasion experiment.</span>
-<span class="sd">    pressures : ndarray, optional</span>
+<span class="sd">    pc : ndarray, optional</span>
 <span class="sd">        An image containing the capillary pressures at which each voxel was</span>
 <span class="sd">        invaded during an invasion experiment.</span>
+<span class="sd">    seq : ndarray, optional</span>
+<span class="sd">        An image containing invasion sequence values, such as that returned</span>
+<span class="sd">        from the ``ibip`` function.</span>
 <span class="sd">    sigma : float, optional</span>
 <span class="sd">        The surface tension of the fluid-fluid system of interest.</span>
-<span class="sd">        This argument is ignored if ``pressures`` are specified, otherwise it</span>
+<span class="sd">        This argument is ignored if ``pc`` are specified, otherwise it</span>
 <span class="sd">        is used in the Washburn equation to convert ``sizes`` to capillary</span>
-<span class="sd">        pressures.</span>
+<span class="sd">        pc.</span>
 <span class="sd">    theta : float</span>
 <span class="sd">        The contact angle measured through the invading phase in degrees.</span>
-<span class="sd">        This argument is ignored if ``pressures`` are specified, otherwise it</span>
+<span class="sd">        This argument is ignored if ``pc`` are specified, otherwise it</span>
 <span class="sd">        is used in the Washburn equation to convert ``sizes`` to capillary</span>
 <span class="sd">        pressures.</span>
 <span class="sd">    voxel_size : float</span>
 <span class="sd">        The voxel resolution of the image.</span>
-<span class="sd">        This argument is ignored if ``pressures`` are specified, otherwise it</span>
+<span class="sd">        This argument is ignored if ``pc`` are specified, otherwise it</span>
 <span class="sd">        is used in the Washburn equation to convert ``sizes`` to capillary</span>
 <span class="sd">        pressures.</span>
 
@@ -1086,7 +1021,7 @@
 <span class="sd">        Attribute           Description</span>
 <span class="sd">        ==================  ===================================================</span>
 <span class="sd">        pc                  The capillary pressure, either as given in</span>
-<span class="sd">                            ``pressures`` or computed from ``sizes`` (see</span>
+<span class="sd">                            ``pc`` or computed from ``sizes`` (see</span>
 <span class="sd">                            Notes).</span>
 <span class="sd">        snwp                The fraction of void space filled by non-wetting</span>
 <span class="sd">                            phase at each pressure in ``pc``</span>
@@ -1100,13 +1035,30 @@
 <span class="sd">    For more control over how capillary pressure model, it can be computed by</span>
 <span class="sd">    hand, for example:</span>
 
-<span class="sd">        $$ p = \frac{-2*0.072*np.cos(np.deg2rad(180))}{sizes \cdot voxel_size} $$</span>
+<span class="sd">        $$ pc = \frac{-2*0.072*np.cos(np.deg2rad(180))}{sizes \cdot voxel_size} $$</span>
 
-<span class="sd">    then passed in as the ``pressures`` argument.</span>
+<span class="sd">    then passed in as the ``pc`` argument.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">tqdm</span> <span class="o">=</span> <span class="n">get_tqdm</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">sizes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">seq</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">seqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">seq</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">with</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">seqs</span><span class="p">,</span> <span class="o">**</span><span class="n">settings</span><span class="o">.</span><span class="n">tqdm</span><span class="p">)</span> <span class="k">as</span> <span class="n">pbar</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">seqs</span><span class="p">:</span>
+                <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+                <span class="n">mask</span> <span class="o">=</span> <span class="n">seq</span> <span class="o">==</span> <span class="n">n</span>
+                <span class="c1"># The following assumes only one size found, which was confirmed</span>
+                <span class="n">r</span> <span class="o">=</span> <span class="n">sizes</span><span class="p">[</span><span class="n">mask</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">voxel_size</span>
+                <span class="n">pc</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">sigma</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">theta</span><span class="p">))</span><span class="o">/</span><span class="n">r</span>
+                <span class="n">x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pc</span><span class="p">)</span>
+                <span class="n">snwp</span> <span class="o">=</span> <span class="p">((</span><span class="n">seq</span> <span class="o">&lt;=</span> <span class="n">n</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">seq</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">im</span> <span class="o">==</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">/</span><span class="n">im</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+                <span class="n">y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">snwp</span><span class="p">)</span>
+        <span class="n">pc_curve</span> <span class="o">=</span> <span class="n">Results</span><span class="p">()</span>
+        <span class="n">pc_curve</span><span class="o">.</span><span class="n">pc</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="n">pc_curve</span><span class="o">.</span><span class="n">snwp</span> <span class="o">=</span> <span class="n">y</span>
+    <span class="k">elif</span> <span class="n">sizes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">im</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">im</span> <span class="o">=</span> <span class="o">~</span><span class="p">(</span><span class="n">sizes</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
         <span class="n">sz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">sizes</span><span class="p">)[:</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
@@ -1124,8 +1076,8 @@
         <span class="n">pc_curve</span> <span class="o">=</span> <span class="n">Results</span><span class="p">()</span>
         <span class="n">pc_curve</span><span class="o">.</span><span class="n">pc</span> <span class="o">=</span> <span class="n">x</span>
         <span class="n">pc_curve</span><span class="o">.</span><span class="n">snwp</span> <span class="o">=</span> <span class="n">y</span>
-    <span class="k">elif</span> <span class="n">pressures</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">Ps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">pressures</span><span class="p">[</span><span class="n">im</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">pc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">Ps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">pc</span><span class="p">[</span><span class="n">im</span><span class="p">])</span>
         <span class="c1"># Utilize the fact that -inf and +inf will be at locations 0 &amp; -1 in Ps</span>
         <span class="k">if</span> <span class="n">Ps</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">:</span>
             <span class="n">Ps</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">Ps</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span>
@@ -1136,7 +1088,7 @@
             <span class="n">Ps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">Ps</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">Ps</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span> <span class="n">Ps</span><span class="p">))</span>
         <span class="n">y</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">Vp</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-        <span class="n">temp</span> <span class="o">=</span> <span class="n">pressures</span><span class="p">[</span><span class="n">im</span><span class="p">]</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">pc</span><span class="p">[</span><span class="n">im</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">Ps</span><span class="p">,</span> <span class="o">**</span><span class="n">settings</span><span class="o">.</span><span class="n">tqdm</span><span class="p">):</span>
             <span class="n">y</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">temp</span> <span class="o">&lt;=</span> <span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">/</span><span class="n">Vp</span><span class="p">)</span>
         <span class="n">pc_curve</span> <span class="o">=</span> <span class="n">Results</span><span class="p">()</span>
@@ -1301,19 +1253,20 @@
       </div>
     </div>
   
-    <script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
-  <footer class="footer mt-5 mt-md-0">
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+<footer class="footer mt-5 mt-md-0">
   <div class="container">
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2022 PoreSpy Team.<br>
+    &copy; Copyright 2022, PMEAL.<br>
 </p>
     </div>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.4.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
 </p>
     </div>
     

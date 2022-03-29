@@ -7,30 +7,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>porespy.visualization._funcs &#8212; PoreSpy  documentation</title>
     
-    <link href="../../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
 <link href="../../../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
-  
+
     
-    <link rel="stylesheet"
-      href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
-    <link rel="preload" as="font" type="font/woff2" crossorigin
-      href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
-    <link rel="preload" as="font" type="font/woff2" crossorigin
-      href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
-  
-    
-      
-  
-    
+  <link rel="stylesheet"
+    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/pydata-sphinx-theme.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
     
-    <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
-  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
@@ -38,6 +35,7 @@
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.1/dist/embed-amd.js"></script>
     <script src="../../../_static/js/custom.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -48,7 +46,7 @@
     <!-- Google Analytics -->
     
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
     
     <div class="container-fluid" id="banner"></div>
 
@@ -328,7 +326,7 @@
     <span class="n">temp_old</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">Ps</span><span class="p">):</span>
         <span class="n">temp</span> <span class="o">=</span> <span class="p">(</span><span class="n">satn</span> <span class="o">&lt;=</span> <span class="n">p</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">satn</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="n">im_data</span> <span class="o">=</span> <span class="n">prep_for_imshow</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="n">temp</span><span class="o">*</span><span class="mf">2.0</span> <span class="o">-</span> <span class="n">temp_old</span><span class="o">*</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span>
+        <span class="n">im_data</span> <span class="o">=</span> <span class="n">prep_for_imshow</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">temp</span><span class="o">*</span><span class="mf">2.0</span> <span class="o">-</span> <span class="n">temp_old</span><span class="o">*</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">im</span><span class="p">,</span>
                                   <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="nb">slice</span><span class="o">=</span><span class="nb">slice</span><span class="p">)</span>
         <span class="n">im_data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;vmax&#39;</span><span class="p">)</span>
         <span class="p">[</span><span class="n">im_data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">]</span>
@@ -339,31 +337,34 @@
     <span class="k">return</span> <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span></div>
 
 
-<div class="viewcode-block" id="prep_for_imshow"><a class="viewcode-back" href="../../../modules/generated/porespy.visualization.prep_for_imshow.html#porespy.visualization.prep_for_imshow">[docs]</a><span class="k">def</span> <span class="nf">prep_for_imshow</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">im</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">slice</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="prep_for_imshow"><a class="viewcode-back" href="../../../modules/generated/porespy.visualization.prep_for_imshow.html#porespy.visualization.prep_for_imshow">[docs]</a><span class="k">def</span> <span class="nf">prep_for_imshow</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">slice</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Adjusts the range of greyscale values in an image to improve visualization</span>
 <span class="sd">    by ``matplotlib.pyplot.imshow``</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    values : ndimage</span>
-<span class="sd">        An image with greyscale values such as capillary pressures or</span>
-<span class="sd">        invasion sequences.  Can include both ``+inf`` and ``-inf`` values.</span>
 <span class="sd">    im : ndimage</span>
-<span class="sd">        An image of the porous material with ``True`` indicating void and</span>
-<span class="sd">        ``False`` indicating solid.</span>
+<span class="sd">        The image to show. If ``im`` includes ``+inf`` or ``-inf`` values,</span>
+<span class="sd">        they are converted to 1 above or below the maximum and minimum finite</span>
+<span class="sd">        values in ``im``, respectively.</span>
+<span class="sd">    mask : ndimage, optional</span>
+<span class="sd">        An image of the porous material with ``True`` indicating voxels of</span>
+<span class="sd">        interest. The ``False`` voxels are excluded from the ``vmax`` and</span>
+<span class="sd">        ``vmin`` calculation.</span>
 <span class="sd">    axis : int, optional</span>
-<span class="sd">        If the image is 3D, a 2D image can be returned with the specified</span>
-<span class="sd">        ``slice`` taken along this axis.  If ``None`` then a 3D</span>
+<span class="sd">        If the image is 3D, a 2D image is returned with the specified</span>
+<span class="sd">        ``slice`` taken along this axis (default = 0).  If ``None`` then a 3D</span>
 <span class="sd">        image is returned. If the image is 2D this is ignored.</span>
 <span class="sd">    slice : int, optional</span>
-<span class="sd">        If the image is 3D, a 2D image can be returned showing this slice</span>
+<span class="sd">        If ``im`` is 3D, a 2D image is be returned showing this slice</span>
 <span class="sd">        along the given ``axis``.  If ``None``, then a slice at the mid-point</span>
-<span class="sd">        of the axis is returned.  If 2D this is ignored.</span>
+<span class="sd">        of the axis is returned.  If ``axis`` is ``None`` or the image is 2D</span>
+<span class="sd">        this is ignored.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    data : dict</span>
+<span class="sd">    kwargs : dict</span>
 <span class="sd">        A python dicionary designed to be passed directly to</span>
 <span class="sd">        ``matplotlib.pyplot.imshow`` using the &quot;**kwargs&quot; features (i.e.</span>
 <span class="sd">        ``plt.imshow(**data)``).  It contains the following key-value pairs:</span>
@@ -374,7 +375,7 @@
 <span class="sd">        &#39;X&#39;             The adjusted image with ``+inf`` replaced by</span>
 <span class="sd">                        ``vmax + 1``, and all solid voxels replacd by</span>
 <span class="sd">                        ``np.nan`` to show as white in ``imshow``</span>
-<span class="sd">        &#39;vmax&#39;          The maximum of ``values`` not including ``+inf``</span>
+<span class="sd">        &#39;vmax&#39;          The maximum of ``values`` not including ``+inf`` or values in</span>
 <span class="sd">        &#39;vmin&#39;          The minimum of ``values`` not including ``-inf``</span>
 <span class="sd">        &#39;interpolation&#39; Set to &#39;none&#39; to avoid artifacts in ``imshow``</span>
 <span class="sd">        &#39;origin&#39;        Set to &#39;lower&#39; to put (0, 0) on the bottom-left corner</span>
@@ -386,24 +387,25 @@
 <span class="sd">    ``del data[&#39;interpolation&#39;]`` or ``data.pop(&#39;interpolation&#39;)``.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># If 3D, fetch 2D slice immediately to save memory</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">axis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">slice</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="nb">slice</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
-        <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="p">)[</span><span class="nb">slice</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+        <span class="c1"># Rotate image to put given axis first, then slice</span>
         <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="p">)[</span><span class="nb">slice</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
-    <span class="k">if</span> <span class="n">values</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="n">temp</span> <span class="o">=</span> <span class="n">values</span>
-        <span class="n">vmax</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="n">vmin</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
-        <span class="n">vmax</span> <span class="o">=</span> <span class="n">temp</span><span class="p">[</span><span class="n">temp</span> <span class="o">&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
-        <span class="n">temp</span><span class="p">[</span><span class="n">temp</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">]</span> <span class="o">=</span> <span class="n">vmax</span> <span class="o">+</span> <span class="mi">1</span>
-        <span class="n">vmin</span> <span class="o">=</span> <span class="n">temp</span><span class="p">[</span><span class="n">temp</span> <span class="o">&gt;</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
-        <span class="n">temp</span><span class="p">[</span><span class="n">temp</span> <span class="o">==</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">]</span> <span class="o">=</span> <span class="n">vmin</span> <span class="o">-</span> <span class="mi">1</span>
-    <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="n">temp</span><span class="o">/</span><span class="n">im</span><span class="p">,</span> <span class="s1">&#39;vmin&#39;</span><span class="p">:</span> <span class="n">vmin</span><span class="p">,</span> <span class="s1">&#39;vmax&#39;</span><span class="p">:</span> <span class="n">vmax</span><span class="p">,</span>
-            <span class="s1">&#39;interpolation&#39;</span><span class="p">:</span> <span class="s1">&#39;none&#39;</span><span class="p">,</span> <span class="s1">&#39;origin&#39;</span><span class="p">:</span> <span class="s1">&#39;lower&#39;</span><span class="p">}</span>
-    <span class="k">return</span> <span class="n">data</span></div>
+        <span class="k">if</span> <span class="n">mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># Rotate mask as well, then slice</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="p">)[</span><span class="nb">slice</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">mask</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+
+    <span class="n">vmax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">((</span><span class="n">im</span><span class="o">*</span><span class="p">(</span><span class="n">im</span> <span class="o">&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">))[</span><span class="n">mask</span><span class="p">])</span>
+    <span class="n">im</span><span class="p">[(</span><span class="n">im</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)]</span> <span class="o">=</span> <span class="n">vmax</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">vmin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amin</span><span class="p">((</span><span class="n">im</span><span class="o">*</span><span class="p">(</span><span class="n">im</span> <span class="o">&gt;</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">))[</span><span class="n">mask</span><span class="p">])</span>
+    <span class="n">im</span><span class="p">[(</span><span class="n">im</span> <span class="o">==</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)]</span> <span class="o">=</span> <span class="n">vmin</span> <span class="o">-</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="n">im</span><span class="p">,</span> <span class="s1">&#39;vmin&#39;</span><span class="p">:</span> <span class="n">vmin</span><span class="p">,</span> <span class="s1">&#39;vmax&#39;</span><span class="p">:</span> <span class="n">vmax</span><span class="p">,</span>
+            <span class="s1">&#39;interpolation&#39;</span><span class="p">:</span> <span class="s1">&#39;none&#39;</span><span class="p">,</span> <span class="s1">&#39;origin&#39;</span><span class="p">:</span> <span class="s1">&#39;lower&#39;</span><span class="p">}</span></div>
 </pre></div>
 
               </div>
@@ -415,19 +417,20 @@
       </div>
     </div>
   
-    <script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
-  <footer class="footer mt-5 mt-md-0">
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+<footer class="footer mt-5 mt-md-0">
   <div class="container">
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2022 PoreSpy Team.<br>
+    &copy; Copyright 2022, PMEAL.<br>
 </p>
     </div>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.4.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
 </p>
     </div>
     

@@ -8,30 +8,27 @@
 
     <title>RSA &#8212; PoreSpy  documentation</title>
     
-    <link href="../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
 <link href="../../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
-  
+
     
-    <link rel="stylesheet"
-      href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
-    <link rel="preload" as="font" type="font/woff2" crossorigin
-      href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
-    <link rel="preload" as="font" type="font/woff2" crossorigin
-      href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
-  
-    
-      
-  
-    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/pydata-sphinx-theme.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
     
-    <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
-  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
@@ -39,6 +36,7 @@
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.1/dist/embed-amd.js"></script>
     <script src="../../_static/js/custom.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -51,7 +49,7 @@
     <!-- Google Analytics -->
     
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
     
     <div class="container-fluid" id="banner"></div>
 
@@ -985,72 +983,11 @@
               <div>
                 
   <section id="rsa">
-<h1>RSA<a class="headerlink" href="#rsa" title="Permalink to this headline">¶</a></h1>
+<h1>RSA<a class="headerlink" href="#rsa" title="Permalink to this headline">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="porespy.generators.RSA">
-<span class="sig-name descname"><span class="pre">RSA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im_or_shape</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">volume_fraction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clearance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'contained'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_spheres</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smooth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/generators/_imgen.html#RSA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.generators.RSA" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generates a sphere or disk packing using Random Sequential Addition</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>im_or_shape</strong> (<em>ndarray</em><em> or </em><em>list</em>) – To provide flexibility, this argument accepts either an image into
-which the spheres are inserted, or a shape which is used to create an
-empty image.  In both cases the spheres are added as <code class="docutils literal notranslate"><span class="pre">True</span></code> values
-to the background.  Since <code class="docutils literal notranslate"><span class="pre">True</span></code> is considered the pore space, then
-the added spheres represent holes.</p></li>
-<li><p><strong>r</strong> (<em>int</em>) – The radius of the disk or sphere to insert.</p></li>
-<li><p><strong>volume_fraction</strong> (<em>scalar</em><em> (</em><em>default is 1.0</em><em>)</em>) – The fraction of the image that should be filled with spheres.  The
-spheres are added as <code class="docutils literal notranslate"><span class="pre">True</span></code>’s, so each sphere addition increases the
-<code class="docutils literal notranslate"><span class="pre">volume_fraction</span></code> until the specified limit is reached.  Note that if
-<code class="docutils literal notranslate"><span class="pre">n_max</span></code> is reached first, then <code class="docutils literal notranslate"><span class="pre">volume_fraction</span></code> will not be
-acheived.  Also, <code class="docutils literal notranslate"><span class="pre">volume_fraction</span></code> is not counted correctly if the
-<code class="docutils literal notranslate"><span class="pre">mode</span></code> is <code class="docutils literal notranslate"><span class="pre">'extended'</span></code>.</p></li>
-<li><p><strong>clearance</strong> (<em>int</em><em> (</em><em>optional</em><em>, </em><em>default = 0</em><em>)</em>) – The amount of space to put between each sphere. Negative values are
-acceptable to create overlaps, so long as <code class="docutils literal notranslate"><span class="pre">abs(clearance)</span> <span class="pre">&lt;</span> <span class="pre">r</span></code>.</p></li>
-<li><p><strong>n_max</strong> (<em>int</em><em> (</em><em>default is 100</em><em>,</em><em>000</em><em>)</em>) – The maximum number of spheres to add.  Using a low value may halt
-the addition process prior to reaching the specified
-<code class="docutils literal notranslate"><span class="pre">volume_fraction</span></code>.  If <code class="docutils literal notranslate"><span class="pre">None</span></code> is given, then no limit is used.</p></li>
-<li><p><strong>mode</strong> (<em>string</em><em> (</em><em>default is 'contained'</em><em>)</em>) – <p>Controls how the edges of the image are handled.  Options are:</p>
-<dl class="simple">
-<dt>’contained’</dt><dd><p>Spheres are all completely within the image</p>
-</dd>
-<dt>’extended’</dt><dd><p>Spheres are allowed to extend beyond the edge of the
-image.  In this mode the volume fraction will be less that
-requested since some spheres extend beyond the image, but their
-entire volume is counted as added for computational efficiency.</p>
-</dd>
-</dl>
-</p></li>
-<li><p><strong>return_spheres</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then an image containing only the spheres is returned
-rather than the input image with the spheres added, which is the
-default behavior.</p></li>
-<li><p><strong>smooth</strong> (<em>bool</em>) – Indicates whether balls should have smooth faces (<code class="docutils literal notranslate"><span class="pre">True</span></code>) or should
-include the bumps on the extremities (<code class="docutils literal notranslate"><span class="pre">False</span></code>).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>image</strong> – An image with spheres of specified radius <em>added</em> to the background.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ndarray</p>
-</dd>
-</dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference internal" href="porespy.generators.pseudo_gravity_packing.html#porespy.generators.pseudo_gravity_packing" title="porespy.generators.pseudo_gravity_packing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pseudo_gravity_packing</span></code></a>, <a class="reference internal" href="porespy.generators.pseudo_electrostatic_packing.html#porespy.generators.pseudo_electrostatic_packing" title="porespy.generators.pseudo_electrostatic_packing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pseudo_electrostatic_packing</span></code></a></p>
-</div>
-<p class="rubric">Notes</p>
-<p>This algorithm ensures that spheres do not overlap but does not
-guarantee they are tightly packed.</p>
-<p>This function adds spheres to the background of the received <code class="docutils literal notranslate"><span class="pre">im</span></code>, which
-allows iteratively adding spheres of different radii to the unfilled space
-by repeatedly passing in the result of previous calls to RSA.</p>
-<p class="rubric">References</p>
-<p>[1] Random Heterogeneous Materials, S. Torquato (2001)</p>
-<p class="rubric">Examples</p>
-<p><a class="reference external" href="https://porespy.org/examples/generators/reference/RSA.html">Click here</a>
-to view online example.</p>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">RSA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/generators/_imgen.html#RSA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.generators.RSA" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
 
 </section>
 
@@ -1064,19 +1001,20 @@ to view online example.</p>
       </div>
     </div>
   
-    <script src="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
-  <footer class="footer mt-5 mt-md-0">
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+<footer class="footer mt-5 mt-md-0">
   <div class="container">
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2022 PoreSpy Team.<br>
+    &copy; Copyright 2022, PMEAL.<br>
 </p>
     </div>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.4.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
 </p>
     </div>
     
