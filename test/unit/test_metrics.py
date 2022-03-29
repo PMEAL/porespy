@@ -6,6 +6,7 @@ from skimage import io
 from edt import edt
 from pathlib import Path
 import scipy.ndimage as spim
+from skimage.morphology import ball
 from numpy.testing import assert_allclose
 ps.settings.tqdm['disable'] = True
 
@@ -150,6 +151,23 @@ class MetricsTest():
         ia = ps.metrics.region_interface_areas(regions, areas)
         # assert np.all(ia.conns[0] == [2, 19])
         # assert np.around(ia.area[0], decimals=2) == 3.59
+
+    def test_region_volumes(self):
+        regions = self.regions[:50, :50, :50]
+        vols_march = ps.metrics.region_volumes(regions=regions)
+        vols_vox = ps.metrics.region_volumes(regions=regions, mode='voxel')
+        assert_allclose(vols_march[:5], [1498.85320453, 2597.90798652, 
+                                         2158.34548652, 1281.17978573, 1172.39853573] )
+        assert_allclose(vols_vox[:5], [1540., 2648., 2206., 1320., 1210.])
+        assert_allclose(np.mean(vols_march), 1907.8062788852674)
+        assert_allclose(np.mean(vols_vox), 1952.125)
+
+    def test_region_volumes_for_sphere(self):
+        region = ball(10)
+        vol_march = ps.metrics.region_volumes(regions=region)
+        vol_vox = ps.metrics.region_volumes(region, mode='voxel')
+        assert_allclose(vol_march, 4102.28678846)
+        assert_allclose(vol_vox, 4169.)
 
     def test_phase_fraction(self):
         im = np.reshape(np.random.randint(0, 10, 1000), [10, 10, 10])

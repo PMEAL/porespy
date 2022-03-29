@@ -70,7 +70,7 @@ def mesh_volume(region):
     mc = mesh_region(region > 0)
     m = Trimesh(vertices=mc.verts, faces=mc.faces, vertex_normals=mc.norm)
     if m.is_watertight:
-        vol = -1 * m.volume
+        vol = np.abs(m.volume)
     else:
         vol = np.nan
     return vol
