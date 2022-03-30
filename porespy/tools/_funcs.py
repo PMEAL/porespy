@@ -1,6 +1,6 @@
-import scipy as sp
 import numpy as np
 import scipy.ndimage as spim
+from scipy.special import erfc
 from skimage.segmentation import relabel_sequential
 from edt import edt
 from loguru import logger
@@ -11,6 +11,35 @@ try:
     from skimage.measure import marching_cubes
 except ImportError:
     from skimage.measure import marching_cubes_lewiner as marching_cubes
+
+
+__all__ = [
+    'align_image_with_openpnm',
+    'bbox_to_slices',
+    'extend_slice',
+    'extract_cylinder',
+    'extract_subsection',
+    'extract_regions',
+    'find_outer_region',
+    'get_border',
+    'get_planes',
+    'insert_cylinder',
+    'insert_sphere',
+    'in_hull',
+    'isolate_object',
+    'marching_map',
+    'make_contiguous',
+    'mesh_region',
+    'norm_to_uniform',
+    'overlay',
+    'randomize_colors',
+    'recombine',
+    'ps_ball',
+    'ps_disk',
+    'ps_rect',
+    'ps_round',
+    'subdivide',
+]
 
 
 def isolate_object(region, i, s=None):
@@ -99,7 +128,7 @@ def align_image_with_openpnm(im):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/tools/howtos/align_image_with_openpnm.html>`_
+    <https://porespy.org/examples/tools/reference/align_image_with_openpnm.html>`_
     to view online example.
 
     """
@@ -152,12 +181,12 @@ def subdivide(im, divs=2, overlap=0):
     >>> import porespy as ps
     >>> import matplotlib.pyplot as plt
     >>> im = ps.generators.blobs(shape=[200, 200])
-    >>> s = ps.tools.subdivide(im, divs=[2, 2], flatten=True)
+    >>> s = ps.tools.subdivide(im, divs=[2, 2])
     >>> print(len(s))
     4
 
     `Click here
-    <https://porespy.org/examples/tools/howtos/subdivide.html>`_
+    <https://porespy.org/examples/tools/reference/subdivide.html>`_
     to view online example.
 
     """
@@ -276,7 +305,7 @@ def bbox_to_slices(bbox):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/tools/howtos/bbox_to_slices.html>`_
+    <https://porespy.org/examples/tools/reference/bbox_to_slices.html>`_
     to view online example.
 
     """
@@ -363,7 +392,7 @@ def extract_cylinder(im, r=None, axis=0):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/tools/howtos/extract_cylinder.html>`_
+    <https://porespy.org/examples/tools/reference/extract_cylinder.html>`_
     to view online example.
 
     """
@@ -405,7 +434,7 @@ def extract_subsection(im, shape):
 
     Examples
     --------
-    >>> import scipy as sp
+    >>> import numpy as sp
     >>> from porespy.tools import extract_subsection
     >>> im = np.array([[1, 1, 1, 1], [1, 2, 2, 2], [1, 2, 3, 3], [1, 2, 3, 4]])
     >>> print(im)
@@ -419,7 +448,7 @@ def extract_subsection(im, shape):
      [2 3]]
 
     `Click here
-    <https://porespy.org/examples/tools/howtos/extract_subsection.html>`_
+    <https://porespy.org/examples/tools/reference/extract_subsection.html>`_
     to view online example.
 
     """
@@ -576,9 +605,9 @@ def randomize_colors(im, keep_vals=[0]):
     Examples
     --------
     >>> import porespy as ps
-    >>> import scipy as sp
-    >>> sp.random.seed(0)
-    >>> im = sp.random.randint(low=0, high=5, size=[4, 4])
+    >>> import numpy as np
+    >>> np.random.seed(0)
+    >>> im = np.random.randint(low=0, high=5, size=[4, 4])
     >>> print(im)
     [[4 0 3 3]
      [3 1 3 2]
@@ -600,7 +629,7 @@ def randomize_colors(im, keep_vals=[0]):
     keep_vals = np.array(keep_vals)
     swap_vals = ~np.in1d(im_flat, keep_vals)
     im_vals = np.unique(im_flat[swap_vals])
-    new_vals = sp.random.permutation(im_vals)
+    new_vals = np.random.permutation(im_vals)
     im_map = np.zeros(shape=[np.amax(im_vals) + 1, ], dtype=int)
     im_map[im_vals] = new_vals
     im_new = im_map[im_flat]
@@ -651,7 +680,7 @@ def make_contiguous(im, mode='keep_zeros'):
     Examples
     --------
     >>> import porespy as ps
-    >>> import scipy as sp
+    >>> import numpy as np
     >>> im = np.array([[0, 2, 9], [6, 8, 3]])
     >>> im = ps.tools.make_contiguous(im)
     >>> print(im)
@@ -659,7 +688,7 @@ def make_contiguous(im, mode='keep_zeros'):
      [3 4 2]]
 
     `Click here
-    <https://porespy.org/examples/tools/howtos/make_contiguous.html>`_
+    <https://porespy.org/examples/tools/reference/make_contiguous.html>`_
     to view online example.
 
     """
@@ -716,54 +745,25 @@ def get_border(shape, thickness=1, mode='edges'):
     Examples
     --------
     >>> import porespy as ps
-    >>> import scipy as sp
+    >>> import numpy as np
     >>> mask = ps.tools.get_border(shape=[3, 3], mode='corners')
     >>> print(mask)
     [[ True False  True]
      [False False False]
      [ True False  True]]
-    >>> mask = ps.tools.get_border(shape=[3, 3], mode='edges')
+    >>> mask = ps.tools.get_border(shape=[3, 3], mode='faces')
     >>> print(mask)
     [[ True  True  True]
      [ True False  True]
      [ True  True  True]]
 
     `Click here
-    <https://porespy.org/examples/tools/howtos/get_border.html>`_
+    <https://porespy.org/examples/tools/reference/get_border.html>`_
     to view online example.
 
     """
-    # TODO: This function uses brute force to create an image then fills the
-    # edges using location-based logic, and if the user requests
-    # ``return_indices`` it finds them using ``np.where``.  Since these arrays
-    # are cubic it should be possible to use more elegant and efficient
-    # index-based logic to find the indices, then use them to fill an empty
-    # image with ``True`` using these indices.
-
-    ndims = len(shape)
-    t = thickness
-    border = np.ones(shape, dtype=bool)
-    if mode == 'faces':
-        if ndims == 2:
-            border[t:-t, t:-t] = False
-        if ndims == 3:
-            border[t:-t, t:-t, t:-t] = False
-    elif mode == 'edges':
-        if ndims == 2:
-            border[t:-t, t:-t] = False
-        if ndims == 3:
-            border[0::, t:-t, t:-t] = False
-            border[t:-t, 0::, t:-t] = False
-            border[t:-t, t:-t, 0::] = False
-    elif mode == 'corners':
-        if ndims == 2:
-            border[t:-t, 0::] = False
-            border[0::, t:-t] = False
-        if ndims == 3:
-            border[t:-t, 0::, 0::] = False
-            border[0::, t:-t, 0::] = False
-            border[0::, 0::, t:-t] = False
-    return border
+    from porespy.generators import borders
+    return borders(shape=shape, thickness=thickness, mode=mode)
 
 
 def in_hull(points, hull):
@@ -817,14 +817,14 @@ def norm_to_uniform(im, scale=None):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/tools/howtos/norm_to_uniform.html>`_
+    <https://porespy.org/examples/tools/reference/norm_to_uniform.html>`_
     to view online example.
 
     """
     if scale is None:
         scale = [im.min(), im.max()]
     im = (im - np.mean(im)) / np.std(im)
-    im = 1 / 2 * sp.special.erfc(-im / np.sqrt(2))
+    im = 1 / 2 * erfc(-im / np.sqrt(2))
     im = (im - im.min()) / (im.max() - im.min())
     im = im * (scale[1] - scale[0]) + scale[0]
     return im
@@ -939,7 +939,7 @@ def ps_disk(r, smooth=True):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/tools/howtos/ps_disk.html>`_
+    <https://porespy.org/examples/tools/reference/ps_disk.html>`_
     to view online example.
 
     """
@@ -967,7 +967,7 @@ def ps_ball(r, smooth=True):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/tools/howtos/ps_ball.html>`_
+    <https://porespy.org/examples/tools/reference/ps_ball.html>`_
     to view online example.
 
     """
@@ -997,7 +997,7 @@ def ps_round(r, ndim, smooth=True):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/tools/howtos/ps_round.html>`_
+    <https://porespy.org/examples/tools/reference/ps_round.html>`_
     to view online example.
 
     """
@@ -1031,7 +1031,7 @@ def ps_rect(w, ndim):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/tools/howtos/ps_rect.html>`_
+    <https://porespy.org/examples/tools/reference/ps_rect.html>`_
     to view online example.
 
     """
@@ -1067,7 +1067,7 @@ def overlay(im1, im2, c):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/tools/howtos/overlay.html>`_
+    <https://porespy.org/examples/tools/reference/overlay.html>`_
     to view online example.
 
     """
@@ -1114,7 +1114,7 @@ def insert_sphere(im, c, r, v=True, overwrite=True):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/tools/howtos/insert_sphere.html>`_
+    <https://porespy.org/examples/tools/reference/insert_sphere.html>`_
     to view online example.
 
     """
@@ -1122,12 +1122,10 @@ def insert_sphere(im, c, r, v=True, overwrite=True):
     if im.dtype != type(v):
         im = im.astype(type(v))
     # Parse the arugments
-    r = int(sp.around(r, decimals=0))
+    r = int(np.around(r, decimals=0))
     if r == 0:
         return im
     c = np.array(c, dtype=int)
-    if c.size != im.ndim:
-        raise Exception('Coordinates do not match dimensionality of image')
     # Define a bounding box around inserted sphere, minding imaage boundaries
     bbox = []
     [bbox.append(np.clip(c[i] - r, 0, im.shape[i])) for i in range(im.ndim)]
@@ -1173,7 +1171,7 @@ def insert_cylinder(im, xyz0, xyz1, r):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/tools/howtos/insert_cylinder.html>`_
+    <https://porespy.org/examples/tools/reference/insert_cylinder.html>`_
     to view online example.
 
     """
@@ -1243,7 +1241,7 @@ def extract_regions(regions, labels: list, trim=True):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/tools/howtos/extract_regions.html>`_
+    <https://porespy.org/examples/tools/reference/extract_regions.html>`_
     to view online example.
 
     """
@@ -1251,7 +1249,7 @@ def extract_regions(regions, labels: list, trim=True):
         labels = [labels]
     s = spim.find_objects(regions)
     im_new = np.zeros_like(regions)
-    x_min, y_min, z_min = sp.inf, sp.inf, sp.inf
+    x_min, y_min, z_min = np.inf, np.inf, np.inf
     x_max, y_max, z_max = 0, 0, 0
     for i in labels:
         im_new[s[i - 1]] = regions[s[i - 1]] == i

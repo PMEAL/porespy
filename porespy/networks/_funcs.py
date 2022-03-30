@@ -4,7 +4,7 @@ import scipy.ndimage as spim
 from skimage.segmentation import find_boundaries
 from skimage.morphology import ball, cube, disk, square
 from porespy.tools import make_contiguous
-from porespy.tools import overlay
+from porespy.tools import overlay, extend_slice
 from porespy.tools import insert_cylinder
 from porespy.generators import borders
 from porespy import settings
@@ -37,7 +37,7 @@ def map_to_regions(regions, values):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/networks/howtos/map_to_regions.html>`_
+    <https://porespy.org/examples/networks/reference/map_to_regions.html>`_
     to view online example.
 
     """
@@ -74,6 +74,12 @@ def add_boundary_regions(regions, pad_width=3):
     padded_regions : ndarray
         An image with new regions padded on each side of the specified
         width.
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/networks/reference/add_boundary_regions.html>`_
+    to view online example.
 
     """
     # Parse user specified padding
@@ -137,7 +143,7 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200):
     # Distance bounding box from the network by a fixed amount
     delta = network["pore.diameter"].mean() / 2
     if isinstance(network, op.network.Cubic):
-        delta = network._spacing.mean() / 2
+        delta = op.topotools.get_spacing(network).mean() / 2
 
     # Shift everything to avoid out-of-bounds
     extra_clearance = int(max_dim * 0.05)
@@ -231,6 +237,12 @@ def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
     (2) If max_dim is not provided, the method calculates it such that the
     further increasing it doesn't change porosity by much.
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/networks/reference/generator_voxel_image.html>`_
+    to view online example.
+
     """
     logger.trace("Generating voxel image from pore network")
     # If max_dim is provided, generate voxel image using max_dim
@@ -278,6 +290,12 @@ def label_phases(
         The same ``network`` as passed in but with new boolean arrays added
         for the phase labels.
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/networks/reference/label_phases.html>`_
+    to view online example.
+
     """
     conns = network['throat.conns']
     for i in alias.keys():
@@ -320,6 +338,12 @@ def label_boundaries(
     network : dict
         The same ``network`` as passed in but with new boolean arrays added
         for the boundary labels.
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/networks/reference/label_boundaries.html>`_
+    to view online example.
 
     """
     crds = network['pore.coords']

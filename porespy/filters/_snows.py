@@ -8,17 +8,21 @@ import scipy.spatial as sptl
 from skimage.segmentation import watershed
 from skimage.morphology import ball, disk, square, cube
 from porespy.tools import _check_for_singleton_axes
-from porespy.tools import extend_slice
+from porespy.tools import extend_slice, ps_rect, ps_round
 from porespy.tools import Results
+from porespy.tools import get_tqdm
 from porespy.filters import chunked_func
 from porespy import settings
 from loguru import logger
 
 
-def snow_partitioning(im, dt=None, r_max=4, sigma=0.4):
+tqdm = get_tqdm()
+
+
+def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, peaks=None):
     r"""
     Partition the void space into pore regions using a marker-based
-    watershed algorithm, with specially filtered peaks as markers.
+    watershed algorithm
 
     Parameters
     ----------
@@ -37,25 +41,31 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4):
         default is 0.4.  If 0 is given then the filter is not applied,
         which is useful if a distance transform is supplied as the ``im``
         argument that has already been processed.
+    peaks : ndarray, optional
+        Optionally, it is possible to supply an array containing peaks, which
+        are used as markers in the watershed segmentation. If a boolean array
+        is received (``True`` indicating peaks), then ``scipy.ndimage.label``
+        with cubic connectivity is used to label them. If an integer array is
+        received then it is assumed the peaks have already been labelled.
+        This allows for comparison of peak finding algorithms for instance.
+        If this argument is provided, then ``r_max`` and ``sigma`` are ignored
+        since these are specfically used in the peak finding process.
 
     Returns
     -------
     results : Results object
-        A custom object with the follow data as attributes:
+        A custom object with the following data as attributes:
 
-        - 'im'
-            The binary image of the void space
-
-        - 'dt'
-            The distance transform of the image
-
-        - 'peaks'
-            The peaks of the distance transform after applying the steps
-            of the SNOW algorithm
-
-        - 'regions'
-            The void space partitioned into pores using a marker
-            based watershed with the peaks found by the SNOW algorithm
+        ============ ==========================================================
+        Item         Description
+        ============ ==========================================================
+        ``im``       The binary image of the void space
+        ``dt``       The distance transform of the image
+        ``peaks``    The peaks of the distance transform after applying the
+                     steps of the SNOW algorithm
+        ``regions``  The void space partitioned into pores using a marker
+                     based watershed with the peaks found by the SNOW algorithm
+        ============ ==========================================================
 
     Notes
     -----
@@ -80,38 +90,37 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4):
         logger.trace("Peforming distance transform")
         if np.any(im_shape == 1):
             dt = edt(im.squeeze())
-            dt = dt.reshape(im.shape)
+            dt = dt.reshape(im_shape)
         else:
             dt = edt(im)
 
-    if sigma > 0:
-        logger.trace(f"Applying Gaussian blur with sigma = {sigma}")
-        dt = spim.gaussian_filter(input=dt, sigma=sigma)
+    if peaks is None:
+        if sigma > 0:
+            logger.trace(f"Applying Gaussian blur with sigma = {sigma}")
+            dt_blurred = spim.gaussian_filter(input=dt, sigma=sigma)*im
+        else:
+            dt_blurred = np.copy(dt)
+        peaks = find_peaks(dt=dt_blurred, r_max=r_max)
 
-    peaks = find_peaks(dt=dt, r_max=r_max, divs=1)
-    logger.debug(f"Initial number of peaks: {spim.label(peaks)[1]}")
-    peaks = trim_saddle_points(peaks=peaks, dt=dt)
-    logger.debug(f"Peaks after trimming saddle points: {spim.label(peaks)[1]}")
-    peaks = trim_nearby_peaks(peaks=peaks, dt=dt)
-    peaks, N = spim.label(peaks)
-    logger.debug(f"Peaks after trimming nearby peaks: {N}")
-    # Note that the mask argument results in some void voxels left unlabeled
+        logger.debug(f"Initial number of peaks: {spim.label(peaks)[1]}")
+        peaks = trim_saddle_points(peaks=peaks, dt=dt)
+        logger.debug(f"Peaks after trimming saddle points: {spim.label(peaks)[1]}")
+        peaks = trim_nearby_peaks(peaks=peaks, dt=dt)
+        logger.debug(f"Peaks after trimming nearby points: {spim.label(peaks)[1]}")
+    peaks, N = spim.label(peaks > 0, structure=ps_rect(3, im.ndim))
     regions = watershed(image=-dt, markers=peaks)
-    regions = regions * (im > 0)
     tup = Results()
     tup.im = im
     tup.dt = dt
     tup.peaks = peaks
-    tup.regions = regions
+    tup.regions = regions * (im > 0)
     return tup
 
 
-def snow_partitioning_n(im, r_max=4, sigma=0.4):
+def snow_partitioning_n(im, r_max=4, sigma=0.4, peaks=None):
     r"""
     This function partitions an imaging oontain an arbitrary number of
-    phases into regions using a marker-based watershed segmentation. Its
-    an extension of snow_partitioning function with all phases partitioned
-    together.
+    phases into regions using a marker-based watershed segmentation.
 
     Parameters
     ----------
@@ -124,11 +133,18 @@ def snow_partitioning_n(im, r_max=4, sigma=0.4):
     sigma : scalar
         The standard deviation of the Gaussian filter used. The default is
         0.4. If 0 is given then the filter is not applied.
+    peaks : ndarray, optional
+        Optionally, it is possible to supply an array containing peaks, which
+        are used as markers in the watershed segmentation. Must be a boolean
+        array with ``True`` indicating peaks; ``scipy.ndimage.label``
+        with cubic connectivity is used to label them. If this argument is
+        provided then ``r_max`` and ``sigma`` are ignored, since these are
+        specfically used in the peak finding process.
 
     Returns
     -------
     results : Results object
-        A custom object with the follow data as attributes:
+        A custom object with the following data as attributes:
 
         - 'im'
             The original image of the porous material
@@ -171,22 +187,27 @@ def snow_partitioning_n(im, r_max=4, sigma=0.4):
 
     """
     # Perform snow on each phase and merge all segmentation and dt together
-    phases_num = np.unique(im * 1)
-    phases_num = np.trim_zeros(phases_num)
+    phases_num = np.unique(im).astype(int)
+    phases_num = phases_num[phases_num > 0]
     combined_dt = 0
     combined_region = 0
-    peaks = np.zeros_like(im, dtype=int)
+    _peaks = np.zeros_like(im, dtype=int)
     num = [0]
     for i, j in enumerate(phases_num):
         logger.trace(f"Processing Phase {j}")
-        phase_snow = snow_partitioning(im == j, dt=None, r_max=r_max, sigma=sigma)
+        # Isolate active phase from image
+        phase = im == j
+        # Limit peaks to active phase only
+        temp = peaks*phase if peaks is not None else None
+        phase_snow = snow_partitioning(phase, dt=None, r_max=r_max,
+                                       sigma=sigma, peaks=temp)
         combined_dt += phase_snow.dt
         phase_snow.regions *= phase_snow.im
         phase_snow.regions += num[i]
         phase_ws = phase_snow.regions * phase_snow.im
         phase_ws[phase_ws == num[i]] = 0
         combined_region += phase_ws
-        peaks = peaks + phase_snow.peaks + (phase_snow.peaks > 0)*num[i]
+        _peaks = _peaks + phase_snow.peaks + (phase_snow.peaks > 0)*num[i]
         num.append(np.amax(combined_region))
 
     tup = Results()
@@ -194,11 +215,11 @@ def snow_partitioning_n(im, r_max=4, sigma=0.4):
     tup.dt = combined_dt
     tup.phase_max_label = num[1:]
     tup.regions = combined_region
-    tup.peaks = peaks
+    tup.peaks = _peaks
     return tup
 
 
-def find_peaks(dt, r_max=4, strel=None, divs=1):
+def find_peaks(dt, r_max=4, strel=None, sigma=None, divs=1):
     r"""
     Finds local maxima in the distance transform
 
@@ -208,12 +229,15 @@ def find_peaks(dt, r_max=4, strel=None, divs=1):
         The distance transform of the pore space.  This may be calculated
         and filtered using any means desired.
     r_max : scalar
-        The size of the structuring element used in the maximum filter.
+        The radius of the spherical element used in the maximum filter.
         This controls the localness of any maxima. The default is 4 voxels.
     strel : ndarray
-        Specifies the shape of the structuring element used to define the
-        neighborhood when looking for peaks.  If ``None`` (the default) is
-        specified then a spherical shape is used (or circular in 2D).
+        Instead of supplying ``r_max``, this argument allows a custom
+        structuring element allowing control over both size and shape.
+    sigma : float or list of floats
+        If given, then a gaussian filter is applied to the distance transform
+        using this value for the kernel
+        (i.e. ``scipy.ndimage.gaussian_filter(dt, sigma)``)
     divs : int or array_like
         The number of times to divide the image for parallel processing.
         If ``1`` then parallel processing does not occur.  ``2`` is
@@ -242,14 +266,10 @@ def find_peaks(dt, r_max=4, strel=None, divs=1):
     """
     im = dt > 0
     _check_for_singleton_axes(im)
-
     if strel is None:
-        if im.ndim == 2:
-            strel = disk
-        elif im.ndim == 3:
-            strel = ball
-        else:  # pragma: no cover
-            raise Exception("Only 2d and 3d images are supported")
+        strel = ps_round(r=r_max, ndim=im.ndim)
+    if sigma is not None:
+        dt = spim.gaussian_filter(dt, sigma=sigma)
     parallel = False
     if isinstance(divs, int):
         divs = [divs]*len(im.shape)
@@ -257,13 +277,15 @@ def find_peaks(dt, r_max=4, strel=None, divs=1):
         parallel = True
         logger.info(f'Performing {insp.currentframe().f_code.co_name} in parallel')
     if parallel:
-        overlap = max(strel(r_max).shape)
+        overlap = max(strel.shape)
         mx = chunked_func(func=spim.maximum_filter, overlap=overlap,
-                          im_arg='input', input=dt + 2 * (~im),
-                          footprint=strel(r_max),
+                          im_arg='input', input=dt + 2.0 * (~im),
+                          footprint=strel,
                           cores=settings.ncores, divs=divs)
     else:
-        mx = spim.maximum_filter(dt + 2 * (~im), footprint=strel(r_max))
+        # The "2 * (~im)" sets solid voxels to 2 so peaks are not found
+        # at the void/solid interface
+        mx = spim.maximum_filter(dt + 2.0 * (~im), footprint=strel)
     peaks = (dt == mx) * im
     return peaks
 
@@ -336,77 +358,142 @@ def trim_saddle_points(peaks, dt, maxiter=20):
     using marker-based watershed segmentation".  Physical Review E. (2017)
 
     """
-    peaks = np.copy(peaks).astype(int)
+    new_peaks = np.zeros_like(peaks, dtype=bool)
     if dt.ndim == 2:
         from skimage.morphology import square as cube
     else:
         from skimage.morphology import cube
     labels, N = spim.label(peaks > 0)
     slices = spim.find_objects(labels)
-    hits = 0
-    for i, s in enumerate(slices):
-        peak_i = labels[s] == (i + 1)
-        R = (dt[s] * peak_i).max()
-        sx = extend_slice(slices[i], shape=peaks.shape, pad=max(10, int(R)))
-        peak_i = labels[sx] == (i + 1)
+    for i, s in tqdm(enumerate(slices), **settings.tqdm):
+        sx = extend_slice(s, shape=peaks.shape, pad=maxiter)
+        peaks_i = labels[sx] == i + 1
         dt_i = dt[sx]
-        peak_dil = np.copy(peak_i)
+        im_i = dt_i > 0
         iters = 0
         while iters < maxiter:
             iters += 1
-            peak_orig = np.copy(peak_dil)
-            peak_dil = spim.binary_dilation(peak_orig, structure=cube(3))
-            rim = peak_dil * dt_i * (~peak_orig)
-            check_1 = rim >= R
-            if check_1.sum() == 0:
-                break  # True peak
-            L, check_2 = spim.label(check_1, structure=cube(3))
-            if check_2 >= 2:
-                hits += 1
-                peaks[sx] = peaks[sx]*(~peak_i)
-                logger.debug("Saddle point found")
-                break  # Saddle point
-            peak_dil = (peak_dil*dt_i) == R
-            if peak_dil.sum() == peak_orig.sum():
-                # hits += 1
-                # peaks[sx] = peaks[sx]*(~peak_i)
-                # logger.debug("Ridge point found")
-                break  # Ridge point
+            peaks_dil = spim.binary_dilation(input=peaks_i, structure=cube(3))
+            peaks_max = peaks_dil * np.amax(dt_i * peaks_dil)
+            peaks_extended = (peaks_max == dt_i) * im_i
+            if np.all(peaks_extended == peaks_i):
+                new_peaks[sx] += peaks_i
+                break  # Found a true peak
+            elif np.sum(peaks_extended * peaks_i) == 0:
+                break  # Found a saddle point
+            peaks_i = peaks_extended
         if iters >= maxiter:
-            logger.warning(f"{iters} iterations reached on point {i+1}")
-    if hits > 0:
-        logger.info(f"Found {hits} saddle points")
-    return peaks
+            logger.debug(
+                "Maximum number of iterations reached, consider "
+                + "running again with a larger value of max_iters"
+            )
+    return new_peaks*peaks
 
 
-def trim_nearby_peaks(peaks, dt, f=1.0):
+def trim_saddle_points_legacy(peaks, dt, maxiter=10):
     r"""
-    Finds pairs of peaks that are nearer to each other than to the solid
-    phase, and removes the peak that is closer to the solid.
+    Removes peaks that were mistakenly identified because they lied on a
+    saddle or ridge in the distance transform that was not actually a true
+    local peak.
+
+    Parameters
+    ----------
+    peaks : ND-array
+        A boolean image containing True values to mark peaks in the distance
+        transform (``dt``)
+    dt : ND-array
+        The distance transform of the pore space for which the true peaks are
+        sought.
+    maxiter : int
+        The maximum number of iterations to run while eroding the saddle
+        points.  The default is 10, which is usually not reached; however,
+        a warning is issued if the loop ends prior to removing all saddle
+        points.
+
+    Returns
+    -------
+    image : ND-array
+        An image with fewer peaks than the input image
+
+    Notes
+    -----
+    This version of the function was included in versions of PoreSpy < 2. It
+    is too aggressive in trimming peaks, so was rewritten for PoreSpy >= 2.
+    This is included here for legacy reasons
+
+    References
+    ----------
+    [1] Gostick, J. "A versatile and efficient network extraction algorithm
+    using marker-based watershed segmenation".  Physical Review E. (2017)
+    """
+    new_peaks = np.zeros_like(peaks, dtype=bool)
+    if dt.ndim == 2:
+        from skimage.morphology import square as cube
+    else:
+        from skimage.morphology import cube
+    labels, N = spim.label(peaks > 0)
+    slices = spim.find_objects(labels)
+    for i, s in tqdm(enumerate(slices), **settings.tqdm):
+        sx = extend_slice(s, shape=peaks.shape, pad=10)
+        peaks_i = labels[sx] == i + 1
+        dt_i = dt[sx]
+        im_i = dt_i > 0
+        iters = 0
+        while iters < maxiter:
+            iters += 1
+            peaks_dil = spim.binary_dilation(input=peaks_i, structure=cube(3))
+            peaks_max = peaks_dil * np.amax(dt_i * peaks_dil)
+            peaks_extended = (peaks_max == dt_i) * im_i
+            if np.all(peaks_extended == peaks_i):
+                break  # Found a true peak
+            elif np.sum(peaks_extended * peaks_i) == 0:
+                peaks_i = False
+                break  # Found a saddle point
+            # The following line was also missing from the original.  It has
+            # no effect on the result but without this the "maxiters" is
+            # reached very often.
+            peaks_i = peaks_extended
+        # The following line is essentially a bug.  It should be:
+        # peaks[s] += peaks_i. Without the += the peaks_i image overwrites
+        # the entire slice s, which may include other peaks that are within
+        # 10 voxels due to the padding of s with extend_slice.
+        new_peaks[sx] = peaks_i
+        if iters >= maxiter:
+            logger.debug(
+                "Maximum number of iterations reached, consider "
+                + "running again with a larger value of max_iters"
+            )
+    return new_peaks*peaks
+
+
+def trim_nearby_peaks(peaks, dt, f=1):
+    r"""
+    Removes peaks that are nearer to another peak than to solid
 
     Parameters
     ----------
     peaks : ndarray
-        A boolean image containing True values to mark peaks in the
-        distance transform (``dt``)
+        A image containing nonzeros values indicating peaks in the distance
+        transform (``dt``).  If ``peaks`` is boolean, a boolean is returned;
+        if ``peaks`` have already been labelled, then the original labels
+        are returned, missing the trimmed peaks.
     dt : ndarray
-        The distance transform of the pore space for which the true peaks
-        are sought.
+        The distance transform of the pore space
     f : scalar
         Controls how close peaks must be before they are considered near
-        to each other. Sets of peaks are tagged as near if
+        to each other. Sets of peaks are tagged as too near if
         ``d_neighbor < f * d_solid``.
 
     Returns
     -------
     image : ndarray
-        An array the same size as ``peaks`` containing a subset of the
-        peaks in the original image.
+        An array the same size and type as ``peaks`` containing a subset of
+        the peaks in the original image.
 
     Notes
     -----
-    Each pair of peaks is considered simultaneously, so for a triplet of
-    peaks each pair is considered.  This ensures that only the single peak
+    Each pair of peaks is considered simultaneously, so for a triplet of nearby
+    peaks, each pair is considered.  This ensures that only the single peak
     that is furthest from the solid is kept.  No iteration is required.
 
     References
@@ -416,36 +503,38 @@ def trim_nearby_peaks(peaks, dt, f=1.0):
     E. (2017)
 
     """
-    peaks = np.copy(peaks)
     if dt.ndim == 2:
         from skimage.morphology import square as cube
     else:
         from skimage.morphology import cube
-    peaks, N = spim.label(peaks, structure=cube(3))
-    crds = spim.measurements.center_of_mass(peaks, labels=peaks,
+
+    labels, N = spim.label(peaks > 0, structure=cube(3))
+    crds = spim.measurements.center_of_mass(peaks > 0, labels=labels,
                                             index=np.arange(1, N + 1))
     crds = np.vstack(crds).astype(int)  # Convert to numpy array of ints
-    # Get distance between each peak as a distance map
-    tree = sptl.cKDTree(data=crds)
+    L = dt[tuple(crds.T)]  # Get distance to solid for each peak
+    # Add tiny amount to joggle points to avoid equal distances to solid
+    # arange was added instead of random values so the results are repeatable
+    L = L + np.arange(len(L))*1e-6
+
+    tree = sptl.KDTree(data=crds)
+    # Find list of nearest peak to each peak
     temp = tree.query(x=crds, k=2)
     nearest_neighbor = temp[1][:, 1]
     dist_to_neighbor = temp[0][:, 1]
     del temp, tree  # Free-up memory
-    dist_to_solid = dt[tuple(crds.T)]  # Get distance to solid for each peak
-    hits = np.where(dist_to_neighbor < f * dist_to_solid)[0]
+    hits = np.where(dist_to_neighbor <= f * L)[0]
     # Drop peak that is closer to the solid than it's neighbor
     drop_peaks = []
-    for peak in hits:
-        if dist_to_solid[peak] < dist_to_solid[nearest_neighbor[peak]]:
-            drop_peaks.append(peak)
+    for i in hits:
+        if L[i] < L[nearest_neighbor[i]]:
+            drop_peaks.append(i)
         else:
-            drop_peaks.append(nearest_neighbor[peak])
+            drop_peaks.append(nearest_neighbor[i])
     drop_peaks = np.unique(drop_peaks)
-    # Remove peaks from image
-    slices = spim.find_objects(input=peaks)
-    for s in drop_peaks:
-        peaks[slices[s]] = 0
-    return peaks > 0
+
+    new_peaks = ~np.isin(labels, drop_peaks+1)*peaks
+    return new_peaks
 
 
 def _estimate_overlap(im, mode='dt', zoom=0.25):
@@ -470,7 +559,8 @@ def snow_partitioning_parallel(im,
                                sigma=0.4,
                                divs=2,
                                overlap=None,
-                               cores=None):
+                               cores=None,
+                               ):
     r"""
     Performs SNOW algorithm in parallel (or serial) to reduce time
     (or memory usage) by geomertirc domain decomposition of large images.
@@ -540,7 +630,8 @@ def snow_partitioning_parallel(im,
     # Applying SNOW to image chunks
     regions = da.from_array(dt, chunks=chunk_shape)
     regions = da.overlap.overlap(regions, depth=depth, boundary='none')
-    regions = regions.map_blocks(_snow_chunked, r_max=r_max, sigma=sigma, dtype=dt.dtype)
+    regions = regions.map_blocks(_snow_chunked, r_max=r_max,
+                                 sigma=sigma, dtype=dt.dtype)
     regions = da.overlap.trim_internal(regions, trim_depth, boundary='none')
     # TODO: use dask ProgressBar once compatible w/ logging.
     logger.trace('Applying snow to image chunks')
@@ -932,13 +1023,12 @@ def _resequence_labels(array):
 
 def _snow_chunked(dt, r_max=5, sigma=0.4):
     r"""
-    This private version of snow is called during snow_parallel. Dask does
-    not all the calls to the logger between each step apparently.
+    This private version of snow is called during snow_parallel.
     """
     dt2 = spim.gaussian_filter(input=dt, sigma=sigma)
     peaks = find_peaks(dt=dt2, r_max=r_max)
-    peaks = trim_saddle_points(peaks=peaks, dt=dt2)
-    peaks = trim_nearby_peaks(peaks=peaks, dt=dt2)
-    peaks, N = spim.label(peaks)
-    regions = watershed(image=-dt2, markers=peaks)
+    peaks = trim_saddle_points(peaks=peaks, dt=dt)
+    peaks = trim_nearby_peaks(peaks=peaks, dt=dt)
+    peaks, N = spim.label(peaks > 0)
+    regions = watershed(image=-dt, markers=peaks)
     return regions * (dt > 0)

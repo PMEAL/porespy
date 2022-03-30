@@ -26,19 +26,25 @@ image, but with altered values.
     filters.find_disconnected_voxels
     filters.find_dt_artifacts
     filters.find_peaks
+    filters.find_trapped_regions
     filters.flood
     filters.flood_func
     filters.hold_peaks
+    filters.ibip
+    filters.ibip_gpu
+    filters.imagej
     filters.local_thickness
-    filters.nphase_border
     filters.nl_means_layered
+    filters.nphase_border
+    filters.pc_to_satn
     filters.porosimetry
     filters.prune_branches
     filters.reduce_peaks
     filters.region_size
-    filters.size_to_seq
-    filters.size_to_satn
+    filters.satn_to_seq
     filters.seq_to_satn
+    filters.size_to_satn
+    filters.size_to_seq
     filters.snow_partitioning
     filters.snow_partitioning_n
     filters.snow_partitioning_parallel
@@ -81,9 +87,8 @@ from ._snows import find_peaks
 from ._snows import reduce_peaks
 from ._snows import trim_nearby_peaks
 from ._snows import trim_saddle_points
-from ._size_seq_satn import size_to_seq
-from ._size_seq_satn import size_to_satn
-from ._size_seq_satn import seq_to_satn
+from ._snows import trim_saddle_points_legacy
+from ._size_seq_satn import *
 from ._nlmeans import nl_means_layered
 from ._fftmorphology import fftmorphology
 from . import imagej

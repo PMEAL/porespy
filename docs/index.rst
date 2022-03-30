@@ -37,11 +37,13 @@ PoreSpy consists of the following modules:
 -  ``metrics``: Tools for quantifying properties of images
 -  ``networks``: Algorithms and tools for analyzing images as pore
    networks
+-  ``simulations``: Functions for performing physics-based simulations on
+   images
+-  ``tools``: Various useful tools for working with images
 -  ``visualization``: Helper functions for creating useful views of the
    image
 -  ``io``: Functions for outputting image data in various formats for
    use in common software
--  ``tools``: Various useful tools for working with images
 
 .. toctree::
    :hidden:

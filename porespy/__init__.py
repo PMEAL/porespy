@@ -57,7 +57,6 @@ Use some filters from PoreSpy:
 
 """
 
-from .__version__ import __version__
 from .tools._utils import Settings as _Settings
 
 settings = _Settings()
@@ -67,11 +66,15 @@ from . import filters
 from . import metrics
 from . import networks
 from . import generators
-from . import dns
+from . import simulations
 from . import visualization
 from . import io
+# The dns module will be deprecated in V3, in favor of simulations
+from . import dns
 
 from .visualization import imshow
 
 import numpy as _np
 _np.seterr(divide='ignore', invalid='ignore')
+
+__version__ = tools._get_version()

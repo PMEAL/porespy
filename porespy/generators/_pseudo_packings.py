@@ -4,110 +4,16 @@ import scipy.ndimage as spim
 from edt import edt
 from skimage.morphology import disk, ball
 from porespy import settings
-from porespy.tools import get_tqdm, ps_round
+from porespy.tools import get_tqdm, ps_round, get_border
+from porespy.tools import _insert_disks_at_points
 from porespy.filters import trim_disconnected_blobs, fftmorphology
 from loguru import logger
+import random
 tqdm = get_tqdm()
 
 
-@numba.jit(nopython=True, parallel=False)
-def insert_disks_at_points(im, coords, radii, v, smooth=True):
-    r"""
-    Insert spheres of specified radii into an ndarray at given locations.
-
-    Parameters
-    ----------
-    im : ndarray
-        The image into which the spheres/disks should be inserted. This is an
-        'in-place' operation.
-    coords : ndarray
-        The center point of each sphere/disk in an array of shape
-        ``ndim by npts``
-    radii : array_like
-        The radii of the spheres/disks to add.
-    v : scalar
-        The value to insert
-    smooth : boolean
-        If ``True`` (default) then the spheres/disks will not have the litte
-        nibs on the surfaces.
-
-    Notes
-    -----
-    This function uses numba to accelerate the process.
-
-    """
-    npts = len(coords[0])
-    if im.ndim == 2:
-        xlim, ylim = im.shape
-        for i in range(npts):
-            r = radii[i]
-            s = _make_disk(r, smooth)
-            pt = coords[:, i]
-            for a, x in enumerate(range(pt[0]-r, pt[0]+r+1)):
-                if (x >= 0) and (x < xlim):
-                    for b, y in enumerate(range(pt[1]-r, pt[1]+r+1)):
-                        if (y >= 0) and (y < ylim):
-                            if (s[a, b] == 1):  # and (im[x, y] == 0):
-                                im[x, y] = v
-    elif im.ndim == 3:
-        xlim, ylim, zlim = im.shape
-        for i in range(npts):
-            r = radii[i]
-            s = _make_ball(r, smooth)
-            pt = coords[:, i]
-            for a, x in enumerate(range(pt[0]-r, pt[0]+r+1)):
-                if (x >= 0) and (x < xlim):
-                    for b, y in enumerate(range(pt[1]-r, pt[1]+r+1)):
-                        if (y >= 0) and (y < ylim):
-                            for c, z in enumerate(range(pt[2]-r, pt[2]+r+1)):
-                                if (z >= 0) and (z < zlim):
-                                    if (s[a, b, c] == 1):  # and (im[x, y, z] == 0):
-                                        im[x, y, z] = v
-    return im
-
-
-@numba.jit(nopython=True, parallel=False)
-def _make_disk(r, smooth=True):
-    r"""
-    Generate a strel suitable for use in numba nojit function.
-
-    Numba won't allow calls to skimage strel generators so this function
-    makes one, also using njit.
-    """
-    s = np.zeros((2*r+1, 2*r+1), dtype=type(r))
-    if smooth:
-        thresh = r - 0.001
-    else:
-        thresh = r
-    for i in range(2*r+1):
-        for j in range(2*r+1):
-            if ((i - r)**2 + (j - r)**2)**0.5 <= thresh:
-                s[i, j] = 1
-    return s
-
-
-@numba.jit(nopython=True, parallel=False)
-def _make_ball(r, smooth=True):
-    r"""
-    Generate a strel suitable for use in numba nojit function.
-
-    Numba won't allow calls to skimage strel generators so this function
-    makes one, also using njit.
-    """
-    s = np.zeros((2*r+1, 2*r+1, 2*r+1), dtype=type(r))
-    if smooth:
-        thresh = r - 0.001
-    else:
-        thresh = r
-    for i in range(2*r+1):
-        for j in range(2*r+1):
-            for k in range(2*r+1):
-                if ((i - r)**2 + (j - r)**2 + (k - r)**2)**0.5 <= thresh:
-                    s[i, j, k] = 1
-    return s
-
-
-def pseudo_gravity_packing(im, r, clearance=0, axis=0, maxiter=1000):
+def pseudo_gravity_packing(im, r, clearance=0, axis=0, maxiter=1000,
+                           edges='contained'):
     r"""
     Iteratively inserts spheres at the lowest accessible point in an image,
     mimicking a gravity packing.
@@ -127,6 +33,16 @@ def pseudo_gravity_packing(im, r, clearance=0, axis=0, maxiter=1000):
         The axis along which gravity acts.
     maxiter : int (default is 1000)
         The maximum number of spheres to add
+    edges : string (default is 'contained')
+        Controls how the edges of the image are handled.  Options are:
+
+        'contained'
+            Spheres are all completely within the image
+        'extended'
+            Spheres are allowed to extend beyond the edge of the
+            image.  In this mode the volume fraction will be less that
+            requested since some spheres extend beyond the image, but their
+            entire volume is counted as added for computational efficiency.
 
     Returns
     -------
@@ -137,6 +53,7 @@ def pseudo_gravity_packing(im, r, clearance=0, axis=0, maxiter=1000):
 
     """
     logger.debug(f'Adding spheres of radius {r}')
+
     im = np.swapaxes(im, 0, axis)
     im_temp = np.zeros_like(im, dtype=bool)
     r = r - 1
@@ -163,10 +80,13 @@ def pseudo_gravity_packing(im, r, clearance=0, axis=0, maxiter=1000):
             cen = np.vstack([x[options[choice]] + x_min,
                              y[options[choice]],
                              z[options[choice]]])
-        im_temp = insert_disks_at_points(im_temp, coords=cen,
-                                         radii=np.array([r - clearance]), v=True)
-        sites = insert_disks_at_points(sites, coords=cen,
-                                       radii=np.array([2*r]), v=0)
+        im_temp = _insert_disks_at_points(im_temp, coords=cen,
+                                          radii=np.array([r - clearance]),
+                                          v=True, overwrite=True)
+        sites = _insert_disks_at_points(sites, coords=cen,
+                                        radii=np.array([2*r]),
+                                        v=0,
+                                        overwrite=True)
         x_min += x.min()
     logger.debug(f'A total of {n} spheres were added')
     im_temp = np.swapaxes(im_temp, 0, axis)
@@ -176,6 +96,7 @@ def pseudo_gravity_packing(im, r, clearance=0, axis=0, maxiter=1000):
 def pseudo_electrostatic_packing(im, r, sites=None,
                                  clearance=0,
                                  protrusion=0,
+                                 edges='extended',
                                  maxiter=1000):
     r"""
     Iterativley inserts spheres as close to the given sites as possible.
@@ -188,7 +109,8 @@ def pseudo_electrostatic_packing(im, r, sites=None,
     r : int
         Radius of spheres to insert.
     sites : ndarray (optional)
-        An image with ``True`` values indicating the electrostatic attraction points.
+        An image with ``True`` values indicating the electrostatic attraction
+        points.
         If this is not given then the peaks in the distance transform are used.
     clearance : int (optional, default=0)
         The amount of space to put between each sphere. Negative values are
@@ -197,6 +119,16 @@ def pseudo_electrostatic_packing(im, r, sites=None,
         The amount that spheres are allowed to protrude beyond the active phase.
     maxiter : int (optional, default=1000)
         The maximum number of spheres to insert.
+    edges : string (default is 'contained')
+        Controls how the edges of the image are handled.  Options are:
+
+        'contained'
+            Spheres are all completely within the image
+        'extended'
+            Spheres are allowed to extend beyond the edge of the
+            image.  In this mode the volume fraction will be less that
+            requested since some spheres extend beyond the image, but their
+            entire volume is counted as added for computational efficiency.
 
     Returns
     -------
@@ -204,6 +136,7 @@ def pseudo_electrostatic_packing(im, r, sites=None,
         An image with inserted spheres indicated by ``True``
 
     """
+    random.seed(0)
     im_temp = np.zeros_like(im, dtype=bool)
     dt_im = edt(im)
     if sites is None:
@@ -212,8 +145,14 @@ def pseudo_electrostatic_packing(im, r, sites=None,
         sites = (spim.maximum_filter(dt2, footprint=strel) == dt2)*im
     dt = edt(sites == 0).astype(int)
     sites = (sites == 0)*(dt_im >= (r - protrusion))
-    dtmax = int(dt_im.max()*2)
+    if dt_im.max() < np.inf:
+        dtmax = int(dt_im.max()*2)
+    else:
+        dtmax = min(im.shape)
     dt[~sites] = dtmax
+    if edges == 'contained':
+        borders = get_border(im.shape, thickness=r, mode='faces')
+        dt[borders] = dtmax
     r = r + clearance
     # Get initial options
     options = np.where(dt == 1)
@@ -226,10 +165,35 @@ def pseudo_electrostatic_packing(im, r, sites=None,
             hits = dt[options] < dtmax
         if hits.size == 0:
             break
-        choice = np.where(hits)[0][0]
+        choice = random.choice(np.where(hits)[0])
         cen = np.vstack([options[i][choice] for i in range(im.ndim)])
-        im_temp = insert_disks_at_points(im_temp, coords=cen,
-                                         radii=np.array([r-clearance]), v=True)
-        dt = insert_disks_at_points(dt, coords=cen,
-                                    radii=np.array([2*r-clearance]), v=int(dtmax))
+        im_temp = _insert_disks_at_points(im_temp, coords=cen,
+                                          radii=np.array([r-clearance]),
+                                          v=True,
+                                          overwrite=True)
+        dt = _insert_disks_at_points(dt, coords=cen,
+                                     radii=np.array([2*r-clearance]),
+                                     v=int(dtmax),
+                                     overwrite=True)
     return im_temp
+
+
+if __name__ == "__main__":
+    import porespy as ps
+    import matplotlib.pyplot as plt
+    shape = [200, 200]
+
+    fig, ax = plt.subplots(1, 2)
+    im = ps.generators.pseudo_gravity_packing(im=np.ones(shape, dtype=bool),
+                                              r=7, clearance=3,
+                                              edges='contained')
+    ax[0].imshow(im, origin='lower')
+
+    sites = np.zeros(shape, dtype=bool)
+    sites[100, 100] = True
+    im = ps.generators.pseudo_electrostatic_packing(im=np.ones(shape,
+                                                               dtype=bool),
+                                                    r=5, sites=sites,
+                                                    clearance=4,
+                                                    maxiter=50)
+    ax[1].imshow(im, origin='lower')

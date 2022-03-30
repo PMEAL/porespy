@@ -45,7 +45,7 @@ def apply_padded(im, pad_width, func, pad_val=1, **kwargs):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/filters/howtos/apply_padded.html>`_
+    <https://porespy.org/examples/filters/reference/apply_padded.html>`_
     to view online example.
 
     """
@@ -78,7 +78,7 @@ def trim_small_clusters(im, size=1):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/filters/howtos/trim_small_clusters.html>`_
+    <https://porespy.org/examples/filters/reference/trim_small_clusters.html>`_
     to view online example.
 
     """
@@ -96,7 +96,7 @@ def trim_small_clusters(im, size=1):
     return filtered_array
 
 
-def hold_peaks(im, axis=-1):
+def hold_peaks(im, axis=-1, ascending=True):
     r"""
     Replaces each voxel with the highest value along the given axis.
 
@@ -106,6 +106,9 @@ def hold_peaks(im, axis=-1):
         A greyscale image whose peaks are to be found.
     axis : int
         The axis along which the operation is to be applied.
+    ascending : bool
+        If ``True`` (default) the given ``axis`` is scanned from 0 to end.
+        If ``False``, it is scanned in reverse order from end to 0.
 
     Returns
     -------
@@ -116,18 +119,19 @@ def hold_peaks(im, axis=-1):
     Notes
     -----
     "im" must be a greyscale image. In case a Boolean image is fed into this
-    method, it will be first converted to float values [0.0,1.0] before proceeding.
+    method, it will be converted to float values [0.0,1.0] before proceeding.
 
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/filters/howtos/hold_peaks.html>`_
+    <https://porespy.org/examples/filters/reference/hold_peaks.html>`_
     to view online example.
 
     """
-
     A = im.astype(float)
     B = np.swapaxes(A, axis, -1)
+    if ascending is False:  # Flip the axis of interest (-1)
+        B = np.flip(B, axis=-1)
     updown = np.empty((*B.shape[:-1], B.shape[-1] + 1), B.dtype)
     updown[..., 0], updown[..., -1] = -1, -1
     np.subtract(B[..., 1:], B[..., :-1], out=updown[..., 1:-1])
@@ -140,6 +144,8 @@ def hold_peaks(im, axis=-1):
     aux[(*map(op.itemgetter(slice(1, None)), pkidx),)] = np.diff(B[pkidx])
     aux[..., 0] = B[..., 0]
     result = out.cumsum(axis=axis)
+    if ascending is False:  # Flip it back
+        result = np.flip(result, axis=-1)
     return result
 
 
@@ -179,7 +185,7 @@ def distance_transform_lin(im, axis=0, mode="both"):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/filters/howtos/distance_transform_lin.html>`_
+    <https://porespy.org/examples/filters/reference/distance_transform_lin.html>`_
     to view online example.
 
     """
@@ -213,7 +219,7 @@ def distance_transform_lin(im, axis=0, mode="both"):
     return f
 
 
-def find_disconnected_voxels(im, conn=None):
+def find_disconnected_voxels(im, conn=None, surface=False):
     r"""
     Identifies all voxels that are not connected to the edge of the image.
 
@@ -226,12 +232,15 @@ def find_disconnected_voxels(im, conn=None):
         For 2D the options are 4 and 8 for square and diagonal neighbors,
         while for the 3D the options are 6 and 26, similarily for square
         and diagonal neighbors. The default is the maximum option.
+    surface : bool
+        If ``True`` any isolated regions touching the edge of the image are
+        considered disconnected.
 
     Returns
     -------
     image : ndarray
-        An ndarray the same size as ``im``, with True values indicating
-        voxels of the phase of interest (i.e. True values in the original
+        An ndarray the same size as ``im``, with ``True`` values indicating
+        voxels of the phase of interest (i.e. ``True`` values in the original
         image) that are not connected to the outer edges.
 
     See Also
@@ -246,7 +255,7 @@ def find_disconnected_voxels(im, conn=None):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/filters/howtos/find_disconnected_voxels.html>`_
+    <https://porespy.org/examples/filters/reference/find_disconnected_voxels.html>`_
     to view online example.
 
     """
@@ -267,13 +276,18 @@ def find_disconnected_voxels(im, conn=None):
         else:
             raise Exception("Received conn is not valid")
     labels, N = spim.label(input=im, structure=strel)
-    holes = clear_border(labels=labels) > 0
+    if not surface:
+        holes = clear_border(labels=labels) > 0
+    else:
+        counts = np.bincount(labels.flatten())[1:]
+        keep = np.where(counts == counts.max())[0] + 1
+        holes = (labels != keep)*im
     return holes
 
 
-def fill_blind_pores(im, conn=None):
+def fill_blind_pores(im, conn=None, surface=False):
     r"""
-    Fills all pores that are not connected to the edges of the image.
+    Fills all blind pores that are isolated from the main void space.
 
     Parameters
     ----------
@@ -288,27 +302,34 @@ def fill_blind_pores(im, conn=None):
         For 2D the options are 4 and 8 for square and diagonal neighbors,
         while for the 3D the options are 6 and 26, similarily for square
         and diagonal neighbors. The default is the maximum option.
+    surface : bool
+        If ``True``, any isolated pore regions that are connected to the
+        sufaces of the image are also removed. When this is enabled, only
+        the voxels belonging to the largest region are kept. This can be
+        problematic if image contains non-intersecting tube-like structures,
+        for instance, since only the largest tube will be preserved.
 
     See Also
     --------
     find_disconnected_voxels
+    trim_nonpercolating_paths
 
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/filters/howtos/fill_blind_pores.html>`_
+    <https://porespy.org/examples/filters/reference/fill_blind_pores.html>`_
     to view online example.
 
     """
     im = np.copy(im)
-    holes = find_disconnected_voxels(im, conn=conn)
+    holes = find_disconnected_voxels(im, conn=conn, surface=surface)
     im[holes] = False
     return im
 
 
-def trim_floating_solid(im, conn=None):
+def trim_floating_solid(im, conn=None, surface=False):
     r"""
-    Removes all solid that that is not attached to the edges of the image.
+    Removes all solid that that is not attached to main solid structure.
 
     Parameters
     ----------
@@ -318,6 +339,13 @@ def trim_floating_solid(im, conn=None):
         For 2D the options are 4 and 8 for square and diagonal neighbors,
         while for the 3D the options are 6 and 26, similarily for square
         and diagonal neighbors. The default is the maximum option.
+    surface : bool
+        If ``True``, any isolated solid regions that are connected to the
+        surfaces of the image are also removed.  When this is enabled,
+        only the voxels belonging to the largest region are kept. This can
+        be problematic if the image contains non-intersecting tube-like
+        structures, for instance, since only the largest tube will be
+        preserved.
 
     Returns
     -------
@@ -327,21 +355,22 @@ def trim_floating_solid(im, conn=None):
     See Also
     --------
     find_disconnected_voxels
+    trim_nonpercolating_paths
 
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/filters/howtos/trim_floating_solid.html>`_
+    <https://porespy.org/examples/filters/reference/trim_floating_solid.html>`_
     to view online example.
 
     """
     im = np.copy(im)
-    holes = find_disconnected_voxels(~im, conn=conn)
+    holes = find_disconnected_voxels(~im, conn=conn, surface=surface)
     im[holes] = True
     return im
 
 
-def trim_nonpercolating_paths(im, inlets, outlets):
+def trim_nonpercolating_paths(im, inlets, outlets, strel=None):
     r"""
     Remove all nonpercolating paths between specified locations
 
@@ -356,6 +385,9 @@ def trim_nonpercolating_paths(im, inlets, outlets):
     outlets : ndarray
         A boolean mask indicating locations of outlets, such as produced by
         ``porespy.generators.faces``.
+    strel : ndarray
+        The structuring element to use when determining if regions are
+        connected.  This is passed to ``scipiy.ndimage.label``.
 
     Returns
     -------
@@ -377,11 +409,11 @@ def trim_nonpercolating_paths(im, inlets, outlets):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/filters/howtos/trim_nonpercolating_paths.html>`_
+    <https://porespy.org/examples/filters/reference/trim_nonpercolating_paths.html>`_
     to view online example.
 
     """
-    labels = spim.label(im)[0]
+    labels = spim.label(im, structure=strel)[0]
     IN = np.unique(labels * inlets)
     OUT = np.unique(labels * outlets)
     hits = np.array(list(set(IN).intersection(set(OUT))))
@@ -420,7 +452,7 @@ def trim_extrema(im, h, mode="maxima"):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/filters/howtos/trim_extrema.html>`_
+    <https://porespy.org/examples/filters/reference/trim_extrema.html>`_
     to view online example.
 
     """
@@ -490,7 +522,7 @@ def flood(im, labels, mode="max"):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/filters/howtos/flood.html>`_
+    <https://porespy.org/examples/filters/reference/flood.html>`_
     to view online example.
 
     """
@@ -506,7 +538,7 @@ def flood(im, labels, mode="max"):
     return flooded
 
 
-def flood_func(im, labels, func):
+def flood_func(im, func, labels=None):
     r"""
     Flood each isolated region in an image with a constant value calculated by
     the given function.
@@ -516,14 +548,14 @@ def flood_func(im, labels, func):
     im : ndarray
         An image with the numerical values of interest in each voxel,
         and 0's elsewhere.
-    labels : ndarray
-        An array containing labels identify each individual region to be
-        flooded. If not provided then ``scipy.ndimage.label`` is applied to
-        ``im > 0``.
     func : Numpy function handle
         The function to be applied to each region in the image.  Any Numpy
         function that returns a scalar value can be passed, such as ``amin``,
         ``amax``, ``sum``, ``mean``, ``median``, etc.
+    labels : ndarray
+        An array containing labels identifying each individual region to be
+        flooded. If not provided then ``scipy.ndimage.label`` is applied to
+        ``im > 0``.
 
     Returns
     -------
@@ -539,19 +571,21 @@ def flood_func(im, labels, func):
     Notes
     -----
     Many of the functions in ``scipy.ndimage`` can be applied to
-    individual regions using the ``index`` argument.  This function extend
+    individual regions using the ``index`` argument.  This function extends
     that behavior to all numpy function, in the event you wanted to compute
     the cosine of the values in each region for some reason. This function
-    also floods the original image instead of return a list of values for
+    also floods the original image instead of returning a list of values for
     each region.
 
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/filters/howtos/flood_func.html>`_
+    <https://porespy.org/examples/filters/reference/flood_func.html>`_
     to view online example.
 
     """
+    if labels is None:
+        labels = spim.label(im > 0)[0]
     slices = spim.find_objects(labels)
     flooded = np.zeros_like(im, dtype=float)
     for i, s in enumerate(slices):
@@ -589,7 +623,7 @@ def find_dt_artifacts(dt):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/filters/howtos/find_dt_artifacts.html>`_
+    <https://porespy.org/examples/filters/reference/find_dt_artifacts.html>`_
     to view online example.
 
     """
@@ -633,7 +667,7 @@ def region_size(im):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/filters/howtos/region_size.html>`_
+    <https://porespy.org/examples/filters/reference/region_size.html>`_
     to view online example.
 
     """
@@ -680,7 +714,7 @@ def apply_chords(im, spacing=1, axis=0, trim_edges=True, label=False):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/filters/howtos/apply_chords.html>`_
+    <https://porespy.org/examples/filters/reference/apply_chords.html>`_
     to view online example.
 
     """
@@ -745,7 +779,7 @@ def apply_chords_3D(im, spacing=0, trim_edges=True):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/filters/howtos/apply_chords_3D.html>`_
+    <https://porespy.org/examples/filters/reference/apply_chords_3D.html>`_
     to view online example.
 
     """
@@ -836,7 +870,7 @@ def local_thickness(im, sizes=25, mode="hybrid", divs=1):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/filters/howtos/local_thickness.html>`_
+    <https://porespy.org/examples/filters/reference/local_thickness.html>`_
     to view online example.
 
     """
@@ -926,7 +960,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/filters/howtos/porosimetry.html>`_
+    <https://porespy.org/examples/filters/reference/porosimetry.html>`_
     to view online example.
 
     """
@@ -1054,7 +1088,7 @@ def trim_disconnected_blobs(im, inlets, strel=None):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/filters/howtos/trim_disconnected_blobs.html>`_
+    <https://porespy.org/examples/filters/reference/trim_disconnected_blobs.html>`_
     to view online example.
 
     """
@@ -1214,7 +1248,7 @@ def prune_branches(skel, branch_points=None, iterations=1):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/filters/howtos/prune_branches.html>`_
+    <https://porespy.org/examples/filters/reference/prune_branches.html>`_
     to view online example.
 
     """
@@ -1339,7 +1373,7 @@ def chunked_func(func,
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/filters/howtos/chunked_func.html>`_
+    <https://porespy.org/examples/filters/reference/chunked_func.html>`_
     to view online example.
 
     """

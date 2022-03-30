@@ -2,7 +2,7 @@ import numpy as np
 from loguru import logger
 
 
-def imagej_wrapper(im, plugin_name, path):
+def imagej_wrapper(im, plugin_name, path):  # pragma: no cover
     r"""
     Apply ImageJ filters on 3D images.
 
@@ -105,7 +105,7 @@ def imagej_wrapper(im, plugin_name, path):
     return results
 
 
-def imagej_plugin(im, path, plugin_name, args=None):
+def imagej_plugin(im, path, plugin_name, args=None):  # pragma: no cover
     r"""
     Apply ImageJ filters on 3D images.
 

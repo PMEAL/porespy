@@ -131,6 +131,19 @@ class GeneratorTest():
         labels, N = spim.label(input=im)
         assert N == 100
 
+    def test_bundle_of_tubes_with_distribution(self):
+        dist = spst.norm(loc=10, scale=4)
+        im = ps.generators.bundle_of_tubes(shape=[301, 301, 1], spacing=30,
+                                           distribution=dist)
+        labels, N = spim.label(input=im)
+        assert N == 100
+
+    def test_bundle_of_tubes_2D(self):
+        im = ps.generators.bundle_of_tubes(shape=[101, 101], spacing=10)
+        labels, N = spim.label(input=im)
+        assert N == 100
+        assert im.shape == (101, 101, 1)
+
     def test_overlapping_spheres_2d(self):
         phis = np.arange(0.1, 0.9, 0.2)
         for phi in phis:
@@ -158,10 +171,11 @@ class GeneratorTest():
 
     def test_voronoi_edges(self):
         np.random.seed(0)
-        im = ps.generators.voronoi_edges(
-            shape=[50, 50, 50], r=2, ncells=25, flat_faces=True)
+        im = ps.generators.voronoi_edges(shape=[50, 50, 50],
+                                         r=2, ncells=25,
+                                         flat_faces=True)
         top_slice = im[:, :, 0]
-        assert np.sum(top_slice) == 1409
+        assert np.sum(top_slice) == 1398
 
     def test_lattice_spheres_square(self):
         im = ps.generators.lattice_spheres(
@@ -323,15 +337,16 @@ class GeneratorTest():
     def test_pseudo_electrostatic_packing_values(self):
         np.random.seed(0)
         # 2d
-        im = ps.generators.blobs(shape=[100, 100])
-        im = ps.generators.pseudo_electrostatic_packing(
-            im=im, r=3, clearance=1, protrusion=1)
-        assert_allclose(np.linalg.norm(im), 46.2276, rtol=1e-5)
+        im1 = ps.generators.blobs(shape=[100, 100])
+        im2 = ps.generators.pseudo_electrostatic_packing(
+            im=im1, r=3, clearance=1, protrusion=1)
+        assert_allclose(np.linalg.norm(im2), 46.604721, rtol=1e-5)
         # 3d
-        im = ps.generators.blobs(shape=[50, 50, 50])
-        im = ps.generators.pseudo_electrostatic_packing(
-            im=im, r=3, clearance=1, protrusion=1)
-        assert_allclose(np.linalg.norm(im), 135.3403, rtol=1e-5)
+        np.random.seed(0)
+        im1 = ps.generators.blobs(shape=[50, 50, 50])
+        im2 = ps.generators.pseudo_electrostatic_packing(
+            im=im1, r=3, clearance=1, protrusion=1)
+        assert_allclose(np.linalg.norm(im2), 130.16528, rtol=1e-5)
 
     def test_faces(self):
         im = ps.generators.faces(shape=[10, 10], inlet=0)
@@ -396,6 +411,80 @@ class GeneratorTest():
         # Ensure the exact same image is produced each time
         im2D = ps.generators.sierpinski_foam(4, 2, 2)
         np.testing.assert_allclose(im2D.sum()/im2D.size, 0.7901234567901234)
+
+    def test_border_thickness_1(self):
+        s = (10, 10)
+        c = ps.generators.borders(shape=s, thickness=1, mode='corners')
+        assert c.sum() == 4
+        c = ps.generators.borders(shape=s, thickness=1, mode='edges')
+        assert c.sum() == 4
+        c = ps.generators.borders(shape=s, thickness=1, mode='faces')
+        assert c.sum() == 36
+        s = (10, 10, 10)
+        c = ps.generators.borders(shape=s, thickness=1, mode='corners')
+        assert c.sum() == 8
+        c = ps.generators.borders(shape=s, thickness=1, mode='edges')
+        assert c.sum() == 104
+        c = ps.generators.borders(shape=s, thickness=1, mode='faces')
+        assert c.sum() == 488
+
+    def test_border_thickness_2(self):
+        s = (10, 10)
+        c = ps.generators.borders(shape=s, thickness=2, mode='corners')
+        assert c.sum() == 16
+        c = ps.generators.borders(shape=s, thickness=2, mode='edges')
+        assert c.sum() == 16
+        c = ps.generators.borders(shape=s, thickness=2, mode='faces')
+        assert c.sum() == 64
+        s = (10, 10, 10)
+        c = ps.generators.borders(shape=s, thickness=2, mode='corners')
+        assert c.sum() == 64
+        c = ps.generators.borders(shape=s, thickness=2, mode='edges')
+        assert c.sum() == 352
+        c = ps.generators.borders(shape=s, thickness=2, mode='faces')
+        assert c.sum() == (1000 - 6*6*6)
+
+    def test_cylindrical_plug(self):
+        s = (50, 50)
+        p = ps.generators.cylindrical_plug(shape=s, r=21, axis=2)
+        assert np.all(p.shape == s)
+        assert p.sum() == 1369
+        s = (50, 50, 10)
+        p = ps.generators.cylindrical_plug(shape=s, r=21, axis=2)
+        assert np.all(p.shape == s)
+        assert p.sum() == 13690
+
+    def test_pseudo_gravity_packing_2D(self):
+        np.random.seed(0)
+        im = np.ones([100, 100], dtype=bool)
+        im = ps.generators.pseudo_gravity_packing(im=im, r=8, clearance=1)
+        assert im.sum() == 4578
+
+    def test_pseudo_gravity_packing_3D(self):
+        np.random.seed(0)
+        im = np.ones([100, 100, 100], dtype=bool)
+        im = ps.generators.pseudo_gravity_packing(im=im, r=8, clearance=1)
+        assert im.sum() == 279240
+
+    def test_pseudo_electrostatic_packing_2D(self):
+        np.random.seed(0)
+        im = np.ones([100, 100], dtype=bool)
+        sites = np.zeros_like(im)
+        sites[50, 50] = True
+        im = ps.generators.pseudo_electrostatic_packing(im=im, r=8,
+                                                        sites=sites,
+                                                        maxiter=10)
+        assert im.sum() == 1930
+
+    def test_pseudo_electrostatic_packing_3D(self):
+        np.random.seed(0)
+        im = np.ones([100, 100, 100], dtype=bool)
+        sites = np.zeros_like(im)
+        sites[50, 50, 50] = True
+        im = ps.generators.pseudo_electrostatic_packing(im=im, r=8,
+                                                        sites=sites,
+                                                        maxiter=10)
+        assert im.sum() == 21030
 
 
 if __name__ == '__main__':

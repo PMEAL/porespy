@@ -41,9 +41,10 @@ help:
 
 clean:
 	-rm -rf $(BUILDDIR)/*
+	find . -name "generated" | xargs rm -rf
 
 html:
-	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
+	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html -j auto
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
 

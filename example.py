@@ -1,4 +1,5 @@
 import porespy as ps
+import numpy as np
 import matplotlib.pyplot as plt
 
 

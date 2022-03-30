@@ -1,19 +1,9 @@
 <p align="center">
-  <img src="https://github.com/PMEAL/porespy/raw/dev/docs/_static/images/porespy_logo.png" width="35%"></img>
+  <img src="https://github.com/PMEAL/porespy/raw/dev/docs/_static/images/porespy_logo.png" width="25%"></img>
 </p>
 
------
-
-[![image](https://github.com/PMEAL/porespy/workflows/Ubuntu/badge.svg)](https://github.com/PMEAL/porespy/actions)
-[![image](https://github.com/PMEAL/porespy/workflows/macOS/badge.svg)](https://github.com/PMEAL/porespy/actions)
-[![image](https://github.com/PMEAL/porespy/workflows/Windows/badge.svg)](https://github.com/PMEAL/porespy/actions)
-[![image](https://github.com/PMEAL/porespy/workflows/Examples/badge.svg)](https://github.com/PMEAL/porespy/actions)<br>
-[![image](https://codecov.io/gh/PMEAL/PoreSpy/branch/dev/graph/badge.svg)](https://codecov.io/gh/PMEAL/PoreSpy)
 [![image](https://img.shields.io/pypi/v/porespy.svg)](https://pypi.python.org/pypi/porespy/)
 [![Pyversions](https://img.shields.io/pypi/pyversions/porespy.svg?style=flat-square&label=Python%20Versions)](https://pypi.python.org/pypi/porespy)
-[![image](https://img.shields.io/badge/DOI-10.21105/joss.01296-blue.svg)](https://doi.org/10.21105/joss.01296)
-
------
 
 # What is PoreSpy?
 
@@ -48,6 +38,7 @@ necessary.
     image
   - `metrics`: Tools for quantifying properties of images
   - `networks`: Algorithms and tools for analyzing images as pore networks
+  - `simulations`: Physical simulations on images including drainage
   - `visualization`: Helper functions for creating useful views of the
     image
   - `io`: Functions for outputting image data in various formats for use in

@@ -3,6 +3,13 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
 
+__all__ = [
+    'bar',
+    'imshow',
+    'show_mesh',
+]
+
+
 def bar(results, h='pdf', **kwargs):  # pragma: no cover
     r"""
     Convenience wrapper for matplotlib's ``bar``.
@@ -41,7 +48,7 @@ def bar(results, h='pdf', **kwargs):  # pragma: no cover
     return fig
 
 
-def imshow(*im, ind=None, axis=None):  # pragma: no cover
+def imshow(*im, ind=None, axis=None, **kwargs):  # pragma: no cover
     r"""
     Convenience wrapper for matplotlib's ``imshow``.
 
@@ -64,11 +71,18 @@ def imshow(*im, ind=None, axis=None):  # pragma: no cover
         The axis to show if ``im`` is 3D.  If not given, then the last
         axis of the image is used, so an 'lower' slice is shown.
 
+    **kwargs
+        All other keyword arguments are passed to ``plt.imshow``
+
     Note
     ----
     ``im`` can also be a series of unnamed arguments, in which case all
     received images will be shown using ``subplot``.
     """
+    if 'origin' not in kwargs.keys():
+        kwargs['origin'] = 'lower'
+    if 'interpolation' not in kwargs.keys():
+        kwargs['interpolation'] = 'none'
     if not isinstance(im, tuple):
         im = tuple([im])
     for i, image in enumerate(im):
@@ -80,7 +94,7 @@ def imshow(*im, ind=None, axis=None):  # pragma: no cover
             image = image.take(indices=ind, axis=axis)
         image = np.ma.array(image, mask=image == 0)
         fig = plt.subplot(1, len(im), i+1)
-        plt.imshow(image, origin='lower', interpolation='none')
+        plt.imshow(image, **kwargs)
     return fig
 
 
