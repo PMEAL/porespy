@@ -55,5 +55,8 @@ from ._sphere_insertions import *
 
 
 def _get_version():
-    from porespy.__version__ import __version__
-    return __version__.removesuffix(".dev0")
+    from porespy.__version__ import __version__ as ver
+    suffix = ".dev0"
+    if ver.endswith(suffix):
+        ver = ver[:-len(suffix)]
+    return ver
