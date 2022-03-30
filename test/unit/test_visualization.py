@@ -85,7 +85,7 @@ class VisualizationTest():
     def test_prep_for_imshow_3D(self):
         a = ps.visualization.prep_for_imshow(self.lt, self.im)
         assert a['X'].shape == (51, 51)
-        assert a['vmin'] == 0
+        assert a['vmin'] == 1.0
         b = ps.visualization.prep_for_imshow(self.lt, self.im, axis=None)
         assert b['X'].shape == (51, 51, 51)
 

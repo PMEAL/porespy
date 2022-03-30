@@ -37,6 +37,12 @@ def region_volumes(regions, mode='marching_cubes'):
         An array of shape [N by 1] where N is the number of labelled regions
         in the image.
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/metrics/reference/mesh_volumes.html>`_
+    to view online example.
+
     """
     slices = spim.find_objects(regions)
     vols = np.zeros([len(slices), ])
@@ -46,7 +52,7 @@ def region_volumes(regions, mode='marching_cubes'):
         if mode == 'marching_cubes':
             vols[i] = mesh_volume(region)
         elif mode.startswith('voxel'):
-            vols[i] = regions.sum()
+            vols[i] = region.sum()
     return vols
 
 
@@ -66,11 +72,17 @@ def mesh_volume(region):
         algorithm to the region, then finding the mesh volume using the
         ``trimesh`` package.
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/metrics/reference/mesh_volume.html>`_
+    to view online example.
+
     """
     mc = mesh_region(region > 0)
     m = Trimesh(vertices=mc.verts, faces=mc.faces, vertex_normals=mc.norm)
     if m.is_watertight:
-        vol = m.volume
+        vol = np.abs(m.volume)
     else:
         vol = np.nan
     return vol
@@ -104,6 +116,12 @@ def region_surface_areas(regions, voxel_size=1, strel=None):
     areas : list
         A list containing the surface area of each region, offset by 1, such
         that the surface area of region 1 is stored in element 0 of the list.
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/metrics/reference/region_surface_areas.html>`_
+    to view online example.
 
     """
     logger.trace('Finding surface area of each region')
@@ -155,6 +173,12 @@ def mesh_surface_area(mesh=None, verts=None, faces=None):
     it allows for the passing of the ``mesh`` tuple returned by the
     ``mesh_region`` function, entirely for convenience.
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/metrics/reference/mesh_surface_area.html>`_
+    to view online example.
+
     """
     if mesh:
         verts = mesh.verts
@@ -204,6 +228,12 @@ def region_interface_areas(regions, areas, voxel_size=1, strel=None):
 
         'area'
             The area calculated for each pair of regions in ``conns``
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/metrics/reference/region_interface_areas.html>`_
+    to view online example.
 
     """
     logger.trace('Finding interfacial areas between each region')

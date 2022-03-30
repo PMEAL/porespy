@@ -65,6 +65,12 @@ def isolate_object(region, i, s=None):
         with the given value ``i``.  If ``s`` is provided, the returned image
         will be a subsection of ``region``.
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/tools/reference/isolate_object.html>`_
+    to view online example.
+
     """
     if s is not None:
         region = region[s]
@@ -95,6 +101,12 @@ def marching_map(path, start):
     Notes
     -----
     This function assumes ``scikit-fmm`` is installed.
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/tools/reference/marching_map.html>`_
+    to view online example.
 
     """
     try:
@@ -238,6 +250,12 @@ def recombine(ims, slices, overlap):
     --------
     chunked_func, subdivide
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/tools/reference/recombine.html>`_
+    to view online example.
+
     """
     shape = [0]*ims[0].ndim
     for s in slices:
@@ -347,6 +365,12 @@ def find_outer_region(im, r=None):
     This is particularly useful for samples that do not fill the
     entire rectangular image, such as cylindrical cores or samples with non-
     parallel faces.
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/tools/reference/find_outer_region.html>`_
+    to view online example.
 
     """
     if r is None:
@@ -488,7 +512,7 @@ def get_planes(im, squeeze=True):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/tools/get_planes.html>`_
+    <https://porespy.org/examples/tools/reference/get_planes.html>`_
     to view online example.
 
     """
@@ -557,6 +581,12 @@ def extend_slice(slices, shape, pad=1):
     As can be seen by the location of the 4s, the slice was extended by 1, and
     also handled the extension beyond the boundary correctly.
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/tools/reference/extend_slice.html>`_
+    to view online example.
+
     """
     shape = np.array(shape)
     pad = np.array(pad).astype(int)*(shape > 0)
@@ -623,6 +653,12 @@ def randomize_colors(im, keep_vals=[0]):
     As can be seen, the 2's have become 3, 3's have become 4, and 4's have
     become 2.  1's remained 1 by random accident.  0's remain zeros by default,
     but this can be controlled using the `keep_vals` argument.
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/tools/reference/randomize_colors.html>`_
+    to view online example.
 
     '''
     im_flat = im.flatten()
@@ -785,6 +821,12 @@ def in_hull(points, hull):
         A 1D-array Boolean array of length *N* indicating whether or not the
         given points in ``points`` lies within the provided ``hull``.
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/tools/reference/in_hull.html>`_
+    to view online example.
+
     """
     from scipy.spatial import Delaunay, ConvexHull
     if isinstance(hull, ConvexHull):
@@ -893,6 +935,12 @@ def mesh_region(region: bool, strel=None):
     mesh : tuple
         A named-tuple containing ``faces``, ``verts``, ``norm``, and ``val``
         as returned by ``scikit-image.measure.marching_cubes`` function.
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/tools/reference/mesh_region.html>`_
+    to view online example.
 
     """
     im = region

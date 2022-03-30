@@ -96,6 +96,12 @@ def drainage(im, voxel_size, pc=None, inlets=None, outlets=None, residual=None,
       configurations, meaning the more dense fluid is on the bottom.
       Be sure that ``inlets`` are specified accordingly.
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/simulations/reference/drainage.html>`_
+    to view online example.
+
     """
     im = np.array(im, dtype=bool)
     dt = edt(im)

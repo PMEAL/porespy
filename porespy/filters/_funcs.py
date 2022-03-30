@@ -1196,6 +1196,12 @@ def nphase_border(im, include_diagonals=False):
         A copy of ``im`` with voxel values equal to the number of uniquely
         different bordering values
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/filters/reference/nphase_border.html>`_
+    to view online example.
+
     """
     _check_for_singleton_axes(im)
     # Get dimension of image

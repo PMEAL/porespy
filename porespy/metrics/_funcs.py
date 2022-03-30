@@ -144,7 +144,8 @@ def porosity_profile(im, axis=0):
     Parameters
     ----------
     im : ndarray
-        The volumetric image for which to calculate the porosity profile
+        The volumetric image for which to calculate the porosity profile.  All
+        voxels with a value of 1 (or ``True``) are considered as void.
     axis : int
         The axis (0, 1, or 2) along which to calculate the profile.  For
         instance, if `axis` is 0, then the porosity in each YZ plane is
@@ -167,7 +168,7 @@ def porosity_profile(im, axis=0):
     im = np.atleast_3d(im)
     a = set(range(im.ndim)).difference(set([axis]))
     a1, a2 = a
-    prof = np.sum(np.sum(im, axis=a2), axis=a1) / (im.shape[a2] * im.shape[a1])
+    prof = np.sum(np.sum(im == 1, axis=a2), axis=a1) / (im.shape[a2] * im.shape[a1])
     return prof
 
 
@@ -333,7 +334,7 @@ def lineal_path_distribution(im, bins=10, voxel_size=1, log=False):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/metrics/reference/linear_density.html>`_
+    <https://porespy.org/examples/metrics/reference/linearl_path_distribution.html>`_
     to view online example.
 
     """
@@ -786,6 +787,7 @@ def phase_fraction(im, normed=True):
         results[label] = np.sum(im == label) * (1 / im.size if normed else 1)
     return results
 
+
 @deprecated("This function is deprecated, use pc_curve instead")
 def pc_curve_from_ibip(*args, **kwargs):
     r"""
@@ -867,6 +869,12 @@ def pc_curve(im, sizes=None, pc=None, seq=None,
         $$ pc = \frac{-2*0.072*np.cos(np.deg2rad(180))}{sizes \cdot voxel_size} $$
 
     then passed in as the ``pc`` argument.
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/metrics/reference/pc_curve.html>`_
+    to view online example.
 
     """
     tqdm = get_tqdm()
@@ -968,6 +976,12 @@ def satn_profile(satn, s, axis=0, span=10, mode='tile'):
                       values are computed.  The units are in voxels.
         saturation    The local saturation value at each position.
         ============= =========================================================
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/metrics/reference/satn_profile.html>`_
+    to view online example.
     """
     # @numba.njit()
     def func(satn, s, axis, span, mode):
@@ -1040,6 +1054,12 @@ def find_h(saturation, position=None, srange=[0.01, 0.99]):
     -----
     The ``satn_profile`` function can be used to obtain the ``saturation``
     and ``position`` from an image.
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/metrics/reference/find_h.html>`_
+    to view online example.
 
     """
     r = Results()

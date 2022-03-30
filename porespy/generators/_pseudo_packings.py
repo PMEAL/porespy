@@ -51,6 +51,12 @@ def pseudo_gravity_packing(im, r, clearance=0, axis=0, maxiter=1000,
         The spheres are only inserted at locations that are accessible
         from the top of the image.
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/generators/reference/pseudo_gravity_packing.html>`_
+    to view online example.
+
     """
     logger.debug(f'Adding spheres of radius {r}')
 
@@ -134,6 +140,12 @@ def pseudo_electrostatic_packing(im, r, sites=None,
     -------
     im : ndarray
         An image with inserted spheres indicated by ``True``
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/generators/reference/pseudo_electrostatic_packing.html>`_
+    to view online example.
 
     """
     random.seed(0)

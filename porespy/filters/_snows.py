@@ -80,6 +80,12 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, peaks=None):
     algorithm using marker-based watershed segmenation".  Physical Review
     E. (2017)
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/filters/reference/snow_partitioning.html>`_
+    to view online example.
+
     """
     logger.trace("Beginning SNOW algorithm")
     im_shape = np.array(im.shape)
@@ -185,6 +191,12 @@ def snow_partitioning_n(im, r_max=4, sigma=0.4, peaks=None):
     applies the watershed to each of the distance transforms separately,
     then merges the segmented regions back into a single image.
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/filters/reference/snow_partitioning_n.html>`_
+    to view online example.
+
     """
     # Perform snow on each phase and merge all segmentation and dt together
     phases_num = np.unique(im).astype(int)
@@ -263,6 +275,12 @@ def find_peaks(dt, r_max=4, strel=None, sigma=None, divs=1):
     which is significantly faster than using a circular or spherical
     element.
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/filters/reference/find_peaks.html>`_
+    to view online example.
+
     """
     im = dt > 0
     _check_for_singleton_axes(im)
@@ -313,6 +331,12 @@ def reduce_peaks(peaks):
     voxel, so if the group has an odd shape (like a horse shoe), the new
     voxel may *not* lie on top of the original set.
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/filters/reference/reduce_peaks.html>`_
+    to view online example.
+
     """
     if peaks.ndim == 2:
         strel = square
@@ -356,6 +380,12 @@ def trim_saddle_points(peaks, dt, maxiter=20):
     ----------
     [1] Gostick, J. "A versatile and efficient network extraction algorithm
     using marker-based watershed segmentation".  Physical Review E. (2017)
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/filters/reference/trim_saddle_points.html>`_
+    to view online example.
 
     """
     new_peaks = np.zeros_like(peaks, dtype=bool)
@@ -425,6 +455,12 @@ def trim_saddle_points_legacy(peaks, dt, maxiter=10):
     ----------
     [1] Gostick, J. "A versatile and efficient network extraction algorithm
     using marker-based watershed segmenation".  Physical Review E. (2017)
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/filters/reference/trim_saddle_points_legacy.html>`_
+    to view online example.
     """
     new_peaks = np.zeros_like(peaks, dtype=bool)
     if dt.ndim == 2:
@@ -501,6 +537,12 @@ def trim_nearby_peaks(peaks, dt, f=1):
     [1] Gostick, J. "A versatile and efficient network extraction
     algorithm using marker-based watershed segmenation". Physical Review
     E. (2017)
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/filters/reference/trim_nearby_peaks.html>`_
+    to view online example.
 
     """
     if dt.ndim == 2:
@@ -593,6 +635,12 @@ def snow_partitioning_parallel(im,
         Partitioned image of segmentated regions with unique labels. Each
         region correspond to pore body while intersection with other
         region correspond throat area.
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/filters/reference/snow_partitioning_parallel.html>`_
+    to view online example.
 
     """
     # Adjust image shape according to specified dimension

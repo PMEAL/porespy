@@ -106,6 +106,12 @@ def regions_to_network(regions, phases=None, voxel_size=1, accuracy='standard'):
         The length between two pore centers on a straight line between them
         that does not pass through the throat centroid.
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/networks/reference/regions_to_network.html>`_
+    to view online example.
+
     """
     logger.trace('Extracting pore/throat information')
 
