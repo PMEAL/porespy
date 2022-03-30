@@ -110,9 +110,8 @@ def satn_to_panels(satn, im, bins=None, axis=0, slice=None, **kwargs):
     im : ndarray
         A boolean image with ``True`` values indicating the void voxels and
         ``False`` for solid.
-    bins : int or array_like
-        Indicates for which saturations images should be made. If a ``list``
-        then each value in the list is used as a threshold. If an ``int``
+    bins : int 
+        Indicates for which saturations images should be made. If an ``int``
         then a list of equally space values between 0 and 1 is generated.
         If ``None`` (default) than all saturation values in the image are used.
     axis : int, optional
