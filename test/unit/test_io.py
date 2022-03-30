@@ -47,40 +47,6 @@ class ExportTest():
         assert a < b
         os.remove('dictvtk.vti')
 
-    def test_openpnm_to_im(self):
-        net = op.network.Cubic(shape=[5, 5, 5])
-        try:
-            spacing = op.topotools.get_spacing(net)
-            shape = op.topotools.get_shape(net)
-        except AttributeError:
-            spacing = net.spacing
-            shape = net.shape
-        # FIXME: get rid of try/except once openpnm v3 is out
-        try:
-            geom = op.geometry.SpheresAndCylinders(network=net,
-                                                   pores=net.Ps,
-                                                   throats=net.Ts)
-        except AttributeError:
-            geom = op.geometry.StickAndBall(network=net,
-                                            pores=net.Ps,
-                                            throats=net.Ts)
-
-        geom.add_model(propname="pore.volume",
-                       model=op.models.geometry.pore_volume.cube)
-        geom.add_model(propname="throat.volume",
-                       model=op.models.geometry.throat_volume.cylinder)
-        geom.regenerate_models()
-
-        im = ps.io.openpnm_to_im(network=net, pore_shape="cube",
-                                 throat_shape="cylinder", rtol=0.01)
-        porosity_actual = im.astype(bool).sum() / np.prod(im.shape)
-
-        volume_void = net["pore.volume"].sum() + net["throat.volume"].sum()
-        volume_total = np.prod(spacing * shape)
-        porosity_desired = volume_void / volume_total
-
-        assert_allclose(actual=porosity_actual, desired=porosity_desired, rtol=0.1)
-
     def test_to_stl(self):
         im = ps.generators.blobs(shape=[50, 50, 50])
         ps.io.to_stl(im, filename="im2stl")
