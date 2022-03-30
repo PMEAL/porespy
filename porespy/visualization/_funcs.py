@@ -123,7 +123,7 @@ def satn_to_panels(satn, im, bins=None, axis=0, slice=None, **kwargs):
         of the axis is returned.  If 2D this is ignored.
     **kwargs : various
         Additional keyword arguments are sent to the ``imshow`` function,
-        such as ``cmap`` and ``interpolation``.
+        such as ``interpolation``.
 
     Returns
     -------
