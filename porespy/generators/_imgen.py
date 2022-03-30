@@ -186,7 +186,7 @@ def rsa(im_or_shape: np.array,
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/generators/reference/RSA.html>`_
+    <https://porespy.org/examples/generators/reference/rsa.html>`_
     to view online example.
 
     """
@@ -894,12 +894,6 @@ def _cylinders(shape: List[int],
     -------
     image : ndarray
         A boolean array with ``True`` values denoting the pore space
-
-    Examples
-    --------
-    `Click here
-    <https://porespy.org/examples/generators/cylinders.html>`_
-    to view online example.
 
     """
     shape = np.array(shape)
