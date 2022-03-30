@@ -46,6 +46,12 @@ def nl_means_layered(im, cores=None, axis=0, patch_size=5, patch_distance=15, h=
     Each slice in the stack is adjusted to have the same histogram and
     intensity.
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/filters/reference/nl_means_layered.html>`_
+    to view online example.
+
     """
 
     @dask.delayed

@@ -46,6 +46,12 @@ def ibip(im, inlets=None, dt=None, maxiter=10000):
     --------
     porosimetry
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/filters/reference/ibip.html>`_
+    to view online example.
+
     """
     # Process the boundary image
     if inlets is None:
@@ -147,6 +153,12 @@ def find_trapped_regions(seq, outlets=None, bins=25, return_mask=True):
         then the image has ``True`` values indicating the trapped voxels.  If
         ``return_mask`` is ``False``, then a copy of ``seq`` is returned with
         trapped voxels set to 0.
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/filters/reference/find_trapped_regions.html>`_
+    to view online example.
 
     """
     seq = np.copy(seq)
