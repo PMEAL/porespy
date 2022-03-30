@@ -56,4 +56,4 @@ from ._sphere_insertions import *
 
 def _get_version():
     from porespy.__version__ import __version__
-    return __version__.strip(".dev0")
+    return __version__.removesuffix(".dev0")
