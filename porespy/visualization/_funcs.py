@@ -66,11 +66,46 @@ def satn_to_movie(im, satn, cmap='viridis',
                   c_under='grey', c_over='white',
                   v_under=1e-3, v_over=1.0, fps=10, repeat=True):
     r"""
+    Converts a saturation map into an animation that can be saved
+
+    Parameters
+    ----------
+    im : ndarray
+        The boolean image of the porous media with ``True`` values indicating
+        the void space
+    satn : ndaray
+        The saturation map such as that produced by an invasion or drainage
+        algorithm.
+    cmap : str
+        The name of the matplotlib color map to use. These are listed on
+        matplotlib's website
+        `here <https://matplotlib.org/stable/gallery/color/colormap_reference.html>`_
+    c_under, c_over : str
+        The color to insert for values that are less than `v_under`
+        (greater than `v_over`).  The string value of colors are given on
+        matplotlib's website
+        `here <https://matplotlib.org/stable/gallery/color/named_colors.html>`_
+    v_under, v_over : scalar
+        The values in ``satn`` that should be considered the lower and upper
+        threshold, beyond which the colors given in `c_under` and `c_over`
+        are used.
+    fps : int
+        The frames per second to use when generating the movie.  A higher
+        number gives a shorter and faster-paced movie.
+    repeat : bool
+        If ``True`` the produced animation will rerun repeatedly until
+        stopped or closed.
 
     Notes
     -----
     To save animation as a file use:
     ``ani.save('image_based_ip.gif', writer='imagemagick', fps=3)``
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/visualization/reference/satn_to_movie.html>`_
+    to view online example.
     """
     # Define nice color map
     cmap = copy(plt.cm.get_cmap(name=cmap))
@@ -110,7 +145,7 @@ def satn_to_panels(satn, im, bins=None, axis=0, slice=None, **kwargs):
     im : ndarray
         A boolean image with ``True`` values indicating the void voxels and
         ``False`` for solid.
-    bins : int 
+    bins : int
         Indicates for which saturations images should be made. If an ``int``
         then a list of equally space values between 0 and 1 is generated.
         If ``None`` (default) than all saturation values in the image are used.
@@ -129,6 +164,12 @@ def satn_to_panels(satn, im, bins=None, axis=0, slice=None, **kwargs):
     -------
     fig, ax : Matplotlib figure and axis objects
         The same things as returned by ``plt.subplots``
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/visualization/reference/satn_to_panels.html>`_
+    to view online example.
     """
     def factors(n):
         return sorted(list(set(
@@ -214,6 +255,12 @@ def prep_for_imshow(im, mask=None, axis=0, slice=None):
     -----
     If any of the *extra* items are unwanted they can be removed with
     ``del data['interpolation']`` or ``data.pop('interpolation')``.
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/visualization/reference/prep_for_imshow.html>`_
+    to view online example.
 
     """
     # If 3D, fetch 2D slice immediately to save memory
