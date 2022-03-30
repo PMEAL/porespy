@@ -37,6 +37,12 @@ def bar(results, h='pdf', **kwargs):  # pragma: no cover
     Returns
     -------
     fig: Matplotlib figure handle
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/visualization/reference/bar.html>`_
+    to view online example.
     """
     if 'edgecolor' not in kwargs:
         kwargs['edgecolor'] = 'k'
@@ -78,6 +84,12 @@ def imshow(*im, ind=None, axis=None, **kwargs):  # pragma: no cover
     ----
     ``im`` can also be a series of unnamed arguments, in which case all
     received images will be shown using ``subplot``.
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/visualization/reference/imshow.html>`_
+    to view online example.
     """
     if 'origin' not in kwargs.keys():
         kwargs['origin'] = 'lower'
@@ -112,6 +124,12 @@ def show_mesh(mesh):  # pragma: no cover
     -------
     fig : Matplotlib figure
         A handle to a matplotlib 3D axis
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/visualization/reference/show_mesh.html>`_
+    to view online example.
     """
     try:
         verts = mesh.vertices
