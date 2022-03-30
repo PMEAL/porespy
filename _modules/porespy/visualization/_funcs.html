@@ -346,7 +346,7 @@
 <span class="sd">    ----------</span>
 <span class="sd">    im : ndimage</span>
 <span class="sd">        The image to show. If ``im`` includes ``+inf`` or ``-inf`` values,</span>
-<span class="sd">        they are converted to 1 above or below the maximum and minimum finite</span>
+<span class="sd">        they are converted to 1 above or below the minimum and maximum finite</span>
 <span class="sd">        values in ``im``, respectively.</span>
 <span class="sd">    mask : ndimage, optional</span>
 <span class="sd">        An image of the porous material with ``True`` indicating voxels of</span>
@@ -375,8 +375,10 @@
 <span class="sd">        &#39;X&#39;             The adjusted image with ``+inf`` replaced by</span>
 <span class="sd">                        ``vmax + 1``, and all solid voxels replacd by</span>
 <span class="sd">                        ``np.nan`` to show as white in ``imshow``</span>
-<span class="sd">        &#39;vmax&#39;          The maximum of ``values`` not including ``+inf`` or values in</span>
-<span class="sd">        &#39;vmin&#39;          The minimum of ``values`` not including ``-inf``</span>
+<span class="sd">        &#39;vmax&#39;          The maximum of ``values`` not including ``+inf`` or</span>
+<span class="sd">                        values in ``False`` voxels in ``mask``.</span>
+<span class="sd">        &#39;vmin&#39;          The minimum of ``values`` not including ``-inf`` or</span>
+<span class="sd">                        values in ``False`` voxels in ``mask``.</span>
 <span class="sd">        &#39;interpolation&#39; Set to &#39;none&#39; to avoid artifacts in ``imshow``</span>
 <span class="sd">        &#39;origin&#39;        Set to &#39;lower&#39; to put (0, 0) on the bottom-left corner</span>
 <span class="sd">        =============== =======================================================</span>

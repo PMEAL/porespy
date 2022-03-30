@@ -993,7 +993,7 @@ by <code class="docutils literal notranslate"><span class="pre">matplotlib.pyplo
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>im</strong> (<em>ndimage</em>) – The image to show. If <code class="docutils literal notranslate"><span class="pre">im</span></code> includes <code class="docutils literal notranslate"><span class="pre">+inf</span></code> or <code class="docutils literal notranslate"><span class="pre">-inf</span></code> values,
-they are converted to 1 above or below the maximum and minimum finite
+they are converted to 1 above or below the minimum and maximum finite
 values in <code class="docutils literal notranslate"><span class="pre">im</span></code>, respectively.</p></li>
 <li><p><strong>mask</strong> (<em>ndimage</em><em>, </em><em>optional</em>) – An image of the porous material with <code class="docutils literal notranslate"><span class="pre">True</span></code> indicating voxels of
 interest. The <code class="docutils literal notranslate"><span class="pre">False</span></code> voxels are excluded from the <code class="docutils literal notranslate"><span class="pre">vmax</span></code> and
@@ -1013,8 +1013,8 @@ this is ignored.</p></li>
 <code class="docutils literal notranslate"><span class="pre">plt.imshow(**data)</span></code>).  It contains the following key-value pairs:</p>
 <table class="table">
 <colgroup>
-<col style="width: 20%" />
-<col style="width: 80%" />
+<col style="width: 21%" />
+<col style="width: 79%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>key</p></th>
@@ -1028,10 +1028,12 @@ this is ignored.</p></li>
 <code class="docutils literal notranslate"><span class="pre">np.nan</span></code> to show as white in <code class="docutils literal notranslate"><span class="pre">imshow</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p>’vmax’</p></td>
-<td><p>The maximum of <code class="docutils literal notranslate"><span class="pre">values</span></code> not including <code class="docutils literal notranslate"><span class="pre">+inf</span></code> or values in</p></td>
+<td><p>The maximum of <code class="docutils literal notranslate"><span class="pre">values</span></code> not including <code class="docutils literal notranslate"><span class="pre">+inf</span></code> or
+values in <code class="docutils literal notranslate"><span class="pre">False</span></code> voxels in <code class="docutils literal notranslate"><span class="pre">mask</span></code>.</p></td>
 </tr>
 <tr class="row-even"><td><p>’vmin’</p></td>
-<td><p>The minimum of <code class="docutils literal notranslate"><span class="pre">values</span></code> not including <code class="docutils literal notranslate"><span class="pre">-inf</span></code></p></td>
+<td><p>The minimum of <code class="docutils literal notranslate"><span class="pre">values</span></code> not including <code class="docutils literal notranslate"><span class="pre">-inf</span></code> or
+values in <code class="docutils literal notranslate"><span class="pre">False</span></code> voxels in <code class="docutils literal notranslate"><span class="pre">mask</span></code>.</p></td>
 </tr>
 <tr class="row-odd"><td><p>’interpolation’</p></td>
 <td><p>Set to ‘none’ to avoid artifacts in <code class="docutils literal notranslate"><span class="pre">imshow</span></code></p></td>
