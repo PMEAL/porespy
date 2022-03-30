@@ -216,7 +216,7 @@ def prep_for_imshow(im, mask=None, axis=0, slice=None):
     ----------
     im : ndimage
         The image to show. If ``im`` includes ``+inf`` or ``-inf`` values,
-        they are converted to 1 above or below the maximum and minimum finite
+        they are converted to 1 above or below the minimum and maximum finite
         values in ``im``, respectively.
     mask : ndimage, optional
         An image of the porous material with ``True`` indicating voxels of
@@ -245,8 +245,10 @@ def prep_for_imshow(im, mask=None, axis=0, slice=None):
         'X'             The adjusted image with ``+inf`` replaced by
                         ``vmax + 1``, and all solid voxels replacd by
                         ``np.nan`` to show as white in ``imshow``
-        'vmax'          The maximum of ``values`` not including ``+inf`` or values in
-        'vmin'          The minimum of ``values`` not including ``-inf``
+        'vmax'          The maximum of ``values`` not including ``+inf`` or
+                        values in ``False`` voxels in ``mask``.
+        'vmin'          The minimum of ``values`` not including ``-inf`` or
+                        values in ``False`` voxels in ``mask``.
         'interpolation' Set to 'none' to avoid artifacts in ``imshow``
         'origin'        Set to 'lower' to put (0, 0) on the bottom-left corner
         =============== =======================================================

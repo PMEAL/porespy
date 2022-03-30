@@ -52,7 +52,7 @@ def region_volumes(regions, mode='marching_cubes'):
         if mode == 'marching_cubes':
             vols[i] = mesh_volume(region)
         elif mode.startswith('voxel'):
-            vols[i] = regions.sum()
+            vols[i] = region.sum()
     return vols
 
 
@@ -82,7 +82,7 @@ def mesh_volume(region):
     mc = mesh_region(region > 0)
     m = Trimesh(vertices=mc.verts, faces=mc.faces, vertex_normals=mc.norm)
     if m.is_watertight:
-        vol = m.volume
+        vol = np.abs(m.volume)
     else:
         vol = np.nan
     return vol

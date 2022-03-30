@@ -74,7 +74,8 @@ def test_variable_Bo_study():
         vmax = np.amax(temp)
         temp[temp == 0] = vmin - 1
         temp[im == 0] = vmax + 1
-        ax.imshow(temp, vmax=vmax, vmin=vmin, cmap=cmap, origin='lower', interpolation='none')
+        ax.imshow(temp, vmax=vmax, vmin=vmin, cmap=cmap, origin='lower',
+                  interpolation='none')
         ax.axis('off')
         plt.colorbar(ax.imshow(temp, vmax=vmax, vmin=vmin, cmap=cmap, origin='lower'))
 

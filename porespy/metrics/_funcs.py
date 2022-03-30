@@ -144,7 +144,8 @@ def porosity_profile(im, axis=0):
     Parameters
     ----------
     im : ndarray
-        The volumetric image for which to calculate the porosity profile
+        The volumetric image for which to calculate the porosity profile.  All
+        voxels with a value of 1 (or ``True``) are considered as void.
     axis : int
         The axis (0, 1, or 2) along which to calculate the profile.  For
         instance, if `axis` is 0, then the porosity in each YZ plane is
@@ -167,7 +168,7 @@ def porosity_profile(im, axis=0):
     im = np.atleast_3d(im)
     a = set(range(im.ndim)).difference(set([axis]))
     a1, a2 = a
-    prof = np.sum(np.sum(im, axis=a2), axis=a1) / (im.shape[a2] * im.shape[a1])
+    prof = np.sum(np.sum(im == 1, axis=a2), axis=a1) / (im.shape[a2] * im.shape[a1])
     return prof
 
 
@@ -785,6 +786,7 @@ def phase_fraction(im, normed=True):
     for label in labels:
         results[label] = np.sum(im == label) * (1 / im.size if normed else 1)
     return results
+
 
 @deprecated("This function is deprecated, use pc_curve instead")
 def pc_curve_from_ibip(*args, **kwargs):

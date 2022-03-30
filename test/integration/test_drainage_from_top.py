@@ -1,16 +1,17 @@
 import numpy as np
 import porespy as ps
 import matplotlib.pyplot as plt
-np.random.seed(6)
 
 
 def test_drainage_from_top():
+    np.random.seed(6)
     im = ps.generators.blobs(shape=[300, 300], porosity=0.7, blobiness=1.5)
     inlets = np.zeros_like(im)
     inlets[-1, :] = True
     outlets = np.zeros_like(im)
     outlets[0, :] = True
-    im = ps.filters.trim_nonpercolating_paths(im=im, inlets=inlets, outlets=outlets)
+    im = ps.filters.trim_nonpercolating_paths(im=im, inlets=inlets,
+                                              outlets=outlets)
     pc = None
     lt = ps.filters.local_thickness(im)
     residual = lt > 25
@@ -90,11 +91,11 @@ def test_drainage_from_top():
         ax = plt.axes()
         ax.set_facecolor(bg)
         plt.step(np.log10(drn1.pc), drn1.snwp, 'b-o', where='post',
-                label="No trapping, no residual")
+                 label="No trapping, no residual")
         plt.step(np.log10(drn2.pc), drn2.snwp, 'r--o', where='post',
-                label="With trapping, no residual")
+                 label="With trapping, no residual")
         plt.step(np.log10(drn3.pc), drn3.snwp, 'g--o', where='post',
-                label="No trapping, with residual")
+                 label="No trapping, with residual")
         plt.step(np.log10(drn4.pc), drn4.snwp, 'm--o', where='post',
-                label="With trapping, with residual")
+                 label="With trapping, with residual")
         plt.legend()
