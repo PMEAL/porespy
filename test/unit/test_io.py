@@ -49,8 +49,18 @@ class ExportTest():
 
     def test_openpnm_to_im(self):
         net = op.network.Cubic(shape=[5, 5, 5])
-        geom = op.geometry.StickAndBall(network=net,
-                                        pores=net.Ps, throats=net.Ts)
+        spacing = op.topotools.get_spacing(net)
+        shape = op.topotools.get_shape(net)
+        # FIXME: get rid of try/except once openpnm v3 is out
+        try:
+            geom = op.geometry.SpheresAndCylinders(network=net,
+                                                   pores=net.Ps,
+                                                   throats=net.Ts)
+        except AttributeError:
+            geom = op.geometry.StickAndBall(network=net,
+                                            pores=net.Ps,
+                                            throats=net.Ts)
+
         geom.add_model(propname="pore.volume",
                        model=op.models.geometry.pore_volume.cube)
         geom.add_model(propname="throat.volume",
@@ -62,7 +72,7 @@ class ExportTest():
         porosity_actual = im.astype(bool).sum() / np.prod(im.shape)
 
         volume_void = net["pore.volume"].sum() + net["throat.volume"].sum()
-        volume_total = np.prod(net.spacing * net.shape)
+        volume_total = np.prod(spacing * shape)
         porosity_desired = volume_void / volume_total
 
         assert_allclose(actual=porosity_actual, desired=porosity_desired, rtol=0.1)

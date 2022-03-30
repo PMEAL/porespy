@@ -45,6 +45,7 @@ from ._imgen import line_segment
 from ._imgen import overlapping_spheres
 from ._imgen import polydisperse_spheres
 from ._imgen import RSA
+from ._imgen import rsa
 from ._imgen import voronoi_edges
 from ._pseudo_packings import pseudo_gravity_packing
 from ._pseudo_packings import pseudo_electrostatic_packing

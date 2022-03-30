@@ -144,7 +144,8 @@ def porosity_profile(im, axis=0):
     Parameters
     ----------
     im : ndarray
-        The volumetric image for which to calculate the porosity profile
+        The volumetric image for which to calculate the porosity profile.  All
+        voxels with a value of 1 (or ``True``) are considered as void.
     axis : int
         The axis (0, 1, or 2) along which to calculate the profile.  For
         instance, if `axis` is 0, then the porosity in each YZ plane is
@@ -167,7 +168,7 @@ def porosity_profile(im, axis=0):
     im = np.atleast_3d(im)
     a = set(range(im.ndim)).difference(set([axis]))
     a1, a2 = a
-    prof = np.sum(np.sum(im, axis=a2), axis=a1) / (im.shape[a2] * im.shape[a1])
+    prof = np.sum(np.sum(im == 1, axis=a2), axis=a1) / (im.shape[a2] * im.shape[a1])
     return prof
 
 
@@ -679,7 +680,7 @@ def two_point_correlation(im):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/metrics/reference/two_point_correlation_fft.html>`_
+    <https://porespy.org/examples/metrics/reference/two_point_correlation.html>`_
     to view online example.
 
     """
@@ -786,93 +787,26 @@ def phase_fraction(im, normed=True):
         results[label] = np.sum(im == label) * (1 / im.size if normed else 1)
     return results
 
-
-def pc_curve_from_ibip(seq, sizes, im=None, sigma=0.072, theta=180,
-                       voxel_size=1, stepped=True):
+@deprecated("This function is deprecated, use pc_curve instead")
+def pc_curve_from_ibip(*args, **kwargs):
     r"""
-    Produces a Pc-Snwp curve from the output of ``ibip``
+    This function is deprecated.  Use ``pc_curve`` instead.  Note that the
+    ``stepped`` argument is no longer supported since this can be done
+    directly in matplotlib with ``plt.step(...)``.
 
-    Parameters
-    ----------
-    seq : ndarray
-        The image containing the invasion sequence values returned from the
-        ``ibip`` function.
-    sizes : ndarray
-        The image containing the invasion size values returned from ``ibip``
-    im : ndarray
-        The voxel image of the porous media.  It not provided then the void
-        space is assumed to be ``im = ~(seq == 0)``.
-    sigma : float
-        The surface tension of the fluid-fluid system of interest
-    theta : float
-        The contact angle measured through the invading phase in degrees
-    voxel_size : float
-        The voxel resolution of the image
-    stepped : boolean
-        If ``True`` (default) the returned data has steps between each point
-        instead of connecting points directly with sloped lines.
-
-    Returns
-    -------
-    pc_curve : Results object
-        A custom object with the following data added as named attributes:
-
-        ==================  ===================================================
-        Attribute           Description
-        ==================  ===================================================
-        pc                  The capillary pressure, either as given in
-                            ``pressures`` or computed from ``sizes`` (see
-                            Notes).
-        snwp                The fraction of void space filled by non-wetting
-                            phase at each pressure in ``pc``
-        ==================  ===================================================
-
-    Notes
-    -----
-    If ``stepped`` was set to ``True`` then the values include the corners
-    of the steps, which may be helpful for plotting.
-
-    """
-    if im is None:
-        im = ~(seq == 0)
-    seqs = np.unique(seq)[1:]
-    x = []
-    y = []
-    with tqdm(seqs, **settings.tqdm) as pbar:
-        for n in seqs:
-            pbar.update()
-            mask = seq == n
-            # The following assumes only one size found, which was confirmed
-            r = sizes[mask][0]*voxel_size
-            pc = -2*sigma*np.cos(np.deg2rad(theta))/r
-            x.append(pc)
-            snwp = ((seq <= n)*(seq > 0)*(im == 1)).sum()/im.sum()
-            y.append(snwp)
-    if stepped:
-        pc = x.copy()
-        snwp = y.copy()
-        for i in range(0, len(x)-1):
-            j = 2*i + 1
-            pc.insert(j, x[i+1])
-            snwp.insert(j, y[i])
-        x = pc
-        y = snwp
-    pc_curve = Results()
-    pc_curve.pc = x
-    pc_curve.snwp = y
-    return pc_curve
-
-
-@deprecated("This function is deprecated, use pc_curve_from_sizes instead")
-def pc_curve_from_mio(*args, **kwargs):
-    r"""
-    This function is deprecated.  Use ``pc_curve_from_sizes`` or
-    ``pc_curve_from_pressures`` instead.
     """
     return pc_curve(*args, **kwargs)
 
 
-def pc_curve(im, sizes=None, pressures=None,
+@deprecated("This function is deprecated, use pc_curve instead")
+def pc_curve_from_mio(*args, **kwargs):
+    r"""
+    This function is deprecated.  Use ``pc_curve`` instead.
+    """
+    return pc_curve(*args, **kwargs)
+
+
+def pc_curve(im, sizes=None, pc=None, seq=None,
              sigma=0.072, theta=180, voxel_size=1):
     r"""
     Produces a Pc-Snwp curve given a map of meniscus radii or capillary
@@ -886,22 +820,25 @@ def pc_curve(im, sizes=None, pressures=None,
     sizes : ndarray, optional
         An image containing the sphere radii at which each voxel was invaded
         during an invasion experiment.
-    pressures : ndarray, optional
+    pc : ndarray, optional
         An image containing the capillary pressures at which each voxel was
         invaded during an invasion experiment.
+    seq : ndarray, optional
+        An image containing invasion sequence values, such as that returned
+        from the ``ibip`` function.
     sigma : float, optional
         The surface tension of the fluid-fluid system of interest.
-        This argument is ignored if ``pressures`` are specified, otherwise it
+        This argument is ignored if ``pc`` are specified, otherwise it
         is used in the Washburn equation to convert ``sizes`` to capillary
-        pressures.
+        pc.
     theta : float
         The contact angle measured through the invading phase in degrees.
-        This argument is ignored if ``pressures`` are specified, otherwise it
+        This argument is ignored if ``pc`` are specified, otherwise it
         is used in the Washburn equation to convert ``sizes`` to capillary
         pressures.
     voxel_size : float
         The voxel resolution of the image.
-        This argument is ignored if ``pressures`` are specified, otherwise it
+        This argument is ignored if ``pc`` are specified, otherwise it
         is used in the Washburn equation to convert ``sizes`` to capillary
         pressures.
 
@@ -914,7 +851,7 @@ def pc_curve(im, sizes=None, pressures=None,
         Attribute           Description
         ==================  ===================================================
         pc                  The capillary pressure, either as given in
-                            ``pressures`` or computed from ``sizes`` (see
+                            ``pc`` or computed from ``sizes`` (see
                             Notes).
         snwp                The fraction of void space filled by non-wetting
                             phase at each pressure in ``pc``
@@ -928,13 +865,30 @@ def pc_curve(im, sizes=None, pressures=None,
     For more control over how capillary pressure model, it can be computed by
     hand, for example:
 
-        $$ p = \frac{-2*0.072*np.cos(np.deg2rad(180))}{sizes \cdot voxel_size} $$
+        $$ pc = \frac{-2*0.072*np.cos(np.deg2rad(180))}{sizes \cdot voxel_size} $$
 
-    then passed in as the ``pressures`` argument.
+    then passed in as the ``pc`` argument.
 
     """
     tqdm = get_tqdm()
-    if sizes is not None:
+    if seq is not None:
+        seqs = np.unique(seq)[1:]
+        x = []
+        y = []
+        with tqdm(seqs, **settings.tqdm) as pbar:
+            for n in seqs:
+                pbar.update()
+                mask = seq == n
+                # The following assumes only one size found, which was confirmed
+                r = sizes[mask][0]*voxel_size
+                pc = -2*sigma*np.cos(np.deg2rad(theta))/r
+                x.append(pc)
+                snwp = ((seq <= n)*(seq > 0)*(im == 1)).sum()/im.sum()
+                y.append(snwp)
+        pc_curve = Results()
+        pc_curve.pc = x
+        pc_curve.snwp = y
+    elif sizes is not None:
         if im is None:
             im = ~(sizes == 0)
         sz = np.unique(sizes)[:0:-1]
@@ -952,8 +906,8 @@ def pc_curve(im, sizes=None, pressures=None,
         pc_curve = Results()
         pc_curve.pc = x
         pc_curve.snwp = y
-    elif pressures is not None:
-        Ps = np.unique(pressures[im])
+    elif pc is not None:
+        Ps = np.unique(pc[im])
         # Utilize the fact that -inf and +inf will be at locations 0 & -1 in Ps
         if Ps[-1] == np.inf:
             Ps[-1] = Ps[-2]*2
@@ -964,7 +918,7 @@ def pc_curve(im, sizes=None, pressures=None,
             Ps = np.hstack((Ps[0] - np.abs(Ps[0]/2), Ps))
         y = []
         Vp = im.sum()
-        temp = pressures[im]
+        temp = pc[im]
         for p in tqdm(Ps, **settings.tqdm):
             y.append((temp <= p).sum()/Vp)
         pc_curve = Results()

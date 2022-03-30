@@ -38,11 +38,14 @@ def size_to_seq(size, im=None, bins=None):
     seq : ndarray
         An ndarray the same shape as ``size`` with invasion size values
         replaced by the invasion sequence.  This assumes that the invasion
-        process occurs via increasing pressure steps, such as produced by
+        process occurs via largest regions first, such as produced by
         the ``porosimetry`` function.
 
     """
-    solid = size == 0
+    if im is None:
+        solid = size == 0
+    else:
+        solid = im == 0
     if bins is None:
         bins = np.unique(size)
     elif isinstance(bins, int):
@@ -179,7 +182,7 @@ def pc_to_satn(pc, im):
     return satn
 
 
-def satn_to_seq(satn, im):
+def satn_to_seq(satn, im=None):
     r"""
     Converts an image of nonwetting phase saturations to invasion sequence
     values
@@ -201,6 +204,8 @@ def satn_to_seq(satn, im):
         uninvaded by -1.
 
     """
+    if im is None:
+        im = satn > 0
     values = np.unique(satn)
     seq = np.digitize(satn, bins=values)
     # Set uninvaded by to -1
