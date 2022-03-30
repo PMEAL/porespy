@@ -787,6 +787,7 @@ def phase_fraction(im, normed=True):
         results[label] = np.sum(im == label) * (1 / im.size if normed else 1)
     return results
 
+
 @deprecated("This function is deprecated, use pc_curve instead")
 def pc_curve_from_ibip(*args, **kwargs):
     r"""

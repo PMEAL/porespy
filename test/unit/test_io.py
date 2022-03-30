@@ -49,8 +49,12 @@ class ExportTest():
 
     def test_openpnm_to_im(self):
         net = op.network.Cubic(shape=[5, 5, 5])
-        spacing = op.topotools.get_spacing(net)
-        shape = op.topotools.get_shape(net)
+        try:
+            spacing = op.topotools.get_spacing(net)
+            shape = op.topotools.get_shape(net)
+        except AttributeError:
+            spacing = net.spacing
+            shape = net.shape
         # FIXME: get rid of try/except once openpnm v3 is out
         try:
             geom = op.geometry.SpheresAndCylinders(network=net,
