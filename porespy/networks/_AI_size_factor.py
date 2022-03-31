@@ -54,6 +54,9 @@ def AI_size_factor(regions, throat_conns=None, voxel_size=1, model_dir=None,
         in the segmented image (im).
 
     '''
+    if g_train is None:
+        raise ValueError("Training ground truth data must be given\
+                         to be used for normalizing the test data")
     if model_dir is not None:
         model = load_model(model_dir)
     if build_model:
