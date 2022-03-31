@@ -19,7 +19,7 @@ tqdm = get_tqdm()
 
 
 def AI_size_factor(regions, throat_conns=None, voxel_size=1, model_dir=None,
-                   weight_dir=None, build_model=False, tensor_wise=False):
+                   weight_dir=None, g_train=None, build_model=False, tensor_wise=False):
     '''
     Parameters
     ----------
@@ -54,17 +54,9 @@ def AI_size_factor(regions, throat_conns=None, voxel_size=1, model_dir=None,
         in the segmented image (im).
 
     '''
-    path = os.getcwd()+'/'
-    f_in = h5py.File(path+'g_train_original.hdf5', 'r')
-    g_train = f_in['g_train'][()]
     if model_dir is not None:
         model = load_model(model_dir)
-    if (model_dir is None) and (build_model is False):
-        model_dir = path+'saved_model.h5'
-        model = load_model(model_dir)
     if build_model:
-        if weight_dir is None:
-            weight_dir = path+'model_weights.h5'
         model = _create_model()
         model.load_weights(weight_dir)
     if throat_conns is None:
