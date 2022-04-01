@@ -295,6 +295,7 @@ class ToolsTest():
         assert np.all(np.unique(im) == [0, 2, 3])
 
     condition = sys.platform.startswith("linux") and sys.version_info == (3, 8)
+
     @pytest.mark.skipif(condition, reason="scikit-fmm clashes with numpy")
     def test_marching_map(self):
         im = ps.generators.lattice_spheres(shape=[101, 101],
