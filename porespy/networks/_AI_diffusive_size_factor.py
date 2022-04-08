@@ -1,69 +1,58 @@
 import os
+import sys
 import numpy as np
 import scipy.ndimage as spim
-from skimage.morphology import ball
-from porespy.tools import get_tqdm
-import tensorflow as tf
-from tensorflow.keras.models import Model, load_model
-from scipy.ndimage import zoom as zm
-from porespy.tools import extend_slice
-import sys
-import copy
-from sklearn import preprocessing
 import h5py
-from tensorflow.keras import layers as ly
-from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.initializers import glorot_uniform
 import math
+from porespy.tools import extend_slice
+from scipy.ndimage import zoom as zm
+from skimage.morphology import ball
+from sklearn import preprocessing
+from porespy.tools import get_tqdm
+from loguru import logger
 tqdm = get_tqdm()
+try:
+    import tensorflow as tf
+except ModuleNotFoundError:
+    raise ModuleNotFoundError('Tensorflow must be installed to use this module. Install tensorflow'
+                               +'using pip install tensorflow')
+try:
+    from tensorflow.keras.models import Model, load_model
+    from tensorflow.keras import layers as ly
+    from tensorflow.keras.optimizers import Adam
+    from tensorflow.keras.initializers import glorot_uniform
+except ModuleNotFoundError:
+    raise ModuleNotFoundError('Tensorflow must be installed to use this module. Install tensorflow'
+                               +'using pip install tensorflow')
 
 
-def AI_size_factor(regions, throat_conns=None, voxel_size=1, model_dir=None,
-                   weight_dir=None, g_train=None, build_model=False, tensor_wise=False):
+def AI_diffusive_size_factor(regions, throat_conns, model,
+                             g_train, voxel_size=1):
     '''
     Parameters
     ----------
     regions : ndarray
         A segmented 3D image of pore regions/a pair of two regions.
-    throat_conns : array, optional
-        An Nt by 2 array containing the throat connections. The default is None.
-        If the user does not pass any conns, the algorithm finds the throats
-        connections using a function.
+    throat_conns : array
+        An Nt by 2 array containing the throat connections. The indices orders in
+        throat_conns start from 0 to be consistent with network extraction method.
+    model : tensorflow model
+        The trained model to be used for prediction.
+    g_train : array
+        The training data distribution. This will be used for denormalizing the prediction.
     voxel_size : scalar, optional
         Voxel size of the image. The default is 1.
-    model_dir : string, optional
-        The directory path of the saved AI model.
-
-    weight_dir : string, optional
-        The directory path of the saved AI model's weights only.
-    build_model : boolean, optional
-        A boolean variable to whether use the existing AI model or build the AI model
-        and load user-defined/existing weights. The default is False.
-        If True, a Resnet50 model will be built and model_weights will be loaded to
-        the built model.
-    tensor_wise : boolean, optional
-        A boolean variable to whether assign all pair of conduits in the segmented
-        image to a tensor and predict the values using AI model or predict the
-        values for each pair separately. The default is False. If True, the tensor
-        prediction will be faster in contrast to predicting each pair in a for loop.
 
     Returns
     -------
     diff_size_factor : array
         An array of length conns containing diffusive size factor of the conduits
-        in the segmented image (im).
+        in the segmented image (regions).
 
     '''
     if g_train is None:
         raise ValueError("Training ground truth data must be given\
                          to be used for normalizing the test data")
-    if model_dir is not None:
-        model = load_model(model_dir)
-    if build_model:
-        model = _create_model()
-        model.load_weights(weight_dir)
-    if throat_conns is None:
-        throat_conns = _find_conns(regions)
     its = -1
     pairs = np.empty((len(throat_conns), 64, 64, 64), dtype='int32')
     diff_size_factor = []
@@ -71,35 +60,27 @@ def AI_size_factor(regions, throat_conns=None, voxel_size=1, model_dir=None,
     for cn in throat_conns:
         # crop two pore regions and label them as 1,2
         bb = _calc_bound_box_bi(regions, cn[0], cn[1])
-        roi_crop = copy.copy(regions[bb[0]:bb[3], bb[1]:bb[4], bb[2]:bb[5]])
+        roi_crop = np.copy(regions[bb[0]:bb[3], bb[1]:bb[4], bb[2]:bb[5]])
         # label two pore regions as 1,2
         roi_masked = _create_labeled_pair(cn, roi_crop)
         # resize to AI input size
         resize_result = _resize_to_AI_input(roi_masked)
         roi_resized = resize_result['resized_im']
         zm_ratio = resize_result['zm_ratio']
-        if tensor_wise:
-            zm_ratios.append(zm_ratio)
-            its = its+1
-            pairs[its, :, :, :] = roi_resized.copy()
-        else:
-            test_data = _convert_to_tf_image_datatype(roi_resized, n_image=1)
-            prediction = model.predict(test_data, steps=1)
-            denorm_size_factor = _denorm_predict(prediction, g_train)
-            g = denorm_size_factor * voxel_size * (1/zm_ratio)
-            diff_size_factor.append(g)
-    if tensor_wise:
-        test_data = _convert_to_tf_image_datatype(pairs, n_image=len(throat_conns))
-        if len(throat_conns) < 16:
-            batch_size = 1
-        else:
-            batch_size = 16
-        test_steps = math.ceil(len(throat_conns) / batch_size)
-        predictions = model.predict(test_data, steps=test_steps)
-        predictions = np.squeeze(predictions)
-        denorm_size_factor = _denorm_predict(predictions, g_train)
-        g = denorm_size_factor * voxel_size * (1/np.array(zm_ratios))
-        diff_size_factor = g
+        zm_ratios.append(zm_ratio)
+        its = its+1
+        pairs[its, :, :, :] = roi_resized.copy()
+    test_data = _convert_to_tf_image_datatype(pairs, n_image=len(throat_conns))
+    if len(throat_conns) < 16:
+        batch_size = 1
+    else:
+        batch_size = 16
+    test_steps = math.ceil(len(throat_conns) / batch_size)
+    predictions = model.predict(test_data, steps=test_steps)
+    predictions = np.squeeze(predictions)
+    denorm_size_factor = _denorm_predict(predictions, g_train)
+    g = denorm_size_factor * voxel_size * (1/np.array(zm_ratios))
+    diff_size_factor = g
     if len(throat_conns) > 1:
         tf.keras.backend.clear_session()
     return diff_size_factor
@@ -172,7 +153,7 @@ def _resize_to_AI_input(im):
     return result
 
 
-def _find_conns(im):
+def find_conns(im):
     '''
     Parameters
     ----------
@@ -411,7 +392,7 @@ def _resnet3d(input_shape=(64, 64, 64, 1)):
     return model
 
 
-def _create_model():
+def create_model():
     '''
     Returns
     -------
