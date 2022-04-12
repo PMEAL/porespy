@@ -5,9 +5,14 @@ from porespy import settings
 from porespy.tools import extend_slice
 from scipy.ndimage import zoom as zm
 from skimage.morphology import ball
-from sklearn import preprocessing
 from porespy.tools import get_tqdm
 tqdm = get_tqdm()
+try:
+    from sklearn import preprocessing
+except ModuleNotFoundError:
+    raise ModuleNotFoundError('Scikit-learn must be installed to use this module. Install sklearn'
+                              + 'using pip install scikit-learn')
+
 try:
     import tensorflow as tf
 except ModuleNotFoundError:
