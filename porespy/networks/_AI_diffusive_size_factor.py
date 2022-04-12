@@ -1,29 +1,26 @@
-import os
-import sys
 import numpy as np
 import scipy.ndimage as spim
-import h5py
 import math
+from porespy import settings
 from porespy.tools import extend_slice
 from scipy.ndimage import zoom as zm
 from skimage.morphology import ball
 from sklearn import preprocessing
 from porespy.tools import get_tqdm
-from loguru import logger
 tqdm = get_tqdm()
 try:
     import tensorflow as tf
 except ModuleNotFoundError:
     raise ModuleNotFoundError('Tensorflow must be installed to use this module. Install tensorflow'
-                               +'using pip install tensorflow')
+                              + 'using pip install tensorflow')
 try:
-    from tensorflow.keras.models import Model, load_model
+    from tensorflow.keras.models import Model
     from tensorflow.keras import layers as ly
     from tensorflow.keras.optimizers import Adam
     from tensorflow.keras.initializers import glorot_uniform
 except ModuleNotFoundError:
     raise ModuleNotFoundError('Tensorflow must be installed to use this module. Install tensorflow'
-                               +'using pip install tensorflow')
+                              + 'using pip install tensorflow')
 
 
 def AI_diffusive_size_factor(regions, throat_conns, model,
@@ -57,7 +54,9 @@ def AI_diffusive_size_factor(regions, throat_conns, model,
     pairs = np.empty((len(throat_conns), 64, 64, 64), dtype='int32')
     diff_size_factor = []
     zm_ratios = []
-    for cn in throat_conns:
+    desc = 'Preparing images tensor'
+    for i in tqdm(np.arange(len(throat_conns)), desc=desc, **settings.tqdm):
+        cn = throat_conns[i]
         # crop two pore regions and label them as 1,2
         bb = _calc_bound_box_bi(regions, cn[0], cn[1])
         roi_crop = np.copy(regions[bb[0]:bb[3], bb[1]:bb[4], bb[2]:bb[5]])
@@ -170,7 +169,8 @@ def find_conns(im):
     slices = spim.find_objects(im)
     Ps = np.arange(1, np.amax(im)+1)
     t_conns = []
-    for i in tqdm(Ps, file=sys.stdout):
+    d = 'Finding neighbouring regions'
+    for i in tqdm(Ps, desc=d, **settings.tqdm):
         pore = i - 1
         if slices[pore] is None:
             continue
