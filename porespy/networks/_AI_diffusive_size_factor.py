@@ -22,7 +22,8 @@ def AI_diffusive_size_factor(regions, throat_conns, model,
     model : tensorflow model
         The trained model to be used for prediction.
     g_train : array
-        The training data distribution. This will be used for denormalizing the prediction.
+        The training data distribution. This will be used for denormalizing
+        the prediction.
     voxel_size : scalar, optional
         Voxel size of the image. The default is 1.
 
@@ -109,16 +110,17 @@ def _resize_to_AI_input(im):
     Parameters
     ----------
     im : ndarray
-        3D image of a pair of pore to pore regions (conduit) cropped from segmented image of 
-        a porous medium.
+        3D image of a pair of pore to pore regions (conduit) cropped from
+        segmented image of a porous medium.
 
     Returns
     -------
     result : dict
-        Contains Resized image of the cropped regions and its zoom ratio. If original image(im)
-        is of shape (n,n,n) resizing includes one step of zoom to a (64,64,64) image. Otherwise,
-        the original image will be first zero padded to its maximum dimension (nmax,nmax,nmax) before
-        zoom step.
+        Contains Resized image of the cropped regions and its zoom ratio.
+        If original image(im) is of shape (n,n,n) resizing includes one step
+        of zoom to a (64,64,64) image. Otherwise, the original image
+        will be first zero padded to its maximum dimension (nmax,nmax,nmax)
+        before zoom step.
 
     '''
     if len(np.unique(im.shape)) != 1:
