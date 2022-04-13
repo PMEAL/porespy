@@ -7,25 +7,6 @@ from scipy.ndimage import zoom as zm
 from skimage.morphology import ball
 from porespy.tools import get_tqdm
 tqdm = get_tqdm()
-try:
-    from sklearn import preprocessing
-except ModuleNotFoundError:
-    raise ModuleNotFoundError('Scikit-learn must be installed to use this module. Install sklearn'
-                              + 'using pip install scikit-learn')
-
-try:
-    import tensorflow as tf
-except ModuleNotFoundError:
-    raise ModuleNotFoundError('Tensorflow must be installed to use this module. Install tensorflow'
-                              + 'using pip install tensorflow')
-try:
-    from tensorflow.keras.models import Model
-    from tensorflow.keras import layers as ly
-    from tensorflow.keras.optimizers import Adam
-    from tensorflow.keras.initializers import glorot_uniform
-except ModuleNotFoundError:
-    raise ModuleNotFoundError('Tensorflow must be installed to use this module. Install tensorflow'
-                              + 'using pip install tensorflow')
 
 
 def AI_diffusive_size_factor(regions, throat_conns, model,
@@ -52,6 +33,7 @@ def AI_diffusive_size_factor(regions, throat_conns, model,
         in the segmented image (regions).
 
     '''
+    import tensorflow as tf
     if g_train is None:
         raise ValueError("Training ground truth data must be given\
                          to be used for normalizing the test data")
@@ -235,6 +217,7 @@ def _convert_to_tf_image_datatype(pair, n_image):
         of conduit images.
 
     '''
+    import tensorflow as tf
     # create a tensor of size (n_image, pair_shape)
     data_ims = np.zeros(shape=(n_image, 64, 64, 64, 1))
     data = np.expand_dims(pair, axis=-1)
@@ -273,6 +256,7 @@ def _denorm_predict(prediction, g_train):
         Denormalized predicted diffusive size factor for conduit images.
 
     '''
+    from sklearn import preprocessing
     scaler = preprocessing.MinMaxScaler(feature_range=(0, 1))
     train_N = scaler.fit_transform(g_train.reshape(-1, 1))
     denorm = scaler.inverse_transform(X=prediction.reshape(-1, 1))
@@ -281,6 +265,8 @@ def _denorm_predict(prediction, g_train):
 
 
 def _id_block(x, filters, kernel_size):
+    from tensorflow.keras import layers as ly
+    from tensorflow.keras.initializers import glorot_uniform
     f1, f2, f3 = filters
     k = kernel_size
     x_orig = x
@@ -309,6 +295,8 @@ def _id_block(x, filters, kernel_size):
 
 
 def _conv_block(x, filters, kernel_size, stride):
+    from tensorflow.keras import layers as ly
+    from tensorflow.keras.initializers import glorot_uniform
     f1, f2, f3 = filters
     k = kernel_size
     s = stride
@@ -343,6 +331,9 @@ def _conv_block(x, filters, kernel_size, stride):
 
 
 def _resnet3d(input_shape=(64, 64, 64, 1)):
+    from tensorflow.keras import layers as ly
+    from tensorflow.keras.initializers import glorot_uniform
+    from tensorflow.keras.models import Model
     x_in = ly.Input(shape=input_shape)
 
     x = ly.ZeroPadding3D(padding=(3, 3, 3))(x_in)
@@ -405,6 +396,7 @@ def create_model():
         Resnet50 model built using convolutional and identity blocks.
 
     '''
+    from tensorflow.keras.optimizers import Adam
     model = _resnet3d()
     model.compile(loss='mse', optimizer=Adam(lr=1e-4), metrics=['mse'])
     return model
