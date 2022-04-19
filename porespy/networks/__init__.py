@@ -21,6 +21,7 @@ Contains functions for analysing images as pore networks.
     networks.maximal_ball_wrapper
     networks.regions_to_network
     networks.snow2
+    networks.AI_size_factor
 
 """
 
@@ -34,3 +35,6 @@ from ._getnet import regions_to_network
 from ._snow2 import snow2
 from ._utils import _net_dict
 from ._snow2 import _parse_pad_width
+from ._AI_diffusive_size_factor import AI_diffusive_size_factor
+from ._AI_diffusive_size_factor import create_model
+from ._AI_diffusive_size_factor import find_conns
