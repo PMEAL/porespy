@@ -334,7 +334,7 @@ def lineal_path_distribution(im, bins=10, voxel_size=1, log=False):
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/metrics/reference/linear_density.html>`_
+    <https://porespy.org/examples/metrics/reference/linearl_path_distribution.html>`_
     to view online example.
 
     """
@@ -870,6 +870,12 @@ def pc_curve(im, sizes=None, pc=None, seq=None,
 
     then passed in as the ``pc`` argument.
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/metrics/reference/pc_curve.html>`_
+    to view online example.
+
     """
     tqdm = get_tqdm()
     if seq is not None:
@@ -970,6 +976,12 @@ def satn_profile(satn, s, axis=0, span=10, mode='tile'):
                       values are computed.  The units are in voxels.
         saturation    The local saturation value at each position.
         ============= =========================================================
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/metrics/reference/satn_profile.html>`_
+    to view online example.
     """
     # @numba.njit()
     def func(satn, s, axis, span, mode):
@@ -1042,6 +1054,12 @@ def find_h(saturation, position=None, srange=[0.01, 0.99]):
     -----
     The ``satn_profile`` function can be used to obtain the ``saturation``
     and ``position`` from an image.
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/metrics/reference/find_h.html>`_
+    to view online example.
 
     """
     r = Results()

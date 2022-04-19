@@ -53,11 +53,6 @@ html_theme_options = {
             "icon": "fab fa-github-square",
         },
         {
-            "name": "Substack",
-            "url": "https://porespy.substack.com/",
-            "icon": "fas fa-envelope-square",
-        },
-        {
             "name": "Twitter",
             "url": "https://twitter.com/porespy",
             "icon": "fab fa-twitter-square",

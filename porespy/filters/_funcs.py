@@ -304,8 +304,9 @@ def fill_blind_pores(im, conn=None, surface=False):
         and diagonal neighbors. The default is the maximum option.
     surface : bool
         If ``True``, any isolated pore regions that are connected to the
-        sufaces of the image are also removed. When this is enabled, only
-        the voxels belonging to the largest region are kept. This can be
+        sufaces of the image are but not connected to the main percolating
+        path are also removed. When this is enabled, only the voxels
+        belonging to the largest region are kept. This can be
         problematic if image contains non-intersecting tube-like structures,
         for instance, since only the largest tube will be preserved.
 
@@ -341,11 +342,11 @@ def trim_floating_solid(im, conn=None, surface=False):
         and diagonal neighbors. The default is the maximum option.
     surface : bool
         If ``True``, any isolated solid regions that are connected to the
-        surfaces of the image are also removed.  When this is enabled,
-        only the voxels belonging to the largest region are kept. This can
-        be problematic if the image contains non-intersecting tube-like
-        structures, for instance, since only the largest tube will be
-        preserved.
+        surfaces of the image but not the main body of the solid are also
+        removed.  When this is enabled, only the voxels belonging to the
+        largest region are kept. This can be problematic if the image
+        contains non-intersecting tube-like structures, for instance,
+        since only the largest tube will be preserved.
 
     Returns
     -------
@@ -1194,6 +1195,12 @@ def nphase_border(im, include_diagonals=False):
     image : ndarray
         A copy of ``im`` with voxel values equal to the number of uniquely
         different bordering values
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/filters/reference/nphase_border.html>`_
+    to view online example.
 
     """
     _check_for_singleton_axes(im)

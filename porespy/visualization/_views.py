@@ -36,6 +36,12 @@ def show_3D(im):  # pragma: no cover
     with no interpolation to view the 3D image from an angle, then casts the
     result into a 2D projection.
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/visualization/reference/show_3D.html>`_
+    to view online example.
+
     """
     im = ~np.copy(im)
     if im.ndim < 3:
@@ -68,6 +74,12 @@ def show_planes(im, spacing=10):  # pragma: no cover
     image : ndarray
         A 2D array containing the views.  This single image can be viewed using
         ``matplotlib.pyplot.imshow``.
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/visualization/reference/show_planes.html>`_
+    to view online example.
 
     """
     s = spacing
@@ -119,6 +131,12 @@ def sem(im, axis=0):  # pragma: no cover
         A 2D greyscale image suitable for use in matplotlib's ``imshow``
         function.
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/visualization/reference/sem.html>`_
+    to view online example.
+
     """
     im = np.array(~im, dtype=int)
     if axis == 1:
@@ -153,6 +171,12 @@ def xray(im, axis=0):  # pragma: no cover
     image : ndarray
         A 2D greyscale image suitable for use in matplotlib\'s ```imshow```
         function.
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/visualization/reference/sem.html>`_
+    to view online example.
     """
     im = np.array(~im, dtype=int)
     if axis == 1:

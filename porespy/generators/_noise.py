@@ -72,6 +72,12 @@ def fractal_noise(shape, frequency=0.05, octaves=4, gain=0.5, mode='simplex',
     For more information on ``cubic noise`` see
     `here <https://github.com/jobtalle/CubicNoise>`__.
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/generators/reference/fractal_noise.html>`_
+    to view online example.
+
     """
     try:
         from pyfastnoisesimd import Noise, NoiseType, PerturbType

@@ -24,6 +24,12 @@ def cylindrical_plug(shape, r=None, axis=2):
         A boolean image of the size given by ``shape`` with ``True``'s
         inside the cylinder and ``False``'s outside.
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/generators/reference/cylindrical_plug.html>`_
+    to view online example.
+
     """
     shape = np.array(shape, dtype=int)
     axes = np.array(list(set([0, 1, 2]).difference(set([axis]))), dtype=int)

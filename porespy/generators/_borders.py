@@ -31,6 +31,12 @@ def faces(shape, inlet=None, outlet=None):
         A boolean image of the given ``shape`` with ``True`` values on the
         specified ``inlet`` and/or ``outlet`` face(s).
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/generators/reference/faces.html>`_
+    to view online example.
+
     """
     im = np.zeros(shape, dtype=bool)
     # Parse inlet and outlet
@@ -74,17 +80,9 @@ def borders(shape, thickness=1, mode='edges'):
 
     Examples
     --------
-    >>> import porespy as ps
-    >>> mask = ps.tools.get_border(shape=[3, 3], mode='corners')
-    >>> print(mask)
-    [[ True False  True]
-     [False False False]
-     [ True False  True]]
-    >>> mask = ps.tools.get_border(shape=[3, 3], mode='faces')
-    >>> print(mask)
-    [[ True  True  True]
-     [ True False  True]
-     [ True  True  True]]
+    `Click here
+    <https://porespy.org/examples/generators/reference/borders.html>`_
+    to view online example.
 
     """
     ndims = len(shape)

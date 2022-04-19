@@ -34,6 +34,12 @@ def dict_to_vtk(data, filename, voxel_size=1, origin=(0, 0, 0)):
     -----
     Outputs a vtk, vtp or vti file that can opened in ParaView
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/io/reference/dict_to_vtk.html>`_
+    to view online example.
+
     """
     vs = voxel_size
     for entry in data:
@@ -71,6 +77,12 @@ def to_vtk(im, filename, divide=False, downsample=False, voxel_size=1, vox=False
     Notes
     -----
     Outputs a vtk, vtp or vti file that can opened in paraview
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/io/reference/to_vtk.html>`_
+    to view online example.
 
     """
     if len(im.shape) == 2:
@@ -124,6 +136,12 @@ def to_palabos(im, filename, solid=0):
     File produced contains 3 values: 2 = Solid, 1 = Interface, 0 = Pore
     Palabos will run the simulation applying the specified pressure drop from
     x = 0 to x = -1.
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/io/reference/to_palabos.html>`_
+    to view online example.
 
     """
     # Create binary image for fluid and solid phases
@@ -218,6 +236,12 @@ def to_stl(im, filename, divide=False, downsample=False, voxel_size=1, vox=False
     -----
     Outputs an STL file that can opened in Paraview
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/io/reference/to_stl.html>`_
+    to view online example.
+
     """
     filename = sanitize_filename(filename, ext="stl", exclude_ext=True)
     if len(im.shape) == 2:
@@ -283,6 +307,12 @@ def to_paraview(im, filename, phase=2):
     Notes
     -----
     Outputs an pvsm file that can opened in Paraview.
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/io/reference/to_paraview.html>`_
+    to view online example.
 
     """
     try:
@@ -426,6 +456,12 @@ def open_paraview(filename=None, im=None, **kwargs):
         sent to ``to_paraview`` and a state file is created with a random name.
         Any additional keyword arguments are sent to ``to_paraview``.
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/io/reference/open_paraview.html>`_
+    to view online example.
+
     """
     if filename is None:
         from datetime import datetime
@@ -469,6 +505,12 @@ def spheres_to_comsol(filename, im=None, centers=None, radii=None):
     centers so it may not perfectly represent the spheres in the original
     image. This is especially true for overlapping sphere and spheres extending
     beyond the edge of the image.
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/io/reference/spheres_to_comsol.html>`_
+    to view online example.
 
     """
     from ._comsol import _save_to_comsol
