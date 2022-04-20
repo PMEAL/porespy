@@ -116,10 +116,6 @@
             <label class="sr-only">GitHub</label></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="https://porespy.substack.com/" rel="noopener" target="_blank" title="Substack"><span><i class="fas fa-envelope-square"></i></span>
-            <label class="sr-only">Substack</label></a>
-        </li>
-        <li class="nav-item">
           <a class="nav-link" href="https://twitter.com/porespy" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
             <label class="sr-only">Twitter</label></a>
         </li>
@@ -474,8 +470,9 @@
 <span class="sd">        and diagonal neighbors. The default is the maximum option.</span>
 <span class="sd">    surface : bool</span>
 <span class="sd">        If ``True``, any isolated pore regions that are connected to the</span>
-<span class="sd">        sufaces of the image are also removed. When this is enabled, only</span>
-<span class="sd">        the voxels belonging to the largest region are kept. This can be</span>
+<span class="sd">        sufaces of the image are but not connected to the main percolating</span>
+<span class="sd">        path are also removed. When this is enabled, only the voxels</span>
+<span class="sd">        belonging to the largest region are kept. This can be</span>
 <span class="sd">        problematic if image contains non-intersecting tube-like structures,</span>
 <span class="sd">        for instance, since only the largest tube will be preserved.</span>
 
@@ -511,11 +508,11 @@
 <span class="sd">        and diagonal neighbors. The default is the maximum option.</span>
 <span class="sd">    surface : bool</span>
 <span class="sd">        If ``True``, any isolated solid regions that are connected to the</span>
-<span class="sd">        surfaces of the image are also removed.  When this is enabled,</span>
-<span class="sd">        only the voxels belonging to the largest region are kept. This can</span>
-<span class="sd">        be problematic if the image contains non-intersecting tube-like</span>
-<span class="sd">        structures, for instance, since only the largest tube will be</span>
-<span class="sd">        preserved.</span>
+<span class="sd">        surfaces of the image but not the main body of the solid are also</span>
+<span class="sd">        removed.  When this is enabled, only the voxels belonging to the</span>
+<span class="sd">        largest region are kept. This can be problematic if the image</span>
+<span class="sd">        contains non-intersecting tube-like structures, for instance,</span>
+<span class="sd">        since only the largest tube will be preserved.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -1364,6 +1361,12 @@
 <span class="sd">    image : ndarray</span>
 <span class="sd">        A copy of ``im`` with voxel values equal to the number of uniquely</span>
 <span class="sd">        different bordering values</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here</span>
+<span class="sd">    &lt;https://porespy.org/examples/filters/reference/nphase_border.html&gt;`_</span>
+<span class="sd">    to view online example.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_check_for_singleton_axes</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>

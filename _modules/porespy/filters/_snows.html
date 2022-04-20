@@ -116,10 +116,6 @@
             <label class="sr-only">GitHub</label></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="https://porespy.substack.com/" rel="noopener" target="_blank" title="Substack"><span><i class="fas fa-envelope-square"></i></span>
-            <label class="sr-only">Substack</label></a>
-        </li>
-        <li class="nav-item">
           <a class="nav-link" href="https://twitter.com/porespy" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
             <label class="sr-only">Twitter</label></a>
         </li>
@@ -250,6 +246,12 @@
 <span class="sd">    algorithm using marker-based watershed segmenation&quot;.  Physical Review</span>
 <span class="sd">    E. (2017)</span>
 
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here</span>
+<span class="sd">    &lt;https://porespy.org/examples/filters/reference/snow_partitioning.html&gt;`_</span>
+<span class="sd">    to view online example.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="s2">&quot;Beginning SNOW algorithm&quot;</span><span class="p">)</span>
     <span class="n">im_shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
@@ -355,6 +357,12 @@
 <span class="sd">    applies the watershed to each of the distance transforms separately,</span>
 <span class="sd">    then merges the segmented regions back into a single image.</span>
 
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here</span>
+<span class="sd">    &lt;https://porespy.org/examples/filters/reference/snow_partitioning_n.html&gt;`_</span>
+<span class="sd">    to view online example.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Perform snow on each phase and merge all segmentation and dt together</span>
     <span class="n">phases_num</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">im</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
@@ -433,6 +441,12 @@
 <span class="sd">    which is significantly faster than using a circular or spherical</span>
 <span class="sd">    element.</span>
 
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here</span>
+<span class="sd">    &lt;https://porespy.org/examples/filters/reference/find_peaks.html&gt;`_</span>
+<span class="sd">    to view online example.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">im</span> <span class="o">=</span> <span class="n">dt</span> <span class="o">&gt;</span> <span class="mi">0</span>
     <span class="n">_check_for_singleton_axes</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
@@ -483,6 +497,12 @@
 <span class="sd">    voxel, so if the group has an odd shape (like a horse shoe), the new</span>
 <span class="sd">    voxel may *not* lie on top of the original set.</span>
 
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here</span>
+<span class="sd">    &lt;https://porespy.org/examples/filters/reference/reduce_peaks.html&gt;`_</span>
+<span class="sd">    to view online example.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">peaks</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
         <span class="n">strel</span> <span class="o">=</span> <span class="n">square</span>
@@ -526,6 +546,12 @@
 <span class="sd">    ----------</span>
 <span class="sd">    [1] Gostick, J. &quot;A versatile and efficient network extraction algorithm</span>
 <span class="sd">    using marker-based watershed segmentation&quot;.  Physical Review E. (2017)</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here</span>
+<span class="sd">    &lt;https://porespy.org/examples/filters/reference/trim_saddle_points.html&gt;`_</span>
+<span class="sd">    to view online example.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">new_peaks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">peaks</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
@@ -595,6 +621,12 @@
 <span class="sd">    ----------</span>
 <span class="sd">    [1] Gostick, J. &quot;A versatile and efficient network extraction algorithm</span>
 <span class="sd">    using marker-based watershed segmenation&quot;.  Physical Review E. (2017)</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here</span>
+<span class="sd">    &lt;https://porespy.org/examples/filters/reference/trim_saddle_points_legacy.html&gt;`_</span>
+<span class="sd">    to view online example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">new_peaks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">peaks</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">dt</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
@@ -671,6 +703,12 @@
 <span class="sd">    [1] Gostick, J. &quot;A versatile and efficient network extraction</span>
 <span class="sd">    algorithm using marker-based watershed segmenation&quot;. Physical Review</span>
 <span class="sd">    E. (2017)</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here</span>
+<span class="sd">    &lt;https://porespy.org/examples/filters/reference/trim_nearby_peaks.html&gt;`_</span>
+<span class="sd">    to view online example.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">dt</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
@@ -763,6 +801,12 @@
 <span class="sd">        Partitioned image of segmentated regions with unique labels. Each</span>
 <span class="sd">        region correspond to pore body while intersection with other</span>
 <span class="sd">        region correspond throat area.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here</span>
+<span class="sd">    &lt;https://porespy.org/examples/filters/reference/snow_partitioning_parallel.html&gt;`_</span>
+<span class="sd">    to view online example.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Adjust image shape according to specified dimension</span>

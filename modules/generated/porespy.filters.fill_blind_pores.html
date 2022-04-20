@@ -119,10 +119,6 @@
             <label class="sr-only">GitHub</label></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="https://porespy.substack.com/" rel="noopener" target="_blank" title="Substack"><span><i class="fas fa-envelope-square"></i></span>
-            <label class="sr-only">Substack</label></a>
-        </li>
-        <li class="nav-item">
           <a class="nav-link" href="https://twitter.com/porespy" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
             <label class="sr-only">Twitter</label></a>
         </li>
@@ -999,8 +995,9 @@
 while for the 3D the options are 6 and 26, similarily for square
 and diagonal neighbors. The default is the maximum option.</p></li>
 <li><p><strong>surface</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, any isolated pore regions that are connected to the
-sufaces of the image are also removed. When this is enabled, only
-the voxels belonging to the largest region are kept. This can be
+sufaces of the image are but not connected to the main percolating
+path are also removed. When this is enabled, only the voxels
+belonging to the largest region are kept. This can be
 problematic if image contains non-intersecting tube-like structures,
 for instance, since only the largest tube will be preserved.</p></li>
 </ul>

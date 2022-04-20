@@ -116,10 +116,6 @@
             <label class="sr-only">GitHub</label></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="https://porespy.substack.com/" rel="noopener" target="_blank" title="Substack"><span><i class="fas fa-envelope-square"></i></span>
-            <label class="sr-only">Substack</label></a>
-        </li>
-        <li class="nav-item">
           <a class="nav-link" href="https://twitter.com/porespy" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
             <label class="sr-only">Twitter</label></a>
         </li>
@@ -236,11 +232,46 @@
                   <span class="n">c_under</span><span class="o">=</span><span class="s1">&#39;grey&#39;</span><span class="p">,</span> <span class="n">c_over</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">,</span>
                   <span class="n">v_under</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">v_over</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Converts a saturation map into an animation that can be saved</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    im : ndarray</span>
+<span class="sd">        The boolean image of the porous media with ``True`` values indicating</span>
+<span class="sd">        the void space</span>
+<span class="sd">    satn : ndaray</span>
+<span class="sd">        The saturation map such as that produced by an invasion or drainage</span>
+<span class="sd">        algorithm.</span>
+<span class="sd">    cmap : str</span>
+<span class="sd">        The name of the matplotlib color map to use. These are listed on</span>
+<span class="sd">        matplotlib&#39;s website</span>
+<span class="sd">        `here &lt;https://matplotlib.org/stable/gallery/color/colormap_reference.html&gt;`_</span>
+<span class="sd">    c_under, c_over : str</span>
+<span class="sd">        The color to insert for values that are less than `v_under`</span>
+<span class="sd">        (greater than `v_over`).  The string value of colors are given on</span>
+<span class="sd">        matplotlib&#39;s website</span>
+<span class="sd">        `here &lt;https://matplotlib.org/stable/gallery/color/named_colors.html&gt;`_</span>
+<span class="sd">    v_under, v_over : scalar</span>
+<span class="sd">        The values in ``satn`` that should be considered the lower and upper</span>
+<span class="sd">        threshold, beyond which the colors given in `c_under` and `c_over`</span>
+<span class="sd">        are used.</span>
+<span class="sd">    fps : int</span>
+<span class="sd">        The frames per second to use when generating the movie.  A higher</span>
+<span class="sd">        number gives a shorter and faster-paced movie.</span>
+<span class="sd">    repeat : bool</span>
+<span class="sd">        If ``True`` the produced animation will rerun repeatedly until</span>
+<span class="sd">        stopped or closed.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    To save animation as a file use:</span>
 <span class="sd">    ``ani.save(&#39;image_based_ip.gif&#39;, writer=&#39;imagemagick&#39;, fps=3)``</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here</span>
+<span class="sd">    &lt;https://porespy.org/examples/visualization/reference/satn_to_movie.html&gt;`_</span>
+<span class="sd">    to view online example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Define nice color map</span>
     <span class="n">cmap</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">cmap</span><span class="p">))</span>
@@ -280,9 +311,8 @@
 <span class="sd">    im : ndarray</span>
 <span class="sd">        A boolean image with ``True`` values indicating the void voxels and</span>
 <span class="sd">        ``False`` for solid.</span>
-<span class="sd">    bins : int or array_like</span>
-<span class="sd">        Indicates for which saturations images should be made. If a ``list``</span>
-<span class="sd">        then each value in the list is used as a threshold. If an ``int``</span>
+<span class="sd">    bins : int</span>
+<span class="sd">        Indicates for which saturations images should be made. If an ``int``</span>
 <span class="sd">        then a list of equally space values between 0 and 1 is generated.</span>
 <span class="sd">        If ``None`` (default) than all saturation values in the image are used.</span>
 <span class="sd">    axis : int, optional</span>
@@ -294,12 +324,18 @@
 <span class="sd">        of the axis is returned.  If 2D this is ignored.</span>
 <span class="sd">    **kwargs : various</span>
 <span class="sd">        Additional keyword arguments are sent to the ``imshow`` function,</span>
-<span class="sd">        such as ``cmap`` and ``interpolation``.</span>
+<span class="sd">        such as ``interpolation``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    fig, ax : Matplotlib figure and axis objects</span>
 <span class="sd">        The same things as returned by ``plt.subplots``</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here</span>
+<span class="sd">    &lt;https://porespy.org/examples/visualization/reference/satn_to_panels.html&gt;`_</span>
+<span class="sd">    to view online example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">factors</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span>
@@ -387,6 +423,12 @@
 <span class="sd">    -----</span>
 <span class="sd">    If any of the *extra* items are unwanted they can be removed with</span>
 <span class="sd">    ``del data[&#39;interpolation&#39;]`` or ``data.pop(&#39;interpolation&#39;)``.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here</span>
+<span class="sd">    &lt;https://porespy.org/examples/visualization/reference/prep_for_imshow.html&gt;`_</span>
+<span class="sd">    to view online example.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># If 3D, fetch 2D slice immediately to save memory</span>

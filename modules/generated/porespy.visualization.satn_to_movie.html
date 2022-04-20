@@ -119,10 +119,6 @@
             <label class="sr-only">GitHub</label></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="https://porespy.substack.com/" rel="noopener" target="_blank" title="Substack"><span><i class="fas fa-envelope-square"></i></span>
-            <label class="sr-only">Substack</label></a>
-        </li>
-        <li class="nav-item">
           <a class="nav-link" href="https://twitter.com/porespy" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
             <label class="sr-only">Twitter</label></a>
         </li>
@@ -987,9 +983,46 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="porespy.visualization.satn_to_movie">
 <span class="sig-name descname"><span class="pre">satn_to_movie</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">satn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'viridis'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c_under</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'grey'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c_over</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'white'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v_under</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v_over</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repeat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/visualization/_funcs.html#satn_to_movie"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.visualization.satn_to_movie" title="Permalink to this definition">#</a></dt>
-<dd><p class="rubric">Notes</p>
+<dd><p>Converts a saturation map into an animation that can be saved</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>im</strong> (<em>ndarray</em>) – The boolean image of the porous media with <code class="docutils literal notranslate"><span class="pre">True</span></code> values indicating
+the void space</p></li>
+<li><p><strong>satn</strong> (<em>ndaray</em>) – The saturation map such as that produced by an invasion or drainage
+algorithm.</p></li>
+<li><p><strong>cmap</strong> (<em>str</em>) – The name of the matplotlib color map to use. These are listed on
+matplotlib’s website
+<a class="reference external" href="https://matplotlib.org/stable/gallery/color/colormap_reference.html">here</a></p></li>
+<li><p><strong>c_under</strong> (<em>str</em>) – <p>The color to insert for values that are less than <cite>v_under</cite>
+(greater than <cite>v_over</cite>).  The string value of colors are given on
+matplotlib’s website
+<a class="reference external" href="https://matplotlib.org/stable/gallery/color/named_colors.html">here</a></p>
+</p></li>
+<li><p><strong>c_over</strong> (<em>str</em>) – <p>The color to insert for values that are less than <cite>v_under</cite>
+(greater than <cite>v_over</cite>).  The string value of colors are given on
+matplotlib’s website
+<a class="reference external" href="https://matplotlib.org/stable/gallery/color/named_colors.html">here</a></p>
+</p></li>
+<li><p><strong>v_under</strong> (<em>scalar</em>) – The values in <code class="docutils literal notranslate"><span class="pre">satn</span></code> that should be considered the lower and upper
+threshold, beyond which the colors given in <cite>c_under</cite> and <cite>c_over</cite>
+are used.</p></li>
+<li><p><strong>v_over</strong> (<em>scalar</em>) – The values in <code class="docutils literal notranslate"><span class="pre">satn</span></code> that should be considered the lower and upper
+threshold, beyond which the colors given in <cite>c_under</cite> and <cite>c_over</cite>
+are used.</p></li>
+<li><p><strong>fps</strong> (<em>int</em>) – The frames per second to use when generating the movie.  A higher
+number gives a shorter and faster-paced movie.</p></li>
+<li><p><strong>repeat</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> the produced animation will rerun repeatedly until
+stopped or closed.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
 <p>To save animation as a file use:
 <code class="docutils literal notranslate"><span class="pre">ani.save('image_based_ip.gif',</span> <span class="pre">writer='imagemagick',</span> <span class="pre">fps=3)</span></code></p>
+<p class="rubric">Examples</p>
+<p><a class="reference external" href="https://porespy.org/examples/visualization/reference/satn_to_movie.html">Click here</a>
+to view online example.</p>
 </dd></dl>
 
 </section>

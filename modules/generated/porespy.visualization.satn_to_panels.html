@@ -119,10 +119,6 @@
             <label class="sr-only">GitHub</label></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="https://porespy.substack.com/" rel="noopener" target="_blank" title="Substack"><span><i class="fas fa-envelope-square"></i></span>
-            <label class="sr-only">Substack</label></a>
-        </li>
-        <li class="nav-item">
           <a class="nav-link" href="https://twitter.com/porespy" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
             <label class="sr-only">Twitter</label></a>
         </li>
@@ -995,8 +991,7 @@
 it was invaded.  0 indicates solid and -1 indicates uninvaded.</p></li>
 <li><p><strong>im</strong> (<em>ndarray</em>) – A boolean image with <code class="docutils literal notranslate"><span class="pre">True</span></code> values indicating the void voxels and
 <code class="docutils literal notranslate"><span class="pre">False</span></code> for solid.</p></li>
-<li><p><strong>bins</strong> (<em>int</em><em> or </em><em>array_like</em>) – Indicates for which saturations images should be made. If a <code class="docutils literal notranslate"><span class="pre">list</span></code>
-then each value in the list is used as a threshold. If an <code class="docutils literal notranslate"><span class="pre">int</span></code>
+<li><p><strong>bins</strong> (<em>int</em>) – Indicates for which saturations images should be made. If an <code class="docutils literal notranslate"><span class="pre">int</span></code>
 then a list of equally space values between 0 and 1 is generated.
 If <code class="docutils literal notranslate"><span class="pre">None</span></code> (default) than all saturation values in the image are used.</p></li>
 <li><p><strong>axis</strong> (<em>int</em><em>, </em><em>optional</em>) – If the image is 3D, a 2D image is extracted at the specified
@@ -1005,7 +1000,7 @@ If <code class="docutils literal notranslate"><span class="pre">None</span></cod
 along the given <code class="docutils literal notranslate"><span class="pre">axis</span></code>.  If <code class="docutils literal notranslate"><span class="pre">None</span></code>, then a slice at the mid-point
 of the axis is returned.  If 2D this is ignored.</p></li>
 <li><p><strong>**kwargs</strong> (<em>various</em>) – Additional keyword arguments are sent to the <code class="docutils literal notranslate"><span class="pre">imshow</span></code> function,
-such as <code class="docutils literal notranslate"><span class="pre">cmap</span></code> and <code class="docutils literal notranslate"><span class="pre">interpolation</span></code>.</p></li>
+such as <code class="docutils literal notranslate"><span class="pre">interpolation</span></code>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -1015,6 +1010,9 @@ such as <code class="docutils literal notranslate"><span class="pre">cmap</span>
 <dd class="field-odd"><p>Matplotlib figure and axis objects</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<p><a class="reference external" href="https://porespy.org/examples/visualization/reference/satn_to_panels.html">Click here</a>
+to view online example.</p>
 </dd></dl>
 
 </section>

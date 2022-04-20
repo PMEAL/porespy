@@ -116,10 +116,6 @@
             <label class="sr-only">GitHub</label></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="https://porespy.substack.com/" rel="noopener" target="_blank" title="Substack"><span><i class="fas fa-envelope-square"></i></span>
-            <label class="sr-only">Substack</label></a>
-        </li>
-        <li class="nav-item">
           <a class="nav-link" href="https://twitter.com/porespy" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
             <label class="sr-only">Twitter</label></a>
         </li>
@@ -207,6 +203,12 @@
 <span class="sd">        An array of shape [N by 1] where N is the number of labelled regions</span>
 <span class="sd">        in the image.</span>
 
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here</span>
+<span class="sd">    &lt;https://porespy.org/examples/metrics/reference/mesh_volumes.html&gt;`_</span>
+<span class="sd">    to view online example.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">slices</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">find_objects</span><span class="p">(</span><span class="n">regions</span><span class="p">)</span>
     <span class="n">vols</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">slices</span><span class="p">),</span> <span class="p">])</span>
@@ -235,6 +237,12 @@
 <span class="sd">        The volume of the region computed by applyuing the marching cubes</span>
 <span class="sd">        algorithm to the region, then finding the mesh volume using the</span>
 <span class="sd">        ``trimesh`` package.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here</span>
+<span class="sd">    &lt;https://porespy.org/examples/metrics/reference/mesh_volume.html&gt;`_</span>
+<span class="sd">    to view online example.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">mc</span> <span class="o">=</span> <span class="n">mesh_region</span><span class="p">(</span><span class="n">region</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
@@ -274,6 +282,12 @@
 <span class="sd">    areas : list</span>
 <span class="sd">        A list containing the surface area of each region, offset by 1, such</span>
 <span class="sd">        that the surface area of region 1 is stored in element 0 of the list.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here</span>
+<span class="sd">    &lt;https://porespy.org/examples/metrics/reference/region_surface_areas.html&gt;`_</span>
+<span class="sd">    to view online example.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="s1">&#39;Finding surface area of each region&#39;</span><span class="p">)</span>
@@ -325,6 +339,12 @@
 <span class="sd">    it allows for the passing of the ``mesh`` tuple returned by the</span>
 <span class="sd">    ``mesh_region`` function, entirely for convenience.</span>
 
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here</span>
+<span class="sd">    &lt;https://porespy.org/examples/metrics/reference/mesh_surface_area.html&gt;`_</span>
+<span class="sd">    to view online example.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">mesh</span><span class="p">:</span>
         <span class="n">verts</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">verts</span>
@@ -374,6 +394,12 @@
 
 <span class="sd">        &#39;area&#39;</span>
 <span class="sd">            The area calculated for each pair of regions in ``conns``</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here</span>
+<span class="sd">    &lt;https://porespy.org/examples/metrics/reference/region_interface_areas.html&gt;`_</span>
+<span class="sd">    to view online example.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="s1">&#39;Finding interfacial areas between each region&#39;</span><span class="p">)</span>

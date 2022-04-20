@@ -116,10 +116,6 @@
             <label class="sr-only">GitHub</label></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="https://porespy.substack.com/" rel="noopener" target="_blank" title="Substack"><span><i class="fas fa-envelope-square"></i></span>
-            <label class="sr-only">Substack</label></a>
-        </li>
-        <li class="nav-item">
           <a class="nav-link" href="https://twitter.com/porespy" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
             <label class="sr-only">Twitter</label></a>
         </li>
@@ -201,6 +197,12 @@
 <span class="sd">        A boolean image of the given ``shape`` with ``True`` values on the</span>
 <span class="sd">        specified ``inlet`` and/or ``outlet`` face(s).</span>
 
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here</span>
+<span class="sd">    &lt;https://porespy.org/examples/generators/reference/faces.html&gt;`_</span>
+<span class="sd">    to view online example.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
     <span class="c1"># Parse inlet and outlet</span>
@@ -244,17 +246,9 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import porespy as ps</span>
-<span class="sd">    &gt;&gt;&gt; mask = ps.tools.get_border(shape=[3, 3], mode=&#39;corners&#39;)</span>
-<span class="sd">    &gt;&gt;&gt; print(mask)</span>
-<span class="sd">    [[ True False  True]</span>
-<span class="sd">     [False False False]</span>
-<span class="sd">     [ True False  True]]</span>
-<span class="sd">    &gt;&gt;&gt; mask = ps.tools.get_border(shape=[3, 3], mode=&#39;faces&#39;)</span>
-<span class="sd">    &gt;&gt;&gt; print(mask)</span>
-<span class="sd">    [[ True  True  True]</span>
-<span class="sd">     [ True False  True]</span>
-<span class="sd">     [ True  True  True]]</span>
+<span class="sd">    `Click here</span>
+<span class="sd">    &lt;https://porespy.org/examples/generators/reference/borders.html&gt;`_</span>
+<span class="sd">    to view online example.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">ndims</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>

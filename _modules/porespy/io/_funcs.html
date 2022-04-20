@@ -116,10 +116,6 @@
             <label class="sr-only">GitHub</label></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="https://porespy.substack.com/" rel="noopener" target="_blank" title="Substack"><span><i class="fas fa-envelope-square"></i></span>
-            <label class="sr-only">Substack</label></a>
-        </li>
-        <li class="nav-item">
           <a class="nav-link" href="https://twitter.com/porespy" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
             <label class="sr-only">Twitter</label></a>
         </li>
@@ -204,6 +200,12 @@
 <span class="sd">    -----</span>
 <span class="sd">    Outputs a vtk, vtp or vti file that can opened in ParaView</span>
 
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here</span>
+<span class="sd">    &lt;https://porespy.org/examples/io/reference/dict_to_vtk.html&gt;`_</span>
+<span class="sd">    to view online example.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">vs</span> <span class="o">=</span> <span class="n">voxel_size</span>
     <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
@@ -241,6 +243,12 @@
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    Outputs a vtk, vtp or vti file that can opened in paraview</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here</span>
+<span class="sd">    &lt;https://porespy.org/examples/io/reference/to_vtk.html&gt;`_</span>
+<span class="sd">    to view online example.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
@@ -294,6 +302,12 @@
 <span class="sd">    File produced contains 3 values: 2 = Solid, 1 = Interface, 0 = Pore</span>
 <span class="sd">    Palabos will run the simulation applying the specified pressure drop from</span>
 <span class="sd">    x = 0 to x = -1.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here</span>
+<span class="sd">    &lt;https://porespy.org/examples/io/reference/to_palabos.html&gt;`_</span>
+<span class="sd">    to view online example.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Create binary image for fluid and solid phases</span>
@@ -388,6 +402,12 @@
 <span class="sd">    -----</span>
 <span class="sd">    Outputs an STL file that can opened in Paraview</span>
 
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here</span>
+<span class="sd">    &lt;https://porespy.org/examples/io/reference/to_stl.html&gt;`_</span>
+<span class="sd">    to view online example.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">filename</span> <span class="o">=</span> <span class="n">sanitize_filename</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="s2">&quot;stl&quot;</span><span class="p">,</span> <span class="n">exclude_ext</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
@@ -453,6 +473,12 @@
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    Outputs an pvsm file that can opened in Paraview.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here</span>
+<span class="sd">    &lt;https://porespy.org/examples/io/reference/to_paraview.html&gt;`_</span>
+<span class="sd">    to view online example.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
@@ -596,6 +622,12 @@
 <span class="sd">        sent to ``to_paraview`` and a state file is created with a random name.</span>
 <span class="sd">        Any additional keyword arguments are sent to ``to_paraview``.</span>
 
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here</span>
+<span class="sd">    &lt;https://porespy.org/examples/io/reference/open_paraview.html&gt;`_</span>
+<span class="sd">    to view online example.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
@@ -639,6 +671,12 @@
 <span class="sd">    centers so it may not perfectly represent the spheres in the original</span>
 <span class="sd">    image. This is especially true for overlapping sphere and spheres extending</span>
 <span class="sd">    beyond the edge of the image.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here</span>
+<span class="sd">    &lt;https://porespy.org/examples/io/reference/spheres_to_comsol.html&gt;`_</span>
+<span class="sd">    to view online example.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">._comsol</span> <span class="kn">import</span> <span class="n">_save_to_comsol</span>
