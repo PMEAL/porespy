@@ -9,7 +9,7 @@ from porespy.tools import get_tqdm
 tqdm = get_tqdm()
 
 
-def AI_diffusive_size_factor(regions, throat_conns, model,
+def diffusive_size_factor_AI(regions, throat_conns, model,
                              g_train, voxel_size=1):
     '''
     Parameters
@@ -395,7 +395,7 @@ def create_model():
     Returns
     -------
     model : tensorflow model
-        Resnet50 model built using convolutional and identity blocks.
+        ResNet50 model built using convolutional and identity blocks.
 
     '''
     from tensorflow.keras.optimizers import Adam
