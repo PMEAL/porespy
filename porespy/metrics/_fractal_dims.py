@@ -33,7 +33,7 @@ def boxcount(im, bins=10):
 
     References
     ----------
-    [1] See Boxcounting on `Wikipedia <https://en.wikipedia.org/wiki/Box_counting>`_
+    .. [1] See Boxcounting on `Wikipedia <https://en.wikipedia.org/wiki/Box_counting>`_
 
     Examples
     --------
