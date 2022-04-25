@@ -1,4 +1,5 @@
 import os
+import sys
 from pathlib import Path
 from platform import system
 from os.path import realpath
@@ -91,6 +92,7 @@ class NetworkExtractionTest():
         assert np.allclose(net1['pore.coords'][:, 1], net2['pore.coords'][:, 2])
         assert np.allclose(net1['pore.coords'][:, 0], net3['pore.coords'][:, 1])
 
+    @pytest.mark.skipif(not sys.platform.startswith("win"), reason="Windows-only!")
     def test_max_ball(self):
         path = Path(realpath(__file__), '../../fixtures/pnextract.exe')
         if system() == 'Windows':
