@@ -40,8 +40,8 @@ def representative_elementary_volume(im, npoints=1000):
 
         These attributes can be conveniently plotted by passing the Results
         object to matplotlib's ``plot`` function using the
-        \* notation: ``plt.plot(*result, 'b.')``.  The resulting plot is
-        similar to the sketch given by Bachmat and Bear [1]
+        \* notation: ``plt.plot(\*result, 'b.')``.  The resulting plot is
+        similar to the sketch given by Bachmat and Bear [1]_
 
     Notes
     -----
@@ -51,7 +51,7 @@ def representative_elementary_volume(im, npoints=1000):
 
     References
     ----------
-    [1] Bachmat and Bear. On the Concept and Size of a Representative
+    .. [1] Bachmat and Bear. On the Concept and Size of a Representative
     Elementary Volume (Rev), Advances in Transport Phenomena in Porous Media
     (1987)
 
@@ -1033,7 +1033,7 @@ def find_h(saturation, position=None, srange=[0.01, 0.99]):
     Parameters
     ----------
     saturation : array_like
-        A list of saturation values as function of ``position`
+        A list of saturation values as function of ``position``
     position : array_like, optional
         A list of positions corresponding to each saturation.  If not provided
         then each value in ``saturation`` is assumed to be separated by 1 voxel.
