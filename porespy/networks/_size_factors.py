@@ -36,7 +36,7 @@ def diffusive_size_factor_AI(regions, throat_conns, model,
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/networks/reference/AI_diffusive_size_factor.html>`_
+    <https://porespy.org/examples/networks/reference/diffusive_size_factor_AI.html>`_
     to view online example.
 
     """
