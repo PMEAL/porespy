@@ -79,12 +79,12 @@ def satn_to_movie(im, satn, cmap='viridis',
     cmap : str
         The name of the matplotlib color map to use. These are listed on
         matplotlib's website
-        `here <https://matplotlib.org/stable/gallery/color/colormap_reference.html>`_
+        `here <https://matplotlib.org/stable/gallery/color/colormap_reference.html>`__
     c_under, c_over : str
         The color to insert for values that are less than `v_under`
         (greater than `v_over`).  The string value of colors are given on
         matplotlib's website
-        `here <https://matplotlib.org/stable/gallery/color/named_colors.html>`_
+        `here <https://matplotlib.org/stable/gallery/color/named_colors.html>`__
     v_under, v_over : scalar
         The values in ``satn`` that should be considered the lower and upper
         threshold, beyond which the colors given in `c_under` and `c_over`
@@ -236,8 +236,8 @@ def prep_for_imshow(im, mask=None, axis=0, slice=None):
     -------
     kwargs : dict
         A python dicionary designed to be passed directly to
-        ``matplotlib.pyplot.imshow`` using the "**kwargs" features (i.e.
-        ``plt.imshow(**data)``).  It contains the following key-value pairs:
+        ``matplotlib.pyplot.imshow`` using the "\*\*kwargs" features (i.e.
+        ``plt.imshow(\*\*data)``).  It contains the following key-value pairs:
 
         =============== =======================================================
         key               value

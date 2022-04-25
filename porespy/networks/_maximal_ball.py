@@ -34,17 +34,16 @@ def maximal_ball_wrapper(im, prefix, path_to_exe, voxel_size=1e-6):
     """
     file = os.path.splitext(prefix)[0]
     imageio.volsave(file + ".tif", np.array(im.astype("uint8")))
-    f = open(file + ".mhd", "w")
-    f.write("ObjectType =  Image\n\
-            NDims =	   3 \n\
-            ElementType = MET_UCHAR \n\
-            DimSize = " + str(im.shape[0]) + " " + str(im.shape[1]) + " " +
-            str(im.shape[2]) + "\n\
-            ElementSpacing =" + str(voxel_size*1e6) + " " +
-            str(voxel_size*1e6) + " " + str(voxel_size*1e6) + "\n\
-            Offset = 0   0  0 \n\
-            ElementDataFile = " + file + ".tif")
-    f.close()
+    with open(f"{file}.mhd", "w") as f:
+        f.write("ObjectType =  Image\n\
+                 NDims =	   3 \n\
+                 ElementType = MET_UCHAR \n\
+                 DimSize = " + str(im.shape[0]) + " " + str(im.shape[1]) + " " +
+                 str(im.shape[2]) + "\n\
+                 ElementSpacing =" + str(voxel_size*1e6) + " " +
+                 str(voxel_size*1e6) + " " + str(voxel_size*1e6) + "\n\
+                 Offset = 0   0  0 \n\
+                 ElementDataFile = " + file + ".tif")
     subprocess.Popen([path_to_exe, file + ".mhd"])
     time_elapsed = 0
     while _is_running('pnextract'):
