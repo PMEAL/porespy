@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 def test_variable_Bo_study():
     np.random.seed(0)
-    
+
     # Input domain and fluid properties
     vx = 5e-5
     L = int(0.02/vx)
