@@ -600,6 +600,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="generated/porespy.networks.diffusive_size_factor_AI.html">
+     diffusive_size_factor_AI
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="generated/porespy.networks.generate_voxel_image.html">
      generate_voxel_image
     </a>
@@ -991,25 +996,33 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.networks.add_boundary_regions.html#porespy.networks.add_boundary_regions" title="porespy.networks.add_boundary_regions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">networks.add_boundary_regions</span></code></a>(regions[, ...])</p></td>
 <td><p>Add boundary regions on specified faces of an image</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.networks.generate_voxel_image.html#porespy.networks.generate_voxel_image" title="porespy.networks.generate_voxel_image"><code class="xref py py-obj docutils literal notranslate"><span class="pre">networks.generate_voxel_image</span></code></a>(network[, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.networks.diffusive_size_factor_AI.html#porespy.networks.diffusive_size_factor_AI" title="porespy.networks.diffusive_size_factor_AI"><code class="xref py py-obj docutils literal notranslate"><span class="pre">networks.diffusive_size_factor_AI</span></code></a>(regions, ...)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">param regions</dt>
+<dd class="field-odd"><p>A segmented 3D image of pore regions/a pair of two regions.</p>
+</dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.networks.generate_voxel_image.html#porespy.networks.generate_voxel_image" title="porespy.networks.generate_voxel_image"><code class="xref py py-obj docutils literal notranslate"><span class="pre">networks.generate_voxel_image</span></code></a>(network[, ...])</p></td>
 <td><p>Generate a voxel image from an OpenPNM network object</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.networks.label_boundaries.html#porespy.networks.label_boundaries" title="porespy.networks.label_boundaries"><code class="xref py py-obj docutils literal notranslate"><span class="pre">networks.label_boundaries</span></code></a>(network[, labels, tol])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.networks.label_boundaries.html#porespy.networks.label_boundaries" title="porespy.networks.label_boundaries"><code class="xref py py-obj docutils literal notranslate"><span class="pre">networks.label_boundaries</span></code></a>(network[, labels, tol])</p></td>
 <td><p>Create boundary pore labels based on proximity to axis extrema</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.networks.label_phases.html#porespy.networks.label_phases" title="porespy.networks.label_phases"><code class="xref py py-obj docutils literal notranslate"><span class="pre">networks.label_phases</span></code></a>(network[, alias])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.networks.label_phases.html#porespy.networks.label_phases" title="porespy.networks.label_phases"><code class="xref py py-obj docutils literal notranslate"><span class="pre">networks.label_phases</span></code></a>(network[, alias])</p></td>
 <td><p>Create pore and throat labels based on 'pore.phase' values</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.networks.map_to_regions.html#porespy.networks.map_to_regions" title="porespy.networks.map_to_regions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">networks.map_to_regions</span></code></a>(regions, values)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.networks.map_to_regions.html#porespy.networks.map_to_regions" title="porespy.networks.map_to_regions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">networks.map_to_regions</span></code></a>(regions, values)</p></td>
 <td><p>Maps pore values from a network onto the image from which it was extracted</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.networks.maximal_ball_wrapper.html#porespy.networks.maximal_ball_wrapper" title="porespy.networks.maximal_ball_wrapper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">networks.maximal_ball_wrapper</span></code></a>(im, prefix, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.networks.maximal_ball_wrapper.html#porespy.networks.maximal_ball_wrapper" title="porespy.networks.maximal_ball_wrapper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">networks.maximal_ball_wrapper</span></code></a>(im, prefix, ...)</p></td>
 <td><p>Implementing a maximal ball algorithm on an image</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.networks.regions_to_network.html#porespy.networks.regions_to_network" title="porespy.networks.regions_to_network"><code class="xref py py-obj docutils literal notranslate"><span class="pre">networks.regions_to_network</span></code></a>(regions[, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.networks.regions_to_network.html#porespy.networks.regions_to_network" title="porespy.networks.regions_to_network"><code class="xref py py-obj docutils literal notranslate"><span class="pre">networks.regions_to_network</span></code></a>(regions[, ...])</p></td>
 <td><p>Analyzes an image that has been partitioned into pore regions and extracts the pore and throat geometry as well as network connectivity.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.networks.snow2.html#porespy.networks.snow2" title="porespy.networks.snow2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">networks.snow2</span></code></a>(phases[, phase_alias, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.networks.snow2.html#porespy.networks.snow2" title="porespy.networks.snow2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">networks.snow2</span></code></a>(phases[, phase_alias, ...])</p></td>
 <td><p>Applies the SNOW algorithm to each phase indicated in <code class="docutils literal notranslate"><span class="pre">phases</span></code>.</p></td>
 </tr>
 </tbody>

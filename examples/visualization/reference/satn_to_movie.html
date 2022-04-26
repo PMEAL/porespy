@@ -681,6 +681,15 @@
    </code>
   </a>
  </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../filters/reference/unpad.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     unpad
+    </span>
+   </code>
+  </a>
+ </li>
 </ul>
 <ul class="nav bd-sidenav">
  <li class="toctree-l1">
@@ -920,6 +929,11 @@
    SNOW network extraction
   </a>
  </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../networks/tutorials/using_diffusive_size_factor_AI_with_snow.html">
+   Using AI based diffusive size factors for extracted networks
+  </a>
+ </li>
 </ul>
 <ul class="nav bd-sidenav">
  <li class="toctree-l1">
@@ -927,6 +941,15 @@
    <code class="docutils literal notranslate">
     <span class="pre">
      add_boundary_regions
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../networks/reference/diffusive_size_factor_AI.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     diffusive_size_factor_AI
     </span>
    </code>
   </a>
@@ -982,22 +1005,22 @@
 </ul>
 <ul class="nav bd-sidenav">
  <li class="toctree-l1">
-  <a class="reference internal" href="../../simulations/tutorials/Finding%20Tortuosity%20From%20An%20Image.html">
+  <a class="reference internal" href="../../simulations/tutorials/drainage_with_gravity_advanced.html">
+   Details of Drainage Simulations with and without Gravity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/tutorials/drainage_with_gravity_basic.html">
+   Basics of Peforming Drainage Simulations with and without Gravity
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/tutorials/finding_tortuosity_from_image.html">
    Finding the Tortuosity (
    <span class="math notranslate nohighlight">
     \(\tau\)
    </span>
    ) of an Image Using tortuosity_fd
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../simulations/tutorials/drainage_with_gravity_part_1.html">
-   Basics of Peforming Drainage Simulations with and without Gravity
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../simulations/tutorials/drainage_with_gravity_part_2.html">
-   Details of Drainage Simulations with and without Gravity
   </a>
  </li>
 </ul>
@@ -1191,7 +1214,7 @@
 </ul>
 <ul class="nav bd-sidenav">
  <li class="toctree-l1">
-  <a class="reference internal" href="../tutorials/Visualizing_tif_in_Paraveiw.html">
+  <a class="reference internal" href="../tutorials/visualizing_tif_in_paraveiw.html">
    Visualizing a tif image in Paraview
   </a>
  </li>
@@ -1680,6 +1703,8 @@ div.rendered_html tbody tr:hover {
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">porespy</span> <span class="k">as</span> <span class="nn">ps</span>
 <span class="kn">import</span> <span class="nn">inspect</span>
+<span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">HTML</span>
+<span class="n">ps</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">set_mpl_style</span><span class="p">()</span>
 <span class="n">inspect</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="n">ps</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">satn_to_movie</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -1702,7 +1727,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
 <span class="n">im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">blobs</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">100</span><span class="p">,</span><span class="mi">100</span><span class="p">],</span> <span class="n">blobiness</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="kc">False</span><span class="p">);</span>
 </pre></div>
@@ -1712,8 +1737,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_visualization_reference_satn_to_movie_5_0.png" src="../../../_images/examples_visualization_reference_satn_to_movie_5_0.png" />
-</div>
+<img alt="../../../_images/examples_visualization_reference_satn_to_movie_5_0.svg" src="../../../_images/examples_visualization_reference_satn_to_movie_5_0.svg" /></div>
 </div>
 </section>
 <section id="satn">
@@ -1736,15 +1760,15 @@ div.rendered_html tbody tr:hover {
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 0, "model_id": "01e2f13537254473b0a964b02a55ee65"}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 0, "model_id": "c966e2d404d64933a35f8c8c51bb277e"}</script></div>
 </div>
-<p>Now we can create an animation of the invasion sequence using <code class="docutils literal notranslate"><span class="pre">satn_to_movie</span></code>: (To save animation as a file and for visualizing use `animation.save’)</p>
+<p>Now we can create an animation of the invasion sequence using <code class="docutils literal notranslate"><span class="pre">satn_to_movie</span></code>: (To save animation as a file and for visualizing use <code class="docutils literal notranslate"><span class="pre">animation.save</span></code>)</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mov</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">satn_to_movie</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">satn</span><span class="o">=</span><span class="n">satn</span><span class="p">)</span>
-<span class="n">mov</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;image_base_ip.gif&#39;</span><span class="p">,</span> <span class="n">writer</span><span class="o">=</span><span class="s1">&#39;imagemagick&#39;</span><span class="p">)</span>
+<span class="n">mov_image_based_ip</span> <span class="o">=</span> <span class="n">mov</span><span class="o">.</span><span class="n">to_html5_video</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -1756,24 +1780,72 @@ div.rendered_html tbody tr:hover {
 
 </pre></div></div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">RuntimeError</span>                              Traceback (most recent call last)
+Input <span class="ansi-green-fg">In [4]</span>, in <span class="ansi-cyan-fg">&lt;cell line: 2&gt;</span><span class="ansi-blue-fg">()</span>
+<span class="ansi-green-intense-fg ansi-bold">      1</span> mov <span style="color: rgb(98,98,98)">=</span> ps<span style="color: rgb(98,98,98)">.</span>visualization<span style="color: rgb(98,98,98)">.</span>satn_to_movie(im<span style="color: rgb(98,98,98)">=</span>im, satn<span style="color: rgb(98,98,98)">=</span>satn)
+<span class="ansi-green-fg">----&gt; 2</span> mov_image_based_ip <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">mov</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">to_html5_video</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">)</span>
+
+File <span class="ansi-green-fg">/usr/share/miniconda/envs/test/lib/python3.8/site-packages/matplotlib/animation.py:1266</span>, in <span class="ansi-cyan-fg">Animation.to_html5_video</span><span class="ansi-blue-fg">(self, embed_limit)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1263</span> path <span style="color: rgb(98,98,98)">=</span> Path(tmpdir, <span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">temp.m4v</span><span style="color: rgb(175,0,0)">&#34;</span>)
+<span class="ansi-green-intense-fg ansi-bold">   1264</span> <span style="color: rgb(95,135,135)"># We create a writer manually so that we can get the</span>
+<span class="ansi-green-intense-fg ansi-bold">   1265</span> <span style="color: rgb(95,135,135)"># appropriate size for the tag</span>
+<span class="ansi-green-fg">-&gt; 1266</span> Writer <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">writers</span><span class="ansi-yellow-bg">[</span><span class="ansi-yellow-bg">mpl</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">rcParams</span><span class="ansi-yellow-bg">[</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">&#39;</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">animation.writer</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">&#39;</span><span class="ansi-yellow-bg">]</span><span class="ansi-yellow-bg">]</span>
+<span class="ansi-green-intense-fg ansi-bold">   1267</span> writer <span style="color: rgb(98,98,98)">=</span> Writer(codec<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">h264</span><span style="color: rgb(175,0,0)">&#39;</span>,
+<span class="ansi-green-intense-fg ansi-bold">   1268</span>                 bitrate<span style="color: rgb(98,98,98)">=</span>mpl<span style="color: rgb(98,98,98)">.</span>rcParams[<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">animation.bitrate</span><span style="color: rgb(175,0,0)">&#39;</span>],
+<span class="ansi-green-intense-fg ansi-bold">   1269</span>                 fps<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(98,98,98)">1000.</span> <span style="color: rgb(98,98,98)">/</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_interval)
+<span class="ansi-green-intense-fg ansi-bold">   1270</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>save(<span style="color: rgb(0,135,0)">str</span>(path), writer<span style="color: rgb(98,98,98)">=</span>writer)
+
+File <span class="ansi-green-fg">/usr/share/miniconda/envs/test/lib/python3.8/site-packages/matplotlib/animation.py:151</span>, in <span class="ansi-cyan-fg">MovieWriterRegistry.__getitem__</span><span class="ansi-blue-fg">(self, name)</span>
+<span class="ansi-green-intense-fg ansi-bold">    149</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>is_available(name):
+<span class="ansi-green-intense-fg ansi-bold">    150</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_registered[name]
+<span class="ansi-green-fg">--&gt; 151</span> <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> <span class="ansi-bold" style="color: rgb(215,95,95)">RuntimeError</span>(<span style="color: rgb(175,0,0)">f</span><span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">Requested MovieWriter (</span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>name<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span style="color: rgb(175,0,0)">) not available</span><span style="color: rgb(175,0,0)">&#34;</span>)
+
+<span class="ansi-red-fg">RuntimeError</span>: Requested MovieWriter (ffmpeg) not available
+</pre></div></div>
+</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_visualization_reference_satn_to_movie_10_1.png" src="../../../_images/examples_visualization_reference_satn_to_movie_10_1.png" />
+<img alt="../../../_images/examples_visualization_reference_satn_to_movie_10_2.svg" src="../../../_images/examples_visualization_reference_satn_to_movie_10_2.svg" /></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">HTML</span><span class="p">(</span><span class="n">mov_image_based_ip</span><span class="p">)</span>
+</pre></div>
 </div>
 </div>
-<p>The saved animation can then be visualized: <img alt="image_base_ip" src="https://user-images.githubusercontent.com/43128873/160906861-d96d1867-e813-4b2c-aef5-a074dc7110fe.gif" /></p>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Input <span class="ansi-green-fg">In [5]</span>, in <span class="ansi-cyan-fg">&lt;cell line: 1&gt;</span><span class="ansi-blue-fg">()</span>
+<span class="ansi-green-fg">----&gt; 1</span> HTML(<span class="ansi-yellow-bg">mov_image_based_ip</span>)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;mov_image_based_ip&#39; is not defined
+</pre></div></div>
+</div>
 </section>
 <section id="cmap">
 <h2><code class="docutils literal notranslate"><span class="pre">cmap</span></code><a class="headerlink" href="#cmap" title="Permalink to this headline">#</a></h2>
 <p>The Colormap used to map invasion sequence values to colors. By default the cmap is ‘viridis’.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mov</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">satn_to_movie</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">satn</span><span class="o">=</span><span class="n">satn</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;plasma&#39;</span><span class="p">)</span>
-<span class="n">mov</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;image_based_ip_cmap.gif&#39;</span><span class="p">,</span> <span class="n">writer</span><span class="o">=</span><span class="s1">&#39;imagemagick&#39;</span><span class="p">)</span>
+<span class="n">image_based_ip_cmap</span> <span class="o">=</span> <span class="n">mov</span><span class="o">.</span><span class="n">to_html5_video</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -1785,24 +1857,72 @@ div.rendered_html tbody tr:hover {
 
 </pre></div></div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">RuntimeError</span>                              Traceback (most recent call last)
+Input <span class="ansi-green-fg">In [6]</span>, in <span class="ansi-cyan-fg">&lt;cell line: 2&gt;</span><span class="ansi-blue-fg">()</span>
+<span class="ansi-green-intense-fg ansi-bold">      1</span> mov <span style="color: rgb(98,98,98)">=</span> ps<span style="color: rgb(98,98,98)">.</span>visualization<span style="color: rgb(98,98,98)">.</span>satn_to_movie(im<span style="color: rgb(98,98,98)">=</span>im, satn<span style="color: rgb(98,98,98)">=</span>satn, cmap<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">plasma</span><span style="color: rgb(175,0,0)">&#39;</span>)
+<span class="ansi-green-fg">----&gt; 2</span> image_based_ip_cmap <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">mov</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">to_html5_video</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">)</span>
+
+File <span class="ansi-green-fg">/usr/share/miniconda/envs/test/lib/python3.8/site-packages/matplotlib/animation.py:1266</span>, in <span class="ansi-cyan-fg">Animation.to_html5_video</span><span class="ansi-blue-fg">(self, embed_limit)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1263</span> path <span style="color: rgb(98,98,98)">=</span> Path(tmpdir, <span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">temp.m4v</span><span style="color: rgb(175,0,0)">&#34;</span>)
+<span class="ansi-green-intense-fg ansi-bold">   1264</span> <span style="color: rgb(95,135,135)"># We create a writer manually so that we can get the</span>
+<span class="ansi-green-intense-fg ansi-bold">   1265</span> <span style="color: rgb(95,135,135)"># appropriate size for the tag</span>
+<span class="ansi-green-fg">-&gt; 1266</span> Writer <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">writers</span><span class="ansi-yellow-bg">[</span><span class="ansi-yellow-bg">mpl</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">rcParams</span><span class="ansi-yellow-bg">[</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">&#39;</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">animation.writer</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">&#39;</span><span class="ansi-yellow-bg">]</span><span class="ansi-yellow-bg">]</span>
+<span class="ansi-green-intense-fg ansi-bold">   1267</span> writer <span style="color: rgb(98,98,98)">=</span> Writer(codec<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">h264</span><span style="color: rgb(175,0,0)">&#39;</span>,
+<span class="ansi-green-intense-fg ansi-bold">   1268</span>                 bitrate<span style="color: rgb(98,98,98)">=</span>mpl<span style="color: rgb(98,98,98)">.</span>rcParams[<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">animation.bitrate</span><span style="color: rgb(175,0,0)">&#39;</span>],
+<span class="ansi-green-intense-fg ansi-bold">   1269</span>                 fps<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(98,98,98)">1000.</span> <span style="color: rgb(98,98,98)">/</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_interval)
+<span class="ansi-green-intense-fg ansi-bold">   1270</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>save(<span style="color: rgb(0,135,0)">str</span>(path), writer<span style="color: rgb(98,98,98)">=</span>writer)
+
+File <span class="ansi-green-fg">/usr/share/miniconda/envs/test/lib/python3.8/site-packages/matplotlib/animation.py:151</span>, in <span class="ansi-cyan-fg">MovieWriterRegistry.__getitem__</span><span class="ansi-blue-fg">(self, name)</span>
+<span class="ansi-green-intense-fg ansi-bold">    149</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>is_available(name):
+<span class="ansi-green-intense-fg ansi-bold">    150</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_registered[name]
+<span class="ansi-green-fg">--&gt; 151</span> <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> <span class="ansi-bold" style="color: rgb(215,95,95)">RuntimeError</span>(<span style="color: rgb(175,0,0)">f</span><span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">Requested MovieWriter (</span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>name<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span style="color: rgb(175,0,0)">) not available</span><span style="color: rgb(175,0,0)">&#34;</span>)
+
+<span class="ansi-red-fg">RuntimeError</span>: Requested MovieWriter (ffmpeg) not available
+</pre></div></div>
+</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_visualization_reference_satn_to_movie_14_1.png" src="../../../_images/examples_visualization_reference_satn_to_movie_14_1.png" />
+<img alt="../../../_images/examples_visualization_reference_satn_to_movie_14_2.svg" src="../../../_images/examples_visualization_reference_satn_to_movie_14_2.svg" /></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">HTML</span><span class="p">(</span><span class="n">image_based_ip_cmap</span><span class="p">)</span>
+</pre></div>
 </div>
 </div>
-<img alt="image_based_ip_cmap" src="https://user-images.githubusercontent.com/43128873/160906891-1c503314-d602-4470-9f68-3569adbbf6e9.gif" />
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Input <span class="ansi-green-fg">In [7]</span>, in <span class="ansi-cyan-fg">&lt;cell line: 1&gt;</span><span class="ansi-blue-fg">()</span>
+<span class="ansi-green-fg">----&gt; 1</span> HTML(<span class="ansi-yellow-bg">image_based_ip_cmap</span>)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;image_based_ip_cmap&#39; is not defined
+</pre></div></div>
+</div>
 </section>
 <section id="c_under">
 <h2><code class="docutils literal notranslate"><span class="pre">c_under</span></code><a class="headerlink" href="#c_under" title="Permalink to this headline">#</a></h2>
 <p>Colormap to be assigned to the lowest color bound (under color) in the color map. The voxeled colored by <code class="docutils literal notranslate"><span class="pre">c_under</span></code> are the uninvaded void space. The default under color is grey.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mov</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">satn_to_movie</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">satn</span><span class="o">=</span><span class="n">satn</span><span class="p">,</span> <span class="n">c_under</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">)</span>
-<span class="n">mov</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;image_based_ip_c_under.gif&#39;</span><span class="p">,</span> <span class="n">writer</span><span class="o">=</span><span class="s1">&#39;imagemagick&#39;</span><span class="p">)</span>
+<span class="n">image_based_ip_c_under</span> <span class="o">=</span> <span class="n">mov</span><span class="o">.</span><span class="n">to_html5_video</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -1814,24 +1934,72 @@ div.rendered_html tbody tr:hover {
 
 </pre></div></div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">RuntimeError</span>                              Traceback (most recent call last)
+Input <span class="ansi-green-fg">In [8]</span>, in <span class="ansi-cyan-fg">&lt;cell line: 2&gt;</span><span class="ansi-blue-fg">()</span>
+<span class="ansi-green-intense-fg ansi-bold">      1</span> mov <span style="color: rgb(98,98,98)">=</span> ps<span style="color: rgb(98,98,98)">.</span>visualization<span style="color: rgb(98,98,98)">.</span>satn_to_movie(im<span style="color: rgb(98,98,98)">=</span>im, satn<span style="color: rgb(98,98,98)">=</span>satn, c_under<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">green</span><span style="color: rgb(175,0,0)">&#39;</span>)
+<span class="ansi-green-fg">----&gt; 2</span> image_based_ip_c_under <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">mov</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">to_html5_video</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">)</span>
+
+File <span class="ansi-green-fg">/usr/share/miniconda/envs/test/lib/python3.8/site-packages/matplotlib/animation.py:1266</span>, in <span class="ansi-cyan-fg">Animation.to_html5_video</span><span class="ansi-blue-fg">(self, embed_limit)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1263</span> path <span style="color: rgb(98,98,98)">=</span> Path(tmpdir, <span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">temp.m4v</span><span style="color: rgb(175,0,0)">&#34;</span>)
+<span class="ansi-green-intense-fg ansi-bold">   1264</span> <span style="color: rgb(95,135,135)"># We create a writer manually so that we can get the</span>
+<span class="ansi-green-intense-fg ansi-bold">   1265</span> <span style="color: rgb(95,135,135)"># appropriate size for the tag</span>
+<span class="ansi-green-fg">-&gt; 1266</span> Writer <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">writers</span><span class="ansi-yellow-bg">[</span><span class="ansi-yellow-bg">mpl</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">rcParams</span><span class="ansi-yellow-bg">[</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">&#39;</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">animation.writer</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">&#39;</span><span class="ansi-yellow-bg">]</span><span class="ansi-yellow-bg">]</span>
+<span class="ansi-green-intense-fg ansi-bold">   1267</span> writer <span style="color: rgb(98,98,98)">=</span> Writer(codec<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">h264</span><span style="color: rgb(175,0,0)">&#39;</span>,
+<span class="ansi-green-intense-fg ansi-bold">   1268</span>                 bitrate<span style="color: rgb(98,98,98)">=</span>mpl<span style="color: rgb(98,98,98)">.</span>rcParams[<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">animation.bitrate</span><span style="color: rgb(175,0,0)">&#39;</span>],
+<span class="ansi-green-intense-fg ansi-bold">   1269</span>                 fps<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(98,98,98)">1000.</span> <span style="color: rgb(98,98,98)">/</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_interval)
+<span class="ansi-green-intense-fg ansi-bold">   1270</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>save(<span style="color: rgb(0,135,0)">str</span>(path), writer<span style="color: rgb(98,98,98)">=</span>writer)
+
+File <span class="ansi-green-fg">/usr/share/miniconda/envs/test/lib/python3.8/site-packages/matplotlib/animation.py:151</span>, in <span class="ansi-cyan-fg">MovieWriterRegistry.__getitem__</span><span class="ansi-blue-fg">(self, name)</span>
+<span class="ansi-green-intense-fg ansi-bold">    149</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>is_available(name):
+<span class="ansi-green-intense-fg ansi-bold">    150</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_registered[name]
+<span class="ansi-green-fg">--&gt; 151</span> <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> <span class="ansi-bold" style="color: rgb(215,95,95)">RuntimeError</span>(<span style="color: rgb(175,0,0)">f</span><span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">Requested MovieWriter (</span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>name<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span style="color: rgb(175,0,0)">) not available</span><span style="color: rgb(175,0,0)">&#34;</span>)
+
+<span class="ansi-red-fg">RuntimeError</span>: Requested MovieWriter (ffmpeg) not available
+</pre></div></div>
+</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_visualization_reference_satn_to_movie_18_1.png" src="../../../_images/examples_visualization_reference_satn_to_movie_18_1.png" />
+<img alt="../../../_images/examples_visualization_reference_satn_to_movie_18_2.svg" src="../../../_images/examples_visualization_reference_satn_to_movie_18_2.svg" /></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">HTML</span><span class="p">(</span><span class="n">image_based_ip_c_under</span><span class="p">)</span>
+</pre></div>
 </div>
 </div>
-<img alt="image_based_ip_c_under" src="https://user-images.githubusercontent.com/43128873/160906884-c0c17a61-eb22-4ce8-af99-e11fc66d58b1.gif" />
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Input <span class="ansi-green-fg">In [9]</span>, in <span class="ansi-cyan-fg">&lt;cell line: 1&gt;</span><span class="ansi-blue-fg">()</span>
+<span class="ansi-green-fg">----&gt; 1</span> HTML(<span class="ansi-yellow-bg">image_based_ip_c_under</span>)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;image_based_ip_c_under&#39; is not defined
+</pre></div></div>
+</div>
 </section>
 <section id="c_over">
 <h2><code class="docutils literal notranslate"><span class="pre">c_over</span></code><a class="headerlink" href="#c_over" title="Permalink to this headline">#</a></h2>
 <p>Colormap to be assigned to the highest color bound (over color) in the color map. The voxeled colored by <code class="docutils literal notranslate"><span class="pre">c_overer</span></code> are the solid phase. The default over color is white.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mov</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">satn_to_movie</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">satn</span><span class="o">=</span><span class="n">satn</span><span class="p">,</span> <span class="n">c_over</span><span class="o">=</span><span class="s1">&#39;yellow&#39;</span><span class="p">)</span>
-<span class="n">mov</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;image_based_ip_c_over.gif&#39;</span><span class="p">,</span> <span class="n">writer</span><span class="o">=</span><span class="s1">&#39;imagemagick&#39;</span><span class="p">)</span>
+<span class="n">image_based_ip_c_over</span> <span class="o">=</span> <span class="n">mov</span><span class="o">.</span><span class="n">to_html5_video</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -1843,24 +2011,72 @@ div.rendered_html tbody tr:hover {
 
 </pre></div></div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">RuntimeError</span>                              Traceback (most recent call last)
+Input <span class="ansi-green-fg">In [10]</span>, in <span class="ansi-cyan-fg">&lt;cell line: 2&gt;</span><span class="ansi-blue-fg">()</span>
+<span class="ansi-green-intense-fg ansi-bold">      1</span> mov <span style="color: rgb(98,98,98)">=</span> ps<span style="color: rgb(98,98,98)">.</span>visualization<span style="color: rgb(98,98,98)">.</span>satn_to_movie(im<span style="color: rgb(98,98,98)">=</span>im, satn<span style="color: rgb(98,98,98)">=</span>satn, c_over<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">yellow</span><span style="color: rgb(175,0,0)">&#39;</span>)
+<span class="ansi-green-fg">----&gt; 2</span> image_based_ip_c_over <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">mov</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">to_html5_video</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">)</span>
+
+File <span class="ansi-green-fg">/usr/share/miniconda/envs/test/lib/python3.8/site-packages/matplotlib/animation.py:1266</span>, in <span class="ansi-cyan-fg">Animation.to_html5_video</span><span class="ansi-blue-fg">(self, embed_limit)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1263</span> path <span style="color: rgb(98,98,98)">=</span> Path(tmpdir, <span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">temp.m4v</span><span style="color: rgb(175,0,0)">&#34;</span>)
+<span class="ansi-green-intense-fg ansi-bold">   1264</span> <span style="color: rgb(95,135,135)"># We create a writer manually so that we can get the</span>
+<span class="ansi-green-intense-fg ansi-bold">   1265</span> <span style="color: rgb(95,135,135)"># appropriate size for the tag</span>
+<span class="ansi-green-fg">-&gt; 1266</span> Writer <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">writers</span><span class="ansi-yellow-bg">[</span><span class="ansi-yellow-bg">mpl</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">rcParams</span><span class="ansi-yellow-bg">[</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">&#39;</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">animation.writer</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">&#39;</span><span class="ansi-yellow-bg">]</span><span class="ansi-yellow-bg">]</span>
+<span class="ansi-green-intense-fg ansi-bold">   1267</span> writer <span style="color: rgb(98,98,98)">=</span> Writer(codec<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">h264</span><span style="color: rgb(175,0,0)">&#39;</span>,
+<span class="ansi-green-intense-fg ansi-bold">   1268</span>                 bitrate<span style="color: rgb(98,98,98)">=</span>mpl<span style="color: rgb(98,98,98)">.</span>rcParams[<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">animation.bitrate</span><span style="color: rgb(175,0,0)">&#39;</span>],
+<span class="ansi-green-intense-fg ansi-bold">   1269</span>                 fps<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(98,98,98)">1000.</span> <span style="color: rgb(98,98,98)">/</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_interval)
+<span class="ansi-green-intense-fg ansi-bold">   1270</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>save(<span style="color: rgb(0,135,0)">str</span>(path), writer<span style="color: rgb(98,98,98)">=</span>writer)
+
+File <span class="ansi-green-fg">/usr/share/miniconda/envs/test/lib/python3.8/site-packages/matplotlib/animation.py:151</span>, in <span class="ansi-cyan-fg">MovieWriterRegistry.__getitem__</span><span class="ansi-blue-fg">(self, name)</span>
+<span class="ansi-green-intense-fg ansi-bold">    149</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>is_available(name):
+<span class="ansi-green-intense-fg ansi-bold">    150</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_registered[name]
+<span class="ansi-green-fg">--&gt; 151</span> <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> <span class="ansi-bold" style="color: rgb(215,95,95)">RuntimeError</span>(<span style="color: rgb(175,0,0)">f</span><span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">Requested MovieWriter (</span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>name<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span style="color: rgb(175,0,0)">) not available</span><span style="color: rgb(175,0,0)">&#34;</span>)
+
+<span class="ansi-red-fg">RuntimeError</span>: Requested MovieWriter (ffmpeg) not available
+</pre></div></div>
+</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_visualization_reference_satn_to_movie_22_1.png" src="../../../_images/examples_visualization_reference_satn_to_movie_22_1.png" />
+<img alt="../../../_images/examples_visualization_reference_satn_to_movie_22_2.svg" src="../../../_images/examples_visualization_reference_satn_to_movie_22_2.svg" /></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">HTML</span><span class="p">(</span><span class="n">image_based_ip_c_over</span><span class="p">)</span>
+</pre></div>
 </div>
 </div>
-<img alt="image_based_ip_c_over" src="https://user-images.githubusercontent.com/43128873/160906875-b4938432-04bd-4931-977f-902788c23d32.gif" />
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Input <span class="ansi-green-fg">In [11]</span>, in <span class="ansi-cyan-fg">&lt;cell line: 1&gt;</span><span class="ansi-blue-fg">()</span>
+<span class="ansi-green-fg">----&gt; 1</span> HTML(<span class="ansi-yellow-bg">image_based_ip_c_over</span>)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;image_based_ip_c_over&#39; is not defined
+</pre></div></div>
+</div>
 </section>
 <section id="v_under">
 <h2><code class="docutils literal notranslate"><span class="pre">v_under</span></code><a class="headerlink" href="#v_under" title="Permalink to this headline">#</a></h2>
 <p>This is the lowest bound of <code class="docutils literal notranslate"><span class="pre">satn</span></code> data range that the colormap covers. By default, the <code class="docutils literal notranslate"><span class="pre">v_under</span></code> is 0.001.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mov</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">satn_to_movie</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">satn</span><span class="o">=</span><span class="n">satn</span><span class="p">,</span> <span class="n">v_under</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
-<span class="n">mov</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;image_based_ip_v_under.gif&#39;</span><span class="p">,</span> <span class="n">writer</span><span class="o">=</span><span class="s1">&#39;imagemagick&#39;</span><span class="p">)</span>
+<span class="n">image_based_ip_v_under</span> <span class="o">=</span> <span class="n">mov</span><span class="o">.</span><span class="n">to_html5_video</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -1872,24 +2088,72 @@ div.rendered_html tbody tr:hover {
 
 </pre></div></div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">RuntimeError</span>                              Traceback (most recent call last)
+Input <span class="ansi-green-fg">In [12]</span>, in <span class="ansi-cyan-fg">&lt;cell line: 2&gt;</span><span class="ansi-blue-fg">()</span>
+<span class="ansi-green-intense-fg ansi-bold">      1</span> mov <span style="color: rgb(98,98,98)">=</span> ps<span style="color: rgb(98,98,98)">.</span>visualization<span style="color: rgb(98,98,98)">.</span>satn_to_movie(im<span style="color: rgb(98,98,98)">=</span>im, satn<span style="color: rgb(98,98,98)">=</span>satn, v_under<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(98,98,98)">0.2</span>)
+<span class="ansi-green-fg">----&gt; 2</span> image_based_ip_v_under <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">mov</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">to_html5_video</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">)</span>
+
+File <span class="ansi-green-fg">/usr/share/miniconda/envs/test/lib/python3.8/site-packages/matplotlib/animation.py:1266</span>, in <span class="ansi-cyan-fg">Animation.to_html5_video</span><span class="ansi-blue-fg">(self, embed_limit)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1263</span> path <span style="color: rgb(98,98,98)">=</span> Path(tmpdir, <span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">temp.m4v</span><span style="color: rgb(175,0,0)">&#34;</span>)
+<span class="ansi-green-intense-fg ansi-bold">   1264</span> <span style="color: rgb(95,135,135)"># We create a writer manually so that we can get the</span>
+<span class="ansi-green-intense-fg ansi-bold">   1265</span> <span style="color: rgb(95,135,135)"># appropriate size for the tag</span>
+<span class="ansi-green-fg">-&gt; 1266</span> Writer <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">writers</span><span class="ansi-yellow-bg">[</span><span class="ansi-yellow-bg">mpl</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">rcParams</span><span class="ansi-yellow-bg">[</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">&#39;</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">animation.writer</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">&#39;</span><span class="ansi-yellow-bg">]</span><span class="ansi-yellow-bg">]</span>
+<span class="ansi-green-intense-fg ansi-bold">   1267</span> writer <span style="color: rgb(98,98,98)">=</span> Writer(codec<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">h264</span><span style="color: rgb(175,0,0)">&#39;</span>,
+<span class="ansi-green-intense-fg ansi-bold">   1268</span>                 bitrate<span style="color: rgb(98,98,98)">=</span>mpl<span style="color: rgb(98,98,98)">.</span>rcParams[<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">animation.bitrate</span><span style="color: rgb(175,0,0)">&#39;</span>],
+<span class="ansi-green-intense-fg ansi-bold">   1269</span>                 fps<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(98,98,98)">1000.</span> <span style="color: rgb(98,98,98)">/</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_interval)
+<span class="ansi-green-intense-fg ansi-bold">   1270</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>save(<span style="color: rgb(0,135,0)">str</span>(path), writer<span style="color: rgb(98,98,98)">=</span>writer)
+
+File <span class="ansi-green-fg">/usr/share/miniconda/envs/test/lib/python3.8/site-packages/matplotlib/animation.py:151</span>, in <span class="ansi-cyan-fg">MovieWriterRegistry.__getitem__</span><span class="ansi-blue-fg">(self, name)</span>
+<span class="ansi-green-intense-fg ansi-bold">    149</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>is_available(name):
+<span class="ansi-green-intense-fg ansi-bold">    150</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_registered[name]
+<span class="ansi-green-fg">--&gt; 151</span> <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> <span class="ansi-bold" style="color: rgb(215,95,95)">RuntimeError</span>(<span style="color: rgb(175,0,0)">f</span><span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">Requested MovieWriter (</span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>name<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span style="color: rgb(175,0,0)">) not available</span><span style="color: rgb(175,0,0)">&#34;</span>)
+
+<span class="ansi-red-fg">RuntimeError</span>: Requested MovieWriter (ffmpeg) not available
+</pre></div></div>
+</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_visualization_reference_satn_to_movie_26_1.png" src="../../../_images/examples_visualization_reference_satn_to_movie_26_1.png" />
+<img alt="../../../_images/examples_visualization_reference_satn_to_movie_26_2.svg" src="../../../_images/examples_visualization_reference_satn_to_movie_26_2.svg" /></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">HTML</span><span class="p">(</span><span class="n">image_based_ip_v_under</span><span class="p">)</span>
+</pre></div>
 </div>
 </div>
-<img alt="image_based_ip_v_under" src="https://user-images.githubusercontent.com/43128873/160906913-a32fcb3e-78ae-4ec9-926c-9892b990d578.gif" />
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Input <span class="ansi-green-fg">In [13]</span>, in <span class="ansi-cyan-fg">&lt;cell line: 1&gt;</span><span class="ansi-blue-fg">()</span>
+<span class="ansi-green-fg">----&gt; 1</span> HTML(<span class="ansi-yellow-bg">image_based_ip_v_under</span>)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;image_based_ip_v_under&#39; is not defined
+</pre></div></div>
+</div>
 </section>
 <section id="v_over">
 <h2><code class="docutils literal notranslate"><span class="pre">v_over</span></code><a class="headerlink" href="#v_over" title="Permalink to this headline">#</a></h2>
 <p>This is the highest bound of <code class="docutils literal notranslate"><span class="pre">satn</span></code> data range that the colormap covers. By default, the <code class="docutils literal notranslate"><span class="pre">v_over</span></code> is 1.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mov</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">satn_to_movie</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">satn</span><span class="o">=</span><span class="n">satn</span><span class="p">,</span> <span class="n">v_over</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
-<span class="n">mov</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;image_based_ip_v_over.gif&#39;</span><span class="p">,</span> <span class="n">writer</span><span class="o">=</span><span class="s1">&#39;imagemagick&#39;</span><span class="p">)</span>
+<span class="n">image_based_ip_v_over</span> <span class="o">=</span> <span class="n">mov</span><span class="o">.</span><span class="n">to_html5_video</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -1901,24 +2165,72 @@ div.rendered_html tbody tr:hover {
 
 </pre></div></div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">RuntimeError</span>                              Traceback (most recent call last)
+Input <span class="ansi-green-fg">In [14]</span>, in <span class="ansi-cyan-fg">&lt;cell line: 2&gt;</span><span class="ansi-blue-fg">()</span>
+<span class="ansi-green-intense-fg ansi-bold">      1</span> mov <span style="color: rgb(98,98,98)">=</span> ps<span style="color: rgb(98,98,98)">.</span>visualization<span style="color: rgb(98,98,98)">.</span>satn_to_movie(im<span style="color: rgb(98,98,98)">=</span>im, satn<span style="color: rgb(98,98,98)">=</span>satn, v_over<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(98,98,98)">0.5</span>)
+<span class="ansi-green-fg">----&gt; 2</span> image_based_ip_v_over <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">mov</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">to_html5_video</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">)</span>
+
+File <span class="ansi-green-fg">/usr/share/miniconda/envs/test/lib/python3.8/site-packages/matplotlib/animation.py:1266</span>, in <span class="ansi-cyan-fg">Animation.to_html5_video</span><span class="ansi-blue-fg">(self, embed_limit)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1263</span> path <span style="color: rgb(98,98,98)">=</span> Path(tmpdir, <span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">temp.m4v</span><span style="color: rgb(175,0,0)">&#34;</span>)
+<span class="ansi-green-intense-fg ansi-bold">   1264</span> <span style="color: rgb(95,135,135)"># We create a writer manually so that we can get the</span>
+<span class="ansi-green-intense-fg ansi-bold">   1265</span> <span style="color: rgb(95,135,135)"># appropriate size for the tag</span>
+<span class="ansi-green-fg">-&gt; 1266</span> Writer <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">writers</span><span class="ansi-yellow-bg">[</span><span class="ansi-yellow-bg">mpl</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">rcParams</span><span class="ansi-yellow-bg">[</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">&#39;</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">animation.writer</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">&#39;</span><span class="ansi-yellow-bg">]</span><span class="ansi-yellow-bg">]</span>
+<span class="ansi-green-intense-fg ansi-bold">   1267</span> writer <span style="color: rgb(98,98,98)">=</span> Writer(codec<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">h264</span><span style="color: rgb(175,0,0)">&#39;</span>,
+<span class="ansi-green-intense-fg ansi-bold">   1268</span>                 bitrate<span style="color: rgb(98,98,98)">=</span>mpl<span style="color: rgb(98,98,98)">.</span>rcParams[<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">animation.bitrate</span><span style="color: rgb(175,0,0)">&#39;</span>],
+<span class="ansi-green-intense-fg ansi-bold">   1269</span>                 fps<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(98,98,98)">1000.</span> <span style="color: rgb(98,98,98)">/</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_interval)
+<span class="ansi-green-intense-fg ansi-bold">   1270</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>save(<span style="color: rgb(0,135,0)">str</span>(path), writer<span style="color: rgb(98,98,98)">=</span>writer)
+
+File <span class="ansi-green-fg">/usr/share/miniconda/envs/test/lib/python3.8/site-packages/matplotlib/animation.py:151</span>, in <span class="ansi-cyan-fg">MovieWriterRegistry.__getitem__</span><span class="ansi-blue-fg">(self, name)</span>
+<span class="ansi-green-intense-fg ansi-bold">    149</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>is_available(name):
+<span class="ansi-green-intense-fg ansi-bold">    150</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_registered[name]
+<span class="ansi-green-fg">--&gt; 151</span> <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> <span class="ansi-bold" style="color: rgb(215,95,95)">RuntimeError</span>(<span style="color: rgb(175,0,0)">f</span><span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">Requested MovieWriter (</span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>name<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span style="color: rgb(175,0,0)">) not available</span><span style="color: rgb(175,0,0)">&#34;</span>)
+
+<span class="ansi-red-fg">RuntimeError</span>: Requested MovieWriter (ffmpeg) not available
+</pre></div></div>
+</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_visualization_reference_satn_to_movie_30_1.png" src="../../../_images/examples_visualization_reference_satn_to_movie_30_1.png" />
+<img alt="../../../_images/examples_visualization_reference_satn_to_movie_30_2.svg" src="../../../_images/examples_visualization_reference_satn_to_movie_30_2.svg" /></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">HTML</span><span class="p">(</span><span class="n">image_based_ip_v_over</span><span class="p">)</span>
+</pre></div>
 </div>
 </div>
-<img alt="image_based_ip_v_over" src="https://user-images.githubusercontent.com/43128873/160906906-29747e75-b80f-49a1-a842-1915db87cd66.gif" />
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Input <span class="ansi-green-fg">In [15]</span>, in <span class="ansi-cyan-fg">&lt;cell line: 1&gt;</span><span class="ansi-blue-fg">()</span>
+<span class="ansi-green-fg">----&gt; 1</span> HTML(<span class="ansi-yellow-bg">image_based_ip_v_over</span>)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;image_based_ip_v_over&#39; is not defined
+</pre></div></div>
+</div>
 </section>
 <section id="fps">
 <h2><code class="docutils literal notranslate"><span class="pre">fps</span></code><a class="headerlink" href="#fps" title="Permalink to this headline">#</a></h2>
 <p>This is the frames per second that the animation will be saved at. The default value is 10.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mov</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">satn_to_movie</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">satn</span><span class="o">=</span><span class="n">satn</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-<span class="n">mov</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;image_based_ip_fps.gif&#39;</span><span class="p">,</span> <span class="n">writer</span><span class="o">=</span><span class="s1">&#39;imagemagick&#39;</span><span class="p">)</span>
+<span class="n">image_based_ip_fps</span> <span class="o">=</span> <span class="n">mov</span><span class="o">.</span><span class="n">to_html5_video</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -1930,24 +2242,72 @@ div.rendered_html tbody tr:hover {
 
 </pre></div></div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">RuntimeError</span>                              Traceback (most recent call last)
+Input <span class="ansi-green-fg">In [16]</span>, in <span class="ansi-cyan-fg">&lt;cell line: 2&gt;</span><span class="ansi-blue-fg">()</span>
+<span class="ansi-green-intense-fg ansi-bold">      1</span> mov <span style="color: rgb(98,98,98)">=</span> ps<span style="color: rgb(98,98,98)">.</span>visualization<span style="color: rgb(98,98,98)">.</span>satn_to_movie(im<span style="color: rgb(98,98,98)">=</span>im, satn<span style="color: rgb(98,98,98)">=</span>satn, fps<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(98,98,98)">5</span>)
+<span class="ansi-green-fg">----&gt; 2</span> image_based_ip_fps <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">mov</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">to_html5_video</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">)</span>
+
+File <span class="ansi-green-fg">/usr/share/miniconda/envs/test/lib/python3.8/site-packages/matplotlib/animation.py:1266</span>, in <span class="ansi-cyan-fg">Animation.to_html5_video</span><span class="ansi-blue-fg">(self, embed_limit)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1263</span> path <span style="color: rgb(98,98,98)">=</span> Path(tmpdir, <span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">temp.m4v</span><span style="color: rgb(175,0,0)">&#34;</span>)
+<span class="ansi-green-intense-fg ansi-bold">   1264</span> <span style="color: rgb(95,135,135)"># We create a writer manually so that we can get the</span>
+<span class="ansi-green-intense-fg ansi-bold">   1265</span> <span style="color: rgb(95,135,135)"># appropriate size for the tag</span>
+<span class="ansi-green-fg">-&gt; 1266</span> Writer <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">writers</span><span class="ansi-yellow-bg">[</span><span class="ansi-yellow-bg">mpl</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">rcParams</span><span class="ansi-yellow-bg">[</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">&#39;</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">animation.writer</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">&#39;</span><span class="ansi-yellow-bg">]</span><span class="ansi-yellow-bg">]</span>
+<span class="ansi-green-intense-fg ansi-bold">   1267</span> writer <span style="color: rgb(98,98,98)">=</span> Writer(codec<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">h264</span><span style="color: rgb(175,0,0)">&#39;</span>,
+<span class="ansi-green-intense-fg ansi-bold">   1268</span>                 bitrate<span style="color: rgb(98,98,98)">=</span>mpl<span style="color: rgb(98,98,98)">.</span>rcParams[<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">animation.bitrate</span><span style="color: rgb(175,0,0)">&#39;</span>],
+<span class="ansi-green-intense-fg ansi-bold">   1269</span>                 fps<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(98,98,98)">1000.</span> <span style="color: rgb(98,98,98)">/</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_interval)
+<span class="ansi-green-intense-fg ansi-bold">   1270</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>save(<span style="color: rgb(0,135,0)">str</span>(path), writer<span style="color: rgb(98,98,98)">=</span>writer)
+
+File <span class="ansi-green-fg">/usr/share/miniconda/envs/test/lib/python3.8/site-packages/matplotlib/animation.py:151</span>, in <span class="ansi-cyan-fg">MovieWriterRegistry.__getitem__</span><span class="ansi-blue-fg">(self, name)</span>
+<span class="ansi-green-intense-fg ansi-bold">    149</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>is_available(name):
+<span class="ansi-green-intense-fg ansi-bold">    150</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_registered[name]
+<span class="ansi-green-fg">--&gt; 151</span> <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> <span class="ansi-bold" style="color: rgb(215,95,95)">RuntimeError</span>(<span style="color: rgb(175,0,0)">f</span><span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">Requested MovieWriter (</span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>name<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span style="color: rgb(175,0,0)">) not available</span><span style="color: rgb(175,0,0)">&#34;</span>)
+
+<span class="ansi-red-fg">RuntimeError</span>: Requested MovieWriter (ffmpeg) not available
+</pre></div></div>
+</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_visualization_reference_satn_to_movie_34_1.png" src="../../../_images/examples_visualization_reference_satn_to_movie_34_1.png" />
+<img alt="../../../_images/examples_visualization_reference_satn_to_movie_34_2.svg" src="../../../_images/examples_visualization_reference_satn_to_movie_34_2.svg" /></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">HTML</span><span class="p">(</span><span class="n">image_based_ip_fps</span><span class="p">)</span>
+</pre></div>
 </div>
 </div>
-<img alt="image_based_ip_fps" src="https://user-images.githubusercontent.com/43128873/160906895-c18133bb-3ccd-4b62-ab08-7fbae3b79556.gif" />
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Input <span class="ansi-green-fg">In [17]</span>, in <span class="ansi-cyan-fg">&lt;cell line: 1&gt;</span><span class="ansi-blue-fg">()</span>
+<span class="ansi-green-fg">----&gt; 1</span> HTML(<span class="ansi-yellow-bg">image_based_ip_fps</span>)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;image_based_ip_fps&#39; is not defined
+</pre></div></div>
+</div>
 </section>
 <section id="repeat">
 <h2><code class="docutils literal notranslate"><span class="pre">repeat</span></code><a class="headerlink" href="#repeat" title="Permalink to this headline">#</a></h2>
 <p>This variable indicates whether the animation <a class="reference external" href="https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.animation.ArtistAnimation.html#matplotlib.animation.ArtistAnimation">repeats</a> when the sequence of frames is completed. By default <code class="docutils literal notranslate"><span class="pre">repeat</span></code>=True.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mov</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">satn_to_movie</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">satn</span><span class="o">=</span><span class="n">satn</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="n">mov</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;image_based_ip_repeat.gif&#39;</span><span class="p">,</span> <span class="n">writer</span><span class="o">=</span><span class="s1">&#39;imagemagick&#39;</span><span class="p">)</span>
+<span class="n">image_based_ip_repeat</span> <span class="o">=</span> <span class="n">mov</span><span class="o">.</span><span class="n">to_html5_video</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -1959,16 +2319,64 @@ div.rendered_html tbody tr:hover {
 
 </pre></div></div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">RuntimeError</span>                              Traceback (most recent call last)
+Input <span class="ansi-green-fg">In [18]</span>, in <span class="ansi-cyan-fg">&lt;cell line: 2&gt;</span><span class="ansi-blue-fg">()</span>
+<span class="ansi-green-intense-fg ansi-bold">      1</span> mov <span style="color: rgb(98,98,98)">=</span> ps<span style="color: rgb(98,98,98)">.</span>visualization<span style="color: rgb(98,98,98)">.</span>satn_to_movie(im<span style="color: rgb(98,98,98)">=</span>im, satn<span style="color: rgb(98,98,98)">=</span>satn, repeat<span style="color: rgb(98,98,98)">=</span><span class="ansi-bold" style="color: rgb(0,135,0)">False</span>)
+<span class="ansi-green-fg">----&gt; 2</span> image_based_ip_repeat <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">mov</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">to_html5_video</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">)</span>
+
+File <span class="ansi-green-fg">/usr/share/miniconda/envs/test/lib/python3.8/site-packages/matplotlib/animation.py:1266</span>, in <span class="ansi-cyan-fg">Animation.to_html5_video</span><span class="ansi-blue-fg">(self, embed_limit)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1263</span> path <span style="color: rgb(98,98,98)">=</span> Path(tmpdir, <span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">temp.m4v</span><span style="color: rgb(175,0,0)">&#34;</span>)
+<span class="ansi-green-intense-fg ansi-bold">   1264</span> <span style="color: rgb(95,135,135)"># We create a writer manually so that we can get the</span>
+<span class="ansi-green-intense-fg ansi-bold">   1265</span> <span style="color: rgb(95,135,135)"># appropriate size for the tag</span>
+<span class="ansi-green-fg">-&gt; 1266</span> Writer <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">writers</span><span class="ansi-yellow-bg">[</span><span class="ansi-yellow-bg">mpl</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">rcParams</span><span class="ansi-yellow-bg">[</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">&#39;</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">animation.writer</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">&#39;</span><span class="ansi-yellow-bg">]</span><span class="ansi-yellow-bg">]</span>
+<span class="ansi-green-intense-fg ansi-bold">   1267</span> writer <span style="color: rgb(98,98,98)">=</span> Writer(codec<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">h264</span><span style="color: rgb(175,0,0)">&#39;</span>,
+<span class="ansi-green-intense-fg ansi-bold">   1268</span>                 bitrate<span style="color: rgb(98,98,98)">=</span>mpl<span style="color: rgb(98,98,98)">.</span>rcParams[<span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">animation.bitrate</span><span style="color: rgb(175,0,0)">&#39;</span>],
+<span class="ansi-green-intense-fg ansi-bold">   1269</span>                 fps<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(98,98,98)">1000.</span> <span style="color: rgb(98,98,98)">/</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_interval)
+<span class="ansi-green-intense-fg ansi-bold">   1270</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>save(<span style="color: rgb(0,135,0)">str</span>(path), writer<span style="color: rgb(98,98,98)">=</span>writer)
+
+File <span class="ansi-green-fg">/usr/share/miniconda/envs/test/lib/python3.8/site-packages/matplotlib/animation.py:151</span>, in <span class="ansi-cyan-fg">MovieWriterRegistry.__getitem__</span><span class="ansi-blue-fg">(self, name)</span>
+<span class="ansi-green-intense-fg ansi-bold">    149</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>is_available(name):
+<span class="ansi-green-intense-fg ansi-bold">    150</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_registered[name]
+<span class="ansi-green-fg">--&gt; 151</span> <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> <span class="ansi-bold" style="color: rgb(215,95,95)">RuntimeError</span>(<span style="color: rgb(175,0,0)">f</span><span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">Requested MovieWriter (</span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>name<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span style="color: rgb(175,0,0)">) not available</span><span style="color: rgb(175,0,0)">&#34;</span>)
+
+<span class="ansi-red-fg">RuntimeError</span>: Requested MovieWriter (ffmpeg) not available
+</pre></div></div>
+</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../_images/examples_visualization_reference_satn_to_movie_38_1.png" src="../../../_images/examples_visualization_reference_satn_to_movie_38_1.png" />
+<img alt="../../../_images/examples_visualization_reference_satn_to_movie_38_2.svg" src="../../../_images/examples_visualization_reference_satn_to_movie_38_2.svg" /></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">HTML</span><span class="p">(</span><span class="n">image_based_ip_repeat</span><span class="p">)</span>
+</pre></div>
 </div>
 </div>
-<img alt="image_based_ip_repeat" src="https://user-images.githubusercontent.com/43128873/160906900-825dc985-cb90-407b-bbc3-67aa18d26009.gif" />
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+Input <span class="ansi-green-fg">In [19]</span>, in <span class="ansi-cyan-fg">&lt;cell line: 1&gt;</span><span class="ansi-blue-fg">()</span>
+<span class="ansi-green-fg">----&gt; 1</span> HTML(<span class="ansi-yellow-bg">image_based_ip_repeat</span>)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;image_based_ip_repeat&#39; is not defined
+</pre></div></div>
+</div>
 <script type="application/vnd.jupyter.widget-state+json">
-{"state": {"4ee05f0ef4114248ad1cc88ac2e00c12": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "92882cc6c0894088b99e907c834424c2": {"model_name": "ProgressStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "ProgressStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "bar_color": null, "description_width": ""}}, "4fe4748f012a43cf948468676bec3bd8": {"model_name": "FloatProgressModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "FloatProgressModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "ProgressView", "bar_style": "danger", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_4ee05f0ef4114248ad1cc88ac2e00c12", "max": 9999.0, "min": 0.0, "orientation": "horizontal", "style": "IPY_MODEL_92882cc6c0894088b99e907c834424c2", "value": 466.0}}, "40333b9874bd46368b6b20aecc82f16e": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "f8e82fb3b82f4db2a1f5756c6e5637b6": {"model_name": "DescriptionStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "DescriptionStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "description_width": ""}}, "b5cc2d4b86e14a02af0733141eb00c29": {"model_name": "HTMLModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HTMLView", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_40333b9874bd46368b6b20aecc82f16e", "placeholder": "\u200b", "style": "IPY_MODEL_f8e82fb3b82f4db2a1f5756c6e5637b6", "value": "  5%"}}, "d23ad08ea47b455880ac54aed83ed864": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "faa16964856a45a4bf33fa5b4b8197f5": {"model_name": "DescriptionStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "DescriptionStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "description_width": ""}}, "28e4cbb738f14216bed6d191da945acb": {"model_name": "HTMLModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HTMLView", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_d23ad08ea47b455880ac54aed83ed864", "placeholder": "\u200b", "style": "IPY_MODEL_faa16964856a45a4bf33fa5b4b8197f5", "value": " 466/9999 [00:01&lt;4:39:28,  1.76s/it]"}}, "dc476d7bd24b4df095180e07f41ff24e": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "01e2f13537254473b0a964b02a55ee65": {"model_name": "HBoxModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HBoxModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HBoxView", "box_style": "", "children": ["IPY_MODEL_b5cc2d4b86e14a02af0733141eb00c29", "IPY_MODEL_4fe4748f012a43cf948468676bec3bd8", "IPY_MODEL_28e4cbb738f14216bed6d191da945acb"], "layout": "IPY_MODEL_dc476d7bd24b4df095180e07f41ff24e"}}}, "version_major": 2, "version_minor": 0}
+{"state": {"67a6b59246bf4ebab2c6f0b002b730c5": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "587b4a82d9e34aebb3a3f59d9e36dd15": {"model_name": "ProgressStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "ProgressStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "bar_color": null, "description_width": ""}}, "11226f4dfc5842d89fbd2ac73bd7f270": {"model_name": "FloatProgressModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "FloatProgressModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "ProgressView", "bar_style": "danger", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_67a6b59246bf4ebab2c6f0b002b730c5", "max": 9999.0, "min": 0.0, "orientation": "horizontal", "style": "IPY_MODEL_587b4a82d9e34aebb3a3f59d9e36dd15", "value": 466.0}}, "3fa49f0543f84074afbe64daed949185": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "836c021712574e7c880f7e3ec426de9c": {"model_name": "DescriptionStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "DescriptionStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "description_width": ""}}, "f592f1d9d18944209ad1304b6d766fe6": {"model_name": "HTMLModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HTMLView", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_3fa49f0543f84074afbe64daed949185", "placeholder": "\u200b", "style": "IPY_MODEL_836c021712574e7c880f7e3ec426de9c", "value": "  5%"}}, "cf2776dc05934aa08c3fcff2cadf612a": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "d5e762ce1eef4256941b6d91093de8cb": {"model_name": "DescriptionStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "DescriptionStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "StyleView", "description_width": ""}}, "bff14dc06cc5439bbb151a712fd2a17a": {"model_name": "HTMLModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HTMLView", "description": "", "description_tooltip": null, "layout": "IPY_MODEL_cf2776dc05934aa08c3fcff2cadf612a", "placeholder": "\u200b", "style": "IPY_MODEL_d5e762ce1eef4256941b6d91093de8cb", "value": " 466/9999 [00:01&lt;4:59:52,  1.89s/it]"}}, "d8aa24c65f26469ea976abe308b5d3e8": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "1.2.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "1.2.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "1.2.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "overflow_x": null, "overflow_y": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "c966e2d404d64933a35f8c8c51bb277e": {"model_name": "HBoxModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "1.5.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "1.5.0", "_model_name": "HBoxModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "1.5.0", "_view_name": "HBoxView", "box_style": "", "children": ["IPY_MODEL_f592f1d9d18944209ad1304b6d766fe6", "IPY_MODEL_11226f4dfc5842d89fbd2ac73bd7f270", "IPY_MODEL_bff14dc06cc5439bbb151a712fd2a17a"], "layout": "IPY_MODEL_d8aa24c65f26469ea976abe308b5d3e8"}}}, "version_major": 2, "version_minor": 0}
 </script></section>
 </section>
 
