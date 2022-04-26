@@ -46,13 +46,13 @@ jobs:
         run: |
           mamba install --file requirements/doc_requirements.txt
           pip install -r requirements/pip_requirements.txt
+          pip install -r requirements/tensorflow_requirements.txt
           pip install -e .
 
       # Build the documentation
       - name: Build the documentation
         run: |
           cd docs
-          python examples_linker.py
           make html
 
       # Push the documentation's HTML to github-pages
