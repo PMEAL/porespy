@@ -5,8 +5,9 @@ from copy import copy
 
 
 def test_ibip():
-    # Generate or load a test image
     np.random.seed(0)
+
+    # Generate or load a test image
     im = ps.generators.blobs(shape=[200, 200], porosity=0.6, blobiness=2)
 
     bd = np.zeros_like(im)
