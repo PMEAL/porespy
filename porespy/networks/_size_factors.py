@@ -33,6 +33,13 @@ def diffusive_size_factor_AI(regions, throat_conns, model,
         An array of length conns containing diffusive size factor of the conduits
         in the segmented image (regions).
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/networks/reference/diffusive_size_factor_AI.html>`_
+    to view online example.
+
+    """
     '''
     import tensorflow as tf
     if g_train is None:

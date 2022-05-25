@@ -6,13 +6,15 @@ import pandas as pd
 
 
 def test_inverse_Bo_study():
-    # Generate image
+    np.random.seed(0)
     plot = False
+
+    # Generate image
     vx = 0.0001
     sigma = 0.072
     g = 9.81
-    np.random.seed(0)
     im = ps.generators.overlapping_spheres(shape=[600, 200], r=8, porosity=0.65)
+
     inlets = np.zeros_like(im, dtype=bool)
     inlets[0, ...] = True
     outlets = np.zeros_like(im, dtype=bool)

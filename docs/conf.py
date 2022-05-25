@@ -50,6 +50,7 @@ copybutton_prompt_is_regexp = True
 
 nbsphinx_prompt_width = "0"
 nbsphinx_execute = 'always'
+nbsphinx_allow_errors = True
 
 panels_add_bootstrap_css = False  # to fix narrow width
 add_module_names = False  # porespy.generators --> generators
