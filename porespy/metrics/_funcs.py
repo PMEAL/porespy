@@ -1,7 +1,8 @@
 import numpy as np
 import scipy.ndimage as spim
 import scipy.spatial as sptl
-from scipy import fftpack as sp_ft
+import multiprocessing
+from scipy import fft as sp_ft
 from skimage.measure import regionprops
 from deprecated import deprecated
 from porespy.tools import extend_slice
@@ -601,7 +602,7 @@ def two_point_correlation_bf(im, spacing=10):
     return tpcf
 
 
-def _radial_profile(autocorr, r_max, nbins=100):
+def _radial_profile(autocorr, bins, pf=None, voxel_size=1):
     r"""
     Helper functions to calculate the radial profile of the autocorrelation
 
@@ -614,40 +615,63 @@ def _radial_profile(autocorr, r_max, nbins=100):
         The image of autocorrelation produced by FFT
     r_max : int or float
         The maximum radius in pixels to sum the image over
+    bins : ndarray
+        The edges of the bins to use in summing the radii, ** must be in voxels
+    pf : float
+        the phase fraction (porosity) of the image, used for scaling the
+        normalized autocorrelation down to match the two-point correlation
+        definition as given by Torquato
+    voxel_size : scalar
+        The size of a voxel side in preferred units.  The default is 1, so the
+        user can apply the scaling to the returned results after the fact.
 
     Returns
     -------
-    result : named_tuple
-        A named tupling containing an array of ``bins`` of radial position
-        and an array of ``counts`` in each bin.
+    result : tpcf
+
 
     """
     if len(autocorr.shape) == 2:
         adj = np.reshape(autocorr.shape, [2, 1, 1])
-        inds = np.indices(autocorr.shape) - adj / 2
+        # use np.round otherwise with odd image sizes, the mask generated can be zero,
+        # resulting in Div/0 error
+        inds = np.indices(autocorr.shape) - np.round(adj / 2)
         dt = np.sqrt(inds[0]**2 + inds[1]**2)
     elif len(autocorr.shape) == 3:
         adj = np.reshape(autocorr.shape, [3, 1, 1, 1])
-        inds = np.indices(autocorr.shape) - adj / 2
+        # use np.round otherwise with odd image sizes, the mask generated can be zero,
+        # resulting in Div/0 error
+        inds = np.indices(autocorr.shape) - np.round(adj / 2)
         dt = np.sqrt(inds[0]**2 + inds[1]**2 + inds[2]**2)
     else:
         raise Exception('Image dimensions must be 2 or 3')
-    bin_size = np.int(np.ceil(r_max / nbins))
-    bins = np.arange(bin_size, r_max, step=bin_size)
-    radial_sum = np.zeros_like(bins)
-    for i, r in enumerate(bins):
+    if np.max(bins) > np.max(dt):
+        raise Exception('Bins specified distances exceeding maximum radial distance for image size. \n'
+                        'Radial distance cannot exceed distance from center of image to corner.')
+    radial_sum = np.zeros_like(bins[:-1])
+    bin_size = bins[1:] - bins[:-1]
+
+    for i, r in enumerate(bins[:-1]):
         # Generate Radial Mask from dt using bins
-        mask = (dt <= r) * (dt > (r - bin_size))
+        mask = (dt <= r) * (dt > (r - bin_size[i]))
+        mask_sum = np.sum(mask)
         radial_sum[i] = np.sum(autocorr[mask]) / np.sum(mask)
     # Return normalized bin and radially summed autoc
     norm_autoc_radial = radial_sum / np.max(autocorr)
+    h = [norm_autoc_radial, bins]
+    h = _parse_histogram(h, voxel_size=1)
     tpcf = Results()
-    tpcf.distance = bins
-    tpcf.probability = norm_autoc_radial
+    tpcf.distance = h.bin_centers * voxel_size
+    tpcf.bin_centers = h.bin_centers * voxel_size
+    tpcf.bin_edges = h.bin_edges * voxel_size
+    tpcf.bin_widths = h.bin_widths * voxel_size
+    tpcf.probability_normalized = norm_autoc_radial
+    tpcf.probability = norm_autoc_radial * pf
+    tpcf.pdf = h.pdf * pf
     return tpcf
 
 
-def two_point_correlation(im):
+def two_point_correlation(im, voxel_size=1, bins=100):
     r"""
     Calculate the two-point correlation function using Fourier transforms
 
@@ -655,20 +679,35 @@ def two_point_correlation(im):
     ----------
     im : ndarray
         The image of the void space on which the 2-point correlation is
-        desired.
+        desired, in which the phase of interest is labelled as True
+    voxel_size : scalar
+        The size of a voxel side in preferred units.  The default is 1, so the
+        user can apply the scaling to the returned results after the fact.
+    bins : scalar or array_like
+        Either an array of bin sizes to use, or the number of bins that should
+        be automatically generated that span the data range. The maximum value of the bins,
+        if passed as an array, cannot exceed the distance from the center of the image to the corner
 
     Returns
     -------
-    result : Results object
-        A custom object with the following data added as named attributes:
-
-        'distance'
-            The distance between two points.
-
-        'probability'
+    result : tpcf
+        the two - point correlation function object, with named attributes:
+        *distance*:
+            The distance between two points - equivalent to bin_centers
+        *bin_centers*
+            The center point of each bin. See distance
+        *bin_edges*
+            Locations of bin divisions, including 1 more value than
+            the number of bins
+        *bin_widths*
+            Useful for passing to the ``width`` argument of
+            ``matplotlib.pyplot.bar``
+        *probability_normalized* :
             The probability that two points of the stated separation distance
-            are within the same phase
-
+            are within the same phase normalized to 1 at r = 0
+        *probability* or *pdf* :
+            The probability that two points of the stated separation distance
+            are within the same phase scaled to the phase fraction at r = 0
     Notes
     -----
     The fourier transform approach utilizes the fact that the
@@ -684,15 +723,26 @@ def two_point_correlation(im):
     to view online example.
 
     """
-    # Calculate half lengths of the image
-    hls = (np.ceil(np.shape(im)) / 2).astype(int)
-    # Fourier Transform and shift image
-    F = sp_ft.ifftshift(sp_ft.fftn(sp_ft.fftshift(im)))
-    # Compute Power Spectrum
-    P = np.absolute(F**2)
-    # Auto-correlation is inverse of Power Spectrum
-    autoc = np.absolute(sp_ft.ifftshift(sp_ft.ifftn(sp_ft.fftshift(P))))
-    tpcf = _radial_profile(autoc, r_max=np.min(hls))
+    # Get the number of CPUs available for parallel processing of Fourier transforms
+    cpus = multiprocessing.cpu_count()
+    # Get the phase fraction of the image
+    pf = np.sum(im == True) / im.size
+    if isinstance(bins, int):
+        # Calculate half lengths of the image
+        r_max = (np.ceil(np.min(np.shape(im))) / 2).astype(int)
+        # Get the bin-size - ensures it will be at least 1
+        bin_size = np.int(np.ceil(r_max / bins))
+        # Calculate the bin divisions, equivalent to bin_edges
+        bins = np.arange(0, r_max, bin_size)
+    # set the number of parallel processors to use:
+    with sp_ft.set_workers(cpus):
+        # Fourier Transform and shift image
+        F = sp_ft.ifftshift(sp_ft.rfftn(sp_ft.fftshift(im)))
+        # Compute Power Spectrum
+        P = np.absolute(F**2)
+        # Auto-correlation is inverse of Power Spectrum
+        autoc = np.absolute(sp_ft.ifftshift(sp_ft.irfftn(sp_ft.fftshift(P))))
+    tpcf = _radial_profile(autoc, bins, pf=pf, voxel_size=voxel_size)
     return tpcf
 
 
