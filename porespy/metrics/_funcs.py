@@ -647,14 +647,9 @@ def _radial_profile(autocorr, bins, pf=None, voxel_size=1):
     if np.max(bins) > np.max(dt):
         raise Exception('Bins specified distances exceeding maximum radial distance for image size. \n'
                         'Radial distance cannot exceed distance from center of image to corner.')
-    radial_sum = np.zeros_like(bins[:-1])
-    bin_size = bins[1:] - bins[:-1]
 
-    for i, r in enumerate(bins[:-1]):
-        # Generate Radial Mask from dt using bins
-        mask = (dt <= r) * (dt > (r - bin_size[i]))
-        mask_sum = np.sum(mask)
-        radial_sum[i] = np.sum(autocorr[mask]) / np.sum(mask)
+    bin_size = bins[1:] - bins[:-1]
+    radial_sum = _get_radial_sum(dt, bins, bin_size, autocorr)
     # Return normalized bin and radially summed autoc
     norm_autoc_radial = radial_sum / np.max(autocorr)
     h = [norm_autoc_radial, bins]
@@ -664,11 +659,19 @@ def _radial_profile(autocorr, bins, pf=None, voxel_size=1):
     tpcf.bin_centers = h.bin_centers * voxel_size
     tpcf.bin_edges = h.bin_edges * voxel_size
     tpcf.bin_widths = h.bin_widths * voxel_size
-    tpcf.probability_normalized = norm_autoc_radial
-    tpcf.probability = norm_autoc_radial * pf
+    tpcf.probability = norm_autoc_radial
+    tpcf.probability_scaled = norm_autoc_radial * pf
     tpcf.pdf = h.pdf * pf
+    tpcf.relfreq = h.relfreq
     return tpcf
 
+
+def _get_radial_sum(dt, bins, bin_size, autocorr):
+    radial_sum = np.zeros_like(bins[:-1])
+    for i, r in enumerate(bins[:-1]):
+        mask = (dt <= r) * (dt > (r - bin_size[i]))
+        radial_sum[i] = np.sum(np.ravel(autocorr)[np.ravel(mask)]) / np.sum(mask)
+    return radial_sum
 
 def two_point_correlation(im, voxel_size=1, bins=100):
     r"""
@@ -745,14 +748,21 @@ def two_point_correlation(im, voxel_size=1, bins=100):
     return tpcf
 
 
-def _parse_histogram(h, voxel_size=1):
+def _parse_histogram(h, voxel_size=1, density=True):
     delta_x = h[1]
     P = h[0]
-    temp = P * (delta_x[1:] - delta_x[:-1])
+    bin_widths = delta_x[1:] - delta_x[:-1]
+    temp = P * (bin_widths)
     C = np.cumsum(temp[-1::-1])[-1::-1]
-    S = P * (delta_x[1:] - delta_x[:-1])
+    S = P * (bin_widths)
+    if not density:
+        P /= np.max(P)
+        temp_sum = np.sum(P * bin_widths)
+        C /= temp_sum
+        S /= temp_sum
+
     bin_edges = delta_x * voxel_size
-    bin_widths = (delta_x[1:] - delta_x[:-1]) * voxel_size
+    bin_widths = (bin_widths) * voxel_size
     bin_centers = ((delta_x[1:] + delta_x[:-1]) / 2) * voxel_size
     hist = Results()
     hist.pdf = P
