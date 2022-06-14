@@ -10,6 +10,7 @@ from porespy.tools import Results
 from porespy import settings
 from porespy.tools import get_tqdm
 from loguru import logger
+from numba import njit
 tqdm = get_tqdm()
 
 
@@ -665,7 +666,7 @@ def _radial_profile(autocorr, bins, pf=None, voxel_size=1):
     tpcf.relfreq = h.relfreq
     return tpcf
 
-
+@njit(parallel=True)
 def _get_radial_sum(dt, bins, bin_size, autocorr):
     radial_sum = np.zeros_like(bins[:-1])
     for i, r in enumerate(bins[:-1]):
