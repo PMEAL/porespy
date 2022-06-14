@@ -736,7 +736,7 @@ def two_point_correlation(im, voxel_size=1, bins=100):
         # Get the bin-size - ensures it will be at least 1
         bin_size = int(np.ceil(r_max / bins))
         # Calculate the bin divisions, equivalent to bin_edges
-        bins = np.arange(0, r_max, bin_size)
+        bins = np.arange(0, r_max + bin_size, bin_size)
     # set the number of parallel processors to use:
     with sp_ft.set_workers(cpus):
         # Fourier Transform and shift image
