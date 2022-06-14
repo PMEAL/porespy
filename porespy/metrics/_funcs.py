@@ -1,7 +1,6 @@
 import numpy as np
 import scipy.ndimage as spim
 import scipy.spatial as sptl
-import multiprocessing
 from scipy import fft as sp_ft
 from skimage.measure import regionprops
 from deprecated import deprecated
@@ -724,14 +723,14 @@ def two_point_correlation(im, voxel_size=1, bins=100):
 
     """
     # Get the number of CPUs available for parallel processing of Fourier transforms
-    cpus = multiprocessing.cpu_count()
+    cpus = settings.ncores
     # Get the phase fraction of the image
-    pf = np.sum(im == True) / im.size
+    pf = porosity(im)
     if isinstance(bins, int):
         # Calculate half lengths of the image
         r_max = (np.ceil(np.min(np.shape(im))) / 2).astype(int)
         # Get the bin-size - ensures it will be at least 1
-        bin_size = np.int(np.ceil(r_max / bins))
+        bin_size = int(np.ceil(r_max / bins))
         # Calculate the bin divisions, equivalent to bin_edges
         bins = np.arange(0, r_max, bin_size)
     # set the number of parallel processors to use:
