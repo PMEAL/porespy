@@ -53,6 +53,14 @@ class MetricsTest():
         phi1 = ps.metrics.porosity(im=self.im3D)
         assert np.sqrt((np.mean(tpcf_fft.probability[-5:]) - phi1)**2) < t
 
+    def test_tpcf_fft_3d_scaled(self):
+        tpcf = ps.metrics.two_point_correlation(im=self.im3D)
+        phi1 = ps.metrics.porosity(im=self.im3D)
+        # The first value at r = 0 should be equal to porosity
+        assert np.abs(tpcf.probability_scaled[0] - phi1) < 0.01
+        # The function should decay to phi**2
+        assert np.abs(np.mean(tpcf.probability_scaled[-5:] - phi1**2)) < 0.01
+
     def test_pore_size_distribution(self):
         mip = ps.filters.porosimetry(self.im3D)
         psd = ps.metrics.pore_size_distribution(mip)
