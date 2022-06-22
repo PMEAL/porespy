@@ -7,12 +7,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
     <title>Examples &#8212; PoreSpy  documentation</title>
-    
-  <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
-<link href="_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
 
-    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
   <link rel="stylesheet"
     href="_static/vendor/fontawesome/5.13.0/css/all.min.css">
   <link rel="preload" as="font" type="font/woff2" crossorigin
@@ -25,9 +29,9 @@
     <link rel="stylesheet" type="text/css" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
     <link rel="stylesheet" type="text/css" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     <link rel="stylesheet" type="text/css" href="_static/css/custom.css" />
-    
+
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+  <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
 
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
@@ -42,34 +46,41 @@
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Generating fibrous mats" href="examples/generators/tutorials/cylinders.html" />
     <link rel="prev" title="spheres_to_comsol" href="modules/generated/porespy.io.spheres_to_comsol.html" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="None">
-    
-
-    <!-- Google Analytics -->
-    
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="docsearch:language" content="None">
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
-    
-    <div class="container-fluid" id="banner"></div>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+    <div class="bd-header-announcement container-fluid" id="banner">
+      
+
+    </div>
 
     
-    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
 
   <div id="navbar-start">
     
     
+  
 
-<a class="navbar-brand" href="https://www.porespy.org">
-  <img src="_static/porespy_logo.png" class="logo" alt="logo">
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+    <img src="_static/porespy_logo.png" class="logo__image only-light" alt="Logo image">
+    <img src="_static/porespy_logo.png" class="logo__image only-dark" alt="Logo image">
+  
+  
 </a>
-
-
     
   </div>
 
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
+    <span class="fas fa-bars"></span>
   </button>
 
   
@@ -113,6 +124,14 @@
     <div id="navbar-end">
       
       <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
         <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
         <li class="nav-item">
           <a class="nav-link" href="https://github.com/PMEAL/porespy" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
@@ -131,13 +150,13 @@
     </nav>
     
 
-    <div class="container-xl">
-      <div class="row">
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
           
-            
-            <!-- Only show if we have sidebars configured, else just a small margin  -->
-            <div class="col-12 col-md-3 bd-sidebar">
-              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="search.html" method="get">
+
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="search.html" method="get">
   <i class="icon fas fa-search"></i>
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
@@ -1321,19 +1340,20 @@
 
   </div>
 </nav>
-              </div>
-              <div class="sidebar-end-items">
-              </div>
-            </div>
-            
-          
+  </div>
+  <div class="sidebar-end-items">
+  </div>
+</div>
+
 
           
-          <div class="d-none d-xl-block col-xl-2 bd-toc">
-            
-              
-              <div class="toc-item">
-                
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+    
+    <div class="toc-item">
+      
 <div class="tocsection onthispage mt-5 pt-1 pb-3">
     <i class="fas fa-list"></i> On this page
 </div>
@@ -1388,23 +1408,21 @@
 </ul>
 
 </nav>
-              </div>
-              
-              <div class="toc-item">
-                
-              </div>
-              
-            
-          </div>
-          
+    </div>
+    
+    <div class="toc-item">
+      
+    </div>
+    
+  
+</div>
+
 
           
           
-            
-          
-          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+          <div class="bd-content col-12 col-md-9 col-xl-7">
               
-              <div>
+              <article class="bd-article" role="main">
                 
   <section id="examples">
 <span id="id1"></span><h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">#</a></h1>
@@ -1415,8 +1433,8 @@ repo, which can be browsed
 <section id="generators">
 <h2>Generators<a class="headerlink" href="#generators" title="Permalink to this headline">#</a></h2>
 <div class="tabbed-set docutils">
-<input checked="checked" id="0f0a4db6-435e-4b1e-a28b-35e2bc74f080" name="68f6e403-135d-4fa2-9a10-60a9703ceb30" type="radio">
-</input><label class="tabbed-label" for="0f0a4db6-435e-4b1e-a28b-35e2bc74f080">
+<input checked="checked" id="c2f81e18-fb2f-4cce-813c-e466daf94516" name="7a5b9683-736a-4516-ba70-7d7de66d8f47" type="radio">
+</input><label class="tabbed-label" for="c2f81e18-fb2f-4cce-813c-e466daf94516">
 Tutorials</label><div class="tabbed-content docutils">
 <div class="toctree-wrapper compound">
 <ul>
@@ -1425,8 +1443,8 @@ Tutorials</label><div class="tabbed-content docutils">
 </ul>
 </div>
 </div>
-<input id="448568b6-820e-4f86-b18f-18e2c2779970" name="68f6e403-135d-4fa2-9a10-60a9703ceb30" type="radio">
-</input><label class="tabbed-label" for="448568b6-820e-4f86-b18f-18e2c2779970">
+<input id="7a2661f9-45d4-4862-917f-a9f4ccb3c57e" name="7a5b9683-736a-4516-ba70-7d7de66d8f47" type="radio">
+</input><label class="tabbed-label" for="7a2661f9-45d4-4862-917f-a9f4ccb3c57e">
 Reference</label><div class="tabbed-content docutils">
 <div class="toctree-wrapper compound">
 <ul>
@@ -1458,8 +1476,8 @@ Reference</label><div class="tabbed-content docutils">
 <section id="filters">
 <h2>Filters<a class="headerlink" href="#filters" title="Permalink to this headline">#</a></h2>
 <div class="tabbed-set docutils">
-<input checked="checked" id="5e426476-3987-499e-86d2-859cabcaac2a" name="1b7417fe-365a-4947-984b-3f8484a12a93" type="radio">
-</input><label class="tabbed-label" for="5e426476-3987-499e-86d2-859cabcaac2a">
+<input checked="checked" id="5e676263-a717-4bd8-8589-db5ae085cb50" name="04170cc0-12c3-49c1-a15e-21f451b8b83e" type="radio">
+</input><label class="tabbed-label" for="5e676263-a717-4bd8-8589-db5ae085cb50">
 Tutorials</label><div class="tabbed-content docutils">
 <div class="toctree-wrapper compound">
 <ul>
@@ -1471,8 +1489,8 @@ Tutorials</label><div class="tabbed-content docutils">
 </ul>
 </div>
 </div>
-<input id="94c2098a-037d-4dc3-b121-e4b52cf4cb7a" name="1b7417fe-365a-4947-984b-3f8484a12a93" type="radio">
-</input><label class="tabbed-label" for="94c2098a-037d-4dc3-b121-e4b52cf4cb7a">
+<input id="f3851fa4-5c04-451c-8638-505556066ba2" name="04170cc0-12c3-49c1-a15e-21f451b8b83e" type="radio">
+</input><label class="tabbed-label" for="f3851fa4-5c04-451c-8638-505556066ba2">
 Reference</label><div class="tabbed-content docutils">
 <div class="toctree-wrapper compound">
 <ul>
@@ -1522,8 +1540,8 @@ Reference</label><div class="tabbed-content docutils">
 <section id="metrics">
 <h2>Metrics<a class="headerlink" href="#metrics" title="Permalink to this headline">#</a></h2>
 <div class="tabbed-set docutils">
-<input checked="checked" id="87c67112-f85d-45e2-8f0c-7a09617a9966" name="c11fb019-7277-4cf4-8655-26cae559c683" type="radio">
-</input><label class="tabbed-label" for="87c67112-f85d-45e2-8f0c-7a09617a9966">
+<input checked="checked" id="33b0e555-7670-4f19-a7a5-5a181bddad28" name="8d383b04-4787-48e5-8940-655c8a476d68" type="radio">
+</input><label class="tabbed-label" for="33b0e555-7670-4f19-a7a5-5a181bddad28">
 Tutorials</label><div class="tabbed-content docutils">
 <div class="toctree-wrapper compound">
 <ul>
@@ -1534,8 +1552,8 @@ Tutorials</label><div class="tabbed-content docutils">
 </ul>
 </div>
 </div>
-<input id="48dd589e-8ea1-467d-8580-774dca63c3b6" name="c11fb019-7277-4cf4-8655-26cae559c683" type="radio">
-</input><label class="tabbed-label" for="48dd589e-8ea1-467d-8580-774dca63c3b6">
+<input id="7a0a23ca-bfbf-4000-8bcb-f8f065eaf29c" name="8d383b04-4787-48e5-8940-655c8a476d68" type="radio">
+</input><label class="tabbed-label" for="7a0a23ca-bfbf-4000-8bcb-f8f065eaf29c">
 Reference</label><div class="tabbed-content docutils">
 <div class="toctree-wrapper compound">
 <ul>
@@ -1569,8 +1587,8 @@ Reference</label><div class="tabbed-content docutils">
 <section id="networks">
 <h2>Networks<a class="headerlink" href="#networks" title="Permalink to this headline">#</a></h2>
 <div class="tabbed-set docutils">
-<input checked="checked" id="70ced13b-1932-46dc-be3a-d0098d5156f8" name="d4ce6fe0-3a65-4ceb-96fc-5c951905ed26" type="radio">
-</input><label class="tabbed-label" for="70ced13b-1932-46dc-be3a-d0098d5156f8">
+<input checked="checked" id="c7cd9906-49fc-457b-ba7c-d35cb5c1ac36" name="b879ee3e-dc13-4fa4-8e1b-efa649ded2cd" type="radio">
+</input><label class="tabbed-label" for="c7cd9906-49fc-457b-ba7c-d35cb5c1ac36">
 Tutorials</label><div class="tabbed-content docutils">
 <div class="toctree-wrapper compound">
 <ul>
@@ -1582,8 +1600,8 @@ Tutorials</label><div class="tabbed-content docutils">
 </ul>
 </div>
 </div>
-<input id="dbf937d0-42f7-49dc-a47c-6dde7beb2356" name="d4ce6fe0-3a65-4ceb-96fc-5c951905ed26" type="radio">
-</input><label class="tabbed-label" for="dbf937d0-42f7-49dc-a47c-6dde7beb2356">
+<input id="31cf5373-886a-4948-bd72-1585907a3b2f" name="b879ee3e-dc13-4fa4-8e1b-efa649ded2cd" type="radio">
+</input><label class="tabbed-label" for="31cf5373-886a-4948-bd72-1585907a3b2f">
 Reference</label><div class="tabbed-content docutils">
 <div class="toctree-wrapper compound">
 <ul>
@@ -1602,8 +1620,8 @@ Reference</label><div class="tabbed-content docutils">
 <section id="simulations">
 <h2>Simulations<a class="headerlink" href="#simulations" title="Permalink to this headline">#</a></h2>
 <div class="tabbed-set docutils">
-<input checked="checked" id="9b699f52-5069-4198-8463-281f49472134" name="f80ae51f-3f7a-45fe-959f-d9cac0c0be6b" type="radio">
-</input><label class="tabbed-label" for="9b699f52-5069-4198-8463-281f49472134">
+<input checked="checked" id="6ae4e2ce-4dc2-42d5-b058-e195b6d7d532" name="9a26ed8b-5e20-405e-8989-6c056b13c8ce" type="radio">
+</input><label class="tabbed-label" for="6ae4e2ce-4dc2-42d5-b058-e195b6d7d532">
 Tutorials</label><div class="tabbed-content docutils">
 <div class="toctree-wrapper compound">
 <ul>
@@ -1618,8 +1636,8 @@ Tutorials</label><div class="tabbed-content docutils">
 <section id="tools">
 <h2>Tools<a class="headerlink" href="#tools" title="Permalink to this headline">#</a></h2>
 <div class="tabbed-set docutils">
-<input checked="checked" id="f39085cc-b25e-4f54-bfa4-4ae8f18c63d5" name="dadcd1e1-a3cd-4fe0-b7f2-397158a2801a" type="radio">
-</input><label class="tabbed-label" for="f39085cc-b25e-4f54-bfa4-4ae8f18c63d5">
+<input checked="checked" id="0b1ff0e9-5c6d-4e19-b966-db7b3ceddcf0" name="38c53eaf-5ed7-4d16-850d-a19de3d8078d" type="radio">
+</input><label class="tabbed-label" for="0b1ff0e9-5c6d-4e19-b966-db7b3ceddcf0">
 Reference</label><div class="tabbed-content docutils">
 <div class="toctree-wrapper compound">
 <ul>
@@ -1651,8 +1669,8 @@ Reference</label><div class="tabbed-content docutils">
 <section id="visualization">
 <h2>Visualization<a class="headerlink" href="#visualization" title="Permalink to this headline">#</a></h2>
 <div class="tabbed-set docutils">
-<input checked="checked" id="83c69338-03fc-4168-a554-0961d2e53105" name="a367de55-4f3a-4aef-8bbb-9e6740e295b8" type="radio">
-</input><label class="tabbed-label" for="83c69338-03fc-4168-a554-0961d2e53105">
+<input checked="checked" id="f3812761-51c5-4625-8554-df976ad13198" name="7ca80036-2ba8-4d61-bbf5-657427fd73ed" type="radio">
+</input><label class="tabbed-label" for="f3812761-51c5-4625-8554-df976ad13198">
 Tutorials</label><div class="tabbed-content docutils">
 <div class="toctree-wrapper compound">
 <ul>
@@ -1660,8 +1678,8 @@ Tutorials</label><div class="tabbed-content docutils">
 </ul>
 </div>
 </div>
-<input id="973fec9f-0b8b-41f0-bfed-1d91452577d4" name="a367de55-4f3a-4aef-8bbb-9e6740e295b8" type="radio">
-</input><label class="tabbed-label" for="973fec9f-0b8b-41f0-bfed-1d91452577d4">
+<input id="800863f3-2ac5-450f-a6f8-c3e25f99a10d" name="7ca80036-2ba8-4d61-bbf5-657427fd73ed" type="radio">
+</input><label class="tabbed-label" for="800863f3-2ac5-450f-a6f8-c3e25f99a10d">
 Reference</label><div class="tabbed-content docutils">
 <div class="toctree-wrapper compound">
 <ul>
@@ -1684,33 +1702,35 @@ Reference</label><div class="tabbed-content docutils">
 </section>
 
 
-              </div>
+              </article>
               
-              
-          </main>
-          
 
+              
+          </div>
+          
       </div>
     </div>
+
+  
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
-<footer class="footer mt-5 mt-md-0">
-  <div class="container">
-    
-    <div class="footer-item">
-      <p class="copyright">
+  <script src="_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
+
+<footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    <p class="copyright">
     &copy; Copyright 2022, PMEAL.<br>
 </p>
-    </div>
-    
-    <div class="footer-item">
-      <p class="sphinx-version">
+  </div>
+  
+  <div class="footer-item">
+    <p class="sphinx-version">
 Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
 </p>
-    </div>
-    
   </div>
+  
+</div>
 </footer>
   </body>
 </html>
