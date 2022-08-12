@@ -830,8 +830,12 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Image dimensions must be 2 or 3&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">bins</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">dt</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Bins specified distances exceeding maximum radial distance for image size. </span><span class="se">\n</span><span class="s1">&#39;</span>
-                        <span class="s1">&#39;Radial distance cannot exceed distance from center of image to corner.&#39;</span><span class="p">)</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s1">&#39;Bins specified distances exceeding maximum radial distance for&#39;</span>
+            <span class="s1">&#39; image size. Radial distance cannot exceed distance from center&#39;</span>
+            <span class="s1">&#39; of image to corner.&#39;</span>
+        <span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
     <span class="n">bin_size</span> <span class="o">=</span> <span class="n">bins</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">bins</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="n">radial_sum</span> <span class="o">=</span> <span class="n">_get_radial_sum</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="n">bin_size</span><span class="p">,</span> <span class="n">autocorr</span><span class="p">)</span>
@@ -850,6 +854,7 @@
     <span class="n">tpcf</span><span class="o">.</span><span class="n">relfreq</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">relfreq</span>
     <span class="k">return</span> <span class="n">tpcf</span>
 
+
 <span class="nd">@njit</span><span class="p">(</span><span class="n">parallel</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">_get_radial_sum</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="n">bin_size</span><span class="p">,</span> <span class="n">autocorr</span><span class="p">):</span>
     <span class="n">radial_sum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">bins</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
@@ -857,6 +862,7 @@
         <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">dt</span> <span class="o">&lt;=</span> <span class="n">r</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">dt</span> <span class="o">&gt;</span> <span class="p">(</span><span class="n">r</span> <span class="o">-</span> <span class="n">bin_size</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
         <span class="n">radial_sum</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">autocorr</span><span class="p">)[</span><span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">mask</span><span class="p">)])</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">radial_sum</span>
+
 
 <div class="viewcode-block" id="two_point_correlation"><a class="viewcode-back" href="../../../modules/generated/porespy.metrics.two_point_correlation.html#porespy.metrics.two_point_correlation">[docs]</a><span class="k">def</span> <span class="nf">two_point_correlation</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">voxel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -868,12 +874,14 @@
 <span class="sd">        The image of the void space on which the 2-point correlation is</span>
 <span class="sd">        desired, in which the phase of interest is labelled as True</span>
 <span class="sd">    voxel_size : scalar</span>
-<span class="sd">        The size of a voxel side in preferred units.  The default is 1, so the</span>
-<span class="sd">        user can apply the scaling to the returned results after the fact.</span>
+<span class="sd">        The size of a voxel side in preferred units.  The default is 1, so</span>
+<span class="sd">        the user can apply the scaling to the returned results after the</span>
+<span class="sd">        fact.</span>
 <span class="sd">    bins : scalar or array_like</span>
-<span class="sd">        Either an array of bin sizes to use, or the number of bins that should</span>
-<span class="sd">        be automatically generated that span the data range. The maximum value of the bins,</span>
-<span class="sd">        if passed as an array, cannot exceed the distance from the center of the image to the corner</span>
+<span class="sd">        Either an array of bin sizes to use, or the number of bins that</span>
+<span class="sd">        should be automatically generated that span the data range. The</span>
+<span class="sd">        maximum value of the bins, if passed as an array, cannot exceed</span>
+<span class="sd">        the distance from the center of the image to the corner.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
