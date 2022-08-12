@@ -101,7 +101,7 @@ class Settings:  # pragma: no cover
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._notebook = None
-        self._ncores = psutil.cpu_count()
+        self._ncores = psutil.cpu_count(logical=False)
 
     @property
     def logger_fmt(self):
@@ -154,15 +154,16 @@ class Settings:  # pragma: no cover
 
     def _get_ncores(self):
         if self._ncores is None:
-            self._ncores = psutil.cpu_count()
+            self._ncores = psutil.cpu_count(logical=False)
         return self._ncores
 
     def _set_ncores(self, val):
+        cpu_count = psutil.cpu_count(logical=False)
         if val is None:
-            val = psutil.cpu_count()
-        elif val > psutil.cpu_count():
+            val = cpu_count
+        elif val > cpu_count:
             logger.error('Value is more than the available number of cores')
-            val = psutil.cpu_count()
+            val = cpu_count
         self._ncores = val
 
     ncores = property(fget=_get_ncores, fset=_set_ncores)
