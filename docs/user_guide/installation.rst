@@ -56,8 +56,8 @@ Clone the repo somewhere in your disk using::
 
 Install ``porespy`` dependencies::
 
-   $ conda install --file=requirements/conda_requirements.txt
-   $ pip install -r requirements/pip_requirements.txt
+   $ conda install --file=requirements/conda.txt
+   $ pip install -r requirements.txt
 
 Install ``porespy`` in "editable" mode::
 

@@ -18,7 +18,7 @@ def test_variable_Bo_study():
     plot = False
 
     # Generate image
-    im = ~ps.generators.RSA([L, W], r=int(D/2), clearance=2, volume_fraction=0.5)
+    im = ~ps.generators.RSA([L, W], r=int(D/2), clearance=2, volume_fraction=0.75)
     inlets = np.zeros_like(im)
     inlets[-1, ...] = True
 
