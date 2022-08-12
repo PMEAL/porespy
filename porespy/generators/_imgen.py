@@ -367,7 +367,7 @@ def bundle_of_tubes(shape: List[int], spacing: int, distribution=None, smooth=Tr
     N = im.sum()
     if distribution is None:
         # +1 below is because randint 4.X gives a max of 3
-        distribution = spst.randint(low=3, high=spacing/2 + 1)
+        distribution = spst.randint(low=3, high=int(spacing/2 + 1))
         Rs = distribution.rvs(N)
     else:
         Rs = distribution.rvs(N)

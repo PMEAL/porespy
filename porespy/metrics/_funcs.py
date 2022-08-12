@@ -646,8 +646,12 @@ def _radial_profile(autocorr, bins, pf=None, voxel_size=1):
     else:
         raise Exception('Image dimensions must be 2 or 3')
     if np.max(bins) > np.max(dt):
-        raise Exception('Bins specified distances exceeding maximum radial distance for image size. \n'
-                        'Radial distance cannot exceed distance from center of image to corner.')
+        msg = (
+            'Bins specified distances exceeding maximum radial distance for'
+            ' image size. Radial distance cannot exceed distance from center'
+            ' of image to corner.'
+        )
+        raise Exception(msg)
 
     bin_size = bins[1:] - bins[:-1]
     radial_sum = _get_radial_sum(dt, bins, bin_size, autocorr)
@@ -666,6 +670,7 @@ def _radial_profile(autocorr, bins, pf=None, voxel_size=1):
     tpcf.relfreq = h.relfreq
     return tpcf
 
+
 @njit(parallel=True)
 def _get_radial_sum(dt, bins, bin_size, autocorr):
     radial_sum = np.zeros_like(bins[:-1])
@@ -673,6 +678,7 @@ def _get_radial_sum(dt, bins, bin_size, autocorr):
         mask = (dt <= r) * (dt > (r - bin_size[i]))
         radial_sum[i] = np.sum(np.ravel(autocorr)[np.ravel(mask)]) / np.sum(mask)
     return radial_sum
+
 
 def two_point_correlation(im, voxel_size=1, bins=100):
     r"""
@@ -684,12 +690,14 @@ def two_point_correlation(im, voxel_size=1, bins=100):
         The image of the void space on which the 2-point correlation is
         desired, in which the phase of interest is labelled as True
     voxel_size : scalar
-        The size of a voxel side in preferred units.  The default is 1, so the
-        user can apply the scaling to the returned results after the fact.
+        The size of a voxel side in preferred units.  The default is 1, so
+        the user can apply the scaling to the returned results after the
+        fact.
     bins : scalar or array_like
-        Either an array of bin sizes to use, or the number of bins that should
-        be automatically generated that span the data range. The maximum value of the bins,
-        if passed as an array, cannot exceed the distance from the center of the image to the corner
+        Either an array of bin sizes to use, or the number of bins that
+        should be automatically generated that span the data range. The
+        maximum value of the bins, if passed as an array, cannot exceed
+        the distance from the center of the image to the corner.
 
     Returns
     -------

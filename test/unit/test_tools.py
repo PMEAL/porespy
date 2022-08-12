@@ -294,7 +294,7 @@ class ToolsTest():
         im = im*ps.tools.extract_regions(im, labels=[2, 3], trim=False)
         assert np.all(np.unique(im) == [0, 2, 3])
 
-    condition = sys.platform.startswith("win") and sys.version_info[:2] == (3, 8)
+    condition = sys.platform.startswith("win")  # and sys.version_info[:2] == (3, 8)
 
     @pytest.mark.skipif(condition, reason="scikit-fmm clashes with numpy")
     def test_marching_map(self):
