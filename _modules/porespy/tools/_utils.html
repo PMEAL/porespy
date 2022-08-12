@@ -285,7 +285,7 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_notebook</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_ncores</span> <span class="o">=</span> <span class="n">psutil</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ncores</span> <span class="o">=</span> <span class="n">psutil</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">(</span><span class="n">logical</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">logger_fmt</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -338,15 +338,16 @@
 
     <span class="k">def</span> <span class="nf">_get_ncores</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ncores</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_ncores</span> <span class="o">=</span> <span class="n">psutil</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ncores</span> <span class="o">=</span> <span class="n">psutil</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">(</span><span class="n">logical</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ncores</span>
 
     <span class="k">def</span> <span class="nf">_set_ncores</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="n">cpu_count</span> <span class="o">=</span> <span class="n">psutil</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">(</span><span class="n">logical</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">val</span> <span class="o">=</span> <span class="n">psutil</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="n">val</span> <span class="o">&gt;</span> <span class="n">psutil</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">():</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="n">cpu_count</span>
+        <span class="k">elif</span> <span class="n">val</span> <span class="o">&gt;</span> <span class="n">cpu_count</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Value is more than the available number of cores&#39;</span><span class="p">)</span>
-            <span class="n">val</span> <span class="o">=</span> <span class="n">psutil</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="n">cpu_count</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ncores</span> <span class="o">=</span> <span class="n">val</span>
 
     <span class="n">ncores</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">fget</span><span class="o">=</span><span class="n">_get_ncores</span><span class="p">,</span> <span class="n">fset</span><span class="o">=</span><span class="n">_set_ncores</span><span class="p">)</span>

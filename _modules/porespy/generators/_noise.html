@@ -182,9 +182,9 @@
               <article class="bd-article" role="main">
                 
   <h1>Source code for porespy.generators._noise</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">multiprocessing</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">norm_to_uniform</span>
+<span class="kn">import</span> <span class="nn">psutil</span>
 
 
 <div class="viewcode-block" id="fractal_noise"><a class="viewcode-back" href="../../../modules/generated/porespy.generators.fractal_noise.html#porespy.generators.fractal_noise">[docs]</a><span class="k">def</span> <span class="nf">fractal_noise</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">frequency</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">octaves</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">gain</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;simplex&#39;</span><span class="p">,</span>
@@ -269,7 +269,7 @@
         <span class="k">raise</span> <span class="ne">ModuleNotFoundError</span><span class="p">(</span><span class="s2">&quot;You need to install `pyfastnoisesimd` using&quot;</span>
                                   <span class="s2">&quot; `pip install pyfastnoisesimd`&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">cores</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">cores</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span>
+        <span class="n">cores</span> <span class="o">=</span> <span class="n">psutil</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">(</span><span class="n">logical</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">seed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="mi">31</span><span class="p">)</span>
     <span class="n">perlin</span> <span class="o">=</span> <span class="n">Noise</span><span class="p">(</span><span class="n">numWorkers</span><span class="o">=</span><span class="n">cores</span><span class="p">)</span>
