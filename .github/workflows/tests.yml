@@ -30,7 +30,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{ matrix.path }}
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/pip_requirements.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
 
@@ -43,11 +43,7 @@ jobs:
 
       - name: Install dependencies (pip)
         run: |
-          pip install \
-            -r requirements/pip_requirements.txt \
-            -r requirements/test_requirements.txt
-          # Install porespy from the checked-out branch
-          pip install -e . --no-deps
+          pip install -r requirements.txt -r tests.txt
 
       # TODO: uncomment this step when integration tests are fixed
       # - name: Disable numba JIT for codecov to include jitted methods
