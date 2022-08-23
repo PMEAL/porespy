@@ -1,6 +1,6 @@
-import multiprocessing
 import numpy as np
 from porespy.tools import norm_to_uniform
+import psutil
 
 
 def fractal_noise(shape, frequency=0.05, octaves=4, gain=0.5, mode='simplex',
@@ -72,6 +72,12 @@ def fractal_noise(shape, frequency=0.05, octaves=4, gain=0.5, mode='simplex',
     For more information on ``cubic noise`` see
     `here <https://github.com/jobtalle/CubicNoise>`__.
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/generators/reference/fractal_noise.html>`_
+    to view online example.
+
     """
     try:
         from pyfastnoisesimd import Noise, NoiseType, PerturbType
@@ -79,7 +85,7 @@ def fractal_noise(shape, frequency=0.05, octaves=4, gain=0.5, mode='simplex',
         raise ModuleNotFoundError("You need to install `pyfastnoisesimd` using"
                                   " `pip install pyfastnoisesimd`")
     if cores is None:
-        cores = multiprocessing.cpu_count()
+        cores = psutil.cpu_count(logical=False)
     if seed is None:
         seed = np.random.randint(2**31)
     perlin = Noise(numWorkers=cores)

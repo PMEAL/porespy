@@ -88,7 +88,7 @@ function bump_version {
     local bump_type=$1
     local version_loc=$2
     local version=$(get_version $version_loc)
-    bump2version --current-version $version $bump_type $version_loc
+    bump2version --current-version $version $bump_type $version_loc --verbose
 }
 
 

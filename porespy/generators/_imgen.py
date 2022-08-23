@@ -186,7 +186,7 @@ def rsa(im_or_shape: np.array,
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/generators/reference/RSA.html>`_
+    <https://porespy.org/examples/generators/reference/rsa.html>`_
     to view online example.
 
     """
@@ -367,7 +367,7 @@ def bundle_of_tubes(shape: List[int], spacing: int, distribution=None, smooth=Tr
     N = im.sum()
     if distribution is None:
         # +1 below is because randint 4.X gives a max of 3
-        distribution = spst.randint(low=3, high=spacing/2 + 1)
+        distribution = spst.randint(low=3, high=int(spacing/2 + 1))
         Rs = distribution.rvs(N)
     else:
         Rs = distribution.rvs(N)
@@ -894,12 +894,6 @@ def _cylinders(shape: List[int],
     -------
     image : ndarray
         A boolean array with ``True`` values denoting the pore space
-
-    Examples
-    --------
-    `Click here
-    <https://porespy.org/examples/generators/cylinders.html>`_
-    to view online example.
 
     """
     shape = np.array(shape)

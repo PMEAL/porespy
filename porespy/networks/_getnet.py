@@ -106,6 +106,12 @@ def regions_to_network(regions, phases=None, voxel_size=1, accuracy='standard'):
         The length between two pore centers on a straight line between them
         that does not pass through the throat centroid.
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/networks/reference/regions_to_network.html>`_
+    to view online example.
+
     """
     logger.trace('Extracting pore/throat information')
 
@@ -117,8 +123,8 @@ def regions_to_network(regions, phases=None, voxel_size=1, accuracy='standard'):
     if im.size != phases.size:
         raise Exception('regions and phase are different sizes, probably ' +
                         'because boundary regions were not added to phases')
-    dt = edt(phases == 1)
-    for i in range(2, phases.max()+1):
+    dt = np.zeros_like(phases, dtype="float32")  # since edt returns float32
+    for i in np.unique(phases[phases.nonzero()]):
         dt += edt(phases == i)
 
     # Get 'slices' into im for each pore region

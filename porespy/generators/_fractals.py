@@ -27,6 +27,12 @@ def random_cantor_dust(shape, n, p=2, f=0.8):
     dust : ndarray
         A boolean image of a random Cantor dust
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/generators/reference/randon_cantor_dust.html>`_
+    to view online example.
+
     """
     # Parse the given shape and adjust if necessary
     shape = np.array(shape)
@@ -68,6 +74,12 @@ def sierpinski_foam(dmin, n, ndim=2, max_size=1e9):
     -------
     foam : ndarray
         A boolean image of a Sierpinski gasket or foam
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/generators/reference/sierpinski_foam.html>`_
+    to view online example.
 
     """
     def _insert_cubes(im, n):

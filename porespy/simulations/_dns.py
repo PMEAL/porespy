@@ -45,6 +45,12 @@ def tortuosity_fd(im, axis):
                             the simulation.
         =================== ===================================================
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/simulations/reference/tortuosity_fd.html>`_
+    to view online example.
+
     """
     if axis > (im.ndim - 1):
         raise Exception(f"'axis' must be <= {im.ndim}")

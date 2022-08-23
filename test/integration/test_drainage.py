@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 
 def test_drainage():
     np.random.seed(6)
+
     im = ps.generators.blobs(shape=[500, 500], porosity=0.7, blobiness=1.5)
     inlets = np.zeros_like(im)
     inlets[0, :] = True

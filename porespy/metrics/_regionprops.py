@@ -42,6 +42,12 @@ def props_to_DataFrame(regionprops):
     prop_to_image
     regionprops_3d
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/metrics/reference/props_to_DataFrame.html>`_
+    to view online example.
+
     """
     # Parse the regionprops list and pull out all props with scalar values
     metrics = []
@@ -94,6 +100,12 @@ def prop_to_image(regionprops, shape, prop):
     --------
     props_to_DataFrame
     regionprops_3d
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/metrics/reference/prop_to_image.html>`_
+    to view online example.
 
     """
     im = np.zeros(shape=shape)
@@ -184,6 +196,12 @@ def regionprops_3D(im):
     Regions can be identified using a watershed algorithm, which can be a bit
     tricky to obtain desired results.  *PoreSpy* includes the SNOW algorithm,
     which may be helpful.
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/metrics/reference/regionprops_3D.html>`_
+    to view online example.
 
     """
     results = regionprops(im)

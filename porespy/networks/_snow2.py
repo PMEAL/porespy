@@ -138,6 +138,12 @@ def snow2(phases,
        networks from massive tomograms via geometric domain decomposition.
        Advances in Water Resources. 145(Nov), 103734 (2020)
 
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/networks/reference/snow2.html>`_
+    to view online example.
+
     """
     # Parallel snow does not accept peaks, so if they are provided,
     # disable parallelization

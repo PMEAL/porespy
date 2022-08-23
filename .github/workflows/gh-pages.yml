@@ -1,9 +1,10 @@
 name: Deploy Documentation
 
 on:
+  workflow_dispatch:
   push:
     branches:
-    - dev
+      - dev
 
 jobs:
   deploy-docs:
@@ -27,7 +28,7 @@ jobs:
           CACHE_NUMBER: 0  # increase value -> force reset cache
         with:
           path: ~/conda_pkgs_dir
-          key: ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{ hashFiles('**/conda_requirements.txt') }}
+          key: ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{ hashFiles('requirements.txt') }}
 
       - name: Set up conda/mamba
         uses: conda-incubator/setup-miniconda@v2
@@ -43,15 +44,13 @@ jobs:
 
       - name: Install dependencies (conda)
         run: |
-          mamba install --file requirements/doc_requirements.txt
-          pip install -r requirements/pip_requirements.txt
-          pip install -e .
+          mamba install --file requirements/docs.txt
+          pip install -r requirements.txt
 
       # Build the documentation
       - name: Build the documentation
         run: |
           cd docs
-          python examples_linker.py
           make html
 
       # Push the documentation's HTML to github-pages
