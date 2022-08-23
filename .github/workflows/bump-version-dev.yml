@@ -7,6 +7,8 @@ on:
 
 jobs:
   build:
+    if: (! contains(github.event.head_commit.message, '[no bump]'))
+
     name: Bump version
     runs-on: ubuntu-latest
 
