@@ -249,8 +249,8 @@
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
 <span class="sd">    .. [1] Bachmat and Bear. On the Concept and Size of a Representative</span>
-<span class="sd">    Elementary Volume (Rev), Advances in Transport Phenomena in Porous Media</span>
-<span class="sd">    (1987)</span>
+<span class="sd">       Elementary Volume (Rev), Advances in Transport Phenomena in Porous Media</span>
+<span class="sd">       (1987)</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -898,9 +898,10 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    result : tpcf</span>
-<span class="sd">        the two - point correlation function object, with named attributes:</span>
-<span class="sd">        *distance*:</span>
-<span class="sd">            The distance between two points - equivalent to bin_centers</span>
+<span class="sd">        The two-point correlation function object, with named attributes:</span>
+
+<span class="sd">        *distance*</span>
+<span class="sd">            The distance between two points, equivalent to bin_centers</span>
 <span class="sd">        *bin_centers*</span>
 <span class="sd">            The center point of each bin. See distance</span>
 <span class="sd">        *bin_edges*</span>
@@ -909,19 +910,20 @@
 <span class="sd">        *bin_widths*</span>
 <span class="sd">            Useful for passing to the ``width`` argument of</span>
 <span class="sd">            ``matplotlib.pyplot.bar``</span>
-<span class="sd">        *probability_normalized* :</span>
+<span class="sd">        *probability_normalized*</span>
 <span class="sd">            The probability that two points of the stated separation distance</span>
 <span class="sd">            are within the same phase normalized to 1 at r = 0</span>
-<span class="sd">        *probability* or *pdf* :</span>
+<span class="sd">        *probability* or *pdf*</span>
 <span class="sd">            The probability that two points of the stated separation distance</span>
 <span class="sd">            are within the same phase scaled to the phase fraction at r = 0</span>
+
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    The fourier transform approach utilizes the fact that the</span>
 <span class="sd">    autocorrelation function is the inverse FT of the power spectrum</span>
 <span class="sd">    density. For background read the Scipy fftpack docs and for a good</span>
 <span class="sd">    explanation `see this thesis</span>
-<span class="sd">    &lt;https://www.ucl.ac.uk/~ucapikr/projects/KamilaSuankulova_BSc_Project.pdf&gt;`_</span>
+<span class="sd">    &lt;https://www.ucl.ac.uk/~ucapikr/projects/KamilaSuankulova_BSc_Project.pdf&gt;`_.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>

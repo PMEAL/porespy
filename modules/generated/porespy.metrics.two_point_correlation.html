@@ -50,7 +50,7 @@
     <script src="../../_static/js/custom.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Networks" href="../networks.html" />
+    <link rel="next" title="networks" href="../networks.html" />
     <link rel="prev" title="satn_profile" href="porespy.metrics.satn_profile.html" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="docsearch:language" content="en">
@@ -1034,12 +1034,10 @@ the distance from the center of the image to the corner.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><p><strong>result</strong> – the two - point correlation function object, with named attributes:
-<em>distance</em>:</p>
-<blockquote>
-<div><p>The distance between two points - equivalent to bin_centers</p>
-</div></blockquote>
+<dd class="field-even"><p><p><strong>result</strong> – The two-point correlation function object, with named attributes:</p>
 <dl class="simple">
+<dt><em>distance</em></dt><dd><p>The distance between two points, equivalent to bin_centers</p>
+</dd>
 <dt><em>bin_centers</em></dt><dd><p>The center point of each bin. See distance</p>
 </dd>
 <dt><em>bin_edges</em></dt><dd><p>Locations of bin divisions, including 1 more value than
@@ -1048,10 +1046,10 @@ the number of bins</p>
 <dt><em>bin_widths</em></dt><dd><p>Useful for passing to the <code class="docutils literal notranslate"><span class="pre">width</span></code> argument of
 <code class="docutils literal notranslate"><span class="pre">matplotlib.pyplot.bar</span></code></p>
 </dd>
-<dt><em>probability_normalized</em> :</dt><dd><p>The probability that two points of the stated separation distance
+<dt><em>probability_normalized</em></dt><dd><p>The probability that two points of the stated separation distance
 are within the same phase normalized to 1 at r = 0</p>
 </dd>
-<dt><em>probability</em> or <em>pdf</em> :</dt><dd><p>The probability that two points of the stated separation distance
+<dt><em>probability</em> or <em>pdf</em></dt><dd><p>The probability that two points of the stated separation distance
 are within the same phase scaled to the phase fraction at r = 0</p>
 </dd>
 </dl>
@@ -1065,7 +1063,7 @@ are within the same phase scaled to the phase fraction at r = 0</p>
 <p>The fourier transform approach utilizes the fact that the
 autocorrelation function is the inverse FT of the power spectrum
 density. For background read the Scipy fftpack docs and for a good
-explanation <a class="reference external" href="https://www.ucl.ac.uk/~ucapikr/projects/KamilaSuankulova_BSc_Project.pdf">see this thesis</a></p>
+explanation <a class="reference external" href="https://www.ucl.ac.uk/~ucapikr/projects/KamilaSuankulova_BSc_Project.pdf">see this thesis</a>.</p>
 <p class="rubric">Examples</p>
 <p><a class="reference external" href="https://porespy.org/examples/metrics/reference/two_point_correlation.html">Click here</a>
 to view online example.</p>
