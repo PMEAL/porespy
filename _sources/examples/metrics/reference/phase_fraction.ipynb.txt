@@ -1,0 +1,196 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#  `phase_fraction`"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Calculates the fraction of each phase (unique label) in an image. This method has varieties of applications including phase fraction in a porous medium where different materials are labeled in the image."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2022-04-25T01:54:56.129438Z",
+     "iopub.status.busy": "2022-04-25T01:54:56.129088Z",
+     "iopub.status.idle": "2022-04-25T01:54:58.444150Z",
+     "shell.execute_reply": "2022-04-25T01:54:58.443655Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<Signature (im, normed=True)>"
+      ]
+     },
+     "execution_count": 1,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "import matplotlib.pyplot as plt\n",
+    "import porespy as ps\n",
+    "import numpy as np\n",
+    "from porespy.filters import fftmorphology\n",
+    "from skimage.morphology import disk\n",
+    "import inspect\n",
+    "inspect.signature(ps.metrics.phase_fraction)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## `im`\n",
+    "The input image containing the phase(s). Let's generate a test image containing three phases:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2022-04-25T01:54:58.448549Z",
+     "iopub.status.busy": "2022-04-25T01:54:58.448400Z",
+     "iopub.status.idle": "2022-04-25T01:54:58.566923Z",
+     "shell.execute_reply": "2022-04-25T01:54:58.566395Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "labels of phases are [0. 1. 2.]\n"
+     ]
+    },
+    {
+     "data": {
+      "image/png": "iVBORw0KGgoAAAANSUhEUgAAAVQAAAFUCAYAAAB7ksS1AAAAOXRFWHRTb2Z0d2FyZQBNYXRwbG90bGliIHZlcnNpb24zLjUuMSwgaHR0cHM6Ly9tYXRwbG90bGliLm9yZy/YYfK9AAAACXBIWXMAAAsTAAALEwEAmpwYAAAkaElEQVR4nO2dTY7eNrOFZeNbRJBpkHk2EWQFgbeQJXkLQVZgeBOeB54aWYX7DnIVy2qJKhbr5xR5HsAD99v9iiKLh8UiWXzz8vKyEUIIGedtdgEIIWQWKKiEEGIEBZUQQoygoBJCiBEUVEIIMYKCSgghRvyv9eGvb38321P14csnq69S8duPv7g/I/Id794nu55XIMKWts2mLa3LOlKmqHqL4OPXv95c/ZweKmny24+/TNURiB4O1s+ECCpCQyCUwYoogTs+h8L6jZlsKZIV6o0eqiERgvP0DKsy3H0PhZWQe9wFdYVRCY1RwZP8/erCWsWuLcr54cunMu+bDT3UQiB4wFe/v6qwUmT6mb3O3rSSo3z95+dXH0o7j6TifvrzD9F39fL53fvbz6qu9mvK3VsOy7oZrQMv29DQsqcjUSvqd3VjbfcjffipzqoPwmar/BL3f/ZRKJqKxjfquUpFDIm9b9D+16XbQ7XA2/vI9lB3svcR9jwf2XNH8FatBN5ihteqDwvPUNpOT+0iqbOKzsK23XuoUwrqtuGI6rbphMSqjJJnZxl1T73MJKo7rXrXTrc14Yle++xpi6xwiTcwghrVMZAEddvyvEVkQd02u/BQpOBaCmumqGrpresZRTVdUKM9DDRBvWLvMJ7leeqUaHVhRfYsqAeLY8Tn9/UQ1ZE67S0Pil3ekXr0FGG6hsjKW47OWNfD53fv//vnhbdd99SJ97tGU3Vhz8VDRRDQCh5qBC3DRK0H786E6L2OTv3P7O9oIbKW9aUpD6Kd3nmozWxTLRBE8w6K6b9UHeW9+fzuvbv9Hr9/VNR2m41uT486+unPP7rrIyI0ZoXaQ6Wg4lMlfnpHlIBkL5T2toM2tioRMqS1jitQbNbcQyXYzOCdjmzt6WHv1MhOwpHffvxlKAywbd8LWeZ7azxWZOA91FZl965sooxuEaBvl/LCQnijj0RHHN6oMFhU2l5VykOVVizKKIvGDN6pFot4Y0SMlbzGciEtCxgP1bsSEUY1bzKToaAzOkUexTuu//R+FQcI5LUQXoEyOSt7pRI0e34reUpP71bpXSSg2juEoNI71cPsRn3swiq1iUpCNJudV/Sq0wWVYqqDQjpOpKgiiEOlwaEq4YtSkY06o5hSRG2RLmJ5LlR9+PLJ9C6wmWyk2rYqV0G1qAjtkTyKaT1jzCRbiCxF1Zsrm0LwwBEwXeWPSmu2ItZiyvq9xnu1PCrpcu/1KVdkhzqQ95W77kOlkPpSLRFzZbI91W173d6WfSJ6xnJ+3shtAxUYFtQZKmEGeoSUg5ae0Vjq7MlBnphdL9SCGnkdBLmHHqk93l6qNrZ9LBP7S5ur9ouos/RtU9tG4xhh9hF/VkYHwuqZxEbRLFZHhHJcr0CZvVEj6V0s4YLUOBYLOxJGBsWntvQQkatnRsWdR9/XyvZDk6OwwxIixzMpiFVy6qc+7Z1q0er6a+/taaaCiiCkWbETb57ietVyepLXaC7akwrE+Xc893D3PMurDFlApu/T0oqdVG2gIwhbekgcEZ5rBFLvdYY+ahJDRagIqdAglHUU7+kb+ZeoGKoUjwTVs5EdQ4VY5R+lR2Do4RFCvBgW1OzRUSOQ1UU1u85JPPROZWTXR2kPdUQYKaqkCtxr3MdV39AkGNcwtCiV2amrC6IFmkUqCjFZgSw7V3uo6B1TsnBAUSYa6DGSO7pX+RGE1PLU0LZhvNMoK+1yiEJSp54r/ivYbVWGVvl77+HJhBvb29Art4XeKjnS9FB/ffv70Fl+D1qCMJJrscJg0aJHKKu/ayTaAcg7ETXbMJep96FKeDJwem7kCq1wfX73/r9/mr/1KBPxZxpB5VSfeDEqYAwLrEMpQR31In/6848phZfetT+jawgSUZV4tPROsSklqOQ1K54UyyRT0Cim+FBQD1QTmpVPimWi3fXS8j7pmc5BmfR92tX9WaEgYuCdWJnUooygWqK9JC0bzXXSrfecJU8sClpxRfNO78pOW3mGU/4ieO2HpFeFDZKIffjy6bt/5DXlPdTZp/u9hjt7fawEimeq+X2kgSCSEh6qx2h4JzwoI6+lF0CRjQXFhjJZ1YuFF9QVG0Xzzk97bFufrVjHXvTWZcVYfg+rCWv5Kf9sZE3xuUBFyDiugnoWB+sO6zWVzRIXzSp+D1V3N8zCyqEXhAE7IuZb1kOdzTi9xZTkctVmrcEtW3zOVB2Mpf3KKiwRKqh7oaXGskrsJTuRMbGhur22rtT5/O79ow0iCG52G8AuSkVUDIJIZRsAsYHtiNGfsik55Y9ouIiYDz3TNajUhlovNfu0F8qAluKhPm2liDy3n7GdSLKVxCPVIMKUbEZWyjOBaEMoYrptzoKKFlgn97CtcKjWFpkiiySm25Y85b+aVqNVkOXUX/puHl5NpRXlSnjYa/YWo9a0f9v6BNTzPbxDZpqBIn1R6lgpvddDWxGRQARVTIkflaf7HGR1uHuoT6PdtmEsznjts+P+UrIqmd5pVl9K91Cr4H3ViJcBZK++roqkPdHzK4zYRqZdZTomJQQ1qoKspv69CSEopjVBED1vNDaSuUUqe5YHL6jZFeRNlpgSfFAEu0cgVx+koQU1Q0wjvWGvBSiJmK5u+KNYeUlVblR4upRw9JptCxCcL+iTUrswRFZUlGcnORvd+31Ssg2f1IW20yZVUCUXyV19jjAStZDsbNi2MVHVCj87hC8eaRV7kwqRPNKn/Bph8PIiLb9Xavy9z5RO6a9gh7Qh8kqe83NRQgDkmlQPdUTArMMBHiviVp7qqNBTSO1AEDR6rLike6ijWHiVnnHTUaPnaj0O3mLa6xwgiDv5HuhFKSnWCzxnRkVx//un89HSmHLPM1ekV2ie6iry2HDviT16q1hMIajb5ieq0YbK6f0Y3ifa7rC0PcuBlcTy5uXl5fbDX9/+fv9hBz0GeycIXuf9M7IwWU7VVhfQI1lTYO9dJ9wS9z1RJ6Va9f72h7/fXP0cxkN9MoTeabOEqintkMuWxaxienyGRFgZAsgFYlGKR9vkrP7+SETvh0bffx1Fqw9kh0nSBdU6+UKFBZ3e79+P9VFMr4n2Tr2ODVs+e/YdAKiiGjLlv9uPSYF4hnXURpMXU9vhkDxEr/y9ZIyQRSkv7jqTxPDvjDFCwCTeA4VUBnIqtwhWTtHonWRasyiVPuUnhBANT4NFhgdfWlDvKhR5KkTvNIYVvFOC11dKCyohhCBROoa6bWMxtOg4qnTlNXvUbZUzu2xHVo2fSmdgSG3ljYctlN7Yj4THveizbGPJvjN+BiJCUqu1kTSzmzcU1AAsjt5GISkrRbUNcgx/RbyTJx0pH0PNnp5HfQ/BZyT5tyUc7PJY2kOVXD0xYpzWaeTINxDipwjieYY2lEt5D7WFxOAlt05mpYQjuKCJKY8m26Jt3yk81IiAtDSLj7YcKJ1BUpcoZc0AUUiJLSNtPLWHum02XuqRlthUF1MJlcpqDZKY0iOVE7mFbgoP1YKeZBOzT+crd1SPzjMipJXrshJWfXJ00JxGUC2m/RkZfNjhsOm1B7ZnPFELlMe2/fj1+nemEVQrIu/zYefDhlePkB1p+y4hqJqNvbwobW14vBMf69CbxVH06RelRvEKaLMj4iIRUy4K5eJ1aecoqR5qlSz+54a563DH36t6AWAFPBcFpWJK8kAV020DnPJXuLVRm8WKYMN2wwd9h01TUO8Kn3FNCLLA9jDLe8wGPVN8kD3THVUM1WqU6DFQ9JGJEELUi1LaM+5nekVV89zsUWuHHg4mkovu2Ha5SC7kG+3nd3/fozdlV/npsRKyBt63m1qUYWd4USoz2TCCqHIhozbcjUEsgVvlrwBFlBAMIsN5EucRQlA90+9ZVbiFiFbZd0vqU+VCyCeiE4lLks63gBDUlZl1e1gFZpruax0S3g9mSwlB1Z6rtxjBoqf3x45BQ38NwtUnGXiuF1BUv2ck61ypVX5ph7HYQrFt+bFShEU3kod2m6D2WWhkDp7a7y/hoR65etGz8J3/r6mcbDHdofcgwyvvZQaI4kZkDAtqpvFJRW//vahOZ90hKoiqpwhE3Bl2JKu+KaQykEM7pab8RzQeZK8Ak2cipqQrCI33O1qFwUibclP+bRsTvKdk05JjiCOMPBsJNJHTzEJaiw+RXqpFXc4mlmj2JaWch2ohOqjC1eoUVQ0sGtS29WD3OimmOAx5qBEjuDRpcy+aa1Gk79uK+T09N+OiwB4qGLtHzNyLCinpIkE4tz+C2kO1FFOJUfVcS+GRHQhhUaiCmCEhsRnkWUGk90n7tkHloaKK6dXPZmgkFKzr8k4ssmciRzxjqdG2iTzzkYDunW6bQlCjxXSUnum3pcHNJuaRU1PrG2dHRTUD6/KiH7Odpa+IBTVDSCXxxNFyIXY29DjqFdF1eGx36SznroyShBgIojMr0ripxYEdb5oxVK94pISMykJsoDOII3l2vVnY59M7cHqex+d37y/rY/85Ul2FbpuSbgLfPYanaUrPqnuL6AYZfV70qSG0hCR38XK0dn4iylFBnu5b2TKKsIYIas9pGq8OWq2zER9a7ZztaZ+Zec+1F9nv6y6oPSOQ1KC9RtWRxLJXtMr51PAIU9CKewKlnupd/WfGgq/wnNbO4p2eyfRWXQVVK6ZelZFtQL1kiipirNaau7gcKijTWgsi7CujriDO8veI6agojmxn0qz2em+f2r87ehcGond6RFrvCALVayPHMmtzQ1RzLrREn5pz81ClnRK9Y1bBQrR7Fg0zmeW+pCPasiIMCFGMnISMqqc3Ly8vtx/++vb3+w8f0KwMe3unZ7Qi1FsOi1VyjUFIy+kR57bAysOyGGwqZJ46tw2qh9r7jk9l7f0+iz739oe/31z9PEVQdyKn+ndEiKrVtiM0byRCXO/eWWMPUQOoFZrySk6ZVRFTS8fliif71Qhqavo+hI25WuOy3D8nJXuqfQZN4J+oFALYNl15q7WJJQhhADcPddvsRAd5umUxra5859WOl9h7elqtNkEU397QDJqXaj3Vt3qWJgQJ6aFKQDRsazTiuIq36ple77zIkXnUWgJy2Z6IFNPev7e0XVdBrWYA2ricxFg8TmqhZWxH85pnpVq/yqKnnqxsN8RD1TZ+htFUNVY0cY1ihQMIdzzZKUrybM2zLMsXKaquMdQ7LDy6CDxWJLP2eWqTdJ9BLT+CvWTwFJvPrrcRYfQoW4/9lomhtrzAqh6i5WZz66mzlZjuv1exfQiRMtL/Uhel0BcDMssTGY9Eq/crJHkNVp7+35GVD0LSHhkhKqnOaPsf/Cp/Nj1Cb30kMkJUPeLbGSv+5B7EwUjSlhUHSAqqEInw9IgTgqhW8Ex7oaeqx6LuNN+RsXjmNSOmoHZg3QARojrbViZ6qTLO9RRRb9lJ5DVY92kKaid38d6RqXPGQlVlkDpkJaT1tnuZx3+S37Usw/kZnliKKgV1AMvFNIpqHxTVseQpmmf1CG3vs7NvqLASVQoqEJVENfrivqv3Rtm4Xo2M1XWL51UQVQoqGJVENYJjNrLe7GQU1TZRoip9DsLK/6ioUlABQRfVqPuAWu+4f77q1N9qhuBZfxpPGEVUtcKacvSUyLA65hmZ+d6ig2pyxFomot65e9/s7Wbe4ZaRwdpKoC1P941yVd9QR0+JjAiDkYgk8t7Op443ciGj9XdWQetZWnq7CJ7qTs/iMz3UAkiO8LWICg9Eeifn51omAfG8pmOEUTuoiNQWomcNH7/+RQ+1Kh65VK2ZpTP3ej2ze6vZ9OydRYCCWoSREdh7mwyCmI6eVx8Ja0R05hW9051KokpBJUMgdWRt3A2hI5I2VUSVMdRi3BlM66KxnvvaPegVXU0MVfu3Pc9AvOocaUCLACWmyhjq5JwN7WpD/E70SRnPq8IjkoBU8Y5WAL0t6KEWw9pQrrzXKI+vhfS5miuAe7j6/ujrmXtnJauQuVeVHiq55GyUEWIq+W6JWIwk25CCsIOC1IEeahFmnk5KT3tpRdJSFD1PZl3B+OkzGZ4qPdRkRrbkzCym2yaLsY6Ih6Xw0GPFA2lgoYfqyOxCuG33I//Iu3t2EOR7uq4Y9VA174skUD1EXpXOs/yL4hWUfzrbPJKxx2tXwEre5UgdrlRPZ0adIHqojmR5qE9Cpi3XqDhrnxuVQWl/v9F2i4qjSvbGjlLNW40aDOihBoM83dd4j1HXvGRxLJvXjZjWRIhHNW81ewCgh+qEp6C2PBOr/J8oqQN3RjvKyN7R7OxTCINztlD14j0Q0EOdAO8TTpaXDkqfF8HoRvwK3qo39FRl0EN1QrI62zJS7Umiyp3f40YA61NNT2XMOM8vpVU2z2ugM/EaCO48VAqqI15HBqOPPkZjuZndq64yrkeJCD1EXXOTQe9x5tbv3wnq/xTlIoOsfLlcJJ7T1N9+/OWV+HgPZlfPvPod72dUpXWs2qo/UlAJHBadOiLVXsZsIOKZT/U/g0PgVX4uSiVRLcgfzZ1wWNTbDGERb1hHOuihOjLz9AkVDlQxoHqp2vbnlJ8QBfS85KA5BBHpJEeFlYLqDJpRklxGbCErZntXZg8vNXuGMSqsFNSCRJzhrkjWnU9PcEB9Bs2eteXholQiaEaEhPUe3gwxtc5li5gbd9SGPe8by4CCSuDQiAZap0QTvhEYd5bDKT+ZntkE4cOXT+HvZL0WED0AeiRCv4KCSkhBMkS1Apq0lJaiOqWgSitoRoOs3NGe2k0TP0Wvi9Y7oYUxLOh5p+isZxbC6iao0bk1z8/s+X30TkfqJuQ40/Meq+7mqNwfzRelrlYiI1YnR75/L1/0QoLXTZ4VF0QqljmC2dq5RfZNCRbP5ir/CcStKbPD+l6DFbxtU0F96hheYuX1nVmeK/meEU9+hrabJdzRovI0/4iZoPYYrvVm5wi04up9t1RlJPVZ/R2tuKuHCPu3cCpmT4q+Y7IopansiNXoKyO0mHZUXkmvBMWUVCN129ToKrtGyM+dVCuw3CGgx8Oraq2IzzAAZtwhFnEdSvV2OTPtopS0ob1vEiU62CbfyFjMmSH2nMGwoD5dqCbpGNaNp+mMe1l7BXbkjh/PxBCIHUIai9OK6YwiHC2mPfHSGet7FBgPFU0AIj3XFbaTsJP2kyGmUthO17gJ6rHCoz1VS89PUnaLcs+WxuzIamJqZQ9PWMYfKaY2wHio6IwYUY/hW4kqSrAfRUzRZkAtkAdWimkb91X+6LvR756dbQg9WW0kV0sgd7odFDGtgrRNrQfLiNX8VXDzUNGmsAhl6fVUEcqshWLaB3Jbe7ZRpZmDBKj0fZqRtyf11tloMzpzb6qw86Vh0bE1L7zqPns/6tOulyO9IupR9p7yzo6FuMPEUDNEINML7H1fZA+ml9U66hUztSf5xrCgWghh9ndkCWtvurIZvNMIMUUWbI2tZae1swA9DaFVGVI9VGtDGf2+Kt6q9/cQHU/TZ419ZbUp8qCEjEkMVRoXrHClwTlmGcXoNQwU01ye2g0hXnoGwTPMxroOTD3U3UM8GsPVz6IYee5VB4gQ2ZGFOfJMBRHJbk96p3rcVvmzjeLIsSw9HUqyH9SDHm8VqZ4lZNWpF1YCHd2OGQML0h1ZXu8PtW0qgl5xlYYAPLbkWF9xS+ywaJdqg+EsSA8yaMQfZttUBhVWT5/Khyq4T1m2CCYzzR6u8D4VtrSg7kiEVeKpZokb6t1XM4qqVT1nDuRodhKBd+rIHQpqBxUS/SIK6yxUjZdKmd07jWC5GGoLacwy+3ijhKv36A0fILxHL0+Dnvd1O0+xt+w6zRxskR0Sq8GEgnpi5oUg7Y2tIyLQqk/LFX+EEALSKjbJGTwoqBeMioCFl4ok6mgXEiJmspcMDCj1d8VM0/3MZNmMoSqYbS+lFA+R7xHH0ZwLHoLGSx5lRA2C2Y4IPdQbJFN/r1iq5LlnkKeaI2GU7BsMrNLbIXun2WTM5rwGQXqokzCjl4QspqQunn3lzcvLy+2HX//5+b8PVx1hJR6K1aquxz45D8/VWqBGEy9fYWGvGu/0ruwI/Uda/x541EvvgGfZd97+8Pebq59zyj+A5QKV16bj4988CZWHsPWCIqYEG28x1SIWVJT9ldGMxlK37b7uolcjUcMC+8BUKV8okWM9MCNfed3loa4qqi2kK/6Mx7VBzBdK6pLlPHDKL0ByXbXXpm5Ur1LDyGo/BbQm1qfGNDtgIuEqvyHZjTkrM4gpZyj+jPQ/q3vl6KEKkXqpVp5q1sor2qCQKaYzHUOe5T0saPXP0b4r3jZ1ZAaPQYt0yqFpGG8xQ1lBl3ZuBDvTbDVCTI5idUChB496GHkPy5Dc3bYpTvmd6DVSTzHNuiabEBSi7F815V95tb9nGpg9fa4sopXt6+lI8rbVfj8JXranCcNE9gN6qApm7wzZsH6/Z7ak4TO3ryqGujNzxTyReYxPgvWobN3WLYFAsyvrOKoH2rvHrO3VK8H3kZ44qrQdem4a3jbGUMOoPM2OBE00rciKV8/mxUZxvk9u9OLOoW1TK8dSK4PcZshlO4M4eCJfcRLdtiO7DHqvm9+hhzohiNt2rkAqCxkjcnCJtpser3V4Yz+91DogthNimVYhMt5v3c53q/2et2kc3+Hj1+vf4UkpQh6Y6cSUB5Wm+tvmWx4TQV1lb10FEON6MxAhqpHJw6O809U0gTFUY1C2TRF7NOIwumrcAuGCQA7g3zO0D/WOFUYl1H2oVRakViUq/VyP0GmfiTDV18waLMr18etf3IdKSDZPndnK4+sRSaR7x7yf410uF0GdfZPxzO9G/IkQm16RrDx1R5p5uXqoFB5C4tGKY/a13dWeeYV6lV+a9/MoqncvLfkdQmaitWtg71MZV4ZL93EiXpf9dB4/omzD26Z6MtRLPFb0LVgZiXp78LrbisTjGducefaYqR1clCIkiYwjlMQXE0H12A9XbQRF8E6fqFanK5C1Gp4trvvC9fHfDJh6qBVEZQXYDuTInXje/VwSarizsZYwPoknurBKxN/8LP/IJXVn0BKvIDe2FLQ6JX5xTcQLAaV/n22j2ndwi6EiHIuzZAYx3ZnpXWbCUkSyBWmUTBsdebZ7timpqFa+1Axx4Hha7UfwAshreq4yYfvZMyrkZdL3ZQrArB4dWp1SIJ6xrKPRfBTeW/Si7dOin5cR1G3Tj87nipL+raSCEb3THYnBe80ANMZZYTYyC1ZOwiz7nq3qQ51tykNIKjYMsqDu9N78qMHDi6ew+mF9QKW370pvJ42ygV77vbv1FEpQt62WqFYQ0x1tvZ4NOiP8QWG1B+3EX2baSY1Nl7lGuopIVSnnjra8CJuvZ41hZ4EmpjMB56EeQfVWKxsdap32Qq9VB7KYZkz71ftNq3ioR7Ib+AqLMn1+9/6/f9Eg1qkGeq0EEfhV/qMAZHpXXtdEXH3uLXqWp9l6n9mitzzcFRBPq4287LbSnmnoKX+LkTtzpH87+o4VbqXcNh9h9RqA7qjS4TIZme5n31Hl1b6tvbit8pRZ5Z+BjHuBLInoPNbl2DaKagutmI7asuXdVpF7pSmoIFh7e6znvjqlqF7TK6hZdhzlpUrqQyOo0ItSlfBaZJplVX6E2RLtoIO6VlFhIVLtoe6saugjRnccaaVGsmo9X4FwH3wlsr3Tp+f1Pt+ifb08VPhVfjSshPT8swqjrxWjOxuYSUtOr11pwivRtju6u8NzL+6wh2pRCHRGR2yLZCyV61hTf6OrzhTUf+mxKUk79aQXbGG5q2DbZO3dm+yIMVQHosT06XerxlK97oivPMBURWLLVgNZb/u2jkdHHptueqi/vv39vw9n9Z7uiBTSM6N5KhGwHAC023pW91ItY6e9dZnlqY7Q47EPe6irGKfFav0qdRWFtj1WikuPYj0wZXmq2c/pmvKP3JJYgZFTOsd/XlSo5+jtY5W89tWQ9AVJXgvvbXOW380Y6gDeAkq+p8KAQr6np388iauHqFp/pziGum1zxPauQDuJ8zRVRa3v0VXinik6WsZ3RKR2FBGHtgi/aHNySL6r93u5yn9Dz/UgKJ0T0VOz2HLjUb+Mo2Jg0bZn73UPBfTuYfbMXbD0Kr+FCHhR7QSVtZfT+/5c7b8GyUuVlKcHS9vvFdIhD3XGUR7Ry9Mwy3ucQe3EZAzLmV5WkvYWS57lR/ZMj/QKAWK6v9F67DndQi/1npFUdYiX5F0RcVvrDmOoHaB0vt5yoI3WFki33pAxMh0jK68VwQ6GkqNU806reKZHVkyecua3H395fP/P794/elpER9RVM1ffr03uYnXlzt07f/x6/ftLJZieIaFGb4IHb6KnitqBpULbevO07RG9f2jbXpOi8OldP379a+0pP7qxSOEUWMfKHr6Up4E4uw61oYHIq3SWENRZxHQHaU/sHV7lQ3/v6qCL6rbp7D9qRwATTJNySGKq3pyfT6GPx2N9YbQd4QTV+orn2bzTIwjCUgmLTP539R21cKOl91hvpRsReoTV20uFmfL3uuQWFYNkFNbMHkfNaLuVBq8KU/8zCP05VVAlqbskf9/6nOQQ0eF6O5BH0m/t70WCWCYvRtcXRusqRVCtA8Sa70IYzUgNZhaklidacWtkNqYx1CoeIcV0HqTxs8g294gxHt/P4tJHKVUPS2QdiFELKlol7ydlCLEk2zu9u3Rux+J0EfmekQERbpV/h4ZCejjai8ab09Dy3ka9VO+Y7SrOh9ZT1bYfnKC2XoLbhHLoOR+NQMT03rMuaON1gRDU3rvr7wyO0/5vjNTDndeFFubJRFIXvV5OlJCyj8jQ7C1O3Tal3eLARSU/LEWTnhYeFNN+Pnz5JLblEA81UgBX8lKtBcvaA51h4IsIM0UMPKv0CQ3SnQySdjIV1Bk60KpwOp+D5qbXnraikMbSJaizCCbaWWQNll4NxbSNx57GkSuzKZL9SNdeRvtCU1Cri86qWHc4jaDMaDs90//W+1e60Xa1wXb0IANMcpRoKi+YWF7p3ZONq0IeVm+e3v+pjirb3Sr89Ocf6sEMYtuUF1WPzbWI7JB3wtDyWFcQXO93HE1NieDZrsrUgkp8OQvrCmLqjcXlcsfPKa7/YjmrazGloB5P9ngeD4zE43I+qwv2qtQhOq32G0lx+fTdxI4pBbUC1tNldph5mS1sNTNlBVV6V/sTGV7q0zUahOxYiSk91RhKr/Jzqvkv2k7S+juKez70TOtRWlC3rZ6oWgsVsx7VQmqvPWLa0weirlOugnX/KTvlPzJ63rrS4tSRiOkbUib8VZAK3nmP8A4HwjzKe6g7q3VsKzEd/R523nieDg+s1heQmEZQt23sJE8VYRg5xeFFlbqrgNV0/KkfSJ+DZmsaIu1ziin/mawLuka5StAQYdAzniirSM8xYAm84SKeUA+1J1GrBVWnPrsXGukdcOpPZiTaLsME9fhi0aKKJKxIZTmDGE4g/6K1m9bfrT4r8bD1lBhqhqggCxkaWg+ZXqoPtF0dGfYYFkNFMIqqsdVMrkR1dc+G4PPUx71mYlMuSj1BYZ2Huza0HsAz9uNafGdUliUUsvv0VNumejnGVxE86CpU6IiWC6CS74lecCWvQbgJYUkP9UyUmLLDxTOSq1XTXse/uXqmxRUqmrKcGU1ijYCmfbydAQoqWYJeYbUY/LTfwdlSG2THhIIagEdyaDLmQaLe+2Qlpsiio2XknaL619Ix1AhmNOwWVd73qpzZcVCK6T0VxHTb6KG60Nv49E5z0HZSqzvcPcjaLuQJYqz0DnqoxlBMY8jywo7tZXmyzHsRSktF+8wsMz3U/+dsjL0GXmkUtQD58sNjvVp5ka22Gn1elJhWtLdq70VB3e7jadv2bOyj00bii0UmrZ628hDzJ6qJjiVo77W0oEo3bFuCZgAjPHmp24axBSgrPWGEuM4sphXjwcvGUDNicIgG4I1XPfdkURoVM8TFJymz2hzqe5l4qK1Og+ChHIkWUtSGt0Li/WV4q9Yi+Pnde7i2rOjBzc6wh/rUqEh74iimuWTv81yJ6rZXNalLt4fqdTrFk8hOjNzYXvTGKK3sweqKD+mNoYhe6oxUHnRFHuruWYy+aIWK0naY1bPda94922O9us3B6nI7b6p6cLPT9FA9jD1yj2JP+c8bto9cdSIa7Wu0J4hGPFaNl/r0nMqX21W3y+px4ZRtU94hAK2QjvwO+YZ2u5B2sJUKYM93VxbVqlQX021z2DbV89JeHrCUCg1Unah7qVqXMaJd1DgLHHBe8+bl5eX2w6///Hz/oSHMskPOIAhglD1p3xXB3lftu29/+PvN5c+jC3JFZjJfQgixAkJQt21MECmm84HQpghe8gogtLUVMIK6beN3+BBCSCZQgrptFEhCSF3gBLUHii8htZmtD0MK6myVTAhZg+a2KUIIIXIgPVRCCKkIBZUQQoygoBJCiBEUVEIIMYKCSgghRlBQCSHEiP8D1yghnp9W6zoAAAAASUVORK5CYII=\n",
+      "text/plain": [
+       "<Figure size 432x432 with 1 Axes>"
+      ]
+     },
+     "metadata": {
+      "needs_background": "light"
+     },
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "np.random.seed(10)\n",
+    "im = ps.generators.blobs(shape=[500, 500])\n",
+    "im_close = fftmorphology(im=im, strel=disk(10), mode='erosion')\n",
+    "pad = im*1.0-im_close*1.0\n",
+    "phases = im + pad\n",
+    "fig, ax = plt.subplots(1, 1, figsize=[6, 6])\n",
+    "ax.imshow(phases, origin='lower', interpolation='none')\n",
+    "ax.axis(False);\n",
+    "labels=np.unique(phases)\n",
+    "print('labels of phases are',labels)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "The generated image includes three phases labeled as 1,2,3. Note that the label values can by any unique number. Given the input image, the `phase_fraction` method returns a dictionary containing the label and the fraction of each phase in the image. The fraction of each phase is calculated by normalizing the number of voxels in each phase by the total number of voxels in the image."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2022-04-25T01:54:58.569037Z",
+     "iopub.status.busy": "2022-04-25T01:54:58.568863Z",
+     "iopub.status.idle": "2022-04-25T01:54:58.577182Z",
+     "shell.execute_reply": "2022-04-25T01:54:58.576662Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "{0.0: 0.512432, 1.0: 0.187, 2.0: 0.300568}\n"
+     ]
+    }
+   ],
+   "source": [
+    "phase_fracs = ps.metrics.phase_fraction(phases)\n",
+    "print(phase_fracs)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## `normed`"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "By default the `phase_fraction` method returns the fraction of phases. We can calculate the number of voxels in each phase by choosing `normed=False`:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2022-04-25T01:54:58.580035Z",
+     "iopub.status.busy": "2022-04-25T01:54:58.579898Z",
+     "iopub.status.idle": "2022-04-25T01:54:58.588316Z",
+     "shell.execute_reply": "2022-04-25T01:54:58.587790Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "{0.0: 128108, 1.0: 46750, 2.0: 75142}\n"
+     ]
+    }
+   ],
+   "source": [
+    "phase_voxel_num = ps.metrics.phase_fraction(phases, normed=False)\n",
+    "print(phase_voxel_num)"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.9.12"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 4
+}

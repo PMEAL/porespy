@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>representative_elementary_volume &#8212; PoreSpy  documentation</title>
 <script>
@@ -26,8 +26,9 @@
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
 
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -36,18 +37,23 @@
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
-    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script src="../../_static/design-tabs.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="../../_static/js/custom.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="satn_profile" href="porespy.metrics.satn_profile.html" />
     <link rel="prev" title="regionprops_3D" href="porespy.metrics.regionprops_3D.html" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="docsearch:language" content="None">
+<meta name="docsearch:language" content="en">
   </head>
   
   
@@ -90,8 +96,14 @@
       <div class="navbar-center-item">
         <ul id="navbar-main-elements" class="navbar-nav">
     <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../../user_guide/index.html">
-  User Guide
+ <a class="reference internal nav-link" href="../../installation.html">
+  Installation
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../basic_usage.html">
+  Basic Usage
  </a>
 </li>
 
@@ -102,7 +114,7 @@
 </li>
 
 <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../../examples.html">
+ <a class="reference internal nav-link" href="../../_examples/index.html">
   Examples
  </a>
 </li>
@@ -1002,7 +1014,7 @@
               <article class="bd-article" role="main">
                 
   <section id="representative-elementary-volume">
-<h1>representative_elementary_volume<a class="headerlink" href="#representative-elementary-volume" title="Permalink to this headline">#</a></h1>
+<h1>representative_elementary_volume<a class="headerlink" href="#representative-elementary-volume" title="Permalink to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="porespy.metrics.representative_elementary_volume">
 <span class="sig-name descname"><span class="pre">representative_elementary_volume</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">npoints</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/porespy/metrics/_funcs.html#representative_elementary_volume"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.metrics.representative_elementary_volume" title="Permalink to this definition">#</a></dt>
@@ -1010,14 +1022,14 @@
 <p>This function extracts a specified number of subdomains of random size,
 then finds their porosity.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>im</strong> (<em>ndarray</em>) – The image of the porous material</p></li>
 <li><p><strong>npoints</strong> (<em>int</em>) – The number of randomly located and sized boxes to sample.  The default
 is 1000.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><p><strong>result</strong> – A custom object with the following data added as named attributes:</p>
 <dl class="simple">
 <dt>’volume’</dt><dd><p>The total volume of each cubic subdomain tested</p>
@@ -1028,10 +1040,10 @@ is 1000.</p></li>
 <p>These attributes can be conveniently plotted by passing the Results
 object to matplotlib’s <code class="docutils literal notranslate"><span class="pre">plot</span></code> function using the
 * notation: <code class="docutils literal notranslate"><span class="pre">plt.plot(\*result,</span> <span class="pre">'b.')</span></code>.  The resulting plot is
-similar to the sketch given by Bachmat and Bear <a class="footnote-reference brackets" href="#id2" id="id1">1</a></p>
+similar to the sketch given by Bachmat and Bear <a class="footnote-reference brackets" href="#id2" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a></p>
 </p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Results object</p>
 </dd>
 </dl>
@@ -1040,11 +1052,12 @@ similar to the sketch given by Bachmat and Bear <a class="footnote-reference bra
 is spent on scipy’s <code class="docutils literal notranslate"><span class="pre">sum</span></code> function which is needed to sum the number of
 void voxels (1’s) in each subdomain.</p>
 <p class="rubric">References</p>
-<dl class="footnote brackets">
-<dt class="label" id="id2"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
-<dd><p>Bachmat and Bear. On the Concept and Size of a Representative</p>
-</dd>
-</dl>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="id2" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>Bachmat and Bear. On the Concept and Size of a Representative</p>
+</aside>
+</aside>
 <p>Elementary Volume (Rev), Advances in Transport Phenomena in Porous Media
 (1987)</p>
 <p class="rubric">Examples</p>
@@ -1079,7 +1092,7 @@ to view online example.</p>
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
 </p>
   </div>
   

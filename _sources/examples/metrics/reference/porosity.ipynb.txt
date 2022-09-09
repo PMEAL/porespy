@@ -1,0 +1,170 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# `porosity`\n",
+    "Porosity is the void volume divided by the bulk volume. In a boolean image this can be calculated with ``im.sum()/im.size``, assuming the void voxels are labeled ``True``.  It can be slightly more complicated however, if the image does not fill up the full array (i.e. ``im.size`` is not the bulk volume) or if the there are other values in the image besides ``True`` (i.e. it's not obvious what is void space).  The ``porosity`` function works as ``np.sum(im == 1)/np.sum(im == 0)``. This means that any voxels marked something else are ignored.  It's still very simple, but is more robust which comes in handy."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2022-04-25T01:55:15.291946Z",
+     "iopub.status.busy": "2022-04-25T01:55:15.291116Z",
+     "iopub.status.idle": "2022-04-25T01:55:17.772536Z",
+     "shell.execute_reply": "2022-04-25T01:55:17.771856Z"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "import matplotlib.pyplot as plt\n",
+    "import numpy as np\n",
+    "import porespy as ps\n",
+    "np.random.seed(0)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2022-04-25T01:55:17.775760Z",
+     "iopub.status.busy": "2022-04-25T01:55:17.775552Z",
+     "iopub.status.idle": "2022-04-25T01:55:17.780833Z",
+     "shell.execute_reply": "2022-04-25T01:55:17.780421Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<Signature (im)>"
+      ]
+     },
+     "execution_count": 2,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "import inspect\n",
+    "inspect.signature(ps.metrics.porosity)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## `im`\n",
+    "In its basic form a binary image is fine:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2022-04-25T01:55:17.785072Z",
+     "iopub.status.busy": "2022-04-25T01:55:17.784899Z",
+     "iopub.status.idle": "2022-04-25T01:55:17.793258Z",
+     "shell.execute_reply": "2022-04-25T01:55:17.792615Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "0.52215\n"
+     ]
+    }
+   ],
+   "source": [
+    "im = ps.generators.blobs(shape=[200, 200])\n",
+    "e = ps.metrics.porosity(im)\n",
+    "print(e)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "However, if the image is has some unfilled space, the around a cylindrical tomogram, then it can be labelled as 2 so it's ignored:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2022-04-25T01:55:17.796151Z",
+     "iopub.status.busy": "2022-04-25T01:55:17.795919Z",
+     "iopub.status.idle": "2022-04-25T01:55:17.966532Z",
+     "shell.execute_reply": "2022-04-25T01:55:17.965963Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "0.49670287539936103\n"
+     ]
+    },
+    {
+     "data": {
+      "image/png": "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\n",
+      "text/plain": [
+       "<Figure size 432x288 with 1 Axes>"
+      ]
+     },
+     "metadata": {
+      "needs_background": "light"
+     },
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "im = ps.generators.blobs(shape=[100, 100, 100], porosity=0.5, blobiness=2).astype(int)\n",
+    "cyl = ps.generators.cylindrical_plug(shape=im.shape, axis=0)\n",
+    "im[~cyl] = 2\n",
+    "plt.imshow(im[50, ...], interpolation='none', origin='lower')\n",
+    "\n",
+    "e = ps.metrics.porosity(im)\n",
+    "print(e)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "The porosity specified when generatign the blobsimage was 50%, and the computed porosity is also 50%, despite having a regions of 2's around the outside."
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.9.12"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 4
+}

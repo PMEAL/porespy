@@ -1,0 +1,257 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "4a972029",
+   "metadata": {},
+   "source": [
+    "#  `show_planes` "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "103a1704",
+   "metadata": {},
+   "source": [
+    "Create a quick montage showing a 3D image in all three directions."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "dcf63949",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2022-04-25T01:53:45.442331Z",
+     "iopub.status.busy": "2022-04-25T01:53:45.441751Z",
+     "iopub.status.idle": "2022-04-25T01:53:47.722296Z",
+     "shell.execute_reply": "2022-04-25T01:53:47.721251Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<Signature (im, spacing=10)>"
+      ]
+     },
+     "execution_count": 1,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "import matplotlib.pyplot as plt\n",
+    "import numpy as np\n",
+    "import porespy as ps\n",
+    "import inspect\n",
+    "ps.visualization.set_mpl_style()\n",
+    "inspect.signature(ps.visualization.show_planes)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "c1d0fe72",
+   "metadata": {},
+   "source": [
+    "## `im`\n",
+    "The input image is 3D array to be veiwed in three directions. Note that the method does not work for 2D arrays as input.\n",
+    "Note that the upper left image shows the xy plane at z=(image length in z dir/2). The lower left image shows the xz plane at y=(image length in y dir/2). The upper right image shows the yz plane at x=(image length in x dir/2)."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "7d20e730",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2022-04-25T01:53:47.727576Z",
+     "iopub.status.busy": "2022-04-25T01:53:47.727141Z",
+     "iopub.status.idle": "2022-04-25T01:53:47.787412Z",
+     "shell.execute_reply": "2022-04-25T01:53:47.786937Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "image/svg+xml": [
+       "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>\n",
+       "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\"\n",
+       "  \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n",
+       "<svg xmlns:xlink=\"http://www.w3.org/1999/xlink\" width=\"564.48pt\" height=\"564.48pt\" viewBox=\"0 0 564.48 564.48\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">\n",
+       " <metadata>\n",
+       "  <rdf:RDF xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:cc=\"http://creativecommons.org/ns#\" xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n",
+       "   <cc:Work>\n",
+       "    <dc:type rdf:resource=\"http://purl.org/dc/dcmitype/StillImage\"/>\n",
+       "    <dc:date>2022-04-24T21:53:47.779264</dc:date>\n",
+       "    <dc:format>image/svg+xml</dc:format>\n",
+       "    <dc:creator>\n",
+       "     <cc:Agent>\n",
+       "      <dc:title>Matplotlib v3.5.1, https://matplotlib.org/</dc:title>\n",
+       "     </cc:Agent>\n",
+       "    </dc:creator>\n",
+       "   </cc:Work>\n",
+       "  </rdf:RDF>\n",
+       " </metadata>\n",
+       " <defs>\n",
+       "  <style type=\"text/css\">*{stroke-linejoin: round; stroke-linecap: butt}</style>\n",
+       " </defs>\n",
+       " <g id=\"figure_1\">\n",
+       "  <g id=\"patch_1\">\n",
+       "   <path d=\"M 0 564.48 \n",
+       "L 564.48 564.48 \n",
+       "L 564.48 0 \n",
+       "L 0 0 \n",
+       "L 0 564.48 \n",
+       "z\n",
+       "\" style=\"fill: none\"/>\n",
+       "  </g>\n",
+       "  <g id=\"axes_1\">\n",
+       "   <g clip-path=\"url(#pef4c5480d1)\">\n",
+       "    <image xlink:href=\"data:image/png;base64,\n",
+       "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\" id=\"image570dfd6eee\" transform=\"matrix(5.009091 0 0 5.009091 7.2 6.28)\" style=\"image-rendering:crisp-edges;image-rendering:pixelated\" width=\"110\" height=\"110\"/>\n",
+       "   </g>\n",
+       "  </g>\n",
+       " </g>\n",
+       " <defs>\n",
+       "  <clipPath id=\"pef4c5480d1\">\n",
+       "   <rect x=\"7.2\" y=\"7.2\" width=\"550.08\" height=\"550.08\"/>\n",
+       "  </clipPath>\n",
+       " </defs>\n",
+       "</svg>\n"
+      ],
+      "text/plain": [
+       "<Figure size 576x576 with 1 Axes>"
+      ]
+     },
+     "metadata": {
+      "needs_background": "light"
+     },
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "im = ps.generators.blobs(shape=[40, 40, 40])\n",
+    "planes = ps.visualization.show_planes(im)\n",
+    "fig, ax = plt.subplots(1, 1, figsize=[8, 8])\n",
+    "ax.imshow(planes)\n",
+    "ax.axis(False);"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "3339e6b5",
+   "metadata": {},
+   "source": [
+    "## `spacing`"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "7fdafe1f",
+   "metadata": {},
+   "source": [
+    "This parameter defines the amount of space to put between each plane. The default spacing is 10."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "c9d58846",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2022-04-25T01:53:47.789746Z",
+     "iopub.status.busy": "2022-04-25T01:53:47.789548Z",
+     "iopub.status.idle": "2022-04-25T01:53:47.831096Z",
+     "shell.execute_reply": "2022-04-25T01:53:47.830534Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "image/svg+xml": [
+       "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>\n",
+       "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\"\n",
+       "  \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n",
+       "<svg xmlns:xlink=\"http://www.w3.org/1999/xlink\" width=\"564.48pt\" height=\"564.48pt\" viewBox=\"0 0 564.48 564.48\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">\n",
+       " <metadata>\n",
+       "  <rdf:RDF xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:cc=\"http://creativecommons.org/ns#\" xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n",
+       "   <cc:Work>\n",
+       "    <dc:type rdf:resource=\"http://purl.org/dc/dcmitype/StillImage\"/>\n",
+       "    <dc:date>2022-04-24T21:53:47.825426</dc:date>\n",
+       "    <dc:format>image/svg+xml</dc:format>\n",
+       "    <dc:creator>\n",
+       "     <cc:Agent>\n",
+       "      <dc:title>Matplotlib v3.5.1, https://matplotlib.org/</dc:title>\n",
+       "     </cc:Agent>\n",
+       "    </dc:creator>\n",
+       "   </cc:Work>\n",
+       "  </rdf:RDF>\n",
+       " </metadata>\n",
+       " <defs>\n",
+       "  <style type=\"text/css\">*{stroke-linejoin: round; stroke-linecap: butt}</style>\n",
+       " </defs>\n",
+       " <g id=\"figure_1\">\n",
+       "  <g id=\"patch_1\">\n",
+       "   <path d=\"M 0 564.48 \n",
+       "L 564.48 564.48 \n",
+       "L 564.48 0 \n",
+       "L 0 0 \n",
+       "L 0 564.48 \n",
+       "z\n",
+       "\" style=\"fill: none\"/>\n",
+       "  </g>\n",
+       "  <g id=\"axes_1\">\n",
+       "   <g clip-path=\"url(#p87a9dbb41c)\">\n",
+       "    <image xlink:href=\"data:image/png;base64,\n",
+       "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\" id=\"imagefb6b9f727c\" transform=\"matrix(6.406977 0 0 6.406977 7.2 6.28)\" style=\"image-rendering:crisp-edges;image-rendering:pixelated\" width=\"86\" height=\"86\"/>\n",
+       "   </g>\n",
+       "  </g>\n",
+       " </g>\n",
+       " <defs>\n",
+       "  <clipPath id=\"p87a9dbb41c\">\n",
+       "   <rect x=\"7.2\" y=\"7.2\" width=\"550.08\" height=\"550.08\"/>\n",
+       "  </clipPath>\n",
+       " </defs>\n",
+       "</svg>\n"
+      ],
+      "text/plain": [
+       "<Figure size 576x576 with 1 Axes>"
+      ]
+     },
+     "metadata": {
+      "needs_background": "light"
+     },
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "planes = ps.visualization.show_planes(im, spacing = 2)\n",
+    "fig, ax = plt.subplots(1, 1, figsize=[8, 8])\n",
+    "ax.imshow(planes)\n",
+    "ax.axis(False);"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.9.12"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

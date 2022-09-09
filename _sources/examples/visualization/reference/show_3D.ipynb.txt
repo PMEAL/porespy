@@ -1,0 +1,162 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "608d0001",
+   "metadata": {},
+   "source": [
+    "#  `show_3D` "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "92fad141",
+   "metadata": {},
+   "source": [
+    "Rotates a 3D image and creates an angled view for a rough 2D visualization. This method uses `scipy.ndimage.rotate` function to view the 3D image from an angle, then projects the result in 2D. This method is useful for a quick visualization of small prototype images. Because it rotates the image it can be slow for large images."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "e3d2c7ef",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2022-04-25T01:53:49.357935Z",
+     "iopub.status.busy": "2022-04-25T01:53:49.357574Z",
+     "iopub.status.idle": "2022-04-25T01:53:51.736783Z",
+     "shell.execute_reply": "2022-04-25T01:53:51.736047Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<Signature (im)>"
+      ]
+     },
+     "execution_count": 1,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "import matplotlib.pyplot as plt\n",
+    "import numpy as np\n",
+    "import porespy as ps\n",
+    "import inspect\n",
+    "ps.visualization.set_mpl_style()\n",
+    "inspect.signature(ps.visualization.show_3D)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "54261dfb",
+   "metadata": {},
+   "source": [
+    "## `im`\n",
+    "The input image is 3D array to be veiwed in 3D. Note that the method does not work for 2D arrays as input."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "3489b58f",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2022-04-25T01:53:51.741929Z",
+     "iopub.status.busy": "2022-04-25T01:53:51.741622Z",
+     "iopub.status.idle": "2022-04-25T01:53:51.816213Z",
+     "shell.execute_reply": "2022-04-25T01:53:51.815594Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "image/svg+xml": [
+       "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>\n",
+       "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\"\n",
+       "  \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n",
+       "<svg xmlns:xlink=\"http://www.w3.org/1999/xlink\" width=\"432pt\" height=\"348.48pt\" viewBox=\"0 0 432 348.48\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">\n",
+       " <metadata>\n",
+       "  <rdf:RDF xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:cc=\"http://creativecommons.org/ns#\" xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n",
+       "   <cc:Work>\n",
+       "    <dc:type rdf:resource=\"http://purl.org/dc/dcmitype/StillImage\"/>\n",
+       "    <dc:date>2022-04-24T21:53:51.807727</dc:date>\n",
+       "    <dc:format>image/svg+xml</dc:format>\n",
+       "    <dc:creator>\n",
+       "     <cc:Agent>\n",
+       "      <dc:title>Matplotlib v3.5.1, https://matplotlib.org/</dc:title>\n",
+       "     </cc:Agent>\n",
+       "    </dc:creator>\n",
+       "   </cc:Work>\n",
+       "  </rdf:RDF>\n",
+       " </metadata>\n",
+       " <defs>\n",
+       "  <style type=\"text/css\">*{stroke-linejoin: round; stroke-linecap: butt}</style>\n",
+       " </defs>\n",
+       " <g id=\"figure_1\">\n",
+       "  <g id=\"patch_1\">\n",
+       "   <path d=\"M 0 348.48 \n",
+       "L 432 348.48 \n",
+       "L 432 0 \n",
+       "L 0 0 \n",
+       "L 0 348.48 \n",
+       "z\n",
+       "\" style=\"fill: none\"/>\n",
+       "  </g>\n",
+       "  <g id=\"axes_1\">\n",
+       "   <g clip-path=\"url(#p2f13e6c51a)\">\n",
+       "    <image xlink:href=\"data:image/png;base64,\n",
+       "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\" id=\"imageaf1aa7db70\" transform=\"matrix(6.430769 0 0 6.442308 7.2 6.28)\" style=\"image-rendering:crisp-edges;image-rendering:pixelated\" width=\"65\" height=\"52\"/>\n",
+       "   </g>\n",
+       "  </g>\n",
+       " </g>\n",
+       " <defs>\n",
+       "  <clipPath id=\"p2f13e6c51a\">\n",
+       "   <rect x=\"7.2\" y=\"7.2\" width=\"417.6\" height=\"334.08\"/>\n",
+       "  </clipPath>\n",
+       " </defs>\n",
+       "</svg>\n"
+      ],
+      "text/plain": [
+       "<Figure size 864x360 with 1 Axes>"
+      ]
+     },
+     "metadata": {
+      "needs_background": "light"
+     },
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "im = ps.generators.blobs(shape=[40, 40, 40])\n",
+    "im_viz = ps.visualization.show_3D(im)\n",
+    "fig, ax = plt.subplots(1, 1, figsize=[12, 5])\n",
+    "ax.imshow(im_viz)\n",
+    "ax.axis(False);"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.9.12"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

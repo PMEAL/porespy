@@ -1,0 +1,242 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "confident-salmon",
+   "metadata": {},
+   "source": [
+    "# `insert_sphere`"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "willing-advertiser",
+   "metadata": {},
+   "source": [
+    "## Import packages"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "straight-pitch",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2022-04-25T01:53:34.417715Z",
+     "iopub.status.busy": "2022-04-25T01:53:34.417417Z",
+     "iopub.status.idle": "2022-04-25T01:53:36.689630Z",
+     "shell.execute_reply": "2022-04-25T01:53:36.688863Z"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "import numpy as np\n",
+    "import porespy as ps\n",
+    "import scipy.ndimage as spim\n",
+    "import matplotlib.pyplot as plt\n",
+    "import skimage\n",
+    "ps.visualization.set_mpl_style()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "formed-drove",
+   "metadata": {},
+   "source": [
+    "## Create image and variables"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "entire-david",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2022-04-25T01:53:36.693413Z",
+     "iopub.status.busy": "2022-04-25T01:53:36.693205Z",
+     "iopub.status.idle": "2022-04-25T01:53:36.823060Z",
+     "shell.execute_reply": "2022-04-25T01:53:36.822555Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "image/svg+xml": [
+       "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>\n",
+       "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\"\n",
+       "  \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n",
+       "<svg xmlns:xlink=\"http://www.w3.org/1999/xlink\" width=\"492.48pt\" height=\"492.48pt\" viewBox=\"0 0 492.48 492.48\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">\n",
+       " <metadata>\n",
+       "  <rdf:RDF xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:cc=\"http://creativecommons.org/ns#\" xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n",
+       "   <cc:Work>\n",
+       "    <dc:type rdf:resource=\"http://purl.org/dc/dcmitype/StillImage\"/>\n",
+       "    <dc:date>2022-04-24T21:53:36.814264</dc:date>\n",
+       "    <dc:format>image/svg+xml</dc:format>\n",
+       "    <dc:creator>\n",
+       "     <cc:Agent>\n",
+       "      <dc:title>Matplotlib v3.5.1, https://matplotlib.org/</dc:title>\n",
+       "     </cc:Agent>\n",
+       "    </dc:creator>\n",
+       "   </cc:Work>\n",
+       "  </rdf:RDF>\n",
+       " </metadata>\n",
+       " <defs>\n",
+       "  <style type=\"text/css\">*{stroke-linejoin: round; stroke-linecap: butt}</style>\n",
+       " </defs>\n",
+       " <g id=\"figure_1\">\n",
+       "  <g id=\"patch_1\">\n",
+       "   <path d=\"M 0 492.48 \n",
+       "L 492.48 492.48 \n",
+       "L 492.48 0 \n",
+       "L 0 0 \n",
+       "L 0 492.48 \n",
+       "z\n",
+       "\" style=\"fill: none\"/>\n",
+       "  </g>\n",
+       "  <g id=\"axes_1\">\n",
+       "   <g clip-path=\"url(#p7552099821)\">\n",
+       "    <image xlink:href=\"data:image/png;base64,\n",
+       "iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAFmklEQVR4nOVdW7brIAht7srQOoQOs0Po3HK/0uVJVV6bh+3+OY9GUBFEwHS7b4/jxsDreG6c51pcaUtocPsVCc0cULiO8x+aQYvX8dy0g/AY/ArY2z9mk3DfHgdictsVoaE3ovUteGsIZ3Lu2+NATgJFq+2TRdsQiOK9RzLToHLfPKDaQyxa8isTrJ2j/WwcOVHfLpRTGOfP2Xivn7l6Wb+InmbMtGXo9lIb9lWS12fP9tqNv7rHxOmfZOJH//vQEMnEzAQgpdPS47b7FrRjFpksqe331pbovUiqAZr2XYGMGmpXr3UgGpznFq7QpM9bMbIqW++DUaesk8c9ZWs0kdPWskdaaEvwIZAIpj1krswZf47ripyXvcKZoEIfRvCyFiOkn0MqC2MET0uhttUaVJl8qdnitkfA1e1FtUXDaoY8xyI2WdYcRhVUFYqJqCVFGwHKQ5LkY7S8ObTbZ0tNIBdUdJq7UCR7AaKmgEMr3ctCAhFXm9GWttEIkSWQFYJ+0v5FRaSlQiEFUlEQnDDHFaiIsre2TQXCHWhFofWA6qenUGB7yEqCicbMqbjO2d578HyYIjhqV839rQ7S7ZWeL9ChCKSL2dJDaTC6fy1c3V5tjh05cWht9S6NZeXUESdaqWCkQrn2wcNsRphitoaskJzyTMOGlpJyYd2wNanZ1RwE68KF7SHUxGkntoI7HZknCYllIVZ5lmCiNRR6MOz9Hz2gSKFI+24156/juX0IZDWbLQFnbFbHwJrAc03hSp6vcP8Q7e1p2na9LEuhWjaoU//reIqKAy0Y8ZpB5Pb2UEEYmkNkhX73YNrU0YPKujTkyZcbxTh/Vwukkh0fteGcjazC4MyDhEd6Tr13vtAcMiNiWVe0WUgULbJyw1KxIS1Q5lTHe0y0NvzPKcSe8emBvB/SW8HcFYG+Z+IBS5WKxOSZ8iE9JtrchrZj3H55AbloJLTMbi+FNmIrLUyrpElcWPvsLpDbrZaJ8gRinCEC4aBaDC3rasJQID2T4WFGtDGsbAF6aH032jt7uP2JYG6tLkdMCudME4GTp/spdcYcRTtjApEaog6/zwh5tqkG6WKhrAEkltUy9HhWglW8OEoo9+1xQGJZnP3gGzTjdvO/+AoNLnrVRHFQUUs0Ueiu25t58dF6d2MVTRwdIcQXX0bEKTrSyK8FnkLxWKwf1e/oqnCuQLzNTIYGW3nuEVHNDGFEAil4t1hWpImKQkS1Clwgq2yqPWgyh2hHIiXaK82PcFK7szZaZGiyKXqLWhmc62iSNrN22n5QQM2F6uUz6AOghl61SzkobSJNVuaeEM0bVS9AOTTikzoK0jKZDGj3pFk7iuZsXsg9BGmLLXVaEj6z9hotsNSmSWnv6LQstXIkK03LB4EsrX5/fwiyHNL6zNknKw0tMk2s+5U2NLyvZ2cn3CCvZ6oqjGshhOa8QwEtFPMJ2HvFevPJPNH3eL+/YcebuQarBiEt+PeLg+Yga17MB0OtWbGeMTxxvYgT6XWF12WdqKyZ2vSrFL226VfasmG5qeWxqMpUv2diFPCThEzSwu+jDmTdOIrm6dU3aOVi5f0AiYhxqgRiVc/MCscZLCF1FEK+rgLZ/tsBeRsQepJ/WWjQV/wh8+2Zt5iknyEhyoShsofawXnd60PwRwUp2S8OQMISHUVXu3g+L8XreG5pB8PsqwMRdVsaSxP63t4oUIfWiDFwXOhuPkQrde6g0EUUGmQkobTjHu4hkpujlVDtVpcUptfEZl59i0L0wvsjEEnE80RVTakAzUJ8C2SVVfztC2CpaG+0MDKKP0KKrbNpVOQ7skhvgaDPGKjS/mhkJ9r+mCx0wl5LB1l4FsF3RG/02ayfrO+gknQiQ6i9M1Nm8Z+FHvma2CggteJaV+XB14uWWxlQFTd6NTf5PwZW/PAsWw+hAAAAAElFTkSuQmCC\" id=\"image8bf8a5da68\" transform=\"matrix(4.79 0 0 -4.79 7.2 485.28)\" style=\"image-rendering:crisp-edges;image-rendering:pixelated\" width=\"100\" height=\"100\"/>\n",
+       "   </g>\n",
+       "  </g>\n",
+       " </g>\n",
+       " <defs>\n",
+       "  <clipPath id=\"p7552099821\">\n",
+       "   <rect x=\"7.2\" y=\"7.2\" width=\"478.08\" height=\"478.08\"/>\n",
+       "  </clipPath>\n",
+       " </defs>\n",
+       "</svg>\n"
+      ],
+      "text/plain": [
+       "<Figure size 504x504 with 1 Axes>"
+      ]
+     },
+     "metadata": {
+      "needs_background": "light"
+     },
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "im = ps.generators.blobs([100, 100,100])\n",
+    "\n",
+    "fig, ax = plt.subplots(figsize=[7, 7]);\n",
+    "ps.visualization.imshow(im);\n",
+    "plt.axis(False);\n",
+    "\n",
+    "#default values:\n",
+    "c=[50,50,50]\n",
+    "r=50\n",
+    "v=False\n",
+    "overwrite=True"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "entire-projection",
+   "metadata": {},
+   "source": [
+    "## Apply tool"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "unlimited-illustration",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2022-04-25T01:53:36.825707Z",
+     "iopub.status.busy": "2022-04-25T01:53:36.825533Z",
+     "iopub.status.idle": "2022-04-25T01:53:36.924901Z",
+     "shell.execute_reply": "2022-04-25T01:53:36.924473Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "image/svg+xml": [
+       "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>\n",
+       "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\"\n",
+       "  \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n",
+       "<svg xmlns:xlink=\"http://www.w3.org/1999/xlink\" width=\"492.48pt\" height=\"492.48pt\" viewBox=\"0 0 492.48 492.48\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">\n",
+       " <metadata>\n",
+       "  <rdf:RDF xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:cc=\"http://creativecommons.org/ns#\" xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n",
+       "   <cc:Work>\n",
+       "    <dc:type rdf:resource=\"http://purl.org/dc/dcmitype/StillImage\"/>\n",
+       "    <dc:date>2022-04-24T21:53:36.919721</dc:date>\n",
+       "    <dc:format>image/svg+xml</dc:format>\n",
+       "    <dc:creator>\n",
+       "     <cc:Agent>\n",
+       "      <dc:title>Matplotlib v3.5.1, https://matplotlib.org/</dc:title>\n",
+       "     </cc:Agent>\n",
+       "    </dc:creator>\n",
+       "   </cc:Work>\n",
+       "  </rdf:RDF>\n",
+       " </metadata>\n",
+       " <defs>\n",
+       "  <style type=\"text/css\">*{stroke-linejoin: round; stroke-linecap: butt}</style>\n",
+       " </defs>\n",
+       " <g id=\"figure_1\">\n",
+       "  <g id=\"patch_1\">\n",
+       "   <path d=\"M 0 492.48 \n",
+       "L 492.48 492.48 \n",
+       "L 492.48 0 \n",
+       "L 0 0 \n",
+       "L 0 492.48 \n",
+       "z\n",
+       "\" style=\"fill: none\"/>\n",
+       "  </g>\n",
+       "  <g id=\"axes_1\">\n",
+       "   <g clip-path=\"url(#p775db0d8ab)\">\n",
+       "    <image xlink:href=\"data:image/png;base64,\n",
+       "iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAACpklEQVR4nO2dXZKsIAxGxZql9RJ6mS7BvXmfnHJskPwApq/nVM3LdCOQzySItkmv9N4mAeu2JMn3jpyPrTmGdFwjsdigxnmeP607OLJPwGLcdVvS3q6lISIKfSQdB3g18Vd6by0MI+1vFBqBhnqIpLPWZ2wrkT2c+y8JNGqc88jOztwtRo51W9Kd45otjTxxeJ9wRDGOeMdotZE4cXpWTE/DYyuTh0CZnGdcecv5s6RR8+q7eFA9TJUWEMf/f3iIJva90nvb/6Rt4JOj/VQhS3rW4x367+yfZQUpNZS45BPFsFDKNVlBLEZ9uhDS+ddC/IcgiGGnhR1UB8gpixifeBY5rusQxMjjsYtZEMS4xmof07IXMWRY7IRhB6DJKQgyCOm2E4IMQnqnlN3eQZB3g8JGbEBUWyfShuCjZFvi2k2Uknz357AgT8lDivdDEKMvJfuy7A1G9p463jGGnJ3xkGDgCQEwP3UC/UGQAJCzAQAAAAAAAAAAAAAAAAAAAAAAOsKvpGLBk4vBmKcJL4kEHhIMBAkGggTjVxDySAzwkGAgSDBmfr0TFF4ZHgNCVjBcL+OH9uAhwcjuZeEl9zFj/FgUQxZC9UX1viwYQ04U3rl4A1d27VoLF/K4XqSMl4xh3ykR5RBEGYc4qSPKGFhlBQNBgoEgwcguv+4u8v5UmhaWBD/rtiQuDDtiiTSqHMLSV06tEHGxXIXVyIS1Otr66tNU8JC96rOm2D20wVWcGFHaP63zR5CcGDWBniyKJSTV+BWEnKCj14nY5Er9SV5SClGtbND1OuSq3Oi30fqkq5Y8at1h6Sz6Nm/yjNnS7k/I8hhL0/YbhPGO8aqt6krdO4johq7RYg6e9tkcckdhMGk15Z79tjiWd+zdkvq6LeZtmf9pMaDlH2zckfl/QV21AAAAAElFTkSuQmCC\" id=\"image2a94563c6a\" transform=\"matrix(4.79 0 0 -4.79 7.2 485.28)\" style=\"image-rendering:crisp-edges;image-rendering:pixelated\" width=\"100\" height=\"100\"/>\n",
+       "   </g>\n",
+       "  </g>\n",
+       " </g>\n",
+       " <defs>\n",
+       "  <clipPath id=\"p775db0d8ab\">\n",
+       "   <rect x=\"7.2\" y=\"7.2\" width=\"478.08\" height=\"478.08\"/>\n",
+       "  </clipPath>\n",
+       " </defs>\n",
+       "</svg>\n"
+      ],
+      "text/plain": [
+       "<Figure size 504x504 with 1 Axes>"
+      ]
+     },
+     "metadata": {
+      "needs_background": "light"
+     },
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "im = ps.tools.insert_sphere(im=im, c=c, r=r, v=v, overwrite=overwrite)\n",
+    "fig, ax = plt.subplots(figsize=[7, 7]);\n",
+    "ps.visualization.imshow(im);\n",
+    "plt.axis(False);"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.9.12"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

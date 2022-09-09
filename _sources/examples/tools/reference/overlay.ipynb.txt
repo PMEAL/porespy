@@ -1,0 +1,391 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "4bd55bf8",
+   "metadata": {},
+   "source": [
+    "# `overlay`"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a71579c9",
+   "metadata": {},
+   "source": [
+    "## Import packages"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "2540ba84",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2022-04-25T01:53:32.259803Z",
+     "iopub.status.busy": "2022-04-25T01:53:32.259594Z",
+     "iopub.status.idle": "2022-04-25T01:53:34.344292Z",
+     "shell.execute_reply": "2022-04-25T01:53:34.343625Z"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "import numpy as np\n",
+    "import porespy as ps\n",
+    "import scipy.ndimage as spim\n",
+    "import matplotlib.pyplot as plt\n",
+    "import skimage\n",
+    "ps.visualization.set_mpl_style()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "24f1086e",
+   "metadata": {},
+   "source": [
+    "## Create image and variables"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "df980fdd",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2022-04-25T01:53:34.347656Z",
+     "iopub.status.busy": "2022-04-25T01:53:34.347416Z",
+     "iopub.status.idle": "2022-04-25T01:53:35.295695Z",
+     "shell.execute_reply": "2022-04-25T01:53:35.295024Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_1115994/2366592848.py:3: DeprecationWarning: Call to deprecated function (or staticmethod) RSA. (This function has been renamed to rsa (lowercase to meet pep8)\n",
+      "  im1 = ps.generators.RSA(im1, r=25, volume_fraction=0.5)\n",
+      "/tmp/ipykernel_1115994/2366592848.py:4: DeprecationWarning: Call to deprecated function (or staticmethod) RSA. (This function has been renamed to rsa (lowercase to meet pep8)\n",
+      "  im2 = ps.generators.RSA(im2, r=5, volume_fraction=0.5)\n"
+     ]
+    },
+    {
+     "data": {
+      "image/svg+xml": [
+       "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>\n",
+       "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\"\n",
+       "  \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n",
+       "<svg xmlns:xlink=\"http://www.w3.org/1999/xlink\" width=\"276.48pt\" height=\"276.48pt\" viewBox=\"0 0 276.48 276.48\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">\n",
+       " <metadata>\n",
+       "  <rdf:RDF xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:cc=\"http://creativecommons.org/ns#\" xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n",
+       "   <cc:Work>\n",
+       "    <dc:type rdf:resource=\"http://purl.org/dc/dcmitype/StillImage\"/>\n",
+       "    <dc:date>2022-04-24T21:53:35.250390</dc:date>\n",
+       "    <dc:format>image/svg+xml</dc:format>\n",
+       "    <dc:creator>\n",
+       "     <cc:Agent>\n",
+       "      <dc:title>Matplotlib v3.5.1, https://matplotlib.org/</dc:title>\n",
+       "     </cc:Agent>\n",
+       "    </dc:creator>\n",
+       "   </cc:Work>\n",
+       "  </rdf:RDF>\n",
+       " </metadata>\n",
+       " <defs>\n",
+       "  <style type=\"text/css\">*{stroke-linejoin: round; stroke-linecap: butt}</style>\n",
+       " </defs>\n",
+       " <g id=\"figure_1\">\n",
+       "  <g id=\"patch_1\">\n",
+       "   <path d=\"M 0 276.48 \n",
+       "L 276.48 276.48 \n",
+       "L 276.48 0 \n",
+       "L 0 0 \n",
+       "L 0 276.48 \n",
+       "z\n",
+       "\" style=\"fill: none\"/>\n",
+       "  </g>\n",
+       "  <g id=\"axes_1\">\n",
+       "   <g clip-path=\"url(#p1c49533526)\">\n",
+       "    <image xlink:href=\"data:image/png;base64,\n",
+       "iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAABl0lEQVR4nO3cUW7CMBBFUdO1dQldZpfQvdEvS4lIIEEZv2txzy8SGeZ5jGJBWpMkSZIkSZIkSZIkQdwq3/z79nPfe+3v/lt67Vl9Vb3xszCOvP6pSgI52mxDeXR5IGebbChrZVuW3mMgMAYCYyAwBgJjIDCXB3L2Dtw79rWSCTnaZMN4VLZlvWq2YUg6b4pt453zrlm3RGzRVx46zhQOrtDK098ZgkHdGFYfxc9w1I9YMYlGUaclPiGpVUudlmgg6aakr78lFgilGZQ6ukggtCaQ6ol/h2hteCCk1bhEqWtoIJQPvYdQn1sWzLBACKvviHSdTgiMgcAMCSS9DZyVrNcJgTEQGAOBMRAYA4ExEBgDgTEQGAOBMRAYA4ExEJghgVB/lLYnWa8TAmMgMMMCmWXbStfphMAMDSS9+l4h1Dd8QggfegulLrcsmEgglNXYkeqJTQilCZQ6uuiWlW5G+vpb4t8hqaYQw2gN8qfPbsQP1KhBdPEJWapuFj2M1mATsuSTHMA+6VknkiRJkiRJkiRJkiRJU/gHp8uAbRhzlhwAAAAASUVORK5CYII=\" id=\"image29d5250d54\" transform=\"matrix(2.63 0 0 -2.63 7.2 269.28)\" style=\"image-rendering:crisp-edges;image-rendering:pixelated\" width=\"100\" height=\"100\"/>\n",
+       "   </g>\n",
+       "  </g>\n",
+       " </g>\n",
+       " <defs>\n",
+       "  <clipPath id=\"p1c49533526\">\n",
+       "   <rect x=\"7.2\" y=\"7.2\" width=\"262.08\" height=\"262.08\"/>\n",
+       "  </clipPath>\n",
+       " </defs>\n",
+       "</svg>\n"
+      ],
+      "text/plain": [
+       "<Figure size 288x288 with 1 Axes>"
+      ]
+     },
+     "metadata": {
+      "needs_background": "light"
+     },
+     "output_type": "display_data"
+    },
+    {
+     "data": {
+      "image/svg+xml": [
+       "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>\n",
+       "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\"\n",
+       "  \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n",
+       "<svg xmlns:xlink=\"http://www.w3.org/1999/xlink\" width=\"276.48pt\" height=\"276.48pt\" viewBox=\"0 0 276.48 276.48\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">\n",
+       " <metadata>\n",
+       "  <rdf:RDF xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:cc=\"http://creativecommons.org/ns#\" xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n",
+       "   <cc:Work>\n",
+       "    <dc:type rdf:resource=\"http://purl.org/dc/dcmitype/StillImage\"/>\n",
+       "    <dc:date>2022-04-24T21:53:35.288422</dc:date>\n",
+       "    <dc:format>image/svg+xml</dc:format>\n",
+       "    <dc:creator>\n",
+       "     <cc:Agent>\n",
+       "      <dc:title>Matplotlib v3.5.1, https://matplotlib.org/</dc:title>\n",
+       "     </cc:Agent>\n",
+       "    </dc:creator>\n",
+       "   </cc:Work>\n",
+       "  </rdf:RDF>\n",
+       " </metadata>\n",
+       " <defs>\n",
+       "  <style type=\"text/css\">*{stroke-linejoin: round; stroke-linecap: butt}</style>\n",
+       " </defs>\n",
+       " <g id=\"figure_1\">\n",
+       "  <g id=\"patch_1\">\n",
+       "   <path d=\"M 0 276.48 \n",
+       "L 276.48 276.48 \n",
+       "L 276.48 0 \n",
+       "L 0 0 \n",
+       "L 0 276.48 \n",
+       "z\n",
+       "\" style=\"fill: none\"/>\n",
+       "  </g>\n",
+       "  <g id=\"axes_1\">\n",
+       "   <g clip-path=\"url(#p030bf34c78)\">\n",
+       "    <image xlink:href=\"data:image/png;base64,\n",
+       "iVBORw0KGgoAAAANSUhEUgAAADMAAAAzCAYAAAA6oTAqAAABXElEQVR4nO1YyQ2DMBA0iNJSQsqkBHpzXkgQfOw1XmN5nlHsnfHehDAxMcHB4mH0s3zj/29H3NVc1BdwiaX+TzlHwao5nCNWIoyEWEyNsIcglWd6wxSjQS7JLarZpr1AAgviKagu1ZRZRK9RhZk0ZFAlXR1mqJCRYFazXjGUmGS8o6ZatI3HYeRUi8aNHKU0cgS18PAVsJzxWA/Efab06pT1AOEhkZjSqyNIUsOVHWatlzJOuN7E1F61dTXjPtzDM8h9A41kzmiJH3FfPPoVbDnLCboKse5DooMWr065g9vERU1Tm1fUxOYWJHKYtR5Nrjaots1CggPrGfBE1TNeo0nJfs7eUMuZixjUpOHmGcSk4fJF84R1rpG68VtW6TWE+pj9luGzOBCeoJBGNFXund2WZsk3hG7FSDCUGHZp9ho4KdistsIeBK0lIp4EJZxMxvcevBLCYAVgolf8AAJf96YEg4TEAAAAAElFTkSuQmCC\" id=\"imaged13b112cbc\" transform=\"matrix(5.156863 0 0 -5.156863 7.2 269.28)\" style=\"image-rendering:crisp-edges;image-rendering:pixelated\" width=\"51\" height=\"51\"/>\n",
+       "   </g>\n",
+       "  </g>\n",
+       " </g>\n",
+       " <defs>\n",
+       "  <clipPath id=\"p030bf34c78\">\n",
+       "   <rect x=\"7.2\" y=\"7.2\" width=\"262.08\" height=\"262.08\"/>\n",
+       "  </clipPath>\n",
+       " </defs>\n",
+       "</svg>\n"
+      ],
+      "text/plain": [
+       "<Figure size 288x288 with 1 Axes>"
+      ]
+     },
+     "metadata": {
+      "needs_background": "light"
+     },
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "im1 = np.zeros([100, 100,100])\n",
+    "im2 = np.zeros([51, 51,51])\n",
+    "im1 = ps.generators.RSA(im1, r=25, volume_fraction=0.5)\n",
+    "im2 = ps.generators.RSA(im2, r=5, volume_fraction=0.5)\n",
+    "im3 = im1.copy()\n",
+    "\n",
+    "fig, ax = plt.subplots(figsize=[4, 4]);\n",
+    "ps.visualization.imshow(im1);\n",
+    "plt.axis(False)\n",
+    "fig, ax = plt.subplots(figsize=[4, 4]);\n",
+    "ps.visualization.imshow(im2);\n",
+    "plt.axis(False);\n",
+    "\n",
+    "#default values:\n",
+    "c = [26,26,26]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "81a1dc0b",
+   "metadata": {},
+   "source": [
+    "## Apply tool"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "a8f3e5aa",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2022-04-25T01:53:35.300341Z",
+     "iopub.status.busy": "2022-04-25T01:53:35.300073Z",
+     "iopub.status.idle": "2022-04-25T01:53:35.360295Z",
+     "shell.execute_reply": "2022-04-25T01:53:35.359676Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "image/svg+xml": [
+       "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>\n",
+       "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\"\n",
+       "  \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n",
+       "<svg xmlns:xlink=\"http://www.w3.org/1999/xlink\" width=\"276.48pt\" height=\"276.48pt\" viewBox=\"0 0 276.48 276.48\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">\n",
+       " <metadata>\n",
+       "  <rdf:RDF xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:cc=\"http://creativecommons.org/ns#\" xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n",
+       "   <cc:Work>\n",
+       "    <dc:type rdf:resource=\"http://purl.org/dc/dcmitype/StillImage\"/>\n",
+       "    <dc:date>2022-04-24T21:53:35.352982</dc:date>\n",
+       "    <dc:format>image/svg+xml</dc:format>\n",
+       "    <dc:creator>\n",
+       "     <cc:Agent>\n",
+       "      <dc:title>Matplotlib v3.5.1, https://matplotlib.org/</dc:title>\n",
+       "     </cc:Agent>\n",
+       "    </dc:creator>\n",
+       "   </cc:Work>\n",
+       "  </rdf:RDF>\n",
+       " </metadata>\n",
+       " <defs>\n",
+       "  <style type=\"text/css\">*{stroke-linejoin: round; stroke-linecap: butt}</style>\n",
+       " </defs>\n",
+       " <g id=\"figure_1\">\n",
+       "  <g id=\"patch_1\">\n",
+       "   <path d=\"M 0 276.48 \n",
+       "L 276.48 276.48 \n",
+       "L 276.48 0 \n",
+       "L 0 0 \n",
+       "L 0 276.48 \n",
+       "z\n",
+       "\" style=\"fill: none\"/>\n",
+       "  </g>\n",
+       "  <g id=\"axes_1\">\n",
+       "   <g clip-path=\"url(#pbf69d704c3)\">\n",
+       "    <image xlink:href=\"data:image/png;base64,\n",
+       "iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAACDklEQVR4nO3cXW7CMBBFYVN1aV1Cl9kldG/0AaXiJyF2lPEcJ+d7RFUZfDMTEwKlSFp2afnjr8v39fmx3+tP0//YA6WOCB+1fzi3CO8ej0KpI0p1IOrjM7uAe0ceRbUwHXL0UVQLE4huqgNZGh29RwqljiiYF/FuNB1lsWs4smAwgRx9FNV6eLFuO/NhOkQ3BgJjIDAGImkgoVta3323CzuHrF2lPdtV3FohgdQutqG82j2Q1kU2lEdue2EMBMZAYAwExkBgDARm9d3ylg+tWrayvmN/FNIhtYtsGK/CRtbaYhvGvNBbSV30dp7UYYY4grdc7xq1O7FF73nRcaRwcIVGXv0dIRjUOST6UvwIl/oRdy5mLBS1W/47JOsLM1lHLbVbUkdW9qJkP/+ctEAoi0GpY5ISCG0RSPWgdllq3GXtsQsjHY3PCDuv6gJa7kJcCo4cxiQ7FEcWTLdARuiOUvLrtENgDASmy+9lZY+BLbJO7k0f4WbvQM7AkQVjIDAGAmMgMAYCYyAwBgJjIDAGAmMgMAYC0yWQ0a6BZdZrh8AYCEy3QEYZW9l12iEwXQPJPvrWEOrr3iGEFz2HUpcjCyYlEMrROCHVk9YhlEWg1DFJHVnZi5H9/HPSzyFZi0IMoxTY16J73FBHDWKS3iH3oheLHkYpsA655y85gJ3pt04kSZIkSZIkSZIkSZKG8Ae4S9Iud3R52gAAAABJRU5ErkJggg==\" id=\"image3c251ffc42\" transform=\"matrix(2.63 0 0 -2.63 7.2 269.28)\" style=\"image-rendering:crisp-edges;image-rendering:pixelated\" width=\"100\" height=\"100\"/>\n",
+       "   </g>\n",
+       "  </g>\n",
+       " </g>\n",
+       " <defs>\n",
+       "  <clipPath id=\"pbf69d704c3\">\n",
+       "   <rect x=\"7.2\" y=\"7.2\" width=\"262.08\" height=\"262.08\"/>\n",
+       "  </clipPath>\n",
+       " </defs>\n",
+       "</svg>\n"
+      ],
+      "text/plain": [
+       "<Figure size 288x288 with 1 Axes>"
+      ]
+     },
+     "metadata": {
+      "needs_background": "light"
+     },
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "im = ps.tools.overlay(im1=im1,im2=im2, c=c)\n",
+    "fig, ax = plt.subplots(figsize=[4, 4]);\n",
+    "ps.visualization.imshow(im);\n",
+    "plt.axis(False);"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "8e89b639",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2022-04-25T01:53:35.364716Z",
+     "iopub.status.busy": "2022-04-25T01:53:35.364463Z",
+     "iopub.status.idle": "2022-04-25T01:53:35.422405Z",
+     "shell.execute_reply": "2022-04-25T01:53:35.421930Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "image/svg+xml": [
+       "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>\n",
+       "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\"\n",
+       "  \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n",
+       "<svg xmlns:xlink=\"http://www.w3.org/1999/xlink\" width=\"276.48pt\" height=\"276.48pt\" viewBox=\"0 0 276.48 276.48\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">\n",
+       " <metadata>\n",
+       "  <rdf:RDF xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:cc=\"http://creativecommons.org/ns#\" xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n",
+       "   <cc:Work>\n",
+       "    <dc:type rdf:resource=\"http://purl.org/dc/dcmitype/StillImage\"/>\n",
+       "    <dc:date>2022-04-24T21:53:35.415783</dc:date>\n",
+       "    <dc:format>image/svg+xml</dc:format>\n",
+       "    <dc:creator>\n",
+       "     <cc:Agent>\n",
+       "      <dc:title>Matplotlib v3.5.1, https://matplotlib.org/</dc:title>\n",
+       "     </cc:Agent>\n",
+       "    </dc:creator>\n",
+       "   </cc:Work>\n",
+       "  </rdf:RDF>\n",
+       " </metadata>\n",
+       " <defs>\n",
+       "  <style type=\"text/css\">*{stroke-linejoin: round; stroke-linecap: butt}</style>\n",
+       " </defs>\n",
+       " <g id=\"figure_1\">\n",
+       "  <g id=\"patch_1\">\n",
+       "   <path d=\"M 0 276.48 \n",
+       "L 276.48 276.48 \n",
+       "L 276.48 0 \n",
+       "L 0 0 \n",
+       "L 0 276.48 \n",
+       "z\n",
+       "\" style=\"fill: none\"/>\n",
+       "  </g>\n",
+       "  <g id=\"axes_1\">\n",
+       "   <g clip-path=\"url(#pda733c1773)\">\n",
+       "    <image xlink:href=\"data:image/png;base64,\n",
+       "iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAACIUlEQVR4nO3cUXKCMBRGYel0aS7BZXYJ3Rt9yoxWkQDJvSd4vkcdJc1PbkigXi6SJEmSJEmSJEmSJIip55dfp9u89N7v/NP12KP66vXF78Koef9TdQmktrMN5VnzQLZ2sqE86laytI+BwBgIjIHAGAiMgcA0D2TrCtwV+6MuI6S2kw3jWbeStdbZhiFpuyHKxp79rlFLIrbRLTcdRwoH19Ceu78jBINaGPbeih9hqx9xxmR0FHW0pI+QrLOWOlpSA8nulOzjv5IWCKUzKO0oUgKhdQKpPelziB6FB0I6G+9R2hUaCOWPXkJonyULJiwQwtlXI7udjhAYA4EJCSS7DGyV2V5HCIyBwBgIjIHAfGc34BO9umgoN8wcIcGWruDK6wYCYyAwBgJjIAuu023OWLEbyIrWoSw9flRe97I3wbtnwkJGCPWhNCJLFoyBwIQFMmrZim63k/o/PQN4t4dVhJYs+iiJDuPV6+FzCDUUSrssWZVqyk0LKVdZlLOxWGtPbblpIe2ylxIKpR1F6jokuzMij7+2h1Ugzg76/xhG/twtIpAi6wG1vXNIzWe3Qm2d9C4he7+/tty0gBoh93r9kkPU5eve42DXIWuduOXzI8EGcm/Uzt1jiEBaooeLmtQlSZIkfQT0ImlUR/bLXBg2dvR2r4HAnHYvK2qbvbVTjpDIp0RaO2UgIzOQxo7e7j3tHJLpyFzlCIE5ZSCRT4no5P4AQbDcmD/xMdMAAAAASUVORK5CYII=\" id=\"image0a327aa21b\" transform=\"matrix(2.63 0 0 -2.63 7.2 269.28)\" style=\"image-rendering:crisp-edges;image-rendering:pixelated\" width=\"100\" height=\"100\"/>\n",
+       "   </g>\n",
+       "  </g>\n",
+       " </g>\n",
+       " <defs>\n",
+       "  <clipPath id=\"pda733c1773\">\n",
+       "   <rect x=\"7.2\" y=\"7.2\" width=\"262.08\" height=\"262.08\"/>\n",
+       "  </clipPath>\n",
+       " </defs>\n",
+       "</svg>\n"
+      ],
+      "text/plain": [
+       "<Figure size 288x288 with 1 Axes>"
+      ]
+     },
+     "metadata": {
+      "needs_background": "light"
+     },
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "im = ps.tools.overlay(im1=im3, im2=im2, c=[74, 74, 74])\n",
+    "fig, ax = plt.subplots(figsize=[4, 4]);\n",
+    "ps.visualization.imshow(im);\n",
+    "plt.axis(False);"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.9.12"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

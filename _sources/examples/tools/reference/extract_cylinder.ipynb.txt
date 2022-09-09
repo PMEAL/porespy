@@ -1,0 +1,187 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "central-afghanistan",
+   "metadata": {},
+   "source": [
+    "# `extract_cylinder`"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "after-error",
+   "metadata": {},
+   "source": [
+    "## Import Packages"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "educational-creator",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2022-04-25T01:53:34.490683Z",
+     "iopub.status.busy": "2022-04-25T01:53:34.490396Z",
+     "iopub.status.idle": "2022-04-25T01:53:36.885119Z",
+     "shell.execute_reply": "2022-04-25T01:53:36.884466Z"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "import numpy as np\n",
+    "import porespy as ps\n",
+    "import scipy.ndimage as spim\n",
+    "import matplotlib.pyplot as plt\n",
+    "import skimage\n",
+    "ps.visualization.set_mpl_style()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "irish-pixel",
+   "metadata": {},
+   "source": [
+    "## Generate Image for Testing"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "surgical-playback",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2022-04-25T01:53:36.888152Z",
+     "iopub.status.busy": "2022-04-25T01:53:36.887905Z",
+     "iopub.status.idle": "2022-04-25T01:53:36.968120Z",
+     "shell.execute_reply": "2022-04-25T01:53:36.967576Z"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "im = ps.generators.blobs([100, 100, 100])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "engaged-aluminum",
+   "metadata": {},
+   "source": [
+    "## Apply tool and visualize\n",
+    "This tool is useful for extracting a cylindrical core from an otherwise cubic image.  This might be helpful if a cylindrical domain is needed, or to test a workflow on a tomogram that has has not been cropped yet."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "fancy-instruction",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2022-04-25T01:53:36.970605Z",
+     "iopub.status.busy": "2022-04-25T01:53:36.970391Z",
+     "iopub.status.idle": "2022-04-25T01:53:37.053285Z",
+     "shell.execute_reply": "2022-04-25T01:53:37.052597Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "image/svg+xml": [
+       "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>\n",
+       "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\"\n",
+       "  \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n",
+       "<svg xmlns:xlink=\"http://www.w3.org/1999/xlink\" width=\"558pt\" height=\"276.48pt\" viewBox=\"0 0 558 276.48\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">\n",
+       " <metadata>\n",
+       "  <rdf:RDF xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:cc=\"http://creativecommons.org/ns#\" xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n",
+       "   <cc:Work>\n",
+       "    <dc:type rdf:resource=\"http://purl.org/dc/dcmitype/StillImage\"/>\n",
+       "    <dc:date>2022-04-24T21:53:37.042104</dc:date>\n",
+       "    <dc:format>image/svg+xml</dc:format>\n",
+       "    <dc:creator>\n",
+       "     <cc:Agent>\n",
+       "      <dc:title>Matplotlib v3.5.1, https://matplotlib.org/</dc:title>\n",
+       "     </cc:Agent>\n",
+       "    </dc:creator>\n",
+       "   </cc:Work>\n",
+       "  </rdf:RDF>\n",
+       " </metadata>\n",
+       " <defs>\n",
+       "  <style type=\"text/css\">*{stroke-linejoin: round; stroke-linecap: butt}</style>\n",
+       " </defs>\n",
+       " <g id=\"figure_1\">\n",
+       "  <g id=\"patch_1\">\n",
+       "   <path d=\"M 0 276.48 \n",
+       "L 558 276.48 \n",
+       "L 558 0 \n",
+       "L 0 0 \n",
+       "L 0 276.48 \n",
+       "z\n",
+       "\" style=\"fill: none\"/>\n",
+       "  </g>\n",
+       "  <g id=\"axes_1\">\n",
+       "   <g clip-path=\"url(#p76f09960f6)\">\n",
+       "    <image xlink:href=\"data:image/png;base64,\n",
+       "iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAF9UlEQVR4nO1d2Y0bMQwdL1yFv1OAiwjgBtKsu3AVThVB8jULrSxRPB6P8eYB+2N7REoUKV6aPf35/ePvFoDb5fry2f35ED/DeQ7JA4efEdpxJc99sH/5BugXXypY7UaQPHeK0BBqh1DMWne0F1Y7fsQjV0ugGnK7XF8IS9T1P7btjBjEIoTb5Vpi10twfz7g59v+XIkzpJIWjbR8hNHCU8LgfnfemZAM0AK1mL2mZAhJShOh2f0YH5aJoxet3Z2zyWpp7mPPNCBjA4zmODxDqtj0nY/RGWXlMVoAPb0Z/+cqi09hdIgexRmQCp59qI/UPXJBZr591lmzokv9hlo3lts7c2ur7NAobYmIsV4EIo0hPKBZYLRQskziF5NVKR4YIVMjo9bmYydWTRhofjTCzFiT08/Tr2VysZ+MllFp0k0ai0QHsxqseFSlTiS77f58fP6haFhNV5bp49BdCmQ2CGdwz/pB9KJG0YNke0fgTsAy0T6S9/SMZmOjzd/yDJHY5SxToM3OopKJ2tLuCKRAEAvMzeEgacygdU44PKOE4loPqeZK91g5GxJnRNosMVubqUCqpEVWQAh91Pygmb8mu9DzXzr9vgJSA7OzAGQJt7qpqZhZsGKfj5vbi4L1sIwWHNUAscLtcp2fIR62WQo0D7PSLVrjtJmJ+/NBa4hHbJFd6aMWHl18m5WgKRoqkxVVNbSo/w6L+Rjxo0E7j9UYS4G0OxrZ8tMCJdR+0pHnB4oWKzCkbCyCEfTYXl5YhIBLdC5uW31XewWUlkMEgmo+O4JQvHmExiGe5isaGocC4YSUMVmVsJuf9K4TDbSJODRQfGTPxWSyWuYR6mrlQfpbbmELOa9VDPelt7eK/eYAHUlnaMaI7vCOYVRJVAtNKTVqwTVr0PLmcqhrW3/aZ6nvNWNGwUpLdYZQ2jGqvmWZQosWW7thpD3SOz2RQNC3mpCowEML7dk8NFm992QxI5poPbsWgzZxkq6VqYYgWj89E3zZ8YIHbperXwnX24RYGr61ObaITeD2ag1LV2CEyVrRoASnFQxnXq7vOtE2KCCeQ3cbculaabu/fEYTZEa4plJaEmga5lRubzuAlQkr3ulQV0Xqq3YZyt4iPDbJ90cGu6Zu/d0snkELS4pqwk3pXLS007w7lhpSpS6O6IKM6AlOSS6ugKgv7HGA5wWfSPPHdY3J1zNlJ+zQDXSjz7PmOKP75QVmR6weona7NZOtoT+yAOf+B0fFzLxxUiTc79GplBHCkovSdAJ3ksjUP5cWqtkc1v2uQWQjQXVPikJoo5zEgUAl/ipAMpfwwDAqccipe0QITrqxliXcIyN7Hhotf9EQ5CQquNHeXS+WsZdur2fPk9fCcOKQEe2qtRT1+7I80urS37ULEq2BXtf7yr04QCMM6rMjoOX75SWYWT6897WGvtesKg5VD+GAE4Bag1RtRw3nube8QTXSdGTgKQFHM9vP1U0OldV+x2rRM7ogV7RSNARxViEXMbMu0mMYh3CY0/r1vasatTs5cRAqi2sZ41NDUDXr1W84n3HpcaEtHlm1Rp06Qas/qhO+ghmJPi/d/6FLhAZEjuUN9aVPNLT9vZ5A8STZ9NNm6yyhVBTEtsUVzEoFhhHC0CZGLTBXDCvs0ix4CYrbsUJqSPROisC+MJIu/sgCF8tkvZtgqlmAafp9hXcSCoUMge001Vfaqu0yD0hSSSh6pjuG30Eokbg/Fy9SRhDYNl1/7dGFrdUutziEWzLlFG2qIIKntMDwqJ6bpQmDMy75Mn5tK+Y736KVLLSmbfZFIL0gsvpjK54hETydudVBzTmgHe87A/bigNWznM843x0F2jOS9b9wKaItRnV2jR1F1B04Y3gFfpI6CtlsLYWmhq4dc7XY/cSq1FYopF5ps2C02Bm0LZrL7Wj5thd2OK65dh1mGswZk8xlRao8ZWLQdzmoVA3yVq/qUNcKJPJ2VBWNjWhyEP/bvJHaVWgl8m4HjbIWojYgTps/5zn0TvO4rraiIQWXJ3ZgyBlw9Jsq5uYo+AcwLVTS1DcHtQAAAABJRU5ErkJggg==\" id=\"imagedd2724dd19\" transform=\"matrix(2.63 0 0 2.63 7.2 6.28)\" style=\"image-rendering:crisp-edges;image-rendering:pixelated\" width=\"100\" height=\"100\"/>\n",
+       "   </g>\n",
+       "  </g>\n",
+       "  <g id=\"axes_2\">\n",
+       "   <g clip-path=\"url(#pcef4685cd8)\">\n",
+       "    <image xlink:href=\"data:image/png;base64,\n",
+       "iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAEGklEQVR4nO2c3W3kMAyEvcFVsVVsEQG2gWs2XaSKtHH3pMQx9EsOybGXH5CXeG3JGoukSNm399vff1tCw1t0B5LfpCBkpCBkpCBkpCBkpCBkpCBkpCBkpCBkpCBk/InuwCwfX5/b8/7oHu/RO5cJWkFGA3zkeX8sn8PIqUzWFQZ8BK0gaBNzFjFDBZEMkmZgP74+6YUJEWRmYHrHtYPKLIq7IDODgfrNGbl5VgytBnHvb2bbYA2DXcJez6e5NdDHPozWNa1rWAvpYrKe98f3XxSatvc+z/rhog17PRgFF63jlqKYCeJlphCzrmbONFGgBhMfciYxCtI1EdoMw2eIhxjR/mgP+n6hM8RCjJWBr7XvIRxyppg6da1AaP9Qux5DBLgHNkNWFmSRq+zewEsWmPvfI0SFCGI1wIiblJ5fO28m8tL2Vy2IRIxjp1GCluuW63maIRofguhI6xqap9tCDA+BaVbqLE5VCmqWQwRpPZGrg3wGUaz76Jp+PxM9B92bDVrBaEwWE16Z3RpqQVjq1Kh+RN+LKuzdd96jeDPqw+pvZ/rrfV+0G+VGIGdDdPZgj1iQyBtotS3dahpV+6hh4tSLPZfWGNBbgDwHVNuWaIb00tyIzQQoNOl47YY86T0vCxJVcxjB0Ic9o7R/iyWT1XpqkAslVB5K+4QjWbmeaT3EMsHHEhWhMQt7rU2I9PoS++75ENCkTjSRmaStHkWAo/n0KPWefl+WVEjNK3DHY/u6fHjFsMeseZCKVwuxV89HlngRiASR1JvRXNWpL5ms3pTs1Q7Q5uSqYmwb2IeMckk1cdBircImbki2F+Uzrgg8yrJydohdkB5hq7afJmEvMvVhsTaxEgbRT+oCFXoD3ez/I6EWZAZUWkNS9Jo5f5XTC1JolWFHA7oSYku2Ba3illyc6bRk97nlHqlWW5pd8iPcZojnRgL2SKqHa7Z3NWEnhW29snIvtFtJEYOq9R8IVh8smnqIBdEzRTLLzdPvhcidJ5Zto6/t9gaV1cDMrENqbXuYRAkik2VVpVv93bG86olVe3Q+RCJG739nQySIRUhqvcHhuFOflVPVQ2aYWYBqF6mWM1FsspjNQy29jlx4WnKZ5GKN0aAz7oJUOfXI98iRg8j0rRPIhwNWbiYqVJ3NNkeLAwt7Z24EGaqunCf9/EeEMHAfIi0Uta4Vjff7h+ZOnWGrJoOws5gIItnuzxTpFCSvUWuhCXuLKAxPc+RrezSCbJvPTTOUBHrQJRejiTadLyfI/u2o3vHR/6x4OUG2jdNUFV5SkBGXWKlfjShRqKIsNi6ROpHA+rmOCMJNluRzHVcmXJBXnQktwgXZNq4CUTQUPqSQopDMkOSHFISMFISMFISMFISMFISMFISMFISMFISMFISMFISM/yYXTSPSVWRCAAAAAElFTkSuQmCC\" id=\"imageb389ecd734\" transform=\"matrix(2.63 0 0 2.63 288.72 6.28)\" style=\"image-rendering:crisp-edges;image-rendering:pixelated\" width=\"100\" height=\"100\"/>\n",
+       "   </g>\n",
+       "  </g>\n",
+       " </g>\n",
+       " <defs>\n",
+       "  <clipPath id=\"p76f09960f6\">\n",
+       "   <rect x=\"7.2\" y=\"7.2\" width=\"262.08\" height=\"262.08\"/>\n",
+       "  </clipPath>\n",
+       "  <clipPath id=\"pcef4685cd8\">\n",
+       "   <rect x=\"288.72\" y=\"7.2\" width=\"262.08\" height=\"262.08\"/>\n",
+       "  </clipPath>\n",
+       " </defs>\n",
+       "</svg>\n"
+      ],
+      "text/plain": [
+       "<Figure size 576x288 with 2 Axes>"
+      ]
+     },
+     "metadata": {
+      "needs_background": "light"
+     },
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "cyl = ps.tools.extract_cylinder(im=im, r=40, axis=2)\n",
+    "\n",
+    "fig, ax = plt.subplots(1, 2, figsize=[8, 4]);\n",
+    "ax[0].imshow(im[..., 50]);\n",
+    "ax[0].axis(False)\n",
+    "ax[1].imshow(cyl[..., 50]);\n",
+    "ax[1].axis(False);"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.9.12"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

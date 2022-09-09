@@ -1,0 +1,351 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#  `find_disconnected_voxels` "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Detects the isolated regions that are not connected to the edges of the image. This function uses the `label` method in scipy ndimage with a specific structuring element to find the disconnected voxels. A cluster of connected pixels or isolated pixels are labeled with a unique value. Then a scikitimage `clear_border` filter is applied on the labeled regions to remove the regions that are connected to the borders of the image. The resulting filtered image includes the isolated regions that are disconnected from the edges of the image."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2022-04-25T01:56:23.246270Z",
+     "iopub.status.busy": "2022-04-25T01:56:23.245966Z",
+     "iopub.status.idle": "2022-04-25T01:56:25.849772Z",
+     "shell.execute_reply": "2022-04-25T01:56:25.849114Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<Signature (im, conn=None, surface=False)>"
+      ]
+     },
+     "execution_count": 1,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "import matplotlib.pyplot as plt\n",
+    "import numpy as np\n",
+    "import porespy as ps\n",
+    "import inspect\n",
+    "ps.visualization.set_mpl_style()\n",
+    "inspect.signature(ps.filters.find_disconnected_voxels)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## `im`\n",
+    "The input image is a binary image, with `True` (or 1) values indicating the phase for which disconnected voxels are to be found."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2022-04-25T01:56:25.854296Z",
+     "iopub.status.busy": "2022-04-25T01:56:25.854049Z",
+     "iopub.status.idle": "2022-04-25T01:56:26.047599Z",
+     "shell.execute_reply": "2022-04-25T01:56:26.047007Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "image/svg+xml": [
+       "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>\n",
+       "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\"\n",
+       "  \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n",
+       "<svg xmlns:xlink=\"http://www.w3.org/1999/xlink\" width=\"757.718182pt\" height=\"348.48pt\" viewBox=\"0 0 757.718182 348.48\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">\n",
+       " <metadata>\n",
+       "  <rdf:RDF xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:cc=\"http://creativecommons.org/ns#\" xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n",
+       "   <cc:Work>\n",
+       "    <dc:type rdf:resource=\"http://purl.org/dc/dcmitype/StillImage\"/>\n",
+       "    <dc:date>2022-04-24T21:56:25.942076</dc:date>\n",
+       "    <dc:format>image/svg+xml</dc:format>\n",
+       "    <dc:creator>\n",
+       "     <cc:Agent>\n",
+       "      <dc:title>Matplotlib v3.5.1, https://matplotlib.org/</dc:title>\n",
+       "     </cc:Agent>\n",
+       "    </dc:creator>\n",
+       "   </cc:Work>\n",
+       "  </rdf:RDF>\n",
+       " </metadata>\n",
+       " <defs>\n",
+       "  <style type=\"text/css\">*{stroke-linejoin: round; stroke-linecap: butt}</style>\n",
+       " </defs>\n",
+       " <g id=\"figure_1\">\n",
+       "  <g id=\"patch_1\">\n",
+       "   <path d=\"M 0 348.48 \n",
+       "L 757.718182 348.48 \n",
+       "L 757.718182 0 \n",
+       "L 0 0 \n",
+       "L 0 348.48 \n",
+       "z\n",
+       "\" style=\"fill: none\"/>\n",
+       "  </g>\n",
+       "  <g id=\"axes_1\">\n",
+       "   <g clip-path=\"url(#p9cdf162c7e)\">\n",
+       "    <image xlink:href=\"data:image/png;base64,\n",
+       "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\" id=\"imageed188f33b9\" transform=\"matrix(1.675 0 0 -1.675 7.2 341.28)\" style=\"image-rendering:crisp-edges;image-rendering:pixelated\" width=\"200\" height=\"200\"/>\n",
+       "   </g>\n",
+       "  </g>\n",
+       "  <g id=\"axes_2\">\n",
+       "   <g clip-path=\"url(#pd54d64a997)\">\n",
+       "    <image xlink:href=\"data:image/png;base64,\n",
+       "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\" id=\"imagee313fcf3f8\" transform=\"matrix(1.675 0 0 -1.675 416.438182 341.28)\" style=\"image-rendering:crisp-edges;image-rendering:pixelated\" width=\"200\" height=\"200\"/>\n",
+       "   </g>\n",
+       "  </g>\n",
+       " </g>\n",
+       " <defs>\n",
+       "  <clipPath id=\"p9cdf162c7e\">\n",
+       "   <rect x=\"7.2\" y=\"7.2\" width=\"334.08\" height=\"334.08\"/>\n",
+       "  </clipPath>\n",
+       "  <clipPath id=\"pd54d64a997\">\n",
+       "   <rect x=\"416.438182\" y=\"7.2\" width=\"334.08\" height=\"334.08\"/>\n",
+       "  </clipPath>\n",
+       " </defs>\n",
+       "</svg>\n"
+      ],
+      "text/plain": [
+       "<Figure size 864x360 with 2 Axes>"
+      ]
+     },
+     "metadata": {
+      "needs_background": "light"
+     },
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "np.random.seed(10)\n",
+    "im = ps.generators.blobs(shape=[200,200])\n",
+    "discon_voxels = ps.filters.find_disconnected_voxels(im=im)\n",
+    "fig, ax = plt.subplots(1, 2, figsize=[12, 5])\n",
+    "ax[0].imshow(im, origin='lower', interpolation='none')\n",
+    "ax[0].axis(False)\n",
+    "ax[1].imshow(discon_voxels, origin='lower', interpolation='none')\n",
+    "ax[1].axis(False);"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## `conn`"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Conn value is used for creating the structuring element that sweeps (filters) the image to find the disconnected voxels. The value of conn and subsequently the structuring element affect the detection of isolated regions (accuracy). The algorithm by default uses conn values of 8 and 26 for 2D and 3D images, respectively. Their corresponding structuring element are square and cube with radius of 3 voxels. The other options for the conn values are 4 and 6, which correspond to the structuring elements disk (in 2D) and ball (in 3D) with radius of 1, respectively."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2022-04-25T01:56:26.050776Z",
+     "iopub.status.busy": "2022-04-25T01:56:26.050184Z",
+     "iopub.status.idle": "2022-04-25T01:56:26.092925Z",
+     "shell.execute_reply": "2022-04-25T01:56:26.092246Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "image/svg+xml": [
+       "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>\n",
+       "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\"\n",
+       "  \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n",
+       "<svg xmlns:xlink=\"http://www.w3.org/1999/xlink\" width=\"420.48pt\" height=\"420.48pt\" viewBox=\"0 0 420.48 420.48\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">\n",
+       " <metadata>\n",
+       "  <rdf:RDF xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:cc=\"http://creativecommons.org/ns#\" xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n",
+       "   <cc:Work>\n",
+       "    <dc:type rdf:resource=\"http://purl.org/dc/dcmitype/StillImage\"/>\n",
+       "    <dc:date>2022-04-24T21:56:26.086287</dc:date>\n",
+       "    <dc:format>image/svg+xml</dc:format>\n",
+       "    <dc:creator>\n",
+       "     <cc:Agent>\n",
+       "      <dc:title>Matplotlib v3.5.1, https://matplotlib.org/</dc:title>\n",
+       "     </cc:Agent>\n",
+       "    </dc:creator>\n",
+       "   </cc:Work>\n",
+       "  </rdf:RDF>\n",
+       " </metadata>\n",
+       " <defs>\n",
+       "  <style type=\"text/css\">*{stroke-linejoin: round; stroke-linecap: butt}</style>\n",
+       " </defs>\n",
+       " <g id=\"figure_1\">\n",
+       "  <g id=\"patch_1\">\n",
+       "   <path d=\"M 0 420.48 \n",
+       "L 420.48 420.48 \n",
+       "L 420.48 0 \n",
+       "L 0 0 \n",
+       "L 0 420.48 \n",
+       "z\n",
+       "\" style=\"fill: none\"/>\n",
+       "  </g>\n",
+       "  <g id=\"axes_1\">\n",
+       "   <g clip-path=\"url(#pb8e2884a77)\">\n",
+       "    <image xlink:href=\"data:image/png;base64,\n",
+       "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\" id=\"image36a62a808b\" transform=\"matrix(2.035 0 0 -2.035 7.2 413.28)\" style=\"image-rendering:crisp-edges;image-rendering:pixelated\" width=\"200\" height=\"200\"/>\n",
+       "   </g>\n",
+       "  </g>\n",
+       " </g>\n",
+       " <defs>\n",
+       "  <clipPath id=\"pb8e2884a77\">\n",
+       "   <rect x=\"7.2\" y=\"7.2\" width=\"406.08\" height=\"406.08\"/>\n",
+       "  </clipPath>\n",
+       " </defs>\n",
+       "</svg>\n"
+      ],
+      "text/plain": [
+       "<Figure size 432x432 with 1 Axes>"
+      ]
+     },
+     "metadata": {
+      "needs_background": "light"
+     },
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "discon_voxels = ps.filters.find_disconnected_voxels(im=im, conn=4)\n",
+    "fig, ax = plt.subplots(1, 1, figsize=[6, 6])\n",
+    "ax.imshow(discon_voxels, origin='lower', interpolation='none')\n",
+    "ax.axis(False);"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## `surface`"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Bt default, this Boolean parameter is `False`. If `True` any isolated regions touching the edge of the image are considered disconnected."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2022-04-25T01:56:26.096032Z",
+     "iopub.status.busy": "2022-04-25T01:56:26.095789Z",
+     "iopub.status.idle": "2022-04-25T01:56:26.152717Z",
+     "shell.execute_reply": "2022-04-25T01:56:26.152309Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "image/svg+xml": [
+       "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>\n",
+       "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\"\n",
+       "  \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n",
+       "<svg xmlns:xlink=\"http://www.w3.org/1999/xlink\" width=\"420.48pt\" height=\"420.48pt\" viewBox=\"0 0 420.48 420.48\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">\n",
+       " <metadata>\n",
+       "  <rdf:RDF xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:cc=\"http://creativecommons.org/ns#\" xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n",
+       "   <cc:Work>\n",
+       "    <dc:type rdf:resource=\"http://purl.org/dc/dcmitype/StillImage\"/>\n",
+       "    <dc:date>2022-04-24T21:56:26.145654</dc:date>\n",
+       "    <dc:format>image/svg+xml</dc:format>\n",
+       "    <dc:creator>\n",
+       "     <cc:Agent>\n",
+       "      <dc:title>Matplotlib v3.5.1, https://matplotlib.org/</dc:title>\n",
+       "     </cc:Agent>\n",
+       "    </dc:creator>\n",
+       "   </cc:Work>\n",
+       "  </rdf:RDF>\n",
+       " </metadata>\n",
+       " <defs>\n",
+       "  <style type=\"text/css\">*{stroke-linejoin: round; stroke-linecap: butt}</style>\n",
+       " </defs>\n",
+       " <g id=\"figure_1\">\n",
+       "  <g id=\"patch_1\">\n",
+       "   <path d=\"M 0 420.48 \n",
+       "L 420.48 420.48 \n",
+       "L 420.48 0 \n",
+       "L 0 0 \n",
+       "L 0 420.48 \n",
+       "z\n",
+       "\" style=\"fill: none\"/>\n",
+       "  </g>\n",
+       "  <g id=\"axes_1\">\n",
+       "   <g clip-path=\"url(#pddf57c5384)\">\n",
+       "    <image xlink:href=\"data:image/png;base64,\n",
+       "iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAYAAACtWK6eAAAHRUlEQVR4nO3d3VHkOBSG4W6KKLgmAIKYKhKYZMmCKCAKir3Y8tJ43cf6Ozo/ep+7qQFats9nSbbsvv65/v2+OPT28d70e69PL0PbgbU9WDdgJMKB0VIFBBgtTUDoPaAhRUAIB7SkCAigJXxA6D2gKXRACAe0hQ4IoC1sQOg9MEPYgAAzhAwIvQdmCRkQYJZwAaH3wEzhAgLMFCog9B6YzW1A9mEgHLDwaN0ACaGANbc9COABAQEEBAQQEBBAQEAAAQEBBAQEEBAQQEBAAAEBAQQEBBAQEEBAQAABAQEEBAQQEBBAQEAAAQEBBAQEEBAQQEBAAAEBAQQEBBAQEEBAQAABAQEEBAQQEBBAQEAAAQEBBAQEEBAQQEBAAAEBAQQEBBAQEEBAQAABAQEEBAQQEBBAQEAAAQEBBAQEEBAQQLBMQN4+3q2bgIAerRugiVCgV9iAUPyYIVRAekPx9vF+eX16GdIWrOEhypk4SjuRy/Xr8/l7+4fXs+uocHjdPvj16yoWZ2ngN/eXeUeGlhMAav0vIBQR8MN9D8K8AZbcBwSwtFxAGEKiRoiAjB5mERKUUrmTvi9Aj/MI7qqjxPAe5OjsPOKMTTHDwtCASEHwGBKGWjgTYg6ihV4JZ4YGhIJDNocB0Rh6EB5EtOwQi8CixPCA7Avv9emFYkRYKvdBvAfCe/vgx2EPkrmAMm8bxgv1THorQoFW/wUkQhGdXV2LsA2I5TFLUWXZDvgSeohFKKAtREAirA5GTq4DcjTnIByYyWVAoq6yvW03Qc6hKyAaQ5+o4UBOzUtNRhfy28d7+HDQa+TTFJB7hdxa4NGDcYuQ5GK+mrcmHFGKL0o7cW7oJL2mMGp7DYoOFpp6kKNiJRzIqLkHqS3alnkGwYA11fsgPZPvmeHgHVm4Ry0gXsNRcgWOsGBjfhVrzyIcRz+X6dIz2qkEpLW4PIRj1GcRsBzc9SCe1Bb5PhiEJL5lAsK8Ai0etrPeyLMdxYgs3HzL7YxQ1X4GQcdyX+KpWfQEKh+1OYjnYpkREt4omcO0l1d7Q0+CEqpXsbwXinSW9952zKF+mTfCUMN7+2Bn2n0Q70UYIciY7/r1+fx99B8Wyz4oUHhjciedICAKV+/FyvRcBi/azsFkiLXJNtTyuIoZfVz1IJsIPcnIe0Xb3/K+zSsyW817VmBeb1ZqPuvhdZtX5nq5e+vzGFpFPKOACYkvLodYt0qHH0eFxXPm6OW6B7klnVlLzrojzsyzQkYv4keYgFwux4+01hQThYdaoQKy6Zlj9IaEodpaQgakR4QCj9DGVZgFxKIIIhRehDau5O5VrAg3685Ea3+09q7A9DLv69PLsIlz9OKK3v6szOcgIwojenFFb39mLm4UjuxJWkifvS/e0e0kHL65CMjlclwoHpZ2cO9kbW4CcuQ2NFHXViG2u3MQun5g14OsFAp6D5R4XCkUQC2TOcj+7D07pKPWY9EL5Tf9PsjZcxulv2Nh/+6sEe/S8rJtODY1IJGLgaHomqYFJHM4CE9e5ktNRtAMn+Xrj2AvRUBqcMMRNaYEJGoBzRw6Rd1H2bnoQXrH+JZzAAo7N/WAeHreY3Qxe/976KcakJIDXlP4Rz9r8TUNZ/+HPK5/rn8PX17dq7SAIrxrSvuZkLPPgx2VpSbZzq6ztyfD+wCyGDrE0nyx82rYjz4MCwgHdDxOOPaGBKTnIFIA59hHdroDwsFDZl0BiRQO7UnvtvRd63Mi7etMXNxJj24fCo2QcFXLRnNAOKPJKOgcqgMS+crK7KId9XmEzY54o3BGELIf/J63RmbfNxH8CkjUnqGGxWtOKfS4rl+fzyprsUpkWaZOAPLiKlYnwpHbUt8w5enzEcP0gGjeTKvlpR3wa9ocxHMxcpUJ96i+ejRzAWXeNvwYGpCoRWP9DVfwqysgUQPRa9XtXlFTQCgQrKL6KhbhWGPFAf5VFRDCgdUUB4Rw/EYvsgaWmgACAnKhN8B9BAQQVC01yTgPmb3M5PbzMu7PbKp6kMiP23pxGwr2pX9NNwqznAU9FOjM9/De297Ix1DbkNW8UXew5Sre2SeZmm2Nejw1qK7mxX2ev96NnuYHV7GSGzmM9DAknY2AJKb1jb4rBeWh952yK3a7EWgX8Soh+dWD1AZl1XB4Lo6ZZ3jP+2EU8TsKpR2QIRwjDrCX/WBZrF72gQbxKta24Vnue2jY9o32t+0e/f0VzuDWii7zEopzGjf8bgNAGGxwFWsgijgfAjIYIcmFgAACAoIu2eenrMU6wJL0MtnDcbkQkF+ODvjRpe7av5FB1u064y4gM+4rbLZXjpZ81oqvJ101FLfEO+kzHRWfxwM0e3UBXxdny8Uk/V4ReDxj3yugyIXVu2A1M9MhVkkAZj6SWmo/L/HWvlJR2z2TSUBannDzeDA9tqlE1HZbKArIWUFzWTQGglHvNCClwyBtXnuRKNh3bVxM0kvRO7UhHO1CBQT1CEcfAgII/gGosrznG8qtqgAAAABJRU5ErkJggg==\" id=\"imagef79f2b65d7\" transform=\"matrix(2.035 0 0 -2.035 7.2 413.28)\" style=\"image-rendering:crisp-edges;image-rendering:pixelated\" width=\"200\" height=\"200\"/>\n",
+       "   </g>\n",
+       "  </g>\n",
+       " </g>\n",
+       " <defs>\n",
+       "  <clipPath id=\"pddf57c5384\">\n",
+       "   <rect x=\"7.2\" y=\"7.2\" width=\"406.08\" height=\"406.08\"/>\n",
+       "  </clipPath>\n",
+       " </defs>\n",
+       "</svg>\n"
+      ],
+      "text/plain": [
+       "<Figure size 432x432 with 1 Axes>"
+      ]
+     },
+     "metadata": {
+      "needs_background": "light"
+     },
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "discon_voxels = ps.filters.find_disconnected_voxels(im=im, surface=True)\n",
+    "fig, ax = plt.subplots(1, 1, figsize=[6, 6])\n",
+    "ax.imshow(discon_voxels, origin='lower', interpolation='none')\n",
+    "ax.axis(False);"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.9.12"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 4
+}

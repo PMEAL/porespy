@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>Quantitative Image Analysis of Porous Materials &#8212; PoreSpy  documentation</title>
 <script>
@@ -26,8 +26,9 @@
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
-    <link rel="stylesheet" type="text/css" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     <link rel="stylesheet" type="text/css" href="_static/css/custom.css" />
 
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -36,17 +37,22 @@
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/clipboard.min.js"></script>
     <script src="_static/copybutton.js"></script>
-    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
+    <script src="_static/design-tabs.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="_static/js/custom.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="User Guide" href="user_guide/index.html" />
+    <link rel="next" title="Installation" href="installation.html" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="docsearch:language" content="None">
+<meta name="docsearch:language" content="en">
   </head>
   
   
@@ -89,8 +95,14 @@
       <div class="navbar-center-item">
         <ul id="navbar-main-elements" class="navbar-nav">
     <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="user_guide/index.html">
-  User Guide
+ <a class="reference internal nav-link" href="installation.html">
+  Installation
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="basic_usage.html">
+  Basic Usage
  </a>
 </li>
 
@@ -101,7 +113,7 @@
 </li>
 
 <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="examples.html">
+ <a class="reference internal nav-link" href="_examples/index.html">
   Examples
  </a>
 </li>
@@ -222,11 +234,11 @@
               
               <article class="bd-article" role="main">
                 
-  <span id="front-page"></span><img alt="_images/porespy_logo.png" id="banner" src="_images/porespy_logo.png" />
+  <span id="front-page"></span><img alt="_images/porespy_logo.jpg" id="banner" src="_images/porespy_logo.jpg" />
 <section id="quantitative-image-analysis-of-porous-materials">
-<h1>Quantitative Image Analysis of Porous Materials<a class="headerlink" href="#quantitative-image-analysis-of-porous-materials" title="Permalink to this headline">#</a></h1>
+<h1>Quantitative Image Analysis of Porous Materials<a class="headerlink" href="#quantitative-image-analysis-of-porous-materials" title="Permalink to this heading">#</a></h1>
 <section id="what-is-porespy-stars">
-<h2>What is PoreSpy? <a class="reference external" href="https://GitHub.com/PMEAL/porespy/stargazers/"><img alt="stars" src="https://img.shields.io/github/stars/PMEAL/porespy.svg?style=social&amp;label=Star&amp;maxAge=2592000" /></a><a class="headerlink" href="#what-is-porespy-stars" title="Permalink to this headline">#</a></h2>
+<h2>What is PoreSpy? <a class="reference external" href="https://GitHub.com/PMEAL/porespy/stargazers/"><img alt="stars" src="https://img.shields.io/github/stars/PMEAL/porespy.svg?style=social&amp;label=Star&amp;maxAge=2592000" /></a><a class="headerlink" href="#what-is-porespy-stars" title="Permalink to this heading">#</a></h2>
 <p>PoreSpy is a collection of image analysis functions used to extract information
 from 3D images of porous materials (typically obtained from X-ray
 tomography). There are other packages that offer generalized image analysis
@@ -238,7 +250,7 @@ routine analyses rapidly and conveniently.</p>
 </section>
 <hr class="docutils" />
 <section id="capabilities">
-<h2>Capabilities<a class="headerlink" href="#capabilities" title="Permalink to this headline">#</a></h2>
+<h2>Capabilities<a class="headerlink" href="#capabilities" title="Permalink to this heading">#</a></h2>
 <p>PoreSpy consists of the following modules:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">generators</span></code>: Routines for generating artificial images of porous
@@ -260,11 +272,11 @@ use in common software</p></li>
 </div>
 </section>
 <section id="gallery">
-<h2>Gallery<a class="headerlink" href="#gallery" title="Permalink to this headline">#</a></h2>
+<h2>Gallery<a class="headerlink" href="#gallery" title="Permalink to this heading">#</a></h2>
 <img alt="_images/montage.svg" id="montage" src="_images/montage.svg" /></section>
 <hr class="docutils" />
 <section id="how-to-cite">
-<h2>How To Cite<a class="headerlink" href="#how-to-cite" title="Permalink to this headline">#</a></h2>
+<h2>How To Cite<a class="headerlink" href="#how-to-cite" title="Permalink to this heading">#</a></h2>
 <p>If you use PoreSpy in a publication, please add the following citation:</p>
 <div class="admonition-citation admonition">
 <p class="admonition-title">Citation</p>
@@ -301,7 +313,7 @@ Porous Media Images. <em>Journal of Open Source Software</em>, 2019.
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
 </p>
   </div>
   

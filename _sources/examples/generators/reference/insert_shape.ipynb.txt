@@ -1,0 +1,235 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# `insert_shape`\n",
+    "Inserts sub-image into a larger image at the specified location"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2022-04-25T01:54:26.855004Z",
+     "iopub.status.busy": "2022-04-25T01:54:26.854670Z",
+     "iopub.status.idle": "2022-04-25T01:54:29.042841Z",
+     "shell.execute_reply": "2022-04-25T01:54:29.042073Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<Signature (im, element, center=None, corner=None, value=1, mode='overwrite')>"
+      ]
+     },
+     "execution_count": 1,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "import matplotlib.pyplot as plt\n",
+    "import numpy as np\n",
+    "import porespy as ps\n",
+    "import inspect\n",
+    "inspect.signature(ps.generators.insert_shape)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2022-04-25T01:54:29.046733Z",
+     "iopub.status.busy": "2022-04-25T01:54:29.046560Z",
+     "iopub.status.idle": "2022-04-25T01:54:29.127078Z",
+     "shell.execute_reply": "2022-04-25T01:54:29.126528Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "image/png": "iVBORw0KGgoAAAANSUhEUgAAAVQAAAFUCAYAAAB7ksS1AAAAOXRFWHRTb2Z0d2FyZQBNYXRwbG90bGliIHZlcnNpb24zLjUuMSwgaHR0cHM6Ly9tYXRwbG90bGliLm9yZy/YYfK9AAAACXBIWXMAAAsTAAALEwEAmpwYAAAFcElEQVR4nO3dy23bUBBAUVFwFakiTRipwFW6gsBNpIqU4edVNoFIM/Ql9ck5SxGUuLoYgIOnaYxxAuDrztd+AIBHIagAEUEFiAgqQERQASKCChB5Wrr4fH6xUwXwl7f31+nS5yZUgIigAkQEFSAiqAARQQWICCpARFABIoIKEBFUgIigAkQEFSAiqAARQQWICCpARFABIoIKEBFUgIigAkQEFSAiqAARQQWICCpARFABIoIKEBFUgIigAkQEFSAiqAARQQWICCpARFABIoIKEBFUgIigAkQEFSAiqAARQQWICCpARFABIoIKEBFUgIigAkQEFSAiqAARQQWICCpARFABIoIKEBFUgIigAkQEFSAiqAARQQWICCpARFABIoIKEBFUgIigAkQEFSAiqAARQQWICCpARFABIoIKEBFUgIigAkQEFSAiqAARQQWICCpARFABIoIKEBFUgIigAkQEFSAiqAARQQWICCpARFABIoIKEBFUgIigAkQEFSAiqAARQQWICCpARFABIoIKEBFUgIigAkQEFSAiqAARQQWICCpARFABIoIKEBFUgIigAkQEFSAiqAARQQWICCpARFABIoIKEBFUgIigAkQEFSAiqAARQQWICCpARFABIoIKEBFUgIigAkQEFSAiqAARQQWICCpARFABIoIKEBFUgIigAkServ0A3Iefv39d/PzHt+83e8/SfUv3/Ot3wR8mVICIoAJEBBUgIqgAEUEFiAgqQMTaFF9SryyV9yzZsoZVPwOPx4QKEBFUgIigAkQEFSAiqAARb/lZpXyLfeQb8S2HoMBWJlSAiKACRAQVICKoABFBBYgIKkDE2hSr3PL60S0c0AKnkwkVICOoABFBBYgIKkBEUAEi3vKzylF/TTJn6+/M3ecvS9iDCRUgIqgAEUEFiAgqQERQASKCChCxNsVujjpM5KjVLfiMCRUgIqgAEUEFiAgqQERQASKCChCxNsVd2HKi1NI161TswYQKEBFUgIigAkQEFSAiqAARb/lZpXxbvuXQlKMOWln6LZsBfMaEChARVICIoAJEBBUgIqgAEUEFiFibYpVyZahetbLOxK0woQJEBBUgIqgAEUEFiAgqQMRbfnaz5ZCRow5OsWnAHkyoABFBBYgIKkBEUAEiggoQEVSAiLUpVjlqNWnLd9WrVnO/deT/WnGfTKgAEUEFiAgqQERQASKCChCZxhizF5/PL/MXAf5Tb++v06XPTagAEUEFiAgqQERQASKCChARVICIoAJEBBUgIqgAEUEFiAgqQERQASKCChARVICIoAJEBBUgIqgAEUEFiAgqQERQASKCChARVICIoAJEBBUgIqgAEUEFiAgqQERQASKCChARVICIoAJEBBUgIqgAEUEFiAgqQERQASKCChARVICIoAJEBBUgIqgAEUEFiAgqQERQASKCChARVICIoAJEBBUgIqgAEUEFiAgqQERQASKCChARVICIoAJEBBUgIqgAEUEFiAgqQERQASKCChARVICIoAJEBBUgIqgAEUEFiAgqQERQASKCChARVICIoAJEBBUgIqgAEUEFiAgqQERQASKCChARVICIoAJEBBUgIqgAEUEFiAgqQERQASKCChARVICIoAJEBBUgIqgAEUEFiAgqQERQASKCChARVICIoAJEBBUgIqgAEUEFiAgqQERQASKCChARVICIoAJEBBUgIqgAEUEFiAgqQERQASKCChARVICIoAJEBBUgIqgAEUEFiAgqQERQASKCChARVICIoAJEBBUgIqgAEUEFiAgqQERQASKCChARVICIoAJEBBUgIqgAEUEFiExjjGs/A8BDMKECRAQVICKoABFBBYgIKkBEUAEiH+ZpewI7BGiyAAAAAElFTkSuQmCC\n",
+      "text/plain": [
+       "<Figure size 432x432 with 1 Axes>"
+      ]
+     },
+     "metadata": {
+      "needs_background": "light"
+     },
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "im = np.zeros([50, 50], dtype=int)\n",
+    "shape = np.random.rand(11, 11) > 0.5\n",
+    "im = ps.generators.insert_shape(im=im, element=shape, center=[25, 25])\n",
+    "\n",
+    "fig, ax = plt.subplots(1, 1, figsize=[6, 6])\n",
+    "ax.imshow(im, interpolation='none', origin='lower')\n",
+    "ax.axis(False);"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## `value`\n",
+    "The value of the inserted voxels can be specified:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2022-04-25T01:54:29.129869Z",
+     "iopub.status.busy": "2022-04-25T01:54:29.129587Z",
+     "iopub.status.idle": "2022-04-25T01:54:29.203133Z",
+     "shell.execute_reply": "2022-04-25T01:54:29.202011Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "image/png": "iVBORw0KGgoAAAANSUhEUgAAAVQAAAFUCAYAAAB7ksS1AAAAOXRFWHRTb2Z0d2FyZQBNYXRwbG90bGliIHZlcnNpb24zLjUuMSwgaHR0cHM6Ly9tYXRwbG90bGliLm9yZy/YYfK9AAAACXBIWXMAAAsTAAALEwEAmpwYAAAGMElEQVR4nO3dsW0bWRRA0SWhEhy5ik1dgOAK1MIWtS2oAkMFOHUVjlyDxpETgzOivy+Hn+I5IQfkyA4uHjAPfw7LsvwDwN87XvsPAHgvBBUgIqgAEUEFiAgqQERQASIPWxcfj092qgB+8/L6fDj1uQkVICKoABFBBYgIKkBEUAEiggoQEVSAiKACRAQVICKoABFBBYgIKkBEUAEiggoQEVSAiKACRAQVICKoABFBBYgIKkBEUAEiggoQEVSAiKACRAQVICKoABFBBYgIKkBEUAEiggoQEVSAiKACRAQVICKoABFBBYgIKkBEUAEiggoQEVSAiKACRAQVICKoABFBBYgIKkBEUAEiggoQEVSAiKACRAQVICKoABFBBYgIKkBEUAEiggoQEVSAiKACRAQVICKoABFBBYgIKkBEUAEiggoQEVSAiKACRAQVICKoABFBBYgIKkBEUAEiggoQEVSAiKACRAQVICKoABFBBYgIKkBEUAEiggoQEVSAiKACRAQVICKoABFBBYgIKkBEUAEiggoQEVSAiKACRAQVICKoABFBBYgIKkBEUAEiggoQEVSAiKACRAQVICKoABFBBYgIKkBEUAEiggoQEVSAiKACRAQVICKoABFBBYgIKkBEUAEiggoQEVSAiKACRAQVICKoABFBBYgIKkBEUAEiggoQEVSAiKACRAQVICKoAJGHa/8B3IYf/306+fmH/79O+52t7219509/C34xoQJEBBUgIqgAEUEFiAgqQERQASKHZVlWLz4en9YvclfKNaN6zaleZ7JSxVteXp8Ppz43oQJEBBUgIqgAEUEFiAgqQMThKJylfIq95xPxkSf2MMqEChARVICIoAJEBBUgIqgAEUEFiFib4iwzrx/tddjKzP8HzMGEChARVICIoAJEBBUgIqgAEU/5Ocu1X00yep+173llCZdgQgWICCpARFABIoIKEBFUgIigAkSsTXExex0mstfqFrzFhAoQEVSAiKACRAQVICKoABFBBYhYm+ImjJwotXXNOhWXYEIFiAgqQERQASKCChARVICIp/ycpXxaPnJoyl4HrWzdy2YAbzGhAkQEFSAiqAARQQWICCpARFABItamOEu5MlSvWllnYhYmVICIoAJEBBUgIqgAEUEFiHjKz8WMHDKy18EpNg24BBMqQERQASKCChARVICIoAJEBBUgYm2Ks+y1mjTyW/Wq1dq99nyvFbfJhAoQEVSAiKACRAQVICKoAJHDsiyrFx+PT+sXAe7Uy+vz4dTnJlSAiKACRAQVICKoABFBBYgIKkBEUAEiggoQEVSAiKACRAQVICKoABFBBYgIKkBEUAEiggoQEVSAiKACRAQVICKoABFBBYgIKkBEUAEiggoQEVSAiKACRAQVICKoABFBBYgIKkBEUAEiggoQEVSAiKACRAQVICKoABFBBYgIKkDkYc+bffn+7Y+/8/njv1e9z9ZvjXxn5G8AboMJFSAiqAARQQWICCpARFABIoIKENl1bWqvFaiR+4/cZ+071p/gPplQASKCChARVICIoAJEBBUgIqgAkXd52tSIvU6bslIF75cJFSAiqAARQQWICCpARFABIlMcjrL1VLw8HGVL+fR99BAWGwBw20yoABFBBYgIKkBEUAEiggoQEVSAyBSHo9TrQnutWs16f+A6TKgAEUEFiAgqQERQASKCChCZ4nCUve4zcgjLyEEno4ejALfNhAoQEVSAiKACRAQVICKoABFBBYhMcTjKiHqdqeS9UXCfTKgAEUEFiAgqQERQASKCChDZ9Sn/mpEn3w4ZAWZjQgWICCpARFABIoIKEBFUgIigAkSmeKfUyArUDIeMlP8e4PaZUAEiggoQEVSAiKACRAQVIDLFK1BGXmdS32fk/jNsGgDzMKECRAQVICKoABFBBYgIKkBEUAEiUxyOMvN9Rla6RtfArGHBbTOhAkQEFSAiqAARQQWICCpA5LAsy+rFx+PT+kWAO/Xy+nw49bkJFSAiqAARQQWICCpARFABIoIKEBFUgIigAkQEFSAiqAARQQWICCpARFABIoIKEBFUgIigAkQEFSAiqAARQQWIbL5TCoDzmVABIoIKEBFUgIigAkQEFSAiqACRnyj55RXtR/BlAAAAAElFTkSuQmCC\n",
+      "text/plain": [
+       "<Figure size 432x432 with 1 Axes>"
+      ]
+     },
+     "metadata": {
+      "needs_background": "light"
+     },
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "shape = np.random.rand(11, 11) > 0.5\n",
+    "im = ps.generators.insert_shape(im=im, element=shape, center=[8, 8], value=3)\n",
+    "\n",
+    "fig, ax = plt.subplots(1, 1, figsize=[6, 6])\n",
+    "ax.imshow(im, interpolation='none', origin='lower')\n",
+    "ax.axis(False);"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## `mode`\n",
+    "If ``mode='overwrite'`` then the inserted image will overwrite anything present in the image.  If ``mode='overlay'`` then the existing values will be added to inserted ones."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2022-04-25T01:54:29.208228Z",
+     "iopub.status.busy": "2022-04-25T01:54:29.207767Z",
+     "iopub.status.idle": "2022-04-25T01:54:29.394792Z",
+     "shell.execute_reply": "2022-04-25T01:54:29.394236Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "image/png": "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\n",
+      "text/plain": [
+       "<Figure size 864x432 with 2 Axes>"
+      ]
+     },
+     "metadata": {
+      "needs_background": "light"
+     },
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "im = np.zeros([50, 50], dtype=int)\n",
+    "\n",
+    "shape = np.ones([11, 11])\n",
+    "im = ps.generators.insert_shape(im=im, element=shape, center=[25, 25], value=3)\n",
+    "im = ps.generators.insert_shape(im=im, element=shape, center=[18, 18], value=5, mode='overwrite')\n",
+    "\n",
+    "fig, ax = plt.subplots(1, 2, figsize=[12, 6])\n",
+    "ax[0].imshow(im, interpolation='none', origin='lower')\n",
+    "ax[0].axis(False)\n",
+    "\n",
+    "im = ps.generators.insert_shape(im=im, element=shape, center=[12, 12], value=7, mode='overlay')\n",
+    "ax[1].imshow(im, interpolation='none', origin='lower')\n",
+    "ax[1].axis(False);"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## `center` and `corner`\n",
+    "Specifies where to insert the shape.  Only one of the other can be supplied.  If center, then the center of the inserted image will be placed on at the provide locations.  In this case the inserted image must have all odd-length dimensions so that a true center can be found.  Alternatively, the corner can be specified which lines up the bottom-left corner of the inserted image with the given coordinates."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2022-04-25T01:54:29.397055Z",
+     "iopub.status.busy": "2022-04-25T01:54:29.396908Z",
+     "iopub.status.idle": "2022-04-25T01:54:29.442787Z",
+     "shell.execute_reply": "2022-04-25T01:54:29.442293Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "image/png": "iVBORw0KGgoAAAANSUhEUgAAAVQAAAFUCAYAAAB7ksS1AAAAOXRFWHRTb2Z0d2FyZQBNYXRwbG90bGliIHZlcnNpb24zLjUuMSwgaHR0cHM6Ly9tYXRwbG90bGliLm9yZy/YYfK9AAAACXBIWXMAAAsTAAALEwEAmpwYAAAE+ElEQVR4nO3aMUoDYRRGUSPTp0/tArIJCaR3lfaCuAkXkNreDTj2IjZeeJNwTvlP81WXV8xuXdc7AP7vfnoAwK0QVICIoAJEBBUgIqgAEUEFiCx/fXy8f/JPFcAPb1/Pu9/eXagAEUEFiAgqQERQASKCChARVICIoAJEBBUgIqgAEUEFiAgqQERQASKCChARVICIoAJEBBUgIqgAEUEFiAgqQERQASKCChARVICIoAJEBBUgIqgAEUEFiAgqQERQASKCChARVICIoAJEBBUgIqgAEUEFiAgqQERQASKCChARVICIoAJEBBUgIqgAEUEFiAgqQERQASKCChARVICIoAJEBBUgIqgAEUEFiAgqQERQASKCChARVICIoAJEBBUgIqgAkWV6AFyLz5eH6Qmbtj9fpieMc6ECRAQVICKoABFBBYgIKkBEUAEiggoQEVSAiKACRAQVICKoABFBBYgIKkBEUAEiggoQEVSAiKACRAQVICKoABFBBYgIKkBEUAEiggoQEVSAiKACRAQVICKoABFBBYgIKkBEUAEiggoQEVSAiKACRAQVICKoABFBBYgIKkBEUAEiggoQEVSAiKACRAQVICKoABFBBYgIKkBEUAEiggoQEVSAiKACRAQVICKoABFBBYgIKkBEUAEiggoQEVSAiKACRAQVICKoABFBBYgIKkBEUAEiggoQEVSAiKACRAQVICKoABFBBYgIKkBEUAEiggoQWaYHwLXYny/TE9g4FypARFABIoIKEBFUgIigAkQEFSAiqAARQQWICCpARFABIoIKEBFUgIigAkQEFSAiqAARQQWICCpARFABIoIKEBFUgIigAkQEFSAiqAARQQWICCpARFABIoIKEBFUgIigAkQEFSAiqAARQQWICCpARFABIoIKEBFUgIigAkQEFSAiqAARQQWICCpARFABIoIKEBFUgIigAkQEFSAiqAARQQWICCpARFABIoIKEBFUgIigAkQEFSAiqAARQQWICCpARFABIsv0gK17/XifnrBpp8NxegJshgsVICKoABFBBYgIKkBEUAEiggoQEVSAiKACRAQVICKoABFBBYgIKkBEUAEiggoQEVSAiKACRAQVICKoABFBBYgIKkBEUAEiggoQEVSAiKACRAQVICKoABFBBYgIKkBEUAEiggoQEVSAiKACRAQVICKoABFBBYgIKkBEUAEiggoQEVSAiKACRAQVICKoABFBBYgIKkBEUAEiggoQEVSAiKACRAQVICKoABFBBYgIKkBEUAEiggoQEVSAiKACRAQVICKoABFBBYgIKkBEUAEiggoQEVSAiKACRAQVICKoABFBBYgIKkBEUAEiggoQEVSAyDI9YOtOh+P0BOBKuFABIoIKEBFUgIigAkQEFSAiqAARQQWICCpARFABIoIKEBFUgIigAkQEFSAiqAARQQWICCpARFABIoIKEBFUgIigAkQEFSAiqAARQQWICCpARFABIoIKEBFUgIigAkQEFSAiqAARQQWICCpARFABIoIKEBFUgIigAkQEFSAiqAARQQWICCpARFABIoIKEBFUgIigAkQEFSAiqAARQQWICCpARFABIoIKEBFUgIigAkQEFSAiqAARQQWICCpARFABIoIKEBFUgIigAkQEFSAiqAARQQWICCpAZLeu6/QGgJvgQgWICCpARFABIoIKEBFUgIigAkS+AdAwFHFoo88rAAAAAElFTkSuQmCC\n",
+      "text/plain": [
+       "<Figure size 432x432 with 1 Axes>"
+      ]
+     },
+     "metadata": {
+      "needs_background": "light"
+     },
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "im = np.zeros([50, 50], dtype=int)\n",
+    "\n",
+    "shape = np.ones([11, 11])\n",
+    "im = ps.generators.insert_shape(im=im, element=shape, center=[35, 35], value=2)\n",
+    "im = ps.generators.insert_shape(im=im, element=shape, corner=[10, 10], value=3)\n",
+    "\n",
+    "fig, ax = plt.subplots(1, 1, figsize=[6, 6])\n",
+    "ax.imshow(im, interpolation='none', origin='lower')\n",
+    "ax.axis(False);"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.9.12"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 4
+}
