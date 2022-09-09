@@ -74,7 +74,7 @@ def tortuosity_fd(im, axis):
     try:
         phase = op.phases.GenericPhase(network=net)
     except AttributeError:
-        phase = op.phase.GenericPhase(network=net)
+        phase = op.phase.Phase(network=net)
     phase['throat.diffusive_conductance'] = 1.0
     # Run Fickian Diffusion on the image
     fd = op.algorithms.FickianDiffusion(network=net, phase=phase)

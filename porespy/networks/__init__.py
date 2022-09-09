@@ -1,6 +1,6 @@
 r"""
 
-Networks
+networks
 ########
 
 **Obtain Network Representations**

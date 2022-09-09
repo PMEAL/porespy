@@ -1,6 +1,6 @@
 r"""
 
-Filters
+filters
 #######
 
 **Highlight Features of Interest**

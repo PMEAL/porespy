@@ -1,6 +1,6 @@
 r"""
 
-Visualization
+visualization
 #############
 
 **Create Basic Views**

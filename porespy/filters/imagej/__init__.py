@@ -1,6 +1,6 @@
 r"""
 
-ImageJ
+imagej
 ######
 
 **Access ImageJ Filters**

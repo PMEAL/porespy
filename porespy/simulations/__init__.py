@@ -1,6 +1,6 @@
 r"""
 
-Simulations
+simulations
 ###########
 
 **Simulations**

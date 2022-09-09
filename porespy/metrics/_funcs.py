@@ -53,8 +53,8 @@ def representative_elementary_volume(im, npoints=1000):
     References
     ----------
     .. [1] Bachmat and Bear. On the Concept and Size of a Representative
-    Elementary Volume (Rev), Advances in Transport Phenomena in Porous Media
-    (1987)
+       Elementary Volume (Rev), Advances in Transport Phenomena in Porous Media
+       (1987)
 
     Examples
     --------
@@ -702,9 +702,10 @@ def two_point_correlation(im, voxel_size=1, bins=100):
     Returns
     -------
     result : tpcf
-        the two - point correlation function object, with named attributes:
-        *distance*:
-            The distance between two points - equivalent to bin_centers
+        The two-point correlation function object, with named attributes:
+
+        *distance*
+            The distance between two points, equivalent to bin_centers
         *bin_centers*
             The center point of each bin. See distance
         *bin_edges*
@@ -713,19 +714,20 @@ def two_point_correlation(im, voxel_size=1, bins=100):
         *bin_widths*
             Useful for passing to the ``width`` argument of
             ``matplotlib.pyplot.bar``
-        *probability_normalized* :
+        *probability_normalized*
             The probability that two points of the stated separation distance
             are within the same phase normalized to 1 at r = 0
-        *probability* or *pdf* :
+        *probability* or *pdf*
             The probability that two points of the stated separation distance
             are within the same phase scaled to the phase fraction at r = 0
+
     Notes
     -----
     The fourier transform approach utilizes the fact that the
     autocorrelation function is the inverse FT of the power spectrum
     density. For background read the Scipy fftpack docs and for a good
     explanation `see this thesis
-    <https://www.ucl.ac.uk/~ucapikr/projects/KamilaSuankulova_BSc_Project.pdf>`_
+    <https://www.ucl.ac.uk/~ucapikr/projects/KamilaSuankulova_BSc_Project.pdf>`_.
 
     Examples
     --------

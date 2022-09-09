@@ -1,6 +1,6 @@
 r"""
 
-Metrics
+metrics
 #######
 
 **Extract Quantitative Information**

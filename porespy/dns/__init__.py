@@ -1,6 +1,6 @@
 r"""
 
-DNS
+dns
 ###
 
 **Direct Numerical Simulation**

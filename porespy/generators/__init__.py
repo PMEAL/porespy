@@ -1,6 +1,6 @@
 r"""
 
-Generators
+generators
 ##########
 
 **Generate Artificial Images**
