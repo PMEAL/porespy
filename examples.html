@@ -7,31 +7,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
     <title>Examples &#8212; PoreSpy  documentation</title>
-  <script>
-    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
-    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
-  </script>
-  
-  <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=9b1a4fa89bdd0e95b23b" rel="stylesheet">
-<link href="_static/styles/pydata-sphinx-theme.css?digest=9b1a4fa89bdd0e95b23b" rel="stylesheet">
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
 
-  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
   <link rel="stylesheet"
-    href="_static/vendor/fontawesome/6.1.2/css/all.min.css">
+    href="_static/vendor/fontawesome/5.13.0/css/all.min.css">
   <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
   <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
     <link rel="stylesheet" type="text/css" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
     <link rel="stylesheet" type="text/css" href="_static/css/custom.css" />
-  
+
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=9b1a4fa89bdd0e95b23b">
+  <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
 
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
@@ -41,45 +41,25 @@
     <script src="_static/copybutton.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'examples';</script>
     <script src="_static/js/custom.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Generating fibrous mats" href="examples/generators/tutorials/cylinders.html" />
     <link rel="prev" title="spheres_to_comsol" href="modules/generated/porespy.io.spheres_to_comsol.html" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="docsearch:language" content="None">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="docsearch:language" content="None">
   </head>
   
   
   <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
-
-  
-  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
-  <label class="overlay overlay-primary" for="__primary"></label>
-
-  
-  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
-  <label class="overlay overlay-secondary" for="__secondary"></label>
-
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+    <div class="bd-header-announcement container-fluid" id="banner">
       
-<form class="bd-search d-flex align-items-center" action="search.html" method="get">
-  <i class="icon fas fa-search"></i>
-  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form>
-    </div>
-  </div>
 
-  
-  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
-  <label class="sidebar-toggle primary-toggle" for="__primary">
-      <span class="fas fa-bars"></span>
-  </label>
+    </div>
+
+    
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
+
   <div id="navbar-start">
     
     
@@ -87,15 +67,9 @@
 
 
 <a class="navbar-brand logo" href="index.html">
-
   
   
   
-  
-  
-  
-  
-
   
     <img src="_static/porespy_logo.png" class="logo__image only-light" alt="Logo image">
     <img src="_static/porespy_logo.png" class="logo__image only-dark" alt="Logo image">
@@ -105,61 +79,52 @@
     
   </div>
 
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="fas fa-bars"></span>
+  </button>
+
   
-  <div class=" navbar-header-items">
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
     <div id="navbar-center" class="mr-auto">
       
       <div class="navbar-center-item">
-        <nav class="navbar-nav">
-    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
-        Site Navigation
-    </p>
-    <ul id="navbar-main-elements" class="navbar-nav">
-        
-                <li class="nav-item">
-                    <a class="nav-link" href="user_guide/index.html">
-                        User Guide
-                    </a>
-                </li>
-                
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="user_guide/index.html">
+  User Guide
+ </a>
+</li>
 
-                <li class="nav-item">
-                    <a class="nav-link" href="modules/index.html">
-                        Module and Function Reference
-                    </a>
-                </li>
-                
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="modules/index.html">
+  Module and Function Reference
+ </a>
+</li>
 
-                <li class="nav-item current active">
-                    <a class="nav-link" href="#">
-                        Examples
-                    </a>
-                </li>
-                
+<li class="toctree-l1 current active nav-item">
+ <a class="current reference internal nav-link" href="#">
+  Examples
+ </a>
+</li>
 
-            <li class="nav-item">
-                <a class="nav-link nav-external" href="https://github.com/PMEAL/porespy/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link nav-external" href="https://github.com/PMEAL/porespy/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
-            </li>
-    </ul>
-</nav>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/porespy/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/porespy/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
       </div>
       
     </div>
 
     <div id="navbar-end">
-      <div class="navbar-end-item navbar-end__search-button-container">
-        
-<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search">
-  <i class="fas fa-search"></i>
-</button>
-      </div>
       
       <div class="navbar-end-item">
-        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
     <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
     <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
     <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
@@ -169,23 +134,11 @@
       <div class="navbar-end-item">
         <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
         <li class="nav-item">
-          
-          
-          
-          
-          
-          
-          <a href="https://github.com/PMEAL/porespy" title="GitHub" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-github-square"></i></span>
+          <a class="nav-link" href="https://github.com/PMEAL/porespy" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
             <label class="sr-only">GitHub</label></a>
         </li>
         <li class="nav-item">
-          
-          
-          
-          
-          
-          
-          <a href="https://twitter.com/porespy" title="Twitter" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-twitter-square"></i></span>
+          <a class="nav-link" href="https://twitter.com/porespy" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
             <label class="sr-only">Twitter</label></a>
         </li>
       </ul>
@@ -193,126 +146,21 @@
       
     </div>
   </div>
-
-
-  
-  <div class="search-button-container--mobile">
-<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search">
-  <i class="fas fa-search"></i>
-</button>
-  </div>
-
-  
-  <label class="sidebar-toggle secondary-toggle" for="__secondary">
-      <span class="fas fa-outdent"></span>
-  </label>
-  
-
 </div>
-  </nav>
-  
-
-  <div class="bd-container">
-    <div class="bd-container__inner bd-page-width">
-      
-      <div class="bd-sidebar-primary bd-sidebar">
-        
-  
-  <div class="sidebar-header-items sidebar-primary__section">
-    
-    
-      <div class="sidebar-header-items__center">
-      
-      <div class="navbar-center-item">
-        <nav class="navbar-nav">
-    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
-        Site Navigation
-    </p>
-    <ul id="navbar-main-elements" class="navbar-nav">
-        
-                <li class="nav-item">
-                    <a class="nav-link" href="user_guide/index.html">
-                        User Guide
-                    </a>
-                </li>
-                
-
-                <li class="nav-item">
-                    <a class="nav-link" href="modules/index.html">
-                        Module and Function Reference
-                    </a>
-                </li>
-                
-
-                <li class="nav-item current active">
-                    <a class="nav-link" href="#">
-                        Examples
-                    </a>
-                </li>
-                
-
-            <li class="nav-item">
-                <a class="nav-link nav-external" href="https://github.com/PMEAL/porespy/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link nav-external" href="https://github.com/PMEAL/porespy/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
-            </li>
-    </ul>
-</nav>
-      </div>
-      
-      </div>
+    </nav>
     
 
-    
-    
-    <div class="sidebar-header-items__end">
-      
-      <div class="navbar-end-item">
-        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle">
-    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
-    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
-    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
-</span>
-      </div>
-      
-      <div class="navbar-end-item">
-        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
-        <li class="nav-item">
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
           
-          
-          
-          
-          
-          
-          <a href="https://github.com/PMEAL/porespy" title="GitHub" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-github-square"></i></span>
-            <label class="sr-only">GitHub</label></a>
-        </li>
-        <li class="nav-item">
-          
-          
-          
-          
-          
-          
-          <a href="https://twitter.com/porespy" title="Twitter" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-twitter-square"></i></span>
-            <label class="sr-only">Twitter</label></a>
-        </li>
-      </ul>
-      </div>
-      
-    </div>
-    
-  </div>
 
-  
-  <div class="sidebar-start-items sidebar-primary__section">
-    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
-  <p class="bd-links__title" role="heading" aria-level="1">
-    Section Navigation
-  </p>
-  <div class="bd-toc-item navbar-nav">
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
     <ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="examples/generators/tutorials/cylinders.html">
@@ -1492,324 +1340,25 @@
 
   </div>
 </nav>
-    </div>
   </div>
-  
-
-  
-  <div class="sidebar-end-items sidebar-primary__section">
-    <div class="sidebar-end-items__item">
-    </div>
+  <div class="sidebar-end-items">
   </div>
-
-      </div>
-      <main class="bd-main">
-        
-        
-        <div class="bd-content">
-          <div class="bd-article-container">
-            
-            <div class="bd-header-article">
-                
-            </div>
-            
-            
-            <article class="bd-article" role="main">
-              
-  <section id="examples">
-<span id="id1"></span><h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">#</a></h1>
-<p>You can download the examples in IPython format from our GitHub
-repo, which can be browsed
-<a class="reference external" href="https://github.com/PMEAL/porespy/tree/dev/examples">here</a>.</p>
-<hr class="docutils" />
-<section id="generators">
-<h2>Generators<a class="headerlink" href="#generators" title="Permalink to this headline">#</a></h2>
-<div class="tabbed-set docutils">
-<input checked="checked" id="8bc003ca-7dc3-4fd4-92c5-fb5ca54d37e4" name="7884eca2-eb70-4a87-9891-e3eabf93757d" type="radio">
-</input><label class="tabbed-label" for="8bc003ca-7dc3-4fd4-92c5-fb5ca54d37e4">
-Tutorials</label><div class="tabbed-content docutils">
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="examples/generators/tutorials/cylinders.html">Generating fibrous mats</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/generators/tutorials/making_blobs.html">Making blobs</a></li>
-</ul>
 </div>
-</div>
-<input id="7b7c1243-6482-401e-a6f4-2cf1c0b2c393" name="7884eca2-eb70-4a87-9891-e3eabf93757d" type="radio">
-</input><label class="tabbed-label" for="7b7c1243-6482-401e-a6f4-2cf1c0b2c393">
-Reference</label><div class="tabbed-content docutils">
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="examples/generators/reference/blobs.html"><code class="docutils literal notranslate"><span class="pre">blobs</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/generators/reference/borders.html"><code class="docutils literal notranslate"><span class="pre">borders</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/generators/reference/borders.html#thickness"><code class="docutils literal notranslate"><span class="pre">thickness</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/generators/reference/borders.html#mode"><code class="docutils literal notranslate"><span class="pre">mode</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/generators/reference/bundle_of_tubes.html"><code class="docutils literal notranslate"><span class="pre">bundle_of_tubes</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/generators/reference/cylinders.html"><code class="docutils literal notranslate"><span class="pre">cylinders</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/generators/reference/cylindrical_plug.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_plug</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/generators/reference/faces.html"><code class="docutils literal notranslate"><span class="pre">faces</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/generators/reference/fractal_noise.html"><code class="docutils literal notranslate"><span class="pre">fractal_noise</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/generators/reference/insert_shape.html"><code class="docutils literal notranslate"><span class="pre">insert_shape</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/generators/reference/lattice_spheres.html"><code class="docutils literal notranslate"><span class="pre">lattice_spheres</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/generators/reference/line_segment.html"><code class="docutils literal notranslate"><span class="pre">line_segment</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/generators/reference/overlapping_spheres.html"><code class="docutils literal notranslate"><span class="pre">overlapping_spheres</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/generators/reference/polydisperse_spheres.html"><code class="docutils literal notranslate"><span class="pre">polydisperse_spheres</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/generators/reference/pseudo_electrostatic_packing.html"><code class="docutils literal notranslate"><span class="pre">pseudo_electrostatic_packing</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/generators/reference/pseudo_gravity_packing.html"><code class="docutils literal notranslate"><span class="pre">pseudo_gravity_packing</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/generators/reference/random_cantor_dust.html"><code class="docutils literal notranslate"><span class="pre">random_cantor_dust</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/generators/reference/rsa.html"><code class="docutils literal notranslate"><span class="pre">rsa</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/generators/reference/sierpinski_foam.html"><code class="docutils literal notranslate"><span class="pre">sierpinski_foam</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/generators/reference/voronoi_edges.html"><code class="docutils literal notranslate"><span class="pre">voronoi_edges</span></code></a></li>
-</ul>
-</div>
-</div>
-</div>
-</section>
-<section id="filters">
-<h2>Filters<a class="headerlink" href="#filters" title="Permalink to this headline">#</a></h2>
-<div class="tabbed-set docutils">
-<input checked="checked" id="5587f857-b70a-4263-8d4b-47a984046409" name="0c420b55-628a-46d9-a7e8-a23b55d53170" type="radio">
-</input><label class="tabbed-label" for="5587f857-b70a-4263-8d4b-47a984046409">
-Tutorials</label><div class="tabbed-content docutils">
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="examples/filters/tutorials/adding_chords.html">Applying chords to 2D and 3D images</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/filters/tutorials/local_thickness.html">Local thickness</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/filters/tutorials/snow_partitioning.html">SNOW partitioning</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/filters/tutorials/snow_partitioning_parallel.html">SNOW partitioning parallel</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/filters/tutorials/using_ibip.html">Image-based invasion percoalation</a></li>
-</ul>
-</div>
-</div>
-<input id="1936b98f-50cc-40d7-89f4-1f33c075e5c6" name="0c420b55-628a-46d9-a7e8-a23b55d53170" type="radio">
-</input><label class="tabbed-label" for="1936b98f-50cc-40d7-89f4-1f33c075e5c6">
-Reference</label><div class="tabbed-content docutils">
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/apply_chords.html"><code class="docutils literal notranslate"><span class="pre">apply_chords</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/apply_chords_3D.html"><code class="docutils literal notranslate"><span class="pre">apply_chords_3D</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/apply_padded.html"><code class="docutils literal notranslate"><span class="pre">apply_padded</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/chunked_func.html"><code class="docutils literal notranslate"><span class="pre">chunked_func</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/distance_transform_lin.html"><code class="docutils literal notranslate"><span class="pre">distance_transform_lin</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/fftmorphology.html"><code class="docutils literal notranslate"><span class="pre">fftmorphology</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/fill_blind_pores.html"><code class="docutils literal notranslate"><span class="pre">fill_blind_pores</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/find_disconnected_voxels.html"><code class="docutils literal notranslate"><span class="pre">find_disconnected_voxels</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/find_dt_artifacts.html"><code class="docutils literal notranslate"><span class="pre">find_dt_artifacts</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/find_peaks.html"><code class="docutils literal notranslate"><span class="pre">find_peaks</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/find_trapped_regions.html"><code class="docutils literal notranslate"><span class="pre">find_trapped_regions</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/flood.html"><code class="docutils literal notranslate"><span class="pre">flood</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/flood_func.html"><code class="docutils literal notranslate"><span class="pre">flood_func</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/hold_peaks.html"><code class="docutils literal notranslate"><span class="pre">hold_peaks</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/ibip.html"><code class="docutils literal notranslate"><span class="pre">ibip</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/local_thickness.html"><code class="docutils literal notranslate"><span class="pre">local_thickness</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/nl_means_layered.html"><code class="docutils literal notranslate"><span class="pre">nl_means_layered</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/nphase_border.html"><code class="docutils literal notranslate"><span class="pre">nphase_border</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/pc_to_satn.html"><code class="docutils literal notranslate"><span class="pre">pc_to_satn</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/porosimetry.html"><code class="docutils literal notranslate"><span class="pre">porosimetry</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/prune_branches.html"><code class="docutils literal notranslate"><span class="pre">prune_branches</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/reduce_peaks.html"><code class="docutils literal notranslate"><span class="pre">reduce_peaks</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/region_size.html"><code class="docutils literal notranslate"><span class="pre">region_size</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/satn_to_seq.html"><code class="docutils literal notranslate"><span class="pre">satn_to_seq</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/seq_to_satn.html"><code class="docutils literal notranslate"><span class="pre">seq_to_satn</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/size_to_satn.html"><code class="docutils literal notranslate"><span class="pre">size_to_satn</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/size_to_seq.html"><code class="docutils literal notranslate"><span class="pre">size_to_seq</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/snow_partitioning.html"><code class="docutils literal notranslate"><span class="pre">snow_partitioning</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/snow_partitioning_n.html"><code class="docutils literal notranslate"><span class="pre">snow_partitioning_n</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/snow_partitioning_parallel.html"><code class="docutils literal notranslate"><span class="pre">snow_partitioning_parallel</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/trim_disconnected_blobs.html"><code class="docutils literal notranslate"><span class="pre">trim_disconnected_blobs</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/trim_extrema.html"><code class="docutils literal notranslate"><span class="pre">trim_extrema</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/trim_floating_solid.html"><code class="docutils literal notranslate"><span class="pre">trim_floating_solid</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/trim_nearby_peaks.html"><code class="docutils literal notranslate"><span class="pre">trim_nearby_peaks</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/trim_nonpercolating_paths.html"><code class="docutils literal notranslate"><span class="pre">trim_nonpercolating_paths</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/trim_saddle_points.html"><code class="docutils literal notranslate"><span class="pre">trim_saddle_points</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/trim_small_clusters.html"><code class="docutils literal notranslate"><span class="pre">trim_small_clusters</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/unpad.html"><code class="docutils literal notranslate"><span class="pre">unpad</span></code></a></li>
-</ul>
-</div>
-</div>
-</div>
-</section>
-<section id="metrics">
-<h2>Metrics<a class="headerlink" href="#metrics" title="Permalink to this headline">#</a></h2>
-<div class="tabbed-set docutils">
-<input checked="checked" id="0ebaad7f-ae9b-4ffa-b999-72fd06608aa6" name="33630979-680d-46ef-9a08-742c40a5096d" type="radio">
-</input><label class="tabbed-label" for="0ebaad7f-ae9b-4ffa-b999-72fd06608aa6">
-Tutorials</label><div class="tabbed-content docutils">
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="examples/metrics/tutorials/computing_fractal_dim.html">Measuring fractal dimension by box-counting</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/metrics/tutorials/lineal_path_function.html">The lineal path function</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/metrics/tutorials/porosity_profiles.html">Obtaining the porosity profile along each principle axis</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/metrics/tutorials/regionprops_3d.html">Using regionprops_3d to analyze properties of each pore</a></li>
-</ul>
-</div>
-</div>
-<input id="ad0deb17-c9b4-4dd3-a451-26218f798ca4" name="33630979-680d-46ef-9a08-742c40a5096d" type="radio">
-</input><label class="tabbed-label" for="ad0deb17-c9b4-4dd3-a451-26218f798ca4">
-Reference</label><div class="tabbed-content docutils">
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="examples/metrics/reference/boxcount.html"><code class="docutils literal notranslate"><span class="pre">boxcount</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/metrics/reference/chord_counts.html"><code class="docutils literal notranslate"><span class="pre">chord_counts</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/metrics/reference/chord_length_distribution.html"><code class="docutils literal notranslate"><span class="pre">chord_length_distribution</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/metrics/reference/find_h.html"><code class="docutils literal notranslate"><span class="pre">find_h</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/metrics/reference/lineal_path_distribution.html"><code class="docutils literal notranslate"><span class="pre">lineal_path_distribution</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/metrics/reference/mesh__volume.html"><code class="docutils literal notranslate"><span class="pre">mesh_volume</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/metrics/reference/mesh_surface_area.html"><code class="docutils literal notranslate"><span class="pre">mesh_surface_area</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/metrics/reference/pc_curve.html"><code class="docutils literal notranslate"><span class="pre">pc_curve</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/metrics/reference/phase_fraction.html"><code class="docutils literal notranslate"><span class="pre">phase_fraction</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/metrics/reference/pore_size_distribution.html"><code class="docutils literal notranslate"><span class="pre">pore_size_distribution</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/metrics/reference/porosity.html"><code class="docutils literal notranslate"><span class="pre">porosity</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/metrics/reference/porosity_profile.html"><code class="docutils literal notranslate"><span class="pre">porosity_profile</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/metrics/reference/props_to_DataFrame.html"><code class="docutils literal notranslate"><span class="pre">props_to_DataFrame</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/metrics/reference/props_to_image.html"><code class="docutils literal notranslate"><span class="pre">props_to_image</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/metrics/reference/radial_density_distribution.html"><code class="docutils literal notranslate"><span class="pre">radial_density_distribution</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/metrics/reference/region_interface_areas.html"><code class="docutils literal notranslate"><span class="pre">region_interface_areas</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/metrics/reference/region_surface_areas.html"><code class="docutils literal notranslate"><span class="pre">region_surface_areas</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/metrics/reference/region_volumes.html"><code class="docutils literal notranslate"><span class="pre">region_volumes</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/metrics/reference/regionprops_3D.html"><code class="docutils literal notranslate"><span class="pre">regionprops_3D</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/metrics/reference/representative_elementary_volume.html"><code class="docutils literal notranslate"><span class="pre">representative_elementary_volume</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/metrics/reference/satn_profile.html"><code class="docutils literal notranslate"><span class="pre">satn_profile</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/metrics/reference/two_point_correlation.html"><code class="docutils literal notranslate"><span class="pre">two_point_correlation</span></code></a></li>
-</ul>
-</div>
-</div>
-</div>
-</section>
-<section id="networks">
-<h2>Networks<a class="headerlink" href="#networks" title="Permalink to this headline">#</a></h2>
-<div class="tabbed-set docutils">
-<input checked="checked" id="796319c3-987a-4b38-91ea-dbf61ef41394" name="cc509905-0a76-45d5-81a8-eaa76eb41d76" type="radio">
-</input><label class="tabbed-label" for="796319c3-987a-4b38-91ea-dbf61ef41394">
-Tutorials</label><div class="tabbed-content docutils">
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="examples/networks/tutorials/adding_boundary_pores.html">Adding boundary pores</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/networks/tutorials/snow_advanced.html">SNOW network extraction (advanced)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/networks/tutorials/snow_basic.html">SNOW network extraction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/networks/tutorials/using_diffusive_size_factor_AI_with_snow.html">Using AI based diffusive size factors for extracted networks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/networks/tutorials/using_diffusive_size_factor_AI_with_snow.html#Trained-model-and-supplementary-materials">Trained model and supplementary materials</a></li>
-</ul>
-</div>
-</div>
-<input id="0d71a719-2e95-47d9-b906-0f2551fd61a9" name="cc509905-0a76-45d5-81a8-eaa76eb41d76" type="radio">
-</input><label class="tabbed-label" for="0d71a719-2e95-47d9-b906-0f2551fd61a9">
-Reference</label><div class="tabbed-content docutils">
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="examples/networks/reference/add_boundary_regions.html"><code class="docutils literal notranslate"><span class="pre">add_boundary_regions</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/networks/reference/diffusive_size_factor_AI.html"><code class="docutils literal notranslate"><span class="pre">diffusive_size_factor_AI</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/networks/reference/label_boundaries.html"><code class="docutils literal notranslate"><span class="pre">label_boundaries</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/networks/reference/label_phases.html"><code class="docutils literal notranslate"><span class="pre">label_phases</span></code> [WIP]</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/networks/reference/map_to_regions.html"><code class="docutils literal notranslate"><span class="pre">map_to_regions</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/networks/reference/regions_to_network.html"><code class="docutils literal notranslate"><span class="pre">regions_to_network</span></code> [WIP]</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/networks/reference/snow2.html"><code class="docutils literal notranslate"><span class="pre">snow2</span></code> [WIP]</a></li>
-</ul>
-</div>
-</div>
-</div>
-</section>
-<section id="simulations">
-<h2>Simulations<a class="headerlink" href="#simulations" title="Permalink to this headline">#</a></h2>
-<div class="tabbed-set docutils">
-<input checked="checked" id="ffed239e-8765-4924-b720-7bc8d7d9341e" name="def937bb-9fe3-4bfd-aaf5-a0d39beb4ed2" type="radio">
-</input><label class="tabbed-label" for="ffed239e-8765-4924-b720-7bc8d7d9341e">
-Tutorials</label><div class="tabbed-content docutils">
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="examples/simulations/tutorials/drainage_with_gravity_advanced.html">Details of Drainage Simulations with and without Gravity</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/simulations/tutorials/drainage_with_gravity_basic.html">Basics of Peforming Drainage Simulations with and without Gravity</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/simulations/tutorials/finding_tortuosity_from_image.html">Finding the Tortuosity (<span class="math notranslate nohighlight">\(\tau\)</span>) of an Image Using tortuosity_fd</a></li>
-</ul>
-</div>
-</div>
-</div>
-</section>
-<section id="tools">
-<h2>Tools<a class="headerlink" href="#tools" title="Permalink to this headline">#</a></h2>
-<div class="tabbed-set docutils">
-<input checked="checked" id="64ba702c-2924-4076-b396-4af2610d9666" name="b538b693-356a-4764-9d72-dc83050bad61" type="radio">
-</input><label class="tabbed-label" for="64ba702c-2924-4076-b396-4af2610d9666">
-Reference</label><div class="tabbed-content docutils">
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="examples/tools/reference/align_image_with_openpnm.html"><code class="docutils literal notranslate"><span class="pre">align_image_with_openpnm</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/tools/reference/bbox_to_slices.html"><code class="docutils literal notranslate"><span class="pre">bbox_to_slices</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/tools/reference/extend_slice.html"><code class="docutils literal notranslate"><span class="pre">extend_slice</span></code> [WIP]</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/tools/reference/extract_cylinder.html"><code class="docutils literal notranslate"><span class="pre">extract_cylinder</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/tools/reference/extract_regions.html"><code class="docutils literal notranslate"><span class="pre">extract_regions</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/tools/reference/extract_subsection.html"><code class="docutils literal notranslate"><span class="pre">extract_subsection</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/tools/reference/get_border.html"><code class="docutils literal notranslate"><span class="pre">get_border</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/tools/reference/get_planes.html"><code class="docutils literal notranslate"><span class="pre">get_planes</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/tools/reference/insert_cylinder.html"><code class="docutils literal notranslate"><span class="pre">insert_cylinder</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/tools/reference/insert_sphere.html"><code class="docutils literal notranslate"><span class="pre">insert_sphere</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/tools/reference/isolate_object.html"><code class="docutils literal notranslate"><span class="pre">isolate_object</span></code> [WIP]</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/tools/reference/make_contiguous.html"><code class="docutils literal notranslate"><span class="pre">make_contiguous</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/tools/reference/marching_map.html"><code class="docutils literal notranslate"><span class="pre">marching_map</span></code> [WIP]</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/tools/reference/mesh_region.html"><code class="docutils literal notranslate"><span class="pre">mesh_region</span></code> [WIP]</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/tools/reference/norm_to_uniform.html"><code class="docutils literal notranslate"><span class="pre">norm_to_uniform</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/tools/reference/overlay.html"><code class="docutils literal notranslate"><span class="pre">overlay</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/tools/reference/randomize_colors.html"><code class="docutils literal notranslate"><span class="pre">randomize_colors</span></code> [WIP]</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/tools/reference/recombine.html"><code class="docutils literal notranslate"><span class="pre">recombine</span></code> [WIP]</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/tools/reference/subdivide.html"><code class="docutils literal notranslate"><span class="pre">subdivide</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/tools/reference/unpad.html"><code class="docutils literal notranslate"><span class="pre">unpad</span></code></a></li>
-</ul>
-</div>
-</div>
-</div>
-</section>
-<section id="visualization">
-<h2>Visualization<a class="headerlink" href="#visualization" title="Permalink to this headline">#</a></h2>
-<div class="tabbed-set docutils">
-<input checked="checked" id="fd1d1117-cff3-48bd-a548-2a3d83cfc374" name="09b46b70-6186-460b-96fd-d18544d23a17" type="radio">
-</input><label class="tabbed-label" for="fd1d1117-cff3-48bd-a548-2a3d83cfc374">
-Tutorials</label><div class="tabbed-content docutils">
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="examples/visualization/tutorials/visualizing_tif_in_paraveiw.html">Visualizing a tif image in Paraview</a></li>
-</ul>
-</div>
-</div>
-<input id="d7e0402d-fb51-470f-b176-35561f82586b" name="09b46b70-6186-460b-96fd-d18544d23a17" type="radio">
-</input><label class="tabbed-label" for="d7e0402d-fb51-470f-b176-35561f82586b">
-Reference</label><div class="tabbed-content docutils">
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="examples/visualization/reference/bar.html"><code class="docutils literal notranslate"><span class="pre">bar</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/visualization/reference/imshow.html"><code class="docutils literal notranslate"><span class="pre">imshow</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/visualization/reference/prep_for_imshow.html"><code class="docutils literal notranslate"><span class="pre">prep_for_imshow</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/visualization/reference/satn_to_movie.html"><code class="docutils literal notranslate"><span class="pre">satn_to_movie</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/visualization/reference/satn_to_panels.html"><code class="docutils literal notranslate"><span class="pre">satn_to_panels</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/visualization/reference/sem.html"><code class="docutils literal notranslate"><span class="pre">sem</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/visualization/reference/set_mpl_style.html"><code class="docutils literal notranslate"><span class="pre">set_mpl_style</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/visualization/reference/show_3D.html"><code class="docutils literal notranslate"><span class="pre">show_3D</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/visualization/reference/show_mesh.html"><code class="docutils literal notranslate"><span class="pre">show_mesh</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/visualization/reference/show_planes.html"><code class="docutils literal notranslate"><span class="pre">show_planes</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/visualization/reference/xray.html"><code class="docutils literal notranslate"><span class="pre">xray</span></code></a></li>
-</ul>
-</div>
-</div>
-</div>
-</section>
-</section>
 
 
-            </article>
-            
-            
-            
-          </div>
           
-          
-          
-            <div class="bd-sidebar-secondary bd-toc">
-              
-<div class="toc-item">
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
   
-<div class="tocsection onthispage">
+    
+    <div class="toc-item">
+      
+<div class="tocsection onthispage mt-5 pt-1 pb-3">
     <i class="fas fa-list"></i> On this page
 </div>
-<nav id="bd-toc-nav" class="page-toc">
+
+<nav id="bd-toc-nav">
     <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#generators">
@@ -1859,52 +1408,329 @@ Reference</label><div class="tabbed-content docutils">
 </ul>
 
 </nav>
-</div>
-
-<div class="toc-item">
-  
-</div>
-
-<div class="toc-item">
-  
-</div>
-
-            </div>
-          
-          
-        </div>
-        <footer class="bd-footer-content">
-          <div class="bd-footer-content__inner">
-            
-          </div>
-        </footer>
-        
-      </main>
     </div>
-  </div>
+    
+    <div class="toc-item">
+      
+    </div>
+    
+  
+</div>
+
+
+          
+          
+          <div class="bd-content col-12 col-md-9 col-xl-7">
+              
+              <article class="bd-article" role="main">
+                
+  <section id="examples">
+<span id="id1"></span><h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">#</a></h1>
+<p>You can download the examples in IPython format from our GitHub
+repo, which can be browsed
+<a class="reference external" href="https://github.com/PMEAL/porespy/tree/dev/examples">here</a>.</p>
+<hr class="docutils" />
+<section id="generators">
+<h2>Generators<a class="headerlink" href="#generators" title="Permalink to this headline">#</a></h2>
+<div class="tabbed-set docutils">
+<input checked="checked" id="70567db5-a584-4138-b4ce-e38b0e719484" name="f2e547c7-b5be-419e-82ab-144b822bd031" type="radio">
+</input><label class="tabbed-label" for="70567db5-a584-4138-b4ce-e38b0e719484">
+Tutorials</label><div class="tabbed-content docutils">
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples/generators/tutorials/cylinders.html">Generating fibrous mats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/generators/tutorials/making_blobs.html">Making blobs</a></li>
+</ul>
+</div>
+</div>
+<input id="094d8ee1-22b3-4b2a-b226-e357d9cf9125" name="f2e547c7-b5be-419e-82ab-144b822bd031" type="radio">
+</input><label class="tabbed-label" for="094d8ee1-22b3-4b2a-b226-e357d9cf9125">
+Reference</label><div class="tabbed-content docutils">
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples/generators/reference/blobs.html"><code class="docutils literal notranslate"><span class="pre">blobs</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/generators/reference/borders.html"><code class="docutils literal notranslate"><span class="pre">borders</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/generators/reference/borders.html#thickness"><code class="docutils literal notranslate"><span class="pre">thickness</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/generators/reference/borders.html#mode"><code class="docutils literal notranslate"><span class="pre">mode</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/generators/reference/bundle_of_tubes.html"><code class="docutils literal notranslate"><span class="pre">bundle_of_tubes</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/generators/reference/cylinders.html"><code class="docutils literal notranslate"><span class="pre">cylinders</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/generators/reference/cylindrical_plug.html"><code class="docutils literal notranslate"><span class="pre">cylindrical_plug</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/generators/reference/faces.html"><code class="docutils literal notranslate"><span class="pre">faces</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/generators/reference/fractal_noise.html"><code class="docutils literal notranslate"><span class="pre">fractal_noise</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/generators/reference/insert_shape.html"><code class="docutils literal notranslate"><span class="pre">insert_shape</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/generators/reference/lattice_spheres.html"><code class="docutils literal notranslate"><span class="pre">lattice_spheres</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/generators/reference/line_segment.html"><code class="docutils literal notranslate"><span class="pre">line_segment</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/generators/reference/overlapping_spheres.html"><code class="docutils literal notranslate"><span class="pre">overlapping_spheres</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/generators/reference/polydisperse_spheres.html"><code class="docutils literal notranslate"><span class="pre">polydisperse_spheres</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/generators/reference/pseudo_electrostatic_packing.html"><code class="docutils literal notranslate"><span class="pre">pseudo_electrostatic_packing</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/generators/reference/pseudo_gravity_packing.html"><code class="docutils literal notranslate"><span class="pre">pseudo_gravity_packing</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/generators/reference/random_cantor_dust.html"><code class="docutils literal notranslate"><span class="pre">random_cantor_dust</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/generators/reference/rsa.html"><code class="docutils literal notranslate"><span class="pre">rsa</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/generators/reference/sierpinski_foam.html"><code class="docutils literal notranslate"><span class="pre">sierpinski_foam</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/generators/reference/voronoi_edges.html"><code class="docutils literal notranslate"><span class="pre">voronoi_edges</span></code></a></li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+<section id="filters">
+<h2>Filters<a class="headerlink" href="#filters" title="Permalink to this headline">#</a></h2>
+<div class="tabbed-set docutils">
+<input checked="checked" id="c2e3cce6-0e01-4b81-b9d5-3de33d91cc78" name="33a68895-9e5f-49f2-aa26-57cf1d80c4d6" type="radio">
+</input><label class="tabbed-label" for="c2e3cce6-0e01-4b81-b9d5-3de33d91cc78">
+Tutorials</label><div class="tabbed-content docutils">
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples/filters/tutorials/adding_chords.html">Applying chords to 2D and 3D images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/filters/tutorials/local_thickness.html">Local thickness</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/filters/tutorials/snow_partitioning.html">SNOW partitioning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/filters/tutorials/snow_partitioning_parallel.html">SNOW partitioning parallel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/filters/tutorials/using_ibip.html">Image-based invasion percoalation</a></li>
+</ul>
+</div>
+</div>
+<input id="2ccbd32c-f69e-4ae5-8421-719b0166ba01" name="33a68895-9e5f-49f2-aa26-57cf1d80c4d6" type="radio">
+</input><label class="tabbed-label" for="2ccbd32c-f69e-4ae5-8421-719b0166ba01">
+Reference</label><div class="tabbed-content docutils">
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/apply_chords.html"><code class="docutils literal notranslate"><span class="pre">apply_chords</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/apply_chords_3D.html"><code class="docutils literal notranslate"><span class="pre">apply_chords_3D</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/apply_padded.html"><code class="docutils literal notranslate"><span class="pre">apply_padded</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/chunked_func.html"><code class="docutils literal notranslate"><span class="pre">chunked_func</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/distance_transform_lin.html"><code class="docutils literal notranslate"><span class="pre">distance_transform_lin</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/fftmorphology.html"><code class="docutils literal notranslate"><span class="pre">fftmorphology</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/fill_blind_pores.html"><code class="docutils literal notranslate"><span class="pre">fill_blind_pores</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/find_disconnected_voxels.html"><code class="docutils literal notranslate"><span class="pre">find_disconnected_voxels</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/find_dt_artifacts.html"><code class="docutils literal notranslate"><span class="pre">find_dt_artifacts</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/find_peaks.html"><code class="docutils literal notranslate"><span class="pre">find_peaks</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/find_trapped_regions.html"><code class="docutils literal notranslate"><span class="pre">find_trapped_regions</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/flood.html"><code class="docutils literal notranslate"><span class="pre">flood</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/flood_func.html"><code class="docutils literal notranslate"><span class="pre">flood_func</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/hold_peaks.html"><code class="docutils literal notranslate"><span class="pre">hold_peaks</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/ibip.html"><code class="docutils literal notranslate"><span class="pre">ibip</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/local_thickness.html"><code class="docutils literal notranslate"><span class="pre">local_thickness</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/nl_means_layered.html"><code class="docutils literal notranslate"><span class="pre">nl_means_layered</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/nphase_border.html"><code class="docutils literal notranslate"><span class="pre">nphase_border</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/pc_to_satn.html"><code class="docutils literal notranslate"><span class="pre">pc_to_satn</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/porosimetry.html"><code class="docutils literal notranslate"><span class="pre">porosimetry</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/prune_branches.html"><code class="docutils literal notranslate"><span class="pre">prune_branches</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/reduce_peaks.html"><code class="docutils literal notranslate"><span class="pre">reduce_peaks</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/region_size.html"><code class="docutils literal notranslate"><span class="pre">region_size</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/satn_to_seq.html"><code class="docutils literal notranslate"><span class="pre">satn_to_seq</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/seq_to_satn.html"><code class="docutils literal notranslate"><span class="pre">seq_to_satn</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/size_to_satn.html"><code class="docutils literal notranslate"><span class="pre">size_to_satn</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/size_to_seq.html"><code class="docutils literal notranslate"><span class="pre">size_to_seq</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/snow_partitioning.html"><code class="docutils literal notranslate"><span class="pre">snow_partitioning</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/snow_partitioning_n.html"><code class="docutils literal notranslate"><span class="pre">snow_partitioning_n</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/snow_partitioning_parallel.html"><code class="docutils literal notranslate"><span class="pre">snow_partitioning_parallel</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/trim_disconnected_blobs.html"><code class="docutils literal notranslate"><span class="pre">trim_disconnected_blobs</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/trim_extrema.html"><code class="docutils literal notranslate"><span class="pre">trim_extrema</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/trim_floating_solid.html"><code class="docutils literal notranslate"><span class="pre">trim_floating_solid</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/trim_nearby_peaks.html"><code class="docutils literal notranslate"><span class="pre">trim_nearby_peaks</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/trim_nonpercolating_paths.html"><code class="docutils literal notranslate"><span class="pre">trim_nonpercolating_paths</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/trim_saddle_points.html"><code class="docutils literal notranslate"><span class="pre">trim_saddle_points</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/trim_small_clusters.html"><code class="docutils literal notranslate"><span class="pre">trim_small_clusters</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/filters/reference/unpad.html"><code class="docutils literal notranslate"><span class="pre">unpad</span></code></a></li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+<section id="metrics">
+<h2>Metrics<a class="headerlink" href="#metrics" title="Permalink to this headline">#</a></h2>
+<div class="tabbed-set docutils">
+<input checked="checked" id="426b6751-377b-4c02-9fce-119dd3f01d9a" name="da443bd0-50ac-4361-a7c7-95f04ba3290c" type="radio">
+</input><label class="tabbed-label" for="426b6751-377b-4c02-9fce-119dd3f01d9a">
+Tutorials</label><div class="tabbed-content docutils">
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples/metrics/tutorials/computing_fractal_dim.html">Measuring fractal dimension by box-counting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/metrics/tutorials/lineal_path_function.html">The lineal path function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/metrics/tutorials/porosity_profiles.html">Obtaining the porosity profile along each principle axis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/metrics/tutorials/regionprops_3d.html">Using regionprops_3d to analyze properties of each pore</a></li>
+</ul>
+</div>
+</div>
+<input id="abad748b-7cf1-451b-aa7b-735aa6374302" name="da443bd0-50ac-4361-a7c7-95f04ba3290c" type="radio">
+</input><label class="tabbed-label" for="abad748b-7cf1-451b-aa7b-735aa6374302">
+Reference</label><div class="tabbed-content docutils">
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples/metrics/reference/boxcount.html"><code class="docutils literal notranslate"><span class="pre">boxcount</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/metrics/reference/chord_counts.html"><code class="docutils literal notranslate"><span class="pre">chord_counts</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/metrics/reference/chord_length_distribution.html"><code class="docutils literal notranslate"><span class="pre">chord_length_distribution</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/metrics/reference/find_h.html"><code class="docutils literal notranslate"><span class="pre">find_h</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/metrics/reference/lineal_path_distribution.html"><code class="docutils literal notranslate"><span class="pre">lineal_path_distribution</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/metrics/reference/mesh__volume.html"><code class="docutils literal notranslate"><span class="pre">mesh_volume</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/metrics/reference/mesh_surface_area.html"><code class="docutils literal notranslate"><span class="pre">mesh_surface_area</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/metrics/reference/pc_curve.html"><code class="docutils literal notranslate"><span class="pre">pc_curve</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/metrics/reference/phase_fraction.html"><code class="docutils literal notranslate"><span class="pre">phase_fraction</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/metrics/reference/pore_size_distribution.html"><code class="docutils literal notranslate"><span class="pre">pore_size_distribution</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/metrics/reference/porosity.html"><code class="docutils literal notranslate"><span class="pre">porosity</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/metrics/reference/porosity_profile.html"><code class="docutils literal notranslate"><span class="pre">porosity_profile</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/metrics/reference/props_to_DataFrame.html"><code class="docutils literal notranslate"><span class="pre">props_to_DataFrame</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/metrics/reference/props_to_image.html"><code class="docutils literal notranslate"><span class="pre">props_to_image</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/metrics/reference/radial_density_distribution.html"><code class="docutils literal notranslate"><span class="pre">radial_density_distribution</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/metrics/reference/region_interface_areas.html"><code class="docutils literal notranslate"><span class="pre">region_interface_areas</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/metrics/reference/region_surface_areas.html"><code class="docutils literal notranslate"><span class="pre">region_surface_areas</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/metrics/reference/region_volumes.html"><code class="docutils literal notranslate"><span class="pre">region_volumes</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/metrics/reference/regionprops_3D.html"><code class="docutils literal notranslate"><span class="pre">regionprops_3D</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/metrics/reference/representative_elementary_volume.html"><code class="docutils literal notranslate"><span class="pre">representative_elementary_volume</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/metrics/reference/satn_profile.html"><code class="docutils literal notranslate"><span class="pre">satn_profile</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/metrics/reference/two_point_correlation.html"><code class="docutils literal notranslate"><span class="pre">two_point_correlation</span></code></a></li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+<section id="networks">
+<h2>Networks<a class="headerlink" href="#networks" title="Permalink to this headline">#</a></h2>
+<div class="tabbed-set docutils">
+<input checked="checked" id="3f37e284-bedc-4e55-8245-a19a7e8d8f3b" name="e2358b2b-14bb-452d-bb16-92844c8f6697" type="radio">
+</input><label class="tabbed-label" for="3f37e284-bedc-4e55-8245-a19a7e8d8f3b">
+Tutorials</label><div class="tabbed-content docutils">
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples/networks/tutorials/adding_boundary_pores.html">Adding boundary pores</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/networks/tutorials/snow_advanced.html">SNOW network extraction (advanced)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/networks/tutorials/snow_basic.html">SNOW network extraction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/networks/tutorials/using_diffusive_size_factor_AI_with_snow.html">Using AI based diffusive size factors for extracted networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/networks/tutorials/using_diffusive_size_factor_AI_with_snow.html#Trained-model-and-supplementary-materials">Trained model and supplementary materials</a></li>
+</ul>
+</div>
+</div>
+<input id="038918a3-9f02-4128-8dac-1484c4f65675" name="e2358b2b-14bb-452d-bb16-92844c8f6697" type="radio">
+</input><label class="tabbed-label" for="038918a3-9f02-4128-8dac-1484c4f65675">
+Reference</label><div class="tabbed-content docutils">
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples/networks/reference/add_boundary_regions.html"><code class="docutils literal notranslate"><span class="pre">add_boundary_regions</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/networks/reference/diffusive_size_factor_AI.html"><code class="docutils literal notranslate"><span class="pre">diffusive_size_factor_AI</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/networks/reference/label_boundaries.html"><code class="docutils literal notranslate"><span class="pre">label_boundaries</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/networks/reference/label_phases.html"><code class="docutils literal notranslate"><span class="pre">label_phases</span></code> [WIP]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/networks/reference/map_to_regions.html"><code class="docutils literal notranslate"><span class="pre">map_to_regions</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/networks/reference/regions_to_network.html"><code class="docutils literal notranslate"><span class="pre">regions_to_network</span></code> [WIP]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/networks/reference/snow2.html"><code class="docutils literal notranslate"><span class="pre">snow2</span></code> [WIP]</a></li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+<section id="simulations">
+<h2>Simulations<a class="headerlink" href="#simulations" title="Permalink to this headline">#</a></h2>
+<div class="tabbed-set docutils">
+<input checked="checked" id="2c0818d3-2302-4454-b261-dcb59cf50184" name="af9fe074-9eb4-49bc-8164-055e2022dc1e" type="radio">
+</input><label class="tabbed-label" for="2c0818d3-2302-4454-b261-dcb59cf50184">
+Tutorials</label><div class="tabbed-content docutils">
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples/simulations/tutorials/drainage_with_gravity_advanced.html">Details of Drainage Simulations with and without Gravity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/simulations/tutorials/drainage_with_gravity_basic.html">Basics of Peforming Drainage Simulations with and without Gravity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/simulations/tutorials/finding_tortuosity_from_image.html">Finding the Tortuosity (<span class="math notranslate nohighlight">\(\tau\)</span>) of an Image Using tortuosity_fd</a></li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+<section id="tools">
+<h2>Tools<a class="headerlink" href="#tools" title="Permalink to this headline">#</a></h2>
+<div class="tabbed-set docutils">
+<input checked="checked" id="2d8b5cf5-6aa0-4df6-bf33-f9286ebced3c" name="ad41c316-4cba-403b-bf5f-027cbd3e252e" type="radio">
+</input><label class="tabbed-label" for="2d8b5cf5-6aa0-4df6-bf33-f9286ebced3c">
+Reference</label><div class="tabbed-content docutils">
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples/tools/reference/align_image_with_openpnm.html"><code class="docutils literal notranslate"><span class="pre">align_image_with_openpnm</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/tools/reference/bbox_to_slices.html"><code class="docutils literal notranslate"><span class="pre">bbox_to_slices</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/tools/reference/extend_slice.html"><code class="docutils literal notranslate"><span class="pre">extend_slice</span></code> [WIP]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/tools/reference/extract_cylinder.html"><code class="docutils literal notranslate"><span class="pre">extract_cylinder</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/tools/reference/extract_regions.html"><code class="docutils literal notranslate"><span class="pre">extract_regions</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/tools/reference/extract_subsection.html"><code class="docutils literal notranslate"><span class="pre">extract_subsection</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/tools/reference/get_border.html"><code class="docutils literal notranslate"><span class="pre">get_border</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/tools/reference/get_planes.html"><code class="docutils literal notranslate"><span class="pre">get_planes</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/tools/reference/insert_cylinder.html"><code class="docutils literal notranslate"><span class="pre">insert_cylinder</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/tools/reference/insert_sphere.html"><code class="docutils literal notranslate"><span class="pre">insert_sphere</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/tools/reference/isolate_object.html"><code class="docutils literal notranslate"><span class="pre">isolate_object</span></code> [WIP]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/tools/reference/make_contiguous.html"><code class="docutils literal notranslate"><span class="pre">make_contiguous</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/tools/reference/marching_map.html"><code class="docutils literal notranslate"><span class="pre">marching_map</span></code> [WIP]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/tools/reference/mesh_region.html"><code class="docutils literal notranslate"><span class="pre">mesh_region</span></code> [WIP]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/tools/reference/norm_to_uniform.html"><code class="docutils literal notranslate"><span class="pre">norm_to_uniform</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/tools/reference/overlay.html"><code class="docutils literal notranslate"><span class="pre">overlay</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/tools/reference/randomize_colors.html"><code class="docutils literal notranslate"><span class="pre">randomize_colors</span></code> [WIP]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/tools/reference/recombine.html"><code class="docutils literal notranslate"><span class="pre">recombine</span></code> [WIP]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/tools/reference/subdivide.html"><code class="docutils literal notranslate"><span class="pre">subdivide</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/tools/reference/unpad.html"><code class="docutils literal notranslate"><span class="pre">unpad</span></code></a></li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+<section id="visualization">
+<h2>Visualization<a class="headerlink" href="#visualization" title="Permalink to this headline">#</a></h2>
+<div class="tabbed-set docutils">
+<input checked="checked" id="4fd5a34c-8af8-40cc-80c4-71d468fb218f" name="105be8a3-29d1-42c5-9aec-54dab80a7522" type="radio">
+</input><label class="tabbed-label" for="4fd5a34c-8af8-40cc-80c4-71d468fb218f">
+Tutorials</label><div class="tabbed-content docutils">
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples/visualization/tutorials/visualizing_tif_in_paraveiw.html">Visualizing a tif image in Paraview</a></li>
+</ul>
+</div>
+</div>
+<input id="782dbded-c9d5-49a7-94fb-dc179fcc8f25" name="105be8a3-29d1-42c5-9aec-54dab80a7522" type="radio">
+</input><label class="tabbed-label" for="782dbded-c9d5-49a7-94fb-dc179fcc8f25">
+Reference</label><div class="tabbed-content docutils">
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples/visualization/reference/bar.html"><code class="docutils literal notranslate"><span class="pre">bar</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/visualization/reference/imshow.html"><code class="docutils literal notranslate"><span class="pre">imshow</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/visualization/reference/prep_for_imshow.html"><code class="docutils literal notranslate"><span class="pre">prep_for_imshow</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/visualization/reference/satn_to_movie.html"><code class="docutils literal notranslate"><span class="pre">satn_to_movie</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/visualization/reference/satn_to_panels.html"><code class="docutils literal notranslate"><span class="pre">satn_to_panels</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/visualization/reference/sem.html"><code class="docutils literal notranslate"><span class="pre">sem</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/visualization/reference/set_mpl_style.html"><code class="docutils literal notranslate"><span class="pre">set_mpl_style</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/visualization/reference/show_3D.html"><code class="docutils literal notranslate"><span class="pre">show_3D</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/visualization/reference/show_mesh.html"><code class="docutils literal notranslate"><span class="pre">show_mesh</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/visualization/reference/show_planes.html"><code class="docutils literal notranslate"><span class="pre">show_planes</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/visualization/reference/xray.html"><code class="docutils literal notranslate"><span class="pre">xray</span></code></a></li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+
+              </article>
+              
+
+              
+          </div>
+          
+      </div>
+    </div>
 
   
-    
+  
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="_static/scripts/pydata-sphinx-theme.js?digest=9b1a4fa89bdd0e95b23b"></script>
+  <script src="_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
 
-  <footer class="bd-footer"><div class="bd-footer__inner container">
+<footer class="bd-footer"><div class="bd-footer__inner container">
   
   <div class="footer-item">
-    
-<p class="copyright">
-
+    <p class="copyright">
     &copy; Copyright 2022, PMEAL.<br>
-
 </p>
-
   </div>
   
   <div class="footer-item">
-    
+    <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
+</p>
   </div>
   
 </div>
-  </footer>
+</footer>
   </body>
 </html>
