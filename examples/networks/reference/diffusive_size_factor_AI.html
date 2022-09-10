@@ -2855,53 +2855,58 @@
 </div>
 </div>
 <div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-09-10 12:52:19.188524: I tensorflow/core/platform/cpu_feature_guard.cc:193] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 AVX512F FMA
+To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2022-09-10 12:52:19.322898: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library &#39;libcudart.so.11.0&#39;; dlerror: libcudart.so.11.0: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.8.13/x64/lib
+2022-09-10 12:52:19.322922: I tensorflow/stream_executor/cuda/cudart_stub.cc:29] Ignore above cudart dlerror if you do not have a GPU set up on your machine.
+2022-09-10 12:52:19.356203: E tensorflow/stream_executor/cuda/cuda_blas.cc:2981] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered
+</pre></div>
+</div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: tensorflow in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (2.10.0)
-Requirement already satisfied: keras&lt;2.11,&gt;=2.10.0 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (2.10.0)
-Requirement already satisfied: opt-einsum&gt;=2.3.2 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (3.3.0)
-Requirement already satisfied: absl-py&gt;=1.0.0 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (1.2.0)
-Requirement already satisfied: termcolor&gt;=1.1.0 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (1.1.0)
-Requirement already satisfied: six&gt;=1.12.0 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (1.16.0)
-Requirement already satisfied: tensorboard&lt;2.11,&gt;=2.10 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (2.10.0)
-Requirement already satisfied: tensorflow-estimator&lt;2.11,&gt;=2.10.0 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (2.10.0)
-Requirement already satisfied: packaging in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (21.3)
-Requirement already satisfied: h5py&gt;=2.9.0 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (3.7.0)
-Requirement already satisfied: typing-extensions&gt;=3.6.6 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (4.3.0)
-Requirement already satisfied: wrapt&gt;=1.11.0 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (1.14.1)
-Requirement already satisfied: keras-preprocessing&gt;=1.1.1 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (1.1.2)
-Requirement already satisfied: numpy&gt;=1.20 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (1.23.3)
-Requirement already satisfied: flatbuffers&gt;=2.0 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (2.0.7)
 Requirement already satisfied: astunparse&gt;=1.6.0 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (1.6.3)
-Requirement already satisfied: protobuf&lt;3.20,&gt;=3.9.2 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (3.19.4)
-Requirement already satisfied: tensorflow-io-gcs-filesystem&gt;=0.23.1 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (0.27.0)
+Requirement already satisfied: packaging in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (21.3)
 Requirement already satisfied: libclang&gt;=13.0.0 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (14.0.6)
 Requirement already satisfied: google-pasta&gt;=0.1.1 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (0.2.0)
+Requirement already satisfied: absl-py&gt;=1.0.0 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (1.2.0)
+Requirement already satisfied: typing-extensions&gt;=3.6.6 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (4.3.0)
+Requirement already satisfied: keras&lt;2.11,&gt;=2.10.0 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (2.10.0)
+Requirement already satisfied: numpy&gt;=1.20 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (1.23.3)
+Requirement already satisfied: flatbuffers&gt;=2.0 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (2.0.7)
+Requirement already satisfied: tensorboard&lt;2.11,&gt;=2.10 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (2.10.0)
+Requirement already satisfied: termcolor&gt;=1.1.0 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (1.1.0)
+Requirement already satisfied: protobuf&lt;3.20,&gt;=3.9.2 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (3.19.4)
+Requirement already satisfied: tensorflow-estimator&lt;2.11,&gt;=2.10.0 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (2.10.0)
 Requirement already satisfied: gast&lt;=0.4.0,&gt;=0.2.1 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (0.4.0)
+Requirement already satisfied: h5py&gt;=2.9.0 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (3.7.0)
+Requirement already satisfied: opt-einsum&gt;=2.3.2 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (3.3.0)
 Requirement already satisfied: setuptools in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (59.8.0)
+Requirement already satisfied: six&gt;=1.12.0 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (1.16.0)
+Requirement already satisfied: keras-preprocessing&gt;=1.1.1 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (1.1.2)
+Requirement already satisfied: wrapt&gt;=1.11.0 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (1.14.1)
+Requirement already satisfied: tensorflow-io-gcs-filesystem&gt;=0.23.1 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (0.27.0)
 Requirement already satisfied: grpcio&lt;2.0,&gt;=1.24.3 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (1.48.1)
 Requirement already satisfied: wheel&lt;1.0,&gt;=0.23.0 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from astunparse&gt;=1.6.0-&gt;tensorflow) (0.37.1)
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: tensorboard-plugin-wit&gt;=1.6.0 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorboard&lt;2.11,&gt;=2.10-&gt;tensorflow) (1.8.1)
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: markdown&gt;=2.6.8 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorboard&lt;2.11,&gt;=2.10-&gt;tensorflow) (3.4.1)
+Requirement already satisfied: google-auth&lt;3,&gt;=1.6.3 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorboard&lt;2.11,&gt;=2.10-&gt;tensorflow) (2.11.0)
 Requirement already satisfied: google-auth-oauthlib&lt;0.5,&gt;=0.4.1 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorboard&lt;2.11,&gt;=2.10-&gt;tensorflow) (0.4.6)
 Requirement already satisfied: requests&lt;3,&gt;=2.21.0 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorboard&lt;2.11,&gt;=2.10-&gt;tensorflow) (2.28.1)
-Requirement already satisfied: werkzeug&gt;=1.0.1 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorboard&lt;2.11,&gt;=2.10-&gt;tensorflow) (2.2.2)
 Requirement already satisfied: tensorboard-data-server&lt;0.7.0,&gt;=0.6.0 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorboard&lt;2.11,&gt;=2.10-&gt;tensorflow) (0.6.1)
-Requirement already satisfied: markdown&gt;=2.6.8 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorboard&lt;2.11,&gt;=2.10-&gt;tensorflow) (3.4.1)
-Requirement already satisfied: google-auth&lt;3,&gt;=1.6.3 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorboard&lt;2.11,&gt;=2.10-&gt;tensorflow) (2.11.0)
+Requirement already satisfied: tensorboard-plugin-wit&gt;=1.6.0 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorboard&lt;2.11,&gt;=2.10-&gt;tensorflow) (1.8.1)
+Requirement already satisfied: werkzeug&gt;=1.0.1 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorboard&lt;2.11,&gt;=2.10-&gt;tensorflow) (2.2.2)
+Requirement already satisfied: pyparsing!=3.0.5,&gt;=2.0.2 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from packaging-&gt;tensorflow) (3.0.9)
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: pyparsing!=3.0.5,&gt;=2.0.2 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from packaging-&gt;tensorflow) (3.0.9)
-Requirement already satisfied: rsa&lt;5,&gt;=3.1.4 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from google-auth&lt;3,&gt;=1.6.3-&gt;tensorboard&lt;2.11,&gt;=2.10-&gt;tensorflow) (4.9)
-Requirement already satisfied: pyasn1-modules&gt;=0.2.1 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from google-auth&lt;3,&gt;=1.6.3-&gt;tensorboard&lt;2.11,&gt;=2.10-&gt;tensorflow) (0.2.8)
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: pyasn1-modules&gt;=0.2.1 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from google-auth&lt;3,&gt;=1.6.3-&gt;tensorboard&lt;2.11,&gt;=2.10-&gt;tensorflow) (0.2.8)
 Requirement already satisfied: cachetools&lt;6.0,&gt;=2.0.0 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from google-auth&lt;3,&gt;=1.6.3-&gt;tensorboard&lt;2.11,&gt;=2.10-&gt;tensorflow) (5.2.0)
+Requirement already satisfied: rsa&lt;5,&gt;=3.1.4 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from google-auth&lt;3,&gt;=1.6.3-&gt;tensorboard&lt;2.11,&gt;=2.10-&gt;tensorflow) (4.9)
 Requirement already satisfied: requests-oauthlib&gt;=0.7.0 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from google-auth-oauthlib&lt;0.5,&gt;=0.4.1-&gt;tensorboard&lt;2.11,&gt;=2.10-&gt;tensorflow) (1.3.1)
 Requirement already satisfied: importlib-metadata&gt;=4.4 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from markdown&gt;=2.6.8-&gt;tensorboard&lt;2.11,&gt;=2.10-&gt;tensorflow) (4.11.4)
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: idna&lt;4,&gt;=2.5 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from requests&lt;3,&gt;=2.21.0-&gt;tensorboard&lt;2.11,&gt;=2.10-&gt;tensorflow) (3.3)
-Requirement already satisfied: certifi&gt;=2017.4.17 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from requests&lt;3,&gt;=2.21.0-&gt;tensorboard&lt;2.11,&gt;=2.10-&gt;tensorflow) (2022.6.15)
 Requirement already satisfied: charset-normalizer&lt;3,&gt;=2 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from requests&lt;3,&gt;=2.21.0-&gt;tensorboard&lt;2.11,&gt;=2.10-&gt;tensorflow) (2.1.1)
 Requirement already satisfied: urllib3&lt;1.27,&gt;=1.21.1 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from requests&lt;3,&gt;=2.21.0-&gt;tensorboard&lt;2.11,&gt;=2.10-&gt;tensorflow) (1.26.11)
+Requirement already satisfied: idna&lt;4,&gt;=2.5 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from requests&lt;3,&gt;=2.21.0-&gt;tensorboard&lt;2.11,&gt;=2.10-&gt;tensorflow) (3.3)
+Requirement already satisfied: certifi&gt;=2017.4.17 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from requests&lt;3,&gt;=2.21.0-&gt;tensorboard&lt;2.11,&gt;=2.10-&gt;tensorflow) (2022.6.15.1)
 Requirement already satisfied: MarkupSafe&gt;=2.1.1 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from werkzeug&gt;=1.0.1-&gt;tensorboard&lt;2.11,&gt;=2.10-&gt;tensorflow) (2.1.1)
 </pre></div>
 </div>
@@ -2913,50 +2918,17 @@ Requirement already satisfied: oauthlib&gt;=3.0.0 in /usr/share/miniconda/envs/t
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting scikit-learn
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Downloading scikit_learn-1.1.2-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (31.2 MB)
-?25l     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">0.0/31.2 MB</span> <span class=" -Color -Color-Red">?</span> eta <span class=" -Color -Color-Cyan">-:--:--</span>
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     ━━╸━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">2.0/31.2 MB</span> <span class=" -Color -Color-Red">60.1 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:01</span>
-     ━━━━━━╺━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">4.9/31.2 MB</span> <span class=" -Color -Color-Red">71.0 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:01</span>
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     ━━━━━━━━━━━╸━━━━━━━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">9.3/31.2 MB</span> <span class=" -Color -Color-Red">86.7 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:01</span>
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     ━━━━━━━━━━━━━━━━╸━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">13.5/31.2 MB</span> <span class=" -Color -Color-Red">108.0 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:01</span>
-     ━━━━━━━━━━━━━━━━━━━━━━╺━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">17.8/31.2 MB</span> <span class=" -Color -Color-Red">119.4 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:01</span>
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     ━━━━━━━━━━━━━━━━━━━━━━━━━━━╸━━━━━━━━━━━ <span class=" -Color -Color-Green">22.0/31.2 MB</span> <span class=" -Color -Color-Red">117.4 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:01</span>
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸━━━━━━ <span class=" -Color -Color-Green">26.3/31.2 MB</span> <span class=" -Color -Color-Red">118.4 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:01</span>
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸ <span class=" -Color -Color-Green">31.2/31.2 MB</span> <span class=" -Color -Color-Red">126.7 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:01</span>
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸ <span class=" -Color -Color-Green">31.2/31.2 MB</span> <span class=" -Color -Color-Red">126.7 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:01</span>
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸ <span class=" -Color -Color-Green">31.2/31.2 MB</span> <span class=" -Color -Color-Red">126.7 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:01</span>
-     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">31.2/31.2 MB</span> <span class=" -Color -Color-Red">47.7 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:00</span>
-?25h
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: numpy&gt;=1.17.3 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from scikit-learn) (1.23.3)
-Collecting threadpoolctl&gt;=2.0.0
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Downloading threadpoolctl-3.1.0-py3-none-any.whl (14 kB)
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Using cached scikit_learn-1.1.2-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (31.2 MB)
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting joblib&gt;=1.0.0
-  Downloading joblib-1.1.0-py2.py3-none-any.whl (306 kB)
-?25l     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">0.0/307.0 kB</span> <span class=" -Color -Color-Red">?</span> eta <span class=" -Color -Color-Cyan">-:--:--</span>
-     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">307.0/307.0 kB</span> <span class=" -Color -Color-Red">58.7 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:00</span>
-?25hRequirement already satisfied: scipy&gt;=1.3.2 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from scikit-learn) (1.9.1)
+  Using cached joblib-1.1.0-py2.py3-none-any.whl (306 kB)
+Requirement already satisfied: scipy&gt;=1.3.2 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from scikit-learn) (1.9.1)
+Requirement already satisfied: numpy&gt;=1.17.3 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from scikit-learn) (1.23.3)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting threadpoolctl&gt;=2.0.0
+  Using cached threadpoolctl-3.1.0-py3-none-any.whl (14 kB)
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Installing collected packages: threadpoolctl, joblib, scikit-learn
@@ -2988,7 +2960,9 @@ remote: Compressing objects:  75% (6/8)
 remote: Compressing objects:  87% (7/8)
 remote: Compressing objects: 100% (8/8)
 remote: Compressing objects: 100% (8/8), done.
-Receiving objects:   4% (1/24)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:   4% (1/24)
 Receiving objects:   8% (2/24)
 Receiving objects:  12% (3/24)
 Receiving objects:  16% (4/24)
@@ -3002,44 +2976,31 @@ Receiving objects:  45% (11/24)
 Receiving objects:  50% (12/24)
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  50% (12/24), 12.51 MiB | 12.50 MiB/s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  50% (12/24), 47.23 MiB | 47.27 MiB/s
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  50% (12/24), 30.23 MiB | 14.92 MiB/s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  54% (13/24), 76.07 MiB | 50.74 MiB/s
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  50% (12/24), 48.58 MiB | 15.95 MiB/s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  54% (13/24), 103.93 MiB | 51.99 MiB/s
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  50% (12/24), 67.59 MiB | 16.63 MiB/s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  54% (13/24), 158.26 MiB | 52.77 MiB/s
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  54% (13/24), 76.80 MiB | 16.77 MiB/s
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  54% (13/24), 106.97 MiB | 18.80 MiB/s
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  54% (13/24), 127.01 MiB | 19.29 MiB/s
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  54% (13/24), 146.87 MiB | 19.61 MiB/s
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  54% (13/24), 166.39 MiB | 19.66 MiB/s
-Receiving objects:  58% (14/24), 166.39 MiB | 19.66 MiB/s
-Receiving objects:  62% (15/24), 166.39 MiB | 19.66 MiB/s
-Receiving objects:  66% (16/24), 166.39 MiB | 19.66 MiB/s
-Receiving objects:  70% (17/24), 166.39 MiB | 19.66 MiB/s
-Receiving objects:  75% (18/24), 166.39 MiB | 19.66 MiB/s
-Receiving objects:  79% (19/24), 166.39 MiB | 19.66 MiB/s
-Receiving objects:  83% (20/24), 166.39 MiB | 19.66 MiB/s
-Receiving objects:  87% (21/24), 166.39 MiB | 19.66 MiB/s
-Receiving objects:  91% (22/24), 166.39 MiB | 19.66 MiB/s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  58% (14/24), 158.26 MiB | 52.77 MiB/s
+Receiving objects:  62% (15/24), 158.26 MiB | 52.77 MiB/s
+Receiving objects:  66% (16/24), 158.26 MiB | 52.77 MiB/s
+Receiving objects:  70% (17/24), 158.26 MiB | 52.77 MiB/s
+Receiving objects:  75% (18/24), 158.26 MiB | 52.77 MiB/s
+Receiving objects:  79% (19/24), 158.26 MiB | 52.77 MiB/s
+Receiving objects:  83% (20/24), 158.26 MiB | 52.77 MiB/s
+Receiving objects:  87% (21/24), 158.26 MiB | 52.77 MiB/s
+Receiving objects:  91% (22/24), 158.26 MiB | 52.77 MiB/s
 remote: Total 24 (delta 2), reused 7 (delta 1), pack-reused 15
-Receiving objects:  95% (23/24), 166.39 MiB | 19.66 MiB/s
-Receiving objects: 100% (24/24), 166.39 MiB | 19.66 MiB/s
-Receiving objects: 100% (24/24), 167.24 MiB | 18.25 MiB/s, done.
+Receiving objects:  95% (23/24), 158.26 MiB | 52.77 MiB/s
+Receiving objects: 100% (24/24), 158.26 MiB | 52.77 MiB/s
+Receiving objects: 100% (24/24), 167.24 MiB | 52.58 MiB/s, done.
 Resolving deltas:   0% (0/6)
 Resolving deltas:  16% (1/6)
 Resolving deltas:  33% (2/6)
@@ -3138,7 +3099,28 @@ Updating files: 100% (8/8), done.
 <span class="g g-Whitespace">     </span><span class="mi">38</span> <span class="kn">from</span> <span class="nn">tensorflow.python.util.lazy_loader</span> <span class="kn">import</span> <span class="n">LazyLoader</span> <span class="k">as</span> <span class="n">_LazyLoader</span>
 <span class="g g-Whitespace">     </span><span class="mi">40</span> <span class="c1"># Make sure code inside the TensorFlow codebase can use tf2.enabled() at import.</span>
 
-<span class="ne">ModuleNotFoundError</span>: No module named &#39;tensorflow.python.tools&#39;
+<span class="n">File</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">share</span><span class="o">/</span><span class="n">miniconda</span><span class="o">/</span><span class="n">envs</span><span class="o">/</span><span class="n">test</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">python3</span><span class="mf">.8</span><span class="o">/</span><span class="n">site</span><span class="o">-</span><span class="n">packages</span><span class="o">/</span><span class="n">tensorflow</span><span class="o">/</span><span class="n">python</span><span class="o">/</span><span class="fm">__init__</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">37</span>
+<span class="g g-Whitespace">     </span><span class="mi">29</span> <span class="c1"># We aim to keep this file minimal and ideally remove completely.</span>
+<span class="g g-Whitespace">     </span><span class="mi">30</span> <span class="c1"># If you are adding a new file with @tf_export decorators,</span>
+<span class="g g-Whitespace">     </span><span class="mi">31</span> <span class="c1"># import it in modules_with_exports.py instead.</span>
+<span class="g g-Whitespace">     </span><span class="mi">32</span> 
+<span class="g g-Whitespace">     </span><span class="mi">33</span> <span class="c1"># go/tf-wildcard-import</span>
+<span class="g g-Whitespace">     </span><span class="mi">34</span> <span class="c1"># pylint: disable=wildcard-import,g-bad-import-order,g-import-not-at-top</span>
+<span class="g g-Whitespace">     </span><span class="mi">36</span> <span class="kn">from</span> <span class="nn">tensorflow.python</span> <span class="kn">import</span> <span class="n">pywrap_tensorflow</span> <span class="k">as</span> <span class="n">_pywrap_tensorflow</span>
+<span class="ne">---&gt; </span><span class="mi">37</span> <span class="kn">from</span> <span class="nn">tensorflow.python.eager</span> <span class="kn">import</span> <span class="n">context</span>
+<span class="g g-Whitespace">     </span><span class="mi">39</span> <span class="c1"># pylint: enable=wildcard-import</span>
+<span class="g g-Whitespace">     </span><span class="mi">40</span> 
+<span class="g g-Whitespace">     </span><span class="mi">41</span> <span class="c1"># Bring in subpackages.</span>
+<span class="g g-Whitespace">     </span><span class="mi">42</span> <span class="kn">from</span> <span class="nn">tensorflow.python</span> <span class="kn">import</span> <span class="n">data</span>
+
+<span class="n">File</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">share</span><span class="o">/</span><span class="n">miniconda</span><span class="o">/</span><span class="n">envs</span><span class="o">/</span><span class="n">test</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">python3</span><span class="mf">.8</span><span class="o">/</span><span class="n">site</span><span class="o">-</span><span class="n">packages</span><span class="o">/</span><span class="n">tensorflow</span><span class="o">/</span><span class="n">python</span><span class="o">/</span><span class="n">eager</span><span class="o">/</span><span class="n">context</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">29</span>
+<span class="g g-Whitespace">     </span><span class="mi">26</span> <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="g g-Whitespace">     </span><span class="mi">27</span> <span class="kn">import</span> <span class="nn">six</span>
+<span class="ne">---&gt; </span><span class="mi">29</span> <span class="kn">from</span> <span class="nn">tensorflow.core.framework</span> <span class="kn">import</span> <span class="n">function_pb2</span>
+<span class="g g-Whitespace">     </span><span class="mi">30</span> <span class="kn">from</span> <span class="nn">tensorflow.core.protobuf</span> <span class="kn">import</span> <span class="n">config_pb2</span>
+<span class="g g-Whitespace">     </span><span class="mi">31</span> <span class="kn">from</span> <span class="nn">tensorflow.core.protobuf</span> <span class="kn">import</span> <span class="n">coordination_config_pb2</span>
+
+<span class="ne">ModuleNotFoundError</span>: No module named &#39;tensorflow.core&#39;
 </pre></div>
 </div>
 </div>

@@ -2793,7 +2793,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/5d646d9620403c9ce5b7fb8f4d6417969384f24567ca109cb680b3c46491a434.svg" src="../../../_images/5d646d9620403c9ce5b7fb8f4d6417969384f24567ca109cb680b3c46491a434.svg" /></div>
+<img alt="../../../_images/0cc4e3c5817afe10a54d44beb9fe8b951e0514785e24c17529381827874d45c5.svg" src="../../../_images/0cc4e3c5817afe10a54d44beb9fe8b951e0514785e24c17529381827874d45c5.svg" /></div>
 </div>
 <p>Next apply the <code class="docutils literal notranslate"><span class="pre">distance_transform_lin</span></code> function along the 0 axis.</p>
 <div class="cell docutils container">
@@ -2804,7 +2804,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/065eab91df27de2809b1355c544b482c8f27404d41c63ef77b81f97e77287619.svg" src="../../../_images/065eab91df27de2809b1355c544b482c8f27404d41c63ef77b81f97e77287619.svg" /></div>
+<img alt="../../../_images/b7c151783e6ebc837192a4a196b027c05d00d3d83cfd209b60a2bf863ff1438f.svg" src="../../../_images/b7c151783e6ebc837192a4a196b027c05d00d3d83cfd209b60a2bf863ff1438f.svg" /></div>
 </div>
 <p>The greyscale values of the above image are worth a comment. They indicated the length of a path that can be drawn from each voxel to the nearest solid voxel, in the specified direction.  Or in terms of Torquato’s definition, each greyscale value represents a random starting point (A) and moving along this line until solid is encountered represents the end of the line (B), providing the path length A <span class="math notranslate nohighlight">\(\rightarrow\)</span> B.  The ‘counter associated with the distance between A and B is then incremented’, which corresponds to the binning the greyscale values in the above image. In other words, the above representation includes ALL possible starting points on each path, so provides the largest possible data set.</p>
 <p>With the image now computed, it can be passed to the <code class="docutils literal notranslate"><span class="pre">lineal_path_distribution</span></code> function, which computes the histogram.  The bins were set to a specific range so that they line up with subsequent plot shown below:</p>
@@ -2826,7 +2826,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/1de5822026f6b3ae1d15d9f9443dfb75f464ef96773d96ce7fd8a6e47f57b0b0.svg" src="../../../_images/1de5822026f6b3ae1d15d9f9443dfb75f464ef96773d96ce7fd8a6e47f57b0b0.svg" /></div>
+<img alt="../../../_images/864c3ec20bd2bf42cd6bb11326946b02fae59a4f6c9c5892a5ea848b3f3e9074.svg" src="../../../_images/864c3ec20bd2bf42cd6bb11326946b02fae59a4f6c9c5892a5ea848b3f3e9074.svg" /></div>
 </div>
 <p>Since the image is anisotropic, the process will yeild a different result in the perpendicular direction, so repeating the above with <code class="docutils literal notranslate"><span class="pre">axis=1</span></code> instead of the default <code class="docutils literal notranslate"><span class="pre">axis=0</span></code>.</p>
 <div class="cell docutils container">
@@ -2837,7 +2837,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/7ab1093b78f8879e99fda3f254231cca93b2270a645fa96cd32f76d8e92bc940.svg" src="../../../_images/7ab1093b78f8879e99fda3f254231cca93b2270a645fa96cd32f76d8e92bc940.svg" /></div>
+<img alt="../../../_images/6cbd62920ec4b732282e43fb04bfa7145c6a6aa2ff2a89fd1230c086af2731df.svg" src="../../../_images/6cbd62920ec4b732282e43fb04bfa7145c6a6aa2ff2a89fd1230c086af2731df.svg" /></div>
 </div>
 <p>Overlaying this result wit the previous one:</p>
 <div class="cell docutils container">
@@ -2849,7 +2849,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/198c27e85268d82e04a5ad60a44dbc7981fb9c69fb8254c2f54cda4641961a22.svg" src="../../../_images/198c27e85268d82e04a5ad60a44dbc7981fb9c69fb8254c2f54cda4641961a22.svg" /></div>
+<img alt="../../../_images/475947a756a017db66ebb75bfd1d3d75ff8031ccda27b26de31286f4715754c9.svg" src="../../../_images/475947a756a017db66ebb75bfd1d3d75ff8031ccda27b26de31286f4715754c9.svg" /></div>
 </div>
 <p>The anisotropy of the image is clearly visible with the first axis possessing longer lineal-path values.</p>
 </section>

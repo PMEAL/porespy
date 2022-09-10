@@ -131,9 +131,16 @@ img.logo__image {
 }
 
 /* So that there's no redundant Tutorials/Reference heading in the tabbed section */
-section:not(#examples) li.toctree-l1 > a {
+section:not(#generators)    li.toctree-l1 > a,
+section:not(#filters)       li.toctree-l1 > a,
+section:not(#metrics)       li.toctree-l1 > a,
+section:not(#networks)      li.toctree-l1 > a,
+section:not(#simulations)   li.toctree-l1 > a,
+section:not(#tools)         li.toctree-l1 > a,
+section:not(#visualization) li.toctree-l1 > a {
     display: none;
 }
+
 section#examples li.toctree-l1 > a {
     display: flex !important;
 }
