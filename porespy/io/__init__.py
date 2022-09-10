@@ -1,9 +1,7 @@
 r"""
 
-io
-##
-
-**Export to and from various formats**
+Collection of functions for importing and exporting images
+##########################################################
 
 .. currentmodule:: porespy
 

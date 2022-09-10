@@ -11,8 +11,8 @@ imagej
    :template: mybase.rst
    :toctree: generated/
 
-    imagej.imagej_wrapper
-    imagej.imagej_plugin
+    filters.imagej.imagej_wrapper
+    filters.imagej.imagej_plugin
 
 """
 

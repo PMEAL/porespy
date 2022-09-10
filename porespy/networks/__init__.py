@@ -1,9 +1,7 @@
 r"""
 
-networks
-########
-
-**Obtain Network Representations**
+Collection of functions for obtaining network representations of images
+#######################################################################
 
 Contains functions for analysing images as pore networks.
 
