@@ -1,3 +1,5 @@
+.. _modules_index:
+
 #############################
 Module and Function Reference
 #############################
