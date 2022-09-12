@@ -88,7 +88,7 @@ def tortuosity_fd(im, axis):
     # FIXME: get rid of try/except once openpnm v3 is out
     try:
         pardiso = op.solvers.PardisoSpsolve()
-        fd.run(solver=pardiso)
+        fd.run(solver=pardiso, verbose=False)
     except AttributeError:
         fd.settings.update({'solver_family': 'scipy', 'solver_type': 'cg'})
         fd.run()
@@ -107,6 +107,7 @@ def tortuosity_fd(im, axis):
 
     # Attach useful parameters to Results object
     result = Results()
+    result.im = im
     result.tortuosity = tau
     result.formation_factor = 1 / Deff
     result.original_porosity = eps0
