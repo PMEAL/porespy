@@ -633,21 +633,21 @@ def _radial_profile(autocorr, bins, pf=None, voxel_size=1):
     """
     if len(autocorr.shape) == 2:
         adj = np.reshape(autocorr.shape, [2, 1, 1])
-        # use np.round otherwise with odd image sizes, the mask generated can be zero,
-        # resulting in Div/0 error
+        # use np.round otherwise with odd image sizes, the mask generated can
+        # be zero, resulting in Div/0 error
         inds = np.indices(autocorr.shape) - np.round(adj / 2)
         dt = np.sqrt(inds[0]**2 + inds[1]**2)
     elif len(autocorr.shape) == 3:
         adj = np.reshape(autocorr.shape, [3, 1, 1, 1])
-        # use np.round otherwise with odd image sizes, the mask generated can be zero,
-        # resulting in Div/0 error
+        # use np.round otherwise with odd image sizes, the mask generated can
+        # be zero, resulting in Div/0 error
         inds = np.indices(autocorr.shape) - np.round(adj / 2)
         dt = np.sqrt(inds[0]**2 + inds[1]**2 + inds[2]**2)
     else:
         raise Exception('Image dimensions must be 2 or 3')
     if np.max(bins) > np.max(dt):
-        raise Exception('Bins specified distances exceeding maximum radial distance for image size. \n'
-                        'Radial distance cannot exceed distance from center of image to corner.')
+        msg = 'Radial distance cannot exceed distance from center of image to corner.'
+        raise Exception(msg)
 
     bin_size = bins[1:] - bins[:-1]
     radial_sum = _get_radial_sum(dt, bins, bin_size, autocorr)
@@ -688,8 +688,9 @@ def two_point_correlation(im, voxel_size=1, bins=100):
         user can apply the scaling to the returned results after the fact.
     bins : scalar or array_like
         Either an array of bin sizes to use, or the number of bins that should
-        be automatically generated that span the data range. The maximum value of the bins,
-        if passed as an array, cannot exceed the distance from the center of the image to the corner
+        be automatically generated that span the data range. The maximum value
+        of the bins, if passed as an array, cannot exceed the distance from the
+        center of the image to the corner
 
     Returns
     -------
@@ -726,7 +727,7 @@ def two_point_correlation(im, voxel_size=1, bins=100):
     to view online example.
 
     """
-    # Get the number of CPUs available for parallel processing of Fourier transforms
+    # Get the number of CPUs available to parallel process Fourier transforms
     cpus = settings.ncores
     # Get the phase fraction of the image
     pf = porosity(im)
