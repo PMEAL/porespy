@@ -9,7 +9,7 @@ from scipy.stats import linregress
 
 def rw_to_displacement(walk, inplace=True):
     r"""
-    Compute the displacement of each walker from their starting point in nm
+    Compute the displacement of each walker from their starting point in [nm]
 
     Parameters
     ----------
