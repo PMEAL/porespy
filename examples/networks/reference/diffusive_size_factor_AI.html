@@ -4,7 +4,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
     <title>diffusive_size_factor_AI &#8212; PoreSpy  documentation</title>
 <script>
@@ -26,8 +26,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
 
@@ -39,14 +38,10 @@
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
-    <script>let toggleHintShow = 'Click to show';</script>
-    <script>let toggleHintHide = 'Click to hide';</script>
-    <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../../../_static/togglebutton.js"></script>
     <script src="../../../_static/design-tabs.js"></script>
-    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="../../../_static/js/custom.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -194,6 +189,11 @@
      </i>
     </label>
     <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../generators/tutorials/Creating_Multiscale_Images.html">
+       Creating Multiscale Images
+      </a>
+     </li>
      <li class="toctree-l3">
       <a class="reference internal" href="../../generators/tutorials/cylinders.html">
        Generating fibrous mats
@@ -1557,6 +1557,11 @@
 </ul>
 <ul class="nav bd-sidenav">
  <li class="toctree-l1">
+  <a class="reference internal" href="../../generators/tutorials/Creating_Multiscale_Images.html">
+   Creating Multiscale Images
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="../../generators/tutorials/cylinders.html">
    Generating fibrous mats
   </a>
@@ -2855,61 +2860,16 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: tensorflow in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (2.10.0)
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-10-17 19:22:11.812643: I tensorflow/core/platform/cpu_feature_guard.cc:193] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 AVX512F FMA
+To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2022-10-17 19:22:11.960145: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library &#39;libcudart.so.11.0&#39;; dlerror: libcudart.so.11.0: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.8.14/x64/lib
+2022-10-17 19:22:11.960167: I tensorflow/stream_executor/cuda/cudart_stub.cc:29] Ignore above cudart dlerror if you do not have a GPU set up on your machine.
+2022-10-17 19:22:11.994118: E tensorflow/stream_executor/cuda/cuda_blas.cc:2981] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: grpcio&lt;2.0,&gt;=1.24.3 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (1.48.1)
-Requirement already satisfied: gast&lt;=0.4.0,&gt;=0.2.1 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (0.4.0)
-Requirement already satisfied: packaging in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (21.3)
-Requirement already satisfied: absl-py&gt;=1.0.0 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (1.2.0)
-Requirement already satisfied: h5py&gt;=2.9.0 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (3.7.0)
-Requirement already satisfied: six&gt;=1.12.0 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (1.16.0)
-Requirement already satisfied: wrapt&gt;=1.11.0 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (1.14.1)
-Requirement already satisfied: tensorflow-estimator&lt;2.11,&gt;=2.10.0 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (2.10.0)
-Requirement already satisfied: protobuf&lt;3.20,&gt;=3.9.2 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (3.19.4)
-Requirement already satisfied: google-pasta&gt;=0.1.1 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (0.2.0)
-Requirement already satisfied: opt-einsum&gt;=2.3.2 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (3.3.0)
-Requirement already satisfied: termcolor&gt;=1.1.0 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (1.1.0)
-Requirement already satisfied: tensorboard&lt;2.11,&gt;=2.10 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (2.10.0)
-Requirement already satisfied: keras&lt;2.11,&gt;=2.10.0 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (2.10.0)
-Requirement already satisfied: keras-preprocessing&gt;=1.1.1 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (1.1.2)
-Requirement already satisfied: astunparse&gt;=1.6.0 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (1.6.3)
-Requirement already satisfied: numpy&gt;=1.20 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (1.23.3)
-Requirement already satisfied: typing-extensions&gt;=3.6.6 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (4.3.0)
-Requirement already satisfied: flatbuffers&gt;=2.0 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (2.0.7)
-Requirement already satisfied: setuptools in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (59.8.0)
-Requirement already satisfied: tensorflow-io-gcs-filesystem&gt;=0.23.1 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (0.27.0)
-Requirement already satisfied: libclang&gt;=13.0.0 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorflow) (14.0.6)
-Requirement already satisfied: wheel&lt;1.0,&gt;=0.23.0 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from astunparse&gt;=1.6.0-&gt;tensorflow) (0.37.1)
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: werkzeug&gt;=1.0.1 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorboard&lt;2.11,&gt;=2.10-&gt;tensorflow) (2.2.2)
-Requirement already satisfied: markdown&gt;=2.6.8 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorboard&lt;2.11,&gt;=2.10-&gt;tensorflow) (3.4.1)
-Requirement already satisfied: tensorboard-data-server&lt;0.7.0,&gt;=0.6.0 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorboard&lt;2.11,&gt;=2.10-&gt;tensorflow) (0.6.1)
-Requirement already satisfied: requests&lt;3,&gt;=2.21.0 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorboard&lt;2.11,&gt;=2.10-&gt;tensorflow) (2.28.1)
-Requirement already satisfied: google-auth&lt;3,&gt;=1.6.3 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorboard&lt;2.11,&gt;=2.10-&gt;tensorflow) (2.11.0)
-Requirement already satisfied: google-auth-oauthlib&lt;0.5,&gt;=0.4.1 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorboard&lt;2.11,&gt;=2.10-&gt;tensorflow) (0.4.6)
-Requirement already satisfied: tensorboard-plugin-wit&gt;=1.6.0 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from tensorboard&lt;2.11,&gt;=2.10-&gt;tensorflow) (1.8.1)
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: pyparsing!=3.0.5,&gt;=2.0.2 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from packaging-&gt;tensorflow) (3.0.9)
-Requirement already satisfied: rsa&lt;5,&gt;=3.1.4 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from google-auth&lt;3,&gt;=1.6.3-&gt;tensorboard&lt;2.11,&gt;=2.10-&gt;tensorflow) (4.9)
-Requirement already satisfied: pyasn1-modules&gt;=0.2.1 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from google-auth&lt;3,&gt;=1.6.3-&gt;tensorboard&lt;2.11,&gt;=2.10-&gt;tensorflow) (0.2.8)
-Requirement already satisfied: cachetools&lt;6.0,&gt;=2.0.0 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from google-auth&lt;3,&gt;=1.6.3-&gt;tensorboard&lt;2.11,&gt;=2.10-&gt;tensorflow) (5.2.0)
-Requirement already satisfied: requests-oauthlib&gt;=0.7.0 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from google-auth-oauthlib&lt;0.5,&gt;=0.4.1-&gt;tensorboard&lt;2.11,&gt;=2.10-&gt;tensorflow) (1.3.1)
-Requirement already satisfied: importlib-metadata&gt;=4.4 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from markdown&gt;=2.6.8-&gt;tensorboard&lt;2.11,&gt;=2.10-&gt;tensorflow) (4.11.4)
-Requirement already satisfied: urllib3&lt;1.27,&gt;=1.21.1 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from requests&lt;3,&gt;=2.21.0-&gt;tensorboard&lt;2.11,&gt;=2.10-&gt;tensorflow) (1.26.11)
-Requirement already satisfied: idna&lt;4,&gt;=2.5 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from requests&lt;3,&gt;=2.21.0-&gt;tensorboard&lt;2.11,&gt;=2.10-&gt;tensorflow) (3.3)
-Requirement already satisfied: certifi&gt;=2017.4.17 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from requests&lt;3,&gt;=2.21.0-&gt;tensorboard&lt;2.11,&gt;=2.10-&gt;tensorflow) (2022.6.15.1)
-Requirement already satisfied: charset-normalizer&lt;3,&gt;=2 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from requests&lt;3,&gt;=2.21.0-&gt;tensorboard&lt;2.11,&gt;=2.10-&gt;tensorflow) (2.1.1)
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: MarkupSafe&gt;=2.1.1 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from werkzeug&gt;=1.0.1-&gt;tensorboard&lt;2.11,&gt;=2.10-&gt;tensorflow) (2.1.1)
-Requirement already satisfied: zipp&gt;=0.5 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from importlib-metadata&gt;=4.4-&gt;markdown&gt;=2.6.8-&gt;tensorboard&lt;2.11,&gt;=2.10-&gt;tensorflow) (3.8.1)
-Requirement already satisfied: pyasn1&lt;0.5.0,&gt;=0.4.6 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from pyasn1-modules&gt;=0.2.1-&gt;google-auth&lt;3,&gt;=1.6.3-&gt;tensorboard&lt;2.11,&gt;=2.10-&gt;tensorflow) (0.4.8)
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: oauthlib&gt;=3.0.0 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from requests-oauthlib&gt;=0.7.0-&gt;google-auth-oauthlib&lt;0.5,&gt;=0.4.1-&gt;tensorboard&lt;2.11,&gt;=2.10-&gt;tensorflow) (3.2.1)
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-10-17 19:22:14.621611: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library &#39;libnvinfer.so.7&#39;; dlerror: libnvinfer.so.7: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.8.14/x64/lib
+2022-10-17 19:22:14.621742: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library &#39;libnvinfer_plugin.so.7&#39;; dlerror: libnvinfer_plugin.so.7: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.8.14/x64/lib
+2022-10-17 19:22:14.621752: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:38] TF-TRT Warning: Cannot dlopen some TensorRT libraries. If you would like to use Nvidia GPU with TensorRT, please make sure the missing libraries mentioned above are installed properly.
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting scikit-learn
@@ -2918,27 +2878,18 @@ Requirement already satisfied: pyasn1&lt;0.5.0,&gt;=0.4.6 in /usr/share/minicond
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Using cached scikit_learn-1.1.2-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (31.2 MB)
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: numpy&gt;=1.17.3 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from scikit-learn) (1.23.3)
-</pre></div>
-</div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting joblib&gt;=1.0.0
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Downloading joblib-1.1.0-py2.py3-none-any.whl (306 kB)
-?25l     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">0.0/307.0 kB</span> <span class=" -Color -Color-Red">?</span> eta <span class=" -Color -Color-Cyan">-:--:--</span>
-     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">307.0/307.0 kB</span> <span class=" -Color -Color-Red">26.5 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:00</span>
-?25h
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting threadpoolctl&gt;=2.0.0
-  Downloading threadpoolctl-3.1.0-py3-none-any.whl (14 kB)
-Requirement already satisfied: scipy&gt;=1.3.2 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from scikit-learn) (1.9.1)
+  Using cached joblib-1.2.0-py3-none-any.whl (297 kB)
+Collecting threadpoolctl&gt;=2.0.0
+  Using cached threadpoolctl-3.1.0-py3-none-any.whl (14 kB)
+Requirement already satisfied: numpy&gt;=1.17.3 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from scikit-learn) (1.23.4)
+Requirement already satisfied: scipy&gt;=1.3.2 in /usr/share/miniconda/envs/test/lib/python3.8/site-packages (from scikit-learn) (1.9.2)
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Installing collected packages: threadpoolctl, joblib, scikit-learn
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Successfully installed joblib-1.1.0 scikit-learn-1.1.2 threadpoolctl-3.1.0
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Successfully installed joblib-1.2.0 scikit-learn-1.1.2 threadpoolctl-3.1.0
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Cloning into &#39;sf-model-lib&#39;...
@@ -2978,31 +2929,32 @@ Receiving objects:  45% (11/24)
 Receiving objects:  50% (12/24)
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  50% (12/24), 42.41 MiB | 42.40 MiB/s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  50% (12/24), 56.16 MiB | 56.20 MiB/s
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  54% (13/24), 64.46 MiB | 42.97 MiB/s
-Receiving objects:  54% (13/24), 87.21 MiB | 43.60 MiB/s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  54% (13/24), 84.68 MiB | 56.49 MiB/s
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  54% (13/24), 133.03 MiB | 44.34 MiB/s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  54% (13/24), 113.17 MiB | 56.61 MiB/s
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  58% (14/24), 156.74 MiB | 44.78 MiB/s
-Receiving objects:  62% (15/24), 156.74 MiB | 44.78 MiB/s
-Receiving objects:  66% (16/24), 156.74 MiB | 44.78 MiB/s
-Receiving objects:  70% (17/24), 156.74 MiB | 44.78 MiB/s
-Receiving objects:  75% (18/24), 156.74 MiB | 44.78 MiB/s
-Receiving objects:  79% (19/24), 156.74 MiB | 44.78 MiB/s
-Receiving objects:  83% (20/24), 156.74 MiB | 44.78 MiB/s
-Receiving objects:  87% (21/24), 156.74 MiB | 44.78 MiB/s
-Receiving objects:  91% (22/24), 156.74 MiB | 44.78 MiB/s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  58% (14/24), 141.70 MiB | 56.70 MiB/s
+Receiving objects:  62% (15/24), 141.70 MiB | 56.70 MiB/s
+Receiving objects:  66% (16/24), 141.70 MiB | 56.70 MiB/s
+Receiving objects:  70% (17/24), 141.70 MiB | 56.70 MiB/s
+Receiving objects:  75% (18/24), 141.70 MiB | 56.70 MiB/s
+Receiving objects:  79% (19/24), 141.70 MiB | 56.70 MiB/s
+Receiving objects:  83% (20/24), 141.70 MiB | 56.70 MiB/s
+Receiving objects:  87% (21/24), 141.70 MiB | 56.70 MiB/s
+Receiving objects:  91% (22/24), 141.70 MiB | 56.70 MiB/s
 remote: Total 24 (delta 2), reused 7 (delta 1), pack-reused 15
-Receiving objects:  95% (23/24), 156.74 MiB | 44.78 MiB/s
-Receiving objects: 100% (24/24), 156.74 MiB | 44.78 MiB/s
-Receiving objects: 100% (24/24), 167.24 MiB | 44.81 MiB/s, done.
+Receiving objects:  95% (23/24), 141.70 MiB | 56.70 MiB/s
+Receiving objects: 100% (24/24), 141.70 MiB | 56.70 MiB/s
+Receiving objects: 100% (24/24), 167.24 MiB | 56.72 MiB/s, done.
 Resolving deltas:   0% (0/6)
-Resolving deltas:  16% (1/6)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Resolving deltas:  16% (1/6)
 Resolving deltas:  33% (2/6)
 Resolving deltas:  50% (3/6)
 Resolving deltas:  66% (4/6)
@@ -3072,34 +3024,11 @@ Updating files: 100% (8/8), done.
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span> <span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">line</span> <span class="mi">5</span>
-<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">path_weights</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;model_weights.h5&#39;</span><span class="p">)</span>
-<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="n">g_train</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">path_train</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)[</span><span class="s1">&#39;g_train&#39;</span><span class="p">][()]</span>
-<span class="ne">----&gt; </span><span class="mi">5</span> <span class="n">model</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">networks</span><span class="o">.</span><span class="n">create_model</span><span class="p">()</span>
-<span class="g g-Whitespace">      </span><span class="mi">6</span> <span class="n">model</span><span class="o">.</span><span class="n">load_weights</span><span class="p">(</span><span class="n">path_weights</span><span class="p">)</span>
-
-<span class="nn">File ~/work/porespy/porespy/porespy/networks/_size_factors.py:408,</span> in <span class="ni">create_model</span><span class="nt">()</span>
-<span class="g g-Whitespace">    </span><span class="mi">400</span> <span class="k">def</span> <span class="nf">create_model</span><span class="p">():</span>
-<span class="g g-Whitespace">    </span><span class="mi">401</span>     <span class="sd">&#39;&#39;&#39;</span>
-<span class="g g-Whitespace">    </span><span class="mi">402</span><span class="sd">     Returns</span>
-<span class="g g-Whitespace">    </span><span class="mi">403</span><span class="sd">     -------</span>
-<span class="sd">   (...)</span>
-<span class="g g-Whitespace">    </span><span class="mi">406</span><span class="sd"> </span>
-<span class="g g-Whitespace">    </span><span class="mi">407</span><span class="sd">     &#39;&#39;&#39;</span>
-<span class="ne">--&gt; </span><span class="mi">408</span>     <span class="kn">from</span> <span class="nn">tensorflow.keras.optimizers</span> <span class="kn">import</span> <span class="n">Adam</span>
-<span class="g g-Whitespace">    </span><span class="mi">409</span>     <span class="n">model</span> <span class="o">=</span> <span class="n">_resnet3d</span><span class="p">()</span>
-<span class="g g-Whitespace">    </span><span class="mi">410</span>     <span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="s1">&#39;mse&#39;</span><span class="p">,</span> <span class="n">optimizer</span><span class="o">=</span><span class="n">Adam</span><span class="p">(</span><span class="n">lr</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">),</span> <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;mse&#39;</span><span class="p">])</span>
-
-<span class="n">File</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">share</span><span class="o">/</span><span class="n">miniconda</span><span class="o">/</span><span class="n">envs</span><span class="o">/</span><span class="n">test</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">python3</span><span class="mf">.8</span><span class="o">/</span><span class="n">site</span><span class="o">-</span><span class="n">packages</span><span class="o">/</span><span class="n">tensorflow</span><span class="o">/</span><span class="fm">__init__</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">37</span>
-<span class="g g-Whitespace">     </span><span class="mi">34</span> <span class="kn">import</span> <span class="nn">sys</span> <span class="k">as</span> <span class="nn">_sys</span>
-<span class="g g-Whitespace">     </span><span class="mi">35</span> <span class="kn">import</span> <span class="nn">typing</span> <span class="k">as</span> <span class="nn">_typing</span>
-<span class="ne">---&gt; </span><span class="mi">37</span> <span class="kn">from</span> <span class="nn">tensorflow.python.tools</span> <span class="kn">import</span> <span class="n">module_util</span> <span class="k">as</span> <span class="n">_module_util</span>
-<span class="g g-Whitespace">     </span><span class="mi">38</span> <span class="kn">from</span> <span class="nn">tensorflow.python.util.lazy_loader</span> <span class="kn">import</span> <span class="n">LazyLoader</span> <span class="k">as</span> <span class="n">_LazyLoader</span>
-<span class="g g-Whitespace">     </span><span class="mi">40</span> <span class="c1"># Make sure code inside the TensorFlow codebase can use tf2.enabled() at import.</span>
-
-<span class="ne">ModuleNotFoundError</span>: No module named &#39;tensorflow.python.tools&#39;
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-10-17 19:22:27.930584: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library &#39;libcuda.so.1&#39;; dlerror: libcuda.so.1: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.8.14/x64/lib
+2022-10-17 19:22:27.930623: W tensorflow/stream_executor/cuda/cuda_driver.cc:263] failed call to cuInit: UNKNOWN ERROR (303)
+2022-10-17 19:22:27.930647: I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:156] kernel driver does not appear to be running on this host (fv-az456-963): /proc/driver/nvidia/version does not exist
+2022-10-17 19:22:27.930920: I tensorflow/core/platform/cpu_feature_guard.cc:193] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 AVX512F FMA
+To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
 </pre></div>
 </div>
 </div>
@@ -3126,7 +3055,8 @@ Updating files: 100% (8/8), done.
 </div>
 </div>
 <div class="cell_output docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "", "version_major": 2, "version_minor": 0}</script><img alt="../../../_images/4b9083512ea2ec587e132edd021e23767b6dfbb68484c6b79764166c6edcb963.svg" src="../../../_images/4b9083512ea2ec587e132edd021e23767b6dfbb68484c6b79764166c6edcb963.svg" /></div>
+<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 0, "model_id": "2efb8f0713094f9c8db5d456effbef7d"}</script><img alt="../../../_images/725f94352911dc5f40ea287bde477be5ef1fd56cc49f0422950b37dca5892645.png" src="../../../_images/725f94352911dc5f40ea287bde477be5ef1fd56cc49f0422950b37dca5892645.png" />
+</div>
 </div>
 </section>
 <section id="throat-conns">
@@ -3143,7 +3073,139 @@ Updating files: 100% (8/8), done.
 </div>
 </div>
 <div class="cell_output docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "", "version_major": 2, "version_minor": 0}</script><script type="application/vnd.jupyter.widget-view+json">{"model_id": "", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 0, "model_id": "8f8a4a1406034fd895171a857b48834f"}</script><script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 0, "model_id": "ff3c53c9d7b3428ba6c10f2f7e0a8c60"}</script><div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2022-10-17 19:22:49.010177: W tensorflow/core/framework/cpu_allocator_impl.cc:82] Allocation of 780140544 exceeds 10% of free system memory.
+2022-10-17 19:22:49.590115: W tensorflow/core/framework/cpu_allocator_impl.cc:82] Allocation of 780140544 exceeds 10% of free system memory.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> 1/47 [..............................] - ETA: 2:44
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
+ 2/47 [&gt;.............................] - ETA: 1:31
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
+ 3/47 [&gt;.............................] - ETA: 1:29
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
+ 4/47 [=&gt;............................] - ETA: 1:27
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
+ 5/47 [==&gt;...........................] - ETA: 1:24
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
+ 6/47 [==&gt;...........................] - ETA: 1:22
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
+ 7/47 [===&gt;..........................] - ETA: 1:20
+</pre></div>
+</div>
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">KeyboardInterrupt</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span> <span class="p">[</span><span class="mi">6</span><span class="p">],</span> <span class="n">line</span> <span class="mi">2</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="n">conns</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">networks</span><span class="o">.</span><span class="n">find_conns</span><span class="p">(</span><span class="n">regions</span><span class="p">)</span>
+<span class="ne">----&gt; </span><span class="mi">2</span> <span class="n">size_factors</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">networks</span><span class="o">.</span><span class="n">diffusive_size_factor_AI</span><span class="p">(</span><span class="n">regions</span><span class="p">,</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span>                                                     <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span>                                                     <span class="n">g_train</span><span class="o">=</span><span class="n">g_train</span><span class="p">,</span>
+<span class="g g-Whitespace">      </span><span class="mi">5</span>                                                     <span class="n">throat_conns</span><span class="o">=</span><span class="n">conns</span><span class="p">)</span>
+
+<span class="nn">File ~/work/porespy/porespy/porespy/networks/_size_factors.py:73,</span> in <span class="ni">diffusive_size_factor_AI</span><span class="nt">(regions, throat_conns, model, g_train, voxel_size)</span>
+<span class="g g-Whitespace">     </span><span class="mi">71</span>     <span class="n">batch_size</span> <span class="o">=</span> <span class="mi">16</span>
+<span class="g g-Whitespace">     </span><span class="mi">72</span> <span class="n">test_steps</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">throat_conns</span><span class="p">)</span> <span class="o">/</span> <span class="n">batch_size</span><span class="p">)</span>
+<span class="ne">---&gt; </span><span class="mi">73</span> <span class="n">predictions</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">test_data</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="n">test_steps</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">74</span> <span class="n">predictions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">predictions</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">75</span> <span class="n">denorm_size_factor</span> <span class="o">=</span> <span class="n">_denorm_predict</span><span class="p">(</span><span class="n">predictions</span><span class="p">,</span> <span class="n">g_train</span><span class="p">)</span>
+
+<span class="nn">File /usr/share/miniconda/envs/test/lib/python3.8/site-packages/keras/utils/traceback_utils.py:65,</span> in <span class="ni">filter_traceback.&lt;locals&gt;.error_handler</span><span class="nt">(*args, **kwargs)</span>
+<span class="g g-Whitespace">     </span><span class="mi">63</span> <span class="n">filtered_tb</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="g g-Whitespace">     </span><span class="mi">64</span> <span class="k">try</span><span class="p">:</span>
+<span class="ne">---&gt; </span><span class="mi">65</span>     <span class="k">return</span> <span class="n">fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">66</span> <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<span class="g g-Whitespace">     </span><span class="mi">67</span>     <span class="n">filtered_tb</span> <span class="o">=</span> <span class="n">_process_traceback_frames</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">__traceback__</span><span class="p">)</span>
+
+<span class="nn">File /usr/share/miniconda/envs/test/lib/python3.8/site-packages/keras/engine/training.py:2253,</span> in <span class="ni">Model.predict</span><span class="nt">(self, x, batch_size, verbose, steps, callbacks, max_queue_size, workers, use_multiprocessing)</span>
+<span class="g g-Whitespace">   </span><span class="mi">2251</span> <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="n">data_handler</span><span class="o">.</span><span class="n">steps</span><span class="p">():</span>
+<span class="g g-Whitespace">   </span><span class="mi">2252</span>     <span class="n">callbacks</span><span class="o">.</span><span class="n">on_predict_batch_begin</span><span class="p">(</span><span class="n">step</span><span class="p">)</span>
+<span class="ne">-&gt; </span><span class="mi">2253</span>     <span class="n">tmp_batch_outputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict_function</span><span class="p">(</span><span class="n">iterator</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">2254</span>     <span class="k">if</span> <span class="n">data_handler</span><span class="o">.</span><span class="n">should_sync</span><span class="p">:</span>
+<span class="g g-Whitespace">   </span><span class="mi">2255</span>         <span class="n">context</span><span class="o">.</span><span class="n">async_wait</span><span class="p">()</span>
+
+<span class="nn">File /usr/share/miniconda/envs/test/lib/python3.8/site-packages/tensorflow/python/util/traceback_utils.py:150,</span> in <span class="ni">filter_traceback.&lt;locals&gt;.error_handler</span><span class="nt">(*args, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">148</span> <span class="n">filtered_tb</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="g g-Whitespace">    </span><span class="mi">149</span> <span class="k">try</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">150</span>   <span class="k">return</span> <span class="n">fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">151</span> <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">152</span>   <span class="n">filtered_tb</span> <span class="o">=</span> <span class="n">_process_traceback_frames</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">__traceback__</span><span class="p">)</span>
+
+<span class="nn">File /usr/share/miniconda/envs/test/lib/python3.8/site-packages/tensorflow/python/eager/def_function.py:915,</span> in <span class="ni">Function.__call__</span><span class="nt">(self, *args, **kwds)</span>
+<span class="g g-Whitespace">    </span><span class="mi">912</span> <span class="n">compiler</span> <span class="o">=</span> <span class="s2">&quot;xla&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_jit_compile</span> <span class="k">else</span> <span class="s2">&quot;nonXla&quot;</span>
+<span class="g g-Whitespace">    </span><span class="mi">914</span> <span class="k">with</span> <span class="n">OptionalXlaContext</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_jit_compile</span><span class="p">):</span>
+<span class="ne">--&gt; </span><span class="mi">915</span>   <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">917</span> <span class="n">new_tracing_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">experimental_get_tracing_count</span><span class="p">()</span>
+<span class="g g-Whitespace">    </span><span class="mi">918</span> <span class="n">without_tracing</span> <span class="o">=</span> <span class="p">(</span><span class="n">tracing_count</span> <span class="o">==</span> <span class="n">new_tracing_count</span><span class="p">)</span>
+
+<span class="nn">File /usr/share/miniconda/envs/test/lib/python3.8/site-packages/tensorflow/python/eager/def_function.py:954,</span> in <span class="ni">Function._call</span><span class="nt">(self, *args, **kwds)</span>
+<span class="g g-Whitespace">    </span><span class="mi">951</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+<span class="g g-Whitespace">    </span><span class="mi">952</span> <span class="c1"># In this case we have not created variables on the first call. So we can</span>
+<span class="g g-Whitespace">    </span><span class="mi">953</span> <span class="c1"># run the first trace but we should fail if variables are created.</span>
+<span class="ne">--&gt; </span><span class="mi">954</span> <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stateful_fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">955</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_created_variables</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">ALLOW_DYNAMIC_VARIABLE_CREATION</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">956</span>   <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Creating variables on a non-first call to a function&quot;</span>
+<span class="g g-Whitespace">    </span><span class="mi">957</span>                    <span class="s2">&quot; decorated with tf.function.&quot;</span><span class="p">)</span>
+
+<span class="nn">File /usr/share/miniconda/envs/test/lib/python3.8/site-packages/tensorflow/python/eager/function.py:2496,</span> in <span class="ni">Function.__call__</span><span class="nt">(self, *args, **kwargs)</span>
+<span class="g g-Whitespace">   </span><span class="mi">2493</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
+<span class="g g-Whitespace">   </span><span class="mi">2494</span>   <span class="p">(</span><span class="n">graph_function</span><span class="p">,</span>
+<span class="g g-Whitespace">   </span><span class="mi">2495</span>    <span class="n">filtered_flat_args</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_maybe_define_function</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+<span class="ne">-&gt; </span><span class="mi">2496</span> <span class="k">return</span> <span class="n">graph_function</span><span class="o">.</span><span class="n">_call_flat</span><span class="p">(</span>
+<span class="g g-Whitespace">   </span><span class="mi">2497</span>     <span class="n">filtered_flat_args</span><span class="p">,</span> <span class="n">captured_inputs</span><span class="o">=</span><span class="n">graph_function</span><span class="o">.</span><span class="n">captured_inputs</span><span class="p">)</span>
+
+<span class="nn">File /usr/share/miniconda/envs/test/lib/python3.8/site-packages/tensorflow/python/eager/function.py:1862,</span> in <span class="ni">ConcreteFunction._call_flat</span><span class="nt">(self, args, captured_inputs, cancellation_manager)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1858</span> <span class="n">possible_gradient_type</span> <span class="o">=</span> <span class="n">gradients_util</span><span class="o">.</span><span class="n">PossibleTapeGradientTypes</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1859</span> <span class="k">if</span> <span class="p">(</span><span class="n">possible_gradient_type</span> <span class="o">==</span> <span class="n">gradients_util</span><span class="o">.</span><span class="n">POSSIBLE_GRADIENT_TYPES_NONE</span>
+<span class="g g-Whitespace">   </span><span class="mi">1860</span>     <span class="ow">and</span> <span class="n">executing_eagerly</span><span class="p">):</span>
+<span class="g g-Whitespace">   </span><span class="mi">1861</span>   <span class="c1"># No tape is watching; skip to running the function.</span>
+<span class="ne">-&gt; </span><span class="mi">1862</span>   <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_call_outputs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_inference_function</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+<span class="g g-Whitespace">   </span><span class="mi">1863</span>       <span class="n">ctx</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">cancellation_manager</span><span class="o">=</span><span class="n">cancellation_manager</span><span class="p">))</span>
+<span class="g g-Whitespace">   </span><span class="mi">1864</span> <span class="n">forward_backward</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_select_forward_and_backward_functions</span><span class="p">(</span>
+<span class="g g-Whitespace">   </span><span class="mi">1865</span>     <span class="n">args</span><span class="p">,</span>
+<span class="g g-Whitespace">   </span><span class="mi">1866</span>     <span class="n">possible_gradient_type</span><span class="p">,</span>
+<span class="g g-Whitespace">   </span><span class="mi">1867</span>     <span class="n">executing_eagerly</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1868</span> <span class="n">forward_function</span><span class="p">,</span> <span class="n">args_with_tangents</span> <span class="o">=</span> <span class="n">forward_backward</span><span class="o">.</span><span class="n">forward</span><span class="p">()</span>
+
+<span class="nn">File /usr/share/miniconda/envs/test/lib/python3.8/site-packages/tensorflow/python/eager/function.py:499,</span> in <span class="ni">_EagerDefinedFunction.call</span><span class="nt">(self, ctx, args, cancellation_manager)</span>
+<span class="g g-Whitespace">    </span><span class="mi">497</span> <span class="k">with</span> <span class="n">_InterpolateFunctionError</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="g g-Whitespace">    </span><span class="mi">498</span>   <span class="k">if</span> <span class="n">cancellation_manager</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">499</span>     <span class="n">outputs</span> <span class="o">=</span> <span class="n">execute</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">500</span>         <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">signature</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
+<span class="g g-Whitespace">    </span><span class="mi">501</span>         <span class="n">num_outputs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_outputs</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">502</span>         <span class="n">inputs</span><span class="o">=</span><span class="n">args</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">503</span>         <span class="n">attrs</span><span class="o">=</span><span class="n">attrs</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">504</span>         <span class="n">ctx</span><span class="o">=</span><span class="n">ctx</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">505</span>   <span class="k">else</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">506</span>     <span class="n">outputs</span> <span class="o">=</span> <span class="n">execute</span><span class="o">.</span><span class="n">execute_with_cancellation</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">507</span>         <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">signature</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
+<span class="g g-Whitespace">    </span><span class="mi">508</span>         <span class="n">num_outputs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_outputs</span><span class="p">,</span>
+   <span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">511</span>         <span class="n">ctx</span><span class="o">=</span><span class="n">ctx</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">512</span>         <span class="n">cancellation_manager</span><span class="o">=</span><span class="n">cancellation_manager</span><span class="p">)</span>
+
+<span class="nn">File /usr/share/miniconda/envs/test/lib/python3.8/site-packages/tensorflow/python/eager/execute.py:54,</span> in <span class="ni">quick_execute</span><span class="nt">(op_name, num_outputs, inputs, attrs, ctx, name)</span>
+<span class="g g-Whitespace">     </span><span class="mi">52</span> <span class="k">try</span><span class="p">:</span>
+<span class="g g-Whitespace">     </span><span class="mi">53</span>   <span class="n">ctx</span><span class="o">.</span><span class="n">ensure_initialized</span><span class="p">()</span>
+<span class="ne">---&gt; </span><span class="mi">54</span>   <span class="n">tensors</span> <span class="o">=</span> <span class="n">pywrap_tfe</span><span class="o">.</span><span class="n">TFE_Py_Execute</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">_handle</span><span class="p">,</span> <span class="n">device_name</span><span class="p">,</span> <span class="n">op_name</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">55</span>                                       <span class="n">inputs</span><span class="p">,</span> <span class="n">attrs</span><span class="p">,</span> <span class="n">num_outputs</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">56</span> <span class="k">except</span> <span class="n">core</span><span class="o">.</span><span class="n">_NotOkStatusException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<span class="g g-Whitespace">     </span><span class="mi">57</span>   <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+<span class="ne">KeyboardInterrupt</span>: 
+</pre></div>
+</div>
+</div>
 </div>
 </section>
 <section id="compare-with-finite-difference">
@@ -3225,7 +3287,7 @@ Updating files: 100% (8/8), done.
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
 </p>
   </div>
   

@@ -4,7 +4,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
     <title>Making blobs &#8212; PoreSpy  documentation</title>
 <script>
@@ -26,8 +26,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
 
@@ -39,14 +38,10 @@
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
-    <script>let toggleHintShow = 'Click to show';</script>
-    <script>let toggleHintHide = 'Click to hide';</script>
-    <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../../../_static/togglebutton.js"></script>
     <script src="../../../_static/design-tabs.js"></script>
-    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="../../../_static/js/custom.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -194,6 +189,11 @@
      </i>
     </label>
     <ul class="current">
+     <li class="toctree-l3">
+      <a class="reference internal" href="Creating_Multiscale_Images.html">
+       Creating Multiscale Images
+      </a>
+     </li>
      <li class="toctree-l3">
       <a class="reference internal" href="cylinders.html">
        Generating fibrous mats
@@ -1557,6 +1557,11 @@
 </ul>
 <ul class="current nav bd-sidenav">
  <li class="toctree-l1">
+  <a class="reference internal" href="Creating_Multiscale_Images.html">
+   Creating Multiscale Images
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="cylinders.html">
    Generating fibrous mats
   </a>
@@ -2795,7 +2800,12 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/d84a999bba379bf907dba76c143389bd2f0d3d01b9efa544b0321ef20b263215.svg" src="../../../_images/d84a999bba379bf907dba76c143389bd2f0d3d01b9efa544b0321ef20b263215.svg" /></div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/usr/share/miniconda/envs/test/lib/python3.8/site-packages/IPython/core/pylabtools.py:151: UserWarning: This figure includes Axes that are not compatible with tight_layout, so results might be incorrect.
+  fig.canvas.print_figure(bytes_io, **kw)
+</pre></div>
+</div>
+<img alt="../../../_images/31a413234a2391cc3e415a38a1b75b706bb2196944bd8295217147837ea6fac8.png" src="../../../_images/31a413234a2391cc3e415a38a1b75b706bb2196944bd8295217147837ea6fac8.png" />
+</div>
 </div>
 <p>The distribution of the values in these images has been renormalized to be a uniform distribution, which can be confirmed by plotting a histogram.  Because the image is not very large, the histogram is not perfectly flat:</p>
 <div class="cell docutils container">
@@ -2806,7 +2816,8 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/5df8ca081a5b64770c6daaf0a48bc7e20b7639d4fc53531898c0cfff8ea8c981.svg" src="../../../_images/5df8ca081a5b64770c6daaf0a48bc7e20b7639d4fc53531898c0cfff8ea8c981.svg" /></div>
+<img alt="../../../_images/3908baa3c049280da7bfcb8247a5ae8a5152171ac6b55050211b00ed60498d30.png" src="../../../_images/3908baa3c049280da7bfcb8247a5ae8a5152171ac6b55050211b00ed60498d30.png" />
+</div>
 </div>
 <p>Next is easy to threshold the noise field to produce a binary image of ‘solid’ and ‘void’:</p>
 <div class="cell docutils container">
@@ -2818,7 +2829,8 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/84b5417c8f5e8c38a4269e78439fb5b5c91d9e71ba46a2123bc62219b4ef86fb.svg" src="../../../_images/84b5417c8f5e8c38a4269e78439fb5b5c91d9e71ba46a2123bc62219b4ef86fb.svg" /></div>
+<img alt="../../../_images/f7622c84e6c72e070013f43cac9a42f2bca3902a14152fea19feb7382262abab.png" src="../../../_images/f7622c84e6c72e070013f43cac9a42f2bca3902a14152fea19feb7382262abab.png" />
+</div>
 </div>
 <p>And we can check the porosity of the thresholded image:</p>
 <div class="cell docutils container">
@@ -2845,7 +2857,8 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/fa6d017903d7bd5b28c46d75b1607f9b1f2a2b990a5e5dcb2c33080bf0d79168.svg" src="../../../_images/fa6d017903d7bd5b28c46d75b1607f9b1f2a2b990a5e5dcb2c33080bf0d79168.svg" /></div>
+<img alt="../../../_images/d61c63dd7a2e7266566e8148a20e767fb640683ab8457ed88d83a1b6f68ffc60.png" src="../../../_images/d61c63dd7a2e7266566e8148a20e767fb640683ab8457ed88d83a1b6f68ffc60.png" />
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -2876,7 +2889,8 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/ad5c3f4163235ae95b8f09348e83967165511018b60529f03835d1817c4f6644.svg" src="../../../_images/ad5c3f4163235ae95b8f09348e83967165511018b60529f03835d1817c4f6644.svg" /></div>
+<img alt="../../../_images/a99a6b4c8cd8ca3bf20b8cabca3c50ef747948bd557a2016ea73a40fb2de543f.png" src="../../../_images/a99a6b4c8cd8ca3bf20b8cabca3c50ef747948bd557a2016ea73a40fb2de543f.png" />
+</div>
 </div>
 </section>
 
@@ -2905,7 +2919,7 @@
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
 </p>
   </div>
   
