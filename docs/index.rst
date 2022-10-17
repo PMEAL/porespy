@@ -3,7 +3,7 @@
 .. module:: porespy
    :noindex:
 
-.. image:: ./_static/images/porespy_logo.png
+.. image:: ./_static/images/porespy_logo.jpg
    :name: banner
 
 ###############################################
@@ -49,12 +49,10 @@ PoreSpy consists of the following modules:
    :hidden:
    :maxdepth: 0
 
-   user_guide/index
+   installation
+   basic_usage
    modules/index
-   examples
-
-.. WARNING: examples.rst MUST BE THE LAST ENTRY, OTHERWISE OUR JS
-.. SCRIPT MIGHT BREAK! SEE _static/js/custom.js
+   _examples/index
 
 
 Gallery

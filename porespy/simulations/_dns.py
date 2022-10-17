@@ -74,7 +74,7 @@ def tortuosity_fd(im, axis):
     try:
         phase = op.phases.GenericPhase(network=net)
     except AttributeError:
-        phase = op.phase.GenericPhase(network=net)
+        phase = op.phase.Phase(network=net)
     phase['throat.diffusive_conductance'] = 1.0
     # Run Fickian Diffusion on the image
     fd = op.algorithms.FickianDiffusion(network=net, phase=phase)
@@ -88,7 +88,7 @@ def tortuosity_fd(im, axis):
     # FIXME: get rid of try/except once openpnm v3 is out
     try:
         pardiso = op.solvers.PardisoSpsolve()
-        fd.run(solver=pardiso)
+        fd.run(solver=pardiso, verbose=False)
     except AttributeError:
         fd.settings.update({'solver_family': 'scipy', 'solver_type': 'cg'})
         fd.run()
@@ -107,6 +107,7 @@ def tortuosity_fd(im, axis):
 
     # Attach useful parameters to Results object
     result = Results()
+    result.im = im
     result.tortuosity = tau
     result.formation_factor = 1 / Deff
     result.original_porosity = eps0

@@ -30,7 +30,7 @@ reading/writing/storing of large tomograms.
 .. raw:: html
 
    <p align="center">
-     <img src="../_static/images/fig1.png" width="40%"></img>
+     <img src="_static/images/fig1.png" width="40%"></img>
    </p>
 
 Applying filters
@@ -49,7 +49,7 @@ distribution.
 .. raw:: html
 
    <p align="center">
-     <img src="../_static/images/fig2.png" width="40%"></img>
+     <img src="_static/images/fig2.png" width="40%"></img>
    </p>
 
 A less common filter is the application of chords that span the pore
@@ -66,7 +66,7 @@ lengths in each principle direction.
 .. raw:: html
 
    <p align="center">
-     <img src="../_static/images/fig3.png" width="40%"></img>
+     <img src="_static/images/fig3.png" width="40%"></img>
    </p>
 
 Calculating metrics
@@ -86,7 +86,7 @@ two-point correlation function.
 .. raw:: html
 
    <p align="center">
-     <img src="../_static/images/fig4.png" width="40%"></img>
+     <img src="_static/images/fig4.png" width="40%"></img>
    </p>
 
 The metrics sub-module also contains a suite of functions that produce
@@ -106,6 +106,6 @@ as local thickness.
 .. raw:: html
 
    <p align="center">
-     <img src="../_static/images/fig5.png" width="40%"></img>
-     <img src="../_static/images/fig6.png" width="45%"></img>
+     <img src="_static/images/fig5.png" width="40%"></img>
+     <img src="_static/images/fig6.png" width="45%"></img>
    </p>

@@ -29,7 +29,7 @@ jobs:
           # This path is specific to Ubuntu
           path: ~/.cache/pip
           # Look to see if there is a cache hit for the corresponding requirements file
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements/pip_requirements.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
             ${{ runner.os }}-
@@ -37,10 +37,8 @@ jobs:
       - name: Install dependencies (pip)
         run: |
           pip install wheel
-          pip install -r requirements/pip_requirements.txt
-          pip install -r requirements/test_requirements.txt
-          # Install porespy from the checked-out branch
-          pip install -e . --no-deps
+          pip install -r requirements.txt
+          pip install -r requirements/tests.txt
 
       - name: Running unit tests and examples
         run: |

@@ -59,7 +59,7 @@ def set_mpl_style():  # pragma: no cover
 
     if ps.settings.notebook:
         import IPython
-        IPython.display.set_matplotlib_formats('svg')
+        IPython.display.set_matplotlib_formats('retina')
 
 
 def satn_to_movie(im, satn, cmap='viridis',
