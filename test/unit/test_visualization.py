@@ -36,14 +36,14 @@ class VisualizationTest():
     def test_imshow_single(self):
         im = ps.generators.blobs(shape=[10, 20, 30])
         fig = ps.visualization.imshow(im)
-        assert fig.numCols == 1
-        assert fig.numRows == 1
+        assert fig.get_gridspec().ncols == 1
+        assert fig.get_gridspec().nrows == 1
 
     def test_imshow_multi(self):
         im = ps.generators.blobs(shape=[10, 20, 30])
         fig = ps.visualization.imshow(im, im)
-        assert fig.numCols == 2
-        assert fig.numRows == 1
+        assert fig.get_gridspec().ncols == 2
+        assert fig.get_gridspec().nrows == 1
 
     def test_bar(self):
         im = ps.generators.blobs(shape=[101, 200])

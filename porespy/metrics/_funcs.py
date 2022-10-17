@@ -633,14 +633,14 @@ def _radial_profile(autocorr, bins, pf=None, voxel_size=1):
     """
     if len(autocorr.shape) == 2:
         adj = np.reshape(autocorr.shape, [2, 1, 1])
-        # use np.round otherwise with odd image sizes, the mask generated can be zero,
-        # resulting in Div/0 error
+        # use np.round otherwise with odd image sizes, the mask generated can
+        # be zero, resulting in Div/0 error
         inds = np.indices(autocorr.shape) - np.round(adj / 2)
         dt = np.sqrt(inds[0]**2 + inds[1]**2)
     elif len(autocorr.shape) == 3:
         adj = np.reshape(autocorr.shape, [3, 1, 1, 1])
-        # use np.round otherwise with odd image sizes, the mask generated can be zero,
-        # resulting in Div/0 error
+        # use np.round otherwise with odd image sizes, the mask generated can
+        # be zero, resulting in Div/0 error
         inds = np.indices(autocorr.shape) - np.round(adj / 2)
         dt = np.sqrt(inds[0]**2 + inds[1]**2 + inds[2]**2)
     else:
@@ -736,7 +736,7 @@ def two_point_correlation(im, voxel_size=1, bins=100):
     to view online example.
 
     """
-    # Get the number of CPUs available for parallel processing of Fourier transforms
+    # Get the number of CPUs available to parallel process Fourier transforms
     cpus = settings.ncores
     # Get the phase fraction of the image
     pf = porosity(im)
