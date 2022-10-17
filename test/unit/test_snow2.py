@@ -21,20 +21,24 @@ class Snow2Test:
     def test_single_phase_2d_serial(self):
         im = ps.generators.blobs(shape=[200, 200])
         snow2 = ps.networks.snow2(im, phase_alias={1: 'phase1'}, parallelization=None)
-        try:
-            pn, geo = op.io.from_porespy(snow2.network)
-        except AttributeError:
+        if hasattr(op.io, 'PoreSpy'):
             pn, geo = op.io.PoreSpy.import_data(snow2.network)
+        elif hasattr(op.io, 'from_porespy'):
+            pn, geo = op.io.from_porespy(snow2.network)
+        elif hasattr(op.io, 'network_from_porespy'):
+            pn = op.io.network_from_porespy(snow2.network)
         # Ensure phase_alias was ignored since only single phase
         assert 'pore.phase1' not in pn.keys()
 
     def test_return_all_serial(self):
         im = ps.generators.blobs(shape=[200, 200])
         snow2 = ps.networks.snow2(im, parallelization=None)
-        try:
-            pn, geo = op.io.from_porespy(snow2.network)
-        except AttributeError:
+        if hasattr(op.io, 'PoreSpy'):
             pn, geo = op.io.PoreSpy.import_data(snow2.network)
+        elif hasattr(op.io, 'from_porespy'):
+            pn, geo = op.io.from_porespy(snow2.network)
+        elif hasattr(op.io, 'network_from_porespy'):
+            pn = op.io.network_from_porespy(snow2.network)
         assert hasattr(snow2, 'regions')
         assert hasattr(snow2, 'phases')
 
@@ -43,10 +47,14 @@ class Snow2Test:
         im2 = ps.generators.blobs(shape=[200, 200], porosity=0.7)
         phases = im1 + (im2 * ~im1)*2
         snow2 = ps.networks.snow2(phases, phase_alias={1: 'phase1', 2: 'test2'})
-        try:
-            pn, geo = op.io.from_porespy(snow2.network)
-        except AttributeError:
+
+        if hasattr(op.io, 'PoreSpy'):
             pn, geo = op.io.PoreSpy.import_data(snow2.network)
+        elif hasattr(op.io, 'from_porespy'):
+            pn, geo = op.io.from_porespy(snow2.network)
+        elif hasattr(op.io, 'network_from_porespy'):
+            pn = op.io.network_from_porespy(snow2.network)
+
         # Ensure phase_alias was interpreted correctly
         assert 'pore.phase1' in pn.keys()
         assert 'pore.test2' in pn.keys()
@@ -55,10 +63,12 @@ class Snow2Test:
     def test_single_phase_3d(self):
         im = ps.generators.blobs(shape=[100, 100, 100], porosity=0.6)
         snow2 = ps.networks.snow2(im, phase_alias={1: 'phase1'})
-        try:
-            pn, geo = op.io.from_porespy(snow2.network)
-        except AttributeError:
+        if hasattr(op.io, 'PoreSpy'):
             pn, geo = op.io.PoreSpy.import_data(snow2.network)
+        elif hasattr(op.io, 'from_porespy'):
+            pn, geo = op.io.from_porespy(snow2.network)
+        elif hasattr(op.io, 'network_from_porespy'):
+            pn = op.io.network_from_porespy(snow2.network)
         # Ensure phase_alias was ignored since only single phase
         assert 'pore.phase1' not in pn.keys()
 
@@ -67,10 +77,12 @@ class Snow2Test:
         im2 = ps.generators.blobs(shape=[100, 100, 100], porosity=0.7)
         phases = im1 + (im2 * ~im1)*2
         snow2 = ps.networks.snow2(phases, phase_alias={1: 'phase1'})
-        try:
-            pn, geo = op.io.from_porespy(snow2.network)
-        except AttributeError:
+        if hasattr(op.io, 'PoreSpy'):
             pn, geo = op.io.PoreSpy.import_data(snow2.network)
+        elif hasattr(op.io, 'from_porespy'):
+            pn, geo = op.io.from_porespy(snow2.network)
+        elif hasattr(op.io, 'network_from_porespy'):
+            pn = op.io.network_from_porespy(snow2.network)
         # Ensure phase_alias was was updated since only 1 phases was spec'd
         assert 'pore.phase1' in pn.keys()
         assert 'pore.phase2' in pn.keys()
@@ -222,10 +234,12 @@ class Snow2Test:
         snow_1 = ps.networks.snow2(im,
                                    accuracy='standard',
                                    parallelization=None)
-        try:
-            pn1, geo1 = op.io.from_porespy(snow_1.network)
-        except AttributeError:
-            pn1, geo1 = op.io.PoreSpy.import_data(snow_1.network)
+        if hasattr(op.io, 'PoreSpy'):
+            pn1, geo = op.io.PoreSpy.import_data(snow_1.network)
+        elif hasattr(op.io, 'from_porespy'):
+            pn1, geo = op.io.from_porespy(snow_1.network)
+        elif hasattr(op.io, 'network_from_porespy'):
+            pn1 = op.io.network_from_porespy(snow_1.network)
         Ps1 = pn1.find_neighbor_pores(pores=pn1.pores('boundary'))
         try:
             Ps1 = pn1.to_mask(pores=Ps1)
@@ -236,10 +250,12 @@ class Snow2Test:
                                    phase_alias={1: 'solid', 2: 'void'},
                                    accuracy='standard',
                                    parallelization=None)
-        try:
-            pn2, geo2 = op.io.from_porespy(snow_2.network)
-        except AttributeError:
-            pn2, geo2 = op.io.PoreSpy.import_data(snow_2.network)
+        if hasattr(op.io, 'PoreSpy'):
+            pn2, geo = op.io.PoreSpy.import_data(snow_2.network)
+        elif hasattr(op.io, 'from_porespy'):
+            pn2, geo = op.io.from_porespy(snow_2.network)
+        elif hasattr(op.io, 'network_from_porespy'):
+            pn2 = op.io.network_from_porespy(snow_2.network)
         Ps2 = pn2.find_neighbor_pores(pores=pn2.pores('boundary'))
         try:
             Ps2 = pn2.to_mask(pores=Ps2)*pn2['pore.void']
@@ -253,10 +269,12 @@ class Snow2Test:
         snow_3 = ps.networks.snow2(im == 0,
                                    accuracy='standard',
                                    parallelization=None)
-        try:
-            pn3, geo3 = op.io.from_porespy(snow_3.network)
-        except AttributeError:
-            pn3, geo3 = op.io.PoreSpy.import_data(snow_3.network)
+        if hasattr(op.io, 'PoreSpy'):
+            pn3, geo = op.io.PoreSpy.import_data(snow_3.network)
+        elif hasattr(op.io, 'from_porespy'):
+            pn3, geo = op.io.from_porespy(snow_3.network)
+        elif hasattr(op.io, 'network_from_porespy'):
+            pn3 = op.io.network_from_porespy(snow_3.network)
         Ps3 = pn3.find_neighbor_pores(pores=pn3.pores('boundary'))
         try:
             Ps3 = pn3.to_mask(pores=Ps3)
