@@ -1,19 +1,12 @@
-@import url('https://fonts.googleapis.com/css2?family=Fira+Code&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=PT+Mono&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans&display=swap');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.044/JuliaMono-Medium.woff2');
 
-main {
-    background-color: white;
-    background-image: url(./_static/images/porespy_logo.png);
-}
 
-body {
-    background-color: #F8F9FB;
-    padding-top: calc(var(--pst-header-height));
-}
-
-.bd-sidebar, .bd-toc {
-    top: calc(var(--pst-header-height));
+ul.nav.bd-sidenav {
+    margin-right: 10px;
 }
 
 div#navbar-menu {
@@ -24,8 +17,92 @@ input#search-input {
     border-radius: 10px;
 }
 
-.toctree-l2 > a.reference.internal {
-    font-family: 'PT Mono', 'Robot Mono', 'Fira Code', monospace;
+nav#bd-docs-nav a.current {
+    background-color: lightgoldenrodyellow;
+    border-radius: 8px;
+}
+
+h1, h2, h3, h4 {
+    font-family: 'Lato';
+}
+
+body {
+    font-family: 'Noto Sans';
+}
+
+.toctree-l1 {
+    font-weight: 400;
+}
+
+.toctree-l3 {
+    font-weight: 300;
+}
+
+.toctree-l4 {
+    font-weight: 300;
+}
+
+.bd-sidenav {
+    font-family: "Roboto Mono" !important;
+}
+
+a {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+nav .toctree-l1 > ul {
+    border-left: 2px solid lightgray;
+    margin-left: 35px;
+    padding-left: 0px !important;
+}
+
+nav .toctree-l2 > ul {
+    border-left: 2px dashed lightgray;
+    margin-left: 35px;
+    padding-left: 0px !important;
+}
+
+nav .toctree-l3 > ul {
+    border-left: 2px dotted lightgray;
+    margin-left: 35px;
+    padding-left: 0px !important;
+}
+
+.toctree-l3 > ul > li > a {
+    line-height: 125% !important;
+}
+
+.bd-sidenav a {
+    padding-left: 12.5px !important;
+}
+
+.sd-tab-content > .toctree-wrapper > ul {
+    margin-bottom: 0;
+}
+
+section#examples > div > ul > li.toctree-l1 > a {
+    font-size: 150%;
+    font-weight: 500;
+    border-bottom: solid 1px lightgray;
+    width: 100%;
+    float: left;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+    margin-top: 15px;
+}
+
+section#examples li.toctree-l2 > a {
+    font-size: 1em !important;
+}
+
+.sd-tab-content li.toctree-l1 > a {
+    font-size: 1em !important;
+}
+
+.sd-tab-content a {
+    font-size: 1em !important;
 }
 
 img#banner {
@@ -35,12 +112,40 @@ img#banner {
     margin-left: auto;
     margin-right: 20px;
     height: 85px;
+    border-radius: 10px;
 }
 
-.tabbed-content {
-    padding-bottom: 0;
+img#montage {
+    /* float: left; */
+    opacity: 1;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 800px;
+    border-radius: 10px;
 }
 
-div.highlight > pre {
-    border-radius: 5px;
+img.logo__image {
+    background-color: white;
+    border-radius: 10px;
+}
+
+/* So that there's no redundant Tutorials/Reference heading in the tabbed section */
+section:not(#generators)    li.toctree-l1 > a,
+section:not(#filters)       li.toctree-l1 > a,
+section:not(#metrics)       li.toctree-l1 > a,
+section:not(#networks)      li.toctree-l1 > a,
+section:not(#simulations)   li.toctree-l1 > a,
+section:not(#tools)         li.toctree-l1 > a,
+section:not(#visualization) li.toctree-l1 > a {
+    display: none;
+}
+
+section#examples li.toctree-l1 > a {
+    display: flex !important;
+}
+
+/* So that Tutorials/Reference are not clickable in the sidebar */
+li.toctree-l2.has-children > a {
+    pointer-events: none;
 }

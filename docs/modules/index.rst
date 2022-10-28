@@ -1,23 +1,20 @@
+.. _modules_index:
+
 #############################
 Module and Function Reference
 #############################
 
-Submodules
-**********
+.. automodule:: porespy
 
-The functions contained in PoreSpy are organized into categories, with
-fairly self-descriptive names. Links to the detailed documentation for each
-sub-module are provided below.
+   .. autosummary::
+      :toctree: generated
+      :recursive:
 
-.. toctree::
-    :maxdepth: 1
-    :titlesonly:
-
-    Generators <generators>
-    Filters <filters>
-    Metrics <metrics>
-    Networks <networks>
-    Simulations <simulations>
-    Tools <tools>
-    Visualization <visualization>
-    IO <io>
+      porespy.generators
+      porespy.filters
+      porespy.metrics
+      porespy.networks
+      porespy.simulations
+      porespy.tools
+      porespy.visualization
+      porespy.io

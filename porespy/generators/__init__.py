@@ -1,9 +1,7 @@
 r"""
 
-Generators
-##########
-
-**Generate Artificial Images**
+Collection of functions for generating synthetic images
+#######################################################
 
 This module contains a variety of functions for generating artificial
 images of porous materials, generally for testing, validation,
