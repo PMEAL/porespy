@@ -1559,6 +1559,18 @@
 </ul>
 <ul class="nav bd-sidenav">
  <li class="toctree-l1">
+  <a class="reference internal" href="../../general/denoising_and_segmenting_images.html">
+   Converting Greyscale Images to Binary
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../general/loading_images.html">
+   Opening and Preparing Images
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
   <a class="reference internal" href="../../generators/tutorials/Creating_Multiscale_Images.html">
    Creating Multiscale Images
   </a>
@@ -2798,11 +2810,11 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/usr/share/miniconda/envs/test/lib/python3.8/site-packages/IPython/core/pylabtools.py:151: UserWarning: This figure includes Axes that are not compatible with tight_layout, so results might be incorrect.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/usr/share/miniconda/envs/test/lib/python3.8/site-packages/IPython/core/pylabtools.py:152: UserWarning: This figure includes Axes that are not compatible with tight_layout, so results might be incorrect.
   fig.canvas.print_figure(bytes_io, **kw)
 </pre></div>
 </div>
-<img alt="../../../_images/7e5ca84bec200bee35d4d895545dc5955be1351e259dd457ace7f379fd57dbca.png" src="../../../_images/7e5ca84bec200bee35d4d895545dc5955be1351e259dd457ace7f379fd57dbca.png" />
+<img alt="../../../_images/43fdee97c9f0fdc901b6ff16f138855cdfc4faa007e392d87d7002f40c498d39.png" src="../../../_images/43fdee97c9f0fdc901b6ff16f138855cdfc4faa007e392d87d7002f40c498d39.png" />
 </div>
 </div>
 <p>Next apply the <code class="docutils literal notranslate"><span class="pre">distance_transform_lin</span></code> function along the 0 axis.</p>
@@ -2814,7 +2826,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/311c077ea5317c23b03de261e8989558e6f40832eedfcf4e43b343e5c4155bd4.png" src="../../../_images/311c077ea5317c23b03de261e8989558e6f40832eedfcf4e43b343e5c4155bd4.png" />
+<img alt="../../../_images/450099222f9bffad1f5b18eb1f9da66013996808452c091c1dffc9db32e232f7.png" src="../../../_images/450099222f9bffad1f5b18eb1f9da66013996808452c091c1dffc9db32e232f7.png" />
 </div>
 </div>
 <p>The greyscale values of the above image are worth a comment. They indicated the length of a path that can be drawn from each voxel to the nearest solid voxel, in the specified direction.  Or in terms of Torquato’s definition, each greyscale value represents a random starting point (A) and moving along this line until solid is encountered represents the end of the line (B), providing the path length A <span class="math notranslate nohighlight">\(\rightarrow\)</span> B.  The ‘counter associated with the distance between A and B is then incremented’, which corresponds to the binning the greyscale values in the above image. In other words, the above representation includes ALL possible starting points on each path, so provides the largest possible data set.</p>
@@ -2837,7 +2849,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/631d525ed81c386c3af1c4563793503ae36b09943828c307465d7a99cf758571.png" src="../../../_images/631d525ed81c386c3af1c4563793503ae36b09943828c307465d7a99cf758571.png" />
+<img alt="../../../_images/67f443b315bf8a75f5960b645545456693591f7db90af2009ddb736f0513b938.png" src="../../../_images/67f443b315bf8a75f5960b645545456693591f7db90af2009ddb736f0513b938.png" />
 </div>
 </div>
 <p>Since the image is anisotropic, the process will yeild a different result in the perpendicular direction, so repeating the above with <code class="docutils literal notranslate"><span class="pre">axis=1</span></code> instead of the default <code class="docutils literal notranslate"><span class="pre">axis=0</span></code>.</p>
@@ -2849,7 +2861,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/00c7e9ad0bf78f1c2eaa53faff507038e261020ac49baa78eb6ac1cbf327d01d.png" src="../../../_images/00c7e9ad0bf78f1c2eaa53faff507038e261020ac49baa78eb6ac1cbf327d01d.png" />
+<img alt="../../../_images/9459bbeafc4052f86d74239cfea976a776099c794953ef5dcb1a7daaa8234745.png" src="../../../_images/9459bbeafc4052f86d74239cfea976a776099c794953ef5dcb1a7daaa8234745.png" />
 </div>
 </div>
 <p>Overlaying this result wit the previous one:</p>
@@ -2862,7 +2874,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/1cb058a1940657a135112f27b23ca28a2d5108df6d90ad719d0c2a9cc4d88e03.png" src="../../../_images/1cb058a1940657a135112f27b23ca28a2d5108df6d90ad719d0c2a9cc4d88e03.png" />
+<img alt="../../../_images/5d9a6b0b0099b383e90883d9da71711bb86379075d770f188f849235be0869e5.png" src="../../../_images/5d9a6b0b0099b383e90883d9da71711bb86379075d770f188f849235be0869e5.png" />
 </div>
 </div>
 <p>The anisotropy of the image is clearly visible with the first axis possessing longer lineal-path values.</p>

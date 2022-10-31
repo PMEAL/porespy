@@ -21,6 +21,16 @@ The examples are categorized into the following categories:
    visualization/index
 
 
+General
+-------
+
+.. toctree::
+   :maxdepth: 1
+   :glob:
+
+   ../examples/general/*
+
+
 Generators
 ----------
 

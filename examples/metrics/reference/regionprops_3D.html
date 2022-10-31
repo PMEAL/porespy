@@ -1557,6 +1557,18 @@
 </ul>
 <ul class="nav bd-sidenav">
  <li class="toctree-l1">
+  <a class="reference internal" href="../../general/denoising_and_segmenting_images.html">
+   Converting Greyscale Images to Binary
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../general/loading_images.html">
+   Opening and Preparing Images
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
   <a class="reference internal" href="../../generators/tutorials/Creating_Multiscale_Images.html">
    Creating Multiscale Images
   </a>
@@ -2794,7 +2806,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/9785f178d898fc2fa4519270d3690d5ae1730c0b80d018b85630c3db15cf5ce4.png" src="../../../_images/9785f178d898fc2fa4519270d3690d5ae1730c0b80d018b85630c3db15cf5ce4.png" />
+<img alt="../../../_images/c43f58a7215403a899b9e4fc7773eb913d56db9983e60637fb90586c8c31f26b.png" src="../../../_images/c43f58a7215403a899b9e4fc7773eb913d56db9983e60637fb90586c8c31f26b.png" />
 </div>
 </div>
 <p>We need to label each sphere so they are recognized as individual regions:</p>
@@ -2806,7 +2818,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/ad640ff722bb6c5a496326a5c68dea7bdd34f26b3a78d436717b57f0a0a93d70.png" src="../../../_images/ad640ff722bb6c5a496326a5c68dea7bdd34f26b3a78d436717b57f0a0a93d70.png" />
+<img alt="../../../_images/5a4b0b098f6dfdb826addeea7a1bba5a35e1c2d00d25a9f79ed6e425e6c2cdb3.png" src="../../../_images/5a4b0b098f6dfdb826addeea7a1bba5a35e1c2d00d25a9f79ed6e425e6c2cdb3.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -2824,26 +2836,25 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7f0b6a7924c0&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7f0b6ab3bf40&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7f0b6a7fbd00&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7f0b6a7fbdf0&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7f0b72270b20&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7f0b72270b50&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7f0b696f1d90&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7f0b69a0f1c0&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7f0b69a0f460&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7f0bb075d9a0&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7f0bb079a1c0&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7f0b6a786940&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7f0b6a786970&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7f0b6a786a60&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7f0b6a786be0&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7f0b6a786fd0&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7f0b6a786910&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7f0b6a786e50&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7f0b6a7920d0&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7f0b6a792100&gt;]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fd058b91220&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fd0a0b08100&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fd0a0b08070&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fd0a0b08160&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fd0a0b08130&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fd058b1e1f0&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fd058b1e2e0&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fd053d6d0a0&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fd0a0b49220&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fd053d6fdf0&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fd058b82070&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fd058b91f10&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fd058b91ee0&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fd058b91c40&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fd058b910d0&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fd058b911c0&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fd058b91d30&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fd058b91100&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fd058b91130&gt;]
 </pre></div>
 </div>
 </div>
