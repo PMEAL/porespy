@@ -12,6 +12,7 @@ The examples are categorized into the following categories:
    :hidden:
    :maxdepth: 3
 
+   general/index
    generators/index
    filters/index
    metrics/index

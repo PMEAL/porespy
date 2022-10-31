@@ -17,17 +17,15 @@ Traceback (most recent call last):
     raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
 nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
 ------------------
-from matplotlib.pyplot import subplots
 fig, ax = subplots(figsize=[5, 5])
 ax.imshow(seq[0]);
 ------------------
 
 [0;31m---------------------------------------------------------------------------[0m
 [0;31mIndexError[0m                                Traceback (most recent call last)
-Cell [0;32mIn [3], line 3[0m
-[1;32m      1[0m [38;5;28;01mfrom[39;00m [38;5;21;01mmatplotlib[39;00m[38;5;21;01m.[39;00m[38;5;21;01mpyplot[39;00m [38;5;28;01mimport[39;00m subplots
-[1;32m      2[0m fig, ax [38;5;241m=[39m subplots(figsize[38;5;241m=[39m[[38;5;241m5[39m, [38;5;241m5[39m])
-[0;32m----> 3[0m ax[38;5;241m.[39mimshow([43mseq[49m[43m[[49m[38;5;241;43m0[39;49m[43m][49m)
+Cell [0;32mIn [4], line 2[0m
+[1;32m      1[0m fig, ax [38;5;241m=[39m subplots(figsize[38;5;241m=[39m[[38;5;241m5[39m, [38;5;241m5[39m])
+[0;32m----> 2[0m ax[38;5;241m.[39mimshow([43mseq[49m[43m[[49m[38;5;241;43m0[39;49m[43m][49m)
 
 File [0;32m/usr/share/miniconda/envs/test/lib/python3.8/site-packages/skimage/io/collection.py:274[0m, in [0;36mImageCollection.__getitem__[0;34m(self, n)[0m
 [1;32m    271[0m     [38;5;28;01mraise[39;00m [38;5;167;01mTypeError[39;00m([38;5;124m'[39m[38;5;124mslicing must be with an int or slice object[39m[38;5;124m'[39m)

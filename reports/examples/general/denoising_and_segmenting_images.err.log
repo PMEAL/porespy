@@ -17,7 +17,6 @@ Traceback (most recent call last):
     raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
 nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
 ------------------
-import imageio
 im = imageio.volread('../../docs/_static/images/Sample 1.tif')
 im = (im - im.min())/(im.max() - im.min())
 fig, ax = subplots(1, 3, figsize=[15, 5])
@@ -28,11 +27,10 @@ ax[2].imshow(im[0, ...].T > 0.6);
 
 [0;31m---------------------------------------------------------------------------[0m
 [0;31mFileNotFoundError[0m                         Traceback (most recent call last)
-Cell [0;32mIn [8], line 2[0m
-[1;32m      1[0m [38;5;28;01mimport[39;00m [38;5;21;01mimageio[39;00m
-[0;32m----> 2[0m im [38;5;241m=[39m [43mimageio[49m[38;5;241;43m.[39;49m[43mvolread[49m[43m([49m[38;5;124;43m'[39;49m[38;5;124;43m../../docs/_static/images/Sample 1.tif[39;49m[38;5;124;43m'[39;49m[43m)[49m
-[1;32m      3[0m im [38;5;241m=[39m (im [38;5;241m-[39m im[38;5;241m.[39mmin())[38;5;241m/[39m(im[38;5;241m.[39mmax() [38;5;241m-[39m im[38;5;241m.[39mmin())
-[1;32m      4[0m fig, ax [38;5;241m=[39m subplots([38;5;241m1[39m, [38;5;241m3[39m, figsize[38;5;241m=[39m[[38;5;241m15[39m, [38;5;241m5[39m])
+Cell [0;32mIn [8], line 1[0m
+[0;32m----> 1[0m im [38;5;241m=[39m [43mimageio[49m[38;5;241;43m.[39;49m[43mvolread[49m[43m([49m[38;5;124;43m'[39;49m[38;5;124;43m../../docs/_static/images/Sample 1.tif[39;49m[38;5;124;43m'[39;49m[43m)[49m
+[1;32m      2[0m im [38;5;241m=[39m (im [38;5;241m-[39m im[38;5;241m.[39mmin())[38;5;241m/[39m(im[38;5;241m.[39mmax() [38;5;241m-[39m im[38;5;241m.[39mmin())
+[1;32m      3[0m fig, ax [38;5;241m=[39m subplots([38;5;241m1[39m, [38;5;241m3[39m, figsize[38;5;241m=[39m[[38;5;241m15[39m, [38;5;241m5[39m])
 
 File [0;32m/usr/share/miniconda/envs/test/lib/python3.8/site-packages/imageio/v2.py:389[0m, in [0;36mvolread[0;34m(uri, format, **kwargs)[0m
 [1;32m    387[0m imopen_args [38;5;241m=[39m decypher_format_arg([38;5;28mformat[39m)
