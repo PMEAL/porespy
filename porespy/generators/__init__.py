@@ -52,3 +52,4 @@ from ._noise import fractal_noise
 from ._borders import *
 from ._fractals import random_cantor_dust
 from ._fractals import sierpinski_foam
+from ._spheres_from_coords import *
