@@ -67,10 +67,11 @@ def spheres_from_coords(df, voxel_size, shape=None):
         for i, k in enumerate(df.keys()):
             if k.upper()[0] in cols:
                 df[k.upper()[0]] = df[k]
-            else:
-                df[cols[i]] = df[k]
     else:  # Assume it's a numpy array
-        df = pd.DataFrame(df, columns=cols)
+        df = pd.DataFrame(df, columns=cols[:df.ndim+1])
+
+    if 'R' not in df.keys():
+        df['R'] = voxel_size
 
     vx = voxel_size
     x = ((df['X'] - df['X'].min() + df['R'].max())/vx).astype(int)
@@ -92,11 +93,11 @@ if __name__ == '__main__':
 
     import pandas as pd
     import matplotlib.pyplot as plt
+    import imageio
     import porespy as ps
 
     df = pd.read_csv('point map.csv')
-    df['R'] = 0.2
+    df['R'] = 1.5
     im = spheres_from_coords(df, voxel_size=.1)
-    plt.imshow(ps.visualization.sem(~im, axis=0))
-
-
+    # plt.imshow(ps.visualization.sem(~im, axis=0))
+    # imageio.volsave('spheres.tif', np.array(im, dtype=int))
