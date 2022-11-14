@@ -202,7 +202,7 @@
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;tortuosity_fd&#39;</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="tortuosity_fd"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.simulations.tortuosity_fd.html#porespy.simulations.tortuosity_fd">[docs]</a><span class="k">def</span> <span class="nf">tortuosity_fd</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
+<div class="viewcode-block" id="tortuosity_fd"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.simulations.tortuosity_fd.html#porespy.simulations.tortuosity_fd">[docs]</a><span class="k">def</span> <span class="nf">tortuosity_fd</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">solver</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates the tortuosity of image in the specified direction.</span>
 
@@ -245,6 +245,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">axis</span> <span class="o">&gt;</span> <span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">ndim</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;axis&#39; must be &lt;= </span><span class="si">{</span><span class="n">im</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">openpnm_v3</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">__version__</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;3&#39;</span><span class="p">)</span>
 
     <span class="c1"># Obtain original porosity</span>
     <span class="n">eps0</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">im</span><span class="o">.</span><span class="n">size</span>
@@ -256,16 +257,14 @@
     <span class="c1"># Check if porosity is changed after trimmimg floating pores</span>
     <span class="n">eps</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">im</span><span class="o">.</span><span class="n">size</span>
     <span class="k">if</span> <span class="n">eps</span> <span class="o">&lt;</span> <span class="n">eps0</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;True porosity is </span><span class="si">{</span><span class="n">eps</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">, filled </span><span class="si">{</span><span class="n">eps0</span> <span class="o">-</span> <span class="n">eps</span><span class="si">:</span><span class="s1">.5f</span><span class="si">}</span><span class="s1">&#39;</span>
-                       <span class="s1">&#39; volume fraction of the image for it to percolate.&#39;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Found non-percolating regions, were filled to percolate&#39;</span><span class="p">)</span>
 
     <span class="c1"># Generate a Cubic network to be used as an orthogonal grid</span>
     <span class="n">net</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">CubicTemplate</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">spacing</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
-    <span class="c1"># Create a dummy phase, FIXME: once openpnm v3 is out, remove try/except</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">phase</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">phases</span><span class="o">.</span><span class="n">GenericPhase</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">openpnm_v3</span><span class="p">:</span>
         <span class="n">phase</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">phase</span><span class="o">.</span><span class="n">Phase</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">phase</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">phases</span><span class="o">.</span><span class="n">GenericPhase</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">)</span>
     <span class="n">phase</span><span class="p">[</span><span class="s1">&#39;throat.diffusive_conductance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
     <span class="c1"># Run Fickian Diffusion on the image</span>
     <span class="n">fd</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">FickianDiffusion</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="n">phase</span><span class="p">)</span>
@@ -276,24 +275,27 @@
     <span class="n">cL</span><span class="p">,</span> <span class="n">cR</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span>
     <span class="n">fd</span><span class="o">.</span><span class="n">set_value_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">inlets</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">cL</span><span class="p">)</span>
     <span class="n">fd</span><span class="o">.</span><span class="n">set_value_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">outlets</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">cR</span><span class="p">)</span>
-    <span class="c1"># FIXME: get rid of try/except once openpnm v3 is out</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">pardiso</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">solvers</span><span class="o">.</span><span class="n">PardisoSpsolve</span><span class="p">()</span>
-        <span class="n">fd</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="n">pardiso</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">openpnm_v3</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">solver</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">solver</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">solvers</span><span class="o">.</span><span class="n">PyamgRugeStubenSolver</span><span class="p">(</span><span class="n">tol</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">)</span>
+        <span class="n">fd</span><span class="o">.</span><span class="n">_update_A_and_b</span><span class="p">()</span>
+        <span class="n">fd</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">fd</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">tocsr</span><span class="p">(),</span> <span class="n">fd</span><span class="o">.</span><span class="n">b</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">info</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Solver failed to converge, exit code: </span><span class="si">{</span><span class="n">info</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
         <span class="n">fd</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;solver_family&#39;</span><span class="p">:</span> <span class="s1">&#39;scipy&#39;</span><span class="p">,</span> <span class="s1">&#39;solver_type&#39;</span><span class="p">:</span> <span class="s1">&#39;cg&#39;</span><span class="p">})</span>
         <span class="n">fd</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 
     <span class="c1"># Calculate molar flow rate, effective diffusivity and tortuosity</span>
-    <span class="n">rate_in</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">rate</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">inlets</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">rate_out</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">rate</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">outlets</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="o">-</span><span class="n">rate_out</span><span class="p">,</span> <span class="n">rate_in</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
-        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Something went wrong, inlet and outlet rates do not match!&#39;</span><span class="p">)</span>
+    <span class="n">r_in</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">rate</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">inlets</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">r_out</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">rate</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">outlets</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="o">-</span><span class="n">r_out</span><span class="p">,</span> <span class="n">r_in</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Inlet/outlet rates don&#39;t match: </span><span class="si">{</span><span class="n">r_in</span><span class="si">:</span><span class="s2">.4e</span><span class="si">}</span><span class="s2"> vs. </span><span class="si">{</span><span class="n">r_out</span><span class="si">:</span><span class="s2">.4e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">dC</span> <span class="o">=</span> <span class="n">cL</span> <span class="o">-</span> <span class="n">cR</span>
     <span class="n">L</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span>
     <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">/</span> <span class="n">L</span>
     <span class="c1"># L-1 because BCs are put inside the domain, see issue #495</span>
-    <span class="n">Deff</span> <span class="o">=</span> <span class="n">rate_in</span> <span class="o">*</span> <span class="p">(</span><span class="n">L</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="n">A</span> <span class="o">/</span> <span class="n">dC</span>
+    <span class="n">Deff</span> <span class="o">=</span> <span class="n">r_in</span> <span class="o">*</span> <span class="p">(</span><span class="n">L</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="n">A</span> <span class="o">/</span> <span class="n">dC</span>
     <span class="n">tau</span> <span class="o">=</span> <span class="n">eps</span> <span class="o">/</span> <span class="n">Deff</span>
 
     <span class="c1"># Attach useful parameters to Results object</span>
