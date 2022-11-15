@@ -1,3 +1,4 @@
+import logging
 import numpy as np
 import scipy.ndimage as spim
 from porespy.tools import extract_subsection, bbox_to_slices
@@ -11,7 +12,9 @@ from skimage.measure import regionprops
 from skimage.measure._regionprops import RegionProperties
 from pandas import DataFrame
 from edt import edt
-from loguru import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 def props_to_DataFrame(regionprops):
@@ -62,7 +65,7 @@ def props_to_DataFrame(regionprops):
     # Create a dictionary of all metrics that are simple scalar properties
     d = {}
     for i, k in enumerate(metrics):
-        logger.trace("Processing {k}")
+        logger.info("Processing {k}")
         try:
             d[k] = np.array([r[k] for r in regionprops])
         except ValueError:  # pragma: no cover

@@ -1,4 +1,5 @@
 import inspect as insp
+import logging
 import dask
 import numpy as np
 from edt import edt
@@ -13,8 +14,10 @@ from porespy.tools import unpad, extract_subsection
 from porespy.tools import ps_disk, ps_ball
 from porespy import settings
 from porespy.tools import get_tqdm
-from loguru import logger
+
+
 tqdm = get_tqdm()
+logger = logging.getLogger(__name__)
 
 
 def apply_padded(im, pad_width, func, pad_val=1, **kwargs):
