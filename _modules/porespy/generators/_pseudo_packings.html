@@ -189,7 +189,8 @@
               <article class="bd-article" role="main">
                 
   <h1>Source code for porespy.generators._pseudo_packings</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">numba</span>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">numba</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">scipy.ndimage</span> <span class="k">as</span> <span class="nn">spim</span>
 <span class="kn">from</span> <span class="nn">edt</span> <span class="kn">import</span> <span class="n">edt</span>
@@ -198,9 +199,11 @@
 <span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">get_tqdm</span><span class="p">,</span> <span class="n">ps_round</span><span class="p">,</span> <span class="n">get_border</span>
 <span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">_insert_disks_at_points</span>
 <span class="kn">from</span> <span class="nn">porespy.filters</span> <span class="kn">import</span> <span class="n">trim_disconnected_blobs</span><span class="p">,</span> <span class="n">fftmorphology</span>
-<span class="kn">from</span> <span class="nn">loguru</span> <span class="kn">import</span> <span class="n">logger</span>
 <span class="kn">import</span> <span class="nn">random</span>
+
+
 <span class="n">tqdm</span> <span class="o">=</span> <span class="n">get_tqdm</span><span class="p">()</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="pseudo_gravity_packing"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.generators.pseudo_gravity_packing.html#porespy.generators.pseudo_gravity_packing">[docs]</a><span class="k">def</span> <span class="nf">pseudo_gravity_packing</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">clearance</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">maxiter</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>

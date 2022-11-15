@@ -189,13 +189,16 @@
               <article class="bd-article" role="main">
                 
   <h1>Source code for porespy.networks._maximal_ball</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">psutil</span>
 <span class="kn">import</span> <span class="nn">subprocess</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">loguru</span> <span class="kn">import</span> <span class="n">logger</span>
 <span class="kn">import</span> <span class="nn">imageio</span>
+
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="maximal_ball_wrapper"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.networks.maximal_ball_wrapper.html#porespy.networks.maximal_ball_wrapper">[docs]</a><span class="k">def</span> <span class="nf">maximal_ball_wrapper</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">path_to_exe</span><span class="p">,</span> <span class="n">voxel_size</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">):</span>
@@ -238,7 +241,7 @@
     <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span><span class="n">path_to_exe</span><span class="p">,</span> <span class="n">file</span> <span class="o">+</span> <span class="s2">&quot;.mhd&quot;</span><span class="p">])</span>
     <span class="n">time_elapsed</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">while</span> <span class="n">_is_running</span><span class="p">(</span><span class="s1">&#39;pnextract&#39;</span><span class="p">):</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="s1">&#39;Maximal ball algorithm running for </span><span class="si">{time_elapsed}</span><span class="s1"> s&#39;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Maximal ball algorithm running for </span><span class="si">{time_elapsed}</span><span class="s1"> s&#39;</span><span class="p">)</span>
         <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
         <span class="n">time_elapsed</span> <span class="o">+=</span> <span class="mi">10</span></div>
 

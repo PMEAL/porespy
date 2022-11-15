@@ -189,14 +189,17 @@
               <article class="bd-article" role="main">
                 
   <h1>Source code for porespy.tools._utils</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">importlib</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
-<span class="kn">from</span> <span class="nn">loguru</span> <span class="kn">import</span> <span class="n">logger</span>
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
 <span class="kn">import</span> <span class="nn">psutil</span>
+
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
@@ -217,30 +220,6 @@
         <span class="k">return</span> <span class="kc">False</span>        <span class="c1"># Other type (?)</span>
     <span class="k">except</span> <span class="ne">NameError</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">False</span>        <span class="c1"># Probably standard Python interpreter</span>
-
-
-<span class="k">def</span> <span class="nf">config_logger</span><span class="p">(</span><span class="n">fmt</span><span class="p">,</span> <span class="n">loglevel</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Configures loguru logger with the given format and log level.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    fmt : str</span>
-<span class="sd">        loguru-compatible format used to format logger messages.</span>
-<span class="sd">    loglevel : str</span>
-<span class="sd">        Determines what messages to get printed in console. Options are:</span>
-<span class="sd">        &quot;TRACE&quot;, &quot;DEBUG&quot;, &quot;INFO&quot;, &quot;SUCCESS&quot;, &quot;WARNING&quot;, &quot;ERROR&quot;, &quot;CRITICAL&quot;</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    None.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="k">lambda</span> <span class="n">msg</span><span class="p">:</span> <span class="n">tqdm</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">),</span>
-               <span class="n">level</span><span class="o">=</span><span class="n">loglevel</span><span class="p">,</span>
-               <span class="nb">format</span><span class="o">=</span><span class="n">fmt</span><span class="p">,</span>
-               <span class="n">colorize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
 <span class="nd">@dataclass</span>
@@ -267,8 +246,6 @@
 <span class="sd">        ``True`` will silence the progress bars.  It&#39;s also possible to</span>
 <span class="sd">        adjust the formatting such as ``&#39;colour&#39;`` and ``&#39;ncols&#39;``, which</span>
 <span class="sd">        controls width.</span>
-<span class="sd">    logger_fmt : str</span>
-<span class="sd">        luguru-compatible format used to format the logger messages.</span>
 <span class="sd">    loglevel : str, or int</span>
 <span class="sd">        Determines what messages to get printed in console. Options are:</span>
 <span class="sd">        &quot;TRACE&quot; (5), &quot;DEBUG&quot; (10), &quot;INFO&quot; (20), &quot;SUCCESS&quot; (25), &quot;WARNING&quot; (30),</span>
@@ -282,12 +259,7 @@
             <span class="s1">&#39;ncols&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
             <span class="s1">&#39;leave&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
             <span class="s1">&#39;file&#39;</span><span class="p">:</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">}</span>
-    <span class="n">_logger_fmt</span> <span class="o">=</span> <span class="s1">&#39;&lt;green&gt;{time:YYYY-MM-DD HH:mm:ss}&lt;/green&gt; | &#39;</span> \
-          <span class="s1">&#39;&lt;level&gt;</span><span class="si">{level: &lt;8}</span><span class="s1">&lt;/level&gt; | &#39;</span> \
-          <span class="s1">&#39;&lt;cyan&gt;</span><span class="si">{name}</span><span class="s1">&lt;/cyan&gt;:&lt;cyan&gt;</span><span class="si">{function}</span><span class="s1">&lt;/cyan&gt;:&lt;cyan&gt;</span><span class="si">{line}</span><span class="s1">&lt;/cyan&gt;&#39;</span> \
-          <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">--&gt; &lt;level&gt;</span><span class="si">{message}</span><span class="s1">&lt;/level&gt;&#39;</span>
-    <span class="n">_loglevel</span> <span class="o">=</span> <span class="s2">&quot;ERROR&quot;</span> <span class="k">if</span> <span class="n">_is_ipython_notebook</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;WARNING&quot;</span>
-    <span class="n">config_logger</span><span class="p">(</span><span class="n">_logger_fmt</span><span class="p">,</span> <span class="n">_loglevel</span><span class="p">)</span>
+    <span class="n">_loglevel</span> <span class="o">=</span> <span class="mi">40</span> <span class="k">if</span> <span class="n">_is_ipython_notebook</span><span class="p">()</span> <span class="k">else</span> <span class="mi">30</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -295,32 +267,23 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_ncores</span> <span class="o">=</span> <span class="n">psutil</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">(</span><span class="n">logical</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">logger_fmt</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logger_fmt</span>
-
-    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">loglevel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loglevel</span>
 
-    <span class="nd">@logger_fmt</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">logger_fmt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_logger_fmt</span> <span class="o">=</span> <span class="n">value</span>
-        <span class="n">config_logger</span><span class="p">(</span><span class="n">fmt</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="n">loglevel</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">loglevel</span><span class="p">)</span>
-
     <span class="nd">@loglevel</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">loglevel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-            <span class="n">options</span> <span class="o">=</span> <span class="p">{</span><span class="mi">5</span><span class="p">:</span> <span class="s2">&quot;TRACE&quot;</span><span class="p">,</span>
-                       <span class="mi">10</span><span class="p">:</span> <span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span>
-                       <span class="mi">20</span><span class="p">:</span> <span class="s2">&quot;INFO&quot;</span><span class="p">,</span>
-                       <span class="mi">25</span><span class="p">:</span> <span class="s2">&quot;SUCESS&quot;</span><span class="p">,</span>
-                       <span class="mi">30</span><span class="p">:</span> <span class="s2">&quot;WARNING&quot;</span><span class="p">,</span>
-                       <span class="mi">40</span><span class="p">:</span> <span class="s2">&quot;ERROR&quot;</span><span class="p">,</span>
-                       <span class="mi">50</span><span class="p">:</span> <span class="s2">&quot;CRITICAL&quot;</span><span class="p">}</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">options</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;TRACE&quot;</span> <span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+                <span class="s2">&quot;DEBUG&quot;</span> <span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+                <span class="s2">&quot;INFO&quot;</span> <span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+                <span class="s2">&quot;SUCESS&quot;</span> <span class="p">:</span> <span class="mi">25</span><span class="p">,</span>
+                <span class="s2">&quot;WARNING&quot;</span> <span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
+                <span class="s2">&quot;ERROR&quot;</span> <span class="p">:</span> <span class="mi">40</span><span class="p">,</span>
+                <span class="s2">&quot;CRITICAL&quot;</span> <span class="p">:</span> <span class="mi">50</span>
+            <span class="p">}</span>
             <span class="n">value</span> <span class="o">=</span> <span class="n">options</span><span class="p">[</span><span class="n">value</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_loglevel</span> <span class="o">=</span> <span class="n">value</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;LOGURU_LEVEL&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
-        <span class="n">config_logger</span><span class="p">(</span><span class="n">fmt</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger_fmt</span><span class="p">,</span> <span class="n">loglevel</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">Settings</span><span class="o">.</span><span class="n">__instance__</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>

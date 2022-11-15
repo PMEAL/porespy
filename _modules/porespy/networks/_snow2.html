@@ -189,13 +189,16 @@
               <article class="bd-article" role="main">
                 
   <h1>Source code for porespy.networks._snow2</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">porespy.networks</span> <span class="kn">import</span> <span class="n">regions_to_network</span>
 <span class="kn">from</span> <span class="nn">porespy.networks</span> <span class="kn">import</span> <span class="n">add_boundary_regions</span>
 <span class="kn">from</span> <span class="nn">porespy.networks</span> <span class="kn">import</span> <span class="n">label_phases</span><span class="p">,</span> <span class="n">label_boundaries</span>
 <span class="kn">from</span> <span class="nn">porespy.filters</span> <span class="kn">import</span> <span class="n">snow_partitioning</span><span class="p">,</span> <span class="n">snow_partitioning_parallel</span>
 <span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">Results</span>
-<span class="kn">from</span> <span class="nn">loguru</span> <span class="kn">import</span> <span class="n">logger</span>
+
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="snow2"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.networks.snow2.html#porespy.networks.snow2">[docs]</a><span class="k">def</span> <span class="nf">snow2</span><span class="p">(</span><span class="n">phases</span><span class="p">,</span>
