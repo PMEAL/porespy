@@ -5,15 +5,13 @@ import numpy as np
 logger = logging.getLogger(__name__)
 
 
-def imagej_wrapper(im, plugin_name, path):  # pragma: no cover
+def imagej_wrapper(im, plugin_name, path, mode='interactive'):  # pragma: no cover
     r"""
     Apply ImageJ filters on 3D images.
-
     Parameters
     ----------
     im : ndarray
         The 3D image of the porous material.
-
     plugin_name : str
         Name of the applied ImageJ plugin which could be one of these options:
             - Distance Transform Watershed 3D
@@ -26,15 +24,15 @@ def imagej_wrapper(im, plugin_name, path):  # pragma: no cover
             - Minimum 3D
             - Maximum 3D
             - Mean 3D
-
     path: str
         path to the Fiji application in the local directory
-
+    mode: str
+        The mode to use when initializing pyimagej. Options are headless, gui,
+        and interactive. The default mode is interactive.
     Returns
     -------
     ndarray
         Outputs a ndarray after applying the desired filter on the image.
-
     """
     try:
         import imagej
@@ -48,7 +46,7 @@ def imagej_wrapper(im, plugin_name, path):  # pragma: no cover
         logger.critical(msg)
 
     i = False
-    ij = imagej.init(path, headless=False)
+    ij = imagej.init(path, mode=mode)
     img = 255 * np.array(im.astype("uint8"))
     WindowManager = jimport("ij.WindowManager")
     ij.ui().show("Image", ij.py.to_java(img))
@@ -108,34 +106,30 @@ def imagej_wrapper(im, plugin_name, path):  # pragma: no cover
     return results
 
 
-def imagej_plugin(im, path, plugin_name, args=None):  # pragma: no cover
+def imagej_plugin(im, path, plugin_name, args=None, mode='interactive'):  # pragma: no cover
     r"""
     Apply ImageJ filters on 3D images.
-
     In This function the plugin_name should have a same format as the
     plugin_name in the ImageJ. For example, to apply a Gaussian blur on a 3D
     image, the plugin_name should be 'Gaussian Blur 3D...'
-
     Parameters
     ----------
     im : ndarray
         The 3D image of the porous material
-
     path: str
         Path to the Fiji application in the local directory
-
     plugin_name : str
         Name of the applied ImageJ plugin
-
     args : dict
          A dictionary that containes the required arguments of the
          applied plugin. For example, it could be {'options': 'True'}
-
+    mode: str
+        The mode to use when initializing pyimagej. Options are headless, gui,
+        and interactive. The default mode is interactive.
     Returns
     -------
     ndarray
         Outputs a ndarray after applying the desired filter on the image.
-
     """
     try:
         import imagej
@@ -147,7 +141,7 @@ def imagej_plugin(im, path, plugin_name, args=None):  # pragma: no cover
                " common. This is why it is not explicitly included as a"
                " dependency in porespy.")
         logger.critical(msg)
-    ij = imagej.init(path, headless=False)
+    ij = imagej.init(path, mode=mode)
     img = 255 * np.array(im.astype("uint8"))
     WindowManager = jimport('ij.WindowManager')
     ij.ui().show('Image', ij.py.to_java(img))
