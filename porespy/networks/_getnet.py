@@ -236,7 +236,8 @@ def regions_to_network(regions, phases=None, voxel_size=1, accuracy='standard'):
     net['throat.direct_length'] = np.sqrt(np.sum(dist**2, axis=1))
     net['throat.perimeter'] = np.array(t_perimeter)*voxel_size
     if (accuracy == 'high') and (im.ndim == 2):
-        logger.warning("accuracy='high' only available in 2D, reverting to 'standard'")
+        msg = "accuracy='high' only available in 3D, reverting to 'standard'"
+        logger.warning(msg)
         accuracy = 'standard'
     if (accuracy == 'high'):
         net['pore.volume'] = region_volumes(regions=im, mode='marching_cubes')
