@@ -1,9 +1,12 @@
+import logging
 import numpy as np
 import scipy.ndimage as spim
 from porespy.tools import get_tqdm
 from porespy import settings
-from loguru import logger
+
+
 tqdm = get_tqdm()
+logger = logging.getLogger(__name__)
 
 
 def random_cantor_dust(shape, n, p=2, f=0.8):

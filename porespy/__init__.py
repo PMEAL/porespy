@@ -33,3 +33,16 @@ import numpy as _np
 _np.seterr(divide='ignore', invalid='ignore')
 
 __version__ = tools._get_version()
+
+
+def _setup_logger_rich():
+    import logging
+    from rich.logging import RichHandler
+
+    FORMAT = "%(message)s"
+    logging.basicConfig(
+        format=FORMAT, datefmt="[%X]", handlers=[RichHandler(rich_tracebacks=True)]
+    )
+
+
+_setup_logger_rich()

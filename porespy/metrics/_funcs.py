@@ -1,3 +1,4 @@
+import logging
 import numpy as np
 import scipy.ndimage as spim
 import scipy.spatial as sptl
@@ -9,9 +10,11 @@ from porespy.tools import _check_for_singleton_axes
 from porespy.tools import Results
 from porespy import settings
 from porespy.tools import get_tqdm
-from loguru import logger
 from numba import njit
+
+
 tqdm = get_tqdm()
+logger = logging.getLogger(__name__)
 
 
 def representative_elementary_volume(im, npoints=1000):
