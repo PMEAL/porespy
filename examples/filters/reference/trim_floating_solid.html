@@ -2832,56 +2832,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">KeyboardInterrupt</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span> <span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">line</span> <span class="mi">2</span>
-<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="n">im2d</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">blobs</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">500</span><span class="p">,</span> <span class="mi">500</span><span class="p">])</span>
-<span class="ne">----&gt; </span><span class="mi">2</span> <span class="n">im3d</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">blobs</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">500</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="mi">500</span><span class="p">])</span>
-<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">12</span><span class="p">,</span> <span class="mi">12</span><span class="p">]);</span>
-<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im2d</span><span class="p">);</span>
-
-<span class="nn">File ~/work/porespy/porespy/porespy/generators/_imgen.py:848,</span> in <span class="ni">blobs</span><span class="nt">(shape, porosity, blobiness, divs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">846</span> <span class="k">else</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">847</span>     <span class="n">im</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">gaussian_filter</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">)</span>
-<span class="ne">--&gt; </span><span class="mi">848</span> <span class="n">im</span> <span class="o">=</span> <span class="n">norm_to_uniform</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
-<span class="g g-Whitespace">    </span><span class="mi">849</span> <span class="k">if</span> <span class="n">porosity</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">850</span>     <span class="n">im</span> <span class="o">=</span> <span class="n">im</span> <span class="o">&lt;</span> <span class="n">porosity</span>
-
-<span class="nn">File ~/work/porespy/porespy/porespy/tools/_funcs.py:871,</span> in <span class="ni">norm_to_uniform</span><span class="nt">(im, scale)</span>
-<span class="g g-Whitespace">    </span><span class="mi">869</span> <span class="k">if</span> <span class="n">scale</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">870</span>     <span class="n">scale</span> <span class="o">=</span> <span class="p">[</span><span class="n">im</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">im</span><span class="o">.</span><span class="n">max</span><span class="p">()]</span>
-<span class="ne">--&gt; </span><span class="mi">871</span> <span class="n">im</span> <span class="o">=</span> <span class="p">(</span><span class="n">im</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">im</span><span class="p">))</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">872</span> <span class="n">im</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">erfc</span><span class="p">(</span><span class="o">-</span><span class="n">im</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
-<span class="g g-Whitespace">    </span><span class="mi">873</span> <span class="n">im</span> <span class="o">=</span> <span class="p">(</span><span class="n">im</span> <span class="o">-</span> <span class="n">im</span><span class="o">.</span><span class="n">min</span><span class="p">())</span> <span class="o">/</span> <span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">-</span> <span class="n">im</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
-
-<span class="nn">File &lt;__array_function__ internals&gt;:180,</span> in <span class="ni">std</span><span class="nt">(*args, **kwargs)</span>
-
-<span class="nn">File /usr/share/miniconda/envs/test/lib/python3.8/site-packages/numpy/core/fromnumeric.py:3573,</span> in <span class="ni">std</span><span class="nt">(a, axis, dtype, out, ddof, keepdims, where)</span>
-<span class="g g-Whitespace">   </span><span class="mi">3570</span>     <span class="k">else</span><span class="p">:</span>
-<span class="g g-Whitespace">   </span><span class="mi">3571</span>         <span class="k">return</span> <span class="n">std</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="n">ddof</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-<span class="ne">-&gt; </span><span class="mi">3573</span> <span class="k">return</span> <span class="n">_methods</span><span class="o">.</span><span class="n">_std</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="n">ddof</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">3574</span>                      <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
-<span class="nn">File /usr/share/miniconda/envs/test/lib/python3.8/site-packages/numpy/core/_methods.py:265,</span> in <span class="ni">_std</span><span class="nt">(a, axis, dtype, out, ddof, keepdims, where)</span>
-<span class="g g-Whitespace">    </span><span class="mi">263</span> <span class="k">def</span> <span class="nf">_std</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">264</span>          <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="ne">--&gt; </span><span class="mi">265</span>     <span class="n">ret</span> <span class="o">=</span> <span class="n">_var</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="n">ddof</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">266</span>                <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">268</span>     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="n">mu</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-<span class="g g-Whitespace">    </span><span class="mi">269</span>         <span class="n">ret</span> <span class="o">=</span> <span class="n">um</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">ret</span><span class="p">)</span>
-
-<span class="nn">File /usr/share/miniconda/envs/test/lib/python3.8/site-packages/numpy/core/_methods.py:233,</span> in <span class="ni">_var</span><span class="nt">(a, axis, dtype, out, ddof, keepdims, where)</span>
-<span class="g g-Whitespace">    </span><span class="mi">228</span>     <span class="n">arrmean</span> <span class="o">=</span> <span class="n">arrmean</span> <span class="o">/</span> <span class="n">rcount</span>
-<span class="g g-Whitespace">    </span><span class="mi">230</span> <span class="c1"># Compute sum of squared deviations from mean</span>
-<span class="g g-Whitespace">    </span><span class="mi">231</span> <span class="c1"># Note that x may not be inexact and that we need it to be an array,</span>
-<span class="g g-Whitespace">    </span><span class="mi">232</span> <span class="c1"># not a scalar.</span>
-<span class="ne">--&gt; </span><span class="mi">233</span> <span class="n">x</span> <span class="o">=</span> <span class="n">asanyarray</span><span class="p">(</span><span class="n">arr</span> <span class="o">-</span> <span class="n">arrmean</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">235</span> <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">arr</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="p">(</span><span class="n">nt</span><span class="o">.</span><span class="n">floating</span><span class="p">,</span> <span class="n">nt</span><span class="o">.</span><span class="n">integer</span><span class="p">)):</span>
-<span class="g g-Whitespace">    </span><span class="mi">236</span>     <span class="n">x</span> <span class="o">=</span> <span class="n">um</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">x</span><span class="p">)</span>
-
-<span class="ne">KeyboardInterrupt</span>: 
-</pre></div>
-</div>
+<img alt="../../../_images/57b8df00222edbf8f96fd0fa939537721c9b42d4684d54e495782fe010b03cac.png" src="../../../_images/57b8df00222edbf8f96fd0fa939537721c9b42d4684d54e495782fe010b03cac.png" />
 </div>
 </div>
 </section>
@@ -2904,7 +2855,8 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/89d795806bea8a2f022c78fd42a2a2b367f68f5c58b7b3212434947cd8b60dcf.svg" src="../../../_images/89d795806bea8a2f022c78fd42a2a2b367f68f5c58b7b3212434947cd8b60dcf.svg" /></div>
+<img alt="../../../_images/586b74a27276120020b79ac7572e13baf9e74df19dd67165120a9db137a8fdc6.png" src="../../../_images/586b74a27276120020b79ac7572e13baf9e74df19dd67165120a9db137a8fdc6.png" />
+</div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">conn</span></code> options for 3D images are 6 and 26 for similarly square and diagonal neighbours. Apparent floating solids in the visualized 2D slice may actually be attached to solid in adjacent 2D slice and therefore may not actually be considered to be a floating solid.</p>
 <div class="cell docutils container">
@@ -2923,7 +2875,8 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/91b70550a01d0d179d6dea6743a0df6e2e70ef8ac076fdb5056ff52cbdb2cd6d.svg" src="../../../_images/91b70550a01d0d179d6dea6743a0df6e2e70ef8ac076fdb5056ff52cbdb2cd6d.svg" /></div>
+<img alt="../../../_images/5a890fb3a08a7a5e2851d5afd834b70b2131fbc983ce34137dc7bcd854388773.png" src="../../../_images/5a890fb3a08a7a5e2851d5afd834b70b2131fbc983ce34137dc7bcd854388773.png" />
+</div>
 </div>
 </section>
 </section>
