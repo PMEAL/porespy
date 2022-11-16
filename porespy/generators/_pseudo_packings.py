@@ -1,3 +1,4 @@
+import logging
 import numba
 import numpy as np
 import scipy.ndimage as spim
@@ -7,9 +8,11 @@ from porespy import settings
 from porespy.tools import get_tqdm, ps_round, get_border
 from porespy.tools import _insert_disks_at_points
 from porespy.filters import trim_disconnected_blobs, fftmorphology
-from loguru import logger
 import random
+
+
 tqdm = get_tqdm()
+logger = logging.getLogger(__name__)
 
 
 def pseudo_gravity_packing(im, r, clearance=0, axis=0, maxiter=1000,

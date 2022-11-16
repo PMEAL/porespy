@@ -1,5 +1,6 @@
 import dask.array as da
 import inspect as insp
+import logging
 import numpy as np
 from numba import njit, prange
 from edt import edt
@@ -13,10 +14,10 @@ from porespy.tools import Results
 from porespy.tools import get_tqdm
 from porespy.filters import chunked_func
 from porespy import settings
-from loguru import logger
 
 
 tqdm = get_tqdm()
+logger = logging.getLogger(__name__)
 
 
 def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, peaks=None):
@@ -87,13 +88,13 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, peaks=None):
     to view online example.
 
     """
-    logger.trace("Beginning SNOW algorithm")
+    logger.info("Beginning SNOW algorithm")
     im_shape = np.array(im.shape)
     if im.dtype is not bool:
-        logger.trace("Converting supplied image to boolean")
+        logger.info("Converting supplied image to boolean")
         im = im > 0
     if dt is None:
-        logger.trace("Peforming distance transform")
+        logger.info("Peforming distance transform")
         if np.any(im_shape == 1):
             dt = edt(im.squeeze())
             dt = dt.reshape(im_shape)
@@ -102,7 +103,7 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, peaks=None):
 
     if peaks is None:
         if sigma > 0:
-            logger.trace(f"Applying Gaussian blur with sigma = {sigma}")
+            logger.info(f"Applying Gaussian blur with sigma = {sigma}")
             dt_blurred = spim.gaussian_filter(input=dt, sigma=sigma)*im
         else:
             dt_blurred = np.copy(dt)
@@ -206,7 +207,7 @@ def snow_partitioning_n(im, r_max=4, sigma=0.4, peaks=None):
     _peaks = np.zeros_like(im, dtype=int)
     num = [0]
     for i, j in enumerate(phases_num):
-        logger.trace(f"Processing Phase {j}")
+        logger.info(f"Processing Phase {j}")
         # Isolate active phase from image
         phase = im == j
         # Limit peaks to active phase only
@@ -580,7 +581,7 @@ def trim_nearby_peaks(peaks, dt, f=1):
 
 
 def _estimate_overlap(im, mode='dt', zoom=0.25):
-    logger.trace('Calculating overlap thickness')
+    logger.info('Calculating overlap thickness')
     if mode == 'watershed':
         rev = spim.interpolation.zoom(im, zoom=zoom, order=0)
         rev = rev > 0
@@ -659,7 +660,7 @@ def snow_partitioning_parallel(im,
 
     # Get overlap thickness from distance transform
     chunk_shape = (np.array(shape) / np.array(divs)).astype(int)
-    logger.trace('Beginning parallel SNOW algorithm...')
+    logger.info('Beginning parallel SNOW algorithm...')
 
     if overlap is None:
         overlap = _estimate_overlap(im, mode='dt')
@@ -682,15 +683,15 @@ def snow_partitioning_parallel(im,
                                  sigma=sigma, dtype=dt.dtype)
     regions = da.overlap.trim_internal(regions, trim_depth, boundary='none')
     # TODO: use dask ProgressBar once compatible w/ logging.
-    logger.trace('Applying snow to image chunks')
+    logger.info('Applying snow to image chunks')
     regions = regions.compute(num_workers=cores)
 
     # Relabelling watershed chunks
-    logger.trace('Relabelling watershed chunks')
+    logger.info('Relabelling watershed chunks')
     regions = relabel_chunks(im=regions, chunk_shape=chunk_shape)
 
     # Stitching watershed chunks
-    logger.trace('Stitching watershed chunks')
+    logger.info('Stitching watershed chunks')
     regions = _watershed_stitching(im=regions, chunk_shape=chunk_shape)
     tup = Results()
     tup.im = im

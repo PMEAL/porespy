@@ -1,17 +1,18 @@
+import logging
 import numpy as np
 import openpnm as op
 from porespy.filters import trim_nonpercolating_paths
 from porespy.tools import Results
-from loguru import logger
 from porespy.generators import faces
 
+logger = logging.getLogger(__name__)
 ws = op.Workspace()
 
 
 __all__ = ['tortuosity_fd']
 
 
-def tortuosity_fd(im, axis):
+def tortuosity_fd(im, axis, solver=None):
     r"""
     Calculates the tortuosity of image in the specified direction.
 
@@ -54,6 +55,7 @@ def tortuosity_fd(im, axis):
     """
     if axis > (im.ndim - 1):
         raise Exception(f"'axis' must be <= {im.ndim}")
+    openpnm_v3 = op.__version__.startswith('3')
 
     # Obtain original porosity
     eps0 = im.sum() / im.size
@@ -65,16 +67,14 @@ def tortuosity_fd(im, axis):
     # Check if porosity is changed after trimmimg floating pores
     eps = im.sum() / im.size
     if eps < eps0:  # pragma: no cover
-        logger.warning(f'True porosity is {eps:.2f}, filled {eps0 - eps:.5f}'
-                       ' volume fraction of the image for it to percolate.')
+        logger.warning(f'Found non-percolating regions, were filled to percolate')
 
     # Generate a Cubic network to be used as an orthogonal grid
     net = op.network.CubicTemplate(template=im, spacing=1.0)
-    # Create a dummy phase, FIXME: once openpnm v3 is out, remove try/except
-    try:
-        phase = op.phases.GenericPhase(network=net)
-    except AttributeError:
+    if openpnm_v3:
         phase = op.phase.Phase(network=net)
+    else:
+        phase = op.phases.GenericPhase(network=net)
     phase['throat.diffusive_conductance'] = 1.0
     # Run Fickian Diffusion on the image
     fd = op.algorithms.FickianDiffusion(network=net, phase=phase)
@@ -85,24 +85,27 @@ def tortuosity_fd(im, axis):
     cL, cR = 1.0, 0.0
     fd.set_value_BC(pores=inlets, values=cL)
     fd.set_value_BC(pores=outlets, values=cR)
-    # FIXME: get rid of try/except once openpnm v3 is out
-    try:
-        pardiso = op.solvers.PardisoSpsolve()
-        fd.run(solver=pardiso, verbose=False)
-    except AttributeError:
+    if openpnm_v3:
+        if solver is None:
+            solver = op.solvers.PyamgRugeStubenSolver(tol=1e-8)
+        fd._update_A_and_b()
+        fd.x, info = solver.solve(fd.A.tocsr(), fd.b)
+        if info:
+            raise Exception(f'Solver failed to converge, exit code: {info}')
+    else:
         fd.settings.update({'solver_family': 'scipy', 'solver_type': 'cg'})
         fd.run()
 
     # Calculate molar flow rate, effective diffusivity and tortuosity
-    rate_in = fd.rate(pores=inlets)[0]
-    rate_out = fd.rate(pores=outlets)[0]
-    if not np.allclose(-rate_out, rate_in):  # pragma: no cover
-        raise Exception('Something went wrong, inlet and outlet rates do not match!')
+    r_in = fd.rate(pores=inlets)[0]
+    r_out = fd.rate(pores=outlets)[0]
+    if not np.allclose(-r_out, r_in, rtol=1e-4):  # pragma: no cover
+        logger.error(f"Inlet/outlet rates don't match: {r_in:.4e} vs. {r_out:.4e}")
     dC = cL - cR
     L = im.shape[axis]
     A = np.prod(im.shape) / L
     # L-1 because BCs are put inside the domain, see issue #495
-    Deff = rate_in * (L-1)/A / dC
+    Deff = r_in * (L-1)/A / dC
     tau = eps / Deff
 
     # Attach useful parameters to Results object
