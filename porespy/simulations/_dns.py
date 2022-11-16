@@ -5,6 +5,7 @@ from porespy.filters import trim_nonpercolating_paths
 from porespy.tools import Results
 from porespy.generators import faces
 
+
 logger = logging.getLogger(__name__)
 ws = op.Workspace()
 

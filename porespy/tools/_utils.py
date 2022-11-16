@@ -8,7 +8,7 @@ from tqdm import tqdm
 import psutil
 
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("porespy")
 
 
 __all__ = [
@@ -92,6 +92,7 @@ class Settings:  # pragma: no cover
                 "CRITICAL" : 50
             }
             value = options[value]
+        self._loglevel = value
         logger.setLevel(value)
 
     def __new__(cls):
