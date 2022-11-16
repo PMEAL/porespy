@@ -257,6 +257,8 @@
     <span class="n">im</span> <span class="o">=</span> <span class="n">trim_nonpercolating_paths</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">inlets</span><span class="o">=</span><span class="n">inlets</span><span class="p">,</span> <span class="n">outlets</span><span class="o">=</span><span class="n">outlets</span><span class="p">)</span>
     <span class="c1"># Check if porosity is changed after trimmimg floating pores</span>
     <span class="n">eps</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">im</span><span class="o">.</span><span class="n">size</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">eps</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;No pores remain after trimming floating pores&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">eps</span> <span class="o">&lt;</span> <span class="n">eps0</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Found non-percolating regions, were filled to percolate&#39;</span><span class="p">)</span>
 
