@@ -66,6 +66,8 @@ def tortuosity_fd(im, axis, solver=None):
     im = trim_nonpercolating_paths(im, inlets=inlets, outlets=outlets)
     # Check if porosity is changed after trimmimg floating pores
     eps = im.sum() / im.size
+    if not eps:
+        raise Exception('No pores remain after trimming floating pores')
     if eps < eps0:  # pragma: no cover
         logger.warning(f'Found non-percolating regions, were filled to percolate')
 
