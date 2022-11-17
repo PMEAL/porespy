@@ -105,9 +105,9 @@ if __name__ == '__main__':
     import imageio
     import porespy as ps
 
-    f = r'C:\Users\jeff\OneDrive - University of Waterloo\Research\NRC - Electrolyzers\point map.csv'
+    f = r'C:\Users\jeff\OneDrive - University of Waterloo\Research\NRC - Electrolyzers\point map 2.csv'
     df = pd.read_csv(f)
-    df['R'] = df['pore size']/2
+    df['R'] = df['size ']*1000/2
     im = spheres_from_coords(df, voxel_size=.1)
     # plt.imshow(ps.visualization.sem(~im, axis=0))
     # imageio.volsave('spheres.tif', np.array(im, dtype=int))
@@ -117,5 +117,4 @@ if __name__ == '__main__':
     vol = Volume(temp)
     lego = vol.legosurface(vmin=1, vmax=temp.max(), boundary=False)
     # lego.cmap('jet', on='cells', vmin=1, vmax=temp.max())
-    lego.add_scalarbar()
-    show(lego).close()
+    show(vol, lego, N=2).close()
