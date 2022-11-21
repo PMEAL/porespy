@@ -6,7 +6,7 @@ from rw_simulation import _wrap_indices
 from scipy.stats import linregress
 
 
-def steps_to_displacements(paths, voxel_size, **kwargs):
+def steps_to_displacements(paths, voxel_size):
     r"""
     Compute the displacement of each walker from their starting point in [nm]
 
@@ -119,7 +119,7 @@ def effective_diffusivity_rw(displacements, im, time_step, **kwargs):
     return Deff
 
 
-def tortuosity_rw(displacements, mfp, step_size, voxel_size, **kwargs):
+def tortuosity_rw(displacements, mfp, step_size, voxel_size):
     """
     Computes the tortuosity obtained from the random walk simulation
 
@@ -175,7 +175,7 @@ def tortuosity_rw(displacements, mfp, step_size, voxel_size, **kwargs):
     return t
 
 
-def plot_diffusion(Deffs, time_step, ax=None, **kwargs):
+def plot_diffusion(Deffs, time_step, ax=None):
     """
     Plots effective diffusivity as a function of step number
 
