@@ -103,13 +103,13 @@ def compute_steps(
     Db,
     ndim,
     voxel_size=1,
-    n_steps=1000,
-    steps_per_path=50,
+    n_steps=10000,
+    steps_per_mfp=10,
     **kwargs
 ):
     r"""
-    Compute the number of steps, path length, and step size to be used in the
-    random walk simulation
+    Helper function to compute the step size information in a form suitable for the
+    ``rw`` function
 
     Parameters
     ----------
@@ -121,20 +121,25 @@ def compute_steps(
         The bulk diffusivity of the walker in units of [m2/s]
     ndim : int
         The dimension of the image which will be passed into the random walk
-        simulation. Must be '2' or '3'
+        simulation. Must be '2' or '3'.  The number of dimensions of an image can
+        be obtained with ``im.ndim``.
     voxel_size : float
         The resolution of the image in units of [nm/voxel]
     n_steps : int
-        Number of steps to take before exiting the walk.  A high number
+        Number of steps to take before exiting the walk.  A higher number
         is needed if the void space is highly tortuous so the walkers can
         probe all the space, but this takes longer to run.
-    steps_per_path: int
-        The number of steps to split each path-length into. More steps
-        increases accuracy, but also reduces the time interval over which
-        the simulation is completed for a given number of steps.
+    steps_per_mfp : int
+        The number of steps that each mean free path should be broken into. Since
+        the walkers check if they have collided with solid after each step, this
+        number controls how accurately these collisions are resolved. A high
+        number may be more accurate but slows the simulation since walkers move
+        less distance on each step.
     kwargs
         All additional keyword arguments are ignored, but are included in the
-        returned dictionary
+        returned dictionary. This means they will be passed onto ``rw``. For
+        instance, if ``n_walkers`` is included it will not by used by this function,
+        but means that it need not be explicitly passed to ``rw``.
 
     Returns
     -------
@@ -155,10 +160,7 @@ def compute_steps(
                         walker hits a wall before this distance is reached it
                         also changes direction.
         time_step       float, The time it takes to complete each step [s]
-        n_mfps          float, The number of mean free paths that each walker
-                        will undergo during the simulation. This can also be
-                        found as ``n_steps * step_size / path_length``.
-        steps_per_path  as passed in
+        steps_per_mpf   as passed in
         voxel_size      as passed in
         n_steps         as passed in
         mfp             as passed in
@@ -194,18 +196,17 @@ def compute_steps(
     walk = kwargs
     walk['voxel_size'] = voxel_size
     walk['n_steps'] = n_steps
-    walk['steps_per_path'] = steps_per_path
+    walk['steps_per_mfp'] = steps_per_mfp
     walk['mfp'] = mfp
     walk['v_rel'] = v_rel
     walk['Db'] = Db
     walk['path_length'] = walk['mfp'] / walk['voxel_size']
     path_length = walk['path_length']
-    step_size = path_length / steps_per_path
+    step_size = path_length / steps_per_mfp
     if step_size > 1:
-        raise ValueError(f'Step size cannot exceed one voxel: {step_size}')
+        raise ValueError('Step size exceeds 1 voxel, try larger steps_per_mfp')
     walk['step_size'] = step_size
     walk['time_step'] = step_size * voxel_size / (walk['v_rel'] * ndim)
-    walk['n_mfps'] = n_steps * step_size / path_length
     return walk
 
 
@@ -223,9 +224,10 @@ def rw(
     **kwargs,
 ):
     r"""
-    Perform a random walk on an image
+    Perform a random walk on an image using the given parameters.
 
-    All arguments are in units of voxels
+    All arguments are in units of voxels. Use the ``compute_steps`` helper function
+    if necessary to convert physical sizes to voxels.
 
     Parameters
     ----------
@@ -234,16 +236,17 @@ def rw(
         values indicating the phase of interest.
     path_length : float
         The length of the mean-free path in units of [voxels]. When walkers
-        travel this distance, without hitting a wall, they are assigned a new
-        direction vector and their distance travelled is reset.
+        travel this distance without hitting a wall they are assigned a new
+        direction vector and they travel along a new path.
     step_size : float
         The length of each step taken by the walkers in units of [voxels]. This
         value should be some fraction of the ``path_length``, and effectively
-        controles the resolution of walk.  A large value allows for longer paths
-        to be probed, but also means that the walker will overshoot the endpoint
-        of its mean-free path by a larger margin.  A smaller value however means
-        that longer run times are required to probe the same amount of pore space.
-        If not provided then it is assumed to be 1% of the path length.
+        controls the resolution of walk. If ``step_size`` is too large, then
+        walkers will not accurately detect collsions with walls. A small value
+        will give more accurate results but means that longer run times are
+        required to probe the same amount of pore space. Given that the solid
+        is approximated as a rough voxel surface, this accuracy is probably not
+        justified. If not provided then it is assumed to be 10% of the path length.
     n_steps : int
         Number of steps to take before exiting the simulation. A high number
         is needed if the void space is highly tortuous so the walkers can
@@ -363,7 +366,7 @@ def rw(
             # every stride steps we save the locations of the walkers to path
             if i % n_write == 0:
                 path[int(i / n_write), :, :-1] = loc.T  # Record new position of walkers
-                path[int(i / n_write), :, -1] = i  # Record new position of walkers
+                path[int(i / n_write), :, -1] = i  # Record index of current step
             pbar.update()
     return path
 

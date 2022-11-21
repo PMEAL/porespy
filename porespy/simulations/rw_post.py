@@ -58,15 +58,19 @@ def steps_to_displacements(paths, voxel_size, **kwargs):
     return dt
 
 
-def effective_diffusivity(displacements, im, time_step, **kwargs):
+def effective_diffusivity_rw(displacements, im, time_step, **kwargs):
     r"""
     Calculates the effective diffusivity based on physical displacements of random
     walkers
 
+    This function uses the kinetic theory of gases to obtain the diffusivity, in
+    constrast to ``tortuosity_fd`` which uses a statistical analysis of path lengths.
+
     Parameters
     ----------
     displacements : ndarray
-        The displacements the walkers
+        The displacements the walkers as computed by the ``steps_to_displacements``
+        function.
     im : ndarray
         The image on which the random walk was conducted.
     time_step : float
@@ -76,12 +80,17 @@ def effective_diffusivity(displacements, im, time_step, **kwargs):
 
     Returns
     -------
-    Deff : Results object
+    Deff : dataclass
         A dataclass with the following attributes:
-        Deff : Effective diffusivity in all directions
-        Deff_x : Effective diffusivity in X dimension
-        Deff_y : Effective diffusivity in Y dimension
-        Deff_z : Effective diffusivity in Z dimension
+
+        ========== ==========================================================
+        attribute  description
+        ========== ==========================================================
+        Deff       Overall effective diffusivity
+        Deff_x     Effective diffusivity in x-dimension
+        Deff_y     Effective diffusivity  in y-dimension
+        Deff_z     Effective diffusivity in z-dimension
+        ========== ==========================================================
 
     """
     d, dx, dy, dz, n = displacements
@@ -114,7 +123,10 @@ def tortuosity_rw(displacements, mfp, step_size, voxel_size, **kwargs):
     """
     Computes the tortuosity obtained from the random walk simulation
 
-    Uses a statistical expected displacement method, instead of kinetic theory
+    This function uses a statistical analysis based on the expected displacement
+    of the walkers, instead of the kinetic theory of gases that is used by
+    ``effective_diffusivity_rw``.
+
     Parameters
     ----------
     displacements : ndarray
@@ -163,60 +175,15 @@ def tortuosity_rw(displacements, mfp, step_size, voxel_size, **kwargs):
     return t
 
 
-def calc_probed(im, paths, mode='symmetric'):
-    r"""
-    Calculates the percentage of the void space that the random walk has probed.
+def plot_diffusion(Deffs, time_step, ax=None, **kwargs):
+    """
+    Plots effective diffusivity as a function of step number
 
     Parameters
     ----------
-    im : ndarray
-        The original binary image used to simulate the random walk
-    paths : ndarray
-        The path of the walkers as returned by the random walk function
-    mode : str
-        How the edges were dealt with during the random walk, either
-        ``'periodic'`` or ``'symmetric'``.
-
-    Returns
-    -------
-    percent_probed : float
-        The percentage of void voxels that have been occupied by at least one
-        walker at any point during the random walk
-    probing_frequency : float
-        The frequency of probing. This should be equal to
-        ``n_walkers * n_steps / im.sum()``
-
-    """
-    porosity = im.sum()/im.size
-    im_blank = np.zeros(im.shape, dtype=int)
-    for i in range(len(paths[:, ...])):
-        locs = np.around(paths[i, :, :-1], decimals=0).astype(int)
-        locs = _wrap_indices(locs.T, im.shape, mode=mode)
-        im_blank[locs] += 1
-    # number of voxels through which the path has passed
-    probed = np.count_nonzero(im_blank) / im_blank.size
-    percent_probed = probed / porosity
-    probing_frequency = np.sum(im_blank) / (im_blank.size * porosity)
-    f = Results()
-    f.percent_probed = percent_probed
-    f.probing_frequency = probing_frequency
-    return f
-
-# plotting functions:
-
-
-def plot_diffusion(walk, ax=None):
-    """
-    Plots tortuosity as a function of step #
-
-    This function will recompute diffusion with 'effective_diffusivity' if the 'eDiff'
-    attribute has not already been assigned to the walk object.
-
-    Parameters
-    ----------
-    walk:
-        The 'walk', returned by the 'rw' or 'rw_parallel' functions. In this function,
-        the required attributes are:
+    Deffs : ndarray
+        The effective diffusivity of each walker as computed by the
+        ``effective_diffusivity_rw`` function
 
     ax : Axes
         A matplotlib Axes handle for the axes onto which to place the plot
@@ -227,33 +194,29 @@ def plot_diffusion(walk, ax=None):
         The matplotlib Axes handle with the diffusion plot drawn on it.
     """
 
+    diff, diffx, diffy, diffz, step_num = Deffs
+    n_write = np.diff(step_num)[0]
+    n_steps = np.amax(step_num) + n_write
+    s = np.arange(1, n_steps/n_write) * n_write
+    dim = 3 if np.any(diffz) else 2
     if not ax:
         fig, ax = plt.subplots(1, 1, figsize=(8, 6))
 
-    s = np.arange(0, walk.path.shape[0]) * walk.time_step * walk.stride
-    if not hasattr(walk, 'eDiff'):
-        print('Running diffusion calculation...')
-        diff, diffx, diffy, diffz = effective_diffusivity(walk, inplace=False)
-    else:
-        diff, diffx, diffy, diffz = walk.eDiff, walk.eDiff_x, walk.eDiff_y, walk.eDiff_z
-    ax.plot(s[1:], diff, '.', label=f'Diffusion: {diff[-1]:0.4} m\u00b2/s')
-    ax.plot(s[1:], diffx, '.', label=f'Diffusion in X: {diffx[-1]:0.4} m\u00b2/s')
-    ax.plot(s[1:], diffy, '.', label=f'Diffusion in Y: {diffy[-1]:0.4} m\u00b2/s')
-    if walk.im.ndim == 3:
-        ax.plot(s[1:], diffz, '.', label=f'Diffusion in Z: {diffz[-1]:0.4} m\u00b2/s')
-    if walk.porosity > 0.9:
-        ax.plot([0, s[-1]], [walk.Db, walk.Db], '-',
-                label=f'Bulk diffusion: {walk.Db:0.4} m\u00b2/s')
+    ax.plot(s, diff, '.', label=f'Diffusion: {diff[-1]:0.4} m\u00b2/s')
+    ax.plot(s, diffx, '.', label=f'Diffusion in X: {diffx[-1]:0.4} m\u00b2/s')
+    ax.plot(s, diffy, '.', label=f'Diffusion in Y: {diffy[-1]:0.4} m\u00b2/s')
+    if dim == 3:
+        ax.plot(s, diffz, '.', label=f'Diffusion in Z: {diffz[-1]:0.4} m\u00b2/s')
     ax.set_xlabel('Time [s]')
     ax.set_ylabel('Diffusion Coefficient [m\u00b2/s]')
-    ax.set_title(f'{walk.im.ndim}D Diffusion Random Walk Simulation')
+    ax.set_title(f'{dim}D Diffusion Random Walk Simulation')
     ax.legend()
     return ax
 
 
 def plot_tau(taus, ax=None):
     """
-    Plots tortuosity as a function of step #
+    Plots tortuosity as a function of step number
 
     Parameters
     ----------
