@@ -187,7 +187,7 @@ def compute_steps(
         precision of the walkers increases, but more steps are required to
         simulate the same period of time
     if 'path_length' << 1 voxel, then either the image is too coarse, or
-    knudsen diffusion is likely to be insignificant in your image, in which
+    Knudsen diffusion is likely to be insignificant in your image, in which
     case it is suggested to use knudsen=False
 
     """
@@ -220,11 +220,12 @@ def rw(
     start=None,
     edges='periodic',
     mode='random',
-    _parallel=False,
     **kwargs,
 ):
     r"""
     Perform a random walk on an image
+
+    All arguments are in units of voxels
 
     Parameters
     ----------
@@ -295,9 +296,9 @@ def rw(
     Returns
     -------
     paths : ndarray
-        A numpy ndarray of size ``[n_steps, n_walkers, im.ndim]``. The
-        [x, y, [z]] location of the walker at each step is recorded in the
-        final column.
+        A numpy ndarray of size ``[n_steps, n_walkers, im.ndim + 1]``. The
+        [x, y, [z], step_num] of the walker at each step is recorded in the
+        final axis.
     """
     # Parse input arguments
     step_size = path_length/100 if step_size is None else step_size
@@ -305,7 +306,7 @@ def rw(
     # Initialize random number generator
     rng = np.random.default_rng(seed)
     # Allocate empty array for path info
-    path = np.zeros([int(n_steps / n_write), n_walkers, im.ndim])
+    path = np.zeros([int(n_steps / n_write), n_walkers, im.ndim + 1])
     # Generate the starting conditions:
     if start is None:
         start = im
@@ -313,7 +314,8 @@ def rw(
     # Get initial direction vector for each walker
     x, y, z = _new_vector(N=n_walkers, L=step_size, ndim=im.ndim, mode=mode, rng=rng)
     loc = np.copy(start)  # initial location for each walker
-    path[0, :] = loc.T  # save locations to path
+    path[0, :, :-1] = loc.T  # save locations to path
+    path[0, :, -1] = 0  # Add step number
     i = 0
 
     with tqdm(range(n_steps - 1), **ps.settings.tqdm) as pbar:
@@ -360,7 +362,8 @@ def rw(
             i += 1  # Increment the step index
             # every stride steps we save the locations of the walkers to path
             if i % n_write == 0:
-                path[int(i / n_write), :] = loc.T  # Record new position of walkers
+                path[int(i / n_write), :, :-1] = loc.T  # Record new position of walkers
+                path[int(i / n_write), :, -1] = i  # Record new position of walkers
             pbar.update()
     return path
 
@@ -522,7 +525,8 @@ def _new_vector(N=1, L=1, ndim=3, mode='random', rng=None):
             # x, y, z = options[np.random.randint(0, len(options), N), :].T
             x, y, z = options[rng.integers(0, len(options), N), :].T
         # x, y, z = x / ndim ** 0.5, y / ndim ** 0.5, z / ndim ** 0.5
-
+    else:
+        raise Exception(f'Unrecognized mode {mode}')
     temp = np.array((x, y, z)) * L
     return temp
 

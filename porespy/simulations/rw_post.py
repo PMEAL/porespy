@@ -29,6 +29,7 @@ def steps_to_displacements(paths, voxel_size, **kwargs):
         x          The x-component of the displacement
         y          The y-component of the displacement
         z          The z-component of the displacement
+        step_num   The step number corresponding to the given displacement
         ========== ==========================================================
 
     Notes
@@ -41,21 +42,23 @@ def steps_to_displacements(paths, voxel_size, **kwargs):
     # Get the total displacements in each direction and overall
     dx = paths[:, :, 0] - paths[0, :, 0]  # all x's subtract initial x position
     dy = paths[:, :, 1] - paths[0, :, 1]
-    try:
+    if paths.shape[-1] == 4:
         dz = paths[:, :, 2] - paths[0, :, 2]
-    except IndexError:
+    else:
         dz = np.zeros(np.shape(dx))
     d = (dx ** 2 + dy ** 2 + dz ** 2) ** 0.5
+    step_num = paths[:, 0, -1]
     # Scale the displacements from voxels to nm
     dt = Results()
     dt.total = d * voxel_size
     dt.x = dx * voxel_size
     dt.y = dy * voxel_size
     dt.z = dz * voxel_size
+    dt.step_num = step_num
     return dt
 
 
-def effective_diffusivity(displacements, im, n_steps, time_step, **kwargs):
+def effective_diffusivity(displacements, im, time_step, **kwargs):
     r"""
     Calculates the effective diffusivity based on physical displacements of random
     walkers
@@ -66,10 +69,6 @@ def effective_diffusivity(displacements, im, n_steps, time_step, **kwargs):
         The displacements the walkers
     im : ndarray
         The image on which the random walk was conducted.
-    n_steps : int
-        The total number of steps taken by the walkers during the simulation. This
-        cannot be inferred from the ``displacements`` array since not all steps are
-        recorded if ``n_write`` was greater than 1.
     time_step : float
         The time elapsed per step of each walker in seconds [s]. Can be calculated as
         `step_size / v_rel` where `v_rel` is the average gas particle velocity,
@@ -85,15 +84,15 @@ def effective_diffusivity(displacements, im, n_steps, time_step, **kwargs):
         Deff_z : Effective diffusivity in Z dimension
 
     """
-    d, dx, dy, dz = displacements
+    d, dx, dy, dz, n = displacements
     d2 = d[1:, :] ** 2
     dx2 = dx[1:, :] ** 2
     dy2 = dy[1:, :] ** 2
     dz2 = dz[1:, :] ** 2
 
-    n_steps_nominal = n_steps
-    n_write = int(n_steps/d.shape[0])
-    s = np.arange(1, n_steps_nominal/n_write) * n_write
+    n_write = np.diff(n)[0]
+    n_steps = np.amax(n) + n_write
+    s = np.arange(1, n_steps/n_write) * n_write
     dim = 3 if dz.any() else 2
 
     porosity = im.sum()/im.size
@@ -107,10 +106,11 @@ def effective_diffusivity(displacements, im, n_steps, time_step, **kwargs):
     Deff.Deff_x = Dx
     Deff.Deff_y = Dy
     Deff.Deff_z = Dz
+    Deff.step_num = n
     return Deff
 
 
-def tortuosity_rw(displacements, n_steps, mfp, step_size, voxel_size, **kwargs):
+def tortuosity_rw(displacements, mfp, step_size, voxel_size, **kwargs):
     """
     Computes the tortuosity obtained from the random walk simulation
 
@@ -121,10 +121,6 @@ def tortuosity_rw(displacements, n_steps, mfp, step_size, voxel_size, **kwargs):
         The displacements of walkers
     mfp : float
         The mean free path of the walkers in units of [nm]
-    n_steps : int
-        The total number of steps taken by the walkers during the simulation. This
-        cannot be inferred from the ``displacements`` array since not all steps are
-        recorded if ``n_write`` was greater than 1.
     step_size : float
         The size of the step taken by each walker on each step, in units of [voxels]
     voxel_size : float
@@ -144,13 +140,14 @@ def tortuosity_rw(displacements, n_steps, mfp, step_size, voxel_size, **kwargs):
         tau_z      tortuosity in z-dimension
         ========== ==========================================================
     """
-    d, dx, dy, dz = displacements
+    d, dx, dy, dz, n = displacements
     d2 = (d ** 2).mean(axis=1)
     dx2 = (dx ** 2).mean(axis=1)
     dy2 = (dy ** 2).mean(axis=1)
     dz2 = (dz ** 2).mean(axis=1)
 
-    n_write = int(n_steps/d.shape[0])
+    n_write = np.diff(n)[0]
+    n_steps = np.amax(n) + n_write
     s = np.arange(1, n_steps/n_write) * n_write
     res = voxel_size
     dim = 3 if dz.any() else 2
@@ -162,6 +159,7 @@ def tortuosity_rw(displacements, n_steps, mfp, step_size, voxel_size, **kwargs):
     t.tau_x = expected_msd1D/(dx2[1:])
     t.tau_y = expected_msd1D/(dy2[1:])
     t.tau_z = expected_msd1D/(dz2[1:])
+    t.step_num = n
     return t
 
 
@@ -192,7 +190,7 @@ def calc_probed(im, paths, mode='symmetric'):
     porosity = im.sum()/im.size
     im_blank = np.zeros(im.shape, dtype=int)
     for i in range(len(paths[:, ...])):
-        locs = np.around(paths[i, ...], decimals=0).astype(int)
+        locs = np.around(paths[i, :, :-1], decimals=0).astype(int)
         locs = _wrap_indices(locs.T, im.shape, mode=mode)
         im_blank[locs] += 1
     # number of voxels through which the path has passed
@@ -253,7 +251,7 @@ def plot_diffusion(walk, ax=None):
     return ax
 
 
-def plot_tau(taus, n_steps, ax=None):
+def plot_tau(taus, ax=None):
     """
     Plots tortuosity as a function of step #
 
@@ -270,10 +268,11 @@ def plot_tau(taus, n_steps, ax=None):
         The matplotlib Axes handle with the tortuosity plot drawn on it.
 
     """
-    tau, taux, tauy, tauz = taus
-    n_write = int(n_steps/tau.shape[0])
-    s = np.arange(1, n_steps/n_write) * n_write
+    tau, taux, tauy, tauz, step_num = taus
+    n_write = np.diff(step_num)[0]
+    n_steps = np.amax(step_num) + n_write
     dim = 2 if np.all(np.isinf(tauz)) else 3
+    s = np.arange(1, n_steps/n_write) * n_write
 
     if not ax:
         fig, ax = plt.subplots(1, 1, figsize=(8, 6))
@@ -290,19 +289,16 @@ def plot_tau(taus, n_steps, ax=None):
     return ax
 
 
-def msd_vs_nsteps(displacements, n_steps, step_size, voxel_size, ax=None, **kwargs):
+def msd_vs_nsteps(displacements, ax=None):
     r"""
     Plot mean-squared displacement in voxels vs number of steps
 
     Parameters
     ----------
     displacements : ndarray
-        The paths of the walkers as computed by the ``rw`` function.
+        The displacments of the walkers in units of [nm]
     path_length : scalar
         The distance a walker travelled before choosing another direction.
-    stride : int
-        The spacing to use between points when computing displacement. Higher
-        values result in smoother data but may lose features.
     ax: [optional]
         a handle to a matplotlib axes object
 
@@ -312,19 +308,20 @@ def msd_vs_nsteps(displacements, n_steps, step_size, voxel_size, ax=None, **kwar
         The handle to the plotted data
 
     """
-    d, dx, dy, dz = displacements
+    d, dx, dy, dz, step_num = displacements
     d2 = (d ** 2).mean(axis=1)
     dx2 = (dx ** 2).mean(axis=1)
     dy2 = (dy ** 2).mean(axis=1)
     dz2 = (dz ** 2).mean(axis=1)
 
-    n_write = int(n_steps/d.shape[0])
-    s = np.arange(1, n_steps/n_write) * n_write
+    n_write = np.diff(step_num)[0]
+    n_steps = np.amax(step_num) + n_write
     dim = 3 if dz.any() else 2
+    # s = np.arange(1, n_steps/n_write) * n_write
+    s = np.arange(0, n_steps, n_write)
 
     if not ax:
         fig, ax = plt.subplots(1, 1, figsize=(10, 6))
-    s = np.arange(0, n_steps, n_write)
 
     lines = [(s, d2, 'Total', 'r'),
              (s, dx2, 'X', 'g'),
@@ -388,10 +385,12 @@ def rw_to_image(paths, im, edges='symmetric', tiled=True, color_by='count'):
         Option      Description
         =========== ==========================================================
         'count'     Each voxel will contain the number of times it was visited
-
         'step'      Each voxel will contain the step number at which is was
                     last visited
+        'visited'   A 1 is placed in any voxel which was visited
         =========== ==========================================================
+
+        In all cases the non-active phase is label with -1.
 
     Returns
     -------
@@ -406,30 +405,35 @@ def rw_to_image(paths, im, edges='symmetric', tiled=True, color_by='count'):
     ``rw_to_image(path=path[:, [1, 3, 5], :]`` for example.
 
     """
+    paths = paths.copy()
+    im2 = im.copy()
     if tiled:  # Convert image to appropriate size
         N_min = []
         N_max = []
-        for i in range(im.ndim):
+        for i in range(im2.ndim):
             imin = np.amin(paths[..., i])
-            N_min.append(int((np.abs(imin // im.shape[i])) * im.shape[i]))
+            N_min.append(int((np.abs(imin // im2.shape[i])) * im2.shape[i]))
             imax = np.amax(paths[..., i])
-            N_max.append(int(np.ceil(imax / im.shape[i]) * im.shape[i]))
+            N_max.append(int(np.ceil(imax / im2.shape[i]) * im2.shape[i]))
         N_min = np.max(N_min) * np.ones(len(N_min)).astype(int)
-        N_max = np.max(N_max) * np.ones(len(N_max)).astype(int)
+        N_max = np.max(N_max) * np.ones(len(N_max)).astype(int) - N_min
         max_shape = max(max(N_min), max(N_max))
-        paths[..., :] = paths[..., :] + max_shape
+        paths[..., :-1] = paths[..., :-1] + max_shape
         padmode = 'wrap' if edges == 'periodic' else 'symmetric'
-        padding = tuple([(max_shape, max_shape) for i in range(im.ndim)])
-        im = np.pad(im, padding, mode=padmode).astype(bool)
-    im_blank = np.zeros_like(im, dtype=int)
+        padding = tuple([(max_shape, max_shape) for i in range(im2.ndim)])
+        im2 = np.pad(im2, padding, mode=padmode).astype(bool)
+    im_blank = np.zeros_like(im2, dtype=float)
+    im_blank[~im2] = -1
     for i in range(paths.shape[0]):
-        locs = np.around(paths[i, ...], decimals=0).astype(int)
+        locs = np.around(paths[i, :, :-1], decimals=0).astype(int)
         if not tiled:
-            locs = _wrap_indices(locs.T, im.shape, mode=edges)
+            locs = _wrap_indices(locs.T, im2.shape, mode=edges)
         else:
             locs = tuple(locs.T)
         if color_by == 'step':
-            im_blank[locs] = i + 1
+            im_blank[locs] = paths[i, :, -1][0]
         elif color_by == 'count':
             im_blank[locs] += 1
+        elif color_by == 'visited':
+            im_blank[locs] = 1
     return im_blank
