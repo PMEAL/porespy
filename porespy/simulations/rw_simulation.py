@@ -9,7 +9,7 @@ from time import perf_counter
 
 
 __all__ = [
-    'calc_mfp',
+    'calc_gas_props',
     'compute_steps',
     'rw',
 ]
@@ -27,7 +27,7 @@ def timer(func):
     return wrap_func
 
 
-def calc_mfp(P, T, MW, mu):
+def calc_gas_props(P, T, MW, mu):
     r"""
     Uses kinetic theory of gases to computes mean free path, average velocity,
     and diffusion coefficient of a molecule at given thermodynamic conditions
@@ -138,7 +138,7 @@ def compute_steps(
     kwargs
         All additional keyword arguments are ignored, but are included in the
         returned dictionary. This means they will be passed onto ``rw``. For
-        instance, if ``n_walkers`` is included it will not by used by this function,
+        instance, if ``n_walkers`` is included it will not be used by this function,
         but means that it need not be explicitly passed to ``rw``.
 
     Returns
@@ -256,9 +256,11 @@ def rw(
         takes longer to run.
     n_write : int
         The number of steps to take between recording walker positions in
-        the `path' array. Default is 1, in which case all steps are recorded.
+        the `path' array. Default is 10, in which case all steps are recorded.
         Values larger than 1 enable longer walks without running out of memory
-        due to size of `path`.
+        due to size of `path`. A value of 1 is really only necessary if a
+        visualization of the walker paths is planned, in which case `n_walkers`
+        should be lower.
     start : ndimage
         A boolean image with ``True`` values indicating where walkers should
         start. If not provided then start points will be selected from the
@@ -320,7 +322,6 @@ def rw(
     path[0, :, :-1] = loc.T  # save locations to path
     path[0, :, -1] = 0  # Add step number
     i = 0
-
     with tqdm(range(n_steps - 1), **ps.settings.tqdm) as pbar:
         while i < (n_steps - 1):
             # if image is 2D, this excludes the z coordinate

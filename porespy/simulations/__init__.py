@@ -15,8 +15,20 @@ This module contains routines for performing simulations directly on images
 
     simulations.drainage
     simulations.tortuosity_fd
+    simulations.rw
+    simulations.calc_gas_props
+    simulations.compute_steps
+    simulations.steps_to_displacements
+    simulations.effective_diffusivity_rw
+    simulations.tortuosity_rw
+    simulations.plot_deff
+    simulations.plot_tau
+    simulations.plot_msd
+    simulations.rw_to_image
 
 """
 
 from ._drainage import *
 from ._dns import *
+from .rw_simulation import *
+from .rw_post import *

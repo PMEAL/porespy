@@ -1,9 +1,19 @@
-import sys
 import numpy as np
 from porespy.tools import Results
 import matplotlib.pyplot as plt
 from rw_simulation import _wrap_indices
 from scipy.stats import linregress
+
+
+__all__ = [
+    'steps_to_displacements',
+    'effective_diffusivity_rw',
+    'tortuosity_rw',
+    'plot_deff',
+    'plot_tau',
+    'plot_msd',
+    'rw_to_image',
+]
 
 
 def steps_to_displacements(paths, voxel_size):
@@ -58,7 +68,7 @@ def steps_to_displacements(paths, voxel_size):
     return dt
 
 
-def effective_diffusivity_rw(displacements, im, time_step, **kwargs):
+def effective_diffusivity_rw(displacements, im, time_step):
     r"""
     Calculates the effective diffusivity based on physical displacements of random
     walkers
@@ -76,7 +86,7 @@ def effective_diffusivity_rw(displacements, im, time_step, **kwargs):
     time_step : float
         The time elapsed per step of each walker in seconds [s]. Can be calculated as
         `step_size / v_rel` where `v_rel` is the average gas particle velocity,
-        as calculated by `calc_kinetic_constants`.
+        as calculated by `calc_gas_props`.
 
     Returns
     -------
@@ -175,7 +185,7 @@ def tortuosity_rw(displacements, mfp, step_size, voxel_size):
     return t
 
 
-def plot_diffusion(Deffs, time_step, ax=None):
+def plot_deff(Deffs, time_step, ax=None):
     """
     Plots effective diffusivity as a function of step number
 
@@ -198,7 +208,7 @@ def plot_diffusion(Deffs, time_step, ax=None):
     n_write = np.diff(step_num)[0]
     n_steps = np.amax(step_num) + n_write
     s = np.arange(1, n_steps/n_write) * n_write
-    dim = 3 if np.any(diffz) else 2
+    dim = 3 if diffz.any() else 2
     if not ax:
         fig, ax = plt.subplots(1, 1, figsize=(8, 6))
 
@@ -252,7 +262,7 @@ def plot_tau(taus, ax=None):
     return ax
 
 
-def msd_vs_nsteps(displacements, ax=None):
+def plot_msd(displacements, ax=None):
     r"""
     Plot mean-squared displacement in voxels vs number of steps
 
