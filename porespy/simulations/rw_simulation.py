@@ -4,10 +4,8 @@ import porespy as ps
 from scipy import constants as C
 import dask
 import dask.array as da
-from porespy.tools import Results
 from functools import wraps
 from time import perf_counter
-from loguru import logger
 
 
 __all__ = [
@@ -29,15 +27,10 @@ def timer(func):
     return wrap_func
 
 
-def calc_mfp(
-    P=101325,
-    T=298,
-    MW=0.032,
-    mu=1.9e-5,
-):
+def calc_mfp(P, T, MW, mu):
     r"""
-    Uses kinetic theory of gases to computes mean free path, average velocity
-    and diffusion coefficient
+    Uses kinetic theory of gases to computes mean free path, average velocity,
+    and diffusion coefficient of a molecule at given thermodynamic conditions
 
     Parameters
     ----------
@@ -46,19 +39,19 @@ def calc_mfp(
     T : float
         The gas temperature in units of [K]
     MW : float
-        The molecular weight of the gas molecule in units of [kg/mol]
+        The molecular weight of the diffusion gas molecule in units of [kg/mol]
     mu : float
-        The dynamic viscosity of the gas in units of [Pa.s]
+        The dynamic viscosity of the gas mixture in units of [Pa.s]
 
     Returns
     -------
     mpf : dict
-        A dictionary with the following keys.  This can be passed directly to the
-        ``compute_steps`` function as kwarys (i.e., **kinetics).
+        A dictionary with the following keys. This can be passed directly to the
+        ``compute_steps`` function as kwargs (i.e., **kinetics).
 
-        ======= =====================================================================
+        ======= =============================================================
         key     description
-        ======= =====================================================================
+        ======= =============================================================
         mfp     float, Mean free path of the gas in units of [nm]
         v_rel   float, The kinetic velocity of the gas in units of [nm/s]
                 relative to other moving gas particles, calculated using
@@ -68,19 +61,18 @@ def calc_mfp(
         P       float, the pressure of the simulation in units of [Pa],
                 as passed in
         T       float, the temperautre in units of [K]
-        MW      float, the molecular weight of the diffusing molecule in units of
-                [kg/mol]
-        mu      float, the viscosity of the gas mixture in which the molecular is
-                diffusion in units of [Pa.s]
-        ======= =====================================================================
+        MW      float, the molecular weight of the diffusing molecule in
+                units of [kg/mol]
+        mu      float, the viscosity of the gas mixture in which the
+                molecular is diffusion in units of [Pa.s]
+        ======= =============================================================
 
     Notes
     -----
-    In order to perform a Knudsen Random Walk, we need the mean free path.
-    The gas velocity and bulk diffusion coeffiecients are also calculated
-    from kinetic theory, and are necessary if we wish to directly compute
-    the effective diffusivity using the included 'effective_diffusivity'
-    function.
+    In order to perform a Knudsen random walk, we need the mean free path.
+    The gas velocity and bulk diffusion coefficients are also calculated
+    from kinetic theory, as these are necessary if we wish to directly compute
+    the effective diffusivity later.
 
     The mean free path is defined as:
         $$ \lambda = \frac{\mu}P \sqrt{(\frac{\pi RT}{(2*MW)})} $$
@@ -94,13 +86,6 @@ def calc_mfp(
     # path_length = mfp / resolution
     v_rel = np.sqrt(2) * np.sqrt(8 / np.pi * C.R * T / MW) / 1e-9
     Db = 1 / 2 * mfp * v_rel * (1e-9) ** 2
-    if ps.settings.loglevel == 'DEBUG':
-        print('_' * 60)
-        print('*Kinetic Theory Parameters*')
-        print('mean free path:'.ljust(35), f'{mfp:0.5}', 'nm')
-        print('mean relative velocity:'.ljust(35), f'{v_rel / 1e9:0.5}', 'nm/ns')
-        print('Theoretical open-space diffusion:'.ljust(35), f'{Db:.5}', '[m\u00b2/s]')
-        print('_' * 60)
     kinetics = {}
     kinetics['mfp'] = mfp
     kinetics['v_rel'] = v_rel
@@ -117,14 +102,14 @@ def compute_steps(
     v_rel,
     Db,
     ndim,
-    resolution=1,
+    voxel_size=1,
     n_steps=1000,
     steps_per_path=50,
     **kwargs
 ):
     r"""
-    Sets up the steps, path length and step sizes used in the random walk
-    simulation
+    Compute the number of steps, path length, and step size to be used in the
+    random walk simulation
 
     Parameters
     ----------
@@ -137,7 +122,7 @@ def compute_steps(
     ndim : int
         The dimension of the image which will be passed into the random walk
         simulation. Must be '2' or '3'
-    resolution : float
+    voxel_size : float
         The resolution of the image in units of [nm/voxel]
     n_steps : int
         Number of steps to take before exiting the walk.  A high number
@@ -147,46 +132,50 @@ def compute_steps(
         The number of steps to split each path-length into. More steps
         increases accuracy, but also reduces the time interval over which
         the simulation is completed for a given number of steps.
+    kwargs
+        All additional keyword arguments are ignored, but are included in the
+        returned dictionary
 
     Returns
     -------
     A walk object : dict
         A dictionary object with following keys:
 
-        =========== ==========================================================
-        attribute   description
-        =========== ==========================================================
-        step_size   float, The distance a walker should take on each step in
-                    units of [voxels]. This should not be more than 1 since
-                    this would makes steps longer than a voxel, and should
-                    also be less than ``path_length``.
-        time_step   float, The time it takes to complete each step [s]
-        path_length float, The distance a walker should travel in [voxels]
-                    before randomly choosing another direction.  If a walker
-                    hits a wall before this distance is reached it also
-                    changes direction.
-        n_mfps      float, The number of mean free paths that each walker
-                    will undergo during the simulation.
-        resolution  as passed in
-        n_steps     as passed in
-        steps_per_path: as passed in
-        mfp         as passed in
-        v_rel       as passed in
-        Db          as passed in
-        =========== ==========================================================
+        =============== ======================================================
+        attribute       description
+        =============== ======================================================
+        step_size       float, The distance a walker should take on each step
+                        in units of [voxels]. This should not be more than 1
+                        voxel since this would cause walker to penetrate walls.
+                        It should also be much less than ``path_length`` so
+                        that walker does not overshoot the desired mean-free
+                        path by too much.
+        path_length     float, The distance a walker should travel in [voxels]
+                        before randomly choosing another direction.  If a
+                        walker hits a wall before this distance is reached it
+                        also changes direction.
+        time_step       float, The time it takes to complete each step [s]
+        n_mfps          float, The number of mean free paths that each walker
+                        will undergo during the simulation. This can also be
+                        found as ``n_steps * step_size / path_length``.
+        steps_per_path  as passed in
+        voxel_size      as passed in
+        n_steps         as passed in
+        mfp             as passed in
+        v_rel           as passed in
+        Db              as passed in
+        =============== ==========================================================
 
-        The parameters of the function are also saved into the object for
-        convenience later:
 
     Notes
     -----
-    In order to simulate knudsen diffusion, the walkers need to take many small
+    In order to simulate Knudsen diffusion, the walkers need to take many small
     steps over the course of each mean free path, during which they don't change
     direction unless they hit a wall. In a regular random walk, each step is one
-    voxel and the walkers change directions after each step. For this reason, when
-    we tell the simulation to take 30000 steps, but to take 50 steps per mean free path,
-    we are simulating for 600 mean free path lengths, which is equivalent to 600 steps
-    in a regular random walk.
+    voxel and the walkers change directions after each step. For this reason,
+    when we tell the simulation to take 30000 steps, but to take 50 steps per
+    mean free path, we are simulating for 600 mean free path lengths, which is
+    equivalent to 600 steps in a regular random walk.
 
     A few requirements here:
 
@@ -203,40 +192,30 @@ def compute_steps(
 
     """
     walk = kwargs
-    walk['resolution'] = resolution
+    walk['voxel_size'] = voxel_size
     walk['n_steps'] = n_steps
     walk['steps_per_path'] = steps_per_path
-
     walk['mfp'] = mfp
     walk['v_rel'] = v_rel
     walk['Db'] = Db
-    walk['path_length'] = walk['mfp'] / walk['resolution']
+    walk['path_length'] = walk['mfp'] / walk['voxel_size']
     path_length = walk['path_length']
-
-    step_size = walk['step_size'] = path_length / steps_per_path
+    step_size = path_length / steps_per_path
     if step_size > 1:
         raise ValueError(f'Step size cannot exceed one voxel: {step_size}')
-    walk['time_step'] = step_size * resolution / (walk['v_rel'] * ndim)
+    walk['step_size'] = step_size
+    walk['time_step'] = step_size * voxel_size / (walk['v_rel'] * ndim)
     walk['n_mfps'] = n_steps * step_size / path_length
-
-    if ps.settings.loglevel == 'DEBUG':
-        print('_' * 80)
-        print('*Step information*')
-        print(f"Number of partial steps: {n_steps}")
-        print(f"Step size: {step_size:0.4f} voxels | {step_size * resolution:0.4f} nm")
-        print(f"Path length: {path_length:0.2f} voxels | {walk['mfp']:0.2f} nm")
-        print(f"Number of path lengths in simulation: {walk['n_mfps']:0.2f}")
-        print('_' * 80)
     return walk
 
 
 def rw(
     im,
     path_length,
-    step_size,
-    n_steps,
+    n_steps=1000,
+    step_size=None,
     n_walkers=1000,
-    stride=1,
+    n_write=1,
     seed=None,
     start=None,
     edges='periodic',
@@ -251,22 +230,39 @@ def rw(
     ----------
     im : ndarray
         The image of void space in which the walk should occur, with ``True``
-        values indicating the voids.
-
+        values indicating the phase of interest.
+    path_length : float
+        The length of the mean-free path in units of [voxels]. When walkers
+        travel this distance, without hitting a wall, they are assigned a new
+        direction vector and their distance travelled is reset.
+    step_size : float
+        The length of each step taken by the walkers in units of [voxels]. This
+        value should be some fraction of the ``path_length``, and effectively
+        controles the resolution of walk.  A large value allows for longer paths
+        to be probed, but also means that the walker will overshoot the endpoint
+        of its mean-free path by a larger margin.  A smaller value however means
+        that longer run times are required to probe the same amount of pore space.
+        If not provided then it is assumed to be 1% of the path length.
+    n_steps : int
+        Number of steps to take before exiting the simulation. A high number
+        is needed if the void space is highly tortuous so the walkers can
+        probe all the space, but this takes longer to run.
     n_walkers : int
         Number of walkers to use.  A higher number gives less noisy data but
         takes longer to run.
-    stride : int
+    n_write : int
         The number of steps to take between recording walker positions in
-        the `path' variable. Must be >= 1. Default is 1, in which case all
-        steps are recorded. Values larger than 1 enable longer walks without
-        running out of memory due to size of `path`.
+        the `path' array. Default is 1, in which case all steps are recorded.
+        Values larger than 1 enable longer walks without running out of memory
+        due to size of `path`.
     start : ndimage
         A boolean image with ``True`` values indicating where walkers should
         start. If not provided then start points will be selected from the
-        void space at random.
+        void space at random.  If ``n_walkers`` > ``start.sum()``, then multiple
+        walkers will start from the same location, including if ``start.sum()`` is
+        1 (i.e. a single pixel).
     seed : int
-        A seed value for a random number generator, which ensures repeatable
+        A seed value for the random number generator, which ensures repeatable
         results. Default is ``None``, in which case each simulation will be
         different.
     edges : string
@@ -276,10 +272,9 @@ def rw(
         ============= ========================================================
         Option        Description
         ============= ========================================================
-        'periodic'    When a walker exits a edge of an image, it continues as
-                      if the image were tiled so it sees the properties of the
-                      opposite side of the image.
-
+        'periodic'    (default) When a walker exits a edge of an image, it
+                      continues as if the image were tiled so it sees the
+                      properties of the opposite side of the image.
         'symmetric'   When a walker exits the edge of an image, it continues
                       as if the image were flipped so it sees the properties
                       similar to the edge of just exited.
@@ -291,23 +286,26 @@ def rw(
         ============= ========================================================
         Option        Description
         ============= ========================================================
-        'random'      Walkers choose a random angle and walk in that direction
-                      until they hit a wall or reach their ``path_length``.
-
+        'random'      (default) Walkers choose a random angle and walk in that
+                      direction until they hit a wall or reach their
+                      ``path_length``.
         'axial'       Walkers follow the cardinal axes of the image.
         ============= ========================================================
 
     Returns
     -------
-    path : ndarray
+    paths : ndarray
         A numpy ndarray of size ``[n_steps, n_walkers, im.ndim]``. The
         [x, y, [z]] location of the walker at each step is recorded in the
         final column.
     """
+    # Parse input arguments
+    step_size = path_length/100 if step_size is None else step_size
+    n_write = int(n_write) if n_write > 1 else 1
     # Initialize random number generator
     rng = np.random.default_rng(seed)
     # Allocate empty array for path info
-    path = np.zeros([int(n_steps / stride), n_walkers, im.ndim])
+    path = np.zeros([int(n_steps / n_write), n_walkers, im.ndim])
     # Generate the starting conditions:
     if start is None:
         start = im
@@ -355,13 +353,14 @@ def rw(
                                 rng=rng)
                 # Reset mean free path start point for walkers that hit the wall
                 start[:, inds_wall] = loc[:, inds_wall]
-                # Walkers that hit a wall return to previous location, with a new direction vector
+                # Walkers that hit a wall return to previous location,
+                # with a new direction vector
                 new_loc[:, inds_wall] = loc[:, inds_wall]
             loc = new_loc  # Update location of each walker with trial step
             i += 1  # Increment the step index
             # every stride steps we save the locations of the walkers to path
-            if i % stride == 0:
-                path[int(i / stride), :] = loc.T  # Record new position of walkers
+            if i % n_write == 0:
+                path[int(i / n_write), :] = loc.T  # Record new position of walkers
             pbar.update()
     return path
 
