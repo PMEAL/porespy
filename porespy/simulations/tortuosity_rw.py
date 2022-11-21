@@ -16,7 +16,6 @@ def tortuosity_rw(im,
                   stride=5,
                   cores=None,
                   chunks=None,
-                  same_start=False,
                   P=101325,
                   T=298,
                   MW=0.032,
@@ -34,7 +33,7 @@ def tortuosity_rw(im,
         The image of void space in which the walk should occur, with
         ``True`` values indicating the voids.
     resolution : float
-        The resolution of the image in units of [nm]
+        The resolution of the image in units of [nm/voxel]
     n_walkers : int
         Number of walkers to use.  A higher number gives less noisy data
         but takes longer to run.
@@ -64,11 +63,6 @@ def tortuosity_rw(im,
         should start. If not provided then start points will be selected
         from the void space at random. In some cases it is necessary or
         interesting to start all walkers at a common point or at a boundary.
-    same_start : bool
-        Default is ``False``. If ``True``, all walkers will start from the same
-        randomly generated location within the image. If `start` is also
-        provided, this will select one point from the subset of locations
-        in `start`
     seed : int
         A seed value for a random number generator, which ensures
         repeatable results. Default is ``None``, in which case each simulation
@@ -184,19 +178,7 @@ def tortuosity_rw(im,
     kin = calc_kinetic_theory(P, T, MW, mu)
     walk = compute_steps(kinetics=kin, n_steps=n_steps, ndim=im.ndim, resolution=resolution,
                          steps_per_path=steps_per_path, knudsen=knudsen)
-    walk = rw_parallel(
-        im,
-        walk,
-        seed=seed,
-        n_walkers=n_walkers,
-        edges=edges,
-        mode=mode,
-        stride=stride,
-        start=start,
-        chunks=chunks,
-        cores=cores,
-        same_start=same_start
-    )
+    walk = rw(im=im, walk=walk)
 
     rw_to_displacement(walk)
     compute_tau(walk)
@@ -221,7 +203,7 @@ def tortuosity_rw(im,
 
 if __name__ == '__main__':
     import numpy as np
-    client = Client(n_workers=20)
+    # client = Client(n_workers=20)
     # im = ps.generators.blobs([100, 100])
     im = np.ones([100, 100])
     n_walkers = 5000
@@ -244,4 +226,4 @@ if __name__ == '__main__':
     # im = ps.filters.fill_blind_pores(im, surface=True)
     # resolution = 20
     # tortuosity_rw(im, resolution)
-    client.shutdown()
+    # client.shutdown()

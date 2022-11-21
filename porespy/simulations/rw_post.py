@@ -391,7 +391,9 @@ def msd_vs_nsteps(walk, ax=None):
 
 def plot_regress(*args, ax):
     """
-    Calculates the linear regression of two 1D arrays, and plots onto the provided plot
+    Calculates the linear regression of two 1D arrays, and plots onto the provided
+    plot
+
     Parameters
     ----------
     args : tuple
@@ -583,7 +585,8 @@ def remove_blank_space(im, pad_width=None, threshold=0.005):
 
     Parameters
     ----------
-    im : image from which to remove blank space
+    im : ndarray
+        image from which to remove blank space
     pad_width :(optional) int
         The amount of voxels to strip from the edges of the image. If this is provided,
         `threshold` will be ignored and `pad_width` will be removed from all faces of the image.
