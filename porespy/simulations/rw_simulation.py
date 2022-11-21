@@ -12,6 +12,7 @@ __all__ = [
     'calc_gas_props',
     'compute_steps',
     'rw',
+    '_wrap_indices',
 ]
 
 

@@ -1,7 +1,7 @@
 import numpy as np
-from porespy.tools import Results
 import matplotlib.pyplot as plt
-from rw_simulation import _wrap_indices
+from porespy.tools import Results
+from porespy.simulations import _wrap_indices
 from scipy.stats import linregress
 
 
