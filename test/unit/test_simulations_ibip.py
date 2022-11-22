@@ -29,12 +29,12 @@ class IBIPTest():
         return im
 
     def test_ibip(self):
-        inv, size = ps.filters.ibip(self.im, inlets=self.bd)
+        inv, size = ps.simulations.ibip(self.im, inlets=self.bd)
         assert inv.max() == 318
 
     def test_ibip_w_trapping(self):
         im = self.sc_lattice_with_trapped_region()
-        inv, size = ps.filters.ibip(im, inlets=self.bd)
+        inv, size = ps.simulations.ibip(im, inlets=self.bd)
         assert inv.max() == 391
         inv_w_trapping = ps.filters.find_trapped_regions(seq=inv,
                                                          return_mask=True)

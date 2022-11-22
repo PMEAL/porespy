@@ -5,19 +5,104 @@ import numpy as np
 from edt import edt
 import operator as op
 import scipy.ndimage as spim
+from deprecated import deprecated
 from skimage.morphology import reconstruction
 from skimage.segmentation import clear_border
 from skimage.morphology import ball, disk, square, cube, diamond, octahedron
 from porespy.tools import _check_for_singleton_axes
-from porespy.tools import get_border, subdivide, recombine
+from porespy.tools import get_border, subdivide, recombine, make_contiguous
 from porespy.tools import unpad, extract_subsection
-from porespy.tools import ps_disk, ps_ball
+from porespy.tools import ps_disk, ps_ball, ps_round
 from porespy import settings
 from porespy.tools import get_tqdm
 
 
 tqdm = get_tqdm()
 logger = logging.getLogger(__name__)
+
+
+@deprecated("The ibip function will be moved to the"
+            + " ``simulations`` module in a future version")
+def ibip(**kwargs):
+    r"""
+    This function has been moved to the ``simulations`` module, please use that.
+    """
+    from porespy.simulations import ibip
+    return ibip(**kwargs)
+
+
+@deprecated("The ibip_gpu function will be moved to the"
+            + " ``simulations`` module in a future version")
+def ibip_gpu(**kwargs):
+    r"""
+    This function has been moved to the ``simulations`` module, please use that.
+    """
+    from porespy.simulations import ibip_gpu
+    return ibip_gpu(**kwargs)
+
+
+def find_trapped_regions(seq, outlets=None, bins=25, return_mask=True):
+    r"""
+    Find the trapped regions given an invasion sequence image
+
+    Parameters
+    ----------
+    seq : ndarray
+        An image with invasion sequence values in each voxel.  Regions
+        labelled -1 are considered uninvaded, and regions labelled 0 are
+        considered solid.
+    outlets : ndarray, optional
+        An image the same size as ``seq`` with ``True`` indicating outlets
+        and ``False`` elsewhere.  If not given then all image boundaries
+        are considered outlets.
+    bins : int
+        The resolution to use when thresholding the ``seq`` image.  By default
+        the invasion sequence will be broken into 25 discrete steps and
+        trapping will be identified at each step. A higher value of ``bins``
+        will provide a more accurate trapping analysis, but is more time
+        consuming. If ``None`` is specified, then *all* the steps will
+        analyzed, providing the highest accuracy.
+    return_mask : bool
+        If ``True`` (default) then the returned image is a boolean mask
+        indicating which voxels are trapped.  If ``False``, then a copy of
+        ``seq`` is returned with the trapped voxels set to uninvaded and
+        the invasion sequence values adjusted accordingly.
+
+    Returns
+    -------
+    trapped : ND-image
+        An image, the same size as ``seq``.  If ``return_mask`` is ``True``,
+        then the image has ``True`` values indicating the trapped voxels.  If
+        ``return_mask`` is ``False``, then a copy of ``seq`` is returned with
+        trapped voxels set to 0.
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/filters/reference/find_trapped_regions.html>`_
+    to view online example.
+
+    """
+    seq = np.copy(seq)
+    if outlets is None:
+        outlets = get_border(seq.shape, mode='faces')
+    trapped = np.zeros_like(outlets)
+    if bins is None:
+        bins = np.unique(seq)[-1::-1]
+        bins = bins[bins > 0]
+    elif isinstance(bins, int):
+        bins = np.linspace(seq.max(), 1, bins)
+    for i in tqdm(bins, **settings.tqdm):
+        temp = seq >= i
+        labels = spim.label(temp)[0]
+        keep = np.unique(labels[outlets])[1:]
+        trapped += temp*np.isin(labels, keep, invert=True)
+    if return_mask:
+        return trapped
+    else:
+        seq[trapped] = -1
+        seq = make_contiguous(seq, mode='symmetric')
+        return seq
 
 
 def apply_padded(im, pad_width, func, pad_val=1, **kwargs):
@@ -85,12 +170,7 @@ def trim_small_clusters(im, size=1):
     to view online example.
 
     """
-    if im.ndim == 2:
-        strel = disk(1)
-    elif im.ndim == 3:
-        strel = ball(1)
-    else:
-        raise Exception("Only 2D or 3D images are accepted")
+    strel = ps_round(r=1, ndim=im.ndim, smooth=False)
     filtered_array = np.copy(im)
     labels, N = spim.label(filtered_array, structure=strel)
     id_sizes = np.array(spim.sum(im, labels, range(N + 1)))
