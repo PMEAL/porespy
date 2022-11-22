@@ -21,7 +21,8 @@ tqdm = get_tqdm()
 logger = logging.getLogger(__name__)
 
 
-@deprecated('The ibip function will be moved to the ``simulations`` module in a future version')
+@deprecated("The ibip function will be moved to the"
+            + " ``simulations`` module in a future version")
 def ibip(**kwargs):
     r"""
     This function has been moved to the ``simulations`` module, please use that.
@@ -30,7 +31,8 @@ def ibip(**kwargs):
     return ibip(**kwargs)
 
 
-@deprecated('The ibip_gpu function will be moved to the ``simulations`` module in a future version')
+@deprecated("The ibip_gpu function will be moved to the"
+            + " ``simulations`` module in a future version")
 def ibip_gpu(**kwargs):
     r"""
     This function has been moved to the ``simulations`` module, please use that.
