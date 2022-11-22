@@ -1,3 +1,4 @@
+import logging
 import numpy as np
 import inspect as insp
 from edt import edt
@@ -12,8 +13,10 @@ from porespy.tools import extract_subsection
 from porespy.tools import insert_sphere
 from porespy import settings
 from typing import List
-from loguru import logger
+
+
 tqdm = ps.tools.get_tqdm()
+logger = logging.getLogger(__name__)
 
 
 def insert_shape(im, element, center=None, corner=None, value=1, mode="overwrite"):
@@ -225,7 +228,7 @@ def rsa(im_or_shape: np.array,
     im[border] = True
     # Dilate existing objects by strel to remove pixels near them
     # from consideration for sphere placement
-    logger.trace("Dilating foreground features by sphere radius")
+    logger.info("Dilating foreground features by sphere radius")
     dt = edt(im == 0)
     options_im = dt >= r
     # Begin inserting the spheres
@@ -248,7 +251,7 @@ def rsa(im_or_shape: np.array,
         options_im[s_lg][template_lg] = False  # Update extended region
         vf += vf_template
         i += 1
-    logger.trace(f"Number of spheres inserted: {i}")
+    logger.info(f"Number of spheres inserted: {i}")
     # Get slice into returned image to retain original size
     s = tuple([slice(2 * (r + clearance), d - 2 * (r + clearance), None)
                for d in im.shape])
@@ -477,7 +480,7 @@ def voronoi_edges(shape: List[int], ncells: int, r: int = 0,
     to view online example.
 
     """
-    logger.trace(f"Generating {ncells} cells")
+    logger.info(f"Generating {ncells} cells")
     shape = np.array(shape)
     if np.size(shape) == 1:
         shape = np.full((3,), int(shape))

@@ -1,5 +1,8 @@
+import logging
 import numpy as np
-from loguru import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 def imagej_wrapper(im, plugin_name, path):  # pragma: no cover

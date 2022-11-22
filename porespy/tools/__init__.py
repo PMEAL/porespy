@@ -1,12 +1,10 @@
 r"""
 
-Tools
-#####
-
-**Helper Functions**
+Collection of helper functions for manipulating images
+######################################################
 
 This module contains a variety of functions for manipulating images in
-ways do NOT return a modified version of the original image.
+ways that do NOT return a modified version of the original image.
 
 .. currentmodule:: porespy
 

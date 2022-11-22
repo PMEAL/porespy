@@ -1,9 +1,7 @@
 r"""
 
-Metrics
-#######
-
-**Extract Quantitative Information**
+Collection of functions for extracting quantitative information from images
+###########################################################################
 
 This submodule contains functions for determining key metrics about an
 image. Typically these are applied to an image after applying a filter,

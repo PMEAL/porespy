@@ -26,33 +26,38 @@ project = 'PoreSpy'
 copyright = f'{datetime.now().year}, PMEAL'
 author = 'PoreSpy Dev Team'
 
-# Import examples_linker file/module so that it runs each time docs are built
-import examples_linker
+# Copy examples folder from PoreSpy root to docs folder
+import shutil
+shutil.copytree('../examples', 'examples', dirs_exist_ok=True)
 
 #------------------------------------------------------------------------#
 # General config                                                         #
 #------------------------------------------------------------------------#
 
-extensions = ['sphinx.ext.autodoc',
-              'sphinx.ext.napoleon',
-              'sphinx.ext.autosummary',
-              'sphinx.ext.ifconfig',
-              'sphinx.ext.viewcode',
-              'sphinx.ext.mathjax',
-              'sphinx_copybutton',
-              'nbsphinx',
-              'nbsphinx_link',
-              'sphinx_panels']
+extensions = [
+    'sphinx.ext.autodoc',
+    'sphinx.ext.napoleon',
+    'sphinx.ext.autosummary',
+    'sphinx.ext.ifconfig',
+    'sphinx.ext.viewcode',
+    'sphinx.ext.mathjax',
+    'sphinx_copybutton',
+    'sphinx_design',
+    'myst_nb',
+]
+
+myst_enable_extensions = [
+    "amsmath",
+    "colon_fence",
+    "deflist",
+    "dollarmath",
+    "html_image",
+]
 
 # So that 'sphinx-copybutton' only copies the actual code, not the prompt
 copybutton_prompt_text = r">>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: "
 copybutton_prompt_is_regexp = True
 
-nbsphinx_prompt_width = "0"
-nbsphinx_execute = 'always'
-nbsphinx_allow_errors = True
-
-panels_add_bootstrap_css = False  # to fix narrow width
 add_module_names = False  # porespy.generators --> generators
 autosummary_generate = True
 globaltoc_maxdepth = 2
@@ -90,7 +95,6 @@ html_show_sourcelink = False
 html_show_sphinx = False
 
 html_theme_options = {
-    "logo_link": "https://www.porespy.org",
     "icon_links": [
         {
             "name": "GitHub",
@@ -120,9 +124,6 @@ html_theme_options = {
 }
 
 html_sidebars = {
-    "contributing": ["sidebar-search-bs.html"],
-    "changelog": [],
-    "examples/*": []
 }
 
 

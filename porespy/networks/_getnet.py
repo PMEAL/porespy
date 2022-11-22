@@ -1,3 +1,4 @@
+import logging
 import numpy as np
 import scipy.ndimage as spim
 from skimage.morphology import disk, ball
@@ -7,8 +8,10 @@ from porespy import settings
 from porespy.tools import get_tqdm, make_contiguous
 from porespy.metrics import region_surface_areas, region_interface_areas
 from porespy.metrics import region_volumes
-from loguru import logger
+
+
 tqdm = get_tqdm()
+logger = logging.getLogger(__name__)
 
 
 def regions_to_network(regions, phases=None, voxel_size=1, accuracy='standard'):
@@ -113,7 +116,7 @@ def regions_to_network(regions, phases=None, voxel_size=1, accuracy='standard'):
     to view online example.
 
     """
-    logger.trace('Extracting pore/throat information')
+    logger.info('Extracting pore/throat information')
 
     im = make_contiguous(regions)
     struc_elem = disk if im.ndim == 2 else ball
@@ -233,8 +236,8 @@ def regions_to_network(regions, phases=None, voxel_size=1, accuracy='standard'):
     net['throat.direct_length'] = np.sqrt(np.sum(dist**2, axis=1))
     net['throat.perimeter'] = np.array(t_perimeter)*voxel_size
     if (accuracy == 'high') and (im.ndim == 2):
-        logger.warning('High accuracy mode is not available in 2D, ' +
-                       'reverting to standard accuracy')
+        msg = "accuracy='high' only available in 3D, reverting to 'standard'"
+        logger.warning(msg)
         accuracy = 'standard'
     if (accuracy == 'high'):
         net['pore.volume'] = region_volumes(regions=im, mode='marching_cubes')
