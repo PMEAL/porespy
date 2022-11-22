@@ -1,8 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from porespy.tools import Results
-from porespy.simulations import _wrap_indices
 from scipy.stats import linregress
+from porespy.tools import Results, get_tqdm
+from porespy.simulations import _wrap_indices
+from porespy import settings
+tqdm = get_tqdm()
 
 
 __all__ = [
@@ -16,7 +18,7 @@ __all__ = [
 ]
 
 
-def steps_to_displacements(paths, voxel_size):
+def steps_to_displacements(paths, voxel_size, **kwargs):
     r"""
     Compute the displacement of each walker from their starting point in [nm]
 
@@ -68,7 +70,7 @@ def steps_to_displacements(paths, voxel_size):
     return dt
 
 
-def effective_diffusivity_rw(displacements, im, time_step):
+def effective_diffusivity_rw(displacements, im, time_step,  **kwargs):
     r"""
     Calculates the effective diffusivity based on physical displacements of random
     walkers
@@ -129,7 +131,7 @@ def effective_diffusivity_rw(displacements, im, time_step):
     return Deff
 
 
-def tortuosity_rw(displacements, mfp, step_size, voxel_size):
+def tortuosity_rw(displacements, mfp, step_size, voxel_size, **kwargs):
     """
     Computes the tortuosity obtained from the random walk simulation
 
@@ -174,7 +176,7 @@ def tortuosity_rw(displacements, mfp, step_size, voxel_size):
     res = voxel_size
     dim = 3 if dz.any() else 2
 
-    expected_msd = (mfp * step_size * res)**2 * (s / (mfp * step_size * res))
+    expected_msd = (mfp * step_size * res) * s
     expected_msd1D = expected_msd / dim
     t = Results()
     t.tau = expected_msd/(d2[1:])
@@ -185,7 +187,7 @@ def tortuosity_rw(displacements, mfp, step_size, voxel_size):
     return t
 
 
-def plot_deff(Deffs, time_step, ax=None):
+def plot_deff(Deffs, time_step, Db=0.0, ax=None, **kwargs):
     """
     Plots effective diffusivity as a function of step number
 
@@ -207,7 +209,7 @@ def plot_deff(Deffs, time_step, ax=None):
     diff, diffx, diffy, diffz, step_num = Deffs
     n_write = np.diff(step_num)[0]
     n_steps = np.amax(step_num) + n_write
-    s = np.arange(1, n_steps/n_write) * n_write
+    s = np.arange(1, n_steps/n_write) * n_write * time_step
     dim = 3 if diffz.any() else 2
     if not ax:
         fig, ax = plt.subplots(1, 1, figsize=(8, 6))
@@ -217,6 +219,9 @@ def plot_deff(Deffs, time_step, ax=None):
     ax.plot(s, diffy, '.', label=f'Diffusion in Y: {diffy[-1]:0.4} m\u00b2/s')
     if dim == 3:
         ax.plot(s, diffz, '.', label=f'Diffusion in Z: {diffz[-1]:0.4} m\u00b2/s')
+    if Db > 0:
+        ax.plot(s, np.ones_like(s)*Db, 'k--')
+    ax.set_ylim([0.0, 2*diff.max()])
     ax.set_xlabel('Time [s]')
     ax.set_ylabel('Diffusion Coefficient [m\u00b2/s]')
     ax.set_title(f'{dim}D Diffusion Random Walk Simulation')
@@ -254,7 +259,7 @@ def plot_tau(taus, ax=None):
     ax.plot(s, tauy, label=f'Final tau in Y: {tauy[-1]:0.3f}')
     if dim == 3:
         ax.plot(s, tauz, label=f'Final tau in Z: {tauz[-1]:0.3f}')
-
+    ax.plot(s, np.ones_like(s), 'k--')
     ax.set_ylabel('Tortuosity')
     ax.set_xlabel('Number of Steps')
     ax.set_ylim([0, 2 * tau[-1]])
@@ -262,7 +267,7 @@ def plot_tau(taus, ax=None):
     return ax
 
 
-def plot_msd(displacements, ax=None):
+def plot_msd(displacements, mfp=None, step_size=None, voxel_size=None, ax=None, **kwargs):
     r"""
     Plot mean-squared displacement in voxels vs number of steps
 
@@ -282,15 +287,15 @@ def plot_msd(displacements, ax=None):
 
     """
     d, dx, dy, dz, step_num = displacements
+    dim = 3 if dz.any() else 2
+
     d2 = (d ** 2).mean(axis=1)
-    dx2 = (dx ** 2).mean(axis=1)
-    dy2 = (dy ** 2).mean(axis=1)
-    dz2 = (dz ** 2).mean(axis=1)
+    dx2 = (dx ** 2).mean(axis=1) * dim
+    dy2 = (dy ** 2).mean(axis=1) * dim
+    dz2 = (dz ** 2).mean(axis=1) * dim
 
     n_write = np.diff(step_num)[0]
     n_steps = np.amax(step_num) + n_write
-    dim = 3 if dz.any() else 2
-    # s = np.arange(1, n_steps/n_write) * n_write
     s = np.arange(0, n_steps, n_write)
 
     if not ax:
@@ -303,6 +308,9 @@ def plot_msd(displacements, ax=None):
     for x, y, label, c in lines[:dim+1]:
         ax.plot(x, y, c, label=label)
         plot_regress((x, y, label, c), ax=ax)
+    if mfp is not None:
+        d_expected = (step_num*mfp*step_size*voxel_size)
+        ax.plot(s, d_expected, 'k--')
     ax.set_xlabel('Number of Steps [#]')
     ax.set_ylabel('Mean Squared Displacement [nm\u00b2]')
     ax.legend()
@@ -397,7 +405,7 @@ def rw_to_image(paths, im, edges='symmetric', tiled=True, color_by='count'):
         im2 = np.pad(im2, padding, mode=padmode).astype(bool)
     im_blank = np.zeros_like(im2, dtype=float)
     im_blank[~im2] = -1
-    for i in range(paths.shape[0]):
+    for i in tqdm(range(paths.shape[0]), **settings.tqdm):
         locs = np.around(paths[i, :, :-1], decimals=0).astype(int)
         if not tiled:
             locs = _wrap_indices(locs.T, im2.shape, mode=edges)

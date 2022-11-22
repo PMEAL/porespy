@@ -1,11 +1,12 @@
 import numpy as np
-from tqdm import tqdm
-import porespy as ps
 from scipy import constants as C
 import dask
 import dask.array as da
 from functools import wraps
 from time import perf_counter
+from porespy.tools import get_tqdm
+from porespy import settings
+tqdm = get_tqdm()
 
 
 __all__ = [
@@ -323,7 +324,7 @@ def rw(
     path[0, :, :-1] = loc.T  # save locations to path
     path[0, :, -1] = 0  # Add step number
     i = 0
-    with tqdm(range(n_steps - 1), **ps.settings.tqdm) as pbar:
+    with tqdm(range(n_steps - 1), **settings.tqdm) as pbar:
         while i < (n_steps - 1):
             # if image is 2D, this excludes the z coordinate
             new_loc = loc + np.array([x, y, z])[:im.ndim, :]
@@ -419,11 +420,11 @@ def rw_parallel(im,
     added to it.
     """
     # Leave cores alone if specified, else set to # of cores in machine
-    cores = cores if cores else ps.settings.ncores
+    cores = cores if cores else settings.ncores
     # Leave chunks alone if specified, else set to # of cores
     chunks = chunks if chunks else cores
     if cores > 1:
-        ps.settings.tqdm['disable'] = True
+        settings.tqdm['disable'] = True
     # the number of walkers to dispatch to each process/chunk
     walkers_per_chunk = n_walkers // chunks
     # Generate an independent random state (seed) for each chunk
@@ -432,7 +433,7 @@ def rw_parallel(im,
     states = ss.spawn(chunks)
     #  Save function parameters into walk:
     walk.im = im
-    walk.porosity = ps.metrics.porosity(im)
+    walk.porosity = im.sum()/im.size
     walk.n_walkers = n_walkers
     walk.stride = stride
     walk.mode = mode
