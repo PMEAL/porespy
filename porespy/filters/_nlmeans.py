@@ -1,12 +1,13 @@
 import numpy as np
-from skimage.restoration import denoise_nl_means, estimate_sigma
+from skimage.restoration.non_local_means import denoise_nl_means
+from skimage.restoration import estimate_sigma
 from skimage.exposure import rescale_intensity, match_histograms
 import dask
 dask.config.set(scheduler="threads")
 # from dask.diagnostics import ProgressBar
 
 
-def nl_means_layered(im, cores=None, axis=0, patch_size=5, patch_distance=15, h=4):
+def nl_means_layered(im, cores=None, axis=0, patch_size=5, patch_distance=5, h=4):
     r"""
     Apply the non-local means filter to each 2D layer of a stack in parallel.
 
@@ -58,25 +59,23 @@ def nl_means_layered(im, cores=None, axis=0, patch_size=5, patch_distance=15, h=
     def apply_func(func, **kwargs):
         return func(**kwargs)
 
-    temp = np.copy(im)
-    for i in range(im.shape[2]):
-        temp[:, :, i] = match_histograms(temp[:, :, i], temp[:, :, 0],
-                                         multichannel=False)
+    # Move axis of interest to first axis
+    temp = np.swapaxes(im, 0, axis)
+    for i in range(im.shape[0]):
+        temp[i, ...] = match_histograms(temp[i, ...], temp[0, ...])
     p2, p98 = np.percentile(temp, (2, 98))
     temp = rescale_intensity(temp, in_range=(p2, p98))
     temp = temp / temp.max()
-    sigma_est = np.mean(estimate_sigma(temp[:, :, 0], multichannel=False))
+    sigma_est = np.mean(estimate_sigma(temp[0, ...]))
 
     kw = {'image': temp,
           'patch_size': patch_size,
           'patch_distance': patch_distance,
           'h': h * sigma_est,
-          'multichannel': False,
           'fast_mode': True}
 
-    temp = np.swapaxes(temp, 0, axis)
     results = []
-    for i in range(im.shape[2]):
+    for i in range(im.shape[0]):
         layer = temp[i, ...]
         kw["image"] = layer
         t = apply_func(func=denoise_nl_means, **kw)

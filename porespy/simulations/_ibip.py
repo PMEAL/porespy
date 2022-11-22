@@ -1,7 +1,6 @@
 import numpy as np
 from edt import edt
 from porespy.tools import get_tqdm
-import scipy.ndimage as spim
 from porespy.tools import get_border, make_contiguous
 from porespy.tools import _insert_disk_at_points
 from porespy.tools import Results
@@ -119,70 +118,6 @@ def _update_dt_and_bd(dt, bd, pt):
     return dt, bd
 
 
-def find_trapped_regions(seq, outlets=None, bins=25, return_mask=True):
-    r"""
-    Find the trapped regions given an invasion sequence image
-
-    Parameters
-    ----------
-    seq : ndarray
-        An image with invasion sequence values in each voxel.  Regions
-        labelled -1 are considered uninvaded, and regions labelled 0 are
-        considered solid.
-    outlets : ndarray, optional
-        An image the same size as ``seq`` with ``True`` indicating outlets
-        and ``False`` elsewhere.  If not given then all image boundaries
-        are considered outlets.
-    bins : int
-        The resolution to use when thresholding the ``seq`` image.  By default
-        the invasion sequence will be broken into 25 discrete steps and
-        trapping will be identified at each step. A higher value of ``bins``
-        will provide a more accurate trapping analysis, but is more time
-        consuming. If ``None`` is specified, then *all* the steps will
-        analyzed, providing the highest accuracy.
-    return_mask : bool
-        If ``True`` (default) then the returned image is a boolean mask
-        indicating which voxels are trapped.  If ``False``, then a copy of
-        ``seq`` is returned with the trapped voxels set to uninvaded and
-        the invasion sequence values adjusted accordingly.
-
-    Returns
-    -------
-    trapped : ND-image
-        An image, the same size as ``seq``.  If ``return_mask`` is ``True``,
-        then the image has ``True`` values indicating the trapped voxels.  If
-        ``return_mask`` is ``False``, then a copy of ``seq`` is returned with
-        trapped voxels set to 0.
-
-    Examples
-    --------
-    `Click here
-    <https://porespy.org/examples/filters/reference/find_trapped_regions.html>`_
-    to view online example.
-
-    """
-    seq = np.copy(seq)
-    if outlets is None:
-        outlets = get_border(seq.shape, mode='faces')
-    trapped = np.zeros_like(outlets)
-    if bins is None:
-        bins = np.unique(seq)[-1::-1]
-        bins = bins[bins > 0]
-    elif isinstance(bins, int):
-        bins = np.linspace(seq.max(), 1, bins)
-    for i in tqdm(bins, **settings.tqdm):
-        temp = seq >= i
-        labels = spim.label(temp)[0]
-        keep = np.unique(labels[outlets])[1:]
-        trapped += temp*np.isin(labels, keep, invert=True)
-    if return_mask:
-        return trapped
-    else:
-        seq[trapped] = -1
-        seq = make_contiguous(seq, mode='symmetric')
-        return seq
-
-
 if __name__ == "__main__":
     import numpy as np
     import porespy as ps
@@ -196,7 +131,7 @@ if __name__ == "__main__":
     im = ps.generators.blobs(shape=[300, 300], porosity=0.7, blobiness=2)
     inlets = np.zeros_like(im)
     inlets[0, :] = True
-    ip = ps.filters.ibip(im=im, inlets=inlets)
+    ip = ps.simulations.ibip(im=im, inlets=inlets)
 
     # %% Generate some plots
     if plots:
