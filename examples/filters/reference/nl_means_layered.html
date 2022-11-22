@@ -444,11 +444,6 @@
        SNOW partitioning parallel
       </a>
      </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../tutorials/using_ibip.html">
-       Image-based invasion percoalation
-      </a>
-     </li>
     </ul>
    </li>
    <li class="toctree-l2 current active has-children">
@@ -583,15 +578,6 @@
        <code class="docutils literal notranslate">
         <span class="pre">
          hold_peaks
-        </span>
-       </code>
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="ibip.html">
-       <code class="docutils literal notranslate">
-        <span class="pre">
-         ibip
         </span>
        </code>
       </a>
@@ -790,15 +776,6 @@
        <code class="docutils literal notranslate">
         <span class="pre">
          trim_small_clusters
-        </span>
-       </code>
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="unpad.html">
-       <code class="docutils literal notranslate">
-        <span class="pre">
-         unpad
         </span>
        </code>
       </a>
@@ -1220,6 +1197,11 @@
         \(\tau\)
        </span>
        ) of an Image Using tortuosity_fd
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../simulations/tutorials/using_ibip.html">
+       Image-based invasion percoalation
       </a>
      </li>
     </ul>
@@ -1791,11 +1773,6 @@
    SNOW partitioning parallel
   </a>
  </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../tutorials/using_ibip.html">
-   Image-based invasion percoalation
-  </a>
- </li>
 </ul>
 <ul class="current nav bd-sidenav">
  <li class="toctree-l1">
@@ -1920,15 +1897,6 @@
    <code class="docutils literal notranslate">
     <span class="pre">
      hold_peaks
-    </span>
-   </code>
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="ibip.html">
-   <code class="docutils literal notranslate">
-    <span class="pre">
-     ibip
     </span>
    </code>
   </a>
@@ -2127,15 +2095,6 @@
    <code class="docutils literal notranslate">
     <span class="pre">
      trim_small_clusters
-    </span>
-   </code>
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="unpad.html">
-   <code class="docutils literal notranslate">
-    <span class="pre">
-     unpad
     </span>
    </code>
   </a>
@@ -2471,6 +2430,11 @@
     \(\tau\)
    </span>
    ) of an Image Using tortuosity_fd
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/tutorials/using_ibip.html">
+   Image-based invasion percoalation
   </a>
  </li>
 </ul>
@@ -2874,7 +2838,7 @@
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">porespy</span> <span class="k">as</span> <span class="nn">ps</span>
-<span class="kn">from</span> <span class="nn">edt</span> <span class="kn">import</span> <span class="n">edt</span>
+<span class="kn">from</span> <span class="nn">skimage.util</span> <span class="kn">import</span> <span class="n">random_noise</span>
 <span class="kn">import</span> <span class="nn">inspect</span>
 <span class="n">ps</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">set_mpl_style</span><span class="p">()</span>
 <span class="n">inspect</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">nl_means_layered</span><span class="p">)</span>
@@ -2893,36 +2857,34 @@
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
-<span class="n">im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">blobs</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">])</span>
-<span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
-<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">dt</span><span class="p">[:,:,</span><span class="mi">15</span><span class="p">])</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="kc">False</span><span class="p">);</span>
+<span class="n">im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">blobs</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">75</span><span class="p">,</span> <span class="mi">75</span><span class="p">,</span> <span class="mi">75</span><span class="p">])</span>
+<span class="n">im2</span> <span class="o">=</span> <span class="n">random_noise</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;gaussian&#39;</span><span class="p">,</span> <span class="n">mean</span><span class="o">=</span><span class="mf">0.24</span><span class="p">,</span> <span class="n">var</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im2</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">15</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">im2</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">bins</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/380508fa6dd47234049d148b2aa382f83ef787a834e2ef7ae67d9eba64676ee3.svg" src="../../../_images/380508fa6dd47234049d148b2aa382f83ef787a834e2ef7ae67d9eba64676ee3.svg" /></div>
+<img alt="../../../_images/309fd005532605156b779d0fce73da82babf77dd89f41341e79115c5a5e22991.png" src="../../../_images/309fd005532605156b779d0fce73da82babf77dd89f41341e79115c5a5e22991.png" />
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">filtered_im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">nl_means_layered</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
-<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">filtered_im</span><span class="p">[:,:,</span><span class="mi">15</span><span class="p">])</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="kc">False</span><span class="p">);</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">filtered_im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">nl_means_layered</span><span class="p">(</span><span class="n">im2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">15</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">filtered_im</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">15</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">filtered_im</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">bins</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">filtered_im</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">15</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.6</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="kc">False</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/amin/Code/porespy/porespy/filters/_nlmeans.py:63: FutureWarning: `multichannel` is a deprecated argument name for `match_histograms`. It will be removed in version 1.0. Please use `channel_axis` instead.
-  temp[:, :, i] = match_histograms(temp[:, :, i], temp[:, :, 0],
-/home/amin/Code/porespy/porespy/filters/_nlmeans.py:68: FutureWarning: `multichannel` is a deprecated argument name for `estimate_sigma`. It will be removed in version 1.0. Please use `channel_axis` instead.
-  sigma_est = np.mean(estimate_sigma(temp[:, :, 0], multichannel=False))
-/home/amin/Code/porespy/porespy/filters/_nlmeans.py:59: FutureWarning: `multichannel` is a deprecated argument name for `denoise_nl_means`. It will be removed in version 1.0. Please use `channel_axis` instead.
-  return func(**kwargs)
-</pre></div>
+<img alt="../../../_images/bae4ec3492b07a0206e85a6b487a4da8f364fbb6752fd23f24716ceeb109f446.png" src="../../../_images/bae4ec3492b07a0206e85a6b487a4da8f364fbb6752fd23f24716ceeb109f446.png" />
 </div>
-<img alt="../../../_images/ac76bc7f522e6f65c802be93a307802a20ad57fbcaf86860d6a8133d50a64012.svg" src="../../../_images/ac76bc7f522e6f65c802be93a307802a20ad57fbcaf86860d6a8133d50a64012.svg" /></div>
 </div>
 </section>
 <section id="cores">
@@ -2930,15 +2892,16 @@
 <p>The number of cores to use for the processing. The default is all cores. Let’s change it to a smaller number (this will slow down the processing time):</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">filtered_im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">nl_means_layered</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">cores</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">filtered_im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">nl_means_layered</span><span class="p">(</span><span class="n">im2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">cores</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">filtered_im</span><span class="p">[:,:,</span><span class="mi">15</span><span class="p">])</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">filtered_im</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">15</span><span class="p">])</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="kc">False</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/0657b3fe61571a659d85c196923332cd9001f0854de0d3bdaaf473adb3460a4e.svg" src="../../../_images/0657b3fe61571a659d85c196923332cd9001f0854de0d3bdaaf473adb3460a4e.svg" /></div>
+<img alt="../../../_images/50a96c5a2be86713b69023c296f7a47ecf33105773c04d39ac6e96bf10c7b9e0.png" src="../../../_images/50a96c5a2be86713b69023c296f7a47ecf33105773c04d39ac6e96bf10c7b9e0.png" />
+</div>
 </div>
 </section>
 <section id="axis">
@@ -2946,23 +2909,24 @@
 <p>The axis along which 2D slices for the filtering process should be taken. This can be 0,1, or 2 corresponding to x, y, and z axis. By default the slices are taken along x axis. When using tomography images, this should correspond to the axis of rotation of the tomography stage.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">im_x</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">nl_means_layered</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">im_y</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">nl_means_layered</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">im_z</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">nl_means_layered</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">im_x</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">nl_means_layered</span><span class="p">(</span><span class="n">im2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">im_y</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">nl_means_layered</span><span class="p">(</span><span class="n">im2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">im_z</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">nl_means_layered</span><span class="p">(</span><span class="n">im2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">15</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">dt</span><span class="p">[:,:,</span><span class="mi">15</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im2</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">15</span><span class="p">])</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="kc">False</span><span class="p">);</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im_x</span><span class="p">[:,:,</span><span class="mi">15</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im_x</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">15</span><span class="p">])</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="kc">False</span><span class="p">);</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im_y</span><span class="p">[:,:,</span><span class="mi">15</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im_y</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">15</span><span class="p">])</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="kc">False</span><span class="p">);</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im_z</span><span class="p">[:,:,</span><span class="mi">15</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im_z</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">15</span><span class="p">])</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="kc">False</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/db87fe2389c7dd8745e0f47a295048c0f87492a679d4b8d967f05044c8b1a220.svg" src="../../../_images/db87fe2389c7dd8745e0f47a295048c0f87492a679d4b8d967f05044c8b1a220.svg" /></div>
+<img alt="../../../_images/d456587baccf80e1f0983b8bd2de8c565e55ca6112bd027a9a3a0194c018cfeb.png" src="../../../_images/d456587baccf80e1f0983b8bd2de8c565e55ca6112bd027a9a3a0194c018cfeb.png" />
+</div>
 </div>
 </section>
 <section id="patch-size">
@@ -2970,23 +2934,24 @@
 <p>The size of patches used for denoising filter. The default is 5.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">im_1</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">nl_means_layered</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">patch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">im_2</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">nl_means_layered</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">patch_size</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-<span class="n">im_3</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">nl_means_layered</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">patch_size</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">im_1</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">nl_means_layered</span><span class="p">(</span><span class="n">im2</span><span class="p">,</span> <span class="n">patch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">im_2</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">nl_means_layered</span><span class="p">(</span><span class="n">im2</span><span class="p">,</span> <span class="n">patch_size</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">im_3</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">nl_means_layered</span><span class="p">(</span><span class="n">im2</span><span class="p">,</span> <span class="n">patch_size</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
 <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">15</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">dt</span><span class="p">[:,:,</span><span class="mi">15</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im2</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">15</span><span class="p">])</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="kc">False</span><span class="p">);</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im_1</span><span class="p">[:,:,</span><span class="mi">15</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im_1</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">15</span><span class="p">])</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="kc">False</span><span class="p">);</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im_2</span><span class="p">[:,:,</span><span class="mi">15</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im_2</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">15</span><span class="p">])</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="kc">False</span><span class="p">);</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im_3</span><span class="p">[:,:,</span><span class="mi">15</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im_3</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">15</span><span class="p">])</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="kc">False</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/927fa6bd2bd0cce389a659b981f349c9eda48aaaece3fb5823b46b3545c3da0c.svg" src="../../../_images/927fa6bd2bd0cce389a659b981f349c9eda48aaaece3fb5823b46b3545c3da0c.svg" /></div>
+<img alt="../../../_images/850e3c8d8061efbaa51903677f4e2bc3d5aae208678bfc2b572dbc324dffaae0.png" src="../../../_images/850e3c8d8061efbaa51903677f4e2bc3d5aae208678bfc2b572dbc324dffaae0.png" />
+</div>
 </div>
 </section>
 <section id="patch-distance">
@@ -2994,23 +2959,24 @@
 <p>Maximal distance in pixels where to search patches used for denoising. The default is 15.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">im_1</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">nl_means_layered</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">patch_distance</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-<span class="n">im_2</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">nl_means_layered</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
-<span class="n">im_3</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">nl_means_layered</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">patch_distance</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">im_1</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">nl_means_layered</span><span class="p">(</span><span class="n">im2</span><span class="p">,</span> <span class="n">patch_distance</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">im_2</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">nl_means_layered</span><span class="p">(</span><span class="n">im2</span><span class="p">)</span>
+<span class="n">im_3</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">nl_means_layered</span><span class="p">(</span><span class="n">im2</span><span class="p">,</span> <span class="n">patch_distance</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
 <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">15</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">dt</span><span class="p">[:,:,</span><span class="mi">15</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im2</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">15</span><span class="p">])</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="kc">False</span><span class="p">);</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im_1</span><span class="p">[:,:,</span><span class="mi">15</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im_1</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">15</span><span class="p">])</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="kc">False</span><span class="p">);</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im_2</span><span class="p">[:,:,</span><span class="mi">15</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im_2</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">15</span><span class="p">])</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="kc">False</span><span class="p">);</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im_3</span><span class="p">[:,:,</span><span class="mi">15</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im_3</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">15</span><span class="p">])</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="kc">False</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/c10acb6d969cb25b2037e469b440e458a6c720933dbcf4cac7960a42673131cc.svg" src="../../../_images/c10acb6d969cb25b2037e469b440e458a6c720933dbcf4cac7960a42673131cc.svg" /></div>
+<img alt="../../../_images/b1008cfe17fb56b3dab206b56d42ab88dcc20f46de75b57e9349d533e94f8999.png" src="../../../_images/b1008cfe17fb56b3dab206b56d42ab88dcc20f46de75b57e9349d533e94f8999.png" />
+</div>
 </div>
 </section>
 <section id="h">
@@ -3019,23 +2985,24 @@
 smoother image, at the expense of blurring features. For a Gaussian noise of standard deviation sigma, a rule of thumb is to choose the value of <code class="docutils literal notranslate"><span class="pre">h</span></code> to be sigma of slightly less. The default is 4.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">im_1</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">nl_means_layered</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">im_2</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">nl_means_layered</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
-<span class="n">im_3</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">nl_means_layered</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">im_1</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">nl_means_layered</span><span class="p">(</span><span class="n">im2</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">im_2</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">nl_means_layered</span><span class="p">(</span><span class="n">im2</span><span class="p">)</span>
+<span class="n">im_3</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">nl_means_layered</span><span class="p">(</span><span class="n">im2</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
 <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">15</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">dt</span><span class="p">[:,:,</span><span class="mi">15</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im2</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">15</span><span class="p">])</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="kc">False</span><span class="p">);</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im_1</span><span class="p">[:,:,</span><span class="mi">15</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im_1</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">15</span><span class="p">])</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="kc">False</span><span class="p">);</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im_2</span><span class="p">[:,:,</span><span class="mi">15</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im_2</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">15</span><span class="p">])</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="kc">False</span><span class="p">);</span>
-<span class="n">ax</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im_3</span><span class="p">[:,:,</span><span class="mi">15</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im_3</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">15</span><span class="p">])</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="kc">False</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/9b6b846030da688f08dd576fca0242c6ee9778035776b1d779fab09c7a83206f.svg" src="../../../_images/9b6b846030da688f08dd576fca0242c6ee9778035776b1d779fab09c7a83206f.svg" /></div>
+<img alt="../../../_images/989baed504ecb568e8340990c7962a69c4905ab1a7651649205ccb77e4b5be68.png" src="../../../_images/989baed504ecb568e8340990c7962a69c4905ab1a7651649205ccb77e4b5be68.png" />
+</div>
 </div>
 </section>
 </section>

@@ -444,11 +444,6 @@
        SNOW partitioning parallel
       </a>
      </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../tutorials/using_ibip.html">
-       Image-based invasion percoalation
-      </a>
-     </li>
     </ul>
    </li>
    <li class="toctree-l2 current active has-children">
@@ -583,15 +578,6 @@
        <code class="docutils literal notranslate">
         <span class="pre">
          hold_peaks
-        </span>
-       </code>
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="ibip.html">
-       <code class="docutils literal notranslate">
-        <span class="pre">
-         ibip
         </span>
        </code>
       </a>
@@ -790,15 +776,6 @@
        <code class="docutils literal notranslate">
         <span class="pre">
          trim_small_clusters
-        </span>
-       </code>
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="unpad.html">
-       <code class="docutils literal notranslate">
-        <span class="pre">
-         unpad
         </span>
        </code>
       </a>
@@ -1220,6 +1197,11 @@
         \(\tau\)
        </span>
        ) of an Image Using tortuosity_fd
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../simulations/tutorials/using_ibip.html">
+       Image-based invasion percoalation
       </a>
      </li>
     </ul>
@@ -1791,11 +1773,6 @@
    SNOW partitioning parallel
   </a>
  </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../tutorials/using_ibip.html">
-   Image-based invasion percoalation
-  </a>
- </li>
 </ul>
 <ul class="current nav bd-sidenav">
  <li class="toctree-l1">
@@ -1920,15 +1897,6 @@
    <code class="docutils literal notranslate">
     <span class="pre">
      hold_peaks
-    </span>
-   </code>
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="ibip.html">
-   <code class="docutils literal notranslate">
-    <span class="pre">
-     ibip
     </span>
    </code>
   </a>
@@ -2127,15 +2095,6 @@
    <code class="docutils literal notranslate">
     <span class="pre">
      trim_small_clusters
-    </span>
-   </code>
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="unpad.html">
-   <code class="docutils literal notranslate">
-    <span class="pre">
-     unpad
     </span>
    </code>
   </a>
@@ -2471,6 +2430,11 @@
     \(\tau\)
    </span>
    ) of an Image Using tortuosity_fd
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/tutorials/using_ibip.html">
+   Image-based invasion percoalation
   </a>
  </li>
 </ul>
@@ -2866,7 +2830,30 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/53bb8fe52451e43a2f35264795d63614076a56ab7465316372a67c0a4ec05600.png" src="../../../_images/53bb8fe52451e43a2f35264795d63614076a56ab7465316372a67c0a4ec05600.png" />
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">KeyboardInterrupt</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span> <span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">line</span> <span class="mi">2</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="n">im2d</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">blobs</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">500</span><span class="p">,</span> <span class="mi">500</span><span class="p">])</span>
+<span class="ne">----&gt; </span><span class="mi">2</span> <span class="n">im3d</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">blobs</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">500</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="mi">500</span><span class="p">])</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">12</span><span class="p">,</span> <span class="mi">12</span><span class="p">]);</span>
+<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im2d</span><span class="p">);</span>
+
+<span class="nn">File ~/work/porespy/porespy/porespy/generators/_imgen.py:848,</span> in <span class="ni">blobs</span><span class="nt">(shape, porosity, blobiness, divs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">846</span> <span class="k">else</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">847</span>     <span class="n">im</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">gaussian_filter</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">848</span> <span class="n">im</span> <span class="o">=</span> <span class="n">norm_to_uniform</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="g g-Whitespace">    </span><span class="mi">849</span> <span class="k">if</span> <span class="n">porosity</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">850</span>     <span class="n">im</span> <span class="o">=</span> <span class="n">im</span> <span class="o">&lt;</span> <span class="n">porosity</span>
+
+<span class="nn">File ~/work/porespy/porespy/porespy/tools/_funcs.py:874,</span> in <span class="ni">norm_to_uniform</span><span class="nt">(im, scale)</span>
+<span class="g g-Whitespace">    </span><span class="mi">872</span> <span class="n">im</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">erfc</span><span class="p">(</span><span class="o">-</span><span class="n">im</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+<span class="g g-Whitespace">    </span><span class="mi">873</span> <span class="n">im</span> <span class="o">=</span> <span class="p">(</span><span class="n">im</span> <span class="o">-</span> <span class="n">im</span><span class="o">.</span><span class="n">min</span><span class="p">())</span> <span class="o">/</span> <span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">-</span> <span class="n">im</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
+<span class="ne">--&gt; </span><span class="mi">874</span> <span class="n">im</span> <span class="o">=</span> <span class="n">im</span> <span class="o">*</span> <span class="p">(</span><span class="n">scale</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">scale</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="n">scale</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="g g-Whitespace">    </span><span class="mi">875</span> <span class="k">return</span> <span class="n">im</span>
+
+<span class="ne">KeyboardInterrupt</span>: 
+</pre></div>
+</div>
 </div>
 </div>
 </section>
@@ -2889,8 +2876,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/b75dc013bac9fb06989f8ef80a25d58a66fd27d0be893bc9bd21c8e0ba808d60.png" src="../../../_images/b75dc013bac9fb06989f8ef80a25d58a66fd27d0be893bc9bd21c8e0ba808d60.png" />
-</div>
+<img alt="../../../_images/89d795806bea8a2f022c78fd42a2a2b367f68f5c58b7b3212434947cd8b60dcf.svg" src="../../../_images/89d795806bea8a2f022c78fd42a2a2b367f68f5c58b7b3212434947cd8b60dcf.svg" /></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">conn</span></code> options for 3D images are 6 and 26 for similarly square and diagonal neighbours. Apparent floating solids in the visualized 2D slice may actually be attached to solid in adjacent 2D slice and therefore may not actually be considered to be a floating solid.</p>
 <div class="cell docutils container">
@@ -2909,8 +2895,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/688813429331e68c378634c7de90edfca0c4da06e5deaf3097586b07082b80fd.png" src="../../../_images/688813429331e68c378634c7de90edfca0c4da06e5deaf3097586b07082b80fd.png" />
-</div>
+<img alt="../../../_images/91b70550a01d0d179d6dea6743a0df6e2e70ef8ac076fdb5056ff52cbdb2cd6d.svg" src="../../../_images/91b70550a01d0d179d6dea6743a0df6e2e70ef8ac076fdb5056ff52cbdb2cd6d.svg" /></div>
 </div>
 </section>
 </section>

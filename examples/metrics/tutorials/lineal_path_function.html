@@ -446,11 +446,6 @@
        SNOW partitioning parallel
       </a>
      </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../filters/tutorials/using_ibip.html">
-       Image-based invasion percoalation
-      </a>
-     </li>
     </ul>
    </li>
    <li class="toctree-l2 has-children">
@@ -585,15 +580,6 @@
        <code class="docutils literal notranslate">
         <span class="pre">
          hold_peaks
-        </span>
-       </code>
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../filters/reference/ibip.html">
-       <code class="docutils literal notranslate">
-        <span class="pre">
-         ibip
         </span>
        </code>
       </a>
@@ -792,15 +778,6 @@
        <code class="docutils literal notranslate">
         <span class="pre">
          trim_small_clusters
-        </span>
-       </code>
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../../filters/reference/unpad.html">
-       <code class="docutils literal notranslate">
-        <span class="pre">
-         unpad
         </span>
        </code>
       </a>
@@ -1222,6 +1199,11 @@
         \(\tau\)
        </span>
        ) of an Image Using tortuosity_fd
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../simulations/tutorials/using_ibip.html">
+       Image-based invasion percoalation
       </a>
      </li>
     </ul>
@@ -1793,11 +1775,6 @@
    SNOW partitioning parallel
   </a>
  </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../filters/tutorials/using_ibip.html">
-   Image-based invasion percoalation
-  </a>
- </li>
 </ul>
 <ul class="nav bd-sidenav">
  <li class="toctree-l1">
@@ -1922,15 +1899,6 @@
    <code class="docutils literal notranslate">
     <span class="pre">
      hold_peaks
-    </span>
-   </code>
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../filters/reference/ibip.html">
-   <code class="docutils literal notranslate">
-    <span class="pre">
-     ibip
     </span>
    </code>
   </a>
@@ -2129,15 +2097,6 @@
    <code class="docutils literal notranslate">
     <span class="pre">
      trim_small_clusters
-    </span>
-   </code>
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../../filters/reference/unpad.html">
-   <code class="docutils literal notranslate">
-    <span class="pre">
-     unpad
     </span>
    </code>
   </a>
@@ -2473,6 +2432,11 @@
     \(\tau\)
    </span>
    ) of an Image Using tortuosity_fd
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../simulations/tutorials/using_ibip.html">
+   Image-based invasion percoalation
   </a>
  </li>
 </ul>
@@ -2832,7 +2796,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/25e13c721f609e8180cd54c993e4701edf8e6ac924ae5e06357382af51576d52.png" src="../../../_images/25e13c721f609e8180cd54c993e4701edf8e6ac924ae5e06357382af51576d52.png" />
+<img alt="../../../_images/4eb9182f122f05f60d3f6082eaa80c98b029cbb85638d13c81bd941452c2703d.png" src="../../../_images/4eb9182f122f05f60d3f6082eaa80c98b029cbb85638d13c81bd941452c2703d.png" />
 </div>
 </div>
 <p>Next apply the <code class="docutils literal notranslate"><span class="pre">distance_transform_lin</span></code> function along the 0 axis.</p>
@@ -2844,7 +2808,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/96edae26b8f0ff2ccd30932f6030a83b01b9d2f6b4e36eced98a3a039cc8c19d.png" src="../../../_images/96edae26b8f0ff2ccd30932f6030a83b01b9d2f6b4e36eced98a3a039cc8c19d.png" />
+<img alt="../../../_images/d0a93d2954ccdc3ff1832745fa6bb76f05c396d1a075bebc578ce0d997c82d49.png" src="../../../_images/d0a93d2954ccdc3ff1832745fa6bb76f05c396d1a075bebc578ce0d997c82d49.png" />
 </div>
 </div>
 <p>The greyscale values of the above image are worth a comment. They indicated the length of a path that can be drawn from each voxel to the nearest solid voxel, in the specified direction.  Or in terms of Torquato’s definition, each greyscale value represents a random starting point (A) and moving along this line until solid is encountered represents the end of the line (B), providing the path length A <span class="math notranslate nohighlight">\(\rightarrow\)</span> B.  The ‘counter associated with the distance between A and B is then incremented’, which corresponds to the binning the greyscale values in the above image. In other words, the above representation includes ALL possible starting points on each path, so provides the largest possible data set.</p>
@@ -2867,7 +2831,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/4d719a540904a1f703e8d83fad34fdaa950c36d157d61df2f2157eb7fca935ac.png" src="../../../_images/4d719a540904a1f703e8d83fad34fdaa950c36d157d61df2f2157eb7fca935ac.png" />
+<img alt="../../../_images/a9687b7d103373c74b4b18f796c2902aadade2bfcd73a8230cb9c904460204d2.png" src="../../../_images/a9687b7d103373c74b4b18f796c2902aadade2bfcd73a8230cb9c904460204d2.png" />
 </div>
 </div>
 <p>Since the image is anisotropic, the process will yeild a different result in the perpendicular direction, so repeating the above with <code class="docutils literal notranslate"><span class="pre">axis=1</span></code> instead of the default <code class="docutils literal notranslate"><span class="pre">axis=0</span></code>.</p>
@@ -2879,7 +2843,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/56aeb082427fbe81df3d1bfaa9d73568f31b20f76cef0bdc72532fe5729b148d.png" src="../../../_images/56aeb082427fbe81df3d1bfaa9d73568f31b20f76cef0bdc72532fe5729b148d.png" />
+<img alt="../../../_images/a0f17da0fb8ae11d6c6bd09a46ff422e3ffa000c7e32b491a566a8ca0b1551ff.png" src="../../../_images/a0f17da0fb8ae11d6c6bd09a46ff422e3ffa000c7e32b491a566a8ca0b1551ff.png" />
 </div>
 </div>
 <p>Overlaying this result wit the previous one:</p>
@@ -2892,7 +2856,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/4dedc81ac3dd7754d34c811f056e3da4262ed8d91fe827a13d397d5b39506859.png" src="../../../_images/4dedc81ac3dd7754d34c811f056e3da4262ed8d91fe827a13d397d5b39506859.png" />
+<img alt="../../../_images/70956800f51d5a94e8ba83c8a3d5ee9de8b0cf9e4d750bf93d448a6b43a665b9.png" src="../../../_images/70956800f51d5a94e8ba83c8a3d5ee9de8b0cf9e4d750bf93d448a6b43a665b9.png" />
 </div>
 </div>
 <p>The anisotropy of the image is clearly visible with the first axis possessing longer lineal-path values.</p>

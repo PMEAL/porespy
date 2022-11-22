@@ -1048,41 +1048,8 @@
 <h1>ibip_gpu<a class="headerlink" href="#ibip-gpu" title="Permalink to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="porespy.filters.ibip_gpu">
-<span class="sig-name descname"><span class="pre">ibip_gpu</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inlets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxiter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/filters/_ibip_gpu.html#ibip_gpu"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.ibip_gpu" title="Permalink to this definition">#</a></dt>
-<dd><p>Performs invasion percolation on given image using iterative image
-dilation on GPU.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>im</strong> (<em>array_like</em>) – Boolean array with <code class="docutils literal notranslate"><span class="pre">True</span></code> values indicating void voxels. If a
-standard numpy array is passed, it is converted to a cupy array.</p></li>
-<li><p><strong>dt</strong> (<em>array_like</em><em>, </em><em>optional</em>) – The distance transform of <code class="docutils literal notranslate"><span class="pre">im</span></code>. If a standard numpy array is
-passed, it is converted to a cupy array.</p></li>
-<li><p><strong>inlets</strong> (<em>array_like</em><em>, </em><em>optional</em>) – Boolean array with <code class="docutils literal notranslate"><span class="pre">True</span></code> values indicating where the invading
-fluid is injected from.  If <code class="docutils literal notranslate"><span class="pre">None</span></code>, all faces will be used.
-If a standard numpy array is passed, it is converted to a cupy
-array.</p></li>
-<li><p><strong>maxiter</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of steps to apply before stopping.  The default is to
-run for 10,000 steps which is almost certain to reach completion
-if the image is smaller than about 250-cubed.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><p><strong>results</strong> – A custom object with the following two arrays as attributes:</p>
-<dl class="simple">
-<dt>’inv_sequence’</dt><dd><p>An ndarray the same shape as <code class="docutils literal notranslate"><span class="pre">im</span></code> with each voxel labelled by
-the sequence at which it was invaded.</p>
-</dd>
-<dt>’inv_size’</dt><dd><p>An ndarray the same shape as <code class="docutils literal notranslate"><span class="pre">im</span></code> with each voxel labelled by
-the <code class="docutils literal notranslate"><span class="pre">inv_size</span></code> at which was filled.</p>
-</dd>
-</dl>
-</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Results object</p>
-</dd>
-</dl>
+<span class="sig-name descname"><span class="pre">ibip_gpu</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/filters/_funcs.html#ibip_gpu"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.ibip_gpu" title="Permalink to this definition">#</a></dt>
+<dd><p>This function has been moved to the <code class="docutils literal notranslate"><span class="pre">simulations</span></code> module, please use that.</p>
 </dd></dl>
 
 </section>

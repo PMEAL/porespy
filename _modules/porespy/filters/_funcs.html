@@ -196,19 +196,104 @@
 <span class="kn">from</span> <span class="nn">edt</span> <span class="kn">import</span> <span class="n">edt</span>
 <span class="kn">import</span> <span class="nn">operator</span> <span class="k">as</span> <span class="nn">op</span>
 <span class="kn">import</span> <span class="nn">scipy.ndimage</span> <span class="k">as</span> <span class="nn">spim</span>
+<span class="kn">from</span> <span class="nn">deprecated</span> <span class="kn">import</span> <span class="n">deprecated</span>
 <span class="kn">from</span> <span class="nn">skimage.morphology</span> <span class="kn">import</span> <span class="n">reconstruction</span>
 <span class="kn">from</span> <span class="nn">skimage.segmentation</span> <span class="kn">import</span> <span class="n">clear_border</span>
 <span class="kn">from</span> <span class="nn">skimage.morphology</span> <span class="kn">import</span> <span class="n">ball</span><span class="p">,</span> <span class="n">disk</span><span class="p">,</span> <span class="n">square</span><span class="p">,</span> <span class="n">cube</span><span class="p">,</span> <span class="n">diamond</span><span class="p">,</span> <span class="n">octahedron</span>
 <span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">_check_for_singleton_axes</span>
-<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">get_border</span><span class="p">,</span> <span class="n">subdivide</span><span class="p">,</span> <span class="n">recombine</span>
+<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">get_border</span><span class="p">,</span> <span class="n">subdivide</span><span class="p">,</span> <span class="n">recombine</span><span class="p">,</span> <span class="n">make_contiguous</span>
 <span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">unpad</span><span class="p">,</span> <span class="n">extract_subsection</span>
-<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">ps_disk</span><span class="p">,</span> <span class="n">ps_ball</span>
+<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">ps_disk</span><span class="p">,</span> <span class="n">ps_ball</span><span class="p">,</span> <span class="n">ps_round</span>
 <span class="kn">from</span> <span class="nn">porespy</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">get_tqdm</span>
 
 
 <span class="n">tqdm</span> <span class="o">=</span> <span class="n">get_tqdm</span><span class="p">()</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="ibip"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.ibip.html#porespy.filters.ibip">[docs]</a><span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;The ibip function will be moved to the&quot;</span>
+            <span class="o">+</span> <span class="s2">&quot; ``simulations`` module in a future version&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">ibip</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function has been moved to the ``simulations`` module, please use that.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">porespy.simulations</span> <span class="kn">import</span> <span class="n">ibip</span>
+    <span class="k">return</span> <span class="n">ibip</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ibip_gpu"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.ibip_gpu.html#porespy.filters.ibip_gpu">[docs]</a><span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;The ibip_gpu function will be moved to the&quot;</span>
+            <span class="o">+</span> <span class="s2">&quot; ``simulations`` module in a future version&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">ibip_gpu</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function has been moved to the ``simulations`` module, please use that.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">porespy.simulations</span> <span class="kn">import</span> <span class="n">ibip_gpu</span>
+    <span class="k">return</span> <span class="n">ibip_gpu</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="find_trapped_regions"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.find_trapped_regions.html#porespy.filters.find_trapped_regions">[docs]</a><span class="k">def</span> <span class="nf">find_trapped_regions</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span> <span class="n">outlets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">return_mask</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Find the trapped regions given an invasion sequence image</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    seq : ndarray</span>
+<span class="sd">        An image with invasion sequence values in each voxel.  Regions</span>
+<span class="sd">        labelled -1 are considered uninvaded, and regions labelled 0 are</span>
+<span class="sd">        considered solid.</span>
+<span class="sd">    outlets : ndarray, optional</span>
+<span class="sd">        An image the same size as ``seq`` with ``True`` indicating outlets</span>
+<span class="sd">        and ``False`` elsewhere.  If not given then all image boundaries</span>
+<span class="sd">        are considered outlets.</span>
+<span class="sd">    bins : int</span>
+<span class="sd">        The resolution to use when thresholding the ``seq`` image.  By default</span>
+<span class="sd">        the invasion sequence will be broken into 25 discrete steps and</span>
+<span class="sd">        trapping will be identified at each step. A higher value of ``bins``</span>
+<span class="sd">        will provide a more accurate trapping analysis, but is more time</span>
+<span class="sd">        consuming. If ``None`` is specified, then *all* the steps will</span>
+<span class="sd">        analyzed, providing the highest accuracy.</span>
+<span class="sd">    return_mask : bool</span>
+<span class="sd">        If ``True`` (default) then the returned image is a boolean mask</span>
+<span class="sd">        indicating which voxels are trapped.  If ``False``, then a copy of</span>
+<span class="sd">        ``seq`` is returned with the trapped voxels set to uninvaded and</span>
+<span class="sd">        the invasion sequence values adjusted accordingly.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    trapped : ND-image</span>
+<span class="sd">        An image, the same size as ``seq``.  If ``return_mask`` is ``True``,</span>
+<span class="sd">        then the image has ``True`` values indicating the trapped voxels.  If</span>
+<span class="sd">        ``return_mask`` is ``False``, then a copy of ``seq`` is returned with</span>
+<span class="sd">        trapped voxels set to 0.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here</span>
+<span class="sd">    &lt;https://porespy.org/examples/filters/reference/find_trapped_regions.html&gt;`_</span>
+<span class="sd">    to view online example.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">seq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">outlets</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">outlets</span> <span class="o">=</span> <span class="n">get_border</span><span class="p">(</span><span class="n">seq</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;faces&#39;</span><span class="p">)</span>
+    <span class="n">trapped</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">outlets</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">bins</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">seq</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">bins</span> <span class="o">=</span> <span class="n">bins</span><span class="p">[</span><span class="n">bins</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">seq</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="mi">1</span><span class="p">,</span> <span class="n">bins</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="o">**</span><span class="n">settings</span><span class="o">.</span><span class="n">tqdm</span><span class="p">):</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">seq</span> <span class="o">&gt;=</span> <span class="n">i</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">temp</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">keep</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">labels</span><span class="p">[</span><span class="n">outlets</span><span class="p">])[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="n">trapped</span> <span class="o">+=</span> <span class="n">temp</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">keep</span><span class="p">,</span> <span class="n">invert</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">return_mask</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">trapped</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">seq</span><span class="p">[</span><span class="n">trapped</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">seq</span> <span class="o">=</span> <span class="n">make_contiguous</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;symmetric&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">seq</span></div>
 
 
 <div class="viewcode-block" id="apply_padded"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.apply_padded.html#porespy.filters.apply_padded">[docs]</a><span class="k">def</span> <span class="nf">apply_padded</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">pad_width</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">pad_val</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -276,12 +361,7 @@
 <span class="sd">    to view online example.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="n">strel</span> <span class="o">=</span> <span class="n">disk</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-        <span class="n">strel</span> <span class="o">=</span> <span class="n">ball</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Only 2D or 3D images are accepted&quot;</span><span class="p">)</span>
+    <span class="n">strel</span> <span class="o">=</span> <span class="n">ps_round</span><span class="p">(</span><span class="n">r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="n">im</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">filtered_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
     <span class="n">labels</span><span class="p">,</span> <span class="n">N</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">filtered_array</span><span class="p">,</span> <span class="n">structure</span><span class="o">=</span><span class="n">strel</span><span class="p">)</span>
     <span class="n">id_sizes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">spim</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)))</span>
