@@ -115,8 +115,8 @@ def marching_map(path, start):
     try:
         import skfmm
     except ModuleNotFoundError:
-        raise ModuleNotFoundError('scikit-fmm must be install to use this ' +
-                                  'function')
+        raise ModuleNotFoundError('scikit-fmm must be install to use this '
+                                  + 'function')
     phi = start*2.0 - 1.0
     speed = path*1.0
     t = skfmm.travel_time(phi, speed)
@@ -1307,7 +1307,8 @@ def extract_regions(regions, labels: list, trim=True):
         x_min, x_max = min(s[i - 1][0].start, x_min), max(s[i - 1][0].stop, x_max)
         y_min, y_max = min(s[i - 1][1].start, y_min), max(s[i - 1][1].stop, y_max)
         if regions.ndim == 3:
-            z_min, z_max = min(s[i - 1][2].start, z_min), max(s[i - 1][2].stop, z_max)
+            z_min = min(s[i - 1][2].start, z_min)
+            z_max = max(s[i - 1][2].stop, z_max)
     if trim:
         if regions.ndim == 3:
             bbox = bbox_to_slices([x_min, y_min, z_min, x_max, y_max, z_max])

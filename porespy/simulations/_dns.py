@@ -70,7 +70,7 @@ def tortuosity_fd(im, axis, solver=None):
     if not eps:
         raise Exception('No pores remain after trimming floating pores')
     if eps < eps0:  # pragma: no cover
-        logger.warning(f'Found non-percolating regions, were filled to percolate')
+        logger.warning('Found non-percolating regions, were filled to percolate')
 
     # Generate a Cubic network to be used as an orthogonal grid
     net = op.network.CubicTemplate(template=im, spacing=1.0)

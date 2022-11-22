@@ -70,7 +70,7 @@ def steps_to_displacements(paths, voxel_size, **kwargs):
     return dt
 
 
-def effective_diffusivity_rw(displacements, im, time_step,  **kwargs):
+def effective_diffusivity_rw(displacements, im, time_step, **kwargs):
     r"""
     Calculates the effective diffusivity based on physical displacements of random
     walkers

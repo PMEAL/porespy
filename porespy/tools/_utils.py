@@ -1,10 +1,8 @@
 import logging
-import os
 import sys
 import numpy as np
 import importlib
 from dataclasses import dataclass
-from tqdm import tqdm
 import psutil
 
 
@@ -83,13 +81,13 @@ class Settings:  # pragma: no cover
     def loglevel(self, value):
         if isinstance(value, str):
             options = {
-                "TRACE" : 5,
-                "DEBUG" : 10,
-                "INFO" : 20,
-                "SUCESS" : 25,
-                "WARNING" : 30,
-                "ERROR" : 40,
-                "CRITICAL" : 50
+                "TRACE": 5,
+                "DEBUG": 10,
+                "INFO": 20,
+                "SUCESS": 25,
+                "WARNING": 30,
+                "ERROR": 40,
+                "CRITICAL": 50
             }
             value = options[value]
         self._loglevel = value

@@ -124,8 +124,8 @@ def regions_to_network(regions, phases=None, voxel_size=1, accuracy='standard'):
     if phases is None:
         phases = (im > 0).astype(int)
     if im.size != phases.size:
-        raise Exception('regions and phase are different sizes, probably ' +
-                        'because boundary regions were not added to phases')
+        raise Exception('regions and phase are different sizes, probably '
+                        + 'because boundary regions were not added to phases')
     dt = np.zeros_like(phases, dtype="float32")  # since edt returns float32
     for i in np.unique(phases[phases.nonzero()]):
         dt += edt(phases == i)

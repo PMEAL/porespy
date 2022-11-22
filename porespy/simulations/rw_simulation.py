@@ -620,7 +620,7 @@ def _wrap_indices(loc, shape, mode='periodic'):
             N_even = 1 - N_wrap % 2  # Note even vs odd number of wraps
             # Deal with even and odd numbered wraps differently
             temp[i] = x - N_even * shape[i] * N_wrap + \
-                      (1 - N_even) * ((shape[i] - x % shape[i]) - x - 1)
+                (1 - N_even) * ((shape[i] - x % shape[i]) - x - 1)
     else:
         raise Exception(f'Unrecognized mode {mode}')
     inds = tuple(temp.astype(int))

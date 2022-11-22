@@ -1066,7 +1066,7 @@ def satn_profile(satn, s, axis=0, span=10, mode='tile'):
             for i in range(int(satn.shape[0]/span)):
                 void = satn[i*span:(i+1)*span, ...] != 0
                 nwp = (satn[i*span:(i+1)*span, ...] < s) \
-                    *(satn[i*span:(i+1)*span, ...] > 0)
+                    * (satn[i*span:(i+1)*span, ...] > 0)
                 y[i] = nwp.sum()/void.sum()
                 z[i] = i*span + (span-1)/2
         if mode == 'slide':
@@ -1145,7 +1145,7 @@ def find_h(saturation, position=None, srange=[0.01, 0.99]):
         srange = max(min(srange), min(saturation)), min(max(srange), max(saturation))
         r.valid = False
         logger.warning(f'The requested saturation range was adjusted to {srange}'
-                        ' to accomodate data')
+                       ' to accomodate data')
     # Find zmax
     x = saturation >= max(srange)
     zmax = np.where(x)[0][-1]
