@@ -62,7 +62,6 @@ jobs:
           pytest .
             --cov=.
             --cov-report=xml
-            --pycodestyle
 
       - name: Upload coverage to Codecov
         if: (matrix.python-version == 3.8) && (matrix.os == 'ubuntu-latest')
