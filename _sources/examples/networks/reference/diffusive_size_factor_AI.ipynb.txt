@@ -43,26 +43,20 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 1,
+   "execution_count": 4,
    "metadata": {
     "tags": []
    },
    "outputs": [],
    "source": [
-    "try:\n",
-    "    import tensorflow as tf\n",
-    "except ImportError:\n",
-    "    !pip install tensorflow  > /dev/null\n",
-    "\n",
-    "try:\n",
-    "    import sklearn\n",
-    "except ImportError:\n",
-    "    !pip install scikit-learn > /dev/null\n",
-    "\n",
     "import os\n",
     "\n",
-    "if not os.path.exists(\"sf-model-lib\"):\n",
-    "    !git clone https://github.com/PMEAL/sf-model-lib > /dev/null"
+    "!pip install -q tensorflow scikit-learn\n",
+    "if not os.path.exists('sf-model-lib'):\n",
+    "    !git clone https://github.com/PMEAL/sf-model-lib\n",
+    "\n",
+    "import tensorflow as tf\n",
+    "import sklearn"
    ]
   },
   {

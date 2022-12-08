@@ -32,8 +32,13 @@ nbclient.exceptions.CellTimeoutError: A cell timed out while it was being execut
 The message was: Cell execution timed out.
 Here is a preview of the cell contents:
 -------------------
-['try:', '    import tensorflow as tf', 'except ImportError:', '    !pip install tensorflow  > /dev/null', '']
-...
-['', 'import os', '', 'if not os.path.exists("sf-model-lib"):', '    !git clone https://github.com/PMEAL/sf-model-lib > /dev/null']
+import os
+
+!pip install -q tensorflow scikit-learn
+if not os.path.exists('sf-model-lib'):
+    !git clone https://github.com/PMEAL/sf-model-lib
+
+import tensorflow as tf
+import sklearn
 -------------------
 
