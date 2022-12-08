@@ -32,8 +32,10 @@ nbclient.exceptions.CellTimeoutError: A cell timed out while it was being execut
 The message was: Cell execution timed out.
 Here is a preview of the cell contents:
 -------------------
-['try:', '    import tensorflow as tf', 'except ImportError:', '    !pip install tensorflow', '']
-...
-['', 'import os', '', 'if not os.path.exists("sf-model-lib"):', '    !git clone https://github.com/PMEAL/sf-model-lib']
+conns = ps.networks.find_conns(regions)
+size_factors = ps.networks.diffusive_size_factor_AI(regions,
+                                                    model=model,
+                                                    g_train=g_train,
+                                                    throat_conns=conns)
 -------------------
 
