@@ -2879,35 +2879,6 @@
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">KeyboardInterrupt</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span> <span class="p">[</span><span class="mi">7</span><span class="p">],</span> <span class="n">line</span> <span class="mi">9</span>
-<span class="g g-Whitespace">      </span><span class="mi">7</span> <span class="k">for</span> <span class="n">eps</span> <span class="ow">in</span> <span class="n">porosity_target</span><span class="p">:</span>
-<span class="g g-Whitespace">      </span><span class="mi">8</span>     <span class="n">temp</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-<span class="ne">----&gt; </span><span class="mi">9</span>     <span class="n">im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">cylinders</span><span class="p">(</span><span class="o">**</span><span class="n">params_generic</span><span class="p">,</span> <span class="n">porosity</span><span class="o">=</span><span class="n">eps</span><span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">10</span>     <span class="n">runtime_porosity</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">temp</span><span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">11</span>     <span class="n">porosity_actual</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ps</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">porosity</span><span class="p">(</span><span class="n">im</span><span class="p">))</span>
-
-<span class="nn">File ~/work/porespy/porespy/porespy/generators/_imgen.py:1080,</span> in <span class="ni">cylinders</span><span class="nt">(shape, r, ncylinders, porosity, phi_max, theta_max, length, maxiter)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1078</span> <span class="n">n_fibers</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">frac</span> <span class="o">*</span> <span class="n">n_fibers_total</span><span class="p">)</span> <span class="o">-</span> <span class="n">n_fibers_added</span><span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1079</span> <span class="k">if</span> <span class="n">n_fibers</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-<span class="ne">-&gt; </span><span class="mi">1080</span>     <span class="n">im</span> <span class="o">=</span> <span class="n">im</span> <span class="o">&amp;</span> <span class="n">_cylinders</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">n_fibers</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1081</span>                          <span class="n">phi_max</span><span class="p">,</span> <span class="n">theta_max</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1082</span>                          <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1083</span> <span class="n">n_fibers_added</span> <span class="o">+=</span> <span class="n">n_fibers</span>
-<span class="g g-Whitespace">   </span><span class="mi">1084</span> <span class="c1"># Update parameters for next iteration</span>
-
-<span class="nn">File ~/work/porespy/porespy/porespy/generators/_imgen.py:945,</span> in <span class="ni">_cylinders</span><span class="nt">(shape, r, ncylinders, phi_max, theta_max, length, verbose)</span>
-<span class="g g-Whitespace">    </span><span class="mi">943</span>             <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
-<span class="g g-Whitespace">    </span><span class="mi">944</span> <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
-<span class="ne">--&gt; </span><span class="mi">945</span> <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="o">~</span><span class="n">im</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">r</span>
-<span class="g g-Whitespace">    </span><span class="mi">946</span> <span class="k">return</span> <span class="o">~</span><span class="n">dt</span>
-
-<span class="ne">KeyboardInterrupt</span>: 
-</pre></div>
-</div>
-</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -2942,7 +2913,8 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/eec59370d0a1441dc815bb5d5e9a0207887e865a168c6eb491d605d05b41739d.svg" src="../../../_images/eec59370d0a1441dc815bb5d5e9a0207887e865a168c6eb491d605d05b41739d.svg" /></div>
+<img alt="../../../_images/4a553aedee2f794be576e6c55a89366bda652872631bc2188ff90e911f08ee93.png" src="../../../_images/4a553aedee2f794be576e6c55a89366bda652872631bc2188ff90e911f08ee93.png" />
+</div>
 </div>
 <p>Lastly, this block shows that more iterations improves proximity to goal porosity.</p>
 <div class="cell docutils container">
@@ -2971,7 +2943,8 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/d5d96625ef70aa1d9e498603303e2dc616c59e87984a47bbc4e1545126ee0bd4.svg" src="../../../_images/d5d96625ef70aa1d9e498603303e2dc616c59e87984a47bbc4e1545126ee0bd4.svg" /></div>
+<img alt="../../../_images/f2d288fe457dd5502889520d5147c26135422fdc918c835aec7252ce8ab716a5.png" src="../../../_images/f2d288fe457dd5502889520d5147c26135422fdc918c835aec7252ce8ab716a5.png" />
+</div>
 </div>
 </section>
 

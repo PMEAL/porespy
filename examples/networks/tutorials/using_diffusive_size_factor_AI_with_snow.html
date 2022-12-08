@@ -2825,61 +2825,27 @@
 <p>Let’s download the <code class="docutils literal notranslate"><span class="pre">tensorflow</span></code> files required to run this notebook:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">contextmanager</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
 
-<span class="o">!</span>pip install -q tensorflow scikit-learn
-<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s1">&#39;sf-model-lib&#39;</span><span class="p">):</span>
-    <span class="o">!</span>git clone https://github.com/PMEAL/sf-model-lib
+<span class="nd">@contextmanager</span>
+<span class="k">def</span> <span class="nf">suppress_stdout</span><span class="p">():</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">devnull</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">devnull</span><span class="p">:</span>
+        <span class="n">old_stdout</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">devnull</span>
+        <span class="k">try</span><span class="p">:</span>  
+            <span class="k">yield</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">old_stdout</span>
+
+<span class="k">with</span> <span class="n">suppress_stdout</span><span class="p">():</span>
+    <span class="o">!</span>pip install -q tensorflow scikit-learn
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s1">&#39;sf-model-lib&#39;</span><span class="p">):</span>
+        <span class="o">!</span>git clone https://github.com/PMEAL/sf-model-lib
 
 <span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
 <span class="kn">import</span> <span class="nn">sklearn</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>^C
-<span class=" -Color -Color-Red">ERROR: Operation cancelled by user</span>
-
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Cloning into &#39;sf-model-lib&#39;...
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>remote: Enumerating objects: 24, done.
-remote: Counting objects:  11% (1/9)
-remote: Counting objects:  22% (2/9)
-remote: Counting objects:  33% (3/9)
-remote: Counting objects:  44% (4/9)
-remote: Counting objects:  55% (5/9)
-remote: Counting objects:  66% (6/9)
-remote: Counting objects:  77% (7/9)
-remote: Counting objects:  88% (8/9)
-remote: Counting objects: 100% (9/9)
-remote: Counting objects: 100% (9/9), done.
-remote: Compressing objects:  12% (1/8)
-remote: Compressing objects:  25% (2/8)
-remote: Compressing objects:  37% (3/8)
-remote: Compressing objects:  50% (4/8)
-remote: Compressing objects:  62% (5/8)
-remote: Compressing objects:  75% (6/8)
-remote: Compressing objects:  87% (7/8)
-remote: Compressing objects: 100% (8/8)
-remote: Compressing objects: 100% (8/8), done.
-Receiving objects:   4% (1/24)
-Receiving objects:   8% (2/24)
-Receiving objects:  12% (3/24)
-Receiving objects:  16% (4/24)
-Receiving objects:  20% (5/24)
-Receiving objects:  25% (6/24)
-Receiving objects:  29% (7/24)
-Receiving objects:  33% (8/24)
-Receiving objects:  37% (9/24)
-Receiving objects:  41% (10/24)
-Receiving objects:  45% (11/24)
-Receiving objects:  50% (12/24)
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Receiving objects:  50% (12/24), 27.93 MiB | 27.93 MiB/s
 </pre></div>
 </div>
 </div>
