@@ -8,9 +8,11 @@ import scipy.spatial as sptl
 import scipy.ndimage as spim
 import scipy.stats as spst
 from deprecated import deprecated
-from porespy.tools import norm_to_uniform, ps_ball, ps_disk, get_border
+from porespy.tools import norm_to_uniform, ps_ball, ps_disk, get_border, ps_round
 from porespy.tools import extract_subsection
 from porespy.tools import insert_sphere
+from porespy.tools import _insert_disk_at_points
+from porespy.tools import extend_slice
 from porespy import settings
 from typing import List
 
@@ -200,46 +202,38 @@ def rsa(im_or_shape: np.array,
     to view online example.
 
     """
-    logger.debug(f"RSA: Adding spheres of size {r}")
-    if len(im_or_shape) <= 3:
+    logger.debug(f"rsa: Adding spheres of size {r}")
+    if np.array(im_or_shape).ndim < 2:
         im = np.zeros(shape=im_or_shape, dtype=bool)
     else:
         im = im_or_shape
-    if seed is not None:
+    if seed is not None:  # Initialize rng so numba sees it
         _set_seed(seed)
     im = im.astype(bool)
+    shape_orig = im.shape  # Store original image shape, to undo padding at the end
     if return_spheres:
         im_temp = np.copy(im)
     if n_max is None:
         n_max = np.inf
+    # Compute volume fraction info
     vf_final = volume_fraction
     vf_start = im.sum() / im.size
+    vf_template = ps_round(r, ndim=im.ndim, smooth=smooth).sum() / im.size
     logger.debug(f"Initial volume fraction: {vf_start}")
-    if im.ndim == 2:
-        template_lg = ps_disk((r + clearance) * 2)
-        template_sm = ps_disk(r, smooth=smooth)
-    else:
-        template_lg = ps_ball((r + clearance) * 2)
-        template_sm = ps_ball(r, smooth=smooth)
-    vf_template = template_sm.sum() / im.size
-    # Pad image by the radius of large template to enable insertion near edges
-    im = np.pad(im, pad_width=2 * (r + clearance), mode="edge")
-    # Depending on mode, adjust mask to remove options around edge
-    if mode == "contained":
-        border = get_border(im.shape, thickness=2 * (r + clearance),
-                            mode="faces")
-    elif mode == "extended":
-        border = get_border(im.shape, thickness=(r + clearance) + 1,
-                            mode="faces")
-    else:
-        raise Exception("Unrecognized mode: ", mode)
-    # Remove border pixels
-    im[border] = True
     # Dilate existing objects by strel to remove pixels near them
     # from consideration for sphere placement
     logger.info("Dilating foreground features by sphere radius")
     dt = edt(im == 0)
-    options_im = dt >= r
+    options_im = dt >= (r + int(np.round(clearance/2)))
+    # Depending on mode, adjust options_im to remove options around edge
+    if mode == "contained":
+        border = get_border(im.shape, thickness=r, mode="faces")
+        options_im[border] = False
+    elif mode == "extended":
+        im = np.pad(im, pad_width=r, mode="edge")
+        options_im = np.pad(options_im, r, mode='symmetric')
+    else:
+        raise Exception("Unrecognized mode: ", mode)
     # Begin inserting the spheres
     vf = vf_start
     free_sites = np.flatnonzero(options_im)
@@ -254,19 +248,21 @@ def rsa(im_or_shape: np.array,
             free_sites = np.flatnonzero(options_im)
         if all(np.array(c) == -1):
             break
-        s_sm = tuple([slice(x - r, x + r + 1, None) for x in c])
-        s_lg = tuple([slice(x - 2 * (r + clearance),
-                            x + 2 * (r + clearance) + 1, None) for x in c])
-        im[s_sm] += template_sm  # Add ball to image
-        options_im[s_lg][template_lg] = False  # Update extended region
+        im = _insert_disk_at_points(im=im,
+                                    coords=np.vstack(c),
+                                    r=r,
+                                    v=True,
+                                    smooth=smooth)
+        options_im = _insert_disk_at_points(im=options_im,
+                                            coords=np.vstack(c),
+                                            r=2*r + int(np.round(clearance/2)),
+                                            v=False,
+                                            smooth=smooth,
+                                            overwrite=True)
         vf += vf_template
         i += 1
     logger.info(f"Number of spheres inserted: {i}")
-    # Get slice into returned image to retain original size
-    s = tuple([slice(2 * (r + clearance), d - 2 * (r + clearance), None)
-               for d in im.shape])
-    im = im[s]
-    vf = im.sum() / im.size
+    im = extract_subsection(im, shape_orig)
     logger.debug("Final volume fraction:", vf)
     if return_spheres:
         im = im * (~im_temp)
@@ -1154,3 +1150,20 @@ def line_segment(X0, X1):
         x = np.rint(np.linspace(X0[0], X1[0], L)).astype(int)
         y = np.rint(np.linspace(X0[1], X1[1], L)).astype(int)
         return [x, y]
+
+
+if __name__ == "__main__":
+    import matplotlib.pyplot as plt
+    im1 = rsa([500, 500, 500], r=15, mode='contained', smooth=False)
+    im2 = rsa([300, 300], r=15, mode='extended', smooth=False)
+    im3 = rsa([300, 300], r=15, mode='contained', clearance=10, smooth=False)
+    im4 = rsa([300, 300], r=15, mode='extended', clearance=10, smooth=False)
+    fig, ax = plt.subplots(2, 2)
+    ax[0][0].imshow(im1)
+    ax[0][0].set_title('mode="contained", clearance=0')
+    ax[0][1].imshow(im2)
+    ax[0][1].set_title('mode="extended", clearance=0')
+    ax[1][0].imshow(im3)
+    ax[1][0].set_title('mode="contained", clearance=4')
+    ax[1][1].imshow(im4)
+    ax[1][1].set_title('mode="extended", clearance=4')

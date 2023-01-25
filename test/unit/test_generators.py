@@ -225,6 +225,13 @@ class GeneratorTest():
         lt = ps.filters.local_thickness(im)
         assert len(np.unique(lt)) > 2
 
+    def test_rsa_2d_extended_with_clearance(self):
+        im = np.zeros([100, 100], dtype=int)
+        im = ps.generators.rsa(im, r=10, volume_fraction=0.5, clearance=2, mode='extended')
+        im = np.pad(im, pad_width=1, mode='constant', constant_values=False)
+        lt = ps.filters.local_thickness(im)
+        assert len(np.unique(lt)) > 2
+
     def test_RSA_3d_contained(self):
         im = np.zeros([100, 100, 100], dtype=int)
         im = ps.generators.RSA(im, r=10, volume_fraction=0.5, mode='contained')
