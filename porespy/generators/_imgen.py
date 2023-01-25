@@ -116,7 +116,8 @@ def rsa(im_or_shape: np.array,
         n_max: int = 100000,
         mode: str = "contained",
         return_spheres: bool = False,
-        smooth: bool = True):
+        smooth: bool = True,
+        seed: int = None):
     r"""
     Generates a sphere or disk packing using Random Sequential Addition
 
@@ -162,6 +163,12 @@ def rsa(im_or_shape: np.array,
     smooth : bool
         Indicates whether balls should have smooth faces (``True``) or should
         include the bumps on the extremities (``False``).
+    seed : int
+        The seed to supply to the random number generators. Because this function
+        uses ``numba`` for speed, calling the normal ``numpy.random.seed(<seed>)``
+        has no effect. To get a repeatable image, the seed must be passed to the
+        function so it can be initialized the way ``numba`` requires. The default
+        is ``None``, which means each call will produce a new realization.
 
     Returns
     -------
@@ -198,6 +205,8 @@ def rsa(im_or_shape: np.array,
         im = np.zeros(shape=im_or_shape, dtype=bool)
     else:
         im = im_or_shape
+    if seed is not None:
+        _set_seed(seed)
     im = im.astype(bool)
     if return_spheres:
         im_temp = np.copy(im)
@@ -236,6 +245,7 @@ def rsa(im_or_shape: np.array,
     free_sites = np.flatnonzero(options_im)
     i = 0
     while (vf <= vf_final) and (i < n_max) and (len(free_sites) > 0):
+        # Choose a random site from free_sites
         c, count = _make_choice(options_im, free_sites=free_sites)
         # The 100 below is arbitrary and may change performance
         if count > 100:
@@ -261,6 +271,21 @@ def rsa(im_or_shape: np.array,
     if return_spheres:
         im = im * (~im_temp)
     return im
+
+
+@njit
+def _set_seed(a):
+    np.random.seed(a)
+
+
+@njit
+def _get_rand_float(*args):
+    return np.random.rand(*args)
+
+
+@njit
+def _get_rand_int(*args):
+    return np.random.randint(*args)
 
 
 @njit
@@ -302,7 +327,7 @@ def _make_choice(options_im, free_sites):
             if count >= maxiter:
                 coords = [-1, -1]
                 break
-            ind = np.random.randint(0, upper_limit)
+            ind = _get_rand_int(0, upper_limit)
             # This numpy function is not supported by numba yet
             # c1, c2 = np.unravel_index(free_sites[ind], options_im.shape)
             # So using manual unraveling
@@ -317,7 +342,7 @@ def _make_choice(options_im, free_sites):
             if count >= maxiter:
                 coords = [-1, -1, -1]
                 break
-            ind = np.random.randint(0, upper_limit)
+            ind = _get_rand_int(0, upper_limit)
             # This numpy function is not supported by numba yet
             # c1, c2, c3 = np.unravel_index(free_sites[ind], options_im.shape)
             # So using manual unraveling
