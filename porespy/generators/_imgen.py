@@ -106,7 +106,7 @@ def insert_shape(im, element, center=None, corner=None, value=1, mode="overwrite
     return im
 
 
-@deprecated("This function has been renamed to rsa (lowercase to meet pep8")
+@deprecated("This function has been renamed to rsa (lowercase to meet pep8)")
 def RSA(*args, **kwargs):
     return rsa(*args, **kwargs)
 
@@ -115,6 +115,7 @@ def rsa(im_or_shape: np.array,
         r: int,
         volume_fraction: int = 1,
         clearance: int = 0,
+        protrusion: int = 0,
         n_max: int = 100000,
         mode: str = "contained",
         return_spheres: bool = False,
@@ -138,11 +139,16 @@ def rsa(im_or_shape: np.array,
         spheres are added as ``True``'s, so each sphere addition increases the
         ``volume_fraction`` until the specified limit is reached.  Note that if
         ``n_max`` is reached first, then ``volume_fraction`` will not be
-        acheived.  Also, ``volume_fraction`` is not counted correctly if the
+        achieved.  Also, ``volume_fraction`` is not counted correctly if the
         ``mode`` is ``'extended'``.
     clearance : int (optional, default = 0)
         The amount of space to put between each sphere. Negative values are
         acceptable to create overlaps, so long as ``abs(clearance) < r``.
+    protrusion : int (optional, default = 0)
+        The amount by which inserted spheres are allowed to protrude outside of
+        the given background.  If set to 0 (the default) then all spheres will
+        be fully inside the region marked ``False`` in the input image. If > 0, then
+        spheres will extend into the region marked ``True`` in the input image.
     n_max : int (default is 100,000)
         The maximum number of spheres to add.  Using a low value may halt
         the addition process prior to reaching the specified
@@ -154,7 +160,7 @@ def rsa(im_or_shape: np.array,
             Spheres are all completely within the image
         'extended'
             Spheres are allowed to extend beyond the edge of the
-            image.  In this mode the volume fraction will be less that
+            image.  In this mode the volume fraction will be less than
             requested since some spheres extend beyond the image, but their
             entire volume is counted as added for computational efficiency.
 
@@ -206,13 +212,12 @@ def rsa(im_or_shape: np.array,
     if np.array(im_or_shape).ndim < 2:
         im = np.zeros(shape=im_or_shape, dtype=bool)
     else:
-        im = im_or_shape
+        input_im = np.copy(im_or_shape)
+        im = np.zeros_like(im_or_shape, dtype=bool)
     if seed is not None:  # Initialize rng so numba sees it
         _set_seed(seed)
     im = im.astype(bool)
     shape_orig = im.shape  # Store original image shape, to undo padding at the end
-    if return_spheres:
-        im_temp = np.copy(im)
     if n_max is None:
         n_max = np.inf
     # Compute volume fraction info
@@ -223,8 +228,8 @@ def rsa(im_or_shape: np.array,
     # Dilate existing objects by strel to remove pixels near them
     # from consideration for sphere placement
     logger.info("Dilating foreground features by sphere radius")
-    dt = edt(im == 0)
-    options_im = dt >= (r + int(np.round(clearance/2)))
+    dt = edt(input_im == 0)
+    options_im = dt >= (r - protrusion)
     # Depending on mode, adjust options_im to remove options around edge
     if mode == "contained":
         border = get_border(im.shape, thickness=r, mode="faces")
@@ -264,8 +269,8 @@ def rsa(im_or_shape: np.array,
     logger.info(f"Number of spheres inserted: {i}")
     im = extract_subsection(im, shape_orig)
     logger.debug("Final volume fraction:", vf)
-    if return_spheres:
-        im = im * (~im_temp)
+    if not return_spheres:
+        im = im + input_im
     return im
 
 
@@ -1154,16 +1159,19 @@ def line_segment(X0, X1):
 
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
-    im1 = rsa([500, 500, 500], r=15, mode='contained', smooth=False)
-    im2 = rsa([300, 300], r=15, mode='extended', smooth=False)
-    im3 = rsa([300, 300], r=15, mode='contained', clearance=10, smooth=False)
-    im4 = rsa([300, 300], r=15, mode='extended', clearance=10, smooth=False)
+    im = ~ps.generators.blobs([300, 300], porosity=0.7)
+    sm = True
+    rs = True
+    im1 = rsa(im, r=10, mode='contained', protrusion=-5, smooth=sm, return_spheres=rs)
+    im2 = rsa(im, r=10, mode='extended', protrusion=-5, smooth=sm, return_spheres=rs)
+    im3 = rsa(im, r=10, mode='contained', protrusion=-5, clearance=-5, smooth=sm, return_spheres=rs)
+    im4 = rsa(im, r=10, mode='extended', protrusion=-5, clearance=-5, smooth=sm, return_spheres=rs)
     fig, ax = plt.subplots(2, 2)
-    ax[0][0].imshow(im1)
+    ax[0][0].imshow(im1 + im*1.0)
     ax[0][0].set_title('mode="contained", clearance=0')
-    ax[0][1].imshow(im2)
+    ax[0][1].imshow(im2 + im*1.0)
     ax[0][1].set_title('mode="extended", clearance=0')
-    ax[1][0].imshow(im3)
+    ax[1][0].imshow(im3 + im*1.0)
     ax[1][0].set_title('mode="contained", clearance=4')
-    ax[1][1].imshow(im4)
+    ax[1][1].imshow(im4 + im*1.0)
     ax[1][1].set_title('mode="extended", clearance=4')

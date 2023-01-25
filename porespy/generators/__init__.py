@@ -13,7 +13,7 @@ debugging, and illustration purposes.
    :template: mybase.rst
    :toctree: generated/
 
-    generators.RSA
+    generators.rsa
     generators.blobs
     generators.borders
     generators.bundle_of_tubes
