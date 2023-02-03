@@ -80,6 +80,144 @@ def diffusive_size_factor_AI(regions, throat_conns, model,
     return diff_size_factor
 
 
+def diffusive_size_factor_DNS(regions, throat_conns, voxel_size=1):
+    DNS_size_factor = []
+    desc = 'Preparing images and DNS calculations'
+    for i in tqdm(np.arange(len(throat_conns)), desc=desc, **settings.tqdm):
+        cn = throat_conns[i]
+        # crop two pore regions and label them as 1,2
+        bb = _calc_bound_box_bi(regions, cn[0], cn[1])
+        roi_crop = np.copy(regions[bb[0]:bb[3], bb[1]:bb[4], bb[2]:bb[5]])
+        # label two pore regions as 1,2
+        roi_masked = _create_labeled_pair(cn, roi_crop)
+        DNS_size_factor.append(_calc_g_val(roi_masked))
+    diff_size_factor = DNS_size_factor * voxel_size
+    return diff_size_factor
+
+def _calc_g_val(im):
+    #apply FD in roi image unit is voxel: g[voxel]
+    #props = ps.metrics.regionprops_3D(im)
+    #centroids=[props[0].centroid,props[1].centroid]
+    '''
+    Calculates the diffusive size factor of conduit image (ROI)
+    using finite difference method.
+    Parameters
+    ----------
+    im : ndarray
+        3D image of a pair of pore to pore regions (conduit)
+    Returns
+    -------
+    g : scalar
+        Diffusive size factor of the conduit.
+    '''
+    import openpnm as op
+    c1 = 20
+    c2 = 10
+    im = np.copy(im)
+    centroids = _find_conns_roi_info(im)['p_coords']
+    p_dia_local = _find_conns_roi_info(im)['p_dia_local']
+    im[im!=0]=1
+    net = op.network.CubicTemplate(template=im)
+    #op.topotools.trim(net,
+    #                  pores=net.check_network_health()['trim_pores'])
+    net.add_model(propname='pore.cluster_number',
+             model=op.models.network.cluster_number)
+    net.add_model(propname='pore.cluster_size',
+             model=op.models.network.cluster_size)
+    cluster_size = np.max(net['pore.cluster_size'])
+    trim_pores = net['pore.cluster_size'] < cluster_size
+    op.topotools.trim(network=net, pores=trim_pores)
+    #geos = op.geometry.GenericGeometry(network=net, pores=net.Ps,
+    #                                   throats=net.Ts)
+    phss = op.phase.Phase(network=net)
+    phss['throat.diffusive_conductance'] = 1
+    algs = op.algorithms.FickianDiffusion(network=net, phase=phss)
+
+    pr1 = closest_node(centroids[0], net['pore.coords'])
+    pr2 = closest_node(centroids[1], net['pore.coords'])
+    # find fd nodes within inscribed diameter
+    mask1_in = within_sphere(nodes=net['pore.coords'],
+                                 center=net['pore.coords'][pr1],
+                                 r=p_dia_local[0])
+    mask2_in = within_sphere(nodes=net['pore.coords'],
+                                 center=net['pore.coords'][pr2],
+                                 r=p_dia_local[1])
+    if mask1_in.any() and mask2_in.any():
+        algs.set_value_BC(pores=pr1, values=c1)
+        algs.set_value_BC(pores=pr2, values=c2)
+        algs.run()
+        c1_avr = algs['pore.concentration'][mask1_in].mean()
+        c2_avr = algs['pore.concentration'][mask2_in].mean()
+        g = abs(algs.rate(pores=pr1)[0]/(c1_avr-c2_avr))
+        #g = abs(algs.rate(pores=pr1)[0]/(10))
+    return g
+
+
+def closest_node(extracted_nodes, fd_nodes):
+    fd_nodes = np.asarray(fd_nodes)
+    dist = np.sum((fd_nodes - extracted_nodes)**2, axis=1)
+    return int(np.argmin(dist))
+
+
+def within_sphere(nodes, center, r):
+    r_nodes = ((nodes[:, 0]-center[0])**2+(nodes[:, 1]-center[1])**2 +
+               (nodes[:, 2]-center[2])**2)
+    mask = r_nodes <= r**2
+    return mask
+
+def _find_conns_roi_info(im):
+    '''
+    Finds the connections list, coordinates of pores centroids and
+    their inscribed sphere's diameter. These values are necessary to be known
+    for applying the finite difference method.
+    Parameters
+    ----------
+    im : ndarray
+        A segmented image of a porous medium.
+    Returns
+    -------
+    A dictionary of info:
+    t_conns : array
+        An Nt by 2 array containing the throats' connections in the segmented image.
+    p_coords : array
+        An Np by 3 array  containing the pores centroids coordinates in the segmented image.
+    p_dia_local : array
+        An Np size array  containing the pores inscribed diameter in the segmented image.
+    '''
+    struc_elem = ball
+    slices = spim.find_objects(im)
+    Ps = np.arange(1, np.amax(im)+1)
+    # additional info to find centroids and inscribed_diam---------------------
+    p_dia_local = np.zeros((len(Ps), ), dtype=float)
+    p_coords = np.zeros((len(Ps), im.ndim), dtype=float)
+    # -------------------------------------------------------------------------
+    t_conns = []
+    desc = 'Getting ROI info'
+    for i in tqdm(Ps, desc=desc, **settings.tqdm):
+        pore = i - 1
+        if slices[pore] is None:
+            continue
+        s = extend_slice(slices[pore], im.shape)
+        sub_im = im[s]
+        pore_im = sub_im == i
+        # additional info to find centroids and inscribed_diam-----------------
+        padded_mask = np.pad(pore_im, pad_width=1, mode='constant')
+        pore_dt = spim.distance_transform_edt(padded_mask)
+        s_offset = np.array([i.start for i in s])
+        p_coords[pore, :] = spim.center_of_mass(pore_im) + s_offset
+        p_dia_local[pore] = (2*np.amax(pore_dt)) - np.sqrt(3)
+        #----------------------------------------------------------------------
+        im_w_throats = spim.binary_dilation(input=pore_im, structure=struc_elem(1))
+        im_w_throats = im_w_throats*sub_im
+        Pn = np.unique(im_w_throats)[1:] - 1
+        for j in Pn:
+            if j > pore:
+                t_conns.append([pore, j])
+    results = {'t_conns': t_conns, 'p_coords':p_coords  ,'p_dia_local': p_dia_local}
+    return results
+
+
+
 def _calc_bound_box_bi(regions, pore_1, pore_2):
     '''
 

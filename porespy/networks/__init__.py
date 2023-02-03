@@ -36,3 +36,4 @@ from ._snow2 import _parse_pad_width
 from ._size_factors import diffusive_size_factor_AI
 from ._size_factors import create_model
 from ._size_factors import find_conns
+from ._size_factors import diffusive_size_factor_DNS
