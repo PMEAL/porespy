@@ -1,4 +1,5 @@
 import numpy as np
+from typing import Literal
 
 
 __all__ = ['faces', 'borders']
@@ -53,7 +54,7 @@ def faces(shape, inlet=None, outlet=None):
     return im
 
 
-def borders(shape, thickness=1, mode='edges'):
+def borders(shape, thickness=1, mode: Literal['edges', 'faces', 'corners'] = 'edges'):
     r"""
     Creates an array of specified size with corners, edges or faces
     labelled as ``True``.

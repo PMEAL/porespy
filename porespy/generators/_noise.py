@@ -4,7 +4,7 @@ import psutil
 
 
 def fractal_noise(shape, frequency=0.05, octaves=4, gain=0.5, mode='simplex',
-                  seed=None, cores=None, uniform=True):
+                  seed=None, cores=1, uniform=True):
     r"""
     Generate fractal noise which can be thresholded to create binary
     images with realistic structures across scales.

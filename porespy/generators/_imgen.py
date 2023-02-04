@@ -12,7 +12,7 @@ from porespy.tools import norm_to_uniform, ps_ball, ps_disk, get_border
 from porespy.tools import extract_subsection
 from porespy.tools import insert_sphere
 from porespy import settings
-from typing import List
+from typing import List, Literal
 
 
 tqdm = ps.tools.get_tqdm()
@@ -114,7 +114,7 @@ def rsa(im_or_shape: np.array,
         volume_fraction: int = 1,
         clearance: int = 0,
         n_max: int = 100000,
-        mode: str = "contained",
+        mode: Literal['contained', 'extended'] = "contained",
         return_spheres: bool = False,
         smooth: bool = True):
     r"""
@@ -550,7 +550,7 @@ def lattice_spheres(shape: List[int],
                     spacing: int = None,
                     offset: int = None,
                     smooth: bool = True,
-                    lattice: str = "sc"):
+                    lattice: Literal['sc', 'tri', 'fcc', 'bcc'] = "sc"):
     r"""
     Generate a cubic packing of spheres in a specified lattice arrangement.
 
