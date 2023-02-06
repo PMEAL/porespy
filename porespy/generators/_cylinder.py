@@ -2,7 +2,7 @@ import numpy as np
 from edt import edt
 
 
-def cylindrical_plug(shape, r=None, axis=2):
+def cylindrical_plug(shape, r: int = None, axis: int = 2):
     r"""
     Generates a cylindrical plug suitable for use as a mask on a tomogram
 

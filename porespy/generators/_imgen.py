@@ -110,7 +110,7 @@ def RSA(*args, **kwargs):
 
 
 def rsa(im_or_shape: np.array,
-        r: int,
+        r: int = 5,
         volume_fraction: int = 1,
         clearance: int = 0,
         n_max: int = 100000,
@@ -329,7 +329,7 @@ def _make_choice(options_im, free_sites):
     return coords, count
 
 
-def bundle_of_tubes(shape: List[int], spacing: int, distribution=None, smooth=True):
+def bundle_of_tubes(shape, spacing: int, distribution=None, smooth: bool = True):
     r"""
     Create a 3D image of a bundle of tubes, in the form of a rectangular
     plate with randomly sized holes through it.
@@ -385,7 +385,7 @@ def bundle_of_tubes(shape: List[int], spacing: int, distribution=None, smooth=Tr
     return temp
 
 
-def polydisperse_spheres(shape: List[int],
+def polydisperse_spheres(shape,
                          porosity: float,
                          dist,
                          nbins: int = 5,
@@ -447,8 +447,7 @@ def polydisperse_spheres(shape: List[int],
     return im
 
 
-def voronoi_edges(shape: List[int], ncells: int, r: int = 0,
-                  flat_faces: bool = True):
+def voronoi_edges(shape, ncells: int = 100, r: int = 0, flat_faces: bool = True):
     r"""
     Create an image from the edges of a Voronoi tessellation.
 
@@ -545,7 +544,7 @@ def _get_Voronoi_edges(vor):
     return edges
 
 
-def lattice_spheres(shape: List[int],
+def lattice_spheres(shape,
                     r: int = 5,
                     spacing: int = 10,
                     offset: int = 5,
@@ -683,9 +682,9 @@ def lattice_spheres(shape: List[int],
     return im
 
 
-def overlapping_spheres(shape: List[int],
-                        r: int,
-                        porosity: float,
+def overlapping_spheres(shape,
+                        r: int = 5,
+                        porosity: float = 0.5,
                         maxiter: int = 10,
                         tol: float = 0.01):
     r"""

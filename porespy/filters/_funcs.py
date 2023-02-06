@@ -15,6 +15,7 @@ from porespy.tools import unpad, extract_subsection
 from porespy.tools import ps_disk, ps_ball, ps_round
 from porespy import settings
 from porespy.tools import get_tqdm
+from typing import Literal
 
 
 tqdm = get_tqdm()
@@ -41,7 +42,7 @@ def ibip_gpu(**kwargs):
     return ibip_gpu(**kwargs)
 
 
-def find_trapped_regions(seq, outlets=None, bins=25, return_mask=True):
+def find_trapped_regions(seq, outlets=None, bins: int = 25, return_mask: bool = True):
     r"""
     Find the trapped regions given an invasion sequence image
 
@@ -232,7 +233,11 @@ def hold_peaks(im, axis=-1, ascending=True):
     return result
 
 
-def distance_transform_lin(im, axis=0, mode="both"):
+def distance_transform_lin(
+    im,
+    axis: int = 0,
+    mode: Literal['forward', 'backward', 'both'] = "both"
+):
     r"""
     Replaces each void voxel with the linear distance to the nearest solid
     voxel along the specified axis.
@@ -302,7 +307,7 @@ def distance_transform_lin(im, axis=0, mode="both"):
     return f
 
 
-def find_disconnected_voxels(im, conn=None, surface=False):
+def find_disconnected_voxels(im, conn: int = None, surface: bool = False):
     r"""
     Identifies all voxels that are not connected to the edge of the image.
 
@@ -368,7 +373,7 @@ def find_disconnected_voxels(im, conn=None, surface=False):
     return holes
 
 
-def fill_blind_pores(im, conn=None, surface=False):
+def fill_blind_pores(im, conn: int = None, surface: bool = False):
     r"""
     Fills all blind pores that are isolated from the main void space.
 
@@ -411,7 +416,7 @@ def fill_blind_pores(im, conn=None, surface=False):
     return im
 
 
-def trim_floating_solid(im, conn=None, surface=False):
+def trim_floating_solid(im, conn:int = None, surface: bool = False):
     r"""
     Removes all solid that that is not attached to main solid structure.
 
@@ -552,7 +557,12 @@ def trim_extrema(im, h, mode="maxima"):
     return result
 
 
-def flood(im, labels, mode="max"):
+def flood(
+    im,
+    labels,
+    mode: Literal['maximum', 'minimum', 'median', 'mean', 'size',
+                  'standard_deviations', 'variance'] = "max",
+):
     r"""
     Floods/fills each region in an image with a single value based on the
     specific values in that region.
@@ -762,7 +772,13 @@ def region_size(im):
     return counts[im]
 
 
-def apply_chords(im, spacing=1, axis=0, trim_edges=True, label=False):
+def apply_chords(
+    im,
+    spacing: int = 1,
+    axis: int = 0,
+    trim_edges: bool = True,
+    label: bool = False,
+):
     r"""
     Adds chords to the void space in the specified direction.
 
@@ -825,7 +841,7 @@ def apply_chords(im, spacing=1, axis=0, trim_edges=True, label=False):
     return result
 
 
-def apply_chords_3D(im, spacing=0, trim_edges=True):
+def apply_chords_3D(im, spacing: int = 0, trim_edges: bool = True):
     r"""
     Adds chords to the void space in all three principle directions.
 
@@ -883,7 +899,12 @@ def apply_chords_3D(im, spacing=0, trim_edges=True):
     return chords
 
 
-def local_thickness(im, sizes=25, mode="hybrid", divs=1):
+def local_thickness(
+    im,
+    sizes: int = 25,
+    mode: Literal['hybrid', 'dt', 'mio'] = "hybrid",
+    divs: int = 1,
+):
     r"""
     For each voxel, this function calculates the radius of the largest
     sphere that both engulfs the voxel and fits entirely within the
@@ -963,8 +984,14 @@ def local_thickness(im, sizes=25, mode="hybrid", divs=1):
     return im_new
 
 
-def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
-                divs=1):
+def porosimetry(
+    im,
+    sizes: int = 25,
+    inlets=None,
+    access_limited: bool = True,
+    mode: Literal['hybrid', 'dt', 'mio'] = 'hybrid',
+    divs=1,
+):
     r"""
     Performs a porosimetry simulution on an image.
 
@@ -1313,7 +1340,7 @@ def nphase_border(im, include_diagonals=False):
         return out[1:-1, 1:-1, 1:-1].copy()
 
 
-def prune_branches(skel, branch_points=None, iterations=1):
+def prune_branches(skel, branch_points=None, iterations: int = 1):
     r"""
     Remove all dangling ends or tails of a skeleton
 

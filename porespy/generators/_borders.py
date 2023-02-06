@@ -5,7 +5,7 @@ from typing import Literal
 __all__ = ['faces', 'borders']
 
 
-def faces(shape, inlet=None, outlet=None):
+def faces(shape, inlet: int = 0, outlet: int = 0):
     r"""
     Generate an image with ``True`` values on the specified ``inlet`` and
     ``outlet`` faces
@@ -19,7 +19,7 @@ def faces(shape, inlet=None, outlet=None):
     inlet : int
         The axis where the faces should be added (e.g. ``inlet=0`` will
         put ``True`` values on the ``x=0`` face). A value of ``None``
-        (default) bypasses the addition of inlets.
+        bypasses the addition of inlets.
     outlet : int
         Same as ``inlet`` except for the outlet face. This is optional. It
         can be be applied at the same time as ``inlet``, instead of
@@ -54,7 +54,11 @@ def faces(shape, inlet=None, outlet=None):
     return im
 
 
-def borders(shape, thickness=1, mode: Literal['edges', 'faces', 'corners'] = 'edges'):
+def borders(
+    shape,
+    thickness: int = 1,
+    mode: Literal['edges', 'faces', 'corners'] = 'edges'
+):
     r"""
     Creates an array of specified size with corners, edges or faces
     labelled as ``True``.
