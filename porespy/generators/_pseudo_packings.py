@@ -9,14 +9,21 @@ from porespy.tools import get_tqdm, ps_round, get_border
 from porespy.tools import _insert_disks_at_points
 from porespy.filters import trim_disconnected_blobs, fftmorphology
 import random
+from typing import Literal
 
 
 tqdm = get_tqdm()
 logger = logging.getLogger(__name__)
 
 
-def pseudo_gravity_packing(im, r, clearance=0, axis=0, maxiter=1000,
-                           edges='contained'):
+def pseudo_gravity_packing(
+    im,
+    r: int = 5,
+    clearance: int = 0,
+    axis: int = 0,
+    edges: Literal['contained', 'extended'] = 'contained',
+    maxiter: int = 1000,
+):
     r"""
     Iteratively inserts spheres at the lowest accessible point in an image,
     mimicking a gravity packing.
@@ -102,11 +109,15 @@ def pseudo_gravity_packing(im, r, clearance=0, axis=0, maxiter=1000,
     return im_temp
 
 
-def pseudo_electrostatic_packing(im, r, sites=None,
-                                 clearance=0,
-                                 protrusion=0,
-                                 edges='extended',
-                                 maxiter=1000):
+def pseudo_electrostatic_packing(
+    im,
+    r: int = 5,
+    sites=None,
+    clearance: int = 0,
+    protrusion: int = 0,
+    edges: Literal['extended', 'contained'] = 'extended',
+    maxiter: int = 1000,
+):
     r"""
     Iterativley inserts spheres as close to the given sites as possible.
 
