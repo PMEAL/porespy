@@ -12,10 +12,29 @@ tqdm = get_tqdm()
 
 __all__ = [
     'zip_to_stack',
+    'folder_to_stack',
 ]
 
 
-def zip_to_stack(f, trim=True):
+def folder_to_stack(target_dir):
+    r"""
+    Opens all images found in the target directory as single 3D numpy array
+
+    Parameters
+    ----------
+    target_dir : str or path object
+        The location of the folder containing the images.
+    """
+    test_im = imageio.v2.imread(os.path.join(target_dir, os.listdir(target_dir)[0]))
+    im = np.zeros(shape=[test_im.shape[0], test_im.shape[1], len(os.listdir(target_dir))],
+                  dtype=test_im.dtype)
+    for i, f in enumerate(tqdm(os.listdir(target_dir))):
+        im[..., i] = imageio.v2.imread(os.path.join(target_dir, f))
+
+    return im
+
+
+def zip_to_stack(f):
     r"""
     Reads a zip file containing 2D slices of a 3D image, and converts to a 3D stack
 
@@ -26,9 +45,6 @@ def zip_to_stack(f, trim=True):
         then it's assumed to be located in the current working directory. Otherwise
         a full path should be given, like ``C:\path\to\file.zip``. Either way, the
         archive is extracted into a folder in the given directory.
-    trim : bool
-        If ``True`` then a bounding box around the image is found and all excess
-        is trimmed.
 
     Returns
     -------
@@ -54,9 +70,5 @@ def zip_to_stack(f, trim=True):
                   dtype=test_im.dtype)
     for i, f in enumerate(tqdm(os.listdir(target_dir))):
         im[..., i] = imageio.v2.imread(os.path.join(target_dir, f))
-
-    if trim:
-        x, y, z = spim.find_objects(im > 0)[0]
-        im = im[x, y, z]
 
     return im

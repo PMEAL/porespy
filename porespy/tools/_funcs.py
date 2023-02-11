@@ -42,7 +42,27 @@ __all__ = [
     'ps_rect',
     'ps_round',
     'subdivide',
+    'trim',
 ]
+
+
+def trim(im):
+    r"""
+    Finds a bounding box around the image and all excess is trimmed.
+
+    Parameters
+    ----------
+    im : ndarray
+        The image to be trimmed
+
+    Returns
+    -------
+    trimmed_im : ndarray
+        The image with no empty slices or columns
+    """
+    x, y, z = spim.find_objects(im > 0)[0]
+    im = im[x, y, z]
+    return im
 
 
 def isolate_object(region, i, s=None):
