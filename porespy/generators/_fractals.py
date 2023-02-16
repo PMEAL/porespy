@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 __all__ = [
     'random_cantor_dust',
     'sierpinski_foam',
-    'sierpinski_foam_2',
+    'sierpinski_foam2',
 ]
 
 
@@ -66,7 +66,7 @@ def random_cantor_dust(shape, n=5, p=2, f=0.8):
     return im
 
 
-def sierpinski_foam_2(shape, n=5):
+def sierpinski_foam2(shape, n=5):
     r"""
     Generates an image of a Sierpinski carpet or foam with independent control of
     image size and number of iterations
