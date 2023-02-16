@@ -1,7 +1,6 @@
 import logging
 import numpy as np
 import scipy.ndimage as spim
-from trimesh import Trimesh
 from porespy.tools import extend_slice, ps_round
 from porespy.tools import _check_for_singleton_axes, Results
 from porespy.tools import mesh_region
@@ -82,6 +81,11 @@ def mesh_volume(region):
     to view online example.
 
     """
+    try:
+        from trimesh import Trimesh
+    except ModuleNotFoundError:
+        msg = 'The trimesh package can be installed with pip install trimesh'
+        raise ModuleNotFoundError(msg)
     mc = mesh_region(region > 0)
     m = Trimesh(vertices=mc.verts, faces=mc.faces, vertex_normals=mc.norm)
     if m.is_watertight:
