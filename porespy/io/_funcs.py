@@ -1,14 +1,11 @@
 import os
-import imageio
 import subprocess
 import numpy as np
-from stl import mesh
 import scipy.ndimage as nd
 import skimage.measure as ms
 from porespy.tools import sanitize_filename
 from porespy.networks import generate_voxel_image
 from porespy.filters import reduce_peaks
-from pyevtk.hl import imageToVTK
 from skimage.morphology import ball
 from edt import edt
 
@@ -41,6 +38,11 @@ def dict_to_vtk(data, filename, voxel_size=1, origin=(0, 0, 0)):
     to view online example.
 
     """
+    try:
+        from pyevtk.hl import imageToVTK
+    except ModuleNotFoundError:
+        msg = 'The pyevtk package can be installed with pip install pyevtk'
+        raise ModuleNotFoundError(msg)
     vs = voxel_size
     for entry in data:
         if data[entry].dtype == bool:
@@ -85,6 +87,11 @@ def to_vtk(im, filename, divide=False, downsample=False, voxel_size=1, vox=False
     to view online example.
 
     """
+    try:
+        from pyevtk.hl import imageToVTK
+    except ModuleNotFoundError:
+        msg = 'The pyevtk package can be installed with pip install pyevtk'
+        raise ModuleNotFoundError(msg)
     if len(im.shape) == 2:
         im = im[:, :, np.newaxis]
     if im.dtype == bool:
@@ -278,6 +285,11 @@ def _save_stl(im, vs, filename):
         Path to output file
 
     """
+    try:
+        from stl import mesh
+    except ModuleNotFoundError:
+        msg = 'numpy-stl can be installed with pip install numpy-stl'
+        ModuleNotFoundError(msg)
     im = np.pad(im, pad_width=10, mode="constant", constant_values=True)
     vertices, faces, norms, values = ms.marching_cubes(im)
     vertices *= vs
@@ -315,6 +327,11 @@ def to_paraview(im, filename, phase=2):
     to view online example.
 
     """
+    try:
+        import imageio
+    except ModuleNotFoundError:
+        msg = "The imageio package can be installed with pip install imageio"
+        raise ModuleNotFoundError(msg)
     try:
         import paraview.simple
     except ModuleNotFoundError:
