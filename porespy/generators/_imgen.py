@@ -12,7 +12,6 @@ from porespy.tools import norm_to_uniform, ps_ball, ps_disk, get_border, ps_roun
 from porespy.tools import extract_subsection
 from porespy.tools import insert_sphere
 from porespy.tools import _insert_disk_at_points
-from porespy.tools import extend_slice
 from porespy import settings
 from typing import List
 
@@ -1146,7 +1145,9 @@ def line_segment(X0, X1):
     X0 = np.around(X0).astype(int)
     X1 = np.around(X1).astype(int)
     if len(X0) == 3:
-        L = np.amax(np.absolute([[X1[0] - X0[0]], [X1[1] - X0[1]], [X1[2] - X0[2]]])) + 1
+        L = np.amax(
+            np.absolute([[X1[0] - X0[0]], [X1[1] - X0[1]], [X1[2] - X0[2]]])
+        ) + 1
         x = np.rint(np.linspace(X0[0], X1[0], L)).astype(int)
         y = np.rint(np.linspace(X0[1], X1[1], L)).astype(int)
         z = np.rint(np.linspace(X0[2], X1[2], L)).astype(int)
@@ -1156,23 +1157,3 @@ def line_segment(X0, X1):
         x = np.rint(np.linspace(X0[0], X1[0], L)).astype(int)
         y = np.rint(np.linspace(X0[1], X1[1], L)).astype(int)
         return [x, y]
-
-
-if __name__ == "__main__":
-    import matplotlib.pyplot as plt
-    im = ~ps.generators.blobs([300, 300], porosity=0.7)
-    sm = True
-    rs = True
-    im1 = rsa(im, r=10, mode='contained', protrusion=-5, smooth=sm, return_spheres=rs)
-    im2 = rsa(im, r=10, mode='extended', protrusion=-5, smooth=sm, return_spheres=rs)
-    im3 = rsa(im, r=10, mode='contained', protrusion=-5, clearance=-5, smooth=sm, return_spheres=rs)
-    im4 = rsa(im, r=10, mode='extended', protrusion=-5, clearance=-5, smooth=sm, return_spheres=rs)
-    fig, ax = plt.subplots(2, 2)
-    ax[0][0].imshow(im1 + im*1.0)
-    ax[0][0].set_title('mode="contained", clearance=0')
-    ax[0][1].imshow(im2 + im*1.0)
-    ax[0][1].set_title('mode="extended", clearance=0')
-    ax[1][0].imshow(im3 + im*1.0)
-    ax[1][0].set_title('mode="contained", clearance=4')
-    ax[1][1].imshow(im4 + im*1.0)
-    ax[1][1].set_title('mode="extended", clearance=4')
