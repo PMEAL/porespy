@@ -273,13 +273,10 @@ class GeneratorTest():
         assert np.all(rsa.shape == (200, 200))
 
     def test_rsa_clearance_large_spheres(self):
-        np.random.seed(0)
-        rsa0 = ps.generators.rsa(im_or_shape=[200, 200], r=9, clearance=0)
-        np.random.seed(0)
-        rsa2p = ps.generators.rsa(im_or_shape=[200, 200], r=9, clearance=2)
+        rsa0 = ps.generators.rsa(im_or_shape=[200, 200], r=9, clearance=0, seed=0)
+        rsa2p = ps.generators.rsa(im_or_shape=[200, 200], r=9, clearance=3, seed=0)
         assert rsa0.sum() > rsa2p.sum()
-        np.random.seed(0)
-        rsa1n = ps.generators.rsa(im_or_shape=[200, 200], r=9, clearance=-1)
+        rsa1n = ps.generators.rsa(im_or_shape=[200, 200], r=9, clearance=-3, seed=0)
         assert rsa0.sum() < rsa1n.sum()
 
     def test_rsa_clearance_small_spheres(self):
