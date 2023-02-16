@@ -3,8 +3,6 @@ import numpy as np
 import os
 from zipfile import ZipFile
 from porespy.tools import get_tqdm
-import scipy.ndimage as spim
-from skimage.io import imread_collection
 
 
 tqdm = get_tqdm()
@@ -24,6 +22,11 @@ def folder_to_stack(target_dir):
     ----------
     target_dir : str or path object
         The location of the folder containing the images.
+
+    Returns
+    -------
+    im : ndarray
+        A 3D numpy array of the imported image.
     """
     test_im = imageio.v2.imread(os.path.join(target_dir, os.listdir(target_dir)[0]))
     im = np.zeros(shape=[test_im.shape[0], test_im.shape[1], len(os.listdir(target_dir))],
