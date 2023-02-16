@@ -7,7 +7,38 @@ __all__ = [
     'bar',
     'imshow',
     'show_mesh',
+    'show_panels',
 ]
+
+
+def show_panels(im, rc=[5, 5], axis=0):
+    r"""
+    Show slices of a 3D image as a 2D array of panels.
+
+    Parameters
+    ----------
+    im : ndarray
+        The 3D image to visualize
+    rc : list if ints
+        The number of rows and columns to create
+    axis : int
+        The axis along which to create the slices
+
+    Returns
+    -------
+    fig, ax : Matplotlib figure and axis handles
+    """
+    i, j = rc
+    im = np.swapaxes(im, axis, 2)
+    slices = np.linspace(0, im.shape[2], i*j, endpoint=False).astype(int)
+    fig, ax = plt.subplots(i, j)
+    s = 0
+    for row in range(i):
+        for col in range(j):
+            ax[row][col].imshow(im[..., slices[s]])
+            ax[row][col].set_title(f"Slice {slices[s]}")
+            s += 1
+    return fig, ax
 
 
 def bar(results, h='pdf', **kwargs):  # pragma: no cover
