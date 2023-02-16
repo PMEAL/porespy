@@ -412,6 +412,14 @@ class GeneratorTest():
         im2D = ps.generators.sierpinski_foam(4, 2, 2)
         np.testing.assert_allclose(im2D.sum()/im2D.size, 0.7901234567901234)
 
+    def test_sierpinski_foam_2(self):
+        im2D = ps.generators.sierpinski_foam_2(shape=[100, 100], n=3)
+        assert np.all(im2D.shape == (100, 100))
+        im3D = ps.generators.sierpinski_foam_2(shape=[100, 100, 100], n=3)
+        assert np.all(im3D.shape == (100, 100, 100))
+        im2Dn5 = ps.generators.sierpinski_foam_2(shape=[100, 100], n=5)
+        assert im2D.sum() > im2Dn5.sum()
+
     def test_border_thickness_1(self):
         s = (10, 10)
         c = ps.generators.borders(shape=s, thickness=1, mode='corners')
