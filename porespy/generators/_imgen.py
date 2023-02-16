@@ -211,6 +211,7 @@ def rsa(im_or_shape: np.array,
     logger.debug(f"rsa: Adding spheres of size {r}")
     if np.array(im_or_shape).ndim < 2:
         im = np.zeros(shape=im_or_shape, dtype=bool)
+        input_im = np.copy(im)
     else:
         input_im = np.copy(im_or_shape)
         im = np.zeros_like(im_or_shape, dtype=bool)
