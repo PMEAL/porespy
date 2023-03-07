@@ -35,11 +35,12 @@ def analyze_skeleton_2(sk, dt):
     return peaks
 
 
-def magnet2(im):
-    im = ps.filters.fill_blind_pores(im, surface=True)
-    if im.ndim == 3:
-        im = ps.filters.trim_floating_solid(im, conn=2*im.ndim, surface=True)
-    sk = skeletonize_3d(im) > 0
+def magnet2(im, sk=None):
+    if sk is None:
+        im = ps.filters.fill_blind_pores(im, surface=True)
+        if im.ndim == 3:
+            im = ps.filters.trim_floating_solid(im, conn=2*im.ndim, surface=True)
+        sk = skeletonize_3d(im) > 0
     sk_orig = np.copy(sk)
     dt = edt(im)
     dt = spim.maximum_filter(dt, size=3)
