@@ -4,8 +4,24 @@ import dask
 import dask.array as da
 from functools import wraps
 from time import perf_counter
+from scipy.stats import linregress
 from porespy.tools import get_tqdm
 from porespy import settings
+import matplotlib.pyplot as plt
+from porespy.simulations import _wrap_indices
+import random
+from edt import edt
+import scipy.ndimage as spim
+from skimage.segmentation import watershed
+from scipy.stats import maxwell
+from mpl_toolkits.mplot3d import Axes3D
+from scipy.ndimage import distance_transform_edt
+from skimage.morphology import binary_dilation
+import porespy as ps
+import numba as nb
+import timeit
+from typing import Callable, Optional
+import pytest
 tqdm = get_tqdm()
 
 
@@ -29,7 +45,7 @@ def timer(func):
     return wrap_func
 
 
-def calc_gas_props(P, T, MW, mu):
+def calc_gas_props(P, T, MWa, mu, d1, knudsen=False, **kwargs):
     r"""
     Uses kinetic theory of gases to computes mean free path, average velocity,
     and diffusion coefficient of a molecule at given thermodynamic conditions
@@ -40,10 +56,23 @@ def calc_gas_props(P, T, MW, mu):
         The gas pressure in units of [Pa]
     T : float
         The gas temperature in units of [K]
-    MW : float
+    MWa : float
         The molecular weight of the diffusion gas molecule in units of [kg/mol]
+    MWb : float
+        The molecular weight of the bulk gas molecule in units of [kg/mol]
     mu : float
         The dynamic viscosity of the gas mixture in units of [Pa.s]
+    d1 : float
+        The kinetic diameter of the gas diffusing  [m]
+    d2 : float
+        The kinetic diameter of the solvating gas  [m]
+    ek1 : float
+        The bonding energy of the solvent gas  [$$\text{ m}^2\text{ kg}\text{ s}^{-2}$$]
+    ek1 : float
+        The bonding energy of the solvating gas  [$$\text{ m}^2\text{ kg}\text{ s}^{-2}$$]
+    knud_dir : array 
+        Depending on the pore morphology, it may be useful to point out which direction
+        is the most restrictive and will have the most interactions with the wall
 
     Returns
     -------
@@ -58,7 +87,11 @@ def calc_gas_props(P, T, MW, mu):
         v_rel   float, The kinetic velocity of the gas in units of [nm/s]
                 relative to other moving gas particles, calculated using
                 kinetic gas theory
-        Db      float, The theoretical bulk phase diffusion coefficient in
+        Daa     float, The theoretical bulk phase diffusion coefficient in
+                units of [m\u00b2/s], calculated using kinetic gas theory
+        Dk      float, The theoretical knudsen diffusion coefficient in
+                units of [m\u00b2/s], calculated using kinetic gas theory
+        Dab     float, The theoretical bulk phase diffusion coefficient in
                 units of [m\u00b2/s], calculated using kinetic gas theory
         P       float, the pressure of the simulation in units of [Pa],
                 as passed in
@@ -66,7 +99,9 @@ def calc_gas_props(P, T, MW, mu):
         MW      float, the molecular weight of the diffusing molecule in
                 units of [kg/mol]
         mu      float, the viscosity of the gas mixture in which the
-                molecular is diffusion in units of [Pa.s]
+                molecular is diffusion in units of [Pa.s]             
+        v_prob  The most probable velocity in units of [nm/s]
+        
         ======= =============================================================
 
     Notes
@@ -82,27 +117,123 @@ def calc_gas_props(P, T, MW, mu):
         $$v =  4 \sqrt{\frac{RT}{\pi*MW}} $$
     And bulk diffusion is defined as:
         $$ D_b=\frac{1}{2} \lambda v $$
-
+        
     """
-    mfp = mu / P * np.sqrt(np.pi * C.R * T / (2 * MW)) / 1e-9
-    # path_length = mfp / resolution
-    v_rel = np.sqrt(2) * np.sqrt(8 / np.pi * C.R * T / MW) / 1e-9
-    Db = 1 / 2 * mfp * v_rel * (1e-9) ** 2
+    if P <= 0 or T <= 0:
+        raise ValueError("Pressure and temperature must be positive.")
+    if MWa <= 0:
+        raise ValueError("Molecular weight of diffusion gas molecule must be positive.")
+    if mu <= 0:
+        raise ValueError("Dynamic viscosity of gas mixture must be positive.")
+    if d1 <= 0:
+        raise ValueError("Kinetic diameter of diffusing gas must be positive.")
+    if knudsen and not kwargs:
+        raise ValueError("Additional keyword arguments required for Knudsen diffusion calculation.")
+    if knudsen:
+        if 'knud_dir' not in kwargs:
+            raise ValueError("Knudsen direction vector required for Knudsen diffusion calculation.")
+        if not all(isinstance(i, (int, float)) for i in kwargs['knud_dir']):
+            raise ValueError("Knudsen direction vector must contain only numeric values.")
+        if any(i < 0 for i in kwargs['knud_dir']):
+            raise ValueError("All values in the Knudsen direction vector must be positive.")
+        if 'pore_diam' in kwargs and kwargs['pore_diam'] <= 0:
+            raise ValueError("Pore diameter must be positive for Knudsen diffusion calculation.")
+    if 'MWb' in kwargs:
+        if kwargs['MWb'] <= 0:
+            raise ValueError("Molecular weight of second gas molecule must be positive.")
+        if 'd2' not in kwargs:
+            raise ValueError("Kinetic diameter of second gas molecule required for binary diffusion calculation.")
+        if kwargs['d2'] <= 0:
+            raise ValueError("Kinetic diameter of second gas molecule must be positive for binary diffusion calculation.")
+    if 'ek1' in kwargs and 'ek2' in kwargs:
+        if kwargs['ek1'] <= 0 or kwargs['ek2'] <= 0:
+            raise ValueError("Epsilon/k values must be positive for Lennard-Jones collision diameter calculation.")
+      #test      
     kinetics = {}
+    n = P * C.Avogadro / (C.R * T)
+    mfp = (np.sqrt(2) * np.pi* d1**2 * n )**-1 / 1e-09
+    ma = MWa / C.Avogadro
+    v_rel = np.sqrt(8 * C.Boltzmann * T / np.pi / ma) / 1e-09
+    p_vel = np.sqrt(2 * C.Boltzmann * T / np.pi / ma) / 1e-09
+    Daa = 1 / 3 * mfp * v_rel * (1e-9) ** 2
+    kinetics['Daa'] = Daa
     kinetics['mfp'] = mfp
     kinetics['v_rel'] = v_rel
-    kinetics['Db'] = Db
+    kinetics['v_prob'] = p_vel
     kinetics['T'] = T
     kinetics['P'] = P
-    kinetics['MW'] = MW
-    kinetics['mu'] = mu
-    return kinetics
+    kinetics['MWa'] = MWa
+    kinetics['mu'] = mu  
+    
+    
+    try:
+        MWb = kwargs['MWb']
+        mb = MWb / C.Avogadro
+        d2 = kwargs['d2']
+        
+        if d1 + d2 < 2:
+            sig_ab = 0.5 * (d1 + d2)
+            Dab = (2 / 3) * np.sqrt(C.Boltzmann * T / np.pi) * \
+                np.sqrt(0.5*((1/ma)+(1/mb))) * 1/n * 1/(np.pi*(sig_ab)**2)
+            kinetics['Dab'] = Dab
+    except:
+        pass
+    try:
+        ek1 = kwargs['ek1']
+        ek2 = kwargs['ek2']
+        if ek1 + ek2 > 2:
+            sig_ab = 0.5 * (d1 + d2)
+            e_ab = np.sqrt(ek1 * ek2)
+            T_dim = T / e_ab
+            
+            omega_ab = (1.06036 / T_dim ** 0.15610) + 0.1939*np.exp(-0.47635*T_dim) + \
+                1.03587*np.exp(-1.52996*T_dim) + 1.76474*np.exp(-3.89411*T_dim)
+            
+            Dab = (3/16) * np.sqrt(2*(C.R*T)**3 / np.pi *
+                                   ((1/MWa)+(1/MWb))) * (C.Avogadro*P*sig_ab**2 * omega_ab)**-1
+            scatt_cross = np.pi*(d1/2 + d2/2)**2
+            mfp_ab = (n * scatt_cross) ** -1
+            m_red = (ma * mb)/(ma + mb)
+            v_rel_ab = np.sqrt(8 * C.Boltzmann * T / np.pi / m_red) / 1e-09
+            kinetics['Dab'] = Dab
+            kinetics['mfp_ab'] = mfp_ab / 1e-09
+            kinetics['v_rel_ab'] = v_rel_ab
+    except:
+        pass
 
+    if knudsen:
+        try:
+            dv = kwargs['knud_dir']
+            dim = len(dv)
+            dv = np.array(dv)
+        except:
+            pass 
+        pore_diam = kwargs.get('pore_diam', 1)
+        mfp = pore_diam
+        dk = pore_diam / 3 * (8 * C.R * T / np.pi / MWa) ** 0.5
+        kinetics['dk'] = dk
+        
+        try: 
+            D_dir = dv*dk
+            mfp_dir = dv*pore_diam
+            D_dir[D_dir == 0] = Daa
+            mfp_dir[mfp_dir == 0] =kinetics['mfp']/np.sqrt(dim)
+            kinetics['D_tens'] = D_dir
+            D_dir[D_dir == Daa] = Dab
+            kinetics['D_tens'] = D_dir
+            kinetics['mfp_tens'] = mfp_dir
+            kinetics['knud_dir']= kwargs['knud_dir']
+            kinetics['skew_ratio'] = kinetics['D_tens']/dk
+            
+        except:
+            pass
+        
+    return kinetics
 
 def compute_steps(
     mfp,
     v_rel,
-    Db,
+    Daa,
     ndim,
     voxel_size=1,
     n_steps=10000,
@@ -112,7 +243,6 @@ def compute_steps(
     r"""
     Helper function to compute the step size information in a form suitable for the
     ``rw`` function
-
     Parameters
     ----------
     mfp : float
@@ -142,12 +272,10 @@ def compute_steps(
         returned dictionary. This means they will be passed onto ``rw``. For
         instance, if ``n_walkers`` is included it will not be used by this function,
         but means that it need not be explicitly passed to ``rw``.
-
     Returns
     -------
     A walk object : dict
         A dictionary object with following keys:
-
         =============== ======================================================
         attribute       description
         =============== ======================================================
@@ -167,10 +295,8 @@ def compute_steps(
         n_steps         as passed in
         mfp             as passed in
         v_rel           as passed in
-        Db              as passed in
+        Daa             as passed in
         =============== ==========================================================
-
-
     Notes
     -----
     In order to simulate Knudsen diffusion, the walkers need to take many small
@@ -180,9 +306,7 @@ def compute_steps(
     when we tell the simulation to take 30000 steps, but to take 50 steps per
     mean free path, we are simulating for 600 mean free path lengths, which is
     equivalent to 600 steps in a regular random walk.
-
     A few requirements here:
-
     'step_size' is a calculated value, but cannot exceed 1 voxel.
         If it does, the walkers could theoretically walk through walls which
         is not ideal :).
@@ -193,19 +317,54 @@ def compute_steps(
     if 'path_length' << 1 voxel, then either the image is too coarse, or
     Knudsen diffusion is likely to be insignificant in your image, in which
     case it is suggested to use knudsen=False
-
     """
+    if mfp < 0:
+        raise ValueError('Mean free path (mfp) must be non-negative')
+    if v_rel < 0:
+        raise ValueError('Relative velocity (v_rel) must be non-negative')
+    if Daa < 0:
+        raise ValueError('Diffusion coefficient (Daa) must be non-negative')
+    if not isinstance(ndim, int):
+        raise ValueError('Number of dimensions (ndim) must be an integer')
+    if not isinstance(n_steps, int):
+        raise ValueError('Number of steps (n_steps) must be an integer')
+    if not isinstance(steps_per_mfp, int):
+        raise ValueError('Steps per mean free path (steps_per_mfp) must be an integer')
+    valid_kwargs = ['max_steps', 'seed', 'rng']
+    for kwarg in kwargs:
+        if kwarg not in valid_kwargs:
+            raise ValueError(f'Invalid keyword argument: {kwarg}')
     walk = kwargs
     walk['voxel_size'] = voxel_size
     walk['n_steps'] = n_steps
     walk['steps_per_mfp'] = steps_per_mfp
     walk['mfp'] = mfp
     walk['v_rel'] = v_rel
-    walk['Db'] = Db
+    walk['Daa'] = Daa
     walk['path_length'] = walk['mfp'] / walk['voxel_size']
+    try: 
+        mfp_skew = kwargs['mfp_tens']
+        walk['path_length_skew'] = np.linalg.norm(mfp_skew)/walk['voxel_size']
+        path_length_skew = walk['path_length_skew']
+        step_size_skew = path_length_skew / steps_per_mfp
+        walk['step_size_skew'] = step_size_skew
+        walk['time_step_skew'] = step_size_skew * voxel_size / (walk['v_rel'] * ndim)
+    except:
+        pass 
+    
     path_length = walk['path_length']
     step_size = path_length / steps_per_mfp
-    if step_size > 1:
+    
+    path_length = walk['path_length']
+    step_size = path_length / steps_per_mfp
+    try: 
+        Dab = kwargs['Dab']
+        Dak = kwargs['Dak']
+        walk['Dab'] = Dab
+        walk['Dak'] = Dak
+    except: 
+        pass 
+    if step_size > 0.8:
         raise ValueError('Step size exceeds 1 voxel, try larger steps_per_mfp')
     walk['step_size'] = step_size
     walk['time_step'] = step_size * voxel_size / (walk['v_rel'] * ndim)
@@ -223,6 +382,7 @@ def rw(
     start=None,
     edges='periodic',
     mode='random',
+    skewed=False,
     **kwargs,
 ):
     r"""
@@ -258,7 +418,7 @@ def rw(
         takes longer to run.
     n_write : int
         The number of steps to take between recording walker positions in
-        the `path' array. Default is 10, in which case all steps are recorded.
+        the `path' array. Default is 1, in which case all steps are recorded.
         Values larger than 1 enable longer walks without running out of memory
         due to size of `path`. A value of 1 is really only necessary if a
         visualization of the walker paths is planned, in which case `n_walkers`
@@ -307,8 +467,35 @@ def rw(
         [x, y, [z], step_num] of the walker at each step is recorded in the
         final axis.
     """
+    if step_size < 0:
+        raise ValueError('step_size must be non-negative')
+    if n_walkers <= 0:
+        raise ValueError('number of walkers must be non-negative')
+    if n_steps <= 0:
+        raise ValueError('number of steps must be non-negative')
+    if not isinstance(n_write, int) or n_write <= 0:
+        raise ValueError('The number of steps to take between recording walker positions must be an integer')
+    if im.ndim not in [2, 3]:
+        raise ValueError('The image must be a 2D or 3D array')
+    if start.shape != im.shape:
+        raise ValueError('Start image must be the same size & dimensions as the passed image')
+    if mode not in ['random', 'normal', 'skewed']:
+        raise ValueError('The entered mode is not valid')
+    if skewed and ('skew_ratio' not in kwargs):
+        raise ValueError('Please provide a skew factor list')
+    if 'T' in kwargs and ('ma' not in kwargs or 'v_rel' not in kwargs):
+        raise ValueError('T, ma, and v_rel must all be specified to attain a distribution') 
+    if edges not in ['periodic','symmetric']:
+        raise ValueError('The edge treatment option is not availible') 
+        
+    try:
+        skew=np.array(kwargs['skew_ratio'])
+    except:
+        pass
+    
     # Parse input arguments
     step_size = path_length/100 if step_size is None else step_size
+    step_size_i = step_size
     n_write = int(n_write) if n_write > 1 else 1
     # Initialize random number generator
     rng = np.random.default_rng(seed)
@@ -319,59 +506,135 @@ def rw(
         start = im
     start = _get_start_points(start, n_walkers, rng)
     # Get initial direction vector for each walker
-    x, y, z = _new_vector(N=n_walkers, L=step_size, ndim=im.ndim, mode=mode, rng=rng)
+    if skewed:
+        x, y, z = _new_vector(N=n_walkers, L=step_size, ndim=im.ndim, mode="skewed", rng=rng, skew_ratio=skew)
+    else:
+        x, y, z = _new_vector(N=n_walkers, L=step_size, ndim=im.ndim, mode=mode, rng=rng)
+        
     loc = np.copy(start)  # initial location for each walker
     path[0, :, :-1] = loc.T  # save locations to path
     path[0, :, -1] = 0  # Add step number
     i = 0
-    with tqdm(range(n_steps - 1), **settings.tqdm) as pbar:
-        while i < (n_steps - 1):
-            # if image is 2D, this excludes the z coordinate
-            new_loc = loc + np.array([x, y, z])[:im.ndim, :]
-            # has any walker gone past its mean free path?
-            temp = np.sum((new_loc - start) ** 2, axis=0)
-            check_mfp = np.around(np.sqrt(temp), decimals=5) > path_length
-            if np.any(check_mfp):
-                # Find the walker indices which have gone past their mfp
-                inds_mfp = np.where((check_mfp == True))
-                # Regenerate direction vectors for these walkers
-                x[inds_mfp], y[inds_mfp], z[inds_mfp] = \
-                    _new_vector(N=len(inds_mfp[0]),
-                                L=step_size,
-                                ndim=im.ndim,
-                                mode=mode,
-                                rng=rng)
-                # Update starting position of invalid walkers to current position
-                start[:, inds_mfp] = loc[:, inds_mfp]
-                # Re-update new location with walkers that changed direction
+
+    
+    if skewed:
+        with tqdm(range(n_steps - 1), **settings.tqdm) as pbar:
+            while i < (n_steps - 1):
+                # if image is 2D, this excludes the z coordinate
                 new_loc = loc + np.array([x, y, z])[:im.ndim, :]
-            wrapped_loc = _wrap_indices(new_loc, im.shape, mode=edges)
-            # has any walker passed into solid phase?
-            check_wall = im[wrapped_loc] == False
-            if np.any(check_wall):  # If any walkers have moved into solid phase
-                inds_wall = np.where((check_wall == True))  # Get their indices
-                # Regenerate direction vectors for walkers who hit wall, but wait
-                # till next step to apply direction. This imitates having them
-                # hit the wall and bounce back to original location.
-                x[inds_wall], y[inds_wall], z[inds_wall] = \
-                    _new_vector(N=len(inds_wall[0]),
-                                L=step_size,
-                                ndim=im.ndim,
-                                mode=mode,
-                                rng=rng)
-                # Reset mean free path start point for walkers that hit the wall
-                start[:, inds_wall] = loc[:, inds_wall]
-                # Walkers that hit a wall return to previous location,
-                # with a new direction vector
-                new_loc[:, inds_wall] = loc[:, inds_wall]
-            loc = new_loc  # Update location of each walker with trial step
-            i += 1  # Increment the step index
-            # every stride steps we save the locations of the walkers to path
-            if i % n_write == 0:
-                path[int(i / n_write), :, :-1] = loc.T  # Record new position of walkers
-                path[int(i / n_write), :, -1] = i  # Record index of current step
-            pbar.update()
+                # has any walker gone past its mean free path?
+                temp = np.sum((new_loc - start) ** 2, axis=0)
+                check_mfp = np.around(np.sqrt(temp), decimals=5) > path_length
+                if np.any(check_mfp):
+                    # Find the walker indices which have gone past their mfp
+                    inds_mfp = np.where((check_mfp == True))
+                    # Regenerate direction vectors for these walkers
+                    x[inds_mfp], y[inds_mfp], z[inds_mfp] = \
+                        _new_vector(N=len(inds_mfp[0]),
+                                    L=step_size,
+                                    ndim=im.ndim,
+                                    mode='skewed',
+                                    rng=rng,skew_ratio=skew)
+                    # Update starting position of invalid walkers to current position
+                    start[:, inds_mfp] = loc[:, inds_mfp]
+                    # Re-update new location with walkers that changed direction
+                    new_loc = loc + np.array([x, y, z])[:im.ndim, :]
+                wrapped_loc = _wrap_indices(new_loc, im.shape, mode=edges)
+                # has any walker passed into solid phase?
+                check_wall = im[wrapped_loc] == False
+                if np.any(check_wall):  # If any walkers have moved into solid phase
+                    inds_wall = np.where((check_wall == True))  # Get their indices
+                    # Regenerate direction vectors for walkers who hit wall, but wait
+                    # till next step to apply direction. This imitates having them
+                    # hit the wall and bounce back to original location.
+                    x[inds_wall], y[inds_wall], z[inds_wall] = \
+                        _new_vector(N=len(inds_wall[0]),
+                                    L=step_size,
+                                    ndim=im.ndim,
+                                    mode="skewed",
+                                    rng=rng,skew_ratio=skew)
+                    # Reset mean free path start point for walkers that hit the wall
+                    start[:, inds_wall] = loc[:, inds_wall]
+                    # Walkers that hit a wall return to previous location,
+                    # with a new direction vector
+                    new_loc[:, inds_wall] = loc[:, inds_wall]
+                loc = new_loc  # Update location of each walker with trial step
+                i += 1  # Increment the step index
+                
+                try: 
+                    T, ma, v_rel_o = kwargs['T'], kwargs['ma'], kwargs['v_rel']
+                    v_rel_o = v_rel_o * 1e-09
+                    scale = np.sqrt(C.Boltzmann * T / ma / 2)
+                    v_rel = maxwell.rvs(scale=scale, size=1)
+                    step_size = step_size_i * v_rel / v_rel_o
+                except: 
+                    pass
+                # every stride steps we save the locations of the walkers to path
+                if i % n_write == 0:
+                    path[int(i / n_write), :, :-1] = loc.T  # Record new position of walkers
+                    path[int(i / n_write), :, -1] = i  # Record index of current step
+                pbar.update()
+    else:
+        
+        with tqdm(range(n_steps - 1), **settings.tqdm) as pbar:
+            while i < (n_steps - 1):
+                # if image is 2D, this excludes the z coordinate
+                new_loc = loc + np.array([x, y, z])[:im.ndim, :]
+                # has any walker gone past its mean free path?
+                temp = np.sum((new_loc - start) ** 2, axis=0)
+                check_mfp = np.around(np.sqrt(temp), decimals=5) > path_length
+                if np.any(check_mfp):
+                    # Find the walker indices which have gone past their mfp
+                    inds_mfp = np.where((check_mfp == True))
+                    # Regenerate direction vectors for these walkers
+                    x[inds_mfp], y[inds_mfp], z[inds_mfp] = \
+                        _new_vector(N=len(inds_mfp[0]),
+                                    L=step_size,
+                                    ndim=im.ndim,
+                                    mode=mode,
+                                    rng=rng)
+                    # Update starting position of invalid walkers to current position
+                    start[:, inds_mfp] = loc[:, inds_mfp]
+                    # Re-update new location with walkers that changed direction
+                    new_loc = loc + np.array([x, y, z])[:im.ndim, :]
+                wrapped_loc = _wrap_indices(new_loc, im.shape, mode=edges)
+                # has any walker passed into solid phase?
+                check_wall = im[wrapped_loc] == False
+                if np.any(check_wall):  # If any walkers have moved into solid phase
+                    inds_wall = np.where((check_wall == True))  # Get their indices
+                    # Regenerate direction vectors for walkers who hit wall, but wait
+                    # till next step to apply direction. This imitates having them
+                    # hit the wall and bounce back to original location.
+                    x[inds_wall], y[inds_wall], z[inds_wall] = \
+                        _new_vector(N=len(inds_wall[0]),
+                                    L=step_size,
+                                    ndim=im.ndim,
+                                    mode=mode,
+                                    rng=rng)
+                    # Reset mean free path start point for walkers that hit the wall
+                    start[:, inds_wall] = loc[:, inds_wall]
+                    # Walkers that hit a wall return to previous location,
+                    # with a new direction vector
+                    new_loc[:, inds_wall] = loc[:, inds_wall]
+                loc = new_loc  # Update location of each walker with trial step
+                i += 1  # Increment the step index
+                
+                try: 
+                    T, ma, v_rel_o = kwargs['T'], kwargs['ma'], kwargs['v_rel']
+                    v_rel_o = v_rel_o * 1e-09
+                    scale = np.sqrt(C.Boltzmann * T / ma / 2)
+                    v_rel = maxwell.rvs(scale=scale, size=1)
+                    step_size = step_size_i * v_rel / v_rel_o
+                except: 
+                    pass
+                # every stride steps we save the locations of the walkers to path
+                if i % n_write == 0:
+                    path[int(i / n_write), :, :-1] = loc.T  # Record new position of walkers
+                    path[int(i / n_write), :, -1] = i  # Record index of current step
+                pbar.update()
+
     return path
+
 
 
 @timer
@@ -461,8 +724,7 @@ def rw_parallel(im,
     walk.path = path
     return walk
 
-
-def _new_vector(N=1, L=1, ndim=3, mode='random', rng=None):
+def _new_vector(N: int = 1, L: float = 1.0, ndim: int = 3, mode: str = 'random', rng: np.random.Generator = None, **kwargs) -> np.ndarray:
     r"""
     Generate a new set of displacement vectors
 
@@ -494,10 +756,25 @@ def _new_vector(N=1, L=1, ndim=3, mode='random', rng=None):
         A numpy ndarray containing the ``[x, y, z]*L`` values for each ``N``
         vectors.
     """
+    
+    if not isinstance(N, int) or N < 1:
+        raise ValueError("N must be a positive integer")
+    if not isinstance(L, (int, float)) or L <= 0:
+        raise ValueError("L must be a positive number")
+    if ndim not in [2, 3]:
+        raise ValueError("ndim must be either 2 or 3")
+    if mode not in ['random', 'axial', 'skewed']:
+        raise ValueError("mode must be either 'random', 'axial', or 'skewed'")
+    if mode == 'skewed':
+        if 'skew_ratio' not in kwargs:
+            raise ValueError("For 'skewed' mode opertion, 'skew_ratio' must be provided as a keyword argument")
+        elif not isinstance(kwargs['skew_ratio'], (list, tuple, np.ndarray)) or len(kwargs['skew_ratio']) != ndim:
+            raise ValueError(f"skew_ratio must be a {ndim}-dimensional list, tuple or numpy array")
+            
     if rng is None:
         rng = np.random.default_rng()
+    
     if mode == 'random':
-        # Generate random theta and phi for each walker
         # This was taken from https://math.stackexchange.com/a/1586185
         u, v = np.vstack(rng.random((2, N)))
         q = np.arccos(2 * u - 1) - np.pi / 2
@@ -512,29 +789,42 @@ def _new_vector(N=1, L=1, ndim=3, mode='random', rng=None):
             x = np.cos(f)
             y = np.sin(f)
             z = np.zeros(N)
-        # x, y, z = x * ndim ** 0.5, y * ndim ** 0.5, z * ndim ** 0.5
-        # x, y, z = x * ndim, y * ndim, z * ndim
+        temps = np.array((x, y, z)) * L
     elif mode == 'axial':
         if ndim == 2:
             options = np.array([[0, 1], [1, 0],
                                 [0, -1], [-1, 0]])
-            # options = np.array([[1, 1], [1, -1],
-            #                     [-1, -1], [-1, 1]])
-            # x, y = options[np.random.randint(0, len(options), N), :].T
             x, y = options[rng.integers(0, len(options), N), :].T
             z = np.zeros(N)
         if ndim == 3:
             options = np.array([[0, 0, 1], [0, 1, 0], [1, 0, 0],
                                 [0, 0, -1], [0, -1, 0], [-1, 0, 0]])
-            # options = np.array([[1, 1, 1], [1, 1, -1], [1, -1, -1], [1, -1, 1],
-            #                     [-1, -1, -1], [-1, -1, 1], [-1, 1, 1], [-1, 1, -1]])
-            # x, y, z = options[np.random.randint(0, len(options), N), :].T
             x, y, z = options[rng.integers(0, len(options), N), :].T
-        # x, y, z = x / ndim ** 0.5, y / ndim ** 0.5, z / ndim ** 0.5
+        temps = np.array((x, y, z)) * L
+    elif mode == 'skewed':
+            try:
+                dv = np.array(kwargs['skew_ratio'])
+                dvn = dv/np.linalg.norm(dv)
+                Ln = L/np.linalg.norm(dv)
+                x = np.random.uniform(-dvn[0], dvn[0], N)
+                y = np.random.uniform(-dvn[1], dvn[1], N)
+                if ndim==3:
+                    z = np.random.uniform(-dvn[2], dvn[2], N)
+                    magnitude = np.sqrt(x**2 + y**2 + z**2)
+                    magnitude = np.repeat(magnitude[:, np.newaxis], 3, axis=1)
+                    temps = (np.column_stack((x, y, z)) / magnitude).T * L
+                else:
+                    magnitude = np.sqrt(x**2 + y**2)
+                    magnitude = np.repeat(magnitude[:, np.newaxis], 2, axis=1)
+                    temps = (np.column_stack((x, y)) / magnitude).T * L
+            except:
+                raise Exception(f'Please Provide a skew_factor list')
+                temps = temps
     else:
         raise Exception(f'Unrecognized mode {mode}')
-    temp = np.array((x, y, z)) * L
-    return temp
+    
+
+    return temps
 
 
 def _get_start_points(im, n_walkers=1, rng=None):
