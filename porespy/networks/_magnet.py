@@ -1,9 +1,11 @@
 import numpy as np
+import scipy as sp
 from skimage.segmentation import find_boundaries
-from skimage.morphology import skeletonize_3d
+from skimage.morphology import skeletonize_3d, square, cube
 import porespy as ps
 from edt import edt
 import scipy.ndimage as spim
+from porespy.filters import reduce_peaks
 from porespy.tools import get_tqdm, Results
 import pandas as pd
 # import openpnm as op
@@ -19,11 +21,28 @@ tqdm = get_tqdm()
 
 
 def analyze_skeleton_2(sk, dt):
+    # kernel for convolution
+    if sk.ndim == 2:
+        a = square(3)
+    else:
+        a = cube(3)
+    # compute convolution directly or via fft, whichever is fastest
+    conv = sp.signal.convolve(sk*1.0, a, mode='same', method='auto')
+    conv = np.rint(conv).astype(int)  # in case of fft, accuracy is lost
+    # find junction points of skeleton
+    juncs = (conv >= 4) * sk
+    # find endpoints of skeleton
+    end_pts = (conv == 2) * sk
+    # reduce cluster of junctions to single pixel at centre
+    juncs_r = reduce_peaks(juncs)
+    # results object
+    pt = Results()
+    pt.juncs = juncs
+    pt.endpts = end_pts
+    pt.juncs_r = juncs_r
+
     # Blur the DT
     dt2 = spim.gaussian_filter(dt, sigma=0.4)
-    # Dilate the skeleton (probably not needed)
-    # strel = ps.tools.ps_round(r=1, ndim=im.ndim, smooth=False)
-    # sk2 = spim.binary_dilation(sk, structure=strel)
     # Run maximum filter on dt
     strel = ps.tools.ps_round(r=3, ndim=sk.ndim, smooth=False)
     dt3 = spim.maximum_filter(dt2, footprint=strel)
@@ -32,7 +51,8 @@ def analyze_skeleton_2(sk, dt):
     # Find peaks on sk3
     strel = ps.tools.ps_round(r=5, ndim=sk.ndim, smooth=False)
     peaks = (spim.maximum_filter(sk3, footprint=strel) == dt3)*sk
-    return peaks
+    pt.peaks = peaks
+    return pt
 
 
 def magnet2(im, sk=None):
@@ -46,8 +66,8 @@ def magnet2(im, sk=None):
     dt = spim.maximum_filter(dt, size=3)
     spheres = np.zeros_like(im, dtype=int)
     centers = np.zeros_like(im, dtype=int)
-    jcts = ps.filters.analyze_skeleton(sk)
-    peaks = analyze_skeleton_2(sk, dt)
+    jcts = analyze_skeleton_2(sk, dt)
+    peaks = jcts.peaks
 
     # %% Insert spheres and center points into image, and delete underlying skeleton
     crds = np.vstack(np.where(jcts.endpts + jcts.juncs + peaks)).T
@@ -132,6 +152,7 @@ def magnet2(im, sk=None):
     hits = pd.DataFrame(conns).duplicated().to_numpy()
     conns = conns[~hits, :]
     throat_diameters = throat_diameters[~hits]
+    sk = sk_orig
 
     # %% Store in openpnm compatible dictionary
     net = {}
