@@ -2,7 +2,7 @@
 import numpy as np
 import scipy.ndimage as spim
 import scipy.spatial as sptl
-from porespy.tools import ps_rect, ps_round, extend_slice, get_tqdm
+from porespy.tools import ps_rect, ps_round, extend_slice, get_tqdm, Results
 from porespy.generators import lattice_spheres, line_segment
 from porespy import settings
 
@@ -29,7 +29,15 @@ def ex(r, t=0):
     return x
 
 
-def rectangular_pillars(shape=[5, 5], spacing=30, Rmin=2, Rmax=20, lattice='sc'):
+def rectangular_pillars(
+    shape=[5, 5],
+    spacing=30,
+    Rmin=5,
+    Rmax=15,
+    lattice='sc',
+    return_edges=False,
+    return_centers=False
+):
     r"""
     A 2D micromodel with rectangular pillars arranged on a regular lattice
 
@@ -59,11 +67,20 @@ def rectangular_pillars(shape=[5, 5], spacing=30, Rmin=2, Rmax=20, lattice='sc')
                  refer to the length of a pixel.
         ======== ===================================================================
 
+    return_edges : boolean, optional, default is ``False``
+        If ``True`` then an image of of the edges between each pore center is also
+        returned along with the micromodel
+    return_centers : boolean, optional, default is ``False``
+        If ``True`` then an image with marks located at each pore center is also
+        return along with the micromodel
+
     Returns
     -------
-    ims : dataclass
-        Several images are generated in internally, so they are all returned as
-        attributes of a dataclass-like object.  The attributes are as follows:
+    im or ims : ndarray or dataclass
+        If ``return_centers`` and ``return_edges`` are both ``False``, then only
+        an ndarray of the micromodel is returned.  If either or both are ``True``
+        then a ``dataclass-like`` object is return with multiple images attached
+        as attributes:
 
         ========== =================================================================
         attribute  description
@@ -132,4 +149,13 @@ def rectangular_pillars(shape=[5, 5], spacing=30, Rmin=2, Rmax=20, lattice='sc')
         t = spim.binary_dilation(mask, structure=strel(r=r, t=1))
         throats[s2] += t
     micromodel = throats > 0
-    return micromodel, edges, centers
+    if (not return_edges) and (not return_centers):
+        return micromodel
+    else:
+        ims = Results()
+        ims.im = micromodel
+        if return_edges:
+            ims.edges = edges
+        if return_centers:
+            ims.centers = centers
+        return ims
