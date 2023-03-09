@@ -83,14 +83,18 @@ def rectangular_pillars(shape=[5, 5], spacing=30, Rmin=2, Rmax=20, lattice='sc')
         <https://porespy.org/examples/generators/reference/rectangular_pillars.html>`_
         to view online example.
     """
-    if lattice == 'sc':
+    if lattice.startswith('s'):
         strel = cross
         Rmax = Rmax + 1
-    else:
+        lattice = 'sc'  # In case user specified s, sq or square, etc.
+    elif lattice.startswith('t'):
         strel = ex
         shape = np.array(shape) - 1
         Rmin = int(Rmin*np.sin(np.deg2rad(45)))
         Rmax = int((Rmax-2)*np.sin(np.deg2rad(45)))
+        lattice = 'tri'  # In case user specified t, or triangle, etc.
+    else:
+        raise Exception(f"Unrecognized lattice type {lattice}")
     centers = ~lattice_spheres(
         shape=[shape[0]*spacing+1, shape[1]*spacing+1],
         spacing=spacing,
