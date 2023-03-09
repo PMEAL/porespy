@@ -8,7 +8,7 @@ from scipy.stats import linregress
 from porespy.tools import get_tqdm
 from porespy import settings
 import matplotlib.pyplot as plt
-from porespy.simulations import _wrap_indices
+# from porespy.simulations import _wrap_indices
 import random
 from edt import edt
 import scipy.ndimage as spim
@@ -70,7 +70,7 @@ def calc_gas_props(P, T, MWa, mu, d1, knudsen=False, **kwargs):
         The bonding energy of the solvent gas  [$$\text{ m}^2\text{ kg}\text{ s}^{-2}$$]
     ek1 : float
         The bonding energy of the solvating gas  [$$\text{ m}^2\text{ kg}\text{ s}^{-2}$$]
-    knud_dir : array 
+    knud_dir : array
         Depending on the pore morphology, it may be useful to point out which direction
         is the most restrictive and will have the most interactions with the wall
 
@@ -99,9 +99,9 @@ def calc_gas_props(P, T, MWa, mu, d1, knudsen=False, **kwargs):
         MW      float, the molecular weight of the diffusing molecule in
                 units of [kg/mol]
         mu      float, the viscosity of the gas mixture in which the
-                molecular is diffusion in units of [Pa.s]             
+                molecular is diffusion in units of [Pa.s]
         v_prob  The most probable velocity in units of [nm/s]
-        
+
         ======= =============================================================
 
     Notes
@@ -117,7 +117,7 @@ def calc_gas_props(P, T, MWa, mu, d1, knudsen=False, **kwargs):
         $$v =  4 \sqrt{\frac{RT}{\pi*MW}} $$
     And bulk diffusion is defined as:
         $$ D_b=\frac{1}{2} \lambda v $$
-        
+
     """
     if P <= 0 or T <= 0:
         raise ValueError("Pressure and temperature must be positive.")
@@ -148,7 +148,7 @@ def calc_gas_props(P, T, MWa, mu, d1, knudsen=False, **kwargs):
     if 'ek1' in kwargs and 'ek2' in kwargs:
         if kwargs['ek1'] <= 0 or kwargs['ek2'] <= 0:
             raise ValueError("Epsilon/k values must be positive for Lennard-Jones collision diameter calculation.")
-      #test      
+      #test
     kinetics = {}
     n = P * C.Avogadro / (C.R * T)
     mfp = (np.sqrt(2) * np.pi* d1**2 * n )**-1 / 1e-09
@@ -163,14 +163,14 @@ def calc_gas_props(P, T, MWa, mu, d1, knudsen=False, **kwargs):
     kinetics['T'] = T
     kinetics['P'] = P
     kinetics['MWa'] = MWa
-    kinetics['mu'] = mu  
-    
-    
+    kinetics['mu'] = mu
+
+
     try:
         MWb = kwargs['MWb']
         mb = MWb / C.Avogadro
         d2 = kwargs['d2']
-        
+
         if d1 + d2 < 2:
             sig_ab = 0.5 * (d1 + d2)
             Dab = (2 / 3) * np.sqrt(C.Boltzmann * T / np.pi) * \
@@ -185,10 +185,10 @@ def calc_gas_props(P, T, MWa, mu, d1, knudsen=False, **kwargs):
             sig_ab = 0.5 * (d1 + d2)
             e_ab = np.sqrt(ek1 * ek2)
             T_dim = T / e_ab
-            
+
             omega_ab = (1.06036 / T_dim ** 0.15610) + 0.1939*np.exp(-0.47635*T_dim) + \
                 1.03587*np.exp(-1.52996*T_dim) + 1.76474*np.exp(-3.89411*T_dim)
-            
+
             Dab = (3/16) * np.sqrt(2*(C.R*T)**3 / np.pi *
                                    ((1/MWa)+(1/MWb))) * (C.Avogadro*P*sig_ab**2 * omega_ab)**-1
             scatt_cross = np.pi*(d1/2 + d2/2)**2
@@ -207,13 +207,13 @@ def calc_gas_props(P, T, MWa, mu, d1, knudsen=False, **kwargs):
             dim = len(dv)
             dv = np.array(dv)
         except:
-            pass 
+            pass
         pore_diam = kwargs.get('pore_diam', 1)
         mfp = pore_diam
         dk = pore_diam / 3 * (8 * C.R * T / np.pi / MWa) ** 0.5
         kinetics['dk'] = dk
-        
-        try: 
+
+        try:
             D_dir = dv*dk
             mfp_dir = dv*pore_diam
             D_dir[D_dir == 0] = Daa
@@ -224,10 +224,10 @@ def calc_gas_props(P, T, MWa, mu, d1, knudsen=False, **kwargs):
             kinetics['mfp_tens'] = mfp_dir
             kinetics['knud_dir']= kwargs['knud_dir']
             kinetics['skew_ratio'] = kinetics['D_tens']/dk
-            
+
         except:
             pass
-        
+
     return kinetics
 
 def compute_steps(
@@ -331,9 +331,9 @@ def compute_steps(
     if not isinstance(steps_per_mfp, int):
         raise ValueError('Steps per mean free path (steps_per_mfp) must be an integer')
     valid_kwargs = ['max_steps', 'seed', 'rng']
-    for kwarg in kwargs:
-        if kwarg not in valid_kwargs:
-            raise ValueError(f'Invalid keyword argument: {kwarg}')
+    # for kwarg in kwargs:
+    #     if kwarg not in valid_kwargs:
+    #         raise ValueError(f'Invalid keyword argument: {kwarg}')
     walk = kwargs
     walk['voxel_size'] = voxel_size
     walk['n_steps'] = n_steps
@@ -342,7 +342,7 @@ def compute_steps(
     walk['v_rel'] = v_rel
     walk['Daa'] = Daa
     walk['path_length'] = walk['mfp'] / walk['voxel_size']
-    try: 
+    try:
         mfp_skew = kwargs['mfp_tens']
         walk['path_length_skew'] = np.linalg.norm(mfp_skew)/walk['voxel_size']
         path_length_skew = walk['path_length_skew']
@@ -350,20 +350,20 @@ def compute_steps(
         walk['step_size_skew'] = step_size_skew
         walk['time_step_skew'] = step_size_skew * voxel_size / (walk['v_rel'] * ndim)
     except:
-        pass 
-    
+        pass
+
     path_length = walk['path_length']
     step_size = path_length / steps_per_mfp
-    
+
     path_length = walk['path_length']
     step_size = path_length / steps_per_mfp
-    try: 
+    try:
         Dab = kwargs['Dab']
         Dak = kwargs['Dak']
         walk['Dab'] = Dab
         walk['Dak'] = Dak
-    except: 
-        pass 
+    except:
+        pass
     if step_size > 0.8:
         raise ValueError('Step size exceeds 1 voxel, try larger steps_per_mfp')
     walk['step_size'] = step_size
@@ -477,6 +477,8 @@ def rw(
         raise ValueError('The number of steps to take between recording walker positions must be an integer')
     if im.ndim not in [2, 3]:
         raise ValueError('The image must be a 2D or 3D array')
+    if start is None:
+        start = np.ones_like(im)
     if start.shape != im.shape:
         raise ValueError('Start image must be the same size & dimensions as the passed image')
     if mode not in ['random', 'normal', 'skewed']:
@@ -484,15 +486,15 @@ def rw(
     if skewed and ('skew_ratio' not in kwargs):
         raise ValueError('Please provide a skew factor list')
     if 'T' in kwargs and ('ma' not in kwargs or 'v_rel' not in kwargs):
-        raise ValueError('T, ma, and v_rel must all be specified to attain a distribution') 
+        raise ValueError('T, ma, and v_rel must all be specified to attain a distribution')
     if edges not in ['periodic','symmetric']:
-        raise ValueError('The edge treatment option is not availible') 
-        
+        raise ValueError('The edge treatment option is not availible')
+
     try:
         skew=np.array(kwargs['skew_ratio'])
     except:
         pass
-    
+
     # Parse input arguments
     step_size = path_length/100 if step_size is None else step_size
     step_size_i = step_size
@@ -510,13 +512,13 @@ def rw(
         x, y, z = _new_vector(N=n_walkers, L=step_size, ndim=im.ndim, mode="skewed", rng=rng, skew_ratio=skew)
     else:
         x, y, z = _new_vector(N=n_walkers, L=step_size, ndim=im.ndim, mode=mode, rng=rng)
-        
+
     loc = np.copy(start)  # initial location for each walker
     path[0, :, :-1] = loc.T  # save locations to path
     path[0, :, -1] = 0  # Add step number
     i = 0
 
-    
+
     if skewed:
         with tqdm(range(n_steps - 1), **settings.tqdm) as pbar:
             while i < (n_steps - 1):
@@ -560,14 +562,14 @@ def rw(
                     new_loc[:, inds_wall] = loc[:, inds_wall]
                 loc = new_loc  # Update location of each walker with trial step
                 i += 1  # Increment the step index
-                
-                try: 
+
+                try:
                     T, ma, v_rel_o = kwargs['T'], kwargs['ma'], kwargs['v_rel']
                     v_rel_o = v_rel_o * 1e-09
                     scale = np.sqrt(C.Boltzmann * T / ma / 2)
                     v_rel = maxwell.rvs(scale=scale, size=1)
                     step_size = step_size_i * v_rel / v_rel_o
-                except: 
+                except:
                     pass
                 # every stride steps we save the locations of the walkers to path
                 if i % n_write == 0:
@@ -575,7 +577,7 @@ def rw(
                     path[int(i / n_write), :, -1] = i  # Record index of current step
                 pbar.update()
     else:
-        
+
         with tqdm(range(n_steps - 1), **settings.tqdm) as pbar:
             while i < (n_steps - 1):
                 # if image is 2D, this excludes the z coordinate
@@ -618,14 +620,14 @@ def rw(
                     new_loc[:, inds_wall] = loc[:, inds_wall]
                 loc = new_loc  # Update location of each walker with trial step
                 i += 1  # Increment the step index
-                
-                try: 
+
+                try:
                     T, ma, v_rel_o = kwargs['T'], kwargs['ma'], kwargs['v_rel']
                     v_rel_o = v_rel_o * 1e-09
                     scale = np.sqrt(C.Boltzmann * T / ma / 2)
                     v_rel = maxwell.rvs(scale=scale, size=1)
                     step_size = step_size_i * v_rel / v_rel_o
-                except: 
+                except:
                     pass
                 # every stride steps we save the locations of the walkers to path
                 if i % n_write == 0:
@@ -756,10 +758,10 @@ def _new_vector(N: int = 1, L: float = 1.0, ndim: int = 3, mode: str = 'random',
         A numpy ndarray containing the ``[x, y, z]*L`` values for each ``N``
         vectors.
     """
-    
+
     if not isinstance(N, int) or N < 1:
         raise ValueError("N must be a positive integer")
-    if not isinstance(L, (int, float)) or L <= 0:
+    if L <= 0:
         raise ValueError("L must be a positive number")
     if ndim not in [2, 3]:
         raise ValueError("ndim must be either 2 or 3")
@@ -770,10 +772,10 @@ def _new_vector(N: int = 1, L: float = 1.0, ndim: int = 3, mode: str = 'random',
             raise ValueError("For 'skewed' mode opertion, 'skew_ratio' must be provided as a keyword argument")
         elif not isinstance(kwargs['skew_ratio'], (list, tuple, np.ndarray)) or len(kwargs['skew_ratio']) != ndim:
             raise ValueError(f"skew_ratio must be a {ndim}-dimensional list, tuple or numpy array")
-            
+
     if rng is None:
         rng = np.random.default_rng()
-    
+
     if mode == 'random':
         # This was taken from https://math.stackexchange.com/a/1586185
         u, v = np.vstack(rng.random((2, N)))
@@ -822,7 +824,7 @@ def _new_vector(N: int = 1, L: float = 1.0, ndim: int = 3, mode: str = 'random',
                 temps = temps
     else:
         raise Exception(f'Unrecognized mode {mode}')
-    
+
 
     return temps
 
@@ -915,3 +917,61 @@ def _wrap_indices(loc, shape, mode='periodic'):
         raise Exception(f'Unrecognized mode {mode}')
     inds = tuple(temp.astype(int))
     return inds
+
+
+if __name__ == "__main__":
+    P=101325
+    T=300
+    mu = 1.85e-5
+    MWa = 0.01802
+    MWb = 0.02801
+    d1 = 2.64e-10
+    d2 = 3.64e-10
+    ek1 = 356
+    ek2 = 99.8
+
+    im3D = np.zeros([200, 200, 200])
+
+    kinetics = calc_gas_props(
+        P,
+        T,
+        MWa,
+        mu,
+        MWb=MWb,
+        d1=d1,
+        d2=d2,
+        ek1=ek1,
+        ek2=ek2,
+        knudsen=True,
+        pore_diam=1,
+        knud_dir=[0,0,1],
+    )
+    walk = compute_steps(
+        kinetics['mfp'],
+        kinetics['v_rel'],
+        kinetics['Daa'],
+        ndim=3,
+        voxel_size=1,
+        n_steps=10000,
+        steps_per_mfp=180,
+        Dab=kinetics['Dab'],
+        Dak=kinetics['dk'],
+    )
+    path = rw(
+        im3D,
+        path_length=walk['path_length'],
+        n_steps=3000,
+        step_size=walk['step_size'],
+        n_walkers=100,
+        n_write=100,
+        seed=None,
+        start=None,
+        edges='periodic',
+        mode='random',
+        T=T,
+        ma=MWa / C.Avogadro,
+        v_rel=kinetics['v_rel'],
+    )
+
+    d = ps.simulations.steps_to_displacements(path, voxel_size=1)
+    deff = ps.simulations.effective_diffusivity_rw(d, im3D, walk['time_step'])
