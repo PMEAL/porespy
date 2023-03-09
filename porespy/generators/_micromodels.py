@@ -2,13 +2,17 @@
 import numpy as np
 import scipy.ndimage as spim
 import scipy.spatial as sptl
-from porespy.tools import ps_rect, ps_round, extend_slice
+from porespy.tools import ps_rect, ps_round, extend_slice, get_tqdm
 from porespy.generators import lattice_spheres, line_segment
+from porespy import settings
 
 
 __all__ = [
     'rectangular_pillars',
 ]
+
+
+tqdm = get_tqdm()
 
 
 def cross(r, t=0):
@@ -97,7 +101,8 @@ def rectangular_pillars(shape=[5, 5], spacing=30, Rmin=2, Rmax=20, lattice='sc')
     crds = np.where(centers)
     tri = sptl.Delaunay(np.vstack(crds).T)
     edges = np.zeros_like(centers, dtype=bool)
-    for s in tri.simplices:
+    msg = 'Adding edges of triangulation to image'
+    for s in tqdm(tri.simplices, msg, **settings.tqdm):
         s2 = s.tolist()
         s2.append(s[0])
         for i in range(len(s)):
@@ -115,7 +120,8 @@ def rectangular_pillars(shape=[5, 5], spacing=30, Rmin=2, Rmax=20, lattice='sc')
         labels, N = spim.label(edges, structure=ps_rect(w=3, ndim=2))
     slices = spim.find_objects(labels)
     throats = np.zeros_like(edges, dtype=int)
-    for i, s in enumerate(slices):
+    msg = 'Dilating edges to random widths'
+    for i, s in enumerate(tqdm(slices, msg, **settings.tqdm)):
         r = np.random.randint(Rmin, Rmax)
         s2 = extend_slice(s, throats.shape, pad=2*r+1)
         mask = labels[s2] == (i + 1)
