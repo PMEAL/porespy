@@ -164,6 +164,7 @@ def calc_gas_props(P, T, MWa, mu, d1, knudsen=False, **kwargs):
     kinetics['P'] = P
     kinetics['MWa'] = MWa
     kinetics['mu'] = mu
+    kinetics['ma'] = ma
 
 
     try:
@@ -210,7 +211,7 @@ def calc_gas_props(P, T, MWa, mu, d1, knudsen=False, **kwargs):
             pass
         pore_diam = kwargs.get('pore_diam', 1)
         mfp = pore_diam
-        dk = pore_diam / 3 * (8 * C.R * T / np.pi / MWa) ** 0.5
+        dk = pore_diam *1e-09/ 3 * (8 * C.R * T / np.pi / MWa) ** 0.5
         kinetics['dk'] = dk
 
         try:
@@ -930,7 +931,7 @@ if __name__ == "__main__":
     ek1 = 356
     ek2 = 99.8
 
-    im3D = np.zeros([200, 200, 200])
+    im3D = np.ones([200, 200, 200])
 
     kinetics = calc_gas_props(
         P,
@@ -975,3 +976,115 @@ if __name__ == "__main__":
 
     d = ps.simulations.steps_to_displacements(path, voxel_size=1)
     deff = ps.simulations.effective_diffusivity_rw(d, im3D, walk['time_step'])
+    ax = ps.simulations.rw_post.plot_deff(deff, time_step = walk['time_step'], Db=kinetics['Daa'], ax=None)
+    fig = plt.figure(dpi=300,figsize=(5,7))
+    fig.set_facecolor("white")
+    #fig.set_facecolor((1, 1, 1))
+    ax = fig.add_subplot(111, projection='3d')
+    for i in range(path.shape[1]):
+        ax.plot(path[:, i, 0], path[:, i, 1], path[:, i, 2], '-', linewidth=0.5)
+    ax.set_xlabel("X axis")
+    ax.set_ylabel("Y axis")
+    ax.set_zlabel('Z axis')
+    ax.set_title("3D Random Walk")
+    ax.view_init(elev=15, azim=40, vertical_axis='x')
+    ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+    ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+    ax.w_zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+    ax.set_aspect('auto',anchor='SE')
+    
+    ax.grid(False)
+    
+    plt.show()
+    
+    """
+    Skewed code Viewing
+    """
+# =============================================================================
+#     kinetics = calc_gas_props(P, T, MWa, mu, MWb=MWb, d1=d1, d2=d2, ek1=ek1, ek2=ek2, knudsen=True, pore_diam=1, knud_dir=[0,0,1])
+#     walk = compute_steps(
+#         kinetics['mfp'],
+#         kinetics['v_rel'],
+#         kinetics['Daa'],
+#         ndim=3,
+#         voxel_size=1,
+#         n_steps=10000,
+#         steps_per_mfp=200,
+#         Dab=kinetics['Dab'],Dak=kinetics['dk'],mfp_tens=kinetics['mfp_tens'])
+#     path =rw(
+#         im3D,
+#         path_length=walk['path_length_skew'],
+#         n_steps=3000,
+#         step_size=walk['step_size_skew'],
+#         n_walkers=1000,
+#         n_write=100,
+#         seed=None,
+#         start=None,
+#         edges='periodic',
+#         mode='random',T=T,ma=kinetics['ma'],v_rel=kinetics['v_rel'],skewed=True,skew_ratio=kinetics['skew_ratio']
+#     )
+#     disp = ps.simulations.steps_to_displacements(paths=path, voxel_size=walk['voxel_size'])
+#     Diffusivity = ps.simulations.effective_diffusivity_rw(disp, im3D, time_step=(walk['time_step']))
+#     taus= ps.simulations.rw_post.tortuosity_rw(disp, mfp=kinetics['mfp'], step_size=walk['step_size_skew'], voxel_size=1)
+#     ps.simulations.rw_post.plot_msd(disp.values(), mfp=None, step_size=None, voxel_size=None, ax=None)
+#     ax=ps.simulations.rw_post.plot_deff(Diffusivity, time_step = walk['time_step'], Db=kinetics['Daa'], ax=None)
+#     ps.simulations.rw_post.plot_tau(taus, ax=None)
+#     fig = plt.figure(dpi=300,figsize=(5,7))
+#     fig.set_facecolor("white")
+#     #fig.set_facecolor((1, 1, 1))
+#     ax = fig.add_subplot(111, projection='3d')
+#     for i in range(path.shape[1]):
+#         ax.plot(path[:, i, 0], path[:, i, 1], path[:, i, 2], '-', linewidth=0.5)
+#     ax.set_xlabel("X axis")
+#     ax.set_ylabel("Y axis")
+#     ax.set_zlabel('Z axis')
+#     ax.set_title("3D Random Walk")
+#     ax.view_init(elev=15, azim=40, vertical_axis='z')
+#     ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+#     ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+#     ax.w_zaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+#     ax.set_aspect('auto',anchor='SE')
+#     
+#     ax.grid(False)
+#     
+#     plt.show()
+#     
+# =============================================================================
+    """
+    on image 2D
+    """
+# =============================================================================
+#     im1 = ps.generators.blobs(shape=[200, 200], porosity=0.7, blobiness=[2, 5])
+#     fig, ax = plt.subplots(1, 1, figsize=[5, 5])
+#     ax.imshow(im1, interpolation='none')
+#     ax.axis(False);
+#     
+#     kinetics = calc_gas_props(P, T, MWa, mu, MWb=MWb, d1=d1, d2=d2, ek1=ek1, ek2=ek2, knudsen=True, pore_diam=1, knud_dir=[0,0,1])
+#     walk = compute_steps(
+#         kinetics['mfp'],
+#         kinetics['v_rel'],
+#         kinetics['Daa'],
+#         ndim=2,
+#         voxel_size=1000,
+#         n_steps=10000,
+#         steps_per_mfp=10,
+#         Dab=kinetics['Dab'],Dak=kinetics['dk'],mfp_tens=kinetics['mfp_tens'])
+#     path =rw(
+#         im1,
+#         path_length=walk['path_length'],
+#         n_steps=10000,
+#         step_size=walk['step_size'],
+#         n_walkers=1000,
+#         n_write=100,
+#         seed=None,
+#         start=None,
+#         edges='periodic',
+#         mode='random',T=T,ma=kinetics['ma'],v_rel=kinetics['v_rel'],skewed=False,skew_ratio=kinetics['skew_ratio']
+#     )
+#     disp=ps.simulations.steps_to_displacements(paths=path, voxel_size=walk['voxel_size'])
+#     Diffusivity = ps.simulations.effective_diffusivity_rw(disp, im1, time_step=(walk['time_step']))
+#     taus = ps.simulations.rw_post.tortuosity_rw(disp, mfp=kinetics['mfp'], step_size=walk['step_size'], voxel_size=1000)
+#     ps.simulations.rw_post.plot_tau(taus, ax=None)
+#     ps.simulations.rw_post.plot_msd(disp.values(), mfp=None, step_size=None, voxel_size=None, ax=None)
+#     ax=ps.simulations.rw_post.plot_deff(Diffusivity, time_step = walk['time_step'], Db=kinetics['Daa'], ax=None)
+# =============================================================================
