@@ -159,3 +159,20 @@ def rectangular_pillars(
         if return_centers:
             ims.centers = centers
         return ims
+
+
+def random_cylindrical_pillars(shape=[100, 100]):
+    from nanomesh import Mesher2D
+    from porespy.generators import borders
+
+    im = np.ones([50, 50], dtype=float)
+    bd = borders(im.shape, mode='faces')
+    im[bd] = 0.0
+
+    mesher = Mesher2D(im)
+    mesher.generate_contour(max_edge_dist=50, level=0.999)
+
+    mesh = mesher.triangulate(opts='q20a5ne')
+    # mesh.plot_pyvista(jupyter_backend='static', show_edges=True)
+    tri = mesh.triangle_dict
+    return tri
