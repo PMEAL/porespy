@@ -161,18 +161,52 @@ def rectangular_pillars(
         return ims
 
 
-def random_cylindrical_pillars(shape=[100, 100]):
+def random_cylindrical_pillars(shape=[100, 100], f=0.45):
     from nanomesh import Mesher2D
     from porespy.generators import borders
 
-    im = np.ones([50, 50], dtype=float)
+    im = np.ones(shape, dtype=float)
     bd = borders(im.shape, mode='faces')
     im[bd] = 0.0
 
     mesher = Mesher2D(im)
     mesher.generate_contour(max_edge_dist=50, level=0.999)
 
-    mesh = mesher.triangulate(opts='q20a5ne')
+    mesh = mesher.triangulate(opts='q1a50ne')
     # mesh.plot_pyvista(jupyter_backend='static', show_edges=True)
     tri = mesh.triangle_dict
+
+    r_max = np.inf*np.ones([tri['vertices'].shape[0], ])
+    for e in tri['edges']:
+        L = np.sqrt(np.sum(np.diff(tri['vertices'][e], axis=0)**2))
+        if tri['vertex_markers'][e[0]] == 0:
+            r_max[e[0]] = min(r_max[e[0]], L/2)
+        if tri['vertex_markers'][e[1]] == 0:
+            r_max[e[1]] = min(r_max[e[1]], L/2)
+
+    mask = np.ravel(tri['vertex_markers'] == 0)
+    r = f*(2*r_max[mask])
+
+    coords = np.vstack((tri['vertices'][mask].T, r)).T
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     return tri
