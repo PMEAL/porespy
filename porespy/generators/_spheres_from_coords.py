@@ -75,6 +75,7 @@ def spheres_from_coords(df, voxel_size=1, maxdim=500):
             if k.upper()[0] in cols:
                 df[k.upper()[0]] = df[k]
     else:  # Assume it's a numpy array
+        import pandas as pd
         df = pd.DataFrame(df, columns=cols[:df.ndim+1])
 
     if 'R' not in df.keys():
@@ -93,27 +94,11 @@ def spheres_from_coords(df, voxel_size=1, maxdim=500):
     if max(shape) >= maxdim:
         raise Exception(f'The expected image size is too large: {shape}')
     im = np.zeros(shape, dtype=bool)
-    im = _insert_disks_at_points(im, coords=np.vstack([x, y, z]), radii=r, v=True, smooth=False)
+    im = _insert_disks_at_points(
+        im,
+        coords=np.vstack([x, y, z]),
+        radii=r,
+        v=True,
+        smooth=False,
+    )
     return im
-
-
-if __name__ == '__main__':
-
-    import pandas as pd
-    import matplotlib.pyplot as plt
-    import imageio
-    import porespy as ps
-
-    f = r'C:\Users\jeff\OneDrive - University of Waterloo\Research\NRC - Electrolyzers\point map 2.csv'
-    df = pd.read_csv(f)
-    df['R'] = df['size ']*1000/2
-    im = spheres_from_coords(df, voxel_size=.1)
-    # plt.imshow(ps.visualization.sem(~im, axis=0))
-    # imageio.volsave('spheres.tif', np.array(im, dtype=int))
-
-    from vedo import Volume, show
-    temp = 4.0*im
-    vol = Volume(temp)
-    lego = vol.legosurface(vmin=1, vmax=temp.max(), boundary=False)
-    # lego.cmap('jet', on='cells', vmin=1, vmax=temp.max())
-    show(vol, lego, N=2).close()
