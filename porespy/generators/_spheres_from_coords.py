@@ -1,5 +1,4 @@
 import numpy as np
-from porespy.tools import insert_sphere
 from porespy.tools import _insert_disks_at_points
 
 
@@ -8,14 +7,14 @@ __all__ = [
 ]
 
 
-def spheres_from_coords(df, voxel_size, maxdim=500):
+def spheres_from_coords(df, voxel_size=1, maxdim=500):
     r"""
     Generates a sphere packing given a list of centers and radii
 
     Parameters
     ----------
     df : DataFrame or dict
-        The X, Y, Z center coordinates and R of each sphere in the packing
+        The X, Y, Z center coordinates and radius R of each sphere in the packing
         should be stored in their own column or key. See ``Notes`` for more
         detail on how this should be formatted. If one of the dimensions has
         all 0's then a 2D image is generated.
@@ -37,7 +36,7 @@ def spheres_from_coords(df, voxel_size, maxdim=500):
 
     Notes
     -----
-    The input data should be in column formatm as a dictionary of 1D
+    The input data should be in column format as a dictionary of 1D
     *numpy* arrays like this:
 
     .. code::
