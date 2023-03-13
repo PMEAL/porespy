@@ -818,7 +818,7 @@ def chord_counts(im):
     """
     labels, N = spim.label(im > 0)
     props = regionprops(labels)
-    chord_lens = np.array([i.filled_area for i in props])
+    chord_lens = np.array([i.filled_area for i in props], dtype=int)
     return chord_lens
 
 
