@@ -3,6 +3,7 @@ import numpy as np
 import scipy.ndimage as spim
 import scipy.spatial as sptl
 from porespy.tools import ps_rect, ps_round, extend_slice, get_tqdm, Results
+from porespy.tools import _insert_disks_at_points
 from porespy.generators import lattice_spheres, line_segment
 from porespy import settings
 
@@ -161,13 +162,42 @@ def rectangular_pillars(
         return ims
 
 
+def points_to_spheres(im):
+    from scipy.spatial import distance_matrix
+    if im.ndim == 3:
+        x, y, z = np.where(im > 0)
+        coords = np.vstack((x, y, z)).T
+    else:
+        x, y = np.where(im > 0)
+        coords = np.vstack((x, y))
+    if im.dtype == bool:
+        dmap = distance_matrix(coords.T, coords.T)
+        mask = dmap < 1
+        dmap[mask] = np.inf
+        r = np.around(dmap.min(axis=0)/2, decimals=0).astype(int)
+    else:
+        r = im[x, y].flatten()
+    im_spheres = np.zeros_like(im, dtype=bool)
+    im_spheres = _insert_disks_at_points(
+        im_spheres,
+        coords=coords,
+        radii=r,
+        v=True,
+        smooth=False,
+    )
+    return im_spheres
+
+
 def random_cylindrical_pillars(
-    shape=[100, 100],
+    shape=[1500, 1500],
     f=0.45,
+    a=1500,
 ):
     from nanomesh import Mesher2D
     from porespy.generators import borders, spheres_from_coords
 
+    if len(shape) != 2:
+        raise Exception("Shape must be 2D")
     im = np.ones(shape, dtype=float)
     bd = borders(im.shape, mode='faces')
     im[bd] = 0.0
@@ -175,7 +205,7 @@ def random_cylindrical_pillars(
     mesher = Mesher2D(im)
     mesher.generate_contour(max_edge_dist=50, level=0.999)
 
-    mesh = mesher.triangulate(opts='q1a50ne')
+    mesh = mesher.triangulate(opts=f'q0a{a}ne')
     # mesh.plot_pyvista(jupyter_backend='static', show_edges=True)
     tri = mesh.triangle_dict
 
@@ -191,32 +221,23 @@ def random_cylindrical_pillars(
     r = f*(2*r_max[mask])
 
     coords = tri['vertices'][mask]
-    if im.ndim == 2:
-        coords = np.pad(
-            array=coords,
-            pad_width=((0, 0), (0, 1)),
-            mode='constant',
-            constant_values=0)
+    coords = np.pad(
+        array=coords,
+        pad_width=((0, 0), (0, 1)),
+        mode='constant',
+        constant_values=0)
     coords = np.vstack((coords.T, r)).T
-    im_w_spheres = spheres_from_coords(coords)
+    im_w_spheres = spheres_from_coords(coords, smooth=True, mode='contained')
+    return im_w_spheres
 
 
+if __name__ == '__main__':
+    import porespy as ps
+    import matplotlib.pyplot as plt
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    return tri
+    im = ~ps.generators.lattice_spheres([1501, 1501], r=1, offset=0, spacing=100)
+    im = im.astype(int)
+    inds = np.where(im)
+    im[inds] = np.random.randint(2, 50, len(inds[0]))
+    im = points_to_spheres(im)
+    plt.imshow(im)
