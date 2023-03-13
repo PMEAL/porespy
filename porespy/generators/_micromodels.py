@@ -161,9 +161,12 @@ def rectangular_pillars(
         return ims
 
 
-def random_cylindrical_pillars(shape=[100, 100], f=0.45):
+def random_cylindrical_pillars(
+    shape=[100, 100],
+    f=0.45,
+):
     from nanomesh import Mesher2D
-    from porespy.generators import borders
+    from porespy.generators import borders, spheres_from_coords
 
     im = np.ones(shape, dtype=float)
     bd = borders(im.shape, mode='faces')
@@ -187,8 +190,15 @@ def random_cylindrical_pillars(shape=[100, 100], f=0.45):
     mask = np.ravel(tri['vertex_markers'] == 0)
     r = f*(2*r_max[mask])
 
-    coords = np.vstack((tri['vertices'][mask].T, r)).T
-
+    coords = tri['vertices'][mask]
+    if im.ndim == 2:
+        coords = np.pad(
+            array=coords,
+            pad_width=((0, 0), (0, 1)),
+            mode='constant',
+            constant_values=0)
+    coords = np.vstack((coords.T, r)).T
+    im_w_spheres = spheres_from_coords(coords)
 
 
 

@@ -24,6 +24,7 @@ __all__ = [
     'extract_subsection',
     'extract_regions',
     'find_outer_region',
+    'find_bbox',
     'get_border',
     'get_planes',
     'insert_cylinder',
@@ -43,6 +44,42 @@ __all__ = [
     'ps_round',
     'subdivide',
 ]
+
+
+def find_bbox(im, order_by='axis'):
+    r"""
+    Finds the lower and upper corner surrounding the foreground in the image
+
+    Parameters
+    ----------
+    im : ndarray
+        The image containing the features around which the bounding box is sought
+    order_by : string
+        How the coords are returned.  Options are:
+
+        ========= ==================================================================
+        option    description
+        ========= ==================================================================
+        axis      The values are sorted by axes first, like
+                  ``[x_min, x_max], [y_min, y_max], [z_min, z_max]``.
+        corner    The values are sorted as lower corner first followed by upper
+                  corner, like ``[x_min, y_min, z_min], [x_max, y_max, z_max]``.
+        ========= ==================================================================
+
+    Returns
+    -------
+    bbox : list or list-of-lists
+        The corners of the bounding box around the forground of the image
+
+    """
+    # This might not be super fast, but I'm not sure of a faster way. There are
+    # a few suggestions on stackoverflow but I can't see how they'd be faster.
+    inds = np.where(im)
+    if order_by.startswith('ax'):
+        bbox = tuple([slice(min(i), max(i)+1, None) for i in inds])
+    elif order_by.startswith('corner'):
+        bbox = [[min(i) for i in inds], [max(i)+1 for i in inds]]
+    return bbox
 
 
 def isolate_object(region, i, s=None):
