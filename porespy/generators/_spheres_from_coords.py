@@ -1,5 +1,5 @@
 import numpy as np
-from porespy.tools import _insert_disks_at_points
+from porespy.tools import _insert_disks_at_points, find_bbox
 
 
 __all__ = [
@@ -7,32 +7,41 @@ __all__ = [
 ]
 
 
-def spheres_from_coords(df, voxel_size=1, maxdim=500):
+def spheres_from_coords(df, mode='contained', smooth=False):
     r"""
     Generates a sphere packing given a list of centers and radii
 
     Parameters
     ----------
     df : DataFrame or dict
-        The X, Y, Z center coordinates and radius R of each sphere in the packing
-        should be stored in their own column or key. See ``Notes`` for more
-        detail on how this should be formatted. If one of the dimensions has
-        all 0's then a 2D image is generated.
-    voxel_size : float
-        The resolution of the image to generate in terms of how many 'units'
-        in the supplied packing data correspond to the side-length of a voxel.
-    maxdim : int
-        The maximum allowable size for the largest dimension of the image.
-        This is set to 500 to ensure that the largest possible image is
-        $500^3$, which is managable on most computers. If one of the dimensions
-        is larger than this an ``Exception`` is raised.  The can happen if the
-        ``voxel_size`` is very small for instance.
+        The X, Y, Z center coordinates, and radius R of each sphere in the packing
+        should be stored in their own column or key. The units should be in voxels.
+        See ``Notes`` for more detail on how this should be formatted. If one of
+        the dimensions has all 0's then a 2D image is generated.
+    smooth : bool
+        Indicates if spheres should be smooth or have the single pixel bump on
+        each face.
+    mode : str
+        How edges are handled. Options are:
+
+        ============= ==============================================================
+        mode          description
+        ============= ==============================================================
+        'contained'   (default) All spheres are fully contained within the image,
+                      meaning the image is padded beyond extents of the given
+                      coordinates by the maximum radius of the given sphere radii
+                      to ensure they all fit.
+        'extended'    Spheres extend beyond the edge of the image. In this mode
+                      the image is only as large enough to hold the given coordinates
+                      so the spheres may extend beyond the image boundary.
+        ============= ==============================================================
 
     Returns
     -------
     spheres : ndarray
         A numpy ndarray of ``True`` values indicating the spheres and
-        ``False`` elsewhere.
+        ``False`` elsewhere. The size of the returned image will be large enough
+        to fit all the spheres plus the radius of the largest sphere.
 
     Notes
     -----
@@ -68,37 +77,52 @@ def spheres_from_coords(df, voxel_size=1, maxdim=500):
     a single pixel
 
     """
-    cols = ['X', 'Y', 'Z', 'R']
     # Convert dict to have standard column names
+    cols = ['X', 'Y', 'Z', 'R']
     if hasattr(df, 'keys'):
         for i, k in enumerate(df.keys()):
             if k.upper()[0] in cols:
                 df[k.upper()[0]] = df[k]
     else:  # Assume it's a numpy array
         import pandas as pd
-        df = pd.DataFrame(df, columns=cols[:df.ndim+1])
+        df = pd.DataFrame(df, columns=cols[:df.shape[1]])
 
     if 'R' not in df.keys():
-        df['R'] = voxel_size
+        df['R'] = np.ones_like(df['X'])
 
-    vx = voxel_size
-    x = ((df['X'] - df['X'].min() + df['R'].max())/vx).astype(int)
-    y = ((df['Y'] - df['Y'].min() + df['R'].max())/vx).astype(int)
-    z = ((df['Z'] - df['Z'].min() + df['R'].max())/vx).astype(int)
-    try:  # Add a try/except to catch files with no radius to use r=1 voxel
-        r = np.array(df['R']/vx, dtype=int)
-    except KeyError:
-        r = np.ones_like(x)
-    R = r.max()
-    shape = np.ceil([x.max()+R+1, y.max()+R+1, z.max()+R+1]).astype(int)
-    if max(shape) >= maxdim:
-        raise Exception(f'The expected image size is too large: {shape}')
+    r = np.array(df['R']).astype(int)
+    x = np.array(df['X']).astype(int)
+    y = np.array(df['Y']).astype(int)
+    z = np.array(df['Z']).astype(int)
+
+    if mode == 'contained':
+        x += r.max()
+        y += r.max()
+        z += r.max()
+        shape = np.ceil([x.max() + 1 + r.max(),
+                         y.max() + 1 + r.max(),
+                         z.max() + 1 + r.max()]).astype(int)
+        crds = np.vstack([x, y, z]).T
+    elif mode == 'extended':
+        shape = np.ceil([x.max() + 1,
+                         y.max() + 1,
+                         z.max() + 1]).astype(int)
+        crds = np.vstack([x, y, z]).T
+
+    mask = np.all(crds == crds[0, :], axis=0)
+    if np.any(mask):
+        crds[:, mask] = 0
+        shape[mask] = 1
+
     im = np.zeros(shape, dtype=bool)
     im = _insert_disks_at_points(
         im,
-        coords=np.vstack([x, y, z]),
+        coords=crds.T,
         radii=r,
         v=True,
-        smooth=False,
+        smooth=smooth,
     )
+    im = im.squeeze()
+    bbox = find_bbox(im)
+    im = im[bbox]
     return im
