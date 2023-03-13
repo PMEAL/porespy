@@ -51,3 +51,4 @@ from ._cylinder import cylindrical_plug
 from ._noise import fractal_noise
 from ._borders import *
 from ._fractals import *
+from ._spheres_from_coords import *

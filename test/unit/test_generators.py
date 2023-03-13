@@ -4,6 +4,7 @@ from numpy.testing import assert_allclose
 import scipy.ndimage as spim
 import scipy.stats as spst
 import porespy as ps
+import pandas as pd
 ps.settings.tqdm['disable'] = True
 
 
@@ -500,6 +501,40 @@ class GeneratorTest():
                                                         sites=sites,
                                                         maxiter=10)
         assert im.sum() == 21030
+
+    def test_spheres_from_coords(self):
+        df = pd.DataFrame({'X': [10, 20, 40, 40],
+                           'Y': [10, 30, 50, 10],
+                           'Z': [0, 0, 0, 0],
+                           'R': [5.0, 8.0, 17.5, 4.0]})
+        im = ps.generators.spheres_from_coords(df)
+        assert im.ndim == 2
+        # Accepts numpy arrays
+        im = ps.generators.spheres_from_coords(np.array(df))
+        assert im.ndim == 2
+        # Accepts pure dicts
+        im = ps.generators.spheres_from_coords(df.to_dict(orient='list'))
+        assert im.ndim == 2
+        df = pd.DataFrame({'X': [10, 20, 40, 40],
+                           'Y': [0, 0, 0, 0],
+                           'Z': [10, 30, 50, 10],
+                           'R': [5.0, 8.0, 17.5, 4.0]})
+        im = ps.generators.spheres_from_coords(df)
+        assert im.ndim == 2
+        # Is 2D if other axis is all 0's
+        df = pd.DataFrame({'X': [10, 20, 40, 40],
+                           'Y': [10, 30, 50, 10],
+                           'Z': [0, 0, 0, 0],
+                           'R': [5.0, 8.0, 17.5, 4.0]})
+        im = ps.generators.spheres_from_coords(df)
+        assert im.ndim == 2
+        # Is 3D
+        df = pd.DataFrame({'X': [10, 20, 40, 40],
+                           'Y': [10, 30, 50, 10],
+                           'Z': [10, 20, 30, 40],
+                           'R': [5.0, 8.0, 17.5, 4.0]})
+        im = ps.generators.spheres_from_coords(df)
+        assert im.ndim == 3
 
 
 if __name__ == '__main__':
