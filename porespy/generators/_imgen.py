@@ -1,3 +1,4 @@
+import logging
 import numpy as np
 import inspect as insp
 from edt import edt
@@ -7,13 +8,16 @@ import scipy.spatial as sptl
 import scipy.ndimage as spim
 import scipy.stats as spst
 from deprecated import deprecated
-from porespy.tools import norm_to_uniform, ps_ball, ps_disk, get_border
+from porespy.tools import norm_to_uniform, ps_ball, ps_disk, get_border, ps_round
 from porespy.tools import extract_subsection
 from porespy.tools import insert_sphere
+from porespy.tools import _insert_disk_at_points
 from porespy import settings
 from typing import List
-from loguru import logger
+
+
 tqdm = ps.tools.get_tqdm()
+logger = logging.getLogger(__name__)
 
 
 def insert_shape(im, element, center=None, corner=None, value=1, mode="overwrite"):
@@ -101,7 +105,7 @@ def insert_shape(im, element, center=None, corner=None, value=1, mode="overwrite
     return im
 
 
-@deprecated("This function has been renamed to rsa (lowercase to meet pep8")
+@deprecated("This function has been renamed to rsa (lowercase to meet pep8)")
 def RSA(*args, **kwargs):
     return rsa(*args, **kwargs)
 
@@ -110,10 +114,12 @@ def rsa(im_or_shape: np.array,
         r: int,
         volume_fraction: int = 1,
         clearance: int = 0,
+        protrusion: int = 0,
         n_max: int = 100000,
         mode: str = "contained",
         return_spheres: bool = False,
-        smooth: bool = True):
+        smooth: bool = True,
+        seed: int = None):
     r"""
     Generates a sphere or disk packing using Random Sequential Addition
 
@@ -132,11 +138,16 @@ def rsa(im_or_shape: np.array,
         spheres are added as ``True``'s, so each sphere addition increases the
         ``volume_fraction`` until the specified limit is reached.  Note that if
         ``n_max`` is reached first, then ``volume_fraction`` will not be
-        acheived.  Also, ``volume_fraction`` is not counted correctly if the
+        achieved.  Also, ``volume_fraction`` is not counted correctly if the
         ``mode`` is ``'extended'``.
     clearance : int (optional, default = 0)
         The amount of space to put between each sphere. Negative values are
         acceptable to create overlaps, so long as ``abs(clearance) < r``.
+    protrusion : int (optional, default = 0)
+        The amount by which inserted spheres are allowed to protrude outside of
+        the given background.  If set to 0 (the default) then all spheres will
+        be fully inside the region marked ``False`` in the input image. If > 0, then
+        spheres will extend into the region marked ``True`` in the input image.
     n_max : int (default is 100,000)
         The maximum number of spheres to add.  Using a low value may halt
         the addition process prior to reaching the specified
@@ -148,7 +159,7 @@ def rsa(im_or_shape: np.array,
             Spheres are all completely within the image
         'extended'
             Spheres are allowed to extend beyond the edge of the
-            image.  In this mode the volume fraction will be less that
+            image.  In this mode the volume fraction will be less than
             requested since some spheres extend beyond the image, but their
             entire volume is counted as added for computational efficiency.
 
@@ -159,6 +170,12 @@ def rsa(im_or_shape: np.array,
     smooth : bool
         Indicates whether balls should have smooth faces (``True``) or should
         include the bumps on the extremities (``False``).
+    seed : int
+        The seed to supply to the random number generators. Because this function
+        uses ``numba`` for speed, calling the normal ``numpy.random.seed(<seed>)``
+        has no effect. To get a repeatable image, the seed must be passed to the
+        function so it can be initialized the way ``numba`` requires. The default
+        is ``None``, which means each call will produce a new realization.
 
     Returns
     -------
@@ -190,49 +207,44 @@ def rsa(im_or_shape: np.array,
     to view online example.
 
     """
-    logger.debug(f"RSA: Adding spheres of size {r}")
-    if len(im_or_shape) <= 3:
+    logger.debug(f"rsa: Adding spheres of size {r}")
+    if np.array(im_or_shape).ndim < 2:
         im = np.zeros(shape=im_or_shape, dtype=bool)
+        input_im = np.copy(im)
     else:
-        im = im_or_shape
+        input_im = np.copy(im_or_shape)
+        im = np.zeros_like(im_or_shape, dtype=bool)
+    if seed is not None:  # Initialize rng so numba sees it
+        _set_seed(seed)
     im = im.astype(bool)
-    if return_spheres:
-        im_temp = np.copy(im)
+    shape_orig = im.shape  # Store original image shape, to undo padding at the end
     if n_max is None:
         n_max = np.inf
+    # Compute volume fraction info
     vf_final = volume_fraction
     vf_start = im.sum() / im.size
+    vf_template = ps_round(r, ndim=im.ndim, smooth=smooth).sum() / im.size
     logger.debug(f"Initial volume fraction: {vf_start}")
-    if im.ndim == 2:
-        template_lg = ps_disk((r + clearance) * 2)
-        template_sm = ps_disk(r, smooth=smooth)
-    else:
-        template_lg = ps_ball((r + clearance) * 2)
-        template_sm = ps_ball(r, smooth=smooth)
-    vf_template = template_sm.sum() / im.size
-    # Pad image by the radius of large template to enable insertion near edges
-    im = np.pad(im, pad_width=2 * (r + clearance), mode="edge")
-    # Depending on mode, adjust mask to remove options around edge
-    if mode == "contained":
-        border = get_border(im.shape, thickness=2 * (r + clearance),
-                            mode="faces")
-    elif mode == "extended":
-        border = get_border(im.shape, thickness=(r + clearance) + 1,
-                            mode="faces")
-    else:
-        raise Exception("Unrecognized mode: ", mode)
-    # Remove border pixels
-    im[border] = True
     # Dilate existing objects by strel to remove pixels near them
     # from consideration for sphere placement
-    logger.trace("Dilating foreground features by sphere radius")
-    dt = edt(im == 0)
-    options_im = dt >= r
+    logger.info("Dilating foreground features by sphere radius")
+    dt = edt(input_im == 0)
+    options_im = dt >= (r - protrusion)
+    # Depending on mode, adjust options_im to remove options around edge
+    if mode == "contained":
+        border = get_border(im.shape, thickness=r, mode="faces")
+        options_im[border] = False
+    elif mode == "extended":
+        im = np.pad(im, pad_width=r, mode="edge")
+        options_im = np.pad(options_im, r, mode='symmetric')
+    else:
+        raise Exception("Unrecognized mode: ", mode)
     # Begin inserting the spheres
     vf = vf_start
     free_sites = np.flatnonzero(options_im)
     i = 0
     while (vf <= vf_final) and (i < n_max) and (len(free_sites) > 0):
+        # Choose a random site from free_sites
         c, count = _make_choice(options_im, free_sites=free_sites)
         # The 100 below is arbitrary and may change performance
         if count > 100:
@@ -241,23 +253,40 @@ def rsa(im_or_shape: np.array,
             free_sites = np.flatnonzero(options_im)
         if all(np.array(c) == -1):
             break
-        s_sm = tuple([slice(x - r, x + r + 1, None) for x in c])
-        s_lg = tuple([slice(x - 2 * (r + clearance),
-                            x + 2 * (r + clearance) + 1, None) for x in c])
-        im[s_sm] += template_sm  # Add ball to image
-        options_im[s_lg][template_lg] = False  # Update extended region
+        im = _insert_disk_at_points(im=im,
+                                    coords=np.vstack(c),
+                                    r=r,
+                                    v=True,
+                                    smooth=smooth)
+        options_im = _insert_disk_at_points(im=options_im,
+                                            coords=np.vstack(c),
+                                            r=2*r + int(np.round(clearance/2)),
+                                            v=False,
+                                            smooth=smooth,
+                                            overwrite=True)
         vf += vf_template
         i += 1
-    logger.trace(f"Number of spheres inserted: {i}")
-    # Get slice into returned image to retain original size
-    s = tuple([slice(2 * (r + clearance), d - 2 * (r + clearance), None)
-               for d in im.shape])
-    im = im[s]
-    vf = im.sum() / im.size
+    logger.info(f"Number of spheres inserted: {i}")
+    im = extract_subsection(im, shape_orig)
     logger.debug("Final volume fraction:", vf)
-    if return_spheres:
-        im = im * (~im_temp)
+    if not return_spheres:
+        im = im + input_im
     return im
+
+
+@njit
+def _set_seed(a):
+    np.random.seed(a)
+
+
+@njit
+def _get_rand_float(*args):
+    return np.random.rand(*args)
+
+
+@njit
+def _get_rand_int(*args):
+    return np.random.randint(*args)
 
 
 @njit
@@ -299,7 +328,7 @@ def _make_choice(options_im, free_sites):
             if count >= maxiter:
                 coords = [-1, -1]
                 break
-            ind = np.random.randint(0, upper_limit)
+            ind = _get_rand_int(0, upper_limit)
             # This numpy function is not supported by numba yet
             # c1, c2 = np.unravel_index(free_sites[ind], options_im.shape)
             # So using manual unraveling
@@ -314,7 +343,7 @@ def _make_choice(options_im, free_sites):
             if count >= maxiter:
                 coords = [-1, -1, -1]
                 break
-            ind = np.random.randint(0, upper_limit)
+            ind = _get_rand_int(0, upper_limit)
             # This numpy function is not supported by numba yet
             # c1, c2, c3 = np.unravel_index(free_sites[ind], options_im.shape)
             # So using manual unraveling
@@ -477,7 +506,7 @@ def voronoi_edges(shape: List[int], ncells: int, r: int = 0,
     to view online example.
 
     """
-    logger.trace(f"Generating {ncells} cells")
+    logger.info(f"Generating {ncells} cells")
     shape = np.array(shape)
     if np.size(shape) == 1:
         shape = np.full((3,), int(shape))
@@ -1116,7 +1145,9 @@ def line_segment(X0, X1):
     X0 = np.around(X0).astype(int)
     X1 = np.around(X1).astype(int)
     if len(X0) == 3:
-        L = np.amax(np.absolute([[X1[0] - X0[0]], [X1[1] - X0[1]], [X1[2] - X0[2]]])) + 1
+        L = np.amax(
+            np.absolute([[X1[0] - X0[0]], [X1[1] - X0[1]], [X1[2] - X0[2]]])
+        ) + 1
         x = np.rint(np.linspace(X0[0], X1[0], L)).astype(int)
         y = np.rint(np.linspace(X0[1], X1[1], L)).astype(int)
         z = np.rint(np.linspace(X0[2], X1[2], L)).astype(int)

@@ -1,9 +1,9 @@
+import logging
 import numpy as np
 import scipy.ndimage as spim
 from scipy.special import erfc
 from skimage.segmentation import relabel_sequential
 from edt import edt
-from loguru import logger
 from skimage.morphology import ball, disk
 from ._utils import Results
 from ._unpad import unpad
@@ -11,6 +11,9 @@ try:
     from skimage.measure import marching_cubes
 except ImportError:
     from skimage.measure import marching_cubes_lewiner as marching_cubes
+
+
+logger = logging.getLogger(__name__)
 
 
 __all__ = [

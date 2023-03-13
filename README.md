@@ -60,7 +60,7 @@ necessary.
 
 # Installation
 
-For detailed and up to date installation instructions, [see here](https://porespy.org/user_guide/installation.html)
+For detailed and up to date installation instructions, [see here](https://porespy.org/installation.html)
 
 # Contributing
 

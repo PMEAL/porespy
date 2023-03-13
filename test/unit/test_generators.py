@@ -212,75 +212,82 @@ class GeneratorTest():
         im = ps.generators.blobs(shape=[101])
         assert len(list(im.shape)) == 3
 
-    def test_RSA_2d_contained(self):
+    def test_rsa_2d_contained(self):
         im = np.zeros([100, 100], dtype=int)
-        im = ps.generators.RSA(im, r=10, volume_fraction=0.5, mode='contained')
+        im = ps.generators.rsa(im, r=10, volume_fraction=0.5, mode='contained')
         im = np.pad(im, pad_width=1, mode='constant', constant_values=False)
         lt = ps.filters.local_thickness(im)
         assert len(np.unique(lt)) == 2
 
-    def test_RSA_2d_extended(self):
+    def test_rsa_2d_extended(self):
         im = np.zeros([100, 100], dtype=int)
-        im = ps.generators.RSA(im, r=10, volume_fraction=0.5, mode='extended')
+        im = ps.generators.rsa(im, r=10, volume_fraction=0.5, mode='extended')
         im = np.pad(im, pad_width=1, mode='constant', constant_values=False)
         lt = ps.filters.local_thickness(im)
         assert len(np.unique(lt)) > 2
 
-    def test_RSA_3d_contained(self):
+    def test_rsa_2d_extended_with_clearance(self):
+        im = np.zeros([100, 100], dtype=int)
+        im = ps.generators.rsa(im, r=10,
+                               volume_fraction=0.5,
+                               clearance=2,
+                               mode='extended')
+        im = np.pad(im, pad_width=1, mode='constant', constant_values=False)
+        lt = ps.filters.local_thickness(im)
+        assert len(np.unique(lt)) > 2
+
+    def test_rsa_3d_contained(self):
         im = np.zeros([100, 100, 100], dtype=int)
-        im = ps.generators.RSA(im, r=10, volume_fraction=0.5, mode='contained')
+        im = ps.generators.rsa(im, r=10, volume_fraction=0.5, mode='contained')
         lt = ps.filters.local_thickness(im, sizes=[10, 9, 8, 7, 6, 5])
         assert len(np.unique(lt)) == 2
 
-    def test_RSA_3d_extended(self):
+    def test_rsa_3d_extended(self):
         im = np.zeros([100, 100, 100], dtype=int)
-        im = ps.generators.RSA(im, r=10, volume_fraction=0.5, mode='extended')
+        im = ps.generators.rsa(im, r=10, volume_fraction=0.5, mode='extended')
         im = np.pad(im, pad_width=1, mode='constant', constant_values=False)
         lt = ps.filters.local_thickness(im, sizes=[10, 9, 8, 7, 6, 5])
         assert len(np.unique(lt)) > 2
 
-    def test_RSA_2d_seqential_additions(self):
+    def test_rsa_2d_seqential_additions(self):
         im = np.zeros([100, 100], dtype=int)
-        im = ps.generators.RSA(im, r=10)
+        im = ps.generators.rsa(im, r=10)
         phi1 = ps.metrics.porosity(im)
-        im = ps.generators.RSA(im, r=5)
+        im = ps.generators.rsa(im, r=5)
         phi2 = ps.metrics.porosity(im)
         assert phi2 > phi1
 
-    def test_RSA_preexisting_structure(self):
+    def test_rsa_preexisting_structure(self):
         im = ps.generators.blobs(shape=[200, 200, 200])
         phi1 = im.sum()/im.size
-        im = ps.generators.RSA(im, r=8, n_max=200, mode='contained')
+        im = ps.generators.rsa(im, r=8, n_max=200, mode='contained')
         phi2 = im.sum()/im.size
         assert phi2 > phi1
-        # Ensure that 3 passes through RSA fills up image
-        im = ps.generators.RSA(im, r=8, n_max=200, mode='contained')
-        im = ps.generators.RSA(im, r=8, n_max=200, mode='contained')
-        im = ps.generators.RSA(im, r=8, n_max=200, mode='contained')
+        # Ensure that 3 passes through rsa fills up image
+        im = ps.generators.rsa(im, r=8, n_max=200, mode='contained')
+        im = ps.generators.rsa(im, r=8, n_max=200, mode='contained')
+        im = ps.generators.rsa(im, r=8, n_max=200, mode='contained')
         phi1 = im.sum()/im.size
-        im = ps.generators.RSA(im, r=8, n_max=200, mode='contained')
+        im = ps.generators.rsa(im, r=8, n_max=200, mode='contained')
         phi2 = im.sum()/im.size
         assert phi2 == phi1
 
-    def test_RSA_shape(self):
-        rsa = ps.generators.RSA(im_or_shape=[200, 200], r=10)
+    def test_rsa_shape(self):
+        rsa = ps.generators.rsa(im_or_shape=[200, 200], r=10)
         assert np.all(rsa.shape == (200, 200))
 
-    def test_RSA_clearance_large_spheres(self):
-        np.random.seed(0)
-        rsa0 = ps.generators.RSA(im_or_shape=[200, 200], r=9, clearance=0)
-        np.random.seed(0)
-        rsa2p = ps.generators.RSA(im_or_shape=[200, 200], r=9, clearance=2)
+    def test_rsa_clearance_large_spheres(self):
+        rsa0 = ps.generators.rsa(im_or_shape=[200, 200], r=9, clearance=0, seed=0)
+        rsa2p = ps.generators.rsa(im_or_shape=[200, 200], r=9, clearance=3, seed=0)
         assert rsa0.sum() > rsa2p.sum()
-        np.random.seed(0)
-        rsa1n = ps.generators.RSA(im_or_shape=[200, 200], r=9, clearance=-1)
+        rsa1n = ps.generators.rsa(im_or_shape=[200, 200], r=9, clearance=-3, seed=0)
         assert rsa0.sum() < rsa1n.sum()
 
-    def test_RSA_clearance_small_spheres(self):
+    def test_rsa_clearance_small_spheres(self):
         np.random.seed(0)
-        rsa0 = ps.generators.RSA(im_or_shape=[200, 200], r=1, clearance=0)
+        rsa0 = ps.generators.rsa(im_or_shape=[200, 200], r=1, clearance=0)
         np.random.seed(0)
-        rsa2p = ps.generators.RSA(im_or_shape=[200, 200], r=1, clearance=2)
+        rsa2p = ps.generators.rsa(im_or_shape=[200, 200], r=1, clearance=2)
         assert rsa0.sum() > rsa2p.sum()
 
     def test_line_segment(self):
@@ -412,6 +419,14 @@ class GeneratorTest():
         # Ensure the exact same image is produced each time
         im2D = ps.generators.sierpinski_foam(4, 2, 2)
         np.testing.assert_allclose(im2D.sum()/im2D.size, 0.7901234567901234)
+
+    def test_sierpinski_foam_2(self):
+        im2D = ps.generators.sierpinski_foam2(shape=[100, 100], n=3)
+        assert np.all(im2D.shape == (100, 100))
+        im3D = ps.generators.sierpinski_foam2(shape=[100, 100, 100], n=3)
+        assert np.all(im3D.shape == (100, 100, 100))
+        im2Dn5 = ps.generators.sierpinski_foam2(shape=[100, 100], n=5)
+        assert im2D.sum() > im2Dn5.sum()
 
     def test_border_thickness_1(self):
         s = (10, 10)

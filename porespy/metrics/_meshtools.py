@@ -1,14 +1,16 @@
+import logging
 import numpy as np
 import scipy.ndimage as spim
-from trimesh import Trimesh
 from porespy.tools import extend_slice, ps_round
 from porespy.tools import _check_for_singleton_axes, Results
 from porespy.tools import mesh_region
 from skimage import measure
 from porespy.tools import get_tqdm
-from loguru import logger
 from porespy import settings
+
+
 tqdm = get_tqdm()
+logger = logging.getLogger(__name__)
 
 
 def region_volumes(regions, mode='marching_cubes'):
@@ -79,6 +81,11 @@ def mesh_volume(region):
     to view online example.
 
     """
+    try:
+        from trimesh import Trimesh
+    except ModuleNotFoundError:
+        msg = 'The trimesh package can be installed with pip install trimesh'
+        raise ModuleNotFoundError(msg)
     mc = mesh_region(region > 0)
     m = Trimesh(vertices=mc.verts, faces=mc.faces, vertex_normals=mc.norm)
     if m.is_watertight:
@@ -124,7 +131,7 @@ def region_surface_areas(regions, voxel_size=1, strel=None):
     to view online example.
 
     """
-    logger.trace('Finding surface area of each region')
+    logger.info('Finding surface area of each region')
     im = regions
     if strel is None:
         strel = ps_round(1, im.ndim, smooth=False)
@@ -236,7 +243,7 @@ def region_interface_areas(regions, areas, voxel_size=1, strel=None):
     to view online example.
 
     """
-    logger.trace('Finding interfacial areas between each region')
+    logger.info('Finding interfacial areas between each region')
     im = regions
     _check_for_singleton_axes(im)
     ball = ps_round(1, im.ndim, smooth=False)

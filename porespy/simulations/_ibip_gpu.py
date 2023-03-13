@@ -1,9 +1,12 @@
+import logging
 import numpy as np
-from loguru import logger
 from edt import edt
 from porespy.tools import get_tqdm, get_border
 from porespy.tools import Results
+
+
 tqdm = get_tqdm()
+logger = logging.getLogger(__name__)
 
 
 def ibip_gpu(im, dt=None, inlets=None, maxiter=10000):  # pragma: no cover

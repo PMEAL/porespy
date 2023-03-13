@@ -64,10 +64,13 @@ from ._funcs import chunked_func
 from ._funcs import distance_transform_lin
 from ._funcs import fill_blind_pores
 from ._funcs import find_disconnected_voxels
+from ._funcs import find_trapped_regions
 from ._funcs import find_dt_artifacts
 from ._funcs import flood
 from ._funcs import flood_func
 from ._funcs import hold_peaks
+from ._funcs import ibip
+from ._funcs import ibip_gpu
 from ._funcs import local_thickness
 from ._funcs import nphase_border
 from ._funcs import porosimetry
@@ -90,6 +93,3 @@ from ._size_seq_satn import *
 from ._nlmeans import nl_means_layered
 from ._fftmorphology import fftmorphology
 from . import imagej
-from ._ibip import ibip
-from ._ibip import find_trapped_regions
-from ._ibip_gpu import ibip_gpu
