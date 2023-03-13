@@ -1,13 +1,55 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+from porespy.tools import get_tqdm
 
 
 __all__ = [
     'bar',
     'imshow',
     'show_mesh',
+    'show_panels',
 ]
+
+
+tqdm = get_tqdm()
+
+
+def show_panels(im, rc=[3, 3], axis=0):
+    r"""
+    Show slices of a 3D image as a 2D array of panels.
+
+    Parameters
+    ----------
+    im : ndarray
+        The 3D image to visualize
+    rc : list if ints
+        The number of rows and columns to create
+    axis : int
+        The axis along which to create the slices
+
+    Returns
+    -------
+    fig, ax : Matplotlib figure and axis handles
+    """
+    from porespy.visualization import prep_for_imshow
+    i, j = rc
+    im = np.swapaxes(im, axis, 2)
+    slices = np.linspace(0, im.shape[2], i*j, endpoint=False).astype(int)
+    fig, ax = plt.subplots(i, j)
+    s = 0
+    for row in range(i):
+        for col in range(j):
+            temp = prep_for_imshow(im[..., slices[s]])
+            ax[row][col].imshow(**temp)
+            ax[row][col].text(
+                0, 1,
+                f"Slice {slices[s]}",
+                # ha="center", va="center",
+                bbox=dict(boxstyle="square,pad=0.3",
+                          fc="white", ec="white", lw=1, alpha=0.75))
+            s += 1
+    return fig, ax
 
 
 def bar(results, h='pdf', **kwargs):  # pragma: no cover
