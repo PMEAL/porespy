@@ -6,6 +6,7 @@ from porespy.tools import ps_rect, ps_round, extend_slice, get_tqdm, Results
 from porespy.tools import _insert_disks_at_points
 from porespy.generators import lattice_spheres, line_segment
 from porespy import settings
+import scipy.stats as spst
 
 
 __all__ = [
@@ -33,8 +34,9 @@ def ex(r, t=0):
 def rectangular_pillars(
     shape=[5, 5],
     spacing=30,
+    dist=None,
     Rmin=5,
-    Rmax=15,
+    Rmax=None,
     lattice='sc',
     return_edges=False,
     return_centers=False
@@ -48,11 +50,26 @@ def rectangular_pillars(
         The number of pillars in the x and y directions.  The size of the of the
         image will be dictated by the ``spacing`` argument.
     spacing : int
-        The number of pixels between neighboring pores centers.
+        The distance between neighboring pores centers in pixels. Note that if a
+        triangular lattice is used the distance is diagonal, meaning the number
+        of pixels will be less than the length by $\sqrt{2}$.
+    dist : scipy.stats object
+        A "frozen" stats object which can be called to produce random variates. For
+        instance, ``dist = sp.stats.norm(loc=50, scale=10))`` would return values
+        from a distribution with a mean  of 50 pixels and a standard deviation of
+        10 pixels. These values are obtained by calling ``dist.rvs()``. To validate
+        the distribution use ``plt.hist(dist.rvs(10000))``, which plots a histogram
+        of 10,000 values sampled from ``dist``. If ``dist`` is not provided then a
+        uniform distribution between ``Rmin`` and ``Rmax`` is used.
     Rmin : int
-        The minimum size of the openings between pillars in pixels
+        The minimum size of the openings between pillars in pixels. This is used as
+        a lower limit on the sizes provided by the chosen distribution, ``f``.  The
+        default is 5.
     Rmax : int
-        The maximum size of the openings between pillars in pixels
+        The maximum size of the openings between pillars in pixels.  This is used
+        as an upper limit on the sizes provided by the chosen distribution.  If
+        not provided then ``spacing/2`` is used to ensure no pillars are
+        over-written.
     lattice : str
         The type of lattice to use. Options are:
 
@@ -69,11 +86,11 @@ def rectangular_pillars(
         ======== ===================================================================
 
     return_edges : boolean, optional, default is ``False``
-        If ``True`` then an image of of the edges between each pore center is also
-        returned along with the micromodel
+        If ``True`` an image of the edges between each pore center is also returned
+        along with the micromodel
     return_centers : boolean, optional, default is ``False``
-        If ``True`` then an image with marks located at each pore center is also
-        return along with the micromodel
+        If ``True`` an image with markers located at each pore center is also
+        returned along with the micromodel
 
     Returns
     -------
@@ -101,27 +118,43 @@ def rectangular_pillars(
         <https://porespy.org/examples/generators/reference/rectangular_pillars.html>`_
         to view online example.
     """
+    # Parse the various input arguments
     if lattice.startswith('s'):
+        # This strel is used to dilate edges of lattice
         strel = cross
+        if Rmax is None:
+            Rmax = spacing/2
         Rmax = Rmax + 1
         lattice = 'sc'  # In case user specified s, sq or square, etc.
     elif lattice.startswith('t'):
+        # This strel is used to dilate edges of lattice
         strel = ex
         shape = np.array(shape) - 1
+        if Rmax is None:
+            Rmax = spacing/2 - 1
         Rmin = int(Rmin*np.sin(np.deg2rad(45)))
         Rmax = int((Rmax-2)*np.sin(np.deg2rad(45)))
+        # Spacing for lattice_spheres function used below is based on horiztonal
+        # distance between lattice cells, which is the hypotenuse of the diagonal
+        # distance between pillars in the final micromodel, so adjust accordingly
+        spacing = int(np.sqrt(spacing**2 + spacing**2))
         lattice = 'tri'  # In case user specified t, or triangle, etc.
     else:
         raise Exception(f"Unrecognized lattice type {lattice}")
+    # Assert Rmin of 1 pixel
+    Rmin = max(1, Rmin)
+    # Generate base points which define pore centers
     centers = ~lattice_spheres(
         shape=[shape[0]*spacing+1, shape[1]*spacing+1],
         spacing=spacing,
         r=1,
         offset=0,
         lattice=lattice)
-    Rmin = max(1, Rmin)
+    # Retrieve indices of center points
     crds = np.where(centers)
+    # Perform tessellation of center points
     tri = sptl.Delaunay(np.vstack(crds).T)
+    # Add edges to image connecting each center point to make the requested lattice
     edges = np.zeros_like(centers, dtype=bool)
     msg = 'Adding edges of triangulation to image'
     for s in tqdm(tri.simplices, msg, **settings.tqdm):
@@ -134,25 +167,41 @@ def rectangular_pillars(
                     or ((lattice == 'sc') and (L <= spacing)):
                 crds = line_segment(P1, P2)
                 edges[tuple(crds)] = True
+    # Remove intersections from lattice so edges are isolated clusters
     temp = spim.binary_dilation(centers, structure=ps_rect(w=1, ndim=2))
     edges = edges*~temp
+    # Label each edge so they can be processed individually
     if lattice == 'sc':
         labels, N = spim.label(edges, structure=ps_round(r=1, ndim=2, smooth=False))
     else:
         labels, N = spim.label(edges, structure=ps_rect(w=3, ndim=2))
+    # Obtain "slice" objects for each edge
     slices = spim.find_objects(labels)
+    # Dilate each edge by some random amount, chosen from given distribution
     throats = np.zeros_like(edges, dtype=int)
     msg = 'Dilating edges to random widths'
+    if dist is None:  # If user did not provide a distribution, use a uniform one
+        dist = spst.uniform(loc=Rmin, scale=Rmax)
     for i, s in enumerate(tqdm(slices, msg, **settings.tqdm)):
-        r = np.random.randint(Rmin, Rmax)
+        # Choose a random size, repeating until it is between Rmin and Rmax
+        r = np.inf
+        while (r > Rmax) or (r <= Rmin):
+            r = np.around(dist.ppf(q=np.random.rand()), decimals=0).astype(int)
+        if lattice == 'tri':  # Convert spacing to number of pixels
+            r = int(r*np.sin(np.deg2rad(45)))
+        # Isolate edge in s small subregion of image
         s2 = extend_slice(s, throats.shape, pad=2*r+1)
         mask = labels[s2] == (i + 1)
+        # Apply dilation to subimage
         t = spim.binary_dilation(mask, structure=strel(r=r, t=1))
+        # Insert subimage into main image
         throats[s2] += t
+    # Generate requested images and return
     micromodel = throats > 0
     if (not return_edges) and (not return_centers):
         return micromodel
     else:
+        # If multiple images are requested, attach them to a Results object
         ims = Results()
         ims.im = micromodel
         if return_edges:
@@ -235,9 +284,31 @@ if __name__ == '__main__':
     import porespy as ps
     import matplotlib.pyplot as plt
 
-    im = ~ps.generators.lattice_spheres([1501, 1501], r=1, offset=0, spacing=100)
-    im = im.astype(int)
-    inds = np.where(im)
-    im[inds] = np.random.randint(2, 50, len(inds[0]))
-    im = points_to_spheres(im)
-    plt.imshow(im)
+    # im = ~ps.generators.lattice_spheres([1501, 1501], r=1, offset=0, spacing=100)
+    # im = im.astype(int)
+    # inds = np.where(im)
+    # im[inds] = np.random.randint(2, 50, len(inds[0]))
+    # im = points_to_spheres(im)
+    # plt.imshow(im)
+
+    f = spst.norm(loc=47, scale=16.8)
+    # f = spst.lognorm(loc=np.log10(47.0), s=np.log10(16.8))
+    # Inspect the distribution
+    if 0:
+        plt.hist(f.rvs(10000))
+
+    im, edges, centers = \
+        ps.generators.rectangular_pillars(
+            shape=[15, 30],
+            spacing=137,
+            dist=f,
+            Rmin=1,
+            Rmax=None,
+            lattice='tri',
+            return_edges=True,
+            return_centers=True,
+        )
+    fig, ax = plt.subplots()
+    # ax.imshow(im + edges*1.0 + centers*2.0, interpolation='none')
+    ax.imshow(im, interpolation='none')
+    ax.axis(False);
