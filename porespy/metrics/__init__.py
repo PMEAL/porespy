@@ -42,5 +42,4 @@ but a few functions can be applied directly to the binary image.
 
 from ._regionprops import *
 from ._funcs import *
-from ._fractal_dims import boxcount
 from ._meshtools import *
