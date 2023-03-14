@@ -190,12 +190,10 @@
                 
   <h1>Source code for porespy.tools._utils</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">importlib</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
-<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
 <span class="kn">import</span> <span class="nn">psutil</span>
 
 
@@ -224,7 +222,7 @@
 
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">Settings</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A dataclass for use at the module level to store settings.  This class</span>
 <span class="sd">    is defined as a Singleton so now matter how or where it gets</span>
 <span class="sd">    instantiated the same object is returned, containing all existing</span>
@@ -335,7 +333,7 @@
 
 
 <div class="viewcode-block" id="get_tqdm"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.get_tqdm.html#porespy.tools.get_tqdm">[docs]</a><span class="k">def</span> <span class="nf">get_tqdm</span><span class="p">():</span>  <span class="c1"># pragma: no cover</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Fetches a version of ``tqdm`` function that depends on the environment.</span>
 
 <span class="sd">    Either text-based for the IPython console or gui-based for Jupyter</span>
@@ -355,7 +353,7 @@
 
 
 <div class="viewcode-block" id="show_docstring"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.show_docstring.html#porespy.tools.show_docstring">[docs]</a><span class="k">def</span> <span class="nf">show_docstring</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Fetches the docstring for a function and returns it in markdown format.</span>
 
 <span class="sd">    Useful for printing in a Jupyter notebook.</span>
@@ -383,7 +381,7 @@
 
 
 <div class="viewcode-block" id="sanitize_filename"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.sanitize_filename.html#porespy.tools.sanitize_filename">[docs]</a><span class="k">def</span> <span class="nf">sanitize_filename</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">ext</span><span class="p">,</span> <span class="n">exclude_ext</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns a sanitized string in the form of name.extension</span>
 
 <span class="sd">    Parameters</span>
@@ -413,7 +411,7 @@
 
 
 <div class="viewcode-block" id="Results"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.tools.Results.html#porespy.tools.Results">[docs]</a><span class="k">class</span> <span class="nc">Results</span><span class="p">:</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A minimal class for use when returning multiple values from a function</span>
 
 <span class="sd">    This class supports dict-like assignment and retrieval</span>

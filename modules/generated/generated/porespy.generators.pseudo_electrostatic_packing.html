@@ -180,8 +180,13 @@
   </label>
   <ul class="current">
    <li class="toctree-l2">
-    <a class="reference internal" href="porespy.generators.RSA.html">
-     RSA
+    <a class="reference internal" href="porespy.generators.rsa.html">
+     rsa
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.generators.random_spheres.html">
+     random_spheres
     </a>
    </li>
    <li class="toctree-l2">
@@ -1048,7 +1053,7 @@
 <h1>pseudo_electrostatic_packing<a class="headerlink" href="#pseudo-electrostatic-packing" title="Permalink to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="porespy.generators.pseudo_electrostatic_packing">
-<span class="sig-name descname"><span class="pre">pseudo_electrostatic_packing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sites</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clearance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">protrusion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edges</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'extended'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxiter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/generators/_pseudo_packings.html#pseudo_electrostatic_packing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.generators.pseudo_electrostatic_packing" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">pseudo_electrostatic_packing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sites</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clearance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">protrusion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edges</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'extended'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxiter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/generators/_pseudo_packings.html#pseudo_electrostatic_packing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.generators.pseudo_electrostatic_packing" title="Permalink to this definition">#</a></dt>
 <dd><p>Iterativley inserts spheres as close to the given sites as possible.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1063,17 +1068,31 @@ If this is not given then the peaks in the distance transform are used.</p></li>
 acceptable to create overlaps, but <code class="docutils literal notranslate"><span class="pre">abs(clearance)</span> <span class="pre">&lt;</span> <span class="pre">r</span></code>.</p></li>
 <li><p><strong>protrusion</strong> (<em>int</em><em> (</em><em>optional</em><em>, </em><em>default=0</em><em>)</em>) – The amount that spheres are allowed to protrude beyond the active phase.</p></li>
 <li><p><strong>maxiter</strong> (<em>int</em><em> (</em><em>optional</em><em>, </em><em>default=1000</em><em>)</em>) – The maximum number of spheres to insert.</p></li>
-<li><p><strong>edges</strong> (<em>string</em><em> (</em><em>default is 'contained'</em><em>)</em>) – <p>Controls how the edges of the image are handled.  Options are:</p>
-<dl class="simple">
-<dt>’contained’</dt><dd><p>Spheres are all completely within the image</p>
-</dd>
-<dt>’extended’</dt><dd><p>Spheres are allowed to extend beyond the edge of the
+<li><p><strong>edges</strong> (<em>string</em><em> (</em><em>default is 'contained'</em><em>)</em>) – <p>Controls how spheres at the edges of the image are handled.  Options are:</p>
+<table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>edges</p></th>
+<th class="head"><p>description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>’contained’</p></td>
+<td><p>Spheres are all completely within the image</p></td>
+</tr>
+<tr class="row-odd"><td><p>’extended’</p></td>
+<td><p>Spheres are allowed to extend beyond the edge of the
 image.  In this mode the volume fraction will be less that
 requested since some spheres extend beyond the image, but their
-entire volume is counted as added for computational efficiency.</p>
-</dd>
-</dl>
+entire volume is counted as added for computational efficiency.</p></td>
+</tr>
+</tbody>
+</table>
 </p></li>
+<li><p><strong>seed</strong> (int, optional, default = <cite>None</cite>) – The seed to supply to the random number generator. Because this function
+uses <code class="docutils literal notranslate"><span class="pre">numba</span></code> for speed, calling the normal <code class="docutils literal notranslate"><span class="pre">numpy.random.seed(&lt;seed&gt;)</span></code>
+has no effect. To get a repeatable image, the seed must be passed to the
+function so it can be initialized the way <code class="docutils literal notranslate"><span class="pre">numba</span></code> requires. The default
+is <code class="docutils literal notranslate"><span class="pre">None</span></code>, which means each call will produce a new realization.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

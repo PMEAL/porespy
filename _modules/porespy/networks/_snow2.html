@@ -210,7 +210,7 @@
           <span class="n">r_max</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
           <span class="n">peaks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
           <span class="n">parallelization</span><span class="o">=</span><span class="p">{},):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Applies the SNOW algorithm to each phase indicated in ``phases``.</span>
 
 <span class="sd">    This function is a combination of ``snow`` [1]_, ``snow_dual`` [2]_,</span>
@@ -399,7 +399,7 @@
 
 
 <span class="k">def</span> <span class="nf">_parse_phase_alias</span><span class="p">(</span><span class="n">alias</span><span class="p">,</span> <span class="n">phases</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">alias</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">alias</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;phase&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">phases</span><span class="o">.</span><span class="n">max</span><span class="p">())}</span>
@@ -410,7 +410,7 @@
 
 
 <span class="k">def</span> <span class="nf">_parse_pad_width</span><span class="p">(</span><span class="n">pad_width</span><span class="p">,</span> <span class="n">shape</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">ndim</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
     <span class="n">pad_width</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pad_width</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">))</span>

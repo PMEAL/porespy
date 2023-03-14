@@ -180,8 +180,13 @@
   </label>
   <ul>
    <li class="toctree-l2">
-    <a class="reference internal" href="porespy.generators.RSA.html">
-     RSA
+    <a class="reference internal" href="porespy.generators.rsa.html">
+     rsa
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.generators.random_spheres.html">
+     random_spheres
     </a>
    </li>
    <li class="toctree-l2">
@@ -1059,6 +1064,12 @@ are exceptions they will be raised instead of returned.</p>
 <li><p><cite>return_value</cite>: The value returned when the mock is called. By default
 this is a new Mock (created on first access). See the
 <cite>return_value</cite> attribute.</p></li>
+<li><p><cite>unsafe</cite>: By default, accessing any attribute whose name starts with
+<em>assert</em>, <em>assret</em>, <em>asert</em>, <em>aseert</em>, or <em>assrt</em> raises an AttributeError.
+Additionally, an AttributeError is raised when accessing
+attributes that match the name of an assertion method without the prefix
+<cite>assert_</cite>, e.g. accessing <cite>called_once</cite> instead of <cite>assert_called_once</cite>.
+Passing <cite>unsafe=True</cite> will allow access to these attributes.</p></li>
 <li><p><cite>wraps</cite>: Item for the mock object to wrap. If <cite>wraps</cite> is not None then
 calling the Mock will pass the call through to the wrapped object
 (returning the real result). Attribute access on the mock will return a

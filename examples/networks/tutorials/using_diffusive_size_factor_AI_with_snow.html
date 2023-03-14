@@ -222,6 +222,11 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="../../generators/tutorials/generate_spheres_packings.html">
+       Generating Sphere Packings from Digital Rocks Portal
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="../../generators/tutorials/making_blobs.html">
        Making blobs
       </a>
@@ -387,6 +392,24 @@
        <code class="docutils literal notranslate">
         <span class="pre">
          sierpinski_foam
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../generators/reference/sierpinski_foam2.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         sierpinski_foam2
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../generators/reference/spheres_from_coords.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         spheres_from_coords
         </span>
        </code>
       </a>
@@ -1534,6 +1557,15 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="../../visualization/reference/show_panels.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         show_panels
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="../../visualization/reference/show_planes.html">
        <code class="docutils literal notranslate">
         <span class="pre">
@@ -1577,6 +1609,11 @@
  <li class="toctree-l1">
   <a class="reference internal" href="../../generators/tutorials/cylinders.html">
    Generating fibrous mats
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../generators/tutorials/generate_spheres_packings.html">
+   Generating Sphere Packings from Digital Rocks Portal
   </a>
  </li>
  <li class="toctree-l1">
@@ -1735,6 +1772,24 @@
    <code class="docutils literal notranslate">
     <span class="pre">
      sierpinski_foam
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../generators/reference/sierpinski_foam2.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     sierpinski_foam2
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../generators/reference/spheres_from_coords.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     spheres_from_coords
     </span>
    </code>
   </a>
@@ -2710,6 +2765,15 @@
   </a>
  </li>
  <li class="toctree-l1">
+  <a class="reference internal" href="../../visualization/reference/show_panels.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     show_panels
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="../../visualization/reference/show_planes.html">
    <code class="docutils literal notranslate">
     <span class="pre">
@@ -2834,9 +2898,9 @@
             <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">old_stdout</span>
 
 <span class="k">with</span> <span class="n">suppress_stdout</span><span class="p">():</span>
-    <span class="o">!</span>pip install -q tensorflow scikit-learn
+    <span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>-q<span class="w"> </span>tensorflow<span class="w"> </span>scikit-learn
     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s1">&#39;sf-model-lib&#39;</span><span class="p">):</span>
-        <span class="o">!</span>git clone https://github.com/PMEAL/sf-model-lib
+        <span class="o">!</span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/PMEAL/sf-model-lib
 
 <span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
 <span class="kn">import</span> <span class="nn">sklearn</span>

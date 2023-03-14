@@ -209,7 +209,7 @@
 
 
 <div class="viewcode-block" id="representative_elementary_volume"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.metrics.representative_elementary_volume.html#porespy.metrics.representative_elementary_volume">[docs]</a><span class="k">def</span> <span class="nf">representative_elementary_volume</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">npoints</span><span class="o">=</span><span class="mi">1000</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates the porosity of an image as a function subdomain size.</span>
 
 <span class="sd">    This function extracts a specified number of subdomains of random size,</span>
@@ -283,7 +283,7 @@
 
 
 <div class="viewcode-block" id="porosity"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.metrics.porosity.html#porespy.metrics.porosity">[docs]</a><span class="k">def</span> <span class="nf">porosity</span><span class="p">(</span><span class="n">im</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates the porosity of an image assuming 1&#39;s are void space and 0&#39;s</span>
 <span class="sd">    are solid phase.</span>
 
@@ -333,7 +333,7 @@
 
 
 <div class="viewcode-block" id="porosity_profile"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.metrics.porosity_profile.html#porespy.metrics.porosity_profile">[docs]</a><span class="k">def</span> <span class="nf">porosity_profile</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes the porosity profile along the specified axis</span>
 
 <span class="sd">    Parameters</span>
@@ -368,7 +368,7 @@
 
 
 <div class="viewcode-block" id="radial_density_distribution"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.metrics.radial_density_distribution.html#porespy.metrics.radial_density_distribution">[docs]</a><span class="k">def</span> <span class="nf">radial_density_distribution</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">voxel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes radial density function by analyzing the histogram of voxel</span>
 <span class="sd">    values in the distance transform.  This function is defined by</span>
 <span class="sd">    Torquato [1] as:</span>
@@ -457,7 +457,7 @@
     <span class="n">h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">h</span> <span class="o">=</span> <span class="n">_parse_histogram</span><span class="p">(</span><span class="n">h</span><span class="o">=</span><span class="n">h</span><span class="p">,</span> <span class="n">voxel_size</span><span class="o">=</span><span class="n">voxel_size</span><span class="p">)</span>
     <span class="n">rdf</span> <span class="o">=</span> <span class="n">Results</span><span class="p">()</span>
-    <span class="n">rdf</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">log</span><span class="o">*</span><span class="s1">&#39;Log&#39;</span> <span class="o">+</span> <span class="s1">&#39;R&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">bin_centers</span>
+    <span class="n">rdf</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">log</span><span class="o">*</span><span class="s1">&#39;Log&#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;R&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">bin_centers</span>
     <span class="n">rdf</span><span class="o">.</span><span class="n">pdf</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">pdf</span>
     <span class="n">rdf</span><span class="o">.</span><span class="n">cdf</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">cdf</span>
     <span class="n">rdf</span><span class="o">.</span><span class="n">relfreq</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">relfreq</span>
@@ -468,7 +468,7 @@
 
 
 <div class="viewcode-block" id="lineal_path_distribution"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.metrics.lineal_path_distribution.html#porespy.metrics.lineal_path_distribution">[docs]</a><span class="k">def</span> <span class="nf">lineal_path_distribution</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">voxel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Determines the probability that a point lies within a certain distance</span>
 <span class="sd">    of the opposite phase *along a specified direction*</span>
 
@@ -539,7 +539,7 @@
     <span class="n">h</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
     <span class="n">h</span> <span class="o">=</span> <span class="n">_parse_histogram</span><span class="p">(</span><span class="n">h</span><span class="o">=</span><span class="n">h</span><span class="p">,</span> <span class="n">voxel_size</span><span class="o">=</span><span class="n">voxel_size</span><span class="p">)</span>
     <span class="n">cld</span> <span class="o">=</span> <span class="n">Results</span><span class="p">()</span>
-    <span class="n">cld</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">log</span><span class="o">*</span><span class="s1">&#39;Log&#39;</span> <span class="o">+</span> <span class="s1">&#39;L&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">bin_centers</span>
+    <span class="n">cld</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">log</span><span class="o">*</span><span class="s1">&#39;Log&#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;L&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">bin_centers</span>
     <span class="n">cld</span><span class="o">.</span><span class="n">pdf</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">pdf</span>
     <span class="n">cld</span><span class="o">.</span><span class="n">cdf</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">cdf</span>
     <span class="n">cld</span><span class="o">.</span><span class="n">relfreq</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">relfreq</span>
@@ -551,7 +551,7 @@
 
 <div class="viewcode-block" id="chord_length_distribution"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.metrics.chord_length_distribution.html#porespy.metrics.chord_length_distribution">[docs]</a><span class="k">def</span> <span class="nf">chord_length_distribution</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">voxel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                               <span class="n">normalization</span><span class="o">=</span><span class="s1">&#39;count&#39;</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Determines the distribution of chord lengths in an image containing chords.</span>
 
 <span class="sd">    Parameters</span>
@@ -641,7 +641,7 @@
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Unsupported normalization:&#39;</span><span class="p">,</span> <span class="n">normalization</span><span class="p">)</span>
     <span class="n">h</span> <span class="o">=</span> <span class="n">_parse_histogram</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
     <span class="n">cld</span> <span class="o">=</span> <span class="n">Results</span><span class="p">()</span>
-    <span class="n">cld</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">log</span><span class="o">*</span><span class="s1">&#39;Log&#39;</span> <span class="o">+</span> <span class="s1">&#39;L&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">bin_centers</span>
+    <span class="n">cld</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">log</span><span class="o">*</span><span class="s1">&#39;Log&#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;L&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">bin_centers</span>
     <span class="n">cld</span><span class="o">.</span><span class="n">pdf</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">pdf</span>
     <span class="n">cld</span><span class="o">.</span><span class="n">cdf</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">cdf</span>
     <span class="n">cld</span><span class="o">.</span><span class="n">relfreq</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">relfreq</span>
@@ -652,7 +652,7 @@
 
 
 <div class="viewcode-block" id="pore_size_distribution"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.metrics.pore_size_distribution.html#porespy.metrics.pore_size_distribution">[docs]</a><span class="k">def</span> <span class="nf">pore_size_distribution</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">voxel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate a pore-size distribution based on the image produced by the</span>
 <span class="sd">    ``porosimetry`` or ``local_thickness`` functions.</span>
 
@@ -718,7 +718,7 @@
         <span class="n">vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span>
     <span class="n">h</span> <span class="o">=</span> <span class="n">_parse_histogram</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
     <span class="n">cld</span> <span class="o">=</span> <span class="n">Results</span><span class="p">()</span>
-    <span class="n">cld</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">log</span><span class="o">*</span><span class="s1">&#39;Log&#39;</span> <span class="o">+</span> <span class="s1">&#39;R&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">bin_centers</span>
+    <span class="n">cld</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">log</span><span class="o">*</span><span class="s1">&#39;Log&#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;R&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">bin_centers</span>
     <span class="n">cld</span><span class="o">.</span><span class="n">pdf</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">pdf</span>
     <span class="n">cld</span><span class="o">.</span><span class="n">cdf</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">cdf</span>
     <span class="n">cld</span><span class="o">.</span><span class="n">satn</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">relfreq</span>
@@ -729,7 +729,7 @@
 
 
 <span class="k">def</span> <span class="nf">two_point_correlation_bf</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">spacing</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates the two-point correlation function using brute-force (see Notes)</span>
 
 <span class="sd">    Parameters</span>
@@ -797,7 +797,7 @@
 
 
 <span class="k">def</span> <span class="nf">_radial_profile</span><span class="p">(</span><span class="n">autocorr</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="n">pf</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">voxel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper functions to calculate the radial profile of the autocorrelation</span>
 
 <span class="sd">    Masks the image in radial segments from the center and averages the values</span>
@@ -875,7 +875,7 @@
 
 
 <div class="viewcode-block" id="two_point_correlation"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.metrics.two_point_correlation.html#porespy.metrics.two_point_correlation">[docs]</a><span class="k">def</span> <span class="nf">two_point_correlation</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">voxel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the two-point correlation function using Fourier transforms</span>
 
 <span class="sd">    Parameters</span>
@@ -980,7 +980,7 @@
 
 
 <div class="viewcode-block" id="chord_counts"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.metrics.chord_counts.html#porespy.metrics.chord_counts">[docs]</a><span class="k">def</span> <span class="nf">chord_counts</span><span class="p">(</span><span class="n">im</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find the length of each chord in the supplied image</span>
 
 <span class="sd">    Parameters</span>
@@ -1009,12 +1009,12 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">labels</span><span class="p">,</span> <span class="n">N</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">im</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
     <span class="n">props</span> <span class="o">=</span> <span class="n">regionprops</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
-    <span class="n">chord_lens</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">filled_area</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">props</span><span class="p">])</span>
+    <span class="n">chord_lens</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">filled_area</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">props</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">chord_lens</span></div>
 
 
 <div class="viewcode-block" id="phase_fraction"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.metrics.phase_fraction.html#porespy.metrics.phase_fraction">[docs]</a><span class="k">def</span> <span class="nf">phase_fraction</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">normed</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the fraction of each phase in an image</span>
 
 <span class="sd">    Parameters</span>
@@ -1054,7 +1054,7 @@
 
 <div class="viewcode-block" id="pc_curve_from_ibip"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.metrics.pc_curve_from_ibip.html#porespy.metrics.pc_curve_from_ibip">[docs]</a><span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;This function is deprecated, use pc_curve instead&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">pc_curve_from_ibip</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function is deprecated.  Use ``pc_curve`` instead.  Note that the</span>
 <span class="sd">    ``stepped`` argument is no longer supported since this can be done</span>
 <span class="sd">    directly in matplotlib with ``plt.step(...)``.</span>
@@ -1065,7 +1065,7 @@
 
 <div class="viewcode-block" id="pc_curve_from_mio"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.metrics.pc_curve_from_mio.html#porespy.metrics.pc_curve_from_mio">[docs]</a><span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;This function is deprecated, use pc_curve instead&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">pc_curve_from_mio</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function is deprecated.  Use ``pc_curve`` instead.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">pc_curve</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
@@ -1073,7 +1073,7 @@
 
 <div class="viewcode-block" id="pc_curve"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.metrics.pc_curve.html#porespy.metrics.pc_curve">[docs]</a><span class="k">def</span> <span class="nf">pc_curve</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">sizes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">seq</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
              <span class="n">sigma</span><span class="o">=</span><span class="mf">0.072</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="mi">180</span><span class="p">,</span> <span class="n">voxel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Produces a Pc-Snwp curve given a map of meniscus radii or capillary</span>
 <span class="sd">    pressures at which each voxel was invaded</span>
 
@@ -1199,7 +1199,7 @@
 
 
 <div class="viewcode-block" id="satn_profile"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.metrics.satn_profile.html#porespy.metrics.satn_profile">[docs]</a><span class="k">def</span> <span class="nf">satn_profile</span><span class="p">(</span><span class="n">satn</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">span</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;tile&#39;</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes a saturation profile from an image of fluid invasion</span>
 
 <span class="sd">    Parameters</span>
@@ -1273,7 +1273,7 @@
     <span class="n">z</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">satn</span><span class="o">=</span><span class="n">satn</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="n">s</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">span</span><span class="o">=</span><span class="n">span</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
 
     <span class="k">class</span> <span class="nc">results</span><span class="p">(</span><span class="n">Results</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        Attributes</span>
 <span class="sd">        ----------</span>
@@ -1291,7 +1291,7 @@
 
 
 <div class="viewcode-block" id="find_h"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.metrics.find_h.html#porespy.metrics.find_h">[docs]</a><span class="k">def</span> <span class="nf">find_h</span><span class="p">(</span><span class="n">saturation</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">srange</span><span class="o">=</span><span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.99</span><span class="p">]):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Given a saturation profile, compute the height between given bounds</span>
 
 <span class="sd">    Parameters</span>

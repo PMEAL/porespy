@@ -222,6 +222,11 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="../../generators/tutorials/generate_spheres_packings.html">
+       Generating Sphere Packings from Digital Rocks Portal
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="../../generators/tutorials/making_blobs.html">
        Making blobs
       </a>
@@ -387,6 +392,24 @@
        <code class="docutils literal notranslate">
         <span class="pre">
          sierpinski_foam
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../generators/reference/sierpinski_foam2.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         sierpinski_foam2
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../generators/reference/spheres_from_coords.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         spheres_from_coords
         </span>
        </code>
       </a>
@@ -1534,6 +1557,15 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="../../visualization/reference/show_panels.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         show_panels
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="../../visualization/reference/show_planes.html">
        <code class="docutils literal notranslate">
         <span class="pre">
@@ -1577,6 +1609,11 @@
  <li class="toctree-l1">
   <a class="reference internal" href="../../generators/tutorials/cylinders.html">
    Generating fibrous mats
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../generators/tutorials/generate_spheres_packings.html">
+   Generating Sphere Packings from Digital Rocks Portal
   </a>
  </li>
  <li class="toctree-l1">
@@ -1735,6 +1772,24 @@
    <code class="docutils literal notranslate">
     <span class="pre">
      sierpinski_foam
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../generators/reference/sierpinski_foam2.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     sierpinski_foam2
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../generators/reference/spheres_from_coords.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     spheres_from_coords
     </span>
    </code>
   </a>
@@ -2710,6 +2765,15 @@
   </a>
  </li>
  <li class="toctree-l1">
+  <a class="reference internal" href="../../visualization/reference/show_panels.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     show_panels
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="../../visualization/reference/show_planes.html">
    <code class="docutils literal notranslate">
     <span class="pre">
@@ -2813,7 +2877,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/458dafb3959559ce38e4904d0fd0c6c4b17209b10a31a20d1593fd2b05ab3981.png" src="../../../_images/458dafb3959559ce38e4904d0fd0c6c4b17209b10a31a20d1593fd2b05ab3981.png" />
+<img alt="../../../_images/b0c0f7b32f22d4831a608727e4bea0e358b19b106a1bc41e5fcf31ea5c4849bd.png" src="../../../_images/b0c0f7b32f22d4831a608727e4bea0e358b19b106a1bc41e5fcf31ea5c4849bd.png" />
 </div>
 </div>
 <p>Now the test image is ready to be passed to <code class="docutils literal notranslate"><span class="pre">chord_counts</span></code>. The method returns a 1D array. Each element in the array corresponds to the length of each chord. A histogram of the chord length array can be plotted:</p>
@@ -2828,7 +2892,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/bd83322b4c355e7775041d4ba077560adc06740341818dea01df5f0f9f1ad126.png" src="../../../_images/bd83322b4c355e7775041d4ba077560adc06740341818dea01df5f0f9f1ad126.png" />
+<img alt="../../../_images/e73658745b3948728b82b63d70a11f104af2305d64d6d616e007970da11437d1.png" src="../../../_images/e73658745b3948728b82b63d70a11f104af2305d64d6d616e007970da11437d1.png" />
 </div>
 </div>
 <p>An alternative to the histogram, we can use <code class="docutils literal notranslate"><span class="pre">numpy.bincount</span></code> that gives the number of chords of each length and can be plotted using <code class="docutils literal notranslate"><span class="pre">plt.plot</span></code>. The resulting plot is similar to the histogram plot with a high number of bins:</p>
@@ -2842,7 +2906,32 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/4f3e39738bc3405533e65605b4a7dac996f068aa220b9506d29db942eae3d42a.png" src="../../../_images/4f3e39738bc3405533e65605b4a7dac996f068aa220b9506d29db942eae3d42a.png" />
+<img alt="../../../_images/1526a3118a210a76ffdad4c963eb5ddd550610e622733e28d20636a6ad17cbe9.png" src="../../../_images/1526a3118a210a76ffdad4c963eb5ddd550610e622733e28d20636a6ad17cbe9.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span><span class="n">chord_length</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([ 0,  1,  3,  0,  3,  3,  5,  2,  4,  7,  9, 10, 11, 12,  7,  8, 11,
+       12,  9, 14,  8, 17, 16, 19, 19, 15, 20, 27, 28, 25, 23, 16, 15, 17,
+       14, 17, 12, 18, 16, 10, 13, 15, 18, 14, 22,  9, 13, 14, 11,  6,  9,
+        6,  6,  6,  6,  6,  9,  9,  4,  5,  4,  0,  5,  7,  8,  5,  4,  4,
+        5,  8,  8,  4,  9,  4,  4,  3,  2,  3,  2,  4,  3,  3,  3,  5,  5,
+        3,  8,  4,  4,  8,  4,  1,  0,  2,  2,  3,  5,  1,  1,  1,  2,  1,
+        2,  1,  1,  1,  1,  0,  2,  1,  0,  2,  1,  2,  3,  0,  0,  2,  1,
+        2,  0,  0,  1,  0,  2,  1,  2,  3,  1,  3,  5,  2,  3,  2,  1,  2,
+        2,  4,  2,  6,  1,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+        0,  1,  1,  0,  1,  0,  1,  0,  0,  0,  0,  0,  0,  0,  1,  0,  1,
+        1,  2,  2,  2,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+        0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+        0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+        0,  1,  0,  2], dtype=int64)
+</pre></div>
+</div>
 </div>
 </div>
 </section>

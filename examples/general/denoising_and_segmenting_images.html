@@ -222,6 +222,11 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="../generators/tutorials/generate_spheres_packings.html">
+       Generating Sphere Packings from Digital Rocks Portal
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="../generators/tutorials/making_blobs.html">
        Making blobs
       </a>
@@ -387,6 +392,24 @@
        <code class="docutils literal notranslate">
         <span class="pre">
          sierpinski_foam
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../generators/reference/sierpinski_foam2.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         sierpinski_foam2
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../generators/reference/spheres_from_coords.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         spheres_from_coords
         </span>
        </code>
       </a>
@@ -1534,6 +1557,15 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="../visualization/reference/show_panels.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         show_panels
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="../visualization/reference/show_planes.html">
        <code class="docutils literal notranslate">
         <span class="pre">
@@ -1577,6 +1609,11 @@
  <li class="toctree-l1">
   <a class="reference internal" href="../generators/tutorials/cylinders.html">
    Generating fibrous mats
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../generators/tutorials/generate_spheres_packings.html">
+   Generating Sphere Packings from Digital Rocks Portal
   </a>
  </li>
  <li class="toctree-l1">
@@ -1735,6 +1772,24 @@
    <code class="docutils literal notranslate">
     <span class="pre">
      sierpinski_foam
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../generators/reference/sierpinski_foam2.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     sierpinski_foam2
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../generators/reference/spheres_from_coords.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     spheres_from_coords
     </span>
    </code>
   </a>
@@ -2710,6 +2765,15 @@
   </a>
  </li>
  <li class="toctree-l1">
+  <a class="reference internal" href="../visualization/reference/show_panels.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     show_panels
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="../visualization/reference/show_planes.html">
    <code class="docutils literal notranslate">
     <span class="pre">
@@ -2825,7 +2889,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/f40bf351ca3aec9373ad3e5b92ba344bdbf91235b09522bcabe1ab84c60faf1e.png" src="../../_images/f40bf351ca3aec9373ad3e5b92ba344bdbf91235b09522bcabe1ab84c60faf1e.png" />
+<img alt="../../_images/7ffaa770f626a9903ca8508f7beef2b76db7f55adc20b31b9d6c727751fd9164.png" src="../../_images/7ffaa770f626a9903ca8508f7beef2b76db7f55adc20b31b9d6c727751fd9164.png" />
 </div>
 </div>
 <p>The above image now contains some noise in each phase, which is more realistic, though as we will see it not close to reality.  Let’s look at a histogram of this image:</p>
@@ -2837,7 +2901,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/bed0c7c492556262bca8c61e3d0f5c1623a4537fe06c611ad6f361f168017b33.png" src="../../_images/bed0c7c492556262bca8c61e3d0f5c1623a4537fe06c611ad6f361f168017b33.png" />
+<img alt="../../_images/43134d4ad7bbf432bb830a347eeb16d35f54d3abf8f830b72d2962259d898bf8.png" src="../../_images/43134d4ad7bbf432bb830a347eeb16d35f54d3abf8f830b72d2962259d898bf8.png" />
 </div>
 </div>
 <p>We can see above that all pixels with a value less than 0.5 belong to the dark phase, while the other pixels belong to the light phase.  A simple global threshold can reproduce the original image perfectly:</p>
@@ -2849,7 +2913,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/73d901345b3906d8b9348bb2156998f10c42de5bec583bd08fbbc24ec5fde7b5.png" src="../../_images/73d901345b3906d8b9348bb2156998f10c42de5bec583bd08fbbc24ec5fde7b5.png" />
+<img alt="../../_images/d6cb5f0a1234445b71f38756843f5e2719a4c0f590e2d30f8a8ee97902fb2101.png" src="../../_images/d6cb5f0a1234445b71f38756843f5e2719a4c0f590e2d30f8a8ee97902fb2101.png" />
 </div>
 </div>
 <p>Now let’s look at a more realistic noise distribution, though still artificially generated:</p>
@@ -2864,7 +2928,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/fba15ac525e50962d2e9dd2be1e28794f5e38dd9a4025169139cab0dcea2be24.png" src="../../_images/fba15ac525e50962d2e9dd2be1e28794f5e38dd9a4025169139cab0dcea2be24.png" />
+<img alt="../../_images/1bb3a51db86f590aa7ee1216d7b12f9612e699e230198cc40330208d6d8831ca.png" src="../../_images/1bb3a51db86f590aa7ee1216d7b12f9612e699e230198cc40330208d6d8831ca.png" />
 </div>
 </div>
 <p>Now we can see that the noise is much less separated, and in fact the tails of the distributions just touch each other in the middle.  Let’s see how the simple threshold we used above would work now:</p>
@@ -2876,7 +2940,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/dbb6f2043219dd8ec02ed60dea6d23cd52b5203582bf663994f790f69182d54f.png" src="../../_images/dbb6f2043219dd8ec02ed60dea6d23cd52b5203582bf663994f790f69182d54f.png" />
+<img alt="../../_images/929905c62f4b6fb28dbd9d99b7c976f39bd677e30933e6cbb5c2a5264c22a94d.png" src="../../_images/929905c62f4b6fb28dbd9d99b7c976f39bd677e30933e6cbb5c2a5264c22a94d.png" />
 </div>
 </div>
 <p>Now there are a few pixels in the dark phase which have been identified as bright and vice-versa. Let’s take this further but putting more extreme, but more realistic noise:</p>
@@ -2892,7 +2956,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/e2c850018ce61242d1b6f0a38bebbc0c280fd2055a9acbd51a8750f3b0e4d63a.png" src="../../_images/e2c850018ce61242d1b6f0a38bebbc0c280fd2055a9acbd51a8750f3b0e4d63a.png" />
+<img alt="../../_images/15c692d2a0e135f93a380376e3151e0d1f0c4e51226f8370bf5b1e35e27f991f.png" src="../../_images/15c692d2a0e135f93a380376e3151e0d1f0c4e51226f8370bf5b1e35e27f991f.png" />
 </div>
 </div>
 <p>In the above case our eyes can differentiate the light and dark phases pretty well, but the histogram is fully merged into one, and the global threshold produces a very problematic result. Just to show this is not an exageration, below is an actual slice of a tomogram taken of an electrospun flow-battery electrode:</p>
@@ -2910,18 +2974,18 @@
 <div class="cell_output docutils container">
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
 <span class="ne">FileNotFoundError</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span> <span class="p">[</span><span class="mi">8</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">8</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
 <span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">im</span> <span class="o">=</span> <span class="n">imageio</span><span class="o">.</span><span class="n">volread</span><span class="p">(</span><span class="s1">&#39;../../docs/_static/images/Sample 1.tif&#39;</span><span class="p">)</span>
 <span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">im</span> <span class="o">=</span> <span class="p">(</span><span class="n">im</span> <span class="o">-</span> <span class="n">im</span><span class="o">.</span><span class="n">min</span><span class="p">())</span><span class="o">/</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">-</span> <span class="n">im</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
 <span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">15</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
 
-<span class="nn">File /usr/share/miniconda/envs/test/lib/python3.8/site-packages/imageio/v2.py:389,</span> in <span class="ni">volread</span><span class="nt">(uri, format, **kwargs)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/imageio/v2.py:389,</span> in <span class="ni">volread</span><span class="nt">(uri, format, **kwargs)</span>
 <span class="g g-Whitespace">    </span><span class="mi">387</span> <span class="n">imopen_args</span> <span class="o">=</span> <span class="n">decypher_format_arg</span><span class="p">(</span><span class="nb">format</span><span class="p">)</span>
 <span class="g g-Whitespace">    </span><span class="mi">388</span> <span class="n">imopen_args</span><span class="p">[</span><span class="s2">&quot;legacy_mode&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="ne">--&gt; </span><span class="mi">389</span> <span class="k">with</span> <span class="n">imopen</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="s2">&quot;rv&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">imopen_args</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
 <span class="g g-Whitespace">    </span><span class="mi">390</span>     <span class="k">return</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-<span class="nn">File /usr/share/miniconda/envs/test/lib/python3.8/site-packages/imageio/core/imopen.py:113,</span> in <span class="ni">imopen</span><span class="nt">(uri, io_mode, plugin, extension, format_hint, legacy_mode, **kwargs)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/imageio/core/imopen.py:113,</span> in <span class="ni">imopen</span><span class="nt">(uri, io_mode, plugin, extension, format_hint, legacy_mode, **kwargs)</span>
 <span class="g g-Whitespace">    </span><span class="mi">111</span>     <span class="n">request</span><span class="o">.</span><span class="n">format_hint</span> <span class="o">=</span> <span class="n">format_hint</span>
 <span class="g g-Whitespace">    </span><span class="mi">112</span> <span class="k">else</span><span class="p">:</span>
 <span class="ne">--&gt; </span><span class="mi">113</span>     <span class="n">request</span> <span class="o">=</span> <span class="n">Request</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">io_mode</span><span class="p">,</span> <span class="n">format_hint</span><span class="o">=</span><span class="n">format_hint</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="n">extension</span><span class="p">)</span>
@@ -2929,21 +2993,21 @@
 <span class="g g-Whitespace">    </span><span class="mi">117</span> <span class="c1"># fast-path based on plugin</span>
 <span class="g g-Whitespace">    </span><span class="mi">118</span> <span class="c1"># (except in legacy mode)</span>
 
-<span class="nn">File /usr/share/miniconda/envs/test/lib/python3.8/site-packages/imageio/core/request.py:248,</span> in <span class="ni">Request.__init__</span><span class="nt">(self, uri, mode, extension, format_hint, **kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">245</span>     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid Request.Mode: </span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">247</span> <span class="c1"># Parse what was given</span>
-<span class="ne">--&gt; </span><span class="mi">248</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_uri</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">250</span> <span class="c1"># Set extension</span>
-<span class="g g-Whitespace">    </span><span class="mi">251</span> <span class="k">if</span> <span class="n">extension</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/imageio/core/request.py:247,</span> in <span class="ni">Request.__init__</span><span class="nt">(self, uri, mode, extension, format_hint, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">244</span>     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid Request.Mode: </span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">246</span> <span class="c1"># Parse what was given</span>
+<span class="ne">--&gt; </span><span class="mi">247</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_uri</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">249</span> <span class="c1"># Set extension</span>
+<span class="g g-Whitespace">    </span><span class="mi">250</span> <span class="k">if</span> <span class="n">extension</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
 
-<span class="nn">File /usr/share/miniconda/envs/test/lib/python3.8/site-packages/imageio/core/request.py:408,</span> in <span class="ni">Request._parse_uri</span><span class="nt">(self, uri)</span>
-<span class="g g-Whitespace">    </span><span class="mi">405</span> <span class="k">if</span> <span class="n">is_read_request</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">406</span>     <span class="c1"># Reading: check that the file exists (but is allowed a dir)</span>
-<span class="g g-Whitespace">    </span><span class="mi">407</span>     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
-<span class="ne">--&gt; </span><span class="mi">408</span>         <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s2">&quot;No such file: &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">fn</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">409</span> <span class="k">else</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">410</span>     <span class="c1"># Writing: check that the directory to write to does exist</span>
-<span class="g g-Whitespace">    </span><span class="mi">411</span>     <span class="n">dn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/imageio/core/request.py:407,</span> in <span class="ni">Request._parse_uri</span><span class="nt">(self, uri)</span>
+<span class="g g-Whitespace">    </span><span class="mi">404</span> <span class="k">if</span> <span class="n">is_read_request</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">405</span>     <span class="c1"># Reading: check that the file exists (but is allowed a dir)</span>
+<span class="g g-Whitespace">    </span><span class="mi">406</span>     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
+<span class="ne">--&gt; </span><span class="mi">407</span>         <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s2">&quot;No such file: &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">fn</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">408</span> <span class="k">else</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">409</span>     <span class="c1"># Writing: check that the directory to write to does exist</span>
+<span class="g g-Whitespace">    </span><span class="mi">410</span>     <span class="n">dn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
 
 <span class="ne">FileNotFoundError</span>: No such file: &#39;/home/runner/work/porespy/porespy/docs/docs/_static/images/Sample 1.tif&#39;
 </pre></div>

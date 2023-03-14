@@ -1,0 +1,1172 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>random_spheres &#8212; PoreSpy  documentation</title>
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
+
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
+  <link rel="stylesheet"
+    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
+
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script src="../../../_static/design-tabs.js"></script>
+    <script src="../../../_static/js/custom.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="blobs" href="porespy.generators.blobs.html" />
+    <link rel="prev" title="rsa" href="porespy.generators.rsa.html" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+    <div class="bd-header-announcement container-fluid" id="banner">
+      
+
+    </div>
+
+    
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
+
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+    <img src="../../../_static/porespy_logo.png" class="logo__image only-light" alt="Logo image">
+    <img src="../../../_static/porespy_logo.png" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="fas fa-bars"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class=" collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../installation.html">
+  Installation
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../basic_usage.html">
+  Basic Usage
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../../index.html">
+  Module and Function Reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../_examples/index.html">
+  Examples
+ </a>
+</li>
+
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/porespy/issues">Issue Tracker<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+    <li class="nav-item">
+        <a class="nav-link nav-external" href="https://github.com/PMEAL/porespy/discussions">Get Help<i class="fas fa-external-link-alt"></i></a>
+    </li>
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/PMEAL/porespy" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twitter.com/porespy" rel="noopener" target="_blank" title="Twitter"><span><i class="fab fa-twitter-square"></i></span>
+            <label class="sr-only">Twitter</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
+          
+
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="../porespy.generators.html">
+   generators
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.generators.rsa.html">
+     rsa
+    </a>
+   </li>
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     random_spheres
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.generators.blobs.html">
+     blobs
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.generators.borders.html">
+     borders
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.generators.bundle_of_tubes.html">
+     bundle_of_tubes
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.generators.cylinders.html">
+     cylinders
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.generators.cylindrical_plug.html">
+     cylindrical_plug
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.generators.faces.html">
+     faces
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.generators.fractal_noise.html">
+     fractal_noise
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.generators.insert_shape.html">
+     insert_shape
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.generators.lattice_spheres.html">
+     lattice_spheres
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.generators.line_segment.html">
+     line_segment
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.generators.overlapping_spheres.html">
+     overlapping_spheres
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.generators.polydisperse_spheres.html">
+     polydisperse_spheres
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.generators.pseudo_electrostatic_packing.html">
+     pseudo_electrostatic_packing
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.generators.pseudo_gravity_packing.html">
+     pseudo_gravity_packing
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.generators.random_cantor_dust.html">
+     random_cantor_dust
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.generators.sierpinski_foam.html">
+     sierpinski_foam
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.generators.voronoi_edges.html">
+     voronoi_edges
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../porespy.filters.html">
+   filters
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+  <label for="toctree-checkbox-2">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.apply_chords.html">
+     apply_chords
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.apply_chords_3D.html">
+     apply_chords_3D
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.apply_padded.html">
+     apply_padded
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.chunked_func.html">
+     chunked_func
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.distance_transform_lin.html">
+     distance_transform_lin
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.fftmorphology.html">
+     fftmorphology
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.fill_blind_pores.html">
+     fill_blind_pores
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.find_disconnected_voxels.html">
+     find_disconnected_voxels
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.find_dt_artifacts.html">
+     find_dt_artifacts
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.find_peaks.html">
+     find_peaks
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.find_trapped_regions.html">
+     find_trapped_regions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.flood.html">
+     flood
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.flood_func.html">
+     flood_func
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.hold_peaks.html">
+     hold_peaks
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.ibip.html">
+     ibip
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.ibip_gpu.html">
+     ibip_gpu
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.imagej.html">
+     imagej
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.local_thickness.html">
+     local_thickness
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.nl_means_layered.html">
+     nl_means_layered
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.nphase_border.html">
+     nphase_border
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.pc_to_satn.html">
+     pc_to_satn
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.porosimetry.html">
+     porosimetry
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.prune_branches.html">
+     prune_branches
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.reduce_peaks.html">
+     reduce_peaks
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.region_size.html">
+     region_size
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.satn_to_seq.html">
+     satn_to_seq
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.seq_to_satn.html">
+     seq_to_satn
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.size_to_satn.html">
+     size_to_satn
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.size_to_seq.html">
+     size_to_seq
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.snow_partitioning.html">
+     snow_partitioning
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.snow_partitioning_n.html">
+     snow_partitioning_n
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.snow_partitioning_parallel.html">
+     snow_partitioning_parallel
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.trim_disconnected_blobs.html">
+     trim_disconnected_blobs
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.trim_extrema.html">
+     trim_extrema
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.trim_floating_solid.html">
+     trim_floating_solid
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.trim_nearby_peaks.html">
+     trim_nearby_peaks
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.trim_nonpercolating_paths.html">
+     trim_nonpercolating_paths
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.trim_saddle_points.html">
+     trim_saddle_points
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.filters.trim_small_clusters.html">
+     trim_small_clusters
+    </a>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../porespy.filters.imagej.html">
+     imagej
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+    <label for="toctree-checkbox-3">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="porespy.filters.imagej.imagej_wrapper.html">
+       imagej_wrapper
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="porespy.filters.imagej.imagej_plugin.html">
+       imagej_plugin
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../porespy.metrics.html">
+   metrics
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+  <label for="toctree-checkbox-4">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.metrics.boxcount.html">
+     boxcount
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.metrics.chord_counts.html">
+     chord_counts
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.metrics.chord_length_distribution.html">
+     chord_length_distribution
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.metrics.find_h.html">
+     find_h
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.metrics.lineal_path_distribution.html">
+     lineal_path_distribution
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.metrics.mesh_surface_area.html">
+     mesh_surface_area
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.metrics.mesh_volume.html">
+     mesh_volume
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.metrics.pc_curve.html">
+     pc_curve
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.metrics.pc_curve_from_ibip.html">
+     pc_curve_from_ibip
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.metrics.pc_curve_from_mio.html">
+     pc_curve_from_mio
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.metrics.phase_fraction.html">
+     phase_fraction
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.metrics.pore_size_distribution.html">
+     pore_size_distribution
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.metrics.porosity.html">
+     porosity
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.metrics.porosity_profile.html">
+     porosity_profile
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.metrics.prop_to_image.html">
+     prop_to_image
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.metrics.props_to_DataFrame.html">
+     props_to_DataFrame
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.metrics.radial_density_distribution.html">
+     radial_density_distribution
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.metrics.region_interface_areas.html">
+     region_interface_areas
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.metrics.region_surface_areas.html">
+     region_surface_areas
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.metrics.region_volumes.html">
+     region_volumes
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.metrics.regionprops_3D.html">
+     regionprops_3D
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.metrics.representative_elementary_volume.html">
+     representative_elementary_volume
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.metrics.satn_profile.html">
+     satn_profile
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.metrics.two_point_correlation.html">
+     two_point_correlation
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../porespy.networks.html">
+   networks
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
+  <label for="toctree-checkbox-5">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.networks.add_boundary_regions.html">
+     add_boundary_regions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.networks.diffusive_size_factor_AI.html">
+     diffusive_size_factor_AI
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.networks.generate_voxel_image.html">
+     generate_voxel_image
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.networks.label_boundaries.html">
+     label_boundaries
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.networks.label_phases.html">
+     label_phases
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.networks.map_to_regions.html">
+     map_to_regions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.networks.maximal_ball_wrapper.html">
+     maximal_ball_wrapper
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.networks.regions_to_network.html">
+     regions_to_network
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.networks.snow2.html">
+     snow2
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../porespy.simulations.html">
+   simulations
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
+  <label for="toctree-checkbox-6">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.simulations.drainage.html">
+     drainage
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.simulations.tortuosity_fd.html">
+     tortuosity_fd
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../porespy.tools.html">
+   tools
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
+  <label for="toctree-checkbox-7">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.tools.Results.html">
+     Results
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.tools.align_image_with_openpnm.html">
+     align_image_with_openpnm
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.tools.bbox_to_slices.html">
+     bbox_to_slices
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.tools.extend_slice.html">
+     extend_slice
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.tools.extract_cylinder.html">
+     extract_cylinder
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.tools.extract_regions.html">
+     extract_regions
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.tools.extract_subsection.html">
+     extract_subsection
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.tools.find_outer_region.html">
+     find_outer_region
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.tools.get_border.html">
+     get_border
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.tools.get_planes.html">
+     get_planes
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.tools.get_tqdm.html">
+     get_tqdm
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.tools.in_hull.html">
+     in_hull
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.tools.insert_cylinder.html">
+     insert_cylinder
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.tools.insert_sphere.html">
+     insert_sphere
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.tools.isolate_object.html">
+     isolate_object
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.tools.make_contiguous.html">
+     make_contiguous
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.tools.marching_map.html">
+     marching_map
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.tools.mesh_region.html">
+     mesh_region
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.tools.norm_to_uniform.html">
+     norm_to_uniform
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.tools.overlay.html">
+     overlay
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.tools.ps_ball.html">
+     ps_ball
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.tools.ps_disk.html">
+     ps_disk
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.tools.ps_rect.html">
+     ps_rect
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.tools.ps_round.html">
+     ps_round
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.tools.randomize_colors.html">
+     randomize_colors
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.tools.recombine.html">
+     recombine
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.tools.sanitize_filename.html">
+     sanitize_filename
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.tools.show_docstring.html">
+     show_docstring
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.tools.subdivide.html">
+     subdivide
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.tools.unpad.html">
+     unpad
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../porespy.visualization.html">
+   visualization
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/>
+  <label for="toctree-checkbox-8">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.visualization.bar.html">
+     bar
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.visualization.imshow.html">
+     imshow
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.visualization.prep_for_imshow.html">
+     prep_for_imshow
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.visualization.satn_to_movie.html">
+     satn_to_movie
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.visualization.satn_to_panels.html">
+     satn_to_panels
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.visualization.sem.html">
+     sem
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.visualization.set_mpl_style.html">
+     set_mpl_style
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.visualization.show_3D.html">
+     show_3D
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.visualization.show_mesh.html">
+     show_mesh
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.visualization.show_planes.html">
+     show_planes
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.visualization.xray.html">
+     xray
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../porespy.io.html">
+   io
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/>
+  <label for="toctree-checkbox-9">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.io.to_vtk.html">
+     to_vtk
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.io.dict_to_vtk.html">
+     dict_to_vtk
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.io.to_palabos.html">
+     to_palabos
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.io.openpnm_to_im.html">
+     openpnm_to_im
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.io.to_stl.html">
+     to_stl
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.io.to_paraview.html">
+     to_paraview
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.io.open_paraview.html">
+     open_paraview
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.io.spheres_to_comsol.html">
+     spheres_to_comsol
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+  </div>
+</nav>
+  </div>
+  <div class="sidebar-end-items">
+  </div>
+</div>
+
+
+          
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+    
+    <div class="toc-item">
+      
+<div class="tocsection onthispage mt-5 pt-1 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#porespy.generators.random_spheres">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     random_spheres()
+    </span>
+   </code>
+  </a>
+ </li>
+</ul>
+
+</nav>
+    </div>
+    
+    <div class="toc-item">
+      
+    </div>
+    
+  
+</div>
+
+
+          
+          
+          <div class="bd-content col-12 col-md-9 col-xl-7">
+              
+              <article class="bd-article" role="main">
+                
+  <section id="random-spheres">
+<h1>random_spheres<a class="headerlink" href="#random-spheres" title="Permalink to this heading">#</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="porespy.generators.random_spheres">
+<span class="sig-name descname"><span class="pre">random_spheres</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im_or_shape</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">volume_fraction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clearance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">protrusion</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edges</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'contained'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_spheres</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smooth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/generators/_imgen.html#random_spheres"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.generators.random_spheres" title="Permalink to this definition">#</a></dt>
+<dd><p>Generates a sphere or disk packing using Random Sequential Addition</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>im_or_shape</strong> (<em>ndarray</em><em> or </em><em>list</em>) – To provide flexibility, this argument accepts either an image into
+which the spheres are inserted, or a shape which is used to create an
+empty image.  In both cases the spheres are added as <code class="docutils literal notranslate"><span class="pre">True</span></code> values
+to the background.  Since <code class="docutils literal notranslate"><span class="pre">True</span></code> is considered the pore space, then
+the added spheres represent holes.</p></li>
+<li><p><strong>r</strong> (<em>int</em>) – The radius of the disk or sphere to insert.</p></li>
+<li><p><strong>volume_fraction</strong> (<em>scalar</em><em> (</em><em>default is 1.0</em><em>)</em>) – The fraction of the image that should be filled with spheres.  The
+spheres are added as <code class="docutils literal notranslate"><span class="pre">True</span></code>’s, so each sphere addition increases the
+<code class="docutils literal notranslate"><span class="pre">volume_fraction</span></code> until the specified limit is reached.  Note that if
+<code class="docutils literal notranslate"><span class="pre">n_max</span></code> is reached first, then <code class="docutils literal notranslate"><span class="pre">volume_fraction</span></code> will not be
+achieved.  Also, <code class="docutils literal notranslate"><span class="pre">volume_fraction</span></code> is not counted correctly if the
+<code class="docutils literal notranslate"><span class="pre">mode</span></code> is <code class="docutils literal notranslate"><span class="pre">'extended'</span></code>.</p></li>
+<li><p><strong>clearance</strong> (<em>int</em><em> (</em><em>optional</em><em>, </em><em>default = 0</em><em>)</em>) – The amount of space to put between each sphere. Negative values are
+acceptable to create overlaps, so long as <code class="docutils literal notranslate"><span class="pre">abs(clearance)</span> <span class="pre">&lt;</span> <span class="pre">r</span></code>.</p></li>
+<li><p><strong>protrusion</strong> (<em>int</em><em> (</em><em>optional</em><em>, </em><em>default = 0</em><em>)</em>) – The amount by which inserted spheres are allowed to protrude outside of
+the given background.  If set to 0 (the default) then all spheres will
+be fully inside the region marked <code class="docutils literal notranslate"><span class="pre">False</span></code> in the input image. If &gt; 0, then
+spheres will extend into the region marked <code class="docutils literal notranslate"><span class="pre">True</span></code> in the input image.</p></li>
+<li><p><strong>n_max</strong> (<em>int</em><em> (</em><em>default is 100</em><em>,</em><em>000</em><em>)</em>) – The maximum number of spheres to add.  Using a low value may halt
+the addition process prior to reaching the specified
+<code class="docutils literal notranslate"><span class="pre">volume_fraction</span></code>.  If <code class="docutils literal notranslate"><span class="pre">None</span></code> is given, then no limit is used.</p></li>
+<li><p><strong>edges</strong> (<em>string</em><em> (</em><em>default is 'contained'</em><em>)</em>) – <p>Controls how the edges of the image are handled.  Options are:</p>
+<table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>edges</p></th>
+<th class="head"><p>description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>’contained’</p></td>
+<td><p>Spheres are all completely within the image</p></td>
+</tr>
+<tr class="row-odd"><td><p>’extended’</p></td>
+<td><p>Spheres are allowed to extend beyond the edge of the
+image.  In this mode the volume fraction will be less than
+requested since some spheres extend beyond the image, but their
+entire volume is counted as added for computational efficiency.</p></td>
+</tr>
+</tbody>
+</table>
+</p></li>
+<li><p><strong>return_spheres</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> then an image containing only the spheres is returned
+rather than the input image with the spheres added, which is the
+default behavior.</p></li>
+<li><p><strong>smooth</strong> (<em>bool</em>) – Indicates whether balls should have smooth faces (<code class="docutils literal notranslate"><span class="pre">True</span></code>) or should
+include the bumps on the extremities (<code class="docutils literal notranslate"><span class="pre">False</span></code>).</p></li>
+<li><p><strong>seed</strong> (<em>int</em>) – The seed to supply to the random number generators. Because this function
+uses <code class="docutils literal notranslate"><span class="pre">numba</span></code> for speed, calling the normal <code class="docutils literal notranslate"><span class="pre">numpy.random.seed(&lt;seed&gt;)</span></code>
+has no effect. To get a repeatable image, the seed must be passed to the
+function so it can be initialized the way <code class="docutils literal notranslate"><span class="pre">numba</span></code> requires. The default
+is <code class="docutils literal notranslate"><span class="pre">None</span></code>, which means each call will produce a new realization.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>image</strong> – An image with spheres of specified radius <em>added</em> to the background.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="porespy.generators.pseudo_gravity_packing.html#porespy.generators.pseudo_gravity_packing" title="porespy.generators.pseudo_gravity_packing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pseudo_gravity_packing</span></code></a>, <a class="reference internal" href="porespy.generators.pseudo_electrostatic_packing.html#porespy.generators.pseudo_electrostatic_packing" title="porespy.generators.pseudo_electrostatic_packing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pseudo_electrostatic_packing</span></code></a></p>
+</div>
+<p class="rubric">Notes</p>
+<p>This algorithm ensures that spheres do not overlap but does not
+guarantee they are tightly packed.</p>
+<p>This function adds spheres to the background of the received <code class="docutils literal notranslate"><span class="pre">im</span></code>, which
+allows iteratively adding spheres of different radii to the unfilled space
+by repeatedly passing in the result of previous calls to RSA.</p>
+<p class="rubric">References</p>
+<p>[1] Random Heterogeneous Materials, S. Torquato (2001)</p>
+<p class="rubric">Examples</p>
+<p><a class="reference external" href="https://porespy.org/examples/generators/reference/random_spheres.html">Click here</a>
+to view online example.</p>
+</dd></dl>
+
+</section>
+
+
+              </article>
+              
+
+              
+          </div>
+          
+      </div>
+    </div>
+
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
+
+<footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    <p class="copyright">
+    &copy; Copyright 2023, PMEAL.<br>
+</p>
+  </div>
+  
+  <div class="footer-item">
+    <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
+</p>
+  </div>
+  
+</div>
+</footer>
+  </body>
+</html>

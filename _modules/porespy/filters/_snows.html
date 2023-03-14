@@ -212,7 +212,7 @@
 
 
 <div class="viewcode-block" id="snow_partitioning"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.snow_partitioning.html#porespy.filters.snow_partitioning">[docs]</a><span class="k">def</span> <span class="nf">snow_partitioning</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">r_max</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">peaks</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Partition the void space into pore regions using a marker-based</span>
 <span class="sd">    watershed algorithm</span>
 
@@ -316,7 +316,7 @@
 
 
 <div class="viewcode-block" id="snow_partitioning_n"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.snow_partitioning_n.html#porespy.filters.snow_partitioning_n">[docs]</a><span class="k">def</span> <span class="nf">snow_partitioning_n</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">r_max</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">peaks</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function partitions an imaging oontain an arbitrary number of</span>
 <span class="sd">    phases into regions using a marker-based watershed segmentation.</span>
 
@@ -424,7 +424,7 @@
 
 
 <div class="viewcode-block" id="find_peaks"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.find_peaks.html#porespy.filters.find_peaks">[docs]</a><span class="k">def</span> <span class="nf">find_peaks</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">r_max</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">strel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">divs</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Finds local maxima in the distance transform</span>
 
 <span class="sd">    Parameters</span>
@@ -501,7 +501,7 @@
 
 
 <div class="viewcode-block" id="reduce_peaks"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.reduce_peaks.html#porespy.filters.reduce_peaks">[docs]</a><span class="k">def</span> <span class="nf">reduce_peaks</span><span class="p">(</span><span class="n">peaks</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Any peaks that are broad or elongated are replaced with a single voxel</span>
 <span class="sd">    that is located at the center of mass of the original voxels.</span>
 
@@ -546,7 +546,7 @@
 
 
 <div class="viewcode-block" id="trim_saddle_points"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.trim_saddle_points.html#porespy.filters.trim_saddle_points">[docs]</a><span class="k">def</span> <span class="nf">trim_saddle_points</span><span class="p">(</span><span class="n">peaks</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">maxiter</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Removes peaks that were mistakenly identified because they lied on a</span>
 <span class="sd">    saddle or ridge in the distance transform that was not actually a true</span>
 <span class="sd">    local peak.</span>
@@ -613,7 +613,7 @@
 
 
 <span class="k">def</span> <span class="nf">trim_saddle_points_legacy</span><span class="p">(</span><span class="n">peaks</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">maxiter</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Removes peaks that were mistakenly identified because they lied on a</span>
 <span class="sd">    saddle or ridge in the distance transform that was not actually a true</span>
 <span class="sd">    local peak.</span>
@@ -695,7 +695,7 @@
 
 
 <div class="viewcode-block" id="trim_nearby_peaks"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.trim_nearby_peaks.html#porespy.filters.trim_nearby_peaks">[docs]</a><span class="k">def</span> <span class="nf">trim_nearby_peaks</span><span class="p">(</span><span class="n">peaks</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">f</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Removes peaks that are nearer to another peak than to solid</span>
 
 <span class="sd">    Parameters</span>
@@ -795,7 +795,7 @@
                                <span class="n">overlap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                                <span class="n">cores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                                <span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Performs SNOW algorithm in parallel (or serial) to reduce time</span>
 <span class="sd">    (or memory usage) by geomertirc domain decomposition of large images.</span>
 
@@ -856,7 +856,7 @@
     <span class="k">if</span> <span class="n">overlap</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">overlap</span> <span class="o">=</span> <span class="n">_estimate_overlap</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;dt&#39;</span><span class="p">)</span>
     <span class="n">overlap</span> <span class="o">=</span> <span class="n">overlap</span> <span class="o">/</span> <span class="mf">2.0</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Overlap thickness: </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">overlap</span><span class="p">)</span><span class="si">}</span><span class="s1"> voxels&#39;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Overlap thickness: </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">overlap</span><span class="p">)</span><span class="si">}</span><span class="s1"> voxels&#39;</span><span class="p">)</span>
 
     <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">((</span><span class="n">im</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">),</span> <span class="n">parallel</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
@@ -892,7 +892,7 @@
 
 
 <span class="k">def</span> <span class="nf">_pad</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">pad_width</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">constant_value</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Pad the image with a constant values and width.</span>
 
 <span class="sd">    Parameters</span>
@@ -930,7 +930,7 @@
 
 
 <span class="k">def</span> <span class="nf">relabel_chunks</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">chunk_shape</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Assign new labels to each chunk or sub-domain of actual image. This</span>
 <span class="sd">    prevents from two or more regions to have same label.</span>
 
@@ -983,7 +983,7 @@
 
 
 <span class="k">def</span> <span class="nf">_trim_internal_slice</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">chunk_shape</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Delete extra slices from image that were used to stitch two or more</span>
 <span class="sd">    chunks together.</span>
 
@@ -1032,7 +1032,7 @@
 
 
 <span class="k">def</span> <span class="nf">_watershed_stitching</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">chunk_shape</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Stitch individual sub-domains of watershed segmentation into one big</span>
 <span class="sd">    segmentation with all boundary labels of each sub-domain relabeled to</span>
 <span class="sd">    merge boundary regions.</span>
@@ -1084,7 +1084,7 @@
 
 <span class="nd">@njit</span><span class="p">(</span><span class="n">parallel</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">_copy</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">output</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The function copy the input array and make output array that is</span>
 <span class="sd">    allocated in different memory space. This a numba version of copy</span>
 <span class="sd">    function of numpy. Because each element is copied using parallel</span>
@@ -1120,7 +1120,7 @@
 
 <span class="nd">@njit</span><span class="p">(</span><span class="n">parallel</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">_replace</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">ind_sort</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function replace keys elements in input array with new value</span>
 <span class="sd">    elements. This function is used as internal function of</span>
 <span class="sd">    replace_relabels.</span>
@@ -1152,7 +1152,7 @@
 
 
 <span class="k">def</span> <span class="nf">_replace_labels</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Replace labels in array provided as keys to values.</span>
 
 <span class="sd">    Parameter:</span>
@@ -1181,7 +1181,7 @@
 
 <span class="nd">@njit</span><span class="p">()</span>
 <span class="k">def</span> <span class="nf">_sequence</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">count</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Internal function of resequnce_labels method. This function resquence</span>
 <span class="sd">    array elements in an ascending order using numba technique which is</span>
 <span class="sd">    many folds faster than make contigious funcition.</span>
@@ -1220,7 +1220,7 @@
 
 <span class="nd">@njit</span><span class="p">(</span><span class="n">parallel</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">_amax</span><span class="p">(</span><span class="n">array</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find largest element in an array using fast parallel numba technique.</span>
 
 <span class="sd">    Parameter:</span>
@@ -1238,7 +1238,7 @@
 
 
 <span class="k">def</span> <span class="nf">_resequence_labels</span><span class="p">(</span><span class="n">array</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Resequence the lablels to make them contigious.</span>
 
 <span class="sd">    Parameters</span>
@@ -1262,7 +1262,7 @@
 
 
 <span class="k">def</span> <span class="nf">_snow_chunked</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">r_max</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">0.4</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This private version of snow is called during snow_parallel.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">dt2</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">gaussian_filter</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">)</span>

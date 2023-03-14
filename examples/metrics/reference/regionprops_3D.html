@@ -222,6 +222,11 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="../../generators/tutorials/generate_spheres_packings.html">
+       Generating Sphere Packings from Digital Rocks Portal
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="../../generators/tutorials/making_blobs.html">
        Making blobs
       </a>
@@ -387,6 +392,24 @@
        <code class="docutils literal notranslate">
         <span class="pre">
          sierpinski_foam
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../generators/reference/sierpinski_foam2.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         sierpinski_foam2
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../generators/reference/spheres_from_coords.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         spheres_from_coords
         </span>
        </code>
       </a>
@@ -1534,6 +1557,15 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="../../visualization/reference/show_panels.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         show_panels
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="../../visualization/reference/show_planes.html">
        <code class="docutils literal notranslate">
         <span class="pre">
@@ -1577,6 +1609,11 @@
  <li class="toctree-l1">
   <a class="reference internal" href="../../generators/tutorials/cylinders.html">
    Generating fibrous mats
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../generators/tutorials/generate_spheres_packings.html">
+   Generating Sphere Packings from Digital Rocks Portal
   </a>
  </li>
  <li class="toctree-l1">
@@ -1735,6 +1772,24 @@
    <code class="docutils literal notranslate">
     <span class="pre">
      sierpinski_foam
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../generators/reference/sierpinski_foam2.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     sierpinski_foam2
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../generators/reference/spheres_from_coords.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     spheres_from_coords
     </span>
    </code>
   </a>
@@ -2710,6 +2765,15 @@
   </a>
  </li>
  <li class="toctree-l1">
+  <a class="reference internal" href="../../visualization/reference/show_panels.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     show_panels
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="../../visualization/reference/show_planes.html">
    <code class="docutils literal notranslate">
     <span class="pre">
@@ -2786,7 +2850,11 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/6c2c61f2133cb0c54c77760f0bf1ef182d752a9d096f0353d6d63d7c7ced6a61.png" src="../../../_images/6c2c61f2133cb0c54c77760f0bf1ef182d752a9d096f0353d6d63d7c7ced6a61.png" />
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_9576/538947285.py:1: DeprecationWarning: Call to deprecated function (or staticmethod) rsa. (This function will be renamed random_spheres in a future version)
+  im = ps.generators.rsa([80, 80, 80], r=10, clearance=3)
+</pre></div>
+</div>
+<img alt="../../../_images/93b49d7155efa0f648525f1860ea749cb5bba54bc26b584670324185d9c0ff32.png" src="../../../_images/93b49d7155efa0f648525f1860ea749cb5bba54bc26b584670324185d9c0ff32.png" />
 </div>
 </div>
 <p>We need to label each sphere so they are recognized as individual regions:</p>
@@ -2798,7 +2866,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/524b1594a24c16aa3db7f596261656fd4c1cf593ed0ed35c5a1e854ea96de3f6.png" src="../../../_images/524b1594a24c16aa3db7f596261656fd4c1cf593ed0ed35c5a1e854ea96de3f6.png" />
+<img alt="../../../_images/a4f1c14876623b528bb557c00a3a51a477438266f546f80b45ee80d294166d43.png" src="../../../_images/a4f1c14876623b528bb557c00a3a51a477438266f546f80b45ee80d294166d43.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -2816,26 +2884,31 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fc1170a50d0&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fc116cf8730&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fc116cf8a00&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fc15c1fd310&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fc1189c4f40&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fc116c8d940&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fc116c8d130&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fc117094190&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fc1170942b0&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fc117094280&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fc117094220&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fc1170945e0&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fc1170946a0&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fc117094730&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fc117094640&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fc1170942e0&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fc1170941c0&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fc1170940d0&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fc1170943a0&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fc1170a5b50&gt;]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fb1842537c0&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fb1c87ff2e0&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fb184345f10&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fb184345640&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fb1843456d0&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fb184345430&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fb184345280&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fb1843453a0&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fb184345ee0&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fb184345df0&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fb184345d60&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fb1843452b0&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fb184253790&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fb184253730&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fb1842538b0&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fb184253340&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fb184253bb0&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fb184253a30&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fb184253ac0&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fb184253430&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fb184253880&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fb184253c10&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fb184253250&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fb184253b20&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fb1842535e0&gt;]
 </pre></div>
 </div>
 </div>
@@ -2865,6 +2938,7 @@ centroid_weighted
 centroid_weighted_local
 convex_volume
 coords
+coords_scaled
 dt
 eccentricity
 equivalent_diameter_area
@@ -2891,6 +2965,7 @@ moments_weighted
 moments_weighted_central
 moments_weighted_hu
 moments_weighted_normalized
+num_pixels
 orientation
 perimeter
 perimeter_crofton
@@ -2915,7 +2990,7 @@ volume
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>4139
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>4139.0
 </pre></div>
 </div>
 </div>
@@ -2928,7 +3003,7 @@ volume
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>4139
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>4139.0
 </pre></div>
 </div>
 </div>
@@ -2954,7 +3029,7 @@ volume
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/5a5d507e20ebda575baebe445e1579e9aec555a5e57dc26dc6b455d4b6beb62b.png" src="../../../_images/5a5d507e20ebda575baebe445e1579e9aec555a5e57dc26dc6b455d4b6beb62b.png" />
+<img alt="../../../_images/40cfc6133874e611c2a3dc38c8669295ebf2666bcad51e394919a8cbd4e74310.png" src="../../../_images/40cfc6133874e611c2a3dc38c8669295ebf2666bcad51e394919a8cbd4e74310.png" />
 </div>
 </div>
 </section>

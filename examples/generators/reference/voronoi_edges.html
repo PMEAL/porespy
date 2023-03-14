@@ -46,7 +46,7 @@
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="Filters" href="../../../_examples/filters/index.html" />
-    <link rel="prev" title="sierpinski_foam" href="sierpinski_foam.html" />
+    <link rel="prev" title="spheres_from_coords" href="spheres_from_coords.html" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="docsearch:language" content="en">
   </head>
@@ -222,6 +222,11 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="../tutorials/generate_spheres_packings.html">
+       Generating Sphere Packings from Digital Rocks Portal
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="../tutorials/making_blobs.html">
        Making blobs
       </a>
@@ -387,6 +392,24 @@
        <code class="docutils literal notranslate">
         <span class="pre">
          sierpinski_foam
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="sierpinski_foam2.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         sierpinski_foam2
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="spheres_from_coords.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         spheres_from_coords
         </span>
        </code>
       </a>
@@ -1534,6 +1557,15 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="../../visualization/reference/show_panels.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         show_panels
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="../../visualization/reference/show_planes.html">
        <code class="docutils literal notranslate">
         <span class="pre">
@@ -1577,6 +1609,11 @@
  <li class="toctree-l1">
   <a class="reference internal" href="../tutorials/cylinders.html">
    Generating fibrous mats
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../tutorials/generate_spheres_packings.html">
+   Generating Sphere Packings from Digital Rocks Portal
   </a>
  </li>
  <li class="toctree-l1">
@@ -1735,6 +1772,24 @@
    <code class="docutils literal notranslate">
     <span class="pre">
      sierpinski_foam
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="sierpinski_foam2.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     sierpinski_foam2
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="spheres_from_coords.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     spheres_from_coords
     </span>
    </code>
   </a>
@@ -2710,6 +2765,15 @@
   </a>
  </li>
  <li class="toctree-l1">
+  <a class="reference internal" href="../../visualization/reference/show_panels.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     show_panels
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="../../visualization/reference/show_planes.html">
    <code class="docutils literal notranslate">
     <span class="pre">
@@ -2827,7 +2891,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(shape: List[int], ncells: int, r: int = 0, flat_faces: bool = True)
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(shape: List[int], ncells: int, r: int = 0, flat_faces: bool = True, seed=None)
 </pre></div>
 </div>
 </div>
@@ -2847,7 +2911,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/871c281e58b45fc45f53feba66a45748c8aa12e21b3949c4b221e42f4a024443.png" src="../../../_images/871c281e58b45fc45f53feba66a45748c8aa12e21b3949c4b221e42f4a024443.png" />
+<img alt="../../../_images/898b75230285967b317cb8b6bc62fef54cc5670d79607468cac7f21debf88a3b.png" src="../../../_images/898b75230285967b317cb8b6bc62fef54cc5670d79607468cac7f21debf88a3b.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -2862,7 +2926,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/407b06c296c8d491504f0115b4aa484bb61e1b205759b1accb4fe556eab4db7a.png" src="../../../_images/407b06c296c8d491504f0115b4aa484bb61e1b205759b1accb4fe556eab4db7a.png" />
+<img alt="../../../_images/32b564460acef3505a295c55a7342d907c080a9108c54b773699050292346421.png" src="../../../_images/32b564460acef3505a295c55a7342d907c080a9108c54b773699050292346421.png" />
 </div>
 </div>
 </section>
@@ -2881,7 +2945,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/1ca08c032f6d9c2f6980df0f10788a00d4919c0ed1b29cefeb4a3bda2ca19770.png" src="../../../_images/1ca08c032f6d9c2f6980df0f10788a00d4919c0ed1b29cefeb4a3bda2ca19770.png" />
+<img alt="../../../_images/5cb10490b32345ff955013e8e459032c131718b4b252a7e26dd63ea9360ba7c3.png" src="../../../_images/5cb10490b32345ff955013e8e459032c131718b4b252a7e26dd63ea9360ba7c3.png" />
 </div>
 </div>
 </section>
@@ -2908,7 +2972,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/d93b9c8a36dce3a6f6d20c4cc7936e86f5b2796d302be99785ea15c4650ebee3.png" src="../../../_images/d93b9c8a36dce3a6f6d20c4cc7936e86f5b2796d302be99785ea15c4650ebee3.png" />
+<img alt="../../../_images/913b5ef7b51f290b564d1f00ab7e823c36ae0f54257424698f45f42c500d01d1.png" src="../../../_images/913b5ef7b51f290b564d1f00ab7e823c36ae0f54257424698f45f42c500d01d1.png" />
 </div>
 </div>
 </section>
@@ -2934,7 +2998,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/d8de52f0f3fae6a36003b75e7e636e38eef8b48c2b1603a55433924e1ae96dfc.png" src="../../../_images/d8de52f0f3fae6a36003b75e7e636e38eef8b48c2b1603a55433924e1ae96dfc.png" />
+<img alt="../../../_images/610ca5830d38fc2fcd9d20ff452ebc093d6b88484600bbf6151795732c4c3d37.png" src="../../../_images/610ca5830d38fc2fcd9d20ff452ebc093d6b88484600bbf6151795732c4c3d37.png" />
 </div>
 </div>
 </section>

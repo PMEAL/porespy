@@ -180,8 +180,13 @@
   </label>
   <ul class="current">
    <li class="toctree-l2">
-    <a class="reference internal" href="porespy.generators.RSA.html">
-     RSA
+    <a class="reference internal" href="porespy.generators.rsa.html">
+     rsa
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.generators.random_spheres.html">
+     random_spheres
     </a>
    </li>
    <li class="toctree-l2">
@@ -1048,7 +1053,7 @@
 <h1>voronoi_edges<a class="headerlink" href="#voronoi-edges" title="Permalink to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="porespy.generators.voronoi_edges">
-<span class="sig-name descname"><span class="pre">voronoi_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncells</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flat_faces</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/generators/_imgen.html#voronoi_edges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.generators.voronoi_edges" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">voronoi_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncells</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flat_faces</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/generators/_imgen.html#voronoi_edges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.generators.voronoi_edges" title="Permalink to this definition">#</a></dt>
 <dd><p>Create an image from the edges of a Voronoi tessellation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1062,6 +1067,9 @@ image.  If not given then edges are a single pixel/voxel thick.</p></li>
 <li><p><strong>flat_faces</strong> (<em>bool</em>) – Whether the Voronoi edges should lie on the boundary of the
 image (<code class="docutils literal notranslate"><span class="pre">True</span></code>), or if edges outside the image should be removed
 (<code class="docutils literal notranslate"><span class="pre">False</span></code>).</p></li>
+<li><p><strong>seed</strong> (int, optional, default = <cite>None</cite>) – Initializes numpy’s random number generator to the specified state. If not
+provided, the current global value is used. This means calls to
+<code class="docutils literal notranslate"><span class="pre">np.random.state(seed)</span></code> prior to calling this function will be respected.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

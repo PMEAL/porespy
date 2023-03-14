@@ -222,6 +222,11 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="../../generators/tutorials/generate_spheres_packings.html">
+       Generating Sphere Packings from Digital Rocks Portal
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="../../generators/tutorials/making_blobs.html">
        Making blobs
       </a>
@@ -387,6 +392,24 @@
        <code class="docutils literal notranslate">
         <span class="pre">
          sierpinski_foam
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../generators/reference/sierpinski_foam2.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         sierpinski_foam2
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../generators/reference/spheres_from_coords.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         spheres_from_coords
         </span>
        </code>
       </a>
@@ -1534,6 +1557,15 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="../../visualization/reference/show_panels.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         show_panels
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="../../visualization/reference/show_planes.html">
        <code class="docutils literal notranslate">
         <span class="pre">
@@ -1577,6 +1609,11 @@
  <li class="toctree-l1">
   <a class="reference internal" href="../../generators/tutorials/cylinders.html">
    Generating fibrous mats
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../generators/tutorials/generate_spheres_packings.html">
+   Generating Sphere Packings from Digital Rocks Portal
   </a>
  </li>
  <li class="toctree-l1">
@@ -1735,6 +1772,24 @@
    <code class="docutils literal notranslate">
     <span class="pre">
      sierpinski_foam
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../generators/reference/sierpinski_foam2.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     sierpinski_foam2
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../generators/reference/spheres_from_coords.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     spheres_from_coords
     </span>
    </code>
   </a>
@@ -2710,6 +2765,15 @@
   </a>
  </li>
  <li class="toctree-l1">
+  <a class="reference internal" href="../../visualization/reference/show_panels.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     show_panels
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="../../visualization/reference/show_planes.html">
    <code class="docutils literal notranslate">
     <span class="pre">
@@ -2751,11 +2815,6 @@
 
 <nav id="bd-toc-nav">
     <ul class="visible nav section-nav flex-column">
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#import-packages">
-   Import packages
-  </a>
- </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#im">
    <code class="docutils literal notranslate">
@@ -2814,8 +2873,6 @@
   <section class="tex2jax_ignore mathjax_ignore" id="apply-padded">
 <h1><code class="docutils literal notranslate"><span class="pre">apply_padded</span></code><a class="headerlink" href="#apply-padded" title="Permalink to this heading">#</a></h1>
 <p>Applies padding to an image before passing through specified function</p>
-<section id="import-packages">
-<h2>Import packages<a class="headerlink" href="#import-packages" title="Permalink to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -2829,7 +2886,6 @@
 </div>
 </div>
 </div>
-</section>
 <section id="im">
 <h2><code class="docutils literal notranslate"><span class="pre">im</span></code><a class="headerlink" href="#im" title="Permalink to this heading">#</a></h2>
 <p>Generate a test image. Can be 2D or 3D image.</p>
@@ -2845,7 +2901,11 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/2e56d6c6cc33eadd6947c821117ac55b2c6870799bf70f3aa3c5516538feb634.png" src="../../../_images/2e56d6c6cc33eadd6947c821117ac55b2c6870799bf70f3aa3c5516538feb634.png" />
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_2321/1290140162.py:2: DeprecationWarning: Call to deprecated function (or staticmethod) rsa. (This function will be renamed random_spheres in a future version)
+  im = ps.generators.rsa(im, r=20, volume_fraction=0.4) == 0
+</pre></div>
+</div>
+<img alt="../../../_images/7515509fa976d3510dae6b7234ff32a08dd870fbd3f983cb9586774081398067.png" src="../../../_images/7515509fa976d3510dae6b7234ff32a08dd870fbd3f983cb9586774081398067.png" />
 </div>
 </div>
 </section>
@@ -2879,7 +2939,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/e8f7c99f133455513ff43310fea6529caf4930902ec8fe839300f277e6c5aa8c.png" src="../../../_images/e8f7c99f133455513ff43310fea6529caf4930902ec8fe839300f277e6c5aa8c.png" />
+<img alt="../../../_images/49b5de38cd29e25658764966048938be8273ac3f4b5c71158f971df356a6c84d.png" src="../../../_images/49b5de38cd29e25658764966048938be8273ac3f4b5c71158f971df356a6c84d.png" />
 </div>
 </div>
 <p>It’s also useful for morphological operations such as <code class="docutils literal notranslate"><span class="pre">binary_opening</span></code></p>
@@ -2892,8 +2952,8 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x3</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">apply_padded</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">pad_width</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="n">func</span><span class="p">,</span> <span class="n">pad_val</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">selem</span><span class="o">=</span><span class="n">ps</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">ps_disk</span><span class="p">(</span><span class="mi">15</span><span class="p">))</span>
-<span class="n">x4</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">apply_padded</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">pad_width</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="n">func</span><span class="p">,</span> <span class="n">pad_val</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">selem</span><span class="o">=</span><span class="n">ps</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">ps_disk</span><span class="p">(</span><span class="mi">15</span><span class="p">))</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x3</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">apply_padded</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">pad_width</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="n">func</span><span class="p">,</span> <span class="n">pad_val</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">footprint</span><span class="o">=</span><span class="n">ps</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">ps_disk</span><span class="p">(</span><span class="mi">15</span><span class="p">))</span>
+<span class="n">x4</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">apply_padded</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">pad_width</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="n">func</span><span class="p">,</span> <span class="n">pad_val</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">footprint</span><span class="o">=</span><span class="n">ps</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">ps_disk</span><span class="p">(</span><span class="mi">15</span><span class="p">))</span>
 
 <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">12</span><span class="p">,</span> <span class="mi">12</span><span class="p">]);</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">x3</span><span class="p">)</span>
@@ -2906,11 +2966,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/runner/work/porespy/porespy/porespy/filters/_funcs.py:142: FutureWarning: `selem` is a deprecated argument name for `binary_opening`. It will be removed in version 1.0. Please use `footprint` instead.
-  temp = func(padded, **kwargs)
-</pre></div>
-</div>
-<img alt="../../../_images/3fe4b6d81503671c4c2b17519b80da413a57b1a1ae47c0131a5e2261a505b103.png" src="../../../_images/3fe4b6d81503671c4c2b17519b80da413a57b1a1ae47c0131a5e2261a505b103.png" />
+<img alt="../../../_images/240ead776e2d61bd0d46b76f15018f2a44087a755aae0ac6e7e71cf8c65758f3.png" src="../../../_images/240ead776e2d61bd0d46b76f15018f2a44087a755aae0ac6e7e71cf8c65758f3.png" />
 </div>
 </div>
 </section>
@@ -2940,7 +2996,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/e1fb1e8e7d1abfce0072337f3943d6791109f373e97b63c345358038af8ff500.png" src="../../../_images/e1fb1e8e7d1abfce0072337f3943d6791109f373e97b63c345358038af8ff500.png" />
+<img alt="../../../_images/106065554ebbc79274b4dd740aa015f67910a6aba86e86dcbf6ba4e7bb91d0e9.png" src="../../../_images/106065554ebbc79274b4dd740aa015f67910a6aba86e86dcbf6ba4e7bb91d0e9.png" />
 </div>
 </div>
 </section>

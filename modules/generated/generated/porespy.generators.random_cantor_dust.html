@@ -180,8 +180,13 @@
   </label>
   <ul class="current">
    <li class="toctree-l2">
-    <a class="reference internal" href="porespy.generators.RSA.html">
-     RSA
+    <a class="reference internal" href="porespy.generators.rsa.html">
+     rsa
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="porespy.generators.random_spheres.html">
+     random_spheres
     </a>
    </li>
    <li class="toctree-l2">
@@ -1048,7 +1053,7 @@
 <h1>random_cantor_dust<a class="headerlink" href="#random-cantor-dust" title="Permalink to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="porespy.generators.random_cantor_dust">
-<span class="sig-name descname"><span class="pre">random_cantor_dust</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.8</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/generators/_fractals.html#random_cantor_dust"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.generators.random_cantor_dust" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">random_cantor_dust</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/generators/_fractals.html#random_cantor_dust"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.generators.random_cantor_dust" title="Permalink to this definition">#</a></dt>
 <dd><p>Generates an image of random cantor dust</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1058,6 +1063,9 @@ it will be increased to the nearest size that is.</p></li>
 <li><p><strong>n</strong> (<em>int</em>) – The number of times to iteratively divide the image.</p></li>
 <li><p><strong>p</strong> (<em>int</em><em> (</em><em>default = 2</em><em>)</em>) – The number of divisions to make on each iteration.</p></li>
 <li><p><strong>f</strong> (<em>float</em><em> (</em><em>default = 0.8</em><em>)</em>) – The fraction of the set to keep on each iteration.</p></li>
+<li><p><strong>seed</strong> (int, optional, default = <cite>None</cite>) – Initializes numpy’s random number generator to the specified state. If not
+provided, the current global value is used. This means calls to
+<code class="docutils literal notranslate"><span class="pre">np.random.state(seed)</span></code> prior to calling this function will be respected.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

@@ -199,9 +199,10 @@
 <span class="kn">import</span> <span class="nn">scipy.ndimage</span> <span class="k">as</span> <span class="nn">spim</span>
 <span class="kn">import</span> <span class="nn">scipy.stats</span> <span class="k">as</span> <span class="nn">spst</span>
 <span class="kn">from</span> <span class="nn">deprecated</span> <span class="kn">import</span> <span class="n">deprecated</span>
-<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">norm_to_uniform</span><span class="p">,</span> <span class="n">ps_ball</span><span class="p">,</span> <span class="n">ps_disk</span><span class="p">,</span> <span class="n">get_border</span>
+<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">norm_to_uniform</span><span class="p">,</span> <span class="n">ps_ball</span><span class="p">,</span> <span class="n">ps_disk</span><span class="p">,</span> <span class="n">get_border</span><span class="p">,</span> <span class="n">ps_round</span>
 <span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">extract_subsection</span>
 <span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">insert_sphere</span>
+<span class="kn">from</span> <span class="nn">porespy.tools</span> <span class="kn">import</span> <span class="n">_insert_disk_at_points</span>
 <span class="kn">from</span> <span class="nn">porespy</span> <span class="kn">import</span> <span class="n">settings</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
 
@@ -211,7 +212,7 @@
 
 
 <div class="viewcode-block" id="insert_shape"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.generators.insert_shape.html#porespy.generators.insert_shape">[docs]</a><span class="k">def</span> <span class="nf">insert_shape</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">element</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">corner</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;overwrite&quot;</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Inserts sub-image into a larger image at the specified location.</span>
 
 <span class="sd">    If the inserted image extends beyond the boundaries of the image it will</span>
@@ -295,20 +296,24 @@
     <span class="k">return</span> <span class="n">im</span></div>
 
 
-<div class="viewcode-block" id="RSA"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.generators.RSA.html#porespy.generators.RSA">[docs]</a><span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;This function has been renamed to rsa (lowercase to meet pep8&quot;</span><span class="p">)</span>
+<span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;This function has been renamed to rsa (lowercase to meet pep8)&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">RSA</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">rsa</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">rsa</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">rsa</span><span class="p">(</span><span class="n">im_or_shape</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span>
-        <span class="n">r</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-        <span class="n">volume_fraction</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-        <span class="n">clearance</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-        <span class="n">n_max</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100000</span><span class="p">,</span>
-        <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;contained&quot;</span><span class="p">,</span>
-        <span class="n">return_spheres</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">smooth</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="random_spheres"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.generators.random_spheres.html#porespy.generators.random_spheres">[docs]</a><span class="k">def</span> <span class="nf">random_spheres</span><span class="p">(</span>
+    <span class="n">im_or_shape</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span>
+    <span class="n">r</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">volume_fraction</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">clearance</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">protrusion</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">n_max</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100000</span><span class="p">,</span>
+    <span class="n">edges</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;contained&quot;</span><span class="p">,</span>
+    <span class="n">return_spheres</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">smooth</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generates a sphere or disk packing using Random Sequential Addition</span>
 
 <span class="sd">    Parameters</span>
@@ -326,11 +331,132 @@
 <span class="sd">        spheres are added as ``True``&#39;s, so each sphere addition increases the</span>
 <span class="sd">        ``volume_fraction`` until the specified limit is reached.  Note that if</span>
 <span class="sd">        ``n_max`` is reached first, then ``volume_fraction`` will not be</span>
-<span class="sd">        acheived.  Also, ``volume_fraction`` is not counted correctly if the</span>
+<span class="sd">        achieved.  Also, ``volume_fraction`` is not counted correctly if the</span>
 <span class="sd">        ``mode`` is ``&#39;extended&#39;``.</span>
 <span class="sd">    clearance : int (optional, default = 0)</span>
 <span class="sd">        The amount of space to put between each sphere. Negative values are</span>
 <span class="sd">        acceptable to create overlaps, so long as ``abs(clearance) &lt; r``.</span>
+<span class="sd">    protrusion : int (optional, default = 0)</span>
+<span class="sd">        The amount by which inserted spheres are allowed to protrude outside of</span>
+<span class="sd">        the given background.  If set to 0 (the default) then all spheres will</span>
+<span class="sd">        be fully inside the region marked ``False`` in the input image. If &gt; 0, then</span>
+<span class="sd">        spheres will extend into the region marked ``True`` in the input image.</span>
+<span class="sd">    n_max : int (default is 100,000)</span>
+<span class="sd">        The maximum number of spheres to add.  Using a low value may halt</span>
+<span class="sd">        the addition process prior to reaching the specified</span>
+<span class="sd">        ``volume_fraction``.  If ``None`` is given, then no limit is used.</span>
+<span class="sd">    edges : string (default is &#39;contained&#39;)</span>
+<span class="sd">        Controls how the edges of the image are handled.  Options are:</span>
+
+<span class="sd">        ============ ===============================================================</span>
+<span class="sd">        edges        description</span>
+<span class="sd">        ============ ===============================================================</span>
+<span class="sd">        &#39;contained&#39;  Spheres are all completely within the image</span>
+<span class="sd">        &#39;extended&#39;   Spheres are allowed to extend beyond the edge of the</span>
+<span class="sd">                     image.  In this mode the volume fraction will be less than</span>
+<span class="sd">                     requested since some spheres extend beyond the image, but their</span>
+<span class="sd">                     entire volume is counted as added for computational efficiency.</span>
+<span class="sd">        ============ ===============================================================</span>
+
+<span class="sd">    return_spheres : bool</span>
+<span class="sd">        If ``True`` then an image containing only the spheres is returned</span>
+<span class="sd">        rather than the input image with the spheres added, which is the</span>
+<span class="sd">        default behavior.</span>
+<span class="sd">    smooth : bool</span>
+<span class="sd">        Indicates whether balls should have smooth faces (``True``) or should</span>
+<span class="sd">        include the bumps on the extremities (``False``).</span>
+<span class="sd">    seed : int</span>
+<span class="sd">        The seed to supply to the random number generators. Because this function</span>
+<span class="sd">        uses ``numba`` for speed, calling the normal ``numpy.random.seed(&lt;seed&gt;)``</span>
+<span class="sd">        has no effect. To get a repeatable image, the seed must be passed to the</span>
+<span class="sd">        function so it can be initialized the way ``numba`` requires. The default</span>
+<span class="sd">        is ``None``, which means each call will produce a new realization.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    image : ndarray</span>
+<span class="sd">        An image with spheres of specified radius *added* to the background.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    pseudo_gravity_packing</span>
+<span class="sd">    pseudo_electrostatic_packing</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This algorithm ensures that spheres do not overlap but does not</span>
+<span class="sd">    guarantee they are tightly packed.</span>
+
+<span class="sd">    This function adds spheres to the background of the received ``im``, which</span>
+<span class="sd">    allows iteratively adding spheres of different radii to the unfilled space</span>
+<span class="sd">    by repeatedly passing in the result of previous calls to RSA.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    [1] Random Heterogeneous Materials, S. Torquato (2001)</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here</span>
+<span class="sd">    &lt;https://porespy.org/examples/generators/reference/random_spheres.html&gt;`_</span>
+<span class="sd">    to view online example.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">rsa</span><span class="p">(</span>
+        <span class="n">im_or_shape</span><span class="o">=</span><span class="n">im_or_shape</span><span class="p">,</span>
+        <span class="n">r</span><span class="o">=</span><span class="n">r</span><span class="p">,</span>
+        <span class="n">volume_fraction</span><span class="o">=</span><span class="n">volume_fraction</span><span class="p">,</span>
+        <span class="n">clearance</span><span class="o">=</span><span class="n">clearance</span><span class="p">,</span>
+        <span class="n">protrusion</span><span class="o">=</span><span class="n">protrusion</span><span class="p">,</span>
+        <span class="n">n_max</span><span class="o">=</span><span class="n">n_max</span><span class="p">,</span>
+        <span class="n">mode</span><span class="o">=</span><span class="n">edges</span><span class="p">,</span>
+        <span class="n">return_spheres</span><span class="o">=</span><span class="n">return_spheres</span><span class="p">,</span>
+        <span class="n">smooth</span><span class="o">=</span><span class="n">smooth</span><span class="p">,</span>
+        <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">im</span></div>
+
+
+<div class="viewcode-block" id="rsa"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.generators.rsa.html#porespy.generators.rsa">[docs]</a><span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;This function will be renamed random_spheres in a future version&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">rsa</span><span class="p">(</span>
+    <span class="n">im_or_shape</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span>
+    <span class="n">r</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">volume_fraction</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">clearance</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">protrusion</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">n_max</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100000</span><span class="p">,</span>
+    <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;contained&quot;</span><span class="p">,</span>
+    <span class="n">return_spheres</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">smooth</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generates a sphere or disk packing using Random Sequential Addition</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    im_or_shape : ndarray or list</span>
+<span class="sd">        To provide flexibility, this argument accepts either an image into</span>
+<span class="sd">        which the spheres are inserted, or a shape which is used to create an</span>
+<span class="sd">        empty image.  In both cases the spheres are added as ``True`` values</span>
+<span class="sd">        to the background.  Since ``True`` is considered the pore space, then</span>
+<span class="sd">        the added spheres represent holes.</span>
+<span class="sd">    r : int</span>
+<span class="sd">        The radius of the disk or sphere to insert.</span>
+<span class="sd">    volume_fraction : scalar (default is 1.0)</span>
+<span class="sd">        The fraction of the image that should be filled with spheres.  The</span>
+<span class="sd">        spheres are added as ``True``&#39;s, so each sphere addition increases the</span>
+<span class="sd">        ``volume_fraction`` until the specified limit is reached.  Note that if</span>
+<span class="sd">        ``n_max`` is reached first, then ``volume_fraction`` will not be</span>
+<span class="sd">        achieved.  Also, ``volume_fraction`` is not counted correctly if the</span>
+<span class="sd">        ``mode`` is ``&#39;extended&#39;``.</span>
+<span class="sd">    clearance : int (optional, default = 0)</span>
+<span class="sd">        The amount of space to put between each sphere. Negative values are</span>
+<span class="sd">        acceptable to create overlaps, so long as ``abs(clearance) &lt; r``.</span>
+<span class="sd">    protrusion : int (optional, default = 0)</span>
+<span class="sd">        The amount by which inserted spheres are allowed to protrude outside of</span>
+<span class="sd">        the given background.  If set to 0 (the default) then all spheres will</span>
+<span class="sd">        be fully inside the region marked ``False`` in the input image. If &gt; 0, then</span>
+<span class="sd">        spheres will extend into the region marked ``True`` in the input image.</span>
 <span class="sd">    n_max : int (default is 100,000)</span>
 <span class="sd">        The maximum number of spheres to add.  Using a low value may halt</span>
 <span class="sd">        the addition process prior to reaching the specified</span>
@@ -342,7 +468,7 @@
 <span class="sd">            Spheres are all completely within the image</span>
 <span class="sd">        &#39;extended&#39;</span>
 <span class="sd">            Spheres are allowed to extend beyond the edge of the</span>
-<span class="sd">            image.  In this mode the volume fraction will be less that</span>
+<span class="sd">            image.  In this mode the volume fraction will be less than</span>
 <span class="sd">            requested since some spheres extend beyond the image, but their</span>
 <span class="sd">            entire volume is counted as added for computational efficiency.</span>
 
@@ -353,6 +479,12 @@
 <span class="sd">    smooth : bool</span>
 <span class="sd">        Indicates whether balls should have smooth faces (``True``) or should</span>
 <span class="sd">        include the bumps on the extremities (``False``).</span>
+<span class="sd">    seed : int</span>
+<span class="sd">        The seed to supply to the random number generators. Because this function</span>
+<span class="sd">        uses ``numba`` for speed, calling the normal ``numpy.random.seed(&lt;seed&gt;)``</span>
+<span class="sd">        has no effect. To get a repeatable image, the seed must be passed to the</span>
+<span class="sd">        function so it can be initialized the way ``numba`` requires. The default</span>
+<span class="sd">        is ``None``, which means each call will produce a new realization.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -384,49 +516,44 @@
 <span class="sd">    to view online example.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;RSA: Adding spheres of size </span><span class="si">{</span><span class="n">r</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">im_or_shape</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">3</span><span class="p">:</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;rsa: Adding spheres of size </span><span class="si">{</span><span class="n">r</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">im_or_shape</span><span class="p">)</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
         <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">im_or_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="n">input_im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">im</span> <span class="o">=</span> <span class="n">im_or_shape</span>
+        <span class="n">input_im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">im_or_shape</span><span class="p">)</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">im_or_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># Initialize rng so numba sees it</span>
+        <span class="n">_set_seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
     <span class="n">im</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">return_spheres</span><span class="p">:</span>
-        <span class="n">im_temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+    <span class="n">shape_orig</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span>  <span class="c1"># Store original image shape, to undo padding at the end</span>
     <span class="k">if</span> <span class="n">n_max</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">n_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+    <span class="c1"># Compute volume fraction info</span>
     <span class="n">vf_final</span> <span class="o">=</span> <span class="n">volume_fraction</span>
     <span class="n">vf_start</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">im</span><span class="o">.</span><span class="n">size</span>
+    <span class="n">vf_template</span> <span class="o">=</span> <span class="n">ps_round</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="n">im</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="n">smooth</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">im</span><span class="o">.</span><span class="n">size</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Initial volume fraction: </span><span class="si">{</span><span class="n">vf_start</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="n">template_lg</span> <span class="o">=</span> <span class="n">ps_disk</span><span class="p">((</span><span class="n">r</span> <span class="o">+</span> <span class="n">clearance</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
-        <span class="n">template_sm</span> <span class="o">=</span> <span class="n">ps_disk</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="n">smooth</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">template_lg</span> <span class="o">=</span> <span class="n">ps_ball</span><span class="p">((</span><span class="n">r</span> <span class="o">+</span> <span class="n">clearance</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
-        <span class="n">template_sm</span> <span class="o">=</span> <span class="n">ps_ball</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="n">smooth</span><span class="p">)</span>
-    <span class="n">vf_template</span> <span class="o">=</span> <span class="n">template_sm</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">im</span><span class="o">.</span><span class="n">size</span>
-    <span class="c1"># Pad image by the radius of large template to enable insertion near edges</span>
-    <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">pad_width</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">r</span> <span class="o">+</span> <span class="n">clearance</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;edge&quot;</span><span class="p">)</span>
-    <span class="c1"># Depending on mode, adjust mask to remove options around edge</span>
-    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;contained&quot;</span><span class="p">:</span>
-        <span class="n">border</span> <span class="o">=</span> <span class="n">get_border</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">thickness</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">r</span> <span class="o">+</span> <span class="n">clearance</span><span class="p">),</span>
-                            <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;faces&quot;</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;extended&quot;</span><span class="p">:</span>
-        <span class="n">border</span> <span class="o">=</span> <span class="n">get_border</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">thickness</span><span class="o">=</span><span class="p">(</span><span class="n">r</span> <span class="o">+</span> <span class="n">clearance</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
-                            <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;faces&quot;</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Unrecognized mode: &quot;</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
-    <span class="c1"># Remove border pixels</span>
-    <span class="n">im</span><span class="p">[</span><span class="n">border</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="c1"># Dilate existing objects by strel to remove pixels near them</span>
     <span class="c1"># from consideration for sphere placement</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Dilating foreground features by sphere radius&quot;</span><span class="p">)</span>
-    <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="n">im</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
-    <span class="n">options_im</span> <span class="o">=</span> <span class="n">dt</span> <span class="o">&gt;=</span> <span class="n">r</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="n">input_im</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">options_im</span> <span class="o">=</span> <span class="n">dt</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="n">r</span> <span class="o">-</span> <span class="n">protrusion</span><span class="p">)</span>
+    <span class="c1"># Depending on mode, adjust options_im to remove options around edge</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;contained&quot;</span><span class="p">:</span>
+        <span class="n">border</span> <span class="o">=</span> <span class="n">get_border</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">thickness</span><span class="o">=</span><span class="n">r</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;faces&quot;</span><span class="p">)</span>
+        <span class="n">options_im</span><span class="p">[</span><span class="n">border</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;extended&quot;</span><span class="p">:</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">pad_width</span><span class="o">=</span><span class="n">r</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;edge&quot;</span><span class="p">)</span>
+        <span class="n">options_im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">options_im</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;symmetric&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Unrecognized mode: &quot;</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
     <span class="c1"># Begin inserting the spheres</span>
     <span class="n">vf</span> <span class="o">=</span> <span class="n">vf_start</span>
     <span class="n">free_sites</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">options_im</span><span class="p">)</span>
     <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">while</span> <span class="p">(</span><span class="n">vf</span> <span class="o">&lt;=</span> <span class="n">vf_final</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">n_max</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">free_sites</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="c1"># Choose a random site from free_sites</span>
         <span class="n">c</span><span class="p">,</span> <span class="n">count</span> <span class="o">=</span> <span class="n">_make_choice</span><span class="p">(</span><span class="n">options_im</span><span class="p">,</span> <span class="n">free_sites</span><span class="o">=</span><span class="n">free_sites</span><span class="p">)</span>
         <span class="c1"># The 100 below is arbitrary and may change performance</span>
         <span class="k">if</span> <span class="n">count</span> <span class="o">&gt;</span> <span class="mi">100</span><span class="p">:</span>
@@ -435,28 +562,45 @@
             <span class="n">free_sites</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">options_im</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
             <span class="k">break</span>
-        <span class="n">s_sm</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="nb">slice</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">r</span><span class="p">,</span> <span class="n">x</span> <span class="o">+</span> <span class="n">r</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">c</span><span class="p">])</span>
-        <span class="n">s_lg</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="nb">slice</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">r</span> <span class="o">+</span> <span class="n">clearance</span><span class="p">),</span>
-                            <span class="n">x</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">r</span> <span class="o">+</span> <span class="n">clearance</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">c</span><span class="p">])</span>
-        <span class="n">im</span><span class="p">[</span><span class="n">s_sm</span><span class="p">]</span> <span class="o">+=</span> <span class="n">template_sm</span>  <span class="c1"># Add ball to image</span>
-        <span class="n">options_im</span><span class="p">[</span><span class="n">s_lg</span><span class="p">][</span><span class="n">template_lg</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># Update extended region</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">_insert_disk_at_points</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span>
+                                    <span class="n">coords</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">c</span><span class="p">),</span>
+                                    <span class="n">r</span><span class="o">=</span><span class="n">r</span><span class="p">,</span>
+                                    <span class="n">v</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                    <span class="n">smooth</span><span class="o">=</span><span class="n">smooth</span><span class="p">)</span>
+        <span class="n">options_im</span> <span class="o">=</span> <span class="n">_insert_disk_at_points</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">options_im</span><span class="p">,</span>
+                                            <span class="n">coords</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">c</span><span class="p">),</span>
+                                            <span class="n">r</span><span class="o">=</span><span class="mi">2</span><span class="o">*</span><span class="n">r</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">clearance</span><span class="o">/</span><span class="mi">2</span><span class="p">)),</span>
+                                            <span class="n">v</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                            <span class="n">smooth</span><span class="o">=</span><span class="n">smooth</span><span class="p">,</span>
+                                            <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">vf</span> <span class="o">+=</span> <span class="n">vf_template</span>
         <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of spheres inserted: </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="c1"># Get slice into returned image to retain original size</span>
-    <span class="n">s</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="nb">slice</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">r</span> <span class="o">+</span> <span class="n">clearance</span><span class="p">),</span> <span class="n">d</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">r</span> <span class="o">+</span> <span class="n">clearance</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
-               <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">])</span>
-    <span class="n">im</span> <span class="o">=</span> <span class="n">im</span><span class="p">[</span><span class="n">s</span><span class="p">]</span>
-    <span class="n">vf</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">im</span><span class="o">.</span><span class="n">size</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">extract_subsection</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">shape_orig</span><span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Final volume fraction:&quot;</span><span class="p">,</span> <span class="n">vf</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">return_spheres</span><span class="p">:</span>
-        <span class="n">im</span> <span class="o">=</span> <span class="n">im</span> <span class="o">*</span> <span class="p">(</span><span class="o">~</span><span class="n">im_temp</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">im</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">return_spheres</span><span class="p">:</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">im</span> <span class="o">+</span> <span class="n">input_im</span>
+    <span class="k">return</span> <span class="n">im</span></div>
+
+
+<span class="nd">@njit</span>
+<span class="k">def</span> <span class="nf">_set_seed</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+
+
+<span class="nd">@njit</span>
+<span class="k">def</span> <span class="nf">_get_rand_float</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+
+
+<span class="nd">@njit</span>
+<span class="k">def</span> <span class="nf">_get_rand_int</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
 
 
 <span class="nd">@njit</span>
 <span class="k">def</span> <span class="nf">_make_choice</span><span class="p">(</span><span class="n">options_im</span><span class="p">,</span> <span class="n">free_sites</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function is called by _begin_inserting to find valid insertion</span>
 <span class="sd">    points.</span>
 
@@ -493,7 +637,7 @@
             <span class="k">if</span> <span class="n">count</span> <span class="o">&gt;=</span> <span class="n">maxiter</span><span class="p">:</span>
                 <span class="n">coords</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
                 <span class="k">break</span>
-            <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">upper_limit</span><span class="p">)</span>
+            <span class="n">ind</span> <span class="o">=</span> <span class="n">_get_rand_int</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">upper_limit</span><span class="p">)</span>
             <span class="c1"># This numpy function is not supported by numba yet</span>
             <span class="c1"># c1, c2 = np.unravel_index(free_sites[ind], options_im.shape)</span>
             <span class="c1"># So using manual unraveling</span>
@@ -508,7 +652,7 @@
             <span class="k">if</span> <span class="n">count</span> <span class="o">&gt;=</span> <span class="n">maxiter</span><span class="p">:</span>
                 <span class="n">coords</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
                 <span class="k">break</span>
-            <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">upper_limit</span><span class="p">)</span>
+            <span class="n">ind</span> <span class="o">=</span> <span class="n">_get_rand_int</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">upper_limit</span><span class="p">)</span>
             <span class="c1"># This numpy function is not supported by numba yet</span>
             <span class="c1"># c1, c2, c3 = np.unravel_index(free_sites[ind], options_im.shape)</span>
             <span class="c1"># So using manual unraveling</span>
@@ -520,8 +664,14 @@
     <span class="k">return</span> <span class="n">coords</span><span class="p">,</span> <span class="n">count</span>
 
 
-<div class="viewcode-block" id="bundle_of_tubes"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.generators.bundle_of_tubes.html#porespy.generators.bundle_of_tubes">[docs]</a><span class="k">def</span> <span class="nf">bundle_of_tubes</span><span class="p">(</span><span class="n">shape</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">spacing</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">distribution</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="bundle_of_tubes"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.generators.bundle_of_tubes.html#porespy.generators.bundle_of_tubes">[docs]</a><span class="k">def</span> <span class="nf">bundle_of_tubes</span><span class="p">(</span>
+    <span class="n">shape</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+    <span class="n">spacing</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">distribution</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a 3D image of a bundle of tubes, in the form of a rectangular</span>
 <span class="sd">    plate with randomly sized holes through it.</span>
 
@@ -536,6 +686,10 @@
 <span class="sd">        be distributed between this values down to 3 voxels.</span>
 <span class="sd">    distribution : scipy.stats object</span>
 <span class="sd">        A handle to a scipy stats object with the desired parameters.</span>
+<span class="sd">    seed : int, optional, default = `None`</span>
+<span class="sd">        Initializes numpy&#39;s random number generator to the specified state. If not</span>
+<span class="sd">        provided, the current global value is used. This means calls to</span>
+<span class="sd">        ``np.random.state(seed)`` prior to calling this function will be respected.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -549,6 +703,8 @@
 <span class="sd">    to view online example.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
     <span class="n">shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
         <span class="n">shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">shape</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
@@ -580,8 +736,9 @@
                          <span class="n">porosity</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
                          <span class="n">dist</span><span class="p">,</span>
                          <span class="n">nbins</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
-                         <span class="n">r_min</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+                         <span class="n">r_min</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+                         <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create an image of randomly placed, overlapping spheres with a</span>
 <span class="sd">    distribution of radii.</span>
 
@@ -608,6 +765,10 @@
 <span class="sd">        monodisperse spheres that span 0.05 and 0.95 of the possible</span>
 <span class="sd">        values produced by the provided distribution, then overlays them</span>
 <span class="sd">        to get polydispersivity.</span>
+<span class="sd">    seed : int, optional, default = `None`</span>
+<span class="sd">        Initializes numpy&#39;s random number generator to the specified state. If not</span>
+<span class="sd">        provided, the current global value is used. This means calls to</span>
+<span class="sd">        ``np.random.state(seed)`` prior to calling this function will be respected.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -621,6 +782,8 @@
 <span class="sd">    to view online example.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
     <span class="n">shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="mi">3</span><span class="p">,),</span> <span class="nb">int</span><span class="p">(</span><span class="n">shape</span><span class="p">))</span>
@@ -638,9 +801,14 @@
     <span class="k">return</span> <span class="n">im</span></div>
 
 
-<div class="viewcode-block" id="voronoi_edges"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.generators.voronoi_edges.html#porespy.generators.voronoi_edges">[docs]</a><span class="k">def</span> <span class="nf">voronoi_edges</span><span class="p">(</span><span class="n">shape</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">ncells</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">r</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-                  <span class="n">flat_faces</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="voronoi_edges"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.generators.voronoi_edges.html#porespy.generators.voronoi_edges">[docs]</a><span class="k">def</span> <span class="nf">voronoi_edges</span><span class="p">(</span>
+    <span class="n">shape</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+    <span class="n">ncells</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">r</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">flat_faces</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create an image from the edges of a Voronoi tessellation.</span>
 
 <span class="sd">    Parameters</span>
@@ -658,6 +826,10 @@
 <span class="sd">        Whether the Voronoi edges should lie on the boundary of the</span>
 <span class="sd">        image (``True``), or if edges outside the image should be removed</span>
 <span class="sd">        (``False``).</span>
+<span class="sd">    seed : int, optional, default = `None`</span>
+<span class="sd">        Initializes numpy&#39;s random number generator to the specified state. If not</span>
+<span class="sd">        provided, the current global value is used. This means calls to</span>
+<span class="sd">        ``np.random.state(seed)`` prior to calling this function will be respected.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -671,6 +843,8 @@
 <span class="sd">    to view online example.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Generating </span><span class="si">{</span><span class="n">ncells</span><span class="si">}</span><span class="s2"> cells&quot;</span><span class="p">)</span>
     <span class="n">shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -701,7 +875,7 @@
 
 
 <span class="k">def</span> <span class="nf">_get_Voronoi_edges</span><span class="p">(</span><span class="n">vor</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Given a Voronoi object as produced by the scipy.spatial.Voronoi class,</span>
 <span class="sd">    this function calculates the start and end points of eeach edge in the</span>
 <span class="sd">    Voronoi diagram, in terms of the vertex indices used by the received</span>
@@ -742,7 +916,7 @@
                     <span class="n">offset</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                     <span class="n">smooth</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
                     <span class="n">lattice</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sc&quot;</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generate a cubic packing of spheres in a specified lattice arrangement.</span>
 
 <span class="sd">    Parameters</span>
@@ -874,12 +1048,15 @@
     <span class="k">return</span> <span class="n">im</span></div>
 
 
-<div class="viewcode-block" id="overlapping_spheres"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.generators.overlapping_spheres.html#porespy.generators.overlapping_spheres">[docs]</a><span class="k">def</span> <span class="nf">overlapping_spheres</span><span class="p">(</span><span class="n">shape</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
-                        <span class="n">r</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-                        <span class="n">porosity</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-                        <span class="n">maxiter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
-                        <span class="n">tol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="overlapping_spheres"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.generators.overlapping_spheres.html#porespy.generators.overlapping_spheres">[docs]</a><span class="k">def</span> <span class="nf">overlapping_spheres</span><span class="p">(</span>
+    <span class="n">shape</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+    <span class="n">r</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">porosity</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">maxiter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="n">tol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">,</span>
+    <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generate a packing of overlapping mono-disperse spheres</span>
 
 <span class="sd">    Parameters</span>
@@ -896,6 +1073,10 @@
 <span class="sd">        the porosity of the final image to match the given value.</span>
 <span class="sd">    tol : float</span>
 <span class="sd">        Tolerance for porosity of the final image compared to the given value.</span>
+<span class="sd">    seed : int, optional, default = `None`</span>
+<span class="sd">        Initializes numpy&#39;s random number generator to the specified state. If not</span>
+<span class="sd">        provided, the current global value is used. This means calls to</span>
+<span class="sd">        ``np.random.state(seed)`` prior to calling this function will be respected.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -915,6 +1096,8 @@
 <span class="sd">    to view online example.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
     <span class="n">shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">shape</span><span class="p">))</span>
@@ -930,7 +1113,7 @@
         <span class="k">return</span> <span class="n">edt</span><span class="p">(</span><span class="n">im</span> <span class="o">&gt;</span> <span class="n">N</span> <span class="o">/</span> <span class="n">bulk_vol</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">r</span>
 
     <span class="k">def</span> <span class="nf">g</span><span class="p">(</span><span class="n">im</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns fraction of 0s, given a binary image&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns fraction of 0s, given a binary image&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">im</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
 
     <span class="c1"># # Newton&#39;s method for getting image porosity match the given</span>
@@ -961,9 +1144,14 @@
     <span class="k">return</span> <span class="o">~</span><span class="n">f</span><span class="p">(</span><span class="n">N</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="blobs"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.generators.blobs.html#porespy.generators.blobs">[docs]</a><span class="k">def</span> <span class="nf">blobs</span><span class="p">(</span><span class="n">shape</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">porosity</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">blobiness</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-          <span class="n">divs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="blobs"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.generators.blobs.html#porespy.generators.blobs">[docs]</a><span class="k">def</span> <span class="nf">blobs</span><span class="p">(</span>
+    <span class="n">shape</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+    <span class="n">porosity</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+    <span class="n">blobiness</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">divs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generates an image containing amorphous blobs</span>
 
 <span class="sd">    Parameters</span>
@@ -986,6 +1174,10 @@
 <span class="sd">        equivalent to ``[2, 2, 2]`` for a 3D image.  The number of cores</span>
 <span class="sd">        used is specified in ``porespy.settings.ncores`` and defaults to</span>
 <span class="sd">        all cores.</span>
+<span class="sd">    seed : int, optional, default = `None`</span>
+<span class="sd">        Initializes numpy&#39;s random number generator to the specified state. If not</span>
+<span class="sd">        provided, the current global value is used. This means calls to</span>
+<span class="sd">        ``np.random.state(seed)`` prior to calling this function will be respected.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -1013,6 +1205,8 @@
 <span class="sd">    to view online example.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
         <span class="n">shape</span> <span class="o">=</span> <span class="p">[</span><span class="n">shape</span><span class="p">]</span><span class="o">*</span><span class="mi">3</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -1042,14 +1236,17 @@
     <span class="k">return</span> <span class="n">im</span></div>
 
 
-<span class="k">def</span> <span class="nf">_cylinders</span><span class="p">(</span><span class="n">shape</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
-               <span class="n">r</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-               <span class="n">ncylinders</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-               <span class="n">phi_max</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-               <span class="n">theta_max</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">90</span><span class="p">,</span>
-               <span class="n">length</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-               <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span> <span class="nf">_cylinders</span><span class="p">(</span>
+    <span class="n">shape</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+    <span class="n">r</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">ncylinders</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">phi_max</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">theta_max</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">90</span><span class="p">,</span>
+    <span class="n">length</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generates a binary image of overlapping cylinders.</span>
 
 <span class="sd">    This is a good approximation of a fibrous mat.</span>
@@ -1083,6 +1280,10 @@
 <span class="sd">        cylinder. Note that one or both of the ends *may* still lie</span>
 <span class="sd">        outside the domain, depending on the randomly chosen center point</span>
 <span class="sd">        of the cylinder.</span>
+<span class="sd">    seed : int, optional, default = `None`</span>
+<span class="sd">        Initializes numpy&#39;s random number generator to the specified state. If not</span>
+<span class="sd">        provided, the current global value is used. This means calls to</span>
+<span class="sd">        ``np.random.state(seed)`` prior to calling this function will be respected.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -1090,6 +1291,8 @@
 <span class="sd">        A boolean array with ``True`` values denoting the pore space</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
     <span class="n">shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">shape</span><span class="p">))</span>
@@ -1137,15 +1340,18 @@
     <span class="k">return</span> <span class="o">~</span><span class="n">dt</span>
 
 
-<div class="viewcode-block" id="cylinders"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.generators.cylinders.html#porespy.generators.cylinders">[docs]</a><span class="k">def</span> <span class="nf">cylinders</span><span class="p">(</span><span class="n">shape</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
-              <span class="n">r</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-              <span class="n">ncylinders</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-              <span class="n">porosity</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-              <span class="n">phi_max</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-              <span class="n">theta_max</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">90</span><span class="p">,</span>
-              <span class="n">length</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-              <span class="n">maxiter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="cylinders"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.generators.cylinders.html#porespy.generators.cylinders">[docs]</a><span class="k">def</span> <span class="nf">cylinders</span><span class="p">(</span>
+    <span class="n">shape</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+    <span class="n">r</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">ncylinders</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">porosity</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">phi_max</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">theta_max</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">90</span><span class="p">,</span>
+    <span class="n">length</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">maxiter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generates a binary image of overlapping cylinders given porosity OR</span>
 <span class="sd">    number of cylinders.</span>
 
@@ -1191,6 +1397,10 @@
 <span class="sd">        typically effective in getting very close to the targeted</span>
 <span class="sd">        porosity), but a greater number can be input to improve the</span>
 <span class="sd">        achieved porosity.</span>
+<span class="sd">    seed : int, optional, default = `None`</span>
+<span class="sd">        Initializes numpy&#39;s random number generator to the specified state. If not</span>
+<span class="sd">        provided, the current global value is used. This means calls to</span>
+<span class="sd">        ``np.random.state(seed)`` prior to calling this function will be respected.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -1223,6 +1433,9 @@
 <span class="sd">    to view online example.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="n">ncylinders</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">im</span> <span class="o">=</span> <span class="n">_cylinders</span><span class="p">(</span>
             <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span>
@@ -1243,7 +1456,7 @@
     <span class="n">vol_total</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">shape</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">get_num_pixels</span><span class="p">(</span><span class="n">porosity</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method to calculate number of pixels given a porosity</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">porosity</span><span class="p">)</span> <span class="o">*</span> <span class="n">vol_total</span>
@@ -1283,7 +1496,7 @@
 
 
 <div class="viewcode-block" id="line_segment"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.generators.line_segment.html#porespy.generators.line_segment">[docs]</a><span class="k">def</span> <span class="nf">line_segment</span><span class="p">(</span><span class="n">X0</span><span class="p">,</span> <span class="n">X1</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the voxel coordinates of a straight line between the two</span>
 <span class="sd">    given end points</span>
 
@@ -1310,7 +1523,9 @@
     <span class="n">X0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">around</span><span class="p">(</span><span class="n">X0</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
     <span class="n">X1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">around</span><span class="p">(</span><span class="n">X1</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">X0</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-        <span class="n">L</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">absolute</span><span class="p">([[</span><span class="n">X1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">X0</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="p">[</span><span class="n">X1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">X0</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="p">[</span><span class="n">X1</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">X0</span><span class="p">[</span><span class="mi">2</span><span class="p">]]]))</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">L</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">absolute</span><span class="p">([[</span><span class="n">X1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">X0</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="p">[</span><span class="n">X1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">X0</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="p">[</span><span class="n">X1</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">X0</span><span class="p">[</span><span class="mi">2</span><span class="p">]]])</span>
+        <span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
         <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rint</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">X0</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">X1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">L</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
         <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rint</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">X0</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">X1</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">L</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
         <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rint</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">X0</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">X1</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">L</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
