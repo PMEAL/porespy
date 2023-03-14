@@ -4,8 +4,7 @@ import numpy as np
 from numpy.testing import assert_allclose
 import porespy as ps
 import openpnm as op
-import imageio
-import zipfile
+from pathlib import Path
 
 
 class ExportTest():
@@ -61,16 +60,16 @@ class ExportTest():
                             [40, 25, 55],
                             [60, 0, 89]])
         ps.io.spheres_to_comsol(filename='sphere_pack', centers=centers, radii=radii)
-        os.remove("sphere_pack.mphtxt")
+        # os.remove("sphere_pack.mphtxt")
 
     def test_spheres_to_comsol_im(self):
         im = ps.generators.overlapping_spheres(shape=[100, 100, 100],
                                                r=10, porosity=0.6)
         ps.io.spheres_to_comsol(filename='sphere_pack', im=im)
-        os.remove("sphere_pack.mphtxt")
+        # os.remove("sphere_pack.mphtxt")
 
     def test_zip_to_stack_and_folder_to_stack(self):
-        im = ps.io.zip_to_stack("blobs_layers.zip")
+        im = ps.io.zip_to_stack('blobs_layers.zip')
         assert im.shape == (100, 100, 10)
         im = ps.io.folder_to_stack("blobs_layers")
         assert im.shape == (100, 100, 10)

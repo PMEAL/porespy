@@ -3,6 +3,7 @@ import numpy as np
 import os
 from zipfile import ZipFile
 from porespy.tools import get_tqdm
+from pathlib import Path
 
 
 tqdm = get_tqdm()
@@ -33,13 +34,14 @@ def folder_to_stack(target_dir):
     The files should be named with leading numerical values indicating their
     layer number, like 001, 002, etc.
     """
-    test_im = imageio.v2.imread(os.path.join(target_dir, os.listdir(target_dir)[0]))
+    p = Path(target_dir).resolve()
+    test_im = imageio.v2.imread(os.path.join(p, os.listdir(p)[0]))
     im = np.zeros(shape=[test_im.shape[0],
                          test_im.shape[1],
-                         len(os.listdir(target_dir))],
+                         len(os.listdir(p))],
                   dtype=test_im.dtype)
-    for i, f in enumerate(tqdm(os.listdir(target_dir))):
-        im[..., i] = imageio.v2.imread(os.path.join(target_dir, f))
+    for i, f in enumerate(tqdm(os.listdir(p))):
+        im[..., i] = imageio.v2.imread(os.path.join(p, f))
 
     return im
 
@@ -66,11 +68,11 @@ def zip_to_stack(f):
     The files should be named with leading numerical values indicating their
     layer number, like 001, 002, etc.
     """
-    fzip = f
-    target_dir = fzip.rpartition('.')[0]
+    p = Path(f).resolve()
+    dir_for_files = p.parts[-1].rpartition('.')[0]
 
-    with ZipFile(fzip, 'r') as f:
-        f.extractall(target_dir)
+    with ZipFile(p, 'r') as f:
+        f.extractall(dir_for_files)
 
     # Method 1: uses skimage and numpy function so is easy to understand
     # filenames = []
@@ -80,12 +82,13 @@ def zip_to_stack(f):
     # im = np.stack(files, axis=2)
 
     # Method 2: Same speed as 1 but more complex, but allows tqdm progress bar
-    test_im = imageio.v2.imread(os.path.join(target_dir, os.listdir(target_dir)[0]))
+    test_im = imageio.v2.imread(os.path.join(dir_for_files,
+                                             os.listdir(dir_for_files)[0]))
     im = np.zeros(shape=[test_im.shape[0],
                          test_im.shape[1],
-                         len(os.listdir(target_dir))],
+                         len(os.listdir(dir_for_files))],
                   dtype=test_im.dtype)
-    for i, f in enumerate(tqdm(os.listdir(target_dir))):
-        im[..., i] = imageio.v2.imread(os.path.join(target_dir, f))
+    for i, f in enumerate(tqdm(os.listdir(dir_for_files))):
+        im[..., i] = imageio.v2.imread(os.path.join(dir_for_files , f))
 
     return im
