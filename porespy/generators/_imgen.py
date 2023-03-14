@@ -207,7 +207,7 @@ def random_spheres(
     Examples
     --------
     `Click here
-    <https://porespy.org/examples/generators/reference/rsa.html>`_
+    <https://porespy.org/examples/generators/reference/random_spheres.html>`_
     to view online example.
 
     """
