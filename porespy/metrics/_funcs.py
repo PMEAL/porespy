@@ -108,7 +108,6 @@ def boxcount(im, bins=10):
     return data
 
 
-
 def representative_elementary_volume(im, npoints=1000):
     r"""
     Calculates the porosity of an image as a function subdomain size.
