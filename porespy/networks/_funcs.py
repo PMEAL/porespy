@@ -12,6 +12,15 @@ from porespy import settings
 from porespy.tools import get_tqdm
 
 
+__all__ = [
+    "add_boundary_regions",
+    "generate_voxel_image",
+    "label_phases",
+    "label_boundaries",
+    "map_to_regions",
+]
+
+
 tqdm = get_tqdm()
 logger = logging.getLogger(__name__)
 
