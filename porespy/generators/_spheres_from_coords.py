@@ -86,7 +86,7 @@ def spheres_from_coords(df, mode='contained', smooth=False):
     if hasattr(df, 'keys'):
         for i, k in enumerate(df.keys()):
             if k.upper()[0] in cols:
-                df[k.upper()[0]] = df[k]
+                df[k.upper()[0]] = np.array(df[k])
     else:  # Assume it's a numpy array
         import pandas as pd
         df = pd.DataFrame(df, columns=cols[:df.shape[1]])
@@ -99,10 +99,10 @@ def spheres_from_coords(df, mode='contained', smooth=False):
         if np.any(df[ax] < 0):
             df[ax] -= df[ax].min()
 
-    r = np.array(df['R']).astype(int)
-    x = np.array(df['X']).astype(int)
-    y = np.array(df['Y']).astype(int)
-    z = np.array(df['Z']).astype(int)
+    r = np.array(np.around(df['R'], decimals=0)).astype(int)
+    x = np.array(np.around(df['X'], decimals=0)).astype(int)
+    y = np.array(np.around(df['Y'], decimals=0)).astype(int)
+    z = np.array(np.around(df['Z'], decimals=0)).astype(int)
 
     if mode == 'contained':
         x += r.max()
