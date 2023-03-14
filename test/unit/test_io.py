@@ -70,9 +70,9 @@ class ExportTest():
         os.remove("sphere_pack.mphtxt")
 
     def test_zip_to_stack_and_folder_to_stack(self):
-        im = ps.io.zip_to_stack("../fixtures/blobs_layers.zip")
+        im = ps.io.zip_to_stack("blobs_layers.zip")
         assert im.shape == (100, 100, 10)
-        im = ps.io.folder_to_stack("../fixtures/blobs_layers")
+        im = ps.io.folder_to_stack("blobs_layers")
         assert im.shape == (100, 100, 10)
 
 
