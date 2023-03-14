@@ -207,8 +207,77 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
 
 
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;blobs&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bundle_of_tubes&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;cylinders&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;cylindrical_plug&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;insert_shape&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;lattice_spheres&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;line_segment&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;overlapping_spheres&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;polydisperse_spheres&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;RSA&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;rsa&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;random_spheres&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;voronoi_edges&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
 <span class="n">tqdm</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">get_tqdm</span><span class="p">()</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="cylindrical_plug"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.generators.cylindrical_plug.html#porespy.generators.cylindrical_plug">[docs]</a><span class="k">def</span> <span class="nf">cylindrical_plug</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generates a cylindrical plug suitable for use as a mask on a tomogram</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    shape : array_like</span>
+<span class="sd">        The shape of the image to create.  Can be 3D, or 2D in which case</span>
+<span class="sd">        a circle is returned.</span>
+<span class="sd">    r : int (optional)</span>
+<span class="sd">        The diameter of the cylinder to create. If not provided then the</span>
+<span class="sd">        largest possible radius is used to fit within the image.</span>
+<span class="sd">    axis : int</span>
+<span class="sd">        The direction along with the cylinder&#39;s axis of rotation should be</span>
+<span class="sd">        oriented.  The default is 2, which is the z-direction.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    cylinder : ndarray</span>
+<span class="sd">        A boolean image of the size given by ``shape`` with ``True``&#39;s</span>
+<span class="sd">        inside the cylinder and ``False``&#39;s outside.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here</span>
+<span class="sd">    &lt;https://porespy.org/examples/generators/reference/cylindrical_plug.html&gt;`_</span>
+<span class="sd">    to view online example.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">axes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="n">axis</span><span class="p">]))),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="n">im2d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">[</span><span class="n">axes</span><span class="p">])</span>
+        <span class="n">im2d</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">/</span><span class="mi">2</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="n">im2d</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">r</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="n">axes</span><span class="p">])</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">circ</span> <span class="o">=</span> <span class="n">dt</span> <span class="o">&lt;</span> <span class="n">r</span>
+        <span class="n">tile_ax</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">tile_ax</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span>
+        <span class="n">circ</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">circ</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
+        <span class="n">cyl</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">circ</span><span class="p">,</span> <span class="n">tile_ax</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">im2d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">im2d</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="n">im2d</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">r</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="n">axes</span><span class="p">])</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">cyl</span> <span class="o">=</span> <span class="n">dt</span> <span class="o">&lt;</span> <span class="n">r</span>
+    <span class="k">return</span> <span class="n">cyl</span></div>
 
 
 <div class="viewcode-block" id="insert_shape"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.generators.insert_shape.html#porespy.generators.insert_shape">[docs]</a><span class="k">def</span> <span class="nf">insert_shape</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">element</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">corner</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;overwrite&quot;</span><span class="p">):</span>

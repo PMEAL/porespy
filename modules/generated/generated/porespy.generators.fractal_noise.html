@@ -1067,28 +1067,34 @@ generated, with larger values giving more scale.</p></li>
 <li><p><strong>gain</strong> (<em>scalar</em><em>, </em><em>default=0.5</em>) – Controls the intensity of successively higher octaves. Values
 below 1.0 mean the higher octaves are less prominent.</p></li>
 <li><p><strong>mode</strong> (<em>string</em>) – <p>The type of noise to generate. Options are:</p>
-<ul>
-<li><dl class="simple">
-<dt>’perlin’</dt><dd><p>classic Perlin noise</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>’simplex’</dt><dd><p>updated Perlin noise for more realistic textures</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>’value’</dt><dd><p>bilnear interpolation of white noise</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>’cubic’</dt><dd><p>cubic interpolation of white noise</p>
-</dd>
-</dl>
-</li>
-</ul>
+<table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>mode</p></th>
+<th class="head"><p>description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>’perlin’</p></td>
+<td><p>Classic Perlin noise. For more information on <code class="docutils literal notranslate"><span class="pre">perlin</span> <span class="pre">noise</span></code> see
+<a class="reference external" href="https://en.wikipedia.org/wiki/Perlin_noise">here</a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>’simplex’</p></td>
+<td><p>Updated Perlin noise for more realistic textures. For more
+information on <code class="docutils literal notranslate"><span class="pre">simplex</span> <span class="pre">noise</span></code> see
+<a class="reference external" href="https://en.wikipedia.org/wiki/Simplex_noise">here</a>.</p></td>
+</tr>
+<tr class="row-even"><td><p>’value’</p></td>
+<td><p>Bilnear interpolation of white noise. For more information on
+<code class="docutils literal notranslate"><span class="pre">value</span> <span class="pre">noise</span></code> see
+<a class="reference external" href="https://en.wikipedia.org/wiki/Value_noise">here</a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>’cubic’</p></td>
+<td><p>Cubic interpolation of white noise. For more information on
+<code class="docutils literal notranslate"><span class="pre">cubic</span> <span class="pre">noise</span></code> see
+<a class="reference external" href="https://github.com/jobtalle/CubicNoise">here</a>.</p></td>
+</tr>
+</tbody>
+</table>
 </p></li>
 <li><p><strong>seed</strong> (<em>int</em><em>, </em><em>optional</em>) – The seed of the random number generator.  Using the same
 <code class="docutils literal notranslate"><span class="pre">seed</span></code> between runs will produce the same image.</p></li>
@@ -1109,14 +1115,6 @@ package. <code class="docutils literal notranslate"><span class="pre">pyfastnois
 called <a class="reference external" href="https://github.com/Auburn/FastNoiseSIMD">FastNoiseSIMD</a>.
 To access the more elaborate functionality and options of these
 packages, explore the <a class="reference external" href="https://pyfastnoisesimd.readthedocs.io/en/latest/overview.html">pyfastnoisesimd documentation</a>.</p>
-<p>For more information on <code class="docutils literal notranslate"><span class="pre">simplex</span> <span class="pre">noise</span></code> see
-<a class="reference external" href="https://en.wikipedia.org/wiki/Simplex_noise">here</a>.</p>
-<p>For more information on <code class="docutils literal notranslate"><span class="pre">perlin</span> <span class="pre">noise</span></code> see
-<a class="reference external" href="https://en.wikipedia.org/wiki/Perlin_noise">here</a>.</p>
-<p>For more information on <code class="docutils literal notranslate"><span class="pre">value</span> <span class="pre">noise</span></code> see
-<a class="reference external" href="https://en.wikipedia.org/wiki/Value_noise">here</a>.</p>
-<p>For more information on <code class="docutils literal notranslate"><span class="pre">cubic</span> <span class="pre">noise</span></code> see
-<a class="reference external" href="https://github.com/jobtalle/CubicNoise">here</a>.</p>
 <p class="rubric">Examples</p>
 <p><a class="reference external" href="https://porespy.org/examples/generators/reference/fractal_noise.html">Click here</a>
 to view online example.</p>

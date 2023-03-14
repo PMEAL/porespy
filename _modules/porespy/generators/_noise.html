@@ -194,6 +194,11 @@
 <span class="kn">import</span> <span class="nn">psutil</span>
 
 
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;fractal_noise&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
 <div class="viewcode-block" id="fractal_noise"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.generators.fractal_noise.html#porespy.generators.fractal_noise">[docs]</a><span class="k">def</span> <span class="nf">fractal_noise</span><span class="p">(</span>
     <span class="n">shape</span><span class="p">,</span>
     <span class="n">frequency</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>
@@ -224,17 +229,21 @@
 <span class="sd">    mode : string</span>
 <span class="sd">        The type of noise to generate. Options are:</span>
 
-<span class="sd">        - &#39;perlin&#39;</span>
-<span class="sd">            classic Perlin noise</span>
-
-<span class="sd">        - &#39;simplex&#39;</span>
-<span class="sd">            updated Perlin noise for more realistic textures</span>
-
-<span class="sd">        - &#39;value&#39;</span>
-<span class="sd">            bilnear interpolation of white noise</span>
-
-<span class="sd">        - &#39;cubic&#39;</span>
-<span class="sd">            cubic interpolation of white noise</span>
+<span class="sd">        ========== ==================================================================</span>
+<span class="sd">        mode       description</span>
+<span class="sd">        ========== ==================================================================</span>
+<span class="sd">        &#39;perlin&#39;   Classic Perlin noise. For more information on ``perlin noise`` see</span>
+<span class="sd">                   `here &lt;https://en.wikipedia.org/wiki/Perlin_noise&gt;`__.</span>
+<span class="sd">        &#39;simplex&#39;  Updated Perlin noise for more realistic textures. For more</span>
+<span class="sd">                   information on ``simplex noise`` see</span>
+<span class="sd">                   `here &lt;https://en.wikipedia.org/wiki/Simplex_noise&gt;`__.</span>
+<span class="sd">        &#39;value&#39;    Bilnear interpolation of white noise. For more information on</span>
+<span class="sd">                   ``value noise`` see</span>
+<span class="sd">                   `here &lt;https://en.wikipedia.org/wiki/Value_noise&gt;`__.</span>
+<span class="sd">        &#39;cubic&#39;    Cubic interpolation of white noise. For more information on</span>
+<span class="sd">                   ``cubic noise`` see</span>
+<span class="sd">                   `here &lt;https://github.com/jobtalle/CubicNoise&gt;`__.</span>
+<span class="sd">        ========== ==================================================================</span>
 
 <span class="sd">    seed : int, optional</span>
 <span class="sd">        The seed of the random number generator.  Using the same</span>
@@ -258,18 +267,6 @@
 <span class="sd">    To access the more elaborate functionality and options of these</span>
 <span class="sd">    packages, explore the `pyfastnoisesimd documentation</span>
 <span class="sd">    &lt;https://pyfastnoisesimd.readthedocs.io/en/latest/overview.html&gt;`_.</span>
-
-<span class="sd">    For more information on ``simplex noise`` see</span>
-<span class="sd">    `here &lt;https://en.wikipedia.org/wiki/Simplex_noise&gt;`__.</span>
-
-<span class="sd">    For more information on ``perlin noise`` see</span>
-<span class="sd">    `here &lt;https://en.wikipedia.org/wiki/Perlin_noise&gt;`__.</span>
-
-<span class="sd">    For more information on ``value noise`` see</span>
-<span class="sd">    `here &lt;https://en.wikipedia.org/wiki/Value_noise&gt;`__.</span>
-
-<span class="sd">    For more information on ``cubic noise`` see</span>
-<span class="sd">    `here &lt;https://github.com/jobtalle/CubicNoise&gt;`__.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>

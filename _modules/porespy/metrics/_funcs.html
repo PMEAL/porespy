@@ -204,8 +204,99 @@
 <span class="kn">from</span> <span class="nn">numba</span> <span class="kn">import</span> <span class="n">njit</span>
 
 
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;boxcount&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;chord_counts&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;chord_length_distribution&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;find_h&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;lineal_path_distribution&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;pore_size_distribution&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;radial_density_distribution&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;porosity&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;porosity_profile&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;representative_elementary_volume&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;satn_profile&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;two_point_correlation&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;phase_fraction&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;pc_curve&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;pc_curve_from_ibip&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;pc_curve_from_mio&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
 <span class="n">tqdm</span> <span class="o">=</span> <span class="n">get_tqdm</span><span class="p">()</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="boxcount"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.metrics.boxcount.html#porespy.metrics.boxcount">[docs]</a><span class="k">def</span> <span class="nf">boxcount</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates fractal dimension of an image using the tiled box counting</span>
+<span class="sd">    method [1]_</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    im : ndarray</span>
+<span class="sd">        The image of the porous material.</span>
+<span class="sd">    bins : int or array_like, optional</span>
+<span class="sd">        The number of box sizes to use. The default is 10 sizes</span>
+<span class="sd">        logarithmically spaced between 1 and ``min(im.shape)``.</span>
+<span class="sd">        If an array is provided, this is used directly.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    results</span>
+<span class="sd">        An object possessing the following attributes:</span>
+
+<span class="sd">        size : ndarray</span>
+<span class="sd">            The box sizes used</span>
+<span class="sd">        count : ndarray</span>
+<span class="sd">            The number of boxes of each size that contain both solid and void</span>
+<span class="sd">        slope : ndarray</span>
+<span class="sd">            The gradient of ``count``. This has the same number of elements as</span>
+<span class="sd">            ``count`` and</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] See Boxcounting on `Wikipedia &lt;https://en.wikipedia.org/wiki/Box_counting&gt;`_</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    `Click here</span>
+<span class="sd">    &lt;https://porespy.org/examples/metrics/reference/box_counting.html&gt;`_</span>
+<span class="sd">    to view online example.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Image must be 2-dimensional or 3-dimensional&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="n">Ds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">)),</span> <span class="n">bins</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">Ds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">bins</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+    <span class="n">N</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">Ds</span><span class="p">,</span> <span class="o">**</span><span class="n">settings</span><span class="o">.</span><span class="n">tqdm</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">d</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">d</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="n">temp</span> <span class="o">=</span> <span class="n">im</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">d</span><span class="p">,</span> <span class="n">j</span><span class="p">:</span><span class="n">j</span><span class="o">+</span><span class="n">d</span><span class="p">]</span>
+                    <span class="n">result</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>
+                    <span class="n">result</span> <span class="o">-=</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">d</span><span class="p">):</span>
+                        <span class="n">temp</span> <span class="o">=</span> <span class="n">im</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">d</span><span class="p">,</span> <span class="n">j</span><span class="p">:</span><span class="n">j</span><span class="o">+</span><span class="n">d</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span><span class="n">k</span><span class="o">+</span><span class="n">d</span><span class="p">]</span>
+                        <span class="n">result</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>
+                        <span class="n">result</span> <span class="o">-=</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>
+        <span class="n">N</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+    <span class="n">slope</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">N</span><span class="p">)),</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">Ds</span><span class="p">))</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">Results</span><span class="p">()</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="n">Ds</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">count</span> <span class="o">=</span> <span class="n">N</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">slope</span> <span class="o">=</span> <span class="n">slope</span>
+    <span class="k">return</span> <span class="n">data</span></div>
 
 
 <div class="viewcode-block" id="representative_elementary_volume"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.metrics.representative_elementary_volume.html#porespy.metrics.representative_elementary_volume">[docs]</a><span class="k">def</span> <span class="nf">representative_elementary_volume</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">npoints</span><span class="o">=</span><span class="mi">1000</span><span class="p">):</span>
