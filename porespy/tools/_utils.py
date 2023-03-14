@@ -236,8 +236,9 @@ class Results:
         self._time = time.asctime()
 
     def __iter__(self):
-        for item in self.__dict__.values():
-            yield item
+        for k, v in self.__dict__.items():
+            if not k.startswith('_'):
+                yield v
 
     def __getitem__(self, key):
         return getattr(self, key)
