@@ -27,9 +27,16 @@ def folder_to_stack(target_dir):
     -------
     im : ndarray
         A 3D numpy array of the imported image.
+
+    Notes
+    -----
+    The files should be named with leading numerical values indicating their
+    layer number, like 001, 002, etc.
     """
     test_im = imageio.v2.imread(os.path.join(target_dir, os.listdir(target_dir)[0]))
-    im = np.zeros(shape=[test_im.shape[0], test_im.shape[1], len(os.listdir(target_dir))],
+    im = np.zeros(shape=[test_im.shape[0],
+                         test_im.shape[1],
+                         len(os.listdir(target_dir))],
                   dtype=test_im.dtype)
     for i, f in enumerate(tqdm(os.listdir(target_dir))):
         im[..., i] = imageio.v2.imread(os.path.join(target_dir, f))
@@ -53,6 +60,11 @@ def zip_to_stack(f):
     -------
     im : ndarray
         A 3D numpy array of the imported image.
+
+    Notes
+    -----
+    The files should be named with leading numerical values indicating their
+    layer number, like 001, 002, etc.
     """
     fzip = f
     target_dir = fzip.rpartition('.')[0]
@@ -69,7 +81,9 @@ def zip_to_stack(f):
 
     # Method 2: Same speed as 1 but more complex, but allows tqdm progress bar
     test_im = imageio.v2.imread(os.path.join(target_dir, os.listdir(target_dir)[0]))
-    im = np.zeros(shape=[test_im.shape[0], test_im.shape[1], len(os.listdir(target_dir))],
+    im = np.zeros(shape=[test_im.shape[0],
+                         test_im.shape[1],
+                         len(os.listdir(target_dir))],
                   dtype=test_im.dtype)
     for i, f in enumerate(tqdm(os.listdir(target_dir))):
         im[..., i] = imageio.v2.imread(os.path.join(target_dir, f))
