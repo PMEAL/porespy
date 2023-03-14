@@ -110,16 +110,18 @@ def RSA(*args, **kwargs):
     return rsa(*args, **kwargs)
 
 
-def rsa(im_or_shape: np.array,
-        r: int,
-        volume_fraction: int = 1,
-        clearance: int = 0,
-        protrusion: int = 0,
-        n_max: int = 100000,
-        mode: str = "contained",
-        return_spheres: bool = False,
-        smooth: bool = True,
-        seed: int = None):
+def rsa(
+    im_or_shape: np.array,
+    r: int,
+    volume_fraction: int = 1,
+    clearance: int = 0,
+    protrusion: int = 0,
+    n_max: int = 100000,
+    mode: str = "contained",
+    return_spheres: bool = False,
+    smooth: bool = True,
+    seed: int = None,
+):
     r"""
     Generates a sphere or disk packing using Random Sequential Addition
 
@@ -356,12 +358,12 @@ def _make_choice(options_im, free_sites):
 
 
 def bundle_of_tubes(
-        shape: List[int],
-        spacing: int,
-        distribution=None,
-        smooth=True,
-        seed=None,
-    ):
+    shape: List[int],
+    spacing: int,
+    distribution=None,
+    smooth=True,
+    seed=None,
+):
     r"""
     Create a 3D image of a bundle of tubes, in the form of a rectangular
     plate with randomly sized holes through it.
@@ -840,7 +842,8 @@ def blobs(
     porosity: float = 0.5,
     blobiness: int = 1,
     divs: int = 1,
-    seed=None):
+    seed=None,
+):
     """
     Generates an image containing amorphous blobs
 
