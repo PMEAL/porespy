@@ -3,8 +3,16 @@ from porespy.tools import norm_to_uniform
 import psutil
 
 
-def fractal_noise(shape, frequency=0.05, octaves=4, gain=0.5, mode='simplex',
-                  seed=None, cores=None, uniform=True):
+def fractal_noise(
+    shape,
+    frequency=0.05,
+    octaves=4,
+    gain=0.5,
+    mode='simplex',
+    seed=None,
+    cores=None,
+    uniform=True,
+):
     r"""
     Generate fractal noise which can be thresholded to create binary
     images with realistic structures across scales.
