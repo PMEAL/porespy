@@ -1,3 +1,4 @@
+import logging
 import numpy as np
 from porespy.tools import _insert_disks_at_points, find_bbox
 
@@ -5,6 +6,9 @@ from porespy.tools import _insert_disks_at_points, find_bbox
 __all__ = [
     'spheres_from_coords',
 ]
+
+
+logger = logging.getLogger(__name__)
 
 
 def spheres_from_coords(df, mode='contained', smooth=False):
@@ -90,6 +94,11 @@ def spheres_from_coords(df, mode='contained', smooth=False):
     if 'R' not in df.keys():
         df['R'] = np.ones_like(df['X'])
 
+    # Correct for any negative coordinates
+    for ax in ['X', 'Y', 'Z']:
+        if np.any(df[ax] < 0):
+            df[ax] -= df[ax].min()
+
     r = np.array(df['R']).astype(int)
     x = np.array(df['X']).astype(int)
     y = np.array(df['Y']).astype(int)
@@ -114,6 +123,7 @@ def spheres_from_coords(df, mode='contained', smooth=False):
         crds[:, mask] = 0
         shape[mask] = 1
 
+    logger.info(f"Inserting spheres into image of size {shape}")
     im = np.zeros(shape, dtype=bool)
     im = _insert_disks_at_points(
         im,
@@ -122,6 +132,7 @@ def spheres_from_coords(df, mode='contained', smooth=False):
         v=True,
         smooth=smooth,
     )
+    logger.info("Sphere insertion complete, performing postprocessing")
     im = im.squeeze()
     bbox = find_bbox(im)
     im = im[bbox]
