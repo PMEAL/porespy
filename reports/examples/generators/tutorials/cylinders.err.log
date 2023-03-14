@@ -32,8 +32,14 @@ nbclient.exceptions.CellTimeoutError: A cell timed out while it was being execut
 The message was: Cell execution timed out.
 Here is a preview of the cell contents:
 -------------------
-['porosity_target = [0.1, 0.4, 0.8, 0.95]', 'porosity_actual = []', 'runtime_ratios = []', 'runtime_porosity = []', 'runtime_ncylinder = []']
-...
-['for eps in porosity_target:', '    temp = time.time()', '    im = ps.generators.cylinders(**params_generic, porosity=eps)', '    runtime_porosity.append(time.time() - temp)', '    porosity_actual.append(ps.metrics.porosity(im))']
+porosity_target = 0.85
+porosity_actual = []
+maxiter = range(0, 10)
+
+for m in maxiter:
+    # Update maxiter in params_generic
+    params_generic.update({"maxiter": m})
+    im = ps.generators.cylinders(**params_generic, porosity=porosity_target)
+    porosity_actual.append(ps.metrics.porosity(im))
 -------------------
 
