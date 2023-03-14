@@ -355,7 +355,13 @@ def _make_choice(options_im, free_sites):
     return coords, count
 
 
-def bundle_of_tubes(shape: List[int], spacing: int, distribution=None, smooth=True):
+def bundle_of_tubes(
+        shape: List[int],
+        spacing: int,
+        distribution=None,
+        smooth=True,
+        seed=None,
+    ):
     r"""
     Create a 3D image of a bundle of tubes, in the form of a rectangular
     plate with randomly sized holes through it.
@@ -371,6 +377,10 @@ def bundle_of_tubes(shape: List[int], spacing: int, distribution=None, smooth=Tr
         be distributed between this values down to 3 voxels.
     distribution : scipy.stats object
         A handle to a scipy stats object with the desired parameters.
+    seed : int, optional, default = `None`
+        Initializes numpy's random number generator to the specified state. If not
+        provided, the current global value is used. This means calls to
+        ``np.random.state(seed)`` prior to calling this function will be respected.
 
     Returns
     -------
@@ -384,6 +394,8 @@ def bundle_of_tubes(shape: List[int], spacing: int, distribution=None, smooth=Tr
     to view online example.
 
     """
+    if seed is not None:
+        np.random.seed(seed)
     shape = np.array(shape)
     if len(shape) == 2:
         shape = np.hstack((shape, [1]))
@@ -415,7 +427,8 @@ def polydisperse_spheres(shape: List[int],
                          porosity: float,
                          dist,
                          nbins: int = 5,
-                         r_min: int = 5):
+                         r_min: int = 5,
+                         seed=None):
     r"""
     Create an image of randomly placed, overlapping spheres with a
     distribution of radii.
@@ -443,6 +456,10 @@ def polydisperse_spheres(shape: List[int],
         monodisperse spheres that span 0.05 and 0.95 of the possible
         values produced by the provided distribution, then overlays them
         to get polydispersivity.
+    seed : int, optional, default = `None`
+        Initializes numpy's random number generator to the specified state. If not
+        provided, the current global value is used. This means calls to
+        ``np.random.state(seed)`` prior to calling this function will be respected.
 
     Returns
     -------
@@ -456,6 +473,8 @@ def polydisperse_spheres(shape: List[int],
     to view online example.
 
     """
+    if seed is not None:
+        np.random.seed(seed)
     shape = np.array(shape)
     if np.size(shape) == 1:
         shape = np.full((3,), int(shape))
@@ -473,8 +492,13 @@ def polydisperse_spheres(shape: List[int],
     return im
 
 
-def voronoi_edges(shape: List[int], ncells: int, r: int = 0,
-                  flat_faces: bool = True):
+def voronoi_edges(
+    shape: List[int],
+    ncells: int,
+    r: int = 0,
+    flat_faces: bool = True,
+    seed=None,
+):
     r"""
     Create an image from the edges of a Voronoi tessellation.
 
@@ -493,6 +517,10 @@ def voronoi_edges(shape: List[int], ncells: int, r: int = 0,
         Whether the Voronoi edges should lie on the boundary of the
         image (``True``), or if edges outside the image should be removed
         (``False``).
+    seed : int, optional, default = `None`
+        Initializes numpy's random number generator to the specified state. If not
+        provided, the current global value is used. This means calls to
+        ``np.random.state(seed)`` prior to calling this function will be respected.
 
     Returns
     -------
@@ -506,6 +534,8 @@ def voronoi_edges(shape: List[int], ncells: int, r: int = 0,
     to view online example.
 
     """
+    if seed is not None:
+        np.random.seed(seed)
     logger.info(f"Generating {ncells} cells")
     shape = np.array(shape)
     if np.size(shape) == 1:
@@ -709,11 +739,14 @@ def lattice_spheres(shape: List[int],
     return im
 
 
-def overlapping_spheres(shape: List[int],
-                        r: int,
-                        porosity: float,
-                        maxiter: int = 10,
-                        tol: float = 0.01):
+def overlapping_spheres(
+    shape: List[int],
+    r: int,
+    porosity: float,
+    maxiter: int = 10,
+    tol: float = 0.01,
+    seed=None,
+):
     r"""
     Generate a packing of overlapping mono-disperse spheres
 
@@ -731,6 +764,10 @@ def overlapping_spheres(shape: List[int],
         the porosity of the final image to match the given value.
     tol : float
         Tolerance for porosity of the final image compared to the given value.
+    seed : int, optional, default = `None`
+        Initializes numpy's random number generator to the specified state. If not
+        provided, the current global value is used. This means calls to
+        ``np.random.state(seed)`` prior to calling this function will be respected.
 
     Returns
     -------
@@ -750,6 +787,8 @@ def overlapping_spheres(shape: List[int],
     to view online example.
 
     """
+    if seed is not None:
+        np.random.seed(seed)
     shape = np.array(shape)
     if np.size(shape) == 1:
         shape = np.full((3, ), int(shape))
@@ -796,8 +835,12 @@ def overlapping_spheres(shape: List[int],
     return ~f(N)
 
 
-def blobs(shape: List[int], porosity: float = 0.5, blobiness: int = 1,
-          divs: int = 1):
+def blobs(
+    shape: List[int],
+    porosity: float = 0.5,
+    blobiness: int = 1,
+    divs: int = 1,
+    seed=None):
     """
     Generates an image containing amorphous blobs
 
@@ -821,6 +864,10 @@ def blobs(shape: List[int], porosity: float = 0.5, blobiness: int = 1,
         equivalent to ``[2, 2, 2]`` for a 3D image.  The number of cores
         used is specified in ``porespy.settings.ncores`` and defaults to
         all cores.
+    seed : int, optional, default = `None`
+        Initializes numpy's random number generator to the specified state. If not
+        provided, the current global value is used. This means calls to
+        ``np.random.state(seed)`` prior to calling this function will be respected.
 
     Returns
     -------
@@ -848,6 +895,8 @@ def blobs(shape: List[int], porosity: float = 0.5, blobiness: int = 1,
     to view online example.
 
     """
+    if seed is not None:
+        np.random.seed(seed)
     if isinstance(shape, int):
         shape = [shape]*3
     if len(shape) == 1:
@@ -877,13 +926,16 @@ def blobs(shape: List[int], porosity: float = 0.5, blobiness: int = 1,
     return im
 
 
-def _cylinders(shape: List[int],
-               r: int,
-               ncylinders: int,
-               phi_max: float = 0,
-               theta_max: float = 90,
-               length: float = None,
-               verbose: bool = True):
+def _cylinders(
+    shape: List[int],
+    r: int,
+    ncylinders: int,
+    phi_max: float = 0,
+    theta_max: float = 90,
+    length: float = None,
+    verbose: bool = True,
+    seed=None,
+):
     r"""
     Generates a binary image of overlapping cylinders.
 
@@ -918,6 +970,10 @@ def _cylinders(shape: List[int],
         cylinder. Note that one or both of the ends *may* still lie
         outside the domain, depending on the randomly chosen center point
         of the cylinder.
+    seed : int, optional, default = `None`
+        Initializes numpy's random number generator to the specified state. If not
+        provided, the current global value is used. This means calls to
+        ``np.random.state(seed)`` prior to calling this function will be respected.
 
     Returns
     -------
@@ -925,6 +981,8 @@ def _cylinders(shape: List[int],
         A boolean array with ``True`` values denoting the pore space
 
     """
+    if seed is not None:
+        np.random.seed(seed)
     shape = np.array(shape)
     if np.size(shape) == 1:
         shape = np.full((3, ), int(shape))
@@ -972,14 +1030,17 @@ def _cylinders(shape: List[int],
     return ~dt
 
 
-def cylinders(shape: List[int],
-              r: int,
-              ncylinders: int = None,
-              porosity: float = None,
-              phi_max: float = 0,
-              theta_max: float = 90,
-              length: float = None,
-              maxiter: int = 3):
+def cylinders(
+    shape: List[int],
+    r: int,
+    ncylinders: int = None,
+    porosity: float = None,
+    phi_max: float = 0,
+    theta_max: float = 90,
+    length: float = None,
+    maxiter: int = 3,
+    seed=None,
+):
     r"""
     Generates a binary image of overlapping cylinders given porosity OR
     number of cylinders.
@@ -1026,6 +1087,10 @@ def cylinders(shape: List[int],
         typically effective in getting very close to the targeted
         porosity), but a greater number can be input to improve the
         achieved porosity.
+    seed : int, optional, default = `None`
+        Initializes numpy's random number generator to the specified state. If not
+        provided, the current global value is used. This means calls to
+        ``np.random.state(seed)`` prior to calling this function will be respected.
 
     Returns
     -------
@@ -1058,6 +1123,9 @@ def cylinders(shape: List[int],
     to view online example.
 
     """
+    if seed is not None:
+        np.random.seed(seed)
+
     if ncylinders is not None:
         im = _cylinders(
             shape=shape,
