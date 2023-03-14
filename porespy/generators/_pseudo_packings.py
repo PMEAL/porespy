@@ -11,6 +11,12 @@ from porespy.filters import trim_disconnected_blobs, fftmorphology
 from numba import njit
 
 
+__all__ = [
+    "pseudo_gravity_packing",
+    "pseudo_electrostatic_packing",
+]
+
+
 tqdm = get_tqdm()
 logger = logging.getLogger(__name__)
 

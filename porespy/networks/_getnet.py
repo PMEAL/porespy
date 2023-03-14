@@ -10,6 +10,11 @@ from porespy.metrics import region_surface_areas, region_interface_areas
 from porespy.metrics import region_volumes
 
 
+__all__ = [
+    "regions_to_network",
+]
+
+
 tqdm = get_tqdm()
 logger = logging.getLogger(__name__)
 

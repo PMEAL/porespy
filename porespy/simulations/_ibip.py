@@ -9,6 +9,11 @@ from porespy import settings
 tqdm = get_tqdm()
 
 
+__all__ = [
+    "ibip",
+]
+
+
 def ibip(im, inlets=None, dt=None, maxiter=10000):
     r"""
     Performs invasion percolation on given image using iterative image dilation
