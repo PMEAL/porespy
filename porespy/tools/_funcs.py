@@ -76,9 +76,9 @@ def find_bbox(im, order_by='axis'):
     # a few suggestions on stackoverflow but I can't see how they'd be faster.
     inds = np.where(im)
     if order_by.startswith('ax'):
-        bbox = tuple([slice(min(i), max(i)+1, None) for i in inds])
+        bbox = tuple([slice(np.amin(i), np.amax(i)+1, None) for i in inds])
     elif order_by.startswith('corner'):
-        bbox = [[min(i) for i in inds], [max(i)+1 for i in inds]]
+        bbox = [[np.amin(i) for i in inds], [np.amax(i)+1 for i in inds]]
     return bbox
 
 
