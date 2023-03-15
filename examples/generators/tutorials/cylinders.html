@@ -2971,7 +2971,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/d14e2ef9f5d07c39f0508095f2f9e693d5a6027c1361778334926d20dfbae950.png" src="../../../_images/d14e2ef9f5d07c39f0508095f2f9e693d5a6027c1361778334926d20dfbae950.png" />
+<img alt="../../../_images/64dc2852dbef1ca1c8cfdd838690500fb811870246add0a2ed80bb0969b5939d.png" src="../../../_images/64dc2852dbef1ca1c8cfdd838690500fb811870246add0a2ed80bb0969b5939d.png" />
 </div>
 </div>
 <p>Lastly, this block shows that more iterations improves proximity to goal porosity.</p>
@@ -2999,12 +2999,20 @@
 <span class="ne">----&gt; </span><span class="mi">8</span>     <span class="n">im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">cylinders</span><span class="p">(</span><span class="o">**</span><span class="n">params_generic</span><span class="p">,</span> <span class="n">porosity</span><span class="o">=</span><span class="n">porosity_target</span><span class="p">)</span>
 <span class="g g-Whitespace">      </span><span class="mi">9</span>     <span class="n">porosity_actual</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ps</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">porosity</span><span class="p">(</span><span class="n">im</span><span class="p">))</span>
 
-<span class="nn">File ~/work/porespy/porespy/porespy/generators/_imgen.py:1367,</span> in <span class="ni">cylinders</span><span class="nt">(shape, r, ncylinders, porosity, phi_max, theta_max, length, maxiter, seed)</span>
+<span class="nn">File ~/work/porespy/porespy/porespy/generators/_imgen.py:1362,</span> in <span class="ni">cylinders</span><span class="nt">(shape, r, ncylinders, porosity, phi_max, theta_max, length, maxiter, seed)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1360</span> <span class="n">n_fibers</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">frac</span> <span class="o">*</span> <span class="n">n_fibers_total</span><span class="p">)</span> <span class="o">-</span> <span class="n">n_fibers_added</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1361</span> <span class="k">if</span> <span class="n">n_fibers</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+<span class="ne">-&gt; </span><span class="mi">1362</span>     <span class="n">im</span> <span class="o">=</span> <span class="n">im</span> <span class="o">&amp;</span> <span class="n">_cylinders</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">n_fibers</span><span class="p">,</span>
+<span class="g g-Whitespace">   </span><span class="mi">1363</span>                          <span class="n">phi_max</span><span class="p">,</span> <span class="n">theta_max</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span>
+<span class="g g-Whitespace">   </span><span class="mi">1364</span>                          <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="g g-Whitespace">   </span><span class="mi">1365</span> <span class="n">n_fibers_added</span> <span class="o">+=</span> <span class="n">n_fibers</span>
 <span class="g g-Whitespace">   </span><span class="mi">1366</span> <span class="c1"># Update parameters for next iteration</span>
-<span class="ne">-&gt; </span><span class="mi">1367</span> <span class="n">porosity</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">porosity</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1368</span> <span class="n">vol_added</span> <span class="o">=</span> <span class="n">get_num_pixels</span><span class="p">(</span><span class="n">porosity</span><span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1369</span> <span class="n">vol_fiber</span> <span class="o">=</span> <span class="n">vol_added</span> <span class="o">/</span> <span class="n">n_fibers_added</span>
+
+<span class="nn">File ~/work/porespy/porespy/porespy/generators/_imgen.py:1217,</span> in <span class="ni">_cylinders</span><span class="nt">(shape, r, ncylinders, phi_max, theta_max, length, verbose, seed)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1215</span>             <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+<span class="g g-Whitespace">   </span><span class="mi">1216</span> <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+<span class="ne">-&gt; </span><span class="mi">1217</span> <span class="n">dt</span> <span class="o">=</span> <span class="n">edt</span><span class="p">(</span><span class="o">~</span><span class="n">im</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">r</span>
+<span class="g g-Whitespace">   </span><span class="mi">1218</span> <span class="k">return</span> <span class="o">~</span><span class="n">dt</span>
 
 <span class="ne">KeyboardInterrupt</span>: 
 </pre></div>
