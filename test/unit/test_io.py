@@ -69,19 +69,13 @@ class ExportTest():
         # os.remove("sphere_pack.mphtxt")
 
     def test_zip_to_stack_and_folder_to_stack(self):
-        try:  # For CI
-            p = Path('../test/unit/blobs_layers.zip').resolve()
-            im = ps.io.zip_to_stack(p)
-        except FileNotFoundError:  # For local
-            p = Path('blobs_layers.zip').resolve()
-            im = ps.io.zip_to_stack(p)
+        p = Path(os.path.realpath(__file__),
+                 '../../../test/unit/blobs_layers.zip').resolve()
+        im = ps.io.zip_to_stack(p)
         assert im.shape == (100, 100, 10)
-        try:  # For CI
-            p = Path("../test/unit/blobs_layers").resolve()
-            im = ps.io.folder_to_stack(p)
-        except FileNotFoundError:  # For local
-            p = Path("blobs_layers").resolve()
-            im = ps.io.folder_to_stack(p)
+        p = Path(os.path.realpath(__file__),
+                 '../../../test/unit/blobs_layers').resolve()
+        im = ps.io.folder_to_stack(p)
         assert im.shape == (100, 100, 10)
 
 
