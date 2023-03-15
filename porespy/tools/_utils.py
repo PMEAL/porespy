@@ -259,6 +259,9 @@ class Results:
             if (isinstance(self[item], np.ndarray)):
                 s = np.shape(self[item])
                 lines.append("{0:<25s} Array of size {1}".format(item, s))
+            elif hasattr(self[item], 'keys'):
+                N = len(self[item].keys())
+                lines.append("{0:<25s} Dictionary with {1} items".format(item, N))
             else:
                 lines.append("{0:<25s} {1}".format(item, self[item]))
         lines.append(header)
