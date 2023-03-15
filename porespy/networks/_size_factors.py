@@ -9,6 +9,13 @@ from porespy.tools import get_tqdm
 tqdm = get_tqdm()
 
 
+__all__ = [
+    "diffusive_size_factor_AI",
+    "create_model",
+    "find_conns",
+]
+
+
 def diffusive_size_factor_AI(regions, throat_conns, model,
                              g_train, voxel_size=1):
     '''

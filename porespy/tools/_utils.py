@@ -1,11 +1,11 @@
 import logging
-import os
 import sys
 import numpy as np
 import importlib
 from dataclasses import dataclass
-from tqdm import tqdm
 import psutil
+import inspect
+import time
 
 
 logger = logging.getLogger("porespy")
@@ -230,12 +230,15 @@ class Results:
     and generic class-like object assignment (``obj.im = im``)
 
     """
-    _value = "Description"
-    _key = "Item"
+
+    def __init__(self, **kwargs):
+        self._func = inspect.getouterframes(inspect.currentframe())[1].function
+        self._time = time.asctime()
 
     def __iter__(self):
-        for item in self.__dict__.values():
-            yield item
+        for k, v in self.__dict__.items():
+            if not k.startswith('_'):
+                yield v
 
     def __getitem__(self, key):
         return getattr(self, key)
@@ -245,16 +248,17 @@ class Results:
 
     def __str__(self):
         header = "―" * 78
-        lines = [header, "{0:<25s} {1}".format(self._key, self._value), header]
+        lines = [
+            header,
+            f"Results of {self._func} generated at {self._time}",
+            header,
+        ]
         for item in list(self.__dict__.keys()):
             if item.startswith('_'):
                 continue
             if (isinstance(self[item], np.ndarray)):
                 s = np.shape(self[item])
-                if (self[item].ndim > 1):
-                    lines.append("{0:<25s} Image of size {1}".format(item, s))
-                else:
-                    lines.append("{0:<25s} Array of size {1}".format(item, s))
+                lines.append("{0:<25s} Array of size {1}".format(item, s))
             else:
                 lines.append("{0:<25s} {1}".format(item, self[item]))
         lines.append(header)

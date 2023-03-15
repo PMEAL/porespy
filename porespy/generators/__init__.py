@@ -13,7 +13,8 @@ debugging, and illustration purposes.
    :template: mybase.rst
    :toctree: generated/
 
-    generators.RSA
+    generators.rsa
+    generators.random_spheres
     generators.blobs
     generators.borders
     generators.bundle_of_tubes
@@ -34,21 +35,9 @@ debugging, and illustration purposes.
 
 """
 
-from ._imgen import blobs
-from ._imgen import bundle_of_tubes
-from ._imgen import cylinders
-from ._imgen import insert_shape
-from ._imgen import lattice_spheres
-from ._imgen import line_segment
-from ._imgen import overlapping_spheres
-from ._imgen import polydisperse_spheres
-from ._imgen import RSA
-from ._imgen import rsa
-from ._imgen import voronoi_edges
-from ._pseudo_packings import pseudo_gravity_packing
-from ._pseudo_packings import pseudo_electrostatic_packing
-from ._cylinder import cylindrical_plug
-from ._noise import fractal_noise
+from ._imgen import *
+from ._pseudo_packings import *
+from ._noise import *
 from ._borders import *
-from ._fractals import random_cantor_dust
-from ._fractals import sierpinski_foam
+from ._fractals import *
+from ._spheres_from_coords import *

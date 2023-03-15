@@ -7,6 +7,12 @@ from porespy.filters import snow_partitioning, snow_partitioning_parallel
 from porespy.tools import Results
 
 
+__all__ = [
+    "snow2",
+    "_parse_pad_width",
+]
+
+
 logger = logging.getLogger(__name__)
 
 
