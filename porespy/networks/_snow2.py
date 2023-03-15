@@ -244,4 +244,4 @@ def _parse_pad_width(pad_width, shape):
         else:
             raise Exception("pad_width components can't have 2+ elements")
 
-    return np.array(tmp)
+    return np.array(tmp, dtype=int)
