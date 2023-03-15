@@ -34,7 +34,7 @@ def folder_to_stack(target_dir):
     The files should be named with leading numerical values indicating their
     layer number, like 001, 002, etc.
     """
-    p = Path(target_dir).resolve()
+    p = Path(target_dir)
     test_im = imageio.v2.imread(os.path.join(p, os.listdir(p)[0]))
     im = np.zeros(shape=[test_im.shape[0],
                          test_im.shape[1],
@@ -68,7 +68,7 @@ def zip_to_stack(f):
     The files should be named with leading numerical values indicating their
     layer number, like 001, 002, etc.
     """
-    p = Path(f).resolve()
+    p = Path(f)
     dir_for_files = p.parts[-1].rpartition('.')[0]
 
     with ZipFile(p, 'r') as f:
