@@ -253,6 +253,11 @@ class GeneratorTest():
         assert np.all(im1 == im2)
         assert not np.all(im1 == im3)
 
+    def test_blobs_w_divs(self):
+        im1 = ps.generators.blobs(shape=[101, 101], seed=0, divs=1)
+        im2 = ps.generators.blobs(shape=[101, 101], seed=0, divs=2)
+        assert np.all(im1 == im2)
+
     def test_rsa_2d_contained(self):
         im = np.zeros([100, 100], dtype=int)
         im = ps.generators.rsa(im, r=10, volume_fraction=0.5, mode='contained')

@@ -1102,7 +1102,7 @@ def blobs(
     sigma = np.mean(shape) / (40 * blobiness)
     im = np.random.random(shape)
     if parallel:
-        overlap = max([int(s*4) for s in sigma])
+        overlap = max([int(s*4) for s in np.array(sigma, ndmin=1)])
         im = ps.filters.chunked_func(func=spim.gaussian_filter,
                                      input=im, sigma=sigma,
                                      divs=divs, overlap=overlap)
