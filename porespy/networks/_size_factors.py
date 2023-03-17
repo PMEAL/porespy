@@ -156,10 +156,10 @@ def _calc_g_val(im):
     # sphere of each region
     mask1_in = within_sphere(nodes=net['pore.coords'],
                              center=net['pore.coords'][pr1],
-                             r=p_dia_local[0]/2)
+                             r=p_dia_local[0])
     mask2_in = within_sphere(nodes=net['pore.coords'],
                              center=net['pore.coords'][pr2],
-                             r=p_dia_local[1]/2)
+                             r=p_dia_local[1])
     if mask1_in.any() and mask2_in.any():
         algs.set_value_BC(pores=pr1, values=c1)
         algs.set_value_BC(pores=pr2, values=c2)
