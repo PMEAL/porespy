@@ -82,7 +82,8 @@ def diffusive_size_factor_AI(regions, throat_conns, model,
 
 def diffusive_size_factor_DNS(regions, throat_conns, voxel_size=1):
     """
-
+    Calculates the diffusive size factor of pore to pore regions in
+    a segmented image of porous material using finite difference method.
     Parameters
     ----------
     regions : ndarray
@@ -116,12 +117,10 @@ def diffusive_size_factor_DNS(regions, throat_conns, voxel_size=1):
 
 
 def _calc_g_val(im):
-    # apply FD in roi image unit is voxel: g[voxel]
-    # props = ps.metrics.regionprops_3D(im)
-    # centroids=[props[0].centroid,props[1].centroid]
     '''
     Calculates the diffusive size factor of conduit image (ROI)
-    using finite difference method.
+    using finite difference method. The finite difference nodes
+    are created using OpenPNM's CubicTemplate method.
     Parameters
     ----------
     im : ndarray
@@ -137,10 +136,8 @@ def _calc_g_val(im):
     im = np.copy(im)
     centroids = _find_conns_roi_info(im)['p_coords']
     p_dia_local = _find_conns_roi_info(im)['p_dia_local']
-    im[im!=0]=1
+    im[im != 0] = 1
     net = op.network.CubicTemplate(template=im)
-    # op.topotools.trim(net,
-    #                   pores=net.check_network_health()['trim_pores'])
     net.add_model(propname='pore.cluster_number',
                   model=op.models.network.cluster_number)
     net.add_model(propname='pore.cluster_size',
@@ -148,21 +145,21 @@ def _calc_g_val(im):
     cluster_size = np.max(net['pore.cluster_size'])
     trim_pores = net['pore.cluster_size'] < cluster_size
     op.topotools.trim(network=net, pores=trim_pores)
-    # geos = op.geometry.GenericGeometry(network=net, pores=net.Ps,
-    #                                    throats=net.Ts)
     phss = op.phase.Phase(network=net)
     phss['throat.diffusive_conductance'] = 1
     algs = op.algorithms.FickianDiffusion(network=net, phase=phss)
 
     pr1 = closest_node(centroids[0], net['pore.coords'])
     pr2 = closest_node(centroids[1], net['pore.coords'])
-    # find fd nodes within inscribed diameter
+    # find the nodes located in inscribed sphere of each pore
+    # region to calculate average concentration within inscribed
+    # sphere of each region
     mask1_in = within_sphere(nodes=net['pore.coords'],
-                                 center=net['pore.coords'][pr1],
-                                 r=p_dia_local[0])
+                             center=net['pore.coords'][pr1],
+                             r=p_dia_local[0])
     mask2_in = within_sphere(nodes=net['pore.coords'],
-                                 center=net['pore.coords'][pr2],
-                                 r=p_dia_local[1])
+                             center=net['pore.coords'][pr2],
+                             r=p_dia_local[1])
     if mask1_in.any() and mask2_in.any():
         algs.set_value_BC(pores=pr1, values=c1)
         algs.set_value_BC(pores=pr2, values=c2)
@@ -170,17 +167,59 @@ def _calc_g_val(im):
         c1_avr = algs['pore.concentration'][mask1_in].mean()
         c2_avr = algs['pore.concentration'][mask2_in].mean()
         g = abs(algs.rate(pores=pr1)[0]/(c1_avr-c2_avr))
-        # g = abs(algs.rate(pores=pr1)[0]/(10))
     return g
 
 
 def closest_node(extracted_nodes, fd_nodes):
+    """
+    Finds the indice of a node in the finite difference
+    nodes that locates closest to the centroid point of a pore region.
+
+    Parameters
+    ----------
+    extracted_nodes : array
+        An array of the coordinate of the centroid point of a pores region.
+    fd_nodes : array
+        An array of the coordinate of all nodes in the finite difference
+        nodes.
+
+    Returns
+    -------
+    scalar
+        The indice of the nearest finite difference node to the
+        centroid of a pore region.
+
+    """
     fd_nodes = np.asarray(fd_nodes)
     dist = np.sum((fd_nodes - extracted_nodes)**2, axis=1)
     return int(np.argmin(dist))
 
 
 def within_sphere(nodes, center, r):
+    """
+    Finds the nodes in the finite difference nodes that are
+    located within a sphere of radius r of center. Returns a
+    mask of True values for the found nodes.
+
+    Parameters
+    ----------
+    nodes : array
+        An array of the coordinate of all nodes in the finite difference
+        nodes.
+    center : array
+        An array of the coordinate of the node in the finite difference
+        nodes that is the nearest node to the centroid of a pore region.
+    r : scalar
+        Radius of the sphere used to mask the nodes.
+
+    Returns
+    -------
+    mask : array
+        An Boolean array of True values for pore indices that are located within
+        the sphere of radius r of the center node. The remaining nodes are
+        labeled as False.
+
+    """
     r_nodes = ((nodes[:, 0]-center[0])**2+(nodes[:, 1]-center[1])**2 +
                (nodes[:, 2]-center[2])**2)
     mask = r_nodes <= r**2
@@ -211,10 +250,8 @@ def _find_conns_roi_info(im):
     struc_elem = ball
     slices = spim.find_objects(im)
     Ps = np.arange(1, np.amax(im)+1)
-    # additional info to find centroids and inscribed_diam---------------------
     p_dia_local = np.zeros((len(Ps), ), dtype=float)
     p_coords = np.zeros((len(Ps), im.ndim), dtype=float)
-    # -------------------------------------------------------------------------
     t_conns = []
     desc = 'Getting ROI info'
     for i in tqdm(Ps, desc=desc, **settings.tqdm):
@@ -230,7 +267,6 @@ def _find_conns_roi_info(im):
         s_offset = np.array([i.start for i in s])
         p_coords[pore, :] = spim.center_of_mass(pore_im) + s_offset
         p_dia_local[pore] = (2*np.amax(pore_dt)) - np.sqrt(3)
-        # ----------------------------------------------------------------------
         im_w_throats = spim.binary_dilation(input=pore_im, structure=struc_elem(1))
         im_w_throats = im_w_throats*sub_im
         Pn = np.unique(im_w_throats)[1:] - 1
