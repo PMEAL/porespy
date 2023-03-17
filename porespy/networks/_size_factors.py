@@ -156,10 +156,10 @@ def _calc_g_val(im):
     # sphere of each region
     mask1_in = within_sphere(nodes=net['pore.coords'],
                              center=net['pore.coords'][pr1],
-                             r=p_dia_local[0])
+                             r=p_dia_local[0]/2)
     mask2_in = within_sphere(nodes=net['pore.coords'],
                              center=net['pore.coords'][pr2],
-                             r=p_dia_local[1])
+                             r=p_dia_local[1]/2)
     if mask1_in.any() and mask2_in.any():
         algs.set_value_BC(pores=pr1, values=c1)
         algs.set_value_BC(pores=pr2, values=c2)
@@ -283,7 +283,6 @@ def _find_conns_roi_info(im):
 
 def _calc_bound_box_bi(regions, pore_1, pore_2):
     '''
-
     Parameters
     ----------
     regions : ndarray
@@ -451,8 +450,6 @@ def _convert_to_tf_image_datatype(pair, n_image):
 
 def _denorm_predict(prediction, g_train):
     '''
-
-
     Parameters
     ----------
     prediction : array
