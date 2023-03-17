@@ -81,6 +81,25 @@ def diffusive_size_factor_AI(regions, throat_conns, model,
 
 
 def diffusive_size_factor_DNS(regions, throat_conns, voxel_size=1):
+    """
+
+    Parameters
+    ----------
+    regions : ndarray
+        A segmented 3D image of pore regions/a pair of two regions.
+    throat_conns : array
+        An Nt by 2 array containing the throat connections. The indices orders in
+        throat_conns start from 0 to be consistent with network extraction method.
+    voxel_size : scalar, optional
+        Voxel size of the image. The default is 1.
+
+    Returns
+    -------
+    diff_size_factor : array
+        An array of length conns containing diffusive size factor of the conduits
+        in the segmented image (regions).
+
+    """
     DNS_size_factor = []
     desc = 'Preparing images and DNS calculations'
     for i in tqdm(np.arange(len(throat_conns)), desc=desc, **settings.tqdm):
@@ -92,6 +111,7 @@ def diffusive_size_factor_DNS(regions, throat_conns, voxel_size=1):
         roi_masked = _create_labeled_pair(cn, roi_crop)
         DNS_size_factor.append(_calc_g_val(roi_masked))
     diff_size_factor = DNS_size_factor * voxel_size
+    diff_size_factor = np.array(diff_size_factor)
     return diff_size_factor
 
 
