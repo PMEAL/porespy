@@ -6,6 +6,11 @@ import subprocess
 import numpy as np
 
 
+__all__ = [
+    "maximal_ball_wrapper",
+]
+
+
 logger = logging.getLogger(__name__)
 
 

@@ -7,6 +7,11 @@ dask.config.set(scheduler="threads")
 # from dask.diagnostics import ProgressBar
 
 
+__all__ = [
+    "nl_means_layered",
+]
+
+
 def nl_means_layered(im, cores=None, axis=0, patch_size=5, patch_distance=5, h=4):
     r"""
     Apply the non-local means filter to each 2D layer of a stack in parallel.

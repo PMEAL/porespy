@@ -9,6 +9,15 @@ from porespy.tools import get_tqdm
 from porespy import settings
 
 
+__all__ = [
+    "mesh_surface_area",
+    "mesh_volume",
+    "region_interface_areas",
+    "region_surface_areas",
+    "region_volumes",
+]
+
+
 tqdm = get_tqdm()
 logger = logging.getLogger(__name__)
 

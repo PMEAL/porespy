@@ -16,7 +16,7 @@ __all__ = [
 ]
 
 
-def random_cantor_dust(shape, n=5, p=2, f=0.8):
+def random_cantor_dust(shape, n=5, p=2, f=0.8, seed=None):
     r"""
     Generates an image of random cantor dust
 
@@ -31,6 +31,10 @@ def random_cantor_dust(shape, n=5, p=2, f=0.8):
         The number of divisions to make on each iteration.
     f : float (default = 0.8)
         The fraction of the set to keep on each iteration.
+    seed : int, optional, default = `None`
+        Initializes numpy's random number generator to the specified state. If not
+        provided, the current global value is used. This means calls to
+        ``np.random.state(seed)`` prior to calling this function will be respected.
 
     Returns
     -------
@@ -44,6 +48,8 @@ def random_cantor_dust(shape, n=5, p=2, f=0.8):
     to view online example.
 
     """
+    if seed is not None:
+        np.random.seed(seed)
     # Parse the given shape and adjust if necessary
     shape = np.array(shape)
     trim = np.mod(shape, (p**n))
