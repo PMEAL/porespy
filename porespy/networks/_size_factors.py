@@ -375,38 +375,38 @@ def _resize_to_AI_input(im):
     return result
 
 
-# def find_conns(im):
-#     '''
-#     Parameters
-#     ----------
-#     im : ndarray
-#         A segmented image of a porous medium.
+def find_conns(im):
+    '''
+    Parameters
+    ----------
+    im : ndarray
+        A segmented image of a porous medium.
 
-#     Returns
-#     -------
-#     t_conns : array
-#         An Nt by 2 addat containing the throats' connections in the
-#          segmented image.
-#     '''
-#     struc_elem = ball
-#     slices = spim.find_objects(im)
-#     Ps = np.arange(1, np.amax(im)+1)
-#     t_conns = []
-#     d = 'Finding neighbouring regions'
-#     for i in tqdm(Ps, desc=d, **settings.tqdm):
-#         pore = i - 1
-#         if slices[pore] is None:
-#             continue
-#         s = extend_slice(slices[pore], im.shape)
-#         sub_im = im[s]
-#         pore_im = sub_im == i
-#         im_w_throats = spim.binary_dilation(input=pore_im, structure=struc_elem(1))
-#         im_w_throats = im_w_throats*sub_im
-#         Pn = np.unique(im_w_throats)[1:] - 1
-#         for j in Pn:
-#             if j > pore:
-#                 t_conns.append([pore, j])
-#     return t_conns
+    Returns
+    -------
+    t_conns : array
+        An Nt by 2 addat containing the throats' connections in the
+          segmented image.
+    '''
+    struc_elem = ball
+    slices = spim.find_objects(im)
+    Ps = np.arange(1, np.amax(im)+1)
+    t_conns = []
+    d = 'Finding neighbouring regions'
+    for i in tqdm(Ps, desc=d, **settings.tqdm):
+        pore = i - 1
+        if slices[pore] is None:
+            continue
+        s = extend_slice(slices[pore], im.shape)
+        sub_im = im[s]
+        pore_im = sub_im == i
+        im_w_throats = spim.binary_dilation(input=pore_im, structure=struc_elem(1))
+        im_w_throats = im_w_throats*sub_im
+        Pn = np.unique(im_w_throats)[1:] - 1
+        for j in Pn:
+            if j > pore:
+                t_conns.append([pore, j])
+    return t_conns
 
 
 def _create_labeled_pair(cn, im):
