@@ -134,39 +134,66 @@ def _calc_g_val(im):
     c1 = 20
     c2 = 10
     im = np.copy(im)
-    centroids = _find_conns_roi_info(im)['p_coords']
-    p_dia_local = _find_conns_roi_info(im)['p_dia_local']
-    im[im != 0] = 1
-    net = op.network.CubicTemplate(template=im)
-    net.add_model(propname='pore.cluster_number',
-                  model=op.models.network.cluster_number)
-    net.add_model(propname='pore.cluster_size',
-                  model=op.models.network.cluster_size)
-    cluster_size = np.max(net['pore.cluster_size'])
-    trim_pores = net['pore.cluster_size'] < cluster_size
-    op.topotools.trim(network=net, pores=trim_pores)
-    phss = op.phase.Phase(network=net)
+    results = _find_conns_roi_info(im)
+    centroids = results['p_coords']
+    p_dia_local = results['p_dia_local']
+    # create a mask where solid phase==True to trim the nodes
+    # in the finite difference nodes that are located in solid/not ROI
+    mask1 = np.array(np.where(im[:] == 1, im[:], 0),
+                     dtype=bool)
+    mask2 = np.array(np.where(im[:] == 2, im[:], 0),
+                     dtype=bool)
+    mask1 = np.reshape(mask1, mask1.size)
+    mask2 = np.reshape(mask2, mask2.size)
+    mask = ~(mask1+mask2)
+    n = im.shape
+    meds = op.network.Cubic(shape=[n[0], n[1], n[2]], spacing=1)
+    meds['pore.region1'] = mask1.copy()
+    meds['pore.region2'] = mask2.copy()
+    # trim nodes that are located in solid phase/not ROI
+    op.topotools.trim(meds, pores=mask)
+    meds.add_model(propname='pore.cluster_number',
+                   model=op.models.network.cluster_number)
+    meds.add_model(propname='pore.cluster_size',
+                   model=op.models.network.cluster_size)
+    cluster_size = np.max(meds['pore.cluster_size'])
+    trim_pores = meds['pore.cluster_size'] < cluster_size
+    op.topotools.trim(network=meds, pores=trim_pores)
+    phss = op.phase.Phase(network=meds)
+    # A diffusive conductance of 1 ensures a finite difference approach
+    # where each node is located at the corner of each voxel
     phss['throat.diffusive_conductance'] = 1
-    algs = op.algorithms.FickianDiffusion(network=net, phase=phss)
-
-    pr1 = closest_node(centroids[0], net['pore.coords'])
-    pr2 = closest_node(centroids[1], net['pore.coords'])
-    # find the nodes located in inscribed sphere of each pore
-    # region to calculate average concentration within inscribed
-    # sphere of each region
-    mask1_in = within_sphere(nodes=net['pore.coords'],
-                             center=net['pore.coords'][pr1],
-                             r=p_dia_local[0])
-    mask2_in = within_sphere(nodes=net['pore.coords'],
-                             center=net['pore.coords'][pr2],
-                             r=p_dia_local[1])
-    if mask1_in.any() and mask2_in.any():
-        algs.set_value_BC(pores=pr1, values=c1)
-        algs.set_value_BC(pores=pr2, values=c2)
-        algs.run()
-        c1_avr = algs['pore.concentration'][mask1_in].mean()
-        c2_avr = algs['pore.concentration'][mask2_in].mean()
-        g = abs(algs.rate(pores=pr1)[0]/(c1_avr-c2_avr))
+    algs = op.algorithms.FickianDiffusion(network=meds,
+                                          phase=phss)
+    # find centroid of each pore region in the finite difference nodes
+    pr1 = closest_node(centroids[0], meds['pore.coords'])
+    pr2 = closest_node(centroids[1], meds['pore.coords'])
+    algs.set_value_BC(pores=pr1, values=c1)
+    algs.set_value_BC(pores=pr2, values=c2)
+    algs.run()
+    # calculate average concentrations within inscribed spheres
+    r1 = p_dia_local[0]/2
+    r2 = p_dia_local[1]/2
+    if np.round(r1) == 0:
+        # This prevent error in find_nearby_pores for narrow regions
+        # If the region is narrow, use the entire region for average concentration
+        c1_avr = algs['pore.concentration'][meds['pore.region1']].mean()
+    else:
+        # use the inscribed sphere within the region for average concentration
+        pores1 = meds.find_nearby_pores(pr1, r=np.round(r1), flatten=True,
+                                        include_input=True)
+        pores1 = np.append(pores1, pr1)
+        pores1 = np.unique(pores1)
+        c1_avr = algs['pore.concentration'][pores1].mean()
+    if np.round(r2) == 0:
+        c2_avr = algs['pore.concentration'][meds['pore.region2']].mean()
+    else:
+        pores2 = meds.find_nearby_pores(pr2, r=np.round(r2), flatten=True,
+                                        include_input=True)
+        pores2 = np.append(pores2, pr2)
+        pores2 = np.unique(pores2)
+        c2_avr = algs['pore.concentration'][pores2].mean()
+    g = abs(algs.rate(pores=pr1)[0]/(c1_avr-c2_avr))
     return g
 
 
@@ -195,35 +222,35 @@ def closest_node(extracted_nodes, fd_nodes):
     return int(np.argmin(dist))
 
 
-def within_sphere(nodes, center, r):
-    """
-    Finds the nodes in the finite difference nodes that are
-    located within a sphere of radius r of center. Returns a
-    mask of True values for the found nodes.
+# def within_sphere(nodes, center, r):
+#     """
+#     Finds the nodes in the finite difference nodes that are
+#     located within a sphere of radius r of center. Returns a
+#     mask of True values for the found nodes.
 
-    Parameters
-    ----------
-    nodes : array
-        An array of the coordinate of all nodes in the finite difference
-        nodes.
-    center : array
-        An array of the coordinate of the node in the finite difference
-        nodes that is the nearest node to the centroid of a pore region.
-    r : scalar
-        Radius of the sphere used to mask the nodes.
+#     Parameters
+#     ----------
+#     nodes : array
+#         An array of the coordinate of all nodes in the finite difference
+#         nodes.
+#     center : array
+#         An array of the coordinate of the node in the finite difference
+#         nodes that is the nearest node to the centroid of a pore region.
+#     r : scalar
+#         Radius of the sphere used to mask the nodes.
 
-    Returns
-    -------
-    mask : array
-        An Boolean array of True values for pore indices that are located within
-        the sphere of radius r of the center node. The remaining nodes are
-        labeled as False.
+#     Returns
+#     -------
+#     mask : array
+#         An Boolean array of True values for pore indices that are located within
+#         the sphere of radius r of the center node. The remaining nodes are
+#         labeled as False.
 
-    """
-    r_nodes = ((nodes[:, 0]-center[0])**2+(nodes[:, 1]-center[1])**2 +
-               (nodes[:, 2]-center[2])**2)
-    mask = r_nodes <= r**2
-    return mask
+#     """
+#     r_nodes = ((nodes[:, 0]-center[0])**2+(nodes[:, 1]-center[1])**2 +
+#                (nodes[:, 2]-center[2])**2)
+#     mask = r_nodes <= r**2
+#     return mask
 
 
 def _find_conns_roi_info(im):
@@ -348,38 +375,38 @@ def _resize_to_AI_input(im):
     return result
 
 
-def find_conns(im):
-    '''
-    Parameters
-    ----------
-    im : ndarray
-        A segmented image of a porous medium.
+# def find_conns(im):
+#     '''
+#     Parameters
+#     ----------
+#     im : ndarray
+#         A segmented image of a porous medium.
 
-    Returns
-    -------
-    t_conns : array
-        An Nt by 2 addat containing the throats' connections in the segmented image.
-
-    '''
-    struc_elem = ball
-    slices = spim.find_objects(im)
-    Ps = np.arange(1, np.amax(im)+1)
-    t_conns = []
-    d = 'Finding neighbouring regions'
-    for i in tqdm(Ps, desc=d, **settings.tqdm):
-        pore = i - 1
-        if slices[pore] is None:
-            continue
-        s = extend_slice(slices[pore], im.shape)
-        sub_im = im[s]
-        pore_im = sub_im == i
-        im_w_throats = spim.binary_dilation(input=pore_im, structure=struc_elem(1))
-        im_w_throats = im_w_throats*sub_im
-        Pn = np.unique(im_w_throats)[1:] - 1
-        for j in Pn:
-            if j > pore:
-                t_conns.append([pore, j])
-    return t_conns
+#     Returns
+#     -------
+#     t_conns : array
+#         An Nt by 2 addat containing the throats' connections in the
+#          segmented image.
+#     '''
+#     struc_elem = ball
+#     slices = spim.find_objects(im)
+#     Ps = np.arange(1, np.amax(im)+1)
+#     t_conns = []
+#     d = 'Finding neighbouring regions'
+#     for i in tqdm(Ps, desc=d, **settings.tqdm):
+#         pore = i - 1
+#         if slices[pore] is None:
+#             continue
+#         s = extend_slice(slices[pore], im.shape)
+#         sub_im = im[s]
+#         pore_im = sub_im == i
+#         im_w_throats = spim.binary_dilation(input=pore_im, structure=struc_elem(1))
+#         im_w_throats = im_w_throats*sub_im
+#         Pn = np.unique(im_w_throats)[1:] - 1
+#         for j in Pn:
+#             if j > pore:
+#                 t_conns.append([pore, j])
+#     return t_conns
 
 
 def _create_labeled_pair(cn, im):
