@@ -111,8 +111,7 @@ def diffusive_size_factor_DNS(regions, throat_conns, voxel_size=1):
         # label two pore regions as 1,2
         roi_masked = _create_labeled_pair(cn, roi_crop)
         DNS_size_factor.append(_calc_g_val(roi_masked))
-    diff_size_factor = DNS_size_factor * voxel_size
-    diff_size_factor = np.array(diff_size_factor)
+    diff_size_factor = np.array(DNS_size_factor) * voxel_size
     return diff_size_factor
 
 
