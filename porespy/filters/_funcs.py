@@ -119,7 +119,15 @@ def find_trapped_regions(seq, outlets=None, bins=25, return_mask=True):
         bins = np.unique(seq)[-1::-1]
         bins = bins[bins > 0]
     elif isinstance(bins, int):
-        bins = np.linspace(seq.max(), 1, bins)
+        # starting the max_bin at: minimum sequence at outlets
+        # This means soon as the fluid reaches the outlets
+        outlet_seq = np.setdiff1d(seq[outlets], np.array([0]))
+        bins_start = outlet_seq.min()
+        # starting the max_bin at: maximum sequence available
+        # in the image. No matter if it's after percolation
+        # threshold (reaching the outlets):
+        #bins_start = seq.max()
+        bins = np.linspace(bins_start, 1, bins)
     for i in tqdm(bins, **settings.tqdm):
         temp = seq >= i
         labels = spim.label(temp)[0]
