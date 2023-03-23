@@ -602,4 +602,3 @@ def create_model():
     model = _resnet3d()
     model.compile(loss='mse', optimizer=Adam(lr=1e-4), metrics=['mse'])
     return model
-
