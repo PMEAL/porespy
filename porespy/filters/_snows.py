@@ -16,6 +16,18 @@ from porespy.filters import chunked_func
 from porespy import settings
 
 
+__all__ = [
+    "snow_partitioning",
+    "snow_partitioning_n",
+    "snow_partitioning_parallel",
+    "find_peaks",
+    "reduce_peaks",
+    "trim_nearby_peaks",
+    "trim_saddle_points",
+    "trim_saddle_points_legacy",
+]
+
+
 tqdm = get_tqdm()
 logger = logging.getLogger(__name__)
 

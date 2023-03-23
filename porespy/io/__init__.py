@@ -28,3 +28,4 @@ from ._funcs import to_stl
 from ._funcs import to_paraview
 from ._funcs import open_paraview
 from ._funcs import spheres_to_comsol
+from ._unzipper import *
