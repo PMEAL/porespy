@@ -310,11 +310,24 @@
         <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">seq</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">bins</span> <span class="o">=</span> <span class="n">bins</span><span class="p">[</span><span class="n">bins</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-        <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">seq</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="mi">1</span><span class="p">,</span> <span class="n">bins</span><span class="p">)</span>
+        <span class="c1"># starting the max_bin at: minimum sequence at outlets</span>
+        <span class="c1"># This means soon as the fluid reaches the outlets</span>
+        <span class="c1"># outlet_seq = np.setdiff1d(seq[outlets], np.array([0]))</span>
+        <span class="c1"># bins_start = outlet_seq.min()</span>
+        <span class="c1"># starting the max_bin at: maximum sequence available</span>
+        <span class="c1"># in the image. No matter if it&#39;s after percolation</span>
+        <span class="c1"># threshold (reaching the outlets):</span>
+        <span class="n">bins_start</span> <span class="o">=</span> <span class="n">seq</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">bins_start</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">bins</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="o">**</span><span class="n">settings</span><span class="o">.</span><span class="n">tqdm</span><span class="p">):</span>
         <span class="n">temp</span> <span class="o">=</span> <span class="n">seq</span> <span class="o">&gt;=</span> <span class="n">i</span>
         <span class="n">labels</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">temp</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">keep</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">labels</span><span class="p">[</span><span class="n">outlets</span><span class="p">])[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="n">keep</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">labels</span><span class="p">[</span><span class="n">outlets</span><span class="p">])</span>
+        <span class="c1"># In cases where entire outlet is filled, the</span>
+        <span class="c1"># first indice is not necessarily the</span>
+        <span class="c1"># void space. Only the element with value</span>
+        <span class="c1"># of zero needs to be removed, if it&#39;s in keep.</span>
+        <span class="n">keep</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">setdiff1d</span><span class="p">(</span><span class="n">keep</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">]))</span>
         <span class="n">trapped</span> <span class="o">+=</span> <span class="n">temp</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">keep</span><span class="p">,</span> <span class="n">invert</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">return_mask</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">trapped</span>
