@@ -11,6 +11,7 @@ tqdm = get_tqdm()
 
 __all__ = [
     "diffusive_size_factor_AI",
+    "diffusive_size_factor_DNS",
     "create_model",
     "find_conns",
 ]
