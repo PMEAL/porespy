@@ -121,8 +121,8 @@ def find_trapped_regions(seq, outlets=None, bins=25, return_mask=True):
     elif isinstance(bins, int):
         # starting the max_bin at: minimum sequence at outlets
         # This means soon as the fluid reaches the outlets
-        #outlet_seq = np.setdiff1d(seq[outlets], np.array([0]))
-        #bins_start = outlet_seq.min()
+        # outlet_seq = np.setdiff1d(seq[outlets], np.array([0]))
+        # bins_start = outlet_seq.min()
         # starting the max_bin at: maximum sequence available
         # in the image. No matter if it's after percolation
         # threshold (reaching the outlets):
