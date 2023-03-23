@@ -123,7 +123,12 @@ def find_trapped_regions(seq, outlets=None, bins=25, return_mask=True):
     for i in tqdm(bins, **settings.tqdm):
         temp = seq >= i
         labels = spim.label(temp)[0]
-        keep = np.unique(labels[outlets])[1:]
+        keep = np.unique(labels[outlets])
+        # In cases where entire outlet is filled, the
+        # first indice is not necessarily the
+        # void space. Only the element with value
+        # of zero needs to be removed, if it's in keep.
+        keep = np.setdiff1d(keep, np.array([0]))
         trapped += temp*np.isin(labels, keep, invert=True)
     if return_mask:
         return trapped
