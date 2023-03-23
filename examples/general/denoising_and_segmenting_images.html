@@ -2869,7 +2869,7 @@
 <p>Let’s import some of the packages and functions we’ll need:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">imageio</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">imageio.v2</span> <span class="k">as</span> <span class="nn">imageio</span>
 <span class="kn">import</span> <span class="nn">porespy</span> <span class="k">as</span> <span class="nn">ps</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">import</span> <span class="n">subplots</span>
@@ -2889,7 +2889,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/0ab13adaf2b102500458654023182bbb059aed33be6465666184aae5bfd9c481.png" src="../../_images/0ab13adaf2b102500458654023182bbb059aed33be6465666184aae5bfd9c481.png" />
+<img alt="../../_images/f922d7a9880e995f52fe24465a78522f9a12805baacccb6e17feba3afd7bdb9d.png" src="../../_images/f922d7a9880e995f52fe24465a78522f9a12805baacccb6e17feba3afd7bdb9d.png" />
 </div>
 </div>
 <p>The above image now contains some noise in each phase, which is more realistic, though as we will see it not close to reality.  Let’s look at a histogram of this image:</p>
@@ -2901,7 +2901,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/63089a4745bb130646a2d5aea50ff1e25d3a630ac5137c4338a702fcb2116ed6.png" src="../../_images/63089a4745bb130646a2d5aea50ff1e25d3a630ac5137c4338a702fcb2116ed6.png" />
+<img alt="../../_images/277075d4e1aa4f6763fd87a8fa2dde41a8b479e05c1a63c1b378c0e964301d28.png" src="../../_images/277075d4e1aa4f6763fd87a8fa2dde41a8b479e05c1a63c1b378c0e964301d28.png" />
 </div>
 </div>
 <p>We can see above that all pixels with a value less than 0.5 belong to the dark phase, while the other pixels belong to the light phase.  A simple global threshold can reproduce the original image perfectly:</p>
@@ -2913,7 +2913,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/e7746daaa2e273086dbbe0532ba653347155f87d948f90aab6bed079876963c0.png" src="../../_images/e7746daaa2e273086dbbe0532ba653347155f87d948f90aab6bed079876963c0.png" />
+<img alt="../../_images/1464d290206ca5d10bda62405c6791a32c8a9a784060ee5eb2fd85f7bf0af9bd.png" src="../../_images/1464d290206ca5d10bda62405c6791a32c8a9a784060ee5eb2fd85f7bf0af9bd.png" />
 </div>
 </div>
 <p>Now let’s look at a more realistic noise distribution, though still artificially generated:</p>
@@ -2928,7 +2928,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/0fdd0b24654f617906138bb07bec7ec94e0b0e82a9fe85ecad4ef583a525d53d.png" src="../../_images/0fdd0b24654f617906138bb07bec7ec94e0b0e82a9fe85ecad4ef583a525d53d.png" />
+<img alt="../../_images/df21ee6f55f129f0509f0846cfb14c77cefd18a1a5006000c725de5149e48e56.png" src="../../_images/df21ee6f55f129f0509f0846cfb14c77cefd18a1a5006000c725de5149e48e56.png" />
 </div>
 </div>
 <p>Now we can see that the noise is much less separated, and in fact the tails of the distributions just touch each other in the middle.  Let’s see how the simple threshold we used above would work now:</p>
@@ -2940,7 +2940,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/03c3dd975807265c31ef45e92519e129c6c435c766a9f83e3daced164d63b3e9.png" src="../../_images/03c3dd975807265c31ef45e92519e129c6c435c766a9f83e3daced164d63b3e9.png" />
+<img alt="../../_images/537cab3b2e2c5e81c5e0bef0a40d468c662a791708ec50157fa35c9d34360533.png" src="../../_images/537cab3b2e2c5e81c5e0bef0a40d468c662a791708ec50157fa35c9d34360533.png" />
 </div>
 </div>
 <p>Now there are a few pixels in the dark phase which have been identified as bright and vice-versa. Let’s take this further but putting more extreme, but more realistic noise:</p>
@@ -2956,7 +2956,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/c6060d155d92b0f714dc0f13944a51b52cdb82eedcda6cb4f609d5e50a0bbb66.png" src="../../_images/c6060d155d92b0f714dc0f13944a51b52cdb82eedcda6cb4f609d5e50a0bbb66.png" />
+<img alt="../../_images/3eee538cb5fd49955f695d303c5335fb8f6190d123e91d2b5c026ad55a336e2e.png" src="../../_images/3eee538cb5fd49955f695d303c5335fb8f6190d123e91d2b5c026ad55a336e2e.png" />
 </div>
 </div>
 <p>In the above case our eyes can differentiate the light and dark phases pretty well, but the histogram is fully merged into one, and the global threshold produces a very problematic result. Just to show this is not an exageration, below is an actual slice of a tomogram taken of an electrospun flow-battery electrode:</p>
@@ -3046,13 +3046,13 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/094043b1c2248cb06287bea5f96e85dbe703813ebe58f93ce0b4ecbe111ca6ea.png" src="../../_images/094043b1c2248cb06287bea5f96e85dbe703813ebe58f93ce0b4ecbe111ca6ea.png" />
+<img alt="../../_images/7947c5efa7c45dab584ec283aacf4da6eda01aa07c466024c8bca44251f0c340.png" src="../../_images/7947c5efa7c45dab584ec283aacf4da6eda01aa07c466024c8bca44251f0c340.png" />
 </div>
 </div>
 <p>The above results are not too bad, but as noted in the title of this subsection, these filters do not preserve edges.  Consider the following artificial case:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">im</span> <span class="o">=</span> <span class="o">~</span><span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">rsa</span><span class="p">([</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span> <span class="n">r</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span><span class="o">*</span><span class="mf">1.0</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">im</span> <span class="o">=</span> <span class="o">~</span><span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">random_spheres</span><span class="p">([</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span> <span class="n">r</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span><span class="o">*</span><span class="mf">1.0</span>
 <span class="n">im1</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">uniform_filter</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
 <span class="n">im2</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">gaussian_filter</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
@@ -3064,7 +3064,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/6f922f0c5d1688dd4b1bb74d765003f646b35e89283121660f33aca1d22b002a.png" src="../../_images/6f922f0c5d1688dd4b1bb74d765003f646b35e89283121660f33aca1d22b002a.png" />
+<img alt="../../_images/07432ba28ec36164b4bcf06c225713570ac7e9c57d77ad3c7a472b6e553bb708.png" src="../../_images/07432ba28ec36164b4bcf06c225713570ac7e9c57d77ad3c7a472b6e553bb708.png" />
 </div>
 </div>
 <p>In the bottom row above it can be seen that the original image is not recovered upon applying the threshold. The reason for this is that the filters merged information from the entire neighborhood without regard for whether those values were high or low (other than the usual weighting). This means that edges are blurred and some information is lost.  Although these filters can do a passable job if the noise is not too bad, in the next section we will look at some fancier filters for this job.</p>
@@ -3094,7 +3094,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/7ff02e0ede3a900d5d999285acacda4a12265061eee0fb0ee91e76b179a86286.png" src="../../_images/7ff02e0ede3a900d5d999285acacda4a12265061eee0fb0ee91e76b179a86286.png" />
+<img alt="../../_images/d769f797d328e1b078435f3f72f5f4eb9636d22ec1d5e3adcff84a62f1bcad6a.png" src="../../_images/d769f797d328e1b078435f3f72f5f4eb9636d22ec1d5e3adcff84a62f1bcad6a.png" />
 </div>
 </div>
 <p>In the above montage the middle image shows the median filter and the edges are visibly less blurred than the gaussian and uniform filters used in the previous section.  The result after threshold is also better.  The right column above shows the non-local means filter and the result is clearly superior.  This was done without even attempting to optimize the various adjustable parameters, which will be explored below.</p>
@@ -3108,7 +3108,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/2c5316e3cc8dc152b6b248e5e27d8e40a14d54532908c67ceadd308691f5004d.png" src="../../_images/2c5316e3cc8dc152b6b248e5e27d8e40a14d54532908c67ceadd308691f5004d.png" />
+<img alt="../../_images/4c922c6d1bf7d7108fc3290d714e09b2be183991603d521e11ed1a0c15a21934.png" src="../../_images/4c922c6d1bf7d7108fc3290d714e09b2be183991603d521e11ed1a0c15a21934.png" />
 </div>
 </div>
 <p>The three histograms above show the distribution of pixel values before filtering, after the median filter, and after the non-local means filter.  The long tail on the righthand side of the non-local means histogram is bright pixels which have now been separated from the dark ones..thought the two histograms will overlap quite a bit.  Note that the solid volume fraction of the material is quite low so there are not a lot of bright pixels, hence the histogram for the bright pixels is not very tall.</p>
@@ -3154,7 +3154,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/d2e72e56130e753a24d92c610ba9cdaea7d38e02d57bba5f5e6ea676a5e507c8.png" src="../../_images/d2e72e56130e753a24d92c610ba9cdaea7d38e02d57bba5f5e6ea676a5e507c8.png" />
+<img alt="../../_images/ced342bf8cb93d6437079850965cc9b2f0b456174353e05da093614bb66b32ef.png" src="../../_images/ced342bf8cb93d6437079850965cc9b2f0b456174353e05da093614bb66b32ef.png" />
 </div>
 </div>
 <p>The rightmost figure above is probably the most smooth in terms of noise removal and shows the cleanest segmentation, though only barely better.</p>
