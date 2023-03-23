@@ -111,6 +111,7 @@ def diffusive_size_factor_DNS(regions, throat_conns, voxel_size=1):
     """
     DNS_size_factor = []
     desc = 'Preparing images and DNS calculations'
+    settings.tqdm['disable'] = False
     for i in tqdm(np.arange(len(throat_conns)), desc=desc, **settings.tqdm):
         cn = throat_conns[i]
         # crop two pore regions and label them as 1,2
@@ -257,6 +258,7 @@ def _find_conns_roi_info(im):
     p_coords = np.zeros((len(Ps), im.ndim), dtype=float)
     t_conns = []
     desc = 'Getting ROI info'
+    settings.tqdm['disable'] = True
     for i in tqdm(Ps, desc=desc, **settings.tqdm):
         pore = i - 1
         if slices[pore] is None:
@@ -369,6 +371,7 @@ def find_conns(im):
     Ps = np.arange(1, np.amax(im)+1)
     t_conns = []
     d = 'Finding neighbouring regions'
+    settings.tqdm['disable'] = True
     for i in tqdm(Ps, desc=d, **settings.tqdm):
         pore = i - 1
         if slices[pore] is None:
