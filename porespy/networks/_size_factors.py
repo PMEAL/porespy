@@ -221,37 +221,6 @@ def closest_node(extracted_nodes, fd_nodes):
     return int(np.argmin(dist))
 
 
-# def within_sphere(nodes, center, r):
-#     """
-#     Finds the nodes in the finite difference nodes that are
-#     located within a sphere of radius r of center. Returns a
-#     mask of True values for the found nodes.
-
-#     Parameters
-#     ----------
-#     nodes : array
-#         An array of the coordinate of all nodes in the finite difference
-#         nodes.
-#     center : array
-#         An array of the coordinate of the node in the finite difference
-#         nodes that is the nearest node to the centroid of a pore region.
-#     r : scalar
-#         Radius of the sphere used to mask the nodes.
-
-#     Returns
-#     -------
-#     mask : array
-#         An Boolean array of True values for pore indices that are located within
-#         the sphere of radius r of the center node. The remaining nodes are
-#         labeled as False.
-
-#     """
-#     r_nodes = ((nodes[:, 0]-center[0])**2+(nodes[:, 1]-center[1])**2 +
-#                (nodes[:, 2]-center[2])**2)
-#     mask = r_nodes <= r**2
-#     return mask
-
-
 def _find_conns_roi_info(im):
     '''
     Finds the connections list, coordinates of pores centroids and
@@ -633,3 +602,4 @@ def create_model():
     model = _resnet3d()
     model.compile(loss='mse', optimizer=Adam(lr=1e-4), metrics=['mse'])
     return model
+
