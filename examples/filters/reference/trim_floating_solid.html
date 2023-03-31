@@ -2888,7 +2888,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Error in callback &lt;function flush_figures at 0x7f0c2dcb2430&gt; (for post_execute):
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Error in callback &lt;function flush_figures at 0x7fd6208a6e50&gt; (for post_execute):
 </pre></div>
 </div>
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
@@ -2920,33 +2920,33 @@
 <span class="g g-Whitespace">    </span><span class="mi">300</span>         <span class="c1"># nothing to display (e.g. _ipython_display_ took over)</span>
 <span class="g g-Whitespace">    </span><span class="mi">301</span>         <span class="k">continue</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/IPython/core/formatters.py:177,</span> in <span class="ni">DisplayFormatter.format</span><span class="nt">(self, obj, include, exclude)</span>
-<span class="g g-Whitespace">    </span><span class="mi">175</span> <span class="n">md</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="g g-Whitespace">    </span><span class="mi">176</span> <span class="k">try</span><span class="p">:</span>
-<span class="ne">--&gt; </span><span class="mi">177</span>     <span class="n">data</span> <span class="o">=</span> <span class="n">formatter</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">178</span> <span class="k">except</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">179</span>     <span class="c1"># FIXME: log the exception</span>
-<span class="g g-Whitespace">    </span><span class="mi">180</span>     <span class="k">raise</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/IPython/core/formatters.py:179,</span> in <span class="ni">DisplayFormatter.format</span><span class="nt">(self, obj, include, exclude)</span>
+<span class="g g-Whitespace">    </span><span class="mi">177</span> <span class="n">md</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="g g-Whitespace">    </span><span class="mi">178</span> <span class="k">try</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">179</span>     <span class="n">data</span> <span class="o">=</span> <span class="n">formatter</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">180</span> <span class="k">except</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">181</span>     <span class="c1"># FIXME: log the exception</span>
+<span class="g g-Whitespace">    </span><span class="mi">182</span>     <span class="k">raise</span>
 
 <span class="nn">File /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/decorator.py:232,</span> in <span class="ni">decorate.&lt;locals&gt;.fun</span><span class="nt">(*args, **kw)</span>
 <span class="g g-Whitespace">    </span><span class="mi">230</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">kwsyntax</span><span class="p">:</span>
 <span class="g g-Whitespace">    </span><span class="mi">231</span>     <span class="n">args</span><span class="p">,</span> <span class="n">kw</span> <span class="o">=</span> <span class="n">fix</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">kw</span><span class="p">,</span> <span class="n">sig</span><span class="p">)</span>
 <span class="ne">--&gt; </span><span class="mi">232</span> <span class="k">return</span> <span class="n">caller</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="o">*</span><span class="p">(</span><span class="n">extras</span> <span class="o">+</span> <span class="n">args</span><span class="p">),</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/IPython/core/formatters.py:221,</span> in <span class="ni">catch_format_error</span><span class="nt">(method, self, *args, **kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">219</span><span class="w"> </span><span class="sd">&quot;&quot;&quot;show traceback on failed format call&quot;&quot;&quot;</span>
-<span class="g g-Whitespace">    </span><span class="mi">220</span> <span class="k">try</span><span class="p">:</span>
-<span class="ne">--&gt; </span><span class="mi">221</span>     <span class="n">r</span> <span class="o">=</span> <span class="n">method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">222</span> <span class="k">except</span> <span class="ne">NotImplementedError</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">223</span>     <span class="c1"># don&#39;t warn on NotImplementedErrors</span>
-<span class="g g-Whitespace">    </span><span class="mi">224</span>     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_return</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/IPython/core/formatters.py:223,</span> in <span class="ni">catch_format_error</span><span class="nt">(method, self, *args, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">221</span><span class="w"> </span><span class="sd">&quot;&quot;&quot;show traceback on failed format call&quot;&quot;&quot;</span>
+<span class="g g-Whitespace">    </span><span class="mi">222</span> <span class="k">try</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">223</span>     <span class="n">r</span> <span class="o">=</span> <span class="n">method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">224</span> <span class="k">except</span> <span class="ne">NotImplementedError</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">225</span>     <span class="c1"># don&#39;t warn on NotImplementedErrors</span>
+<span class="g g-Whitespace">    </span><span class="mi">226</span>     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_return</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/IPython/core/formatters.py:338,</span> in <span class="ni">BaseFormatter.__call__</span><span class="nt">(self, obj)</span>
-<span class="g g-Whitespace">    </span><span class="mi">336</span>     <span class="k">pass</span>
-<span class="g g-Whitespace">    </span><span class="mi">337</span> <span class="k">else</span><span class="p">:</span>
-<span class="ne">--&gt; </span><span class="mi">338</span>     <span class="k">return</span> <span class="n">printer</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">339</span> <span class="c1"># Finally look for special method names</span>
-<span class="g g-Whitespace">    </span><span class="mi">340</span> <span class="n">method</span> <span class="o">=</span> <span class="n">get_real_method</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">print_method</span><span class="p">)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/IPython/core/formatters.py:340,</span> in <span class="ni">BaseFormatter.__call__</span><span class="nt">(self, obj)</span>
+<span class="g g-Whitespace">    </span><span class="mi">338</span>     <span class="k">pass</span>
+<span class="g g-Whitespace">    </span><span class="mi">339</span> <span class="k">else</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">340</span>     <span class="k">return</span> <span class="n">printer</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">341</span> <span class="c1"># Finally look for special method names</span>
+<span class="g g-Whitespace">    </span><span class="mi">342</span> <span class="n">method</span> <span class="o">=</span> <span class="n">get_real_method</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">print_method</span><span class="p">)</span>
 
 <span class="nn">File /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/IPython/core/pylabtools.py:169,</span> in <span class="ni">retina_figure</span><span class="nt">(fig, base64, **kwargs)</span>
 <span class="g g-Whitespace">    </span><span class="mi">160</span> <span class="k">def</span> <span class="nf">retina_figure</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">base64</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -2968,20 +2968,28 @@
 <span class="g g-Whitespace">    </span><span class="mi">153</span> <span class="n">data</span> <span class="o">=</span> <span class="n">bytes_io</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
 <span class="g g-Whitespace">    </span><span class="mi">154</span> <span class="k">if</span> <span class="n">fmt</span> <span class="o">==</span> <span class="s1">&#39;svg&#39;</span><span class="p">:</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/matplotlib/backend_bases.py:2366,</span> in <span class="ni">FigureCanvasBase.print_figure</span><span class="nt">(self, filename, dpi, facecolor, edgecolor, orientation, format, bbox_inches, pad_inches, bbox_extra_artists, backend, **kwargs)</span>
-<span class="g g-Whitespace">   </span><span class="mi">2362</span> <span class="k">try</span><span class="p">:</span>
-<span class="g g-Whitespace">   </span><span class="mi">2363</span>     <span class="c1"># _get_renderer may change the figure dpi (as vector formats</span>
-<span class="g g-Whitespace">   </span><span class="mi">2364</span>     <span class="c1"># force the figure dpi to 72), so we need to set it again here.</span>
-<span class="g g-Whitespace">   </span><span class="mi">2365</span>     <span class="k">with</span> <span class="n">cbook</span><span class="o">.</span><span class="n">_setattr_cm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">figure</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">):</span>
-<span class="ne">-&gt; </span><span class="mi">2366</span>         <span class="n">result</span> <span class="o">=</span> <span class="n">print_method</span><span class="p">(</span>
-<span class="g g-Whitespace">   </span><span class="mi">2367</span>             <span class="n">filename</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">2368</span>             <span class="n">facecolor</span><span class="o">=</span><span class="n">facecolor</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">2369</span>             <span class="n">edgecolor</span><span class="o">=</span><span class="n">edgecolor</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">2370</span>             <span class="n">orientation</span><span class="o">=</span><span class="n">orientation</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">2371</span>             <span class="n">bbox_inches_restore</span><span class="o">=</span><span class="n">_bbox_inches_restore</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">2372</span>             <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">2373</span> <span class="k">finally</span><span class="p">:</span>
-<span class="g g-Whitespace">   </span><span class="mi">2374</span>     <span class="k">if</span> <span class="n">bbox_inches</span> <span class="ow">and</span> <span class="n">restore_bbox</span><span class="p">:</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/matplotlib/backend_bases.py:2336,</span> in <span class="ni">FigureCanvasBase.print_figure</span><span class="nt">(self, filename, dpi, facecolor, edgecolor, orientation, format, bbox_inches, pad_inches, bbox_extra_artists, backend, **kwargs)</span>
+<span class="g g-Whitespace">   </span><span class="mi">2329</span>     <span class="n">bbox_inches</span> <span class="o">=</span> <span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;savefig.bbox&#39;</span><span class="p">]</span>
+<span class="g g-Whitespace">   </span><span class="mi">2331</span> <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">get_layout_engine</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span>
+<span class="g g-Whitespace">   </span><span class="mi">2332</span>         <span class="n">bbox_inches</span> <span class="o">==</span> <span class="s2">&quot;tight&quot;</span><span class="p">):</span>
+<span class="g g-Whitespace">   </span><span class="mi">2333</span>     <span class="c1"># we need to trigger a draw before printing to make sure</span>
+<span class="g g-Whitespace">   </span><span class="mi">2334</span>     <span class="c1"># CL works.  &quot;tight&quot; also needs a draw to get the right</span>
+<span class="g g-Whitespace">   </span><span class="mi">2335</span>     <span class="c1"># locations:</span>
+<span class="ne">-&gt; </span><span class="mi">2336</span>     <span class="n">renderer</span> <span class="o">=</span> <span class="n">_get_renderer</span><span class="p">(</span>
+<span class="g g-Whitespace">   </span><span class="mi">2337</span>         <span class="bp">self</span><span class="o">.</span><span class="n">figure</span><span class="p">,</span>
+<span class="g g-Whitespace">   </span><span class="mi">2338</span>         <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span>
+<span class="g g-Whitespace">   </span><span class="mi">2339</span>             <span class="n">print_method</span><span class="p">,</span> <span class="n">orientation</span><span class="o">=</span><span class="n">orientation</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">2340</span>     <span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">2341</span>     <span class="k">with</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">renderer</span><span class="p">,</span> <span class="s2">&quot;_draw_disabled&quot;</span><span class="p">,</span> <span class="n">nullcontext</span><span class="p">)():</span>
+<span class="g g-Whitespace">   </span><span class="mi">2342</span>         <span class="bp">self</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">renderer</span><span class="p">)</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/matplotlib/backend_bases.py:1598,</span> in <span class="ni">_get_renderer</span><span class="nt">(figure, print_method)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1595</span>     <span class="n">print_method</span> <span class="o">=</span> <span class="n">stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span>
+<span class="g g-Whitespace">   </span><span class="mi">1596</span>         <span class="n">figure</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">_switch_canvas_and_return_print_method</span><span class="p">(</span><span class="n">fmt</span><span class="p">))</span>
+<span class="g g-Whitespace">   </span><span class="mi">1597</span> <span class="k">try</span><span class="p">:</span>
+<span class="ne">-&gt; </span><span class="mi">1598</span>     <span class="n">print_method</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">())</span>
+<span class="g g-Whitespace">   </span><span class="mi">1599</span> <span class="k">except</span> <span class="n">Done</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+<span class="g g-Whitespace">   </span><span class="mi">1600</span>     <span class="n">renderer</span><span class="p">,</span> <span class="o">=</span> <span class="n">exc</span><span class="o">.</span><span class="n">args</span>
 
 <span class="nn">File /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/matplotlib/backend_bases.py:2232,</span> in <span class="ni">FigureCanvasBase._switch_canvas_and_return_print_method.&lt;locals&gt;.&lt;lambda&gt;</span><span class="nt">(*args, **kwargs)</span>
 <span class="g g-Whitespace">   </span><span class="mi">2228</span>     <span class="n">optional_kws</span> <span class="o">=</span> <span class="p">{</span>  <span class="c1"># Passed by print_figure for other renderers.</span>
@@ -3003,46 +3011,47 @@
 <span class="g g-Whitespace">    </span><span class="mi">508</span><span class="sd">     &quot;&quot;&quot;</span>
 <span class="ne">--&gt; </span><span class="mi">509</span>     <span class="bp">self</span><span class="o">.</span><span class="n">_print_pil</span><span class="p">(</span><span class="n">filename_or_obj</span><span class="p">,</span> <span class="s2">&quot;png&quot;</span><span class="p">,</span> <span class="n">pil_kwargs</span><span class="p">,</span> <span class="n">metadata</span><span class="p">)</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/matplotlib/backends/backend_agg.py:458,</span> in <span class="ni">FigureCanvasAgg._print_pil</span><span class="nt">(self, filename_or_obj, fmt, pil_kwargs, metadata)</span>
-<span class="g g-Whitespace">    </span><span class="mi">453</span><span class="w"> </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="g g-Whitespace">    </span><span class="mi">454</span><span class="sd"> Draw the canvas, then save it using `.image.imsave` (to which</span>
-<span class="g g-Whitespace">    </span><span class="mi">455</span><span class="sd"> *pil_kwargs* and *metadata* are forwarded).</span>
-<span class="g g-Whitespace">    </span><span class="mi">456</span><span class="sd"> &quot;&quot;&quot;</span>
-<span class="g g-Whitespace">    </span><span class="mi">457</span> <span class="n">FigureCanvasAgg</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-<span class="ne">--&gt; </span><span class="mi">458</span> <span class="n">mpl</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">imsave</span><span class="p">(</span>
-<span class="g g-Whitespace">    </span><span class="mi">459</span>     <span class="n">filename_or_obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer_rgba</span><span class="p">(),</span> <span class="nb">format</span><span class="o">=</span><span class="n">fmt</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s2">&quot;upper&quot;</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">460</span>     <span class="n">dpi</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">dpi</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span> <span class="n">pil_kwargs</span><span class="o">=</span><span class="n">pil_kwargs</span><span class="p">)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/matplotlib/backends/backend_agg.py:457,</span> in <span class="ni">FigureCanvasAgg._print_pil</span><span class="nt">(self, filename_or_obj, fmt, pil_kwargs, metadata)</span>
+<span class="g g-Whitespace">    </span><span class="mi">452</span> <span class="k">def</span> <span class="nf">_print_pil</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename_or_obj</span><span class="p">,</span> <span class="n">fmt</span><span class="p">,</span> <span class="n">pil_kwargs</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="g g-Whitespace">    </span><span class="mi">453</span><span class="w">     </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="g g-Whitespace">    </span><span class="mi">454</span><span class="sd">     Draw the canvas, then save it using `.image.imsave` (to which</span>
+<span class="g g-Whitespace">    </span><span class="mi">455</span><span class="sd">     *pil_kwargs* and *metadata* are forwarded).</span>
+<span class="g g-Whitespace">    </span><span class="mi">456</span><span class="sd">     &quot;&quot;&quot;</span>
+<span class="ne">--&gt; </span><span class="mi">457</span>     <span class="n">FigureCanvasAgg</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">458</span>     <span class="n">mpl</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">imsave</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">459</span>         <span class="n">filename_or_obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer_rgba</span><span class="p">(),</span> <span class="nb">format</span><span class="o">=</span><span class="n">fmt</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s2">&quot;upper&quot;</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">460</span>         <span class="n">dpi</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">dpi</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span> <span class="n">pil_kwargs</span><span class="o">=</span><span class="n">pil_kwargs</span><span class="p">)</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/matplotlib/image.py:1689,</span> in <span class="ni">imsave</span><span class="nt">(fname, arr, vmin, vmax, cmap, format, origin, dpi, metadata, pil_kwargs)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1687</span> <span class="n">pil_kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;format&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1688</span> <span class="n">pil_kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;dpi&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">dpi</span><span class="p">,</span> <span class="n">dpi</span><span class="p">))</span>
-<span class="ne">-&gt; </span><span class="mi">1689</span> <span class="n">image</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="o">**</span><span class="n">pil_kwargs</span><span class="p">)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/matplotlib/backends/backend_agg.py:394,</span> in <span class="ni">FigureCanvasAgg.draw</span><span class="nt">(self)</span>
+<span class="g g-Whitespace">    </span><span class="mi">392</span> <span class="k">def</span> <span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="g g-Whitespace">    </span><span class="mi">393</span>     <span class="c1"># docstring inherited</span>
+<span class="ne">--&gt; </span><span class="mi">394</span>     <span class="bp">self</span><span class="o">.</span><span class="n">renderer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_renderer</span><span class="p">()</span>
+<span class="g g-Whitespace">    </span><span class="mi">395</span>     <span class="bp">self</span><span class="o">.</span><span class="n">renderer</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+<span class="g g-Whitespace">    </span><span class="mi">396</span>     <span class="c1"># Acquire a lock on the shared font cache.</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/PIL/Image.py:2400,</span> in <span class="ni">Image.save</span><span class="nt">(self, fp, format, **params)</span>
-<span class="g g-Whitespace">   </span><span class="mi">2397</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoderinfo</span> <span class="o">=</span> <span class="n">params</span>
-<span class="g g-Whitespace">   </span><span class="mi">2398</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoderconfig</span> <span class="o">=</span> <span class="p">()</span>
-<span class="ne">-&gt; </span><span class="mi">2400</span> <span class="n">preinit</span><span class="p">()</span>
-<span class="g g-Whitespace">   </span><span class="mi">2402</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">filename</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-<span class="g g-Whitespace">   </span><span class="mi">2404</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">format</span><span class="p">:</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/matplotlib/_api/deprecation.py:384,</span> in <span class="ni">delete_parameter.&lt;locals&gt;.wrapper</span><span class="nt">(*inner_args, **inner_kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">379</span> <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">380</span> <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">inner_args</span><span class="p">,</span> <span class="o">**</span><span class="n">inner_kwargs</span><span class="p">):</span>
+<span class="g g-Whitespace">    </span><span class="mi">381</span>     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">inner_args</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">name_idx</span> <span class="ow">and</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">inner_kwargs</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">382</span>         <span class="c1"># Early return in the simple, non-deprecated case (much faster than</span>
+<span class="g g-Whitespace">    </span><span class="mi">383</span>         <span class="c1"># calling bind()).</span>
+<span class="ne">--&gt; </span><span class="mi">384</span>         <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">inner_args</span><span class="p">,</span> <span class="o">**</span><span class="n">inner_kwargs</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">385</span>     <span class="n">arguments</span> <span class="o">=</span> <span class="n">signature</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="o">*</span><span class="n">inner_args</span><span class="p">,</span> <span class="o">**</span><span class="n">inner_kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">arguments</span>
+<span class="g g-Whitespace">    </span><span class="mi">386</span>     <span class="k">if</span> <span class="n">is_varargs</span> <span class="ow">and</span> <span class="n">arguments</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/PIL/Image.py:329,</span> in <span class="ni">preinit</span><span class="nt">()</span>
-<span class="g g-Whitespace">    </span><span class="mi">326</span>     <span class="k">return</span>
-<span class="g g-Whitespace">    </span><span class="mi">328</span> <span class="k">try</span><span class="p">:</span>
-<span class="ne">--&gt; </span><span class="mi">329</span>     <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">BmpImagePlugin</span>
-<span class="g g-Whitespace">    </span><span class="mi">331</span>     <span class="k">assert</span> <span class="n">BmpImagePlugin</span>
-<span class="g g-Whitespace">    </span><span class="mi">332</span> <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/matplotlib/backends/backend_agg.py:411,</span> in <span class="ni">FigureCanvasAgg.get_renderer</span><span class="nt">(self, cleared)</span>
+<span class="g g-Whitespace">    </span><span class="mi">409</span> <span class="n">reuse_renderer</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_lastKey</span> <span class="o">==</span> <span class="n">key</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">410</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">reuse_renderer</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">411</span>     <span class="bp">self</span><span class="o">.</span><span class="n">renderer</span> <span class="o">=</span> <span class="n">RendererAgg</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">dpi</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">412</span>     <span class="bp">self</span><span class="o">.</span><span class="n">_lastKey</span> <span class="o">=</span> <span class="n">key</span>
+<span class="g g-Whitespace">    </span><span class="mi">413</span> <span class="k">elif</span> <span class="n">cleared</span><span class="p">:</span>
 
-<span class="nn">File &lt;frozen importlib._bootstrap&gt;:991,</span> in <span class="ni">_find_and_load</span><span class="nt">(name, import_)</span>
-
-<span class="nn">File &lt;frozen importlib._bootstrap&gt;:975,</span> in <span class="ni">_find_and_load_unlocked</span><span class="nt">(name, import_)</span>
-
-<span class="nn">File &lt;frozen importlib._bootstrap&gt;:671,</span> in <span class="ni">_load_unlocked</span><span class="nt">(spec)</span>
-
-<span class="nn">File &lt;frozen importlib._bootstrap_external&gt;:839,</span> in <span class="ni">exec_module</span><span class="nt">(self, module)</span>
-
-<span class="nn">File &lt;frozen importlib._bootstrap_external&gt;:971,</span> in <span class="ni">get_code</span><span class="nt">(self, fullname)</span>
-
-<span class="nn">File &lt;frozen importlib._bootstrap_external&gt;:640,</span> in <span class="ni">_compile_bytecode</span><span class="nt">(data, name, bytecode_path, source_path)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/matplotlib/backends/backend_agg.py:84,</span> in <span class="ni">RendererAgg.__init__</span><span class="nt">(self, width, height, dpi)</span>
+<span class="g g-Whitespace">     </span><span class="mi">82</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="n">width</span>
+<span class="g g-Whitespace">     </span><span class="mi">83</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="n">height</span>
+<span class="ne">---&gt; </span><span class="mi">84</span> <span class="bp">self</span><span class="o">.</span><span class="n">_renderer</span> <span class="o">=</span> <span class="n">_RendererAgg</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">width</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">height</span><span class="p">),</span> <span class="n">dpi</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">85</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_renderers</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="g g-Whitespace">     </span><span class="mi">87</span> <span class="bp">self</span><span class="o">.</span><span class="n">_update_methods</span><span class="p">()</span>
 
 <span class="ne">KeyboardInterrupt</span>: 
 </pre></div>
