@@ -1089,6 +1089,11 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="../../networks/tutorials/predicting_diffusive_size_factors_rock_sample.html">
+       Predicting diffusive size factors of a rock sample
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="../../networks/tutorials/snow_advanced.html">
        SNOW network extraction (advanced)
       </a>
@@ -1129,6 +1134,15 @@
        <code class="docutils literal notranslate">
         <span class="pre">
          diffusive_size_factor_AI
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../networks/reference/diffusive_size_factor_DNS.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         diffusive_size_factor_DNS
         </span>
        </code>
       </a>
@@ -2383,6 +2397,11 @@
   </a>
  </li>
  <li class="toctree-l1">
+  <a class="reference internal" href="../../networks/tutorials/predicting_diffusive_size_factors_rock_sample.html">
+   Predicting diffusive size factors of a rock sample
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="../../networks/tutorials/snow_advanced.html">
    SNOW network extraction (advanced)
   </a>
@@ -2413,6 +2432,15 @@
    <code class="docutils literal notranslate">
     <span class="pre">
      diffusive_size_factor_AI
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../networks/reference/diffusive_size_factor_DNS.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     diffusive_size_factor_DNS
     </span>
    </code>
   </a>
@@ -2937,6 +2965,58 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">KeyboardInterrupt</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">7</span><span class="p">],</span> <span class="n">line</span> <span class="mi">9</span>
+<span class="g g-Whitespace">      </span><span class="mi">7</span> <span class="k">for</span> <span class="n">eps</span> <span class="ow">in</span> <span class="n">porosity_target</span><span class="p">:</span>
+<span class="g g-Whitespace">      </span><span class="mi">8</span>     <span class="n">temp</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="ne">----&gt; </span><span class="mi">9</span>     <span class="n">im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">cylinders</span><span class="p">(</span><span class="o">**</span><span class="n">params_generic</span><span class="p">,</span> <span class="n">porosity</span><span class="o">=</span><span class="n">eps</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">10</span>     <span class="n">runtime_porosity</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">temp</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">11</span>     <span class="n">porosity_actual</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ps</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">porosity</span><span class="p">(</span><span class="n">im</span><span class="p">))</span>
+
+<span class="nn">File ~/work/porespy/porespy/porespy/generators/_imgen.py:1362,</span> in <span class="ni">cylinders</span><span class="nt">(shape, r, ncylinders, porosity, phi_max, theta_max, length, maxiter, seed)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1360</span> <span class="n">n_fibers</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">frac</span> <span class="o">*</span> <span class="n">n_fibers_total</span><span class="p">)</span> <span class="o">-</span> <span class="n">n_fibers_added</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1361</span> <span class="k">if</span> <span class="n">n_fibers</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+<span class="ne">-&gt; </span><span class="mi">1362</span>     <span class="n">im</span> <span class="o">=</span> <span class="n">im</span> <span class="o">&amp;</span> <span class="n">_cylinders</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">n_fibers</span><span class="p">,</span>
+<span class="g g-Whitespace">   </span><span class="mi">1363</span>                          <span class="n">phi_max</span><span class="p">,</span> <span class="n">theta_max</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span>
+<span class="g g-Whitespace">   </span><span class="mi">1364</span>                          <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1365</span> <span class="n">n_fibers_added</span> <span class="o">+=</span> <span class="n">n_fibers</span>
+<span class="g g-Whitespace">   </span><span class="mi">1366</span> <span class="c1"># Update parameters for next iteration</span>
+
+<span class="nn">File ~/work/porespy/porespy/porespy/generators/_imgen.py:1208,</span> in <span class="ni">_cylinders</span><span class="nt">(shape, r, ncylinders, phi_max, theta_max, length, verbose, seed)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1204</span> <span class="n">X0</span> <span class="o">=</span> <span class="n">R</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">),</span>
+<span class="g g-Whitespace">   </span><span class="mi">1205</span>                    <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">),</span>
+<span class="g g-Whitespace">   </span><span class="mi">1206</span>                    <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span><span class="p">)])</span>
+<span class="g g-Whitespace">   </span><span class="mi">1207</span> <span class="p">[</span><span class="n">X0</span><span class="p">,</span> <span class="n">X1</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="o">+</span> <span class="n">X0</span><span class="p">,</span> <span class="n">x</span> <span class="o">-</span> <span class="n">X0</span><span class="p">]</span>
+<span class="ne">-&gt; </span><span class="mi">1208</span> <span class="n">crds</span> <span class="o">=</span> <span class="n">line_segment</span><span class="p">(</span><span class="n">X0</span><span class="p">,</span> <span class="n">X1</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1209</span> <span class="n">lower</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">crds</span><span class="p">)</span><span class="o">.</span><span class="n">T</span> <span class="o">&lt;</span> <span class="p">[</span><span class="n">L</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">L</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1210</span> <span class="n">upper</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">crds</span><span class="p">)</span><span class="o">.</span><span class="n">T</span> <span class="o">&gt;=</span> <span class="n">shape</span> <span class="o">+</span> <span class="n">L</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="nn">File ~/work/porespy/porespy/porespy/generators/_imgen.py:1407,</span> in <span class="ni">line_segment</span><span class="nt">(X0, X1)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1403</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">X0</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+<span class="g g-Whitespace">   </span><span class="mi">1404</span>     <span class="n">L</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span>
+<span class="g g-Whitespace">   </span><span class="mi">1405</span>         <span class="n">np</span><span class="o">.</span><span class="n">absolute</span><span class="p">([[</span><span class="n">X1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">X0</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="p">[</span><span class="n">X1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">X0</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="p">[</span><span class="n">X1</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">X0</span><span class="p">[</span><span class="mi">2</span><span class="p">]]])</span>
+<span class="g g-Whitespace">   </span><span class="mi">1406</span>     <span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="ne">-&gt; </span><span class="mi">1407</span>     <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rint</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">X0</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">X1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">L</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1408</span>     <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rint</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">X0</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">X1</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">L</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1409</span>     <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rint</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">X0</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">X1</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">L</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+<span class="nn">File &lt;__array_function__ internals&gt;:180,</span> in <span class="ni">linspace</span><span class="nt">(*args, **kwargs)</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/numpy/core/function_base.py:139,</span> in <span class="ni">linspace</span><span class="nt">(start, stop, num, endpoint, retstep, dtype, axis)</span>
+<span class="g g-Whitespace">    </span><span class="mi">135</span> <span class="n">y</span> <span class="o">=</span> <span class="n">_nx</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,)</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span> <span class="o">*</span> <span class="n">ndim</span><span class="p">(</span><span class="n">delta</span><span class="p">))</span>
+<span class="g g-Whitespace">    </span><span class="mi">136</span> <span class="c1"># In-place multiplication y *= delta/div is faster, but prevents the multiplicant</span>
+<span class="g g-Whitespace">    </span><span class="mi">137</span> <span class="c1"># from overriding what class is produced, and thus prevents, e.g. use of Quantities,</span>
+<span class="g g-Whitespace">    </span><span class="mi">138</span> <span class="c1"># see gh-7142. Hence, we multiply in place only for standard scalar types.</span>
+<span class="ne">--&gt; </span><span class="mi">139</span> <span class="n">_mult_inplace</span> <span class="o">=</span> <span class="n">_nx</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">delta</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">140</span> <span class="k">if</span> <span class="n">div</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">141</span>     <span class="n">step</span> <span class="o">=</span> <span class="n">delta</span> <span class="o">/</span> <span class="n">div</span>
+
+<span class="ne">KeyboardInterrupt</span>: 
+</pre></div>
+</div>
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -2971,8 +3051,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/f0914fb18f658c7a88ad6920a7cd84570144297d1b78788adb2dd1213cb1d39e.png" src="../../../_images/f0914fb18f658c7a88ad6920a7cd84570144297d1b78788adb2dd1213cb1d39e.png" />
-</div>
+<img alt="../../../_images/eec59370d0a1441dc815bb5d5e9a0207887e865a168c6eb491d605d05b41739d.svg" src="../../../_images/eec59370d0a1441dc815bb5d5e9a0207887e865a168c6eb491d605d05b41739d.svg" /></div>
 </div>
 <p>Lastly, this block shows that more iterations improves proximity to goal porosity.</p>
 <div class="cell docutils container">
@@ -3001,8 +3080,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/b2f2e466fb14048e166e7708477c0f140d80b4c17bc9b906e43aa4cb94b6e8b8.png" src="../../../_images/b2f2e466fb14048e166e7708477c0f140d80b4c17bc9b906e43aa4cb94b6e8b8.png" />
-</div>
+<img alt="../../../_images/d5d96625ef70aa1d9e498603303e2dc616c59e87984a47bbc4e1545126ee0bd4.svg" src="../../../_images/d5d96625ef70aa1d9e498603303e2dc616c59e87984a47bbc4e1545126ee0bd4.svg" /></div>
 </div>
 </section>
 

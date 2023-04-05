@@ -1087,6 +1087,11 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="../networks/tutorials/predicting_diffusive_size_factors_rock_sample.html">
+       Predicting diffusive size factors of a rock sample
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="../networks/tutorials/snow_advanced.html">
        SNOW network extraction (advanced)
       </a>
@@ -1127,6 +1132,15 @@
        <code class="docutils literal notranslate">
         <span class="pre">
          diffusive_size_factor_AI
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../networks/reference/diffusive_size_factor_DNS.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         diffusive_size_factor_DNS
         </span>
        </code>
       </a>
@@ -2381,6 +2395,11 @@
   </a>
  </li>
  <li class="toctree-l1">
+  <a class="reference internal" href="../networks/tutorials/predicting_diffusive_size_factors_rock_sample.html">
+   Predicting diffusive size factors of a rock sample
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="../networks/tutorials/snow_advanced.html">
    SNOW network extraction (advanced)
   </a>
@@ -2411,6 +2430,15 @@
    <code class="docutils literal notranslate">
     <span class="pre">
      diffusive_size_factor_AI
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../networks/reference/diffusive_size_factor_DNS.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     diffusive_size_factor_DNS
     </span>
    </code>
   </a>
@@ -2889,7 +2917,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/82d8a875a505d8b333974f77fcfc0863622a5f5f47ebff94498099f075ca0555.png" src="../../_images/82d8a875a505d8b333974f77fcfc0863622a5f5f47ebff94498099f075ca0555.png" />
+<img alt="../../_images/de7f99375908110e40bd4059d12287c0a3943539e4ce35d38e02b3bb5cdd7985.png" src="../../_images/de7f99375908110e40bd4059d12287c0a3943539e4ce35d38e02b3bb5cdd7985.png" />
 </div>
 </div>
 <p>The above image now contains some noise in each phase, which is more realistic, though as we will see it not close to reality.  Let’s look at a histogram of this image:</p>
@@ -2901,7 +2929,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/e41386e0155b8aa152b94238379366e6e0c15a07ef014c1b8485f070d3611046.png" src="../../_images/e41386e0155b8aa152b94238379366e6e0c15a07ef014c1b8485f070d3611046.png" />
+<img alt="../../_images/0498e2788aafcf17ac11f2ac8802916263429e4768177213481bed4ecbb63210.png" src="../../_images/0498e2788aafcf17ac11f2ac8802916263429e4768177213481bed4ecbb63210.png" />
 </div>
 </div>
 <p>We can see above that all pixels with a value less than 0.5 belong to the dark phase, while the other pixels belong to the light phase.  A simple global threshold can reproduce the original image perfectly:</p>
@@ -2913,7 +2941,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/4e36e4aba982b5a02e84b20612219e1354840150a96ba08a541ee28028d9331d.png" src="../../_images/4e36e4aba982b5a02e84b20612219e1354840150a96ba08a541ee28028d9331d.png" />
+<img alt="../../_images/8826891845270dfdcba66115d00bebaa8279047b59657954665697702aa7d661.png" src="../../_images/8826891845270dfdcba66115d00bebaa8279047b59657954665697702aa7d661.png" />
 </div>
 </div>
 <p>Now let’s look at a more realistic noise distribution, though still artificially generated:</p>
@@ -2928,7 +2956,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/39a156a835cd6f25f7bba7d5cb3a91c306482b6cb3a254e6b636c89f38ed74d1.png" src="../../_images/39a156a835cd6f25f7bba7d5cb3a91c306482b6cb3a254e6b636c89f38ed74d1.png" />
+<img alt="../../_images/e2a507eb903a5cb457db6a92a22fbb2f4a6cc215cbee03e6f47902c5fb5865b2.png" src="../../_images/e2a507eb903a5cb457db6a92a22fbb2f4a6cc215cbee03e6f47902c5fb5865b2.png" />
 </div>
 </div>
 <p>Now we can see that the noise is much less separated, and in fact the tails of the distributions just touch each other in the middle.  Let’s see how the simple threshold we used above would work now:</p>
@@ -2940,7 +2968,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/07d308fb9ceef0902aeeabf113fee48b6d9cf2479aedd65b0e758e1c4f4bac1f.png" src="../../_images/07d308fb9ceef0902aeeabf113fee48b6d9cf2479aedd65b0e758e1c4f4bac1f.png" />
+<img alt="../../_images/ade896297e79bc450931ea091898425faa8c242fb1fcdef8f3c3512c1506cc49.png" src="../../_images/ade896297e79bc450931ea091898425faa8c242fb1fcdef8f3c3512c1506cc49.png" />
 </div>
 </div>
 <p>Now there are a few pixels in the dark phase which have been identified as bright and vice-versa. Let’s take this further but putting more extreme, but more realistic noise:</p>
@@ -2956,7 +2984,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/352ed22d426111867e4ba6cd0bea6b3cb56f1e10b6d4955407d466784a87893c.png" src="../../_images/352ed22d426111867e4ba6cd0bea6b3cb56f1e10b6d4955407d466784a87893c.png" />
+<img alt="../../_images/bf756155dfc399c797d07cf61f69de71df982d302bfd62f67559953715468088.png" src="../../_images/bf756155dfc399c797d07cf61f69de71df982d302bfd62f67559953715468088.png" />
 </div>
 </div>
 <p>In the above case our eyes can differentiate the light and dark phases pretty well, but the histogram is fully merged into one, and the global threshold produces a very problematic result. Just to show this is not an exageration, below is an actual slice of a tomogram taken of an electrospun flow-battery electrode:</p>

@@ -202,6 +202,7 @@
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;diffusive_size_factor_AI&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;diffusive_size_factor_DNS&quot;</span><span class="p">,</span>
     <span class="s2">&quot;create_model&quot;</span><span class="p">,</span>
     <span class="s2">&quot;find_conns&quot;</span><span class="p">,</span>
 <span class="p">]</span>
@@ -241,8 +242,8 @@
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
     <span class="k">if</span> <span class="n">g_train</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Training ground truth data must be given</span><span class="se">\</span>
-<span class="s2">                         to be used for normalizing the test data&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Training ground truth data must be given&quot;</span> <span class="o">+</span>
+                         <span class="s2">&quot;to be used for normalizing the test data&quot;</span><span class="p">)</span>
     <span class="n">its</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
     <span class="n">pairs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">throat_conns</span><span class="p">),</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;int32&#39;</span><span class="p">)</span>
     <span class="n">diff_size_factor</span> <span class="o">=</span> <span class="p">[]</span>
@@ -278,9 +279,206 @@
     <span class="k">return</span> <span class="n">diff_size_factor</span></div>
 
 
+<span class="k">def</span> <span class="nf">diffusive_size_factor_DNS</span><span class="p">(</span><span class="n">regions</span><span class="p">,</span> <span class="n">throat_conns</span><span class="p">,</span> <span class="n">voxel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the diffusive size factor of pore to pore regions in</span>
+<span class="sd">    a segmented image of porous material using finite difference method.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    regions : ndarray</span>
+<span class="sd">        A segmented 3D image of pore regions/a pair of two regions.</span>
+<span class="sd">    throat_conns : array</span>
+<span class="sd">        An Nt by 2 array containing the throat connections. The indices orders in</span>
+<span class="sd">        throat_conns start from 0 to be consistent with network extraction method.</span>
+<span class="sd">    voxel_size : scalar, optional</span>
+<span class="sd">        Voxel size of the image. The default is 1.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    diff_size_factor : array</span>
+<span class="sd">        An array of length conns containing diffusive size factor of the conduits</span>
+<span class="sd">        in the segmented image (regions).</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">DNS_size_factor</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">desc</span> <span class="o">=</span> <span class="s1">&#39;Preparing images and DNS calculations&#39;</span>
+    <span class="n">settings</span><span class="o">.</span><span class="n">tqdm</span><span class="p">[</span><span class="s1">&#39;disable&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">throat_conns</span><span class="p">)),</span> <span class="n">desc</span><span class="o">=</span><span class="n">desc</span><span class="p">,</span> <span class="o">**</span><span class="n">settings</span><span class="o">.</span><span class="n">tqdm</span><span class="p">):</span>
+        <span class="n">cn</span> <span class="o">=</span> <span class="n">throat_conns</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="c1"># crop two pore regions and label them as 1,2</span>
+        <span class="n">bb</span> <span class="o">=</span> <span class="n">_calc_bound_box_bi</span><span class="p">(</span><span class="n">regions</span><span class="p">,</span> <span class="n">cn</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">cn</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">roi_crop</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">regions</span><span class="p">[</span><span class="n">bb</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="n">bb</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">bb</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span><span class="n">bb</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">bb</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span><span class="n">bb</span><span class="p">[</span><span class="mi">5</span><span class="p">]])</span>
+        <span class="c1"># label two pore regions as 1,2</span>
+        <span class="n">roi_masked</span> <span class="o">=</span> <span class="n">_create_labeled_pair</span><span class="p">(</span><span class="n">cn</span><span class="p">,</span> <span class="n">roi_crop</span><span class="p">)</span>
+        <span class="n">DNS_size_factor</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_calc_g_val</span><span class="p">(</span><span class="n">roi_masked</span><span class="p">))</span>
+    <span class="n">diff_size_factor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">DNS_size_factor</span><span class="p">)</span> <span class="o">*</span> <span class="n">voxel_size</span>
+    <span class="k">return</span> <span class="n">diff_size_factor</span>
+
+
+<span class="k">def</span> <span class="nf">_calc_g_val</span><span class="p">(</span><span class="n">im</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Calculates the diffusive size factor of conduit image (ROI)</span>
+<span class="sd">    using finite difference method. The finite difference nodes</span>
+<span class="sd">    are created using OpenPNM&#39;s CubicTemplate method.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    im : ndarray</span>
+<span class="sd">        3D image of a pair of pore to pore regions (conduit)</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    g : scalar</span>
+<span class="sd">        Diffusive size factor of the conduit.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="kn">import</span> <span class="nn">openpnm</span> <span class="k">as</span> <span class="nn">op</span>
+    <span class="n">c1</span> <span class="o">=</span> <span class="mi">20</span>
+    <span class="n">c2</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">_find_conns_roi_info</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+    <span class="n">centroids</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s1">&#39;p_coords&#39;</span><span class="p">]</span>
+    <span class="n">p_dia_local</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s1">&#39;p_dia_local&#39;</span><span class="p">]</span>
+    <span class="c1"># create a mask where solid phase==True to trim the nodes</span>
+    <span class="c1"># in the finite difference nodes that are located in solid/not ROI</span>
+    <span class="n">mask1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">im</span><span class="p">[:]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="n">im</span><span class="p">[:],</span> <span class="mi">0</span><span class="p">),</span>
+                     <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="n">mask2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">im</span><span class="p">[:]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span> <span class="n">im</span><span class="p">[:],</span> <span class="mi">0</span><span class="p">),</span>
+                     <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="n">mask1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">mask1</span><span class="p">,</span> <span class="n">mask1</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+    <span class="n">mask2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">mask2</span><span class="p">,</span> <span class="n">mask2</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="o">~</span><span class="p">(</span><span class="n">mask1</span><span class="o">+</span><span class="n">mask2</span><span class="p">)</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">meds</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Cubic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">n</span><span class="p">[</span><span class="mi">2</span><span class="p">]],</span> <span class="n">spacing</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">meds</span><span class="p">[</span><span class="s1">&#39;pore.region1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mask1</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">meds</span><span class="p">[</span><span class="s1">&#39;pore.region2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mask2</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="c1"># trim nodes that are located in solid phase/not ROI</span>
+    <span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">trim</span><span class="p">(</span><span class="n">meds</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">mask</span><span class="p">)</span>
+    <span class="n">meds</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.cluster_number&#39;</span><span class="p">,</span>
+                   <span class="n">model</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">cluster_number</span><span class="p">)</span>
+    <span class="n">meds</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">propname</span><span class="o">=</span><span class="s1">&#39;pore.cluster_size&#39;</span><span class="p">,</span>
+                   <span class="n">model</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">cluster_size</span><span class="p">)</span>
+    <span class="n">cluster_size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">meds</span><span class="p">[</span><span class="s1">&#39;pore.cluster_size&#39;</span><span class="p">])</span>
+    <span class="n">trim_pores</span> <span class="o">=</span> <span class="n">meds</span><span class="p">[</span><span class="s1">&#39;pore.cluster_size&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">cluster_size</span>
+    <span class="n">op</span><span class="o">.</span><span class="n">topotools</span><span class="o">.</span><span class="n">trim</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">meds</span><span class="p">,</span> <span class="n">pores</span><span class="o">=</span><span class="n">trim_pores</span><span class="p">)</span>
+    <span class="n">phss</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">phase</span><span class="o">.</span><span class="n">Phase</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">meds</span><span class="p">)</span>
+    <span class="c1"># A diffusive conductance of 1 ensures a finite difference approach</span>
+    <span class="c1"># where each node is located at the corner of each voxel</span>
+    <span class="n">phss</span><span class="p">[</span><span class="s1">&#39;throat.diffusive_conductance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">algs</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">FickianDiffusion</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">meds</span><span class="p">,</span>
+                                          <span class="n">phase</span><span class="o">=</span><span class="n">phss</span><span class="p">)</span>
+    <span class="c1"># find centroid of each pore region in the finite difference nodes</span>
+    <span class="n">pr1</span> <span class="o">=</span> <span class="n">closest_node</span><span class="p">(</span><span class="n">centroids</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">meds</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">])</span>
+    <span class="n">pr2</span> <span class="o">=</span> <span class="n">closest_node</span><span class="p">(</span><span class="n">centroids</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">meds</span><span class="p">[</span><span class="s1">&#39;pore.coords&#39;</span><span class="p">])</span>
+    <span class="n">algs</span><span class="o">.</span><span class="n">set_value_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pr1</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">c1</span><span class="p">)</span>
+    <span class="n">algs</span><span class="o">.</span><span class="n">set_value_BC</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pr2</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">c2</span><span class="p">)</span>
+    <span class="n">algs</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+    <span class="c1"># calculate average concentrations within inscribed spheres</span>
+    <span class="n">r1</span> <span class="o">=</span> <span class="n">p_dia_local</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span>
+    <span class="n">r2</span> <span class="o">=</span> <span class="n">p_dia_local</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">r1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c1"># This prevent error in find_nearby_pores for narrow regions</span>
+        <span class="c1"># If the region is narrow, use the entire region for average concentration</span>
+        <span class="n">c1_avr</span> <span class="o">=</span> <span class="n">algs</span><span class="p">[</span><span class="s1">&#39;pore.concentration&#39;</span><span class="p">][</span><span class="n">meds</span><span class="p">[</span><span class="s1">&#39;pore.region1&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># use the inscribed sphere within the region for average concentration</span>
+        <span class="n">pores1</span> <span class="o">=</span> <span class="n">meds</span><span class="o">.</span><span class="n">find_nearby_pores</span><span class="p">(</span><span class="n">pr1</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">r1</span><span class="p">),</span> <span class="n">flatten</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                        <span class="n">include_input</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">pores1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pores1</span><span class="p">,</span> <span class="n">pr1</span><span class="p">)</span>
+        <span class="n">pores1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">pores1</span><span class="p">)</span>
+        <span class="n">c1_avr</span> <span class="o">=</span> <span class="n">algs</span><span class="p">[</span><span class="s1">&#39;pore.concentration&#39;</span><span class="p">][</span><span class="n">pores1</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">r2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">c2_avr</span> <span class="o">=</span> <span class="n">algs</span><span class="p">[</span><span class="s1">&#39;pore.concentration&#39;</span><span class="p">][</span><span class="n">meds</span><span class="p">[</span><span class="s1">&#39;pore.region2&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">pores2</span> <span class="o">=</span> <span class="n">meds</span><span class="o">.</span><span class="n">find_nearby_pores</span><span class="p">(</span><span class="n">pr2</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">r2</span><span class="p">),</span> <span class="n">flatten</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                        <span class="n">include_input</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">pores2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pores2</span><span class="p">,</span> <span class="n">pr2</span><span class="p">)</span>
+        <span class="n">pores2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">pores2</span><span class="p">)</span>
+        <span class="n">c2_avr</span> <span class="o">=</span> <span class="n">algs</span><span class="p">[</span><span class="s1">&#39;pore.concentration&#39;</span><span class="p">][</span><span class="n">pores2</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">algs</span><span class="o">.</span><span class="n">rate</span><span class="p">(</span><span class="n">pores</span><span class="o">=</span><span class="n">pr1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="p">(</span><span class="n">c1_avr</span><span class="o">-</span><span class="n">c2_avr</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">g</span>
+
+
+<span class="k">def</span> <span class="nf">closest_node</span><span class="p">(</span><span class="n">extracted_nodes</span><span class="p">,</span> <span class="n">fd_nodes</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Finds the indice of a node in the finite difference</span>
+<span class="sd">    nodes that locates closest to the centroid point of a pore region.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    extracted_nodes : array</span>
+<span class="sd">        An array of the coordinate of the centroid point of a pores region.</span>
+<span class="sd">    fd_nodes : array</span>
+<span class="sd">        An array of the coordinate of all nodes in the finite difference</span>
+<span class="sd">        nodes.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    scalar</span>
+<span class="sd">        The indice of the nearest finite difference node to the</span>
+<span class="sd">        centroid of a pore region.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fd_nodes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">fd_nodes</span><span class="p">)</span>
+    <span class="n">dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">fd_nodes</span> <span class="o">-</span> <span class="n">extracted_nodes</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">dist</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">_find_conns_roi_info</span><span class="p">(</span><span class="n">im</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Finds the connections list, coordinates of pores centroids and</span>
+<span class="sd">    their inscribed sphere&#39;s diameter. These values are necessary to be known</span>
+<span class="sd">    for applying the finite difference method.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    im : ndarray</span>
+<span class="sd">        A segmented image of a porous medium.</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    A dictionary of info:</span>
+<span class="sd">    t_conns : array</span>
+<span class="sd">        An Nt by 2 array containing the throats&#39; connections in the segmented image.</span>
+<span class="sd">    p_coords : array</span>
+<span class="sd">        An Np by 3 array  containing the pores centroids coordinates in the</span>
+<span class="sd">        segmented image.</span>
+<span class="sd">    p_dia_local : array</span>
+<span class="sd">        An Np size array  containing the pores inscribed diameter in the</span>
+<span class="sd">        segmented image.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">struc_elem</span> <span class="o">=</span> <span class="n">ball</span>
+    <span class="n">slices</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">find_objects</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+    <span class="n">Ps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">im</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">p_dia_local</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">Ps</span><span class="p">),</span> <span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">p_coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">Ps</span><span class="p">),</span> <span class="n">im</span><span class="o">.</span><span class="n">ndim</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">t_conns</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">desc</span> <span class="o">=</span> <span class="s1">&#39;Getting ROI info&#39;</span>
+    <span class="n">settings</span><span class="o">.</span><span class="n">tqdm</span><span class="p">[</span><span class="s1">&#39;disable&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">Ps</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="n">desc</span><span class="p">,</span> <span class="o">**</span><span class="n">settings</span><span class="o">.</span><span class="n">tqdm</span><span class="p">):</span>
+        <span class="n">pore</span> <span class="o">=</span> <span class="n">i</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">slices</span><span class="p">[</span><span class="n">pore</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">extend_slice</span><span class="p">(</span><span class="n">slices</span><span class="p">[</span><span class="n">pore</span><span class="p">],</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">sub_im</span> <span class="o">=</span> <span class="n">im</span><span class="p">[</span><span class="n">s</span><span class="p">]</span>
+        <span class="n">pore_im</span> <span class="o">=</span> <span class="n">sub_im</span> <span class="o">==</span> <span class="n">i</span>
+        <span class="c1"># additional info to find centroids and inscribed_diam</span>
+        <span class="n">padded_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">pore_im</span><span class="p">,</span> <span class="n">pad_width</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;constant&#39;</span><span class="p">)</span>
+        <span class="n">pore_dt</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">distance_transform_edt</span><span class="p">(</span><span class="n">padded_mask</span><span class="p">)</span>
+        <span class="n">s_offset</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">start</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">s</span><span class="p">])</span>
+        <span class="n">p_coords</span><span class="p">[</span><span class="n">pore</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">center_of_mass</span><span class="p">(</span><span class="n">pore_im</span><span class="p">)</span> <span class="o">+</span> <span class="n">s_offset</span>
+        <span class="n">p_dia_local</span><span class="p">[</span><span class="n">pore</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">pore_dt</span><span class="p">))</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+        <span class="n">im_w_throats</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">binary_dilation</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">pore_im</span><span class="p">,</span> <span class="n">structure</span><span class="o">=</span><span class="n">struc_elem</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">im_w_throats</span> <span class="o">=</span> <span class="n">im_w_throats</span><span class="o">*</span><span class="n">sub_im</span>
+        <span class="n">Pn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">im_w_throats</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">Pn</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">j</span> <span class="o">&gt;</span> <span class="n">pore</span><span class="p">:</span>
+                <span class="n">t_conns</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">pore</span><span class="p">,</span> <span class="n">j</span><span class="p">])</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;t_conns&#39;</span><span class="p">:</span> <span class="n">t_conns</span><span class="p">,</span>
+        <span class="s1">&#39;p_coords&#39;</span><span class="p">:</span> <span class="n">p_coords</span><span class="p">,</span>
+        <span class="s1">&#39;p_dia_local&#39;</span><span class="p">:</span> <span class="n">p_dia_local</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">results</span>
+
+
 <span class="k">def</span> <span class="nf">_calc_bound_box_bi</span><span class="p">(</span><span class="n">regions</span><span class="p">,</span> <span class="n">pore_1</span><span class="p">,</span> <span class="n">pore_2</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
-
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    regions : ndarray</span>
@@ -356,14 +554,15 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    t_conns : array</span>
-<span class="sd">        An Nt by 2 addat containing the throats&#39; connections in the segmented image.</span>
-
+<span class="sd">        An Nt by 2 addat containing the throats&#39; connections in the</span>
+<span class="sd">          segmented image.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">struc_elem</span> <span class="o">=</span> <span class="n">ball</span>
     <span class="n">slices</span> <span class="o">=</span> <span class="n">spim</span><span class="o">.</span><span class="n">find_objects</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
     <span class="n">Ps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">im</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">t_conns</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">d</span> <span class="o">=</span> <span class="s1">&#39;Finding neighbouring regions&#39;</span>
+    <span class="n">settings</span><span class="o">.</span><span class="n">tqdm</span><span class="p">[</span><span class="s1">&#39;disable&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">Ps</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="n">d</span><span class="p">,</span> <span class="o">**</span><span class="n">settings</span><span class="o">.</span><span class="n">tqdm</span><span class="p">):</span>
         <span class="n">pore</span> <span class="o">=</span> <span class="n">i</span> <span class="o">-</span> <span class="mi">1</span>
         <span class="k">if</span> <span class="n">slices</span><span class="p">[</span><span class="n">pore</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -448,8 +647,6 @@
 
 <span class="k">def</span> <span class="nf">_denorm_predict</span><span class="p">(</span><span class="n">prediction</span><span class="p">,</span> <span class="n">g_train</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
-
-
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    prediction : array</span>

@@ -1089,6 +1089,11 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="../../networks/tutorials/predicting_diffusive_size_factors_rock_sample.html">
+       Predicting diffusive size factors of a rock sample
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="../../networks/tutorials/snow_advanced.html">
        SNOW network extraction (advanced)
       </a>
@@ -1129,6 +1134,15 @@
        <code class="docutils literal notranslate">
         <span class="pre">
          diffusive_size_factor_AI
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../networks/reference/diffusive_size_factor_DNS.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         diffusive_size_factor_DNS
         </span>
        </code>
       </a>
@@ -2383,6 +2397,11 @@
   </a>
  </li>
  <li class="toctree-l1">
+  <a class="reference internal" href="../../networks/tutorials/predicting_diffusive_size_factors_rock_sample.html">
+   Predicting diffusive size factors of a rock sample
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="../../networks/tutorials/snow_advanced.html">
    SNOW network extraction (advanced)
   </a>
@@ -2413,6 +2432,15 @@
    <code class="docutils literal notranslate">
     <span class="pre">
      diffusive_size_factor_AI
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../networks/reference/diffusive_size_factor_DNS.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     diffusive_size_factor_DNS
     </span>
    </code>
   </a>
@@ -2854,7 +2882,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/dc2a14f716bf3402ba800eba2660cac9facd1a4deca37aea45ed401c03f62155.png" src="../../../_images/dc2a14f716bf3402ba800eba2660cac9facd1a4deca37aea45ed401c03f62155.png" />
+<img alt="../../../_images/2cd5a5eceabacbd03b7d33bb864c82b7b18c5b4b0c49660659581db076dbc563.png" src="../../../_images/2cd5a5eceabacbd03b7d33bb864c82b7b18c5b4b0c49660659581db076dbc563.png" />
 </div>
 </div>
 <p>Next apply the <code class="docutils literal notranslate"><span class="pre">distance_transform_lin</span></code> function along the 0 axis.</p>
@@ -2866,7 +2894,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/13969f7a36d634cbb20f1fdb7975636ead5195a950940614893b292ac9f2e020.png" src="../../../_images/13969f7a36d634cbb20f1fdb7975636ead5195a950940614893b292ac9f2e020.png" />
+<img alt="../../../_images/3a32c4acf6db06b0acfed04c3ba09ab2d713ac4b2a981ba9a97579cbb030cea5.png" src="../../../_images/3a32c4acf6db06b0acfed04c3ba09ab2d713ac4b2a981ba9a97579cbb030cea5.png" />
 </div>
 </div>
 <p>The greyscale values of the above image are worth a comment. They indicated the length of a path that can be drawn from each voxel to the nearest solid voxel, in the specified direction.  Or in terms of Torquato’s definition, each greyscale value represents a random starting point (A) and moving along this line until solid is encountered represents the end of the line (B), providing the path length A <span class="math notranslate nohighlight">\(\rightarrow\)</span> B.  The ‘counter associated with the distance between A and B is then incremented’, which corresponds to the binning the greyscale values in the above image. In other words, the above representation includes ALL possible starting points on each path, so provides the largest possible data set.</p>
@@ -2889,7 +2917,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/22d08f7fa551505c40e21112a993cc39856b4fa0cca137a7a1ef51e739fd927d.png" src="../../../_images/22d08f7fa551505c40e21112a993cc39856b4fa0cca137a7a1ef51e739fd927d.png" />
+<img alt="../../../_images/572d3335ea03710940527d1a80f331a32d3d90efe9b3256a60c3b3ee599f5254.png" src="../../../_images/572d3335ea03710940527d1a80f331a32d3d90efe9b3256a60c3b3ee599f5254.png" />
 </div>
 </div>
 <p>Since the image is anisotropic, the process will yeild a different result in the perpendicular direction, so repeating the above with <code class="docutils literal notranslate"><span class="pre">axis=1</span></code> instead of the default <code class="docutils literal notranslate"><span class="pre">axis=0</span></code>.</p>
@@ -2901,7 +2929,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/d0b4b7d2eb814fe3a2d2025689041f66c758b12d01fb680bd8caaea3c4e18ac3.png" src="../../../_images/d0b4b7d2eb814fe3a2d2025689041f66c758b12d01fb680bd8caaea3c4e18ac3.png" />
+<img alt="../../../_images/582de0e293bbd82d16a7acb5049188ae75cac9efbce80523c2f8979096afcd57.png" src="../../../_images/582de0e293bbd82d16a7acb5049188ae75cac9efbce80523c2f8979096afcd57.png" />
 </div>
 </div>
 <p>Overlaying this result wit the previous one:</p>
@@ -2914,7 +2942,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/d40d3438df34197353d24163a57f0eff83deb70e6186bc63a7af906bce358865.png" src="../../../_images/d40d3438df34197353d24163a57f0eff83deb70e6186bc63a7af906bce358865.png" />
+<img alt="../../../_images/940fcd725917a2e9d61f11079c92f9a8e2f37b0d4895ccb1fa72d1cfc9b0ba10.png" src="../../../_images/940fcd725917a2e9d61f11079c92f9a8e2f37b0d4895ccb1fa72d1cfc9b0ba10.png" />
 </div>
 </div>
 <p>The anisotropy of the image is clearly visible with the first axis possessing longer lineal-path values.</p>

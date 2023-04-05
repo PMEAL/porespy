@@ -1087,6 +1087,11 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="../../networks/tutorials/predicting_diffusive_size_factors_rock_sample.html">
+       Predicting diffusive size factors of a rock sample
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="../../networks/tutorials/snow_advanced.html">
        SNOW network extraction (advanced)
       </a>
@@ -1127,6 +1132,15 @@
        <code class="docutils literal notranslate">
         <span class="pre">
          diffusive_size_factor_AI
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../../networks/reference/diffusive_size_factor_DNS.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         diffusive_size_factor_DNS
         </span>
        </code>
       </a>
@@ -2381,6 +2395,11 @@
   </a>
  </li>
  <li class="toctree-l1">
+  <a class="reference internal" href="../../networks/tutorials/predicting_diffusive_size_factors_rock_sample.html">
+   Predicting diffusive size factors of a rock sample
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="../../networks/tutorials/snow_advanced.html">
    SNOW network extraction (advanced)
   </a>
@@ -2411,6 +2430,15 @@
    <code class="docutils literal notranslate">
     <span class="pre">
      diffusive_size_factor_AI
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../networks/reference/diffusive_size_factor_DNS.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     diffusive_size_factor_DNS
     </span>
    </code>
   </a>
@@ -2850,11 +2878,11 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_9663/538947285.py:1: DeprecationWarning: Call to deprecated function (or staticmethod) rsa. (This function will be renamed random_spheres in a future version)
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/tmp/ipykernel_9428/538947285.py:1: DeprecationWarning: Call to deprecated function (or staticmethod) rsa. (This function will be renamed random_spheres in a future version)
   im = ps.generators.rsa([80, 80, 80], r=10, clearance=3)
 </pre></div>
 </div>
-<img alt="../../../_images/ed40a6678b82f8ae1c85a633fe193ef728dfb06985cfd9c0a935cb60f1c5107e.png" src="../../../_images/ed40a6678b82f8ae1c85a633fe193ef728dfb06985cfd9c0a935cb60f1c5107e.png" />
+<img alt="../../../_images/659defa9570278af858a0bdb1f719ac3976f9ed69ddfe3296eb35b7b289fa923.png" src="../../../_images/659defa9570278af858a0bdb1f719ac3976f9ed69ddfe3296eb35b7b289fa923.png" />
 </div>
 </div>
 <p>We need to label each sphere so they are recognized as individual regions:</p>
@@ -2866,7 +2894,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/72a023936d29d1739a352eddfd5ea867f91fa1d875802d4a28d63c13cf9cf4d4.png" src="../../../_images/72a023936d29d1739a352eddfd5ea867f91fa1d875802d4a28d63c13cf9cf4d4.png" />
+<img alt="../../../_images/a8c0c39967469f340f59aacfee24b1977be967a7baf4509d7f7cea15684d8114.png" src="../../../_images/a8c0c39967469f340f59aacfee24b1977be967a7baf4509d7f7cea15684d8114.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -2884,33 +2912,32 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fb86dbe0820&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fb86e1ad370&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fb8b445ae50&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fb86def4580&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fb8b445fd30&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fb8b445fd60&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fb8b445f0d0&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fb8b445fca0&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fb8b445ff70&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fb86ded4fd0&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fb86ded4c40&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fb8b447c490&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fb8b447c670&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fb8b447c190&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fb8b447c370&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fb8b4456bb0&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fb8b44562e0&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fb86dbe0f10&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fb86dbe0fd0&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fb86dbe0cd0&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fb86dbe0d60&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fb86dbe0e80&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fb86dbe0910&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fb86dbe0940&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fb86dbe0880&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fb86dbe08b0&gt;,
- &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fb86dbcf910&gt;]
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fc7f0a887f0&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fc83804d730&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fc7f1b414c0&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fc7f0b11790&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fc838063820&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fc838063490&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fc838063940&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fc7f0b8ac40&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fc7f0de6d90&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fc7f1bfe730&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fc83805ea30&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fc7f1ae7a30&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fc7f0ba0340&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fc7f0b82520&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fc7f0b82370&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fc7f0b824f0&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fc7f0aecf10&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fc7f0aecf70&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fc7f0aec2e0&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fc7f0aec460&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fc7f0a88820&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fc7f0a88e80&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fc7f0a88fd0&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fc7f0a88610&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fc7f0a886d0&gt;,
+ &lt;porespy.metrics._regionprops.RegionPropertiesPS at 0x7fc7f0a88790&gt;]
 </pre></div>
 </div>
 </div>

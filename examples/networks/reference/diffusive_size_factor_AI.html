@@ -45,7 +45,7 @@
     <script src="../../../_static/js/custom.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="label_boundaries" href="label_boundaries.html" />
+    <link rel="next" title="diffusive_size_factor_DNS" href="diffusive_size_factor_DNS.html" />
     <link rel="prev" title="add_boundary_regions" href="add_boundary_regions.html" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="docsearch:language" content="en">
@@ -1087,6 +1087,11 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="../tutorials/predicting_diffusive_size_factors_rock_sample.html">
+       Predicting diffusive size factors of a rock sample
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="../tutorials/snow_advanced.html">
        SNOW network extraction (advanced)
       </a>
@@ -1127,6 +1132,15 @@
        <code class="docutils literal notranslate">
         <span class="pre">
          diffusive_size_factor_AI
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="diffusive_size_factor_DNS.html">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         diffusive_size_factor_DNS
         </span>
        </code>
       </a>
@@ -2381,6 +2395,11 @@
   </a>
  </li>
  <li class="toctree-l1">
+  <a class="reference internal" href="../tutorials/predicting_diffusive_size_factors_rock_sample.html">
+   Predicting diffusive size factors of a rock sample
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="../tutorials/snow_advanced.html">
    SNOW network extraction (advanced)
   </a>
@@ -2411,6 +2430,15 @@
    <code class="docutils literal notranslate">
     <span class="pre">
      diffusive_size_factor_AI
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="diffusive_size_factor_DNS.html">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     diffusive_size_factor_DNS
     </span>
    </code>
   </a>
@@ -2898,38 +2926,172 @@
 <p>Let’s download the <code class="docutils literal notranslate"><span class="pre">tensorflow</span></code> files required to run this notebook:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">contextmanager</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>tensorflow
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">sklearn</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>scikit-learn
+
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">sys</span>
 
-<span class="nd">@contextmanager</span>
-<span class="k">def</span> <span class="nf">suppress_stdout</span><span class="p">():</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">devnull</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">devnull</span><span class="p">:</span>
-        <span class="n">old_stdout</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span>
-        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">devnull</span>
-        <span class="k">try</span><span class="p">:</span>  
-            <span class="k">yield</span>
-        <span class="k">finally</span><span class="p">:</span>
-            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">old_stdout</span>
-
-<span class="k">with</span> <span class="n">suppress_stdout</span><span class="p">():</span>
-    <span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>-q<span class="w"> </span>tensorflow<span class="w"> </span>scikit-learn
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s1">&#39;sf-model-lib&#39;</span><span class="p">):</span>
-        <span class="o">!</span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/PMEAL/sf-model-lib
-
-<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
-<span class="kn">import</span> <span class="nn">sklearn</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">&quot;sf-model-lib&quot;</span><span class="p">):</span>
+    <span class="o">!</span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/PMEAL/sf-model-lib
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-03-31 14:22:52.390757: I tensorflow/tsl/cuda/cudart_stub.cc:28] Could not find cuda drivers on your machine, GPU will not be used.
-2023-03-31 14:22:52.442492: I tensorflow/tsl/cuda/cudart_stub.cc:28] Could not find cuda drivers on your machine, GPU will not be used.
-2023-03-31 14:22:52.444095: I tensorflow/core/platform/cpu_feature_guard.cc:182] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
-To enable the following instructions: AVX2 AVX512F FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting tensorflow
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-03-31 14:22:53.366516: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:38] TF-TRT Warning: Could not find TensorRT
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Using cached tensorflow-2.12.0-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (585.9 MB)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: wrapt&lt;1.15,&gt;=1.11.0 in /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages (from tensorflow) (1.14.1)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting grpcio&lt;2.0,&gt;=1.24.3
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Using cached grpcio-1.53.0-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (5.0 MB)
+Requirement already satisfied: tensorflow-io-gcs-filesystem&gt;=0.23.1 in /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages (from tensorflow) (0.32.0)
+Requirement already satisfied: six&gt;=1.12.0 in /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages (from tensorflow) (1.16.0)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting astunparse&gt;=1.6.0
+  Using cached astunparse-1.6.3-py2.py3-none-any.whl (12 kB)
+Requirement already satisfied: termcolor&gt;=1.1.0 in /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages (from tensorflow) (2.2.0)
+Requirement already satisfied: typing-extensions&gt;=3.6.6 in /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages (from tensorflow) (4.5.0)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting gast&lt;=0.4.0,&gt;=0.2.1
+  Using cached gast-0.4.0-py3-none-any.whl (9.8 kB)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting keras&lt;2.13,&gt;=2.12.0
+  Using cached keras-2.12.0-py2.py3-none-any.whl (1.7 MB)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: setuptools in /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages (from tensorflow) (56.0.0)
+Requirement already satisfied: packaging in /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages (from tensorflow) (23.0)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting tensorboard&lt;2.13,&gt;=2.12
+  Using cached tensorboard-2.12.1-py3-none-any.whl (5.6 MB)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: libclang&gt;=13.0.0 in /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages (from tensorflow) (16.0.0)
+Requirement already satisfied: h5py&gt;=2.9.0 in /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages (from tensorflow) (3.8.0)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting protobuf!=4.21.0,!=4.21.1,!=4.21.2,!=4.21.3,!=4.21.4,!=4.21.5,&lt;5.0.0dev,&gt;=3.20.3
+  Using cached protobuf-4.22.1-cp37-abi3-manylinux2014_x86_64.whl (302 kB)
+Requirement already satisfied: flatbuffers&gt;=2.0 in /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages (from tensorflow) (23.3.3)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting opt-einsum&gt;=2.3.2
+  Using cached opt_einsum-3.3.0-py3-none-any.whl (65 kB)
+Collecting absl-py&gt;=1.0.0
+  Using cached absl_py-1.4.0-py3-none-any.whl (126 kB)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting google-pasta&gt;=0.1.1
+  Using cached google_pasta-0.2.0-py3-none-any.whl (57 kB)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting jax&gt;=0.3.15
+  Using cached jax-0.4.8-py3-none-any.whl
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting tensorflow-estimator&lt;2.13,&gt;=2.12.0
+  Using cached tensorflow_estimator-2.12.0-py2.py3-none-any.whl (440 kB)
+Requirement already satisfied: numpy&lt;1.24,&gt;=1.22 in /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages (from tensorflow) (1.23.5)
+Requirement already satisfied: wheel&lt;1.0,&gt;=0.23.0 in /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages (from astunparse&gt;=1.6.0-&gt;tensorflow) (0.40.0)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting ml-dtypes&gt;=0.0.3
+  Using cached ml_dtypes-0.0.4-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (154 kB)
+Requirement already satisfied: scipy&gt;=1.7 in /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages (from jax&gt;=0.3.15-&gt;tensorflow) (1.9.1)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting google-auth-oauthlib&lt;1.1,&gt;=0.5
+  Using cached google_auth_oauthlib-1.0.0-py2.py3-none-any.whl (18 kB)
+Requirement already satisfied: requests&lt;3,&gt;=2.21.0 in /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages (from tensorboard&lt;2.13,&gt;=2.12-&gt;tensorflow) (2.28.2)
+Requirement already satisfied: tensorboard-plugin-wit&gt;=1.6.0 in /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages (from tensorboard&lt;2.13,&gt;=2.12-&gt;tensorflow) (1.8.1)
+Requirement already satisfied: werkzeug&gt;=1.0.1 in /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages (from tensorboard&lt;2.13,&gt;=2.12-&gt;tensorflow) (2.2.3)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting markdown&gt;=2.6.8
+  Using cached Markdown-3.4.3-py3-none-any.whl (93 kB)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting google-auth&lt;3,&gt;=1.6.3
+  Using cached google_auth-2.17.1-py2.py3-none-any.whl (178 kB)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting tensorboard-data-server&lt;0.8.0,&gt;=0.7.0
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Using cached tensorboard_data_server-0.7.0-py3-none-manylinux2014_x86_64.whl (6.6 MB)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting rsa&lt;5,&gt;=3.1.4
+  Using cached rsa-4.9-py3-none-any.whl (34 kB)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting cachetools&lt;6.0,&gt;=2.0.0
+  Using cached cachetools-5.3.0-py3-none-any.whl (9.3 kB)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting pyasn1-modules&gt;=0.2.1
+  Using cached pyasn1_modules-0.2.8-py2.py3-none-any.whl (155 kB)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting requests-oauthlib&gt;=0.7.0
+  Using cached requests_oauthlib-1.3.1-py2.py3-none-any.whl (23 kB)
+Requirement already satisfied: importlib-metadata&gt;=4.4 in /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages (from markdown&gt;=2.6.8-&gt;tensorboard&lt;2.13,&gt;=2.12-&gt;tensorflow) (6.1.0)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: certifi&gt;=2017.4.17 in /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages (from requests&lt;3,&gt;=2.21.0-&gt;tensorboard&lt;2.13,&gt;=2.12-&gt;tensorflow) (2022.12.7)
+Requirement already satisfied: urllib3&lt;1.27,&gt;=1.21.1 in /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages (from requests&lt;3,&gt;=2.21.0-&gt;tensorboard&lt;2.13,&gt;=2.12-&gt;tensorflow) (1.26.15)
+Requirement already satisfied: idna&lt;4,&gt;=2.5 in /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages (from requests&lt;3,&gt;=2.21.0-&gt;tensorboard&lt;2.13,&gt;=2.12-&gt;tensorflow) (3.4)
+Requirement already satisfied: charset-normalizer&lt;4,&gt;=2 in /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages (from requests&lt;3,&gt;=2.21.0-&gt;tensorboard&lt;2.13,&gt;=2.12-&gt;tensorflow) (3.1.0)
+Requirement already satisfied: MarkupSafe&gt;=2.1.1 in /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages (from werkzeug&gt;=1.0.1-&gt;tensorboard&lt;2.13,&gt;=2.12-&gt;tensorflow) (2.1.2)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: zipp&gt;=0.5 in /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages (from importlib-metadata&gt;=4.4-&gt;markdown&gt;=2.6.8-&gt;tensorboard&lt;2.13,&gt;=2.12-&gt;tensorflow) (3.15.0)
+Requirement already satisfied: pyasn1&lt;0.5.0,&gt;=0.4.6 in /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages (from pyasn1-modules&gt;=0.2.1-&gt;google-auth&lt;3,&gt;=1.6.3-&gt;tensorboard&lt;2.13,&gt;=2.12-&gt;tensorflow) (0.4.8)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting oauthlib&gt;=3.0.0
+  Using cached oauthlib-3.2.2-py3-none-any.whl (151 kB)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Installing collected packages: tensorflow-estimator, tensorboard-data-server, rsa, pyasn1-modules, protobuf, opt-einsum, oauthlib, ml-dtypes, keras, grpcio, google-pasta, gast, cachetools, astunparse, absl-py, requests-oauthlib, markdown, jax, google-auth, google-auth-oauthlib, tensorboard, tensorflow
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>^C
+<span class=" -Color -Color-Red">ERROR: Operation cancelled by user</span>
+
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting scikit-learn
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Using cached scikit_learn-1.2.2-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (9.8 MB)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting threadpoolctl&gt;=2.0.0
+  Using cached threadpoolctl-3.1.0-py3-none-any.whl (14 kB)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting joblib&gt;=1.1.1
+  Using cached joblib-1.2.0-py3-none-any.whl (297 kB)
+Requirement already satisfied: scipy&gt;=1.3.2 in /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages (from scikit-learn) (1.9.1)
+Requirement already satisfied: numpy&gt;=1.17.3 in /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages (from scikit-learn) (1.23.5)
 </pre></div>
 </div>
 </div>
@@ -2987,6 +3149,15 @@ To enable the following instructions: AVX2 AVX512F FMA, in other operations, reb
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-03-23 14:30:39.889200: I tensorflow/core/platform/cpu_feature_guard.cc:193] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  SSE4.1 SSE4.2
+To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+</pre></div>
+</div>
+<div class="output text_html"><pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #7fbfbf; text-decoration-color: #7fbfbf">[14:30:41] </span><span style="color: #800000; text-decoration-color: #800000">WARNING </span> `lr` is deprecated, please use `learning_rate` instead, or use the legacy      <a href="file:///home/anaconda/mambaforge/envs/tensorflow_env/lib/python3.9/site-packages/keras/optimizers/optimizer_experimental/optimizer.py" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">optimizer.py</span></a><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">:</span><a href="file:///home/anaconda/mambaforge/envs/tensorflow_env/lib/python3.9/site-packages/keras/optimizers/optimizer_experimental/optimizer.py#106" target="_blank"><span style="color: #7f7f7f; text-decoration-color: #7f7f7f">106</span></a>
+<span style="color: #7fbfbf; text-decoration-color: #7fbfbf">           </span>         optimizer, e.g.,tf.keras.optimizers.legacy.Adam.                               <span style="color: #7f7f7f; text-decoration-color: #7f7f7f">                </span>
+</pre>
+</div></div>
 </div>
 </section>
 <section id="regions">
@@ -3010,7 +3181,8 @@ To enable the following instructions: AVX2 AVX512F FMA, in other operations, reb
 </div>
 </div>
 <div class="cell_output docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "", "version_major": 2, "version_minor": 0}</script><img alt="../../../_images/4b9083512ea2ec587e132edd021e23767b6dfbb68484c6b79764166c6edcb963.svg" src="../../../_images/4b9083512ea2ec587e132edd021e23767b6dfbb68484c6b79764166c6edcb963.svg" /></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "9efa44712f8e49e5b63b115fa104fbc0", "version_major": 2, "version_minor": 0}</script><img alt="../../../_images/c743fa0e6fad722e5e2b7f955ab48a20745396ffb826f22bb9320a49c1b9920d.png" src="../../../_images/c743fa0e6fad722e5e2b7f955ab48a20745396ffb826f22bb9320a49c1b9920d.png" />
+</div>
 </div>
 </section>
 <section id="throat-conns">
@@ -3027,21 +3199,27 @@ To enable the following instructions: AVX2 AVX512F FMA, in other operations, reb
 </div>
 </div>
 <div class="cell_output docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "", "version_major": 2, "version_minor": 0}</script><script type="application/vnd.jupyter.widget-view+json">{"model_id": "", "version_major": 2, "version_minor": 0}</script></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "49dbf0f6de944a8f890196e5c478a0c0", "version_major": 2, "version_minor": 0}</script><script type="application/vnd.jupyter.widget-view+json">{"model_id": "fe14eeb5039a42dc93eb52266b579935", "version_major": 2, "version_minor": 0}</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>47/47 [==============================] - 43s 861ms/step
+</pre></div>
+</div>
+</div>
 </div>
 </section>
 <section id="compare-with-finite-difference">
 <h2>Compare with finite difference<a class="headerlink" href="#compare-with-finite-difference" title="Permalink to this heading">#</a></h2>
 <p>Assuming a diffusivity of 1, the diffusive conductance of the conduits will be equal to their diffusive size factors. Now let’s compare the AI-based diffusive conductances with the conductance values calculated by finite difference method. The finite difference method results are found using the steps explained <a class="reference external" href="https://doi.org/10.1016/j.cageo.2022.105086">here</a>.</p>
+<p>Note: The finite difference-based diffusive size factors were calculated using PoreSpy’s size factor method <code class="docutils literal notranslate"><span class="pre">diffusive_size_factor_DNS</span></code>.  However, due to the long runtime of the DNS function the results were saved in the example data folder and used in this example. The Following code was used to estimate the finite difference-based values using PoreSpy:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">g_FD</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">networks</span><span class="o">.</span><span class="n">diffusive_size_factor_DNS</span><span class="p">(</span><span class="n">regions</span><span class="p">,</span> <span class="n">conns</span><span class="p">)</span>
+</pre></div>
+</div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;g_finite_difference120-phi7.hdf5&#39;</span><span class="p">)</span>
 <span class="n">g_FD</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)[</span><span class="s1">&#39;g_finite_difference&#39;</span><span class="p">][()]</span>
 <span class="n">g_AI</span> <span class="o">=</span> <span class="n">size_factors</span>
+<span class="n">max_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">([</span><span class="n">g_FD</span><span class="p">,</span> <span class="n">g_AI</span><span class="p">])</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">80</span><span class="p">])</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">80</span><span class="p">])</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">g_FD</span><span class="p">,</span> <span class="n">g_AI</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">80</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">80</span><span class="p">],</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">g_FD</span><span class="p">,</span> <span class="n">g_AI</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_val</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_val</span><span class="p">],</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;g reference&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;g prediction&#39;</span><span class="p">)</span>
 <span class="n">r2</span> <span class="o">=</span> <span class="n">r2_score</span><span class="p">(</span><span class="n">g_FD</span><span class="p">,</span> <span class="n">g_AI</span><span class="p">)</span>
@@ -3050,23 +3228,24 @@ To enable the following instructions: AVX2 AVX512F FMA, in other operations, reb
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The R^2 prediction accuracy is 0.952
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The R^2 prediction accuracy is 0.977
 </pre></div>
 </div>
-<img alt="../../../_images/5f62c8f7eb8460c94b75a2ce61ecd60fe9d2f97215101823ca4a0ce49bb8eb53.svg" src="../../../_images/5f62c8f7eb8460c94b75a2ce61ecd60fe9d2f97215101823ca4a0ce49bb8eb53.svg" /></div>
+<img alt="../../../_images/5dbab4bce661a01039d27e5eb3dad4d61bc578b19308be4494980df84fe3be93.png" src="../../../_images/5dbab4bce661a01039d27e5eb3dad4d61bc578b19308be4494980df84fe3be93.png" />
+</div>
 </div>
 <p>Note on runtime: A larger part of <code class="docutils literal notranslate"><span class="pre">AI_size_factors</span></code> runtime is related to extracting the pairs of conduits, which is the common step required for both AI and finite difference method. Once the data is prepared, AI Prediction on the tensor takes a smaller amount of time in contrast to finite difference method, as it was shown <span class="xref myst">here</span>.</p>
 </section>
 <section id="apply-on-one-conduit">
 <h2>Apply on one conduit<a class="headerlink" href="#apply-on-one-conduit" title="Permalink to this heading">#</a></h2>
-<p>PoreSpy’s <code class="docutils literal notranslate"><span class="pre">diffusive_size_factor_AI</span></code> method can take in an image of a pair of regions. An image of a conduit and its diffusive size factor was saved for comparison:</p>
+<p>PoreSpy’s <code class="docutils literal notranslate"><span class="pre">diffusive_size_factor_AI</span></code> method can take in an image of a pair of regions. Let’s predict the diffusice size factor for a pair of image using both AI and DNS methods:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;pair.hdf5&#39;</span><span class="p">)</span>
 <span class="n">pair_in</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
 <span class="n">im_pair</span> <span class="o">=</span> <span class="n">pair_in</span><span class="p">[</span><span class="s1">&#39;pair&#39;</span><span class="p">][()]</span>
 <span class="n">conns</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">networks</span><span class="o">.</span><span class="n">find_conns</span><span class="p">(</span><span class="n">im_pair</span><span class="p">)</span>
-<span class="n">sf_FD</span> <span class="o">=</span> <span class="n">pair_in</span><span class="p">[</span><span class="s1">&#39;size_factor&#39;</span><span class="p">][()]</span>
+<span class="n">sf_FD</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">networks</span><span class="o">.</span><span class="n">diffusive_size_factor_DNS</span><span class="p">(</span><span class="n">im_pair</span><span class="p">,</span> <span class="n">throat_conns</span><span class="o">=</span><span class="n">conns</span><span class="p">)</span>
 <span class="n">sf_AI</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">networks</span><span class="o">.</span><span class="n">diffusive_size_factor_AI</span><span class="p">(</span><span class="n">im_pair</span><span class="p">,</span>
                                              <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
                                              <span class="n">g_train</span><span class="o">=</span><span class="n">g_train</span><span class="p">,</span>
@@ -3076,7 +3255,8 @@ To enable the following instructions: AVX2 AVX512F FMA, in other operations, reb
 </div>
 </div>
 <div class="cell_output docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "", "version_major": 2, "version_minor": 0}</script><script type="application/vnd.jupyter.widget-view+json">{"model_id": "", "version_major": 2, "version_minor": 0}</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Diffusive size factor from FD: 9.87, and AI: 9.91
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "6f3096f76b3a465b920b249db9431ef9", "version_major": 2, "version_minor": 0}</script><script type="application/vnd.jupyter.widget-view+json">{"model_id": "487b196111cd42158c14db0b52fbe413", "version_major": 2, "version_minor": 0}</script><script type="application/vnd.jupyter.widget-view+json">{"model_id": "d18d4fa83bf9402eb3138d6961390bcd", "version_major": 2, "version_minor": 0}</script><script type="application/vnd.jupyter.widget-view+json">{"model_id": "48954de4b04a493caefc9602998022e9", "version_major": 2, "version_minor": 0}</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1/1 [==============================] - 1s 1s/step
+Diffusive size factor from FD: 8.39, and AI: 8.47
 </pre></div>
 </div>
 </div>
