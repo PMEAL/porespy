@@ -252,6 +252,8 @@ def regions_to_network(regions, phases=None, voxel_size=1, accuracy='standard'):
                                                 voxel_size=voxel_size)
         A = interface_area.area
         net['throat.cross_sectional_area'] = A
+        np.add.at(net['pore.surface_area'],net['throat.conns'][:, 0], -A)
+        np.add.at(net['pore.surface_area'],net['throat.conns'][:, 1], -A)
         net['throat.equivalent_diameter'] = (4*A/np.pi)**(1/2)
     else:
         net['pore.volume'] = np.copy(p_volume)*(voxel_size**ND)
