@@ -63,7 +63,7 @@ def region_volumes(regions, mode='marching_cubes'):
         if mode == 'marching_cubes':
             vols[i] = mesh_volume(region)
         elif mode.startswith('voxel'):
-            vols[i] = region.sum()
+            vols[i] = region.sum(dtype=np.int64)
     return vols
 
 

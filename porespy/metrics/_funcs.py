@@ -533,8 +533,10 @@ def chord_length_distribution(im, bins=10, log=False, voxel_size=1,
         x = np.log10(x)
     if normalization == 'length':
         h = list(np.histogram(x, bins=bins, density=False))
-        h[0] = h[0] * (h[1][1:] + h[1][:-1]) / 2  # Scale bin heigths by length
-        h[0] = h[0] / h[0].sum() / (h[1][1:] - h[1][:-1])  # Normalize h[0] manually
+        # Scale bin heigths by length
+        h[0] = h[0] * (h[1][1:] + h[1][:-1]) / 2
+        # Normalize h[0] manually
+        h[0] = h[0] / h[0].sum(dtype=np.int64) / (h[1][1:] - h[1][:-1])
     elif normalization in ['number', 'count']:
         h = np.histogram(x, bins=bins, density=True)
     else:
@@ -1054,7 +1056,8 @@ def pc_curve(im, sizes=None, pc=None, seq=None,
                 r = sizes[mask][0]*voxel_size
                 pc = -2*sigma*np.cos(np.deg2rad(theta))/r
                 x.append(pc)
-                snwp = ((seq <= n)*(seq > 0)*(im == 1)).sum()/im.sum()
+                snwp = ((seq <= n)*(seq > 0) *
+                        (im == 1)).sum(dtype=np.int64)/im.sum(dtype=np.int64)
                 y.append(snwp)
         pc_curve = Results()
         pc_curve.pc = x
@@ -1072,7 +1075,7 @@ def pc_curve(im, sizes=None, pc=None, seq=None,
                 r = n*voxel_size
                 pc = -2*sigma*np.cos(np.deg2rad(theta))/r
                 x.append(pc)
-                snwp = ((sizes >= n)*(im == 1)).sum()/im.sum()
+                snwp = ((sizes >= n)*(im == 1)).sum(dtype=np.int64)/im.sum(dtype=np.int64)
                 y.append(snwp)
         pc_curve = Results()
         pc_curve.pc = x
@@ -1088,10 +1091,10 @@ def pc_curve(im, sizes=None, pc=None, seq=None,
             # Add a point at begining to ensure curve starts a 0, if no residual
             Ps = np.hstack((Ps[0] - np.abs(Ps[0]/2), Ps))
         y = []
-        Vp = im.sum()
+        Vp = im.sum(dtype=np.int64)
         temp = pc[im]
         for p in tqdm(Ps, **settings.tqdm):
-            y.append((temp <= p).sum()/Vp)
+            y.append((temp <= p).sum(dtype=np.int64)/Vp)
         pc_curve = Results()
         pc_curve.pc = Ps
         pc_curve.snwp = y
@@ -1158,7 +1161,7 @@ def satn_profile(satn, s, axis=0, span=10, mode='tile'):
                 void = satn[i*span:(i+1)*span, ...] != 0
                 nwp = (satn[i*span:(i+1)*span, ...] < s) \
                     *(satn[i*span:(i+1)*span, ...] > 0)
-                y[i] = nwp.sum()/void.sum()
+                y[i] = nwp.sum(dtype=np.int64)/void.sum(dtype=np.int64)
                 z[i] = i*span + (span-1)/2
         if mode == 'slide':
             y = np.zeros(int(satn.shape[0]-span))
@@ -1166,7 +1169,7 @@ def satn_profile(satn, s, axis=0, span=10, mode='tile'):
             for i in range(int(satn.shape[0]-span)):
                 void = satn[i:i+span, ...] != 0
                 nwp = (satn[i:i+span, ...] < s)*(satn[i:i+span, ...] > 0)
-                y[i] = nwp.sum()/void.sum()
+                y[i] = nwp.sum(dtype=np.int64)/void.sum(dtype=np.int64)
                 z[i] = i + (span-1)/2
         return z, y
 

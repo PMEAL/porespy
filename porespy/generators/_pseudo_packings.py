@@ -221,7 +221,7 @@ def pseudo_electrostatic_packing(
     options = np.where(dt == 1)
     for _ in tqdm(range(maxiter), **settings.tqdm):
         hits = dt[options] < dtmax
-        if hits.sum() == 0:
+        if hits.sum(dtype=np.int64) == 0:
             if dt.min() == dtmax:
                 break
             options = np.where(dt == dt.min())

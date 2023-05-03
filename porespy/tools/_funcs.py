@@ -1342,7 +1342,7 @@ def insert_cylinder(im, xyz0, xyz1, r):
     template = np.zeros(shape=shape_template)
 
     # Shortcut for orthogonal cylinders
-    if (xyz0 == xyz1).sum() == 2:
+    if (xyz0 == xyz1).sum(dtype=np.int64) == 2:
         unique_dim = [xyz0[i] != xyz1[i] for i in range(3)].index(True)
         shape_template[unique_dim] = 1
         template_2D = disk(radius=r).reshape(shape_template)
