@@ -172,7 +172,7 @@ def representative_elementary_volume(im, npoints=1000):
         p = pads[i]
         new_s = extend_slice(s, shape=im.shape, pad=p)
         temp = im[new_s]
-        Vp = np.sum(temp)
+        Vp = np.sum(temp, dtype=np.int64)
         Vt = np.size(temp)
         porosity[i] = Vp / Vt
         volume[i] = Vt
@@ -225,9 +225,9 @@ def porosity(im):
     to view online example.
 
     """
-    im = np.array(im, dtype=int)
-    Vp = np.sum(im == 1)
-    Vs = np.sum(im == 0)
+    im = np.array(im, dtype=np.int64)
+    Vp = np.sum(im == 1, dtype=np.int64)
+    Vs = np.sum(im == 0, dtype=np.int64)
     e = Vp / (Vs + Vp)
     return e
 
@@ -263,7 +263,8 @@ def porosity_profile(im, axis=0):
     im = np.atleast_3d(im)
     a = set(range(im.ndim)).difference(set([axis]))
     a1, a2 = a
-    prof = np.sum(np.sum(im == 1, axis=a2), axis=a1) / (im.shape[a2] * im.shape[a1])
+    tmp = np.sum(np.sum(im == 1, axis=a2, dtype=np.int64), axis=a1, dtype=np.int64)
+    prof = tmp / (im.shape[a2] * im.shape[a1])
     return prof
 
 
@@ -772,7 +773,8 @@ def _get_radial_sum(dt, bins, bin_size, autocorr):
     radial_sum = np.zeros_like(bins[:-1])
     for i, r in enumerate(bins[:-1]):
         mask = (dt <= r) * (dt > (r - bin_size[i]))
-        radial_sum[i] = np.sum(np.ravel(autocorr)[np.ravel(mask)]) / np.sum(mask)
+        radial_sum[i] = np.sum(np.ravel(autocorr)[np.ravel(mask)], dtype=np.int64) \
+            / np.sum(mask)
     return radial_sum
 
 
@@ -950,7 +952,8 @@ def phase_fraction(im, normed=True):
     labels = np.unique(im)
     results = {}
     for label in labels:
-        results[label] = np.sum(im == label) * (1 / im.size if normed else 1)
+        results[label] = np.sum(im == label, dtype=np.int64) * \
+            (1 / im.size if normed else 1)
     return results
 
 
