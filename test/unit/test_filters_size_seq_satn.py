@@ -150,7 +150,7 @@ class SeqTest():
         assert satn.max() == 1.0
 
     def test_size_to_satn_ascending_and_descending(self):
-        sz = 10*np.tile(np.atleast_2d(np.arange(0, 20)), [20, 1])
+        sz = 10*np.tile(np.atleast_2d(np.arange(0, 21)), [21, 1])
         satn = ps.filters.size_to_satn(sz, ascending=True)
         assert satn.max() == 1.0
         assert satn[-1, -1] == 1.0
@@ -162,7 +162,7 @@ class SeqTest():
         assert satn[0, 0] == 0
 
     def test_size_to_satn_uninvaded(self):
-        sz = 10*np.tile(np.atleast_2d(np.arange(0, 20)), [20, 1])
+        sz = 10*np.tile(np.atleast_2d(np.arange(0, 21)), [21, 1])
         sz[:, 0] = 0
         sz[:, 1] = -1
         satn = ps.filters.size_to_satn(sz, ascending=True)
@@ -173,7 +173,7 @@ class SeqTest():
         assert satn[0, 2] == 0.05
         satn = ps.filters.size_to_satn(sz, ascending=False)
         assert satn.max() == 0.95
-        assert satn[-1, -1] == 0.95
+        assert satn[-1, -1] == 0.05
         assert satn[0, 0] == 0
         assert satn[0, 1] == -1
         assert satn[0, 2] == 0.95
