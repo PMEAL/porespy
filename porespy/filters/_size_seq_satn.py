@@ -33,9 +33,9 @@ def size_to_seq(size, im=None, bins=None, ascending=False):
         maximum value in ``size``.  If an array is supplied it is used as
         the bins directly.
     ascending : bool
-        Indicates if the sizes are filled from large to small (the default,
-        corresponding to drainage), or small to large (if ``ascending=True``,
-        corresponding to imbibition.
+        Indicates if the sizes are filled from large to small (the default, if
+        ``ascending=False``, corresponding to drainage), or small to large (if
+        ``ascending=True``, corresponding to imbibition).
 
     Returns
     -------
@@ -56,18 +56,21 @@ def size_to_seq(size, im=None, bins=None, ascending=False):
         solid = size == 0
     else:
         solid = im == 0
+    uninvaded = size == -1
     if bins is None:
         bins = np.unique(size)
     elif isinstance(bins, int):
         bins = np.linspace(0, size.max(), bins)
     vals = np.digitize(size, bins=bins, right=True)
+    if ascending is True:
+        vals[solid] = 0
+        vals[uninvaded] = -1
+        vals = make_contiguous(vals, mode='symmetric')
     if ascending is False:
-        # Invert the vals so smallest size has largest sequence
-        vals = -(vals - vals.max() - 1) * ~solid
-    else:
-        vals = vals
-    # In case too many bins are given, remove empty ones
-    vals = make_contiguous(vals, mode='keep_zeros')
+        vals = make_contiguous(vals, mode='symmetric')
+        vals = vals.max() + 1 - vals
+        vals[solid] = 0
+        vals[uninvaded] = -1
     return vals
 
 
@@ -94,7 +97,7 @@ def size_to_satn(size, im=None, bins=None, ascending=False):
     ascending : bool
         Indicates if the sizes are filled from large to small (the default,
         corresponding to drainage), or small to large (if ``ascending=True``,
-        corresponding to imbibition.
+        corresponding to imbibition).
 
     Returns
     -------
@@ -111,11 +114,11 @@ def size_to_satn(size, im=None, bins=None, ascending=False):
     to view online example.
     """
     if bins is None:
-        bins = np.unique(size)
+        bins = np.unique(size[size > 0])
     elif isinstance(bins, int):
         bins = np.linspace(0, size.max(), bins)
     if im is None:
-        im = (size != 0)
+        im = ~(size == 0)
     void_vol = im.sum()
     satn = -np.ones_like(size, dtype=float)
     if ascending:
@@ -132,7 +135,7 @@ def size_to_satn(size, im=None, bins=None, ascending=False):
     return satn
 
 
-def seq_to_satn(seq, im=None):
+def seq_to_satn(seq, im=None, ascending=True):
     r"""
     Converts an image of invasion sequence values to saturation values.
 
@@ -145,6 +148,10 @@ def seq_to_satn(seq, im=None):
         A binary image of the porous media, with ``True`` indicating the
         void space and ``False`` indicating the solid phase. If not given
         then it is assumed that the solid is identified as ``seq == 0``.
+    ascending : bool
+        Indicates if the sequence progresses from low saturation to high (the
+        default, corresponding to drainage), or high saturation to low (if
+        ``ascending=False``, corresponding to imbibition).
 
     Returns
     -------
@@ -167,6 +174,10 @@ def seq_to_satn(seq, im=None):
         solid_mask = im == 0
     uninvaded_mask = seq == -1
     seq[seq <= 0] = 0
+    if ascending is False:
+        seq = seq.max() - seq + 1
+        seq[solid_mask] = 0
+        seq[uninvaded_mask] = 0
     seq = rankdata(seq, method='dense') - 1
     b = np.bincount(seq)
     if (solid_mask.sum() > 0) or (uninvaded_mask.sum() > 0):
@@ -222,7 +233,7 @@ def pc_to_satn(pc, im):
     return satn
 
 
-def satn_to_seq(satn, im=None):
+def satn_to_seq(satn, im=None, ascending=True):
     r"""
     Converts an image of nonwetting phase saturations to invasion sequence
     values
@@ -232,15 +243,19 @@ def satn_to_seq(satn, im=None):
     satn : ndarray
         A Numpy array with the value in each voxel indicating the global
         saturation at the point it was invaded. -1 indicates a voxel that
-        not invaded.
+        not invaded, and 0 indicates solid phase.
     im : ndarray
         A Numpy array with ``True`` values indicating the void space.
+    ascending : bool
+        Indicates if the saturation progresses from low to high (the default,
+        corresponding to drainage), or high to low (if ``ascending=False``,
+        corresponding to imbibition).
 
     Returns
     -------
-    satn : ndarray
-        A Numpy array with each voxel value indicating the global saturation
-        at which it was invaded. Solid voxels are indicated by 0 and
+    seq : ndarray
+        A Numpy array with each voxel value indicating the sequence
+        in which it was invaded. Solid voxels are indicated by 0 and
         uninvaded by -1.
 
     Examples
@@ -252,6 +267,7 @@ def satn_to_seq(satn, im=None):
     """
     if im is None:
         im = satn > 0
+    uninvaded = satn == -1
     values = np.unique(satn)
     seq = np.digitize(satn, bins=values)
     # Set uninvaded by to -1
@@ -260,4 +276,8 @@ def satn_to_seq(satn, im=None):
     seq[~im] = 0
     # Ensure values are contiguous while keeping -1 and 0
     seq = make_contiguous(im=seq, mode='symmetric')
+    if ascending is False:
+        seq = (seq.max() + 1) - seq
+        seq[~im] = 0
+    seq[uninvaded] = -1
     return seq

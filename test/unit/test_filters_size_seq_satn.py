@@ -19,27 +19,69 @@ class SeqTest():
         self.im2D = ps.generators.blobs(shape=[51, 51])
         self.im3D = ps.generators.blobs(shape=[51, 51, 51])
 
-    def test_size_to_seq(self):
-        im = self.im2D
-        sz = ps.filters.porosimetry(im)
-        nsizes = np.size(np.unique(sz))
-        sq = ps.filters.size_to_seq(sz)
-        nsteps = np.size(np.unique(sq))
-        assert nsteps == nsizes
+    def test_satn_to_seq(self):
+        satn = np.tile(np.atleast_2d(np.arange(0, 21)), [21, 1])/20
+        seq = ps.filters.satn_to_seq(satn)
+        assert seq.max() == 20
 
-    def test_size_to_seq_ascending(self):
-        sz = 10*np.tile(np.atleast_2d(np.arange(0, 20)), [20, 1])
+    def test_satn_to_seq_uninvaded(self):
+        satn = (np.tile(np.atleast_2d(np.arange(0, 21)), [21, 1]) - 1)/20
+        satn[satn < 0] = -1
+        seq = ps.filters.satn_to_seq(satn)
+        assert seq.max() == 19
+        assert seq.min() == -1
+        seq = ps.filters.satn_to_seq(satn, ascending=False)
+        assert seq[-1, -1] == 1
+        assert seq.max() == 19
+        # Ensure 0's remain 0's, and -1's remain -1's
+        assert seq[0, 1] == 0
+        assert seq[0, 0] == -1
+
+    def test_satn_to_seq_ascending(self):
+        satn = np.tile(np.atleast_2d(np.arange(0, 21)), [21, 1])/20
+        seq = ps.filters.satn_to_seq(satn, ascending=True)
+        assert seq.max() == 20
+        assert satn[-1, -1] == 1.0
+        assert seq[-1, -1] == 20
+        assert seq[0, 0] == 0
+        seq = ps.filters.satn_to_seq(satn, ascending=False)
+        assert seq[-1, -1] == 1
+        assert seq.max() == 20
+        # Ensure 0's remain 0's
+        assert seq[0, 0] == 0
+
+    def test_size_to_seq_ascending_and_descending(self):
+        sz = 10*(np.tile(np.atleast_2d(np.arange(0, 20)), [20, 1]))
+        sq = ps.filters.size_to_seq(sz, ascending=False)  # default behavior
+        assert sq.max() == 19
+        assert sz[-1, -1] == 190
+        assert sq[-1, -1] == 1
+        assert sq[0, 0] == 0
         sq = ps.filters.size_to_seq(sz, ascending=True)
         assert sq.max() == 19
         assert sz[-1, -1] == 190
         assert sq[-1, -1] == 19
+        # Ensure 0's remain 0's
         assert sq[0, 0] == 0
-        sq = ps.filters.size_to_seq(sz, ascending=False)
-        assert sq.max() == 19
+
+    def test_size_to_seq_uninvaded(self):
+        sz = 10*np.tile(np.atleast_2d(np.arange(0, 20)), [20, 1])
+        sz[:, 0] = -1
+        sz[:, 1] = 0
+        sq = ps.filters.size_to_seq(sz, ascending=False)  # Default behavior
+        assert sq.max() == 18
         assert sz[-1, -1] == 190
         assert sq[-1, -1] == 1
         # Ensure 0's remain 0's
-        assert sq[0, 0] == 0
+        assert sq[0, 0] == -1
+        assert sq[0, 1] == 0
+        sq = ps.filters.size_to_seq(sz, ascending=True)
+        assert sq.max() == 18
+        assert sz[-1, -1] == 190
+        assert sq[-1, -1] == 18
+        # Ensure 0's remain 0's
+        assert sq[0, 0] == -1
+        assert sq[0, 1] == 0
 
     def test_size_to_seq_int_bins(self):
         im = self.im2D
@@ -70,6 +112,35 @@ class SeqTest():
         sat = ps.filters.seq_to_satn(sq)
         assert sat.max() < 1
 
+    def test_seq_to_satn_ascending_and_descending(self):
+        seq = np.tile(np.atleast_2d(np.arange(0, 21)), [21, 1])
+        satn = ps.filters.seq_to_satn(seq, ascending=True)
+        assert satn.max() == 1.0
+        assert satn[-1, -1] == 1.0
+        assert satn[0, 0] == 0
+        assert satn[0, 1] == 0.05
+        satn = ps.filters.seq_to_satn(seq, ascending=False)
+        assert satn[-1, -1] == 0.05
+        assert satn.max() == 1.0
+        assert satn[0, 0] == 0
+
+    def test_seq_to_satn_uninvaded(self):
+        seq = np.tile(np.atleast_2d(np.arange(0, 21)), [21, 1]) - 1
+        seq[:, 0] = 0
+        seq[:, 1] = -1
+        satn = ps.filters.seq_to_satn(seq, ascending=True)
+        assert satn.max() == 0.95
+        assert satn[-1, -1] == 0.95
+        assert satn[0, 0] == 0.0
+        assert satn[0, 1] == -1
+        assert satn[0, 2] == 0.05
+        satn = ps.filters.seq_to_satn(seq, ascending=False)
+        assert satn.max() == 0.95
+        assert satn[-1, -1] == 0.05
+        assert satn[0, 0] == 0.0
+        assert satn[0, 1] == -1
+        assert satn[0, 2] == 0.95
+
     def test_size_to_satn(self):
         im = self.im2D
         sz = ps.filters.porosimetry(im)
@@ -77,6 +148,35 @@ class SeqTest():
         assert satn.max() == 1.0
         satn = ps.filters.size_to_satn(sz, bins=4)
         assert satn.max() == 1.0
+
+    def test_size_to_satn_ascending_and_descending(self):
+        sz = 10*np.tile(np.atleast_2d(np.arange(0, 20)), [20, 1])
+        satn = ps.filters.size_to_satn(sz, ascending=True)
+        assert satn.max() == 1.0
+        assert satn[-1, -1] == 1.0
+        assert satn[0, 0] == 0
+        satn = ps.filters.size_to_satn(sz, ascending=False)
+        assert satn.max() == 1.0
+        assert satn[-1, -1] < 1.0
+        # Ensure 0's remain 0's
+        assert satn[0, 0] == 0
+
+    def test_size_to_satn_uninvaded(self):
+        sz = 10*np.tile(np.atleast_2d(np.arange(0, 20)), [20, 1])
+        sz[:, 0] = 0
+        sz[:, 1] = -1
+        satn = ps.filters.size_to_satn(sz, ascending=True)
+        assert satn.max() == 0.95
+        assert satn[-1, -1] == 0.95
+        assert satn[0, 0] == 0
+        assert satn[0, 1] == -1
+        assert satn[0, 2] == 0.05
+        satn = ps.filters.size_to_satn(sz, ascending=False)
+        assert satn.max() == 0.95
+        assert satn[-1, -1] == 0.95
+        assert satn[0, 0] == 0
+        assert satn[0, 1] == -1
+        assert satn[0, 2] == 0.95
 
     def test_compare_size_and_seq_to_satn(self):
         im = ps.generators.blobs(shape=[250, 250])
@@ -88,20 +188,6 @@ class SeqTest():
         mio_seq[im*(mio_seq == 0)] = -1  # Adjust to set uninvaded to -1
         mio_satn_2 = ps.filters.seq_to_satn(mio_seq)
         assert np.all(mio_satn == mio_satn_2)
-
-    def test_size_to_satn_ascending(self):
-        sz = 10*np.tile(np.atleast_2d(np.arange(0, 20)), [20, 1])
-        satn = ps.filters.size_to_satn(sz, ascending=True)
-        assert satn.max() == 1.0
-        assert sz[-1, -1] == 190
-        assert satn[-1, -1] == 1.0
-        assert satn[0, 0] == 0
-        satn = ps.filters.size_to_satn(sz, ascending=False)
-        assert satn.max() == 1.0
-        assert sz[-1, -1] == 190
-        assert satn[-1, -1] < 1.0
-        # Ensure 0's remain 0's
-        assert satn[0, 0] == 0
 
 
 if __name__ == '__main__':
