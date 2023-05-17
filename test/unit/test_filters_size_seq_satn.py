@@ -157,7 +157,7 @@ class SeqTest():
         assert satn[0, 0] == 0
         satn = ps.filters.size_to_satn(sz, ascending=False)
         assert satn.max() == 1.0
-        assert satn[-1, -1] < 1.0
+        assert satn[-1, -1] == 0.05
         # Ensure 0's remain 0's
         assert satn[0, 0] == 0
 
