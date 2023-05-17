@@ -27,7 +27,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
 
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -1053,7 +1053,7 @@
 <h1>satn_to_seq<a class="headerlink" href="#satn-to-seq" title="Permalink to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="porespy.filters.satn_to_seq">
-<span class="sig-name descname"><span class="pre">satn_to_seq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">satn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">im</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/filters/_size_seq_satn.html#satn_to_seq"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.satn_to_seq" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">satn_to_seq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">satn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">im</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ascending</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/filters/_size_seq_satn.html#satn_to_seq"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.satn_to_seq" title="Permalink to this definition">#</a></dt>
 <dd><p>Converts an image of nonwetting phase saturations to invasion sequence
 values</p>
 <dl class="field-list simple">
@@ -1061,13 +1061,16 @@ values</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>satn</strong> (<em>ndarray</em>) – A Numpy array with the value in each voxel indicating the global
 saturation at the point it was invaded. -1 indicates a voxel that
-not invaded.</p></li>
+not invaded, and 0 indicates solid phase.</p></li>
 <li><p><strong>im</strong> (<em>ndarray</em>) – A Numpy array with <code class="docutils literal notranslate"><span class="pre">True</span></code> values indicating the void space.</p></li>
+<li><p><strong>ascending</strong> (<em>bool</em>) – Indicates if the saturation progresses from low to high (the default,
+corresponding to drainage), or high to low (if <code class="docutils literal notranslate"><span class="pre">ascending=False</span></code>,
+corresponding to imbibition).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>satn</strong> – A Numpy array with each voxel value indicating the global saturation
-at which it was invaded. Solid voxels are indicated by 0 and
+<dd class="field-even"><p><strong>seq</strong> – A Numpy array with each voxel value indicating the sequence
+in which it was invaded. Solid voxels are indicated by 0 and
 uninvaded by -1.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>

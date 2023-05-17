@@ -27,7 +27,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
 
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -2870,6 +2870,12 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/openpnm/algorithms/_invasion_percolation.py:358: NumbaDeprecationWarning: The &#39;nopython&#39; keyword argument was not supplied to the &#39;numba.jit&#39; decorator. The implicit default value for this argument is currently False, but it will be changed to True in Numba 0.59.0. See https://numba.readthedocs.io/en/stable/reference/deprecation.html#deprecation-of-object-mode-fall-back-behaviour-when-using-jit for details.
+  def _find_trapped_pores(inv_seq, indices, indptr, outlets):  # pragma: no cover
+</pre></div>
+</div>
+</div>
 </div>
 <p>Here we generate a test image using the <code class="docutils literal notranslate"><span class="pre">blobs</span></code> function.  We will create an image with different lengths in each direction since this highlights an important point later on when plotting the results.</p>
 <div class="cell docutils container">
@@ -2881,7 +2887,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/57f6f720f7f04fc87b0e0a3b224fab1d658433272da5a3c36d66332d15f1250a.png" src="../../../_images/57f6f720f7f04fc87b0e0a3b224fab1d658433272da5a3c36d66332d15f1250a.png" />
+<img alt="../../../_images/88a811f355f94b28e3816fd80a3cda8050b49537c64236d91b32b44dd33ad633.png" src="../../../_images/88a811f355f94b28e3816fd80a3cda8050b49537c64236d91b32b44dd33ad633.png" />
 </div>
 </div>
 <p>All results in PoreSpy are reported in voxels, so it is up to the user to scale these values to the physical size of each voxel.  Here we’ll assume that each voxel corresponds to 5.9 microns.</p>
@@ -2917,7 +2923,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/4d9865c8853f173b6ae3fd460900be32fd4f6774446179eadf71cfb33e9c4cbf.png" src="../../../_images/4d9865c8853f173b6ae3fd460900be32fd4f6774446179eadf71cfb33e9c4cbf.png" />
+<img alt="../../../_images/1dfa20d67bc98c760ea757692b726b22ccbaa5da7975f34b3f695b64927a8724.png" src="../../../_images/1dfa20d67bc98c760ea757692b726b22ccbaa5da7975f34b3f695b64927a8724.png" />
 </div>
 </div>
 <p>Note how each line ends at a different position on the x-axis.  This is caused by the fact that image had different total length in each direction.  We can also do the plots with each axis normalized by their total length:</p>
@@ -2935,7 +2941,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/2c3676ebfd1a1b676efac88740f902a7b38fab514c039508b06e0b4ce5d48318.png" src="../../../_images/2c3676ebfd1a1b676efac88740f902a7b38fab514c039508b06e0b4ce5d48318.png" />
+<img alt="../../../_images/7895a9d239f848af45c67c9b294140d0842a1a14106ee8c7250a926165953b9c.png" src="../../../_images/7895a9d239f848af45c67c9b294140d0842a1a14106ee8c7250a926165953b9c.png" />
 </div>
 </div>
 </section>

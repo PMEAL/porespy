@@ -27,7 +27,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
 
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -2872,6 +2872,12 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/openpnm/algorithms/_invasion_percolation.py:358: NumbaDeprecationWarning: The &#39;nopython&#39; keyword argument was not supplied to the &#39;numba.jit&#39; decorator. The implicit default value for this argument is currently False, but it will be changed to True in Numba 0.59.0. See https://numba.readthedocs.io/en/stable/reference/deprecation.html#deprecation-of-object-mode-fall-back-behaviour-when-using-jit for details.
+  def _find_trapped_pores(inv_seq, indices, indptr, outlets):  # pragma: no cover
+</pre></div>
+</div>
+</div>
 </div>
 <p>First generate an anisotropic image using the <code class="docutils literal notranslate"><span class="pre">blobs</span></code> generator:</p>
 <div class="cell docutils container">
@@ -2882,7 +2888,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/2cd5a5eceabacbd03b7d33bb864c82b7b18c5b4b0c49660659581db076dbc563.png" src="../../../_images/2cd5a5eceabacbd03b7d33bb864c82b7b18c5b4b0c49660659581db076dbc563.png" />
+<img alt="../../../_images/52580e61ab82def35aac5a47c93b61a6ca84318137ed4d4f0e3f72144a8946a6.png" src="../../../_images/52580e61ab82def35aac5a47c93b61a6ca84318137ed4d4f0e3f72144a8946a6.png" />
 </div>
 </div>
 <p>Next apply the <code class="docutils literal notranslate"><span class="pre">distance_transform_lin</span></code> function along the 0 axis.</p>
@@ -2894,7 +2900,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/3a32c4acf6db06b0acfed04c3ba09ab2d713ac4b2a981ba9a97579cbb030cea5.png" src="../../../_images/3a32c4acf6db06b0acfed04c3ba09ab2d713ac4b2a981ba9a97579cbb030cea5.png" />
+<img alt="../../../_images/158b230ae4c6885e80f3f9cb21adfdd08fd04d2cb9fffd67c08e133c19be4146.png" src="../../../_images/158b230ae4c6885e80f3f9cb21adfdd08fd04d2cb9fffd67c08e133c19be4146.png" />
 </div>
 </div>
 <p>The greyscale values of the above image are worth a comment. They indicated the length of a path that can be drawn from each voxel to the nearest solid voxel, in the specified direction.  Or in terms of Torquato’s definition, each greyscale value represents a random starting point (A) and moving along this line until solid is encountered represents the end of the line (B), providing the path length A <span class="math notranslate nohighlight">\(\rightarrow\)</span> B.  The ‘counter associated with the distance between A and B is then incremented’, which corresponds to the binning the greyscale values in the above image. In other words, the above representation includes ALL possible starting points on each path, so provides the largest possible data set.</p>
@@ -2917,7 +2923,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/572d3335ea03710940527d1a80f331a32d3d90efe9b3256a60c3b3ee599f5254.png" src="../../../_images/572d3335ea03710940527d1a80f331a32d3d90efe9b3256a60c3b3ee599f5254.png" />
+<img alt="../../../_images/1e64c9d8e5e0051461e9ecb2095f1b8f7516d45a46b409fe040e4567cae462f6.png" src="../../../_images/1e64c9d8e5e0051461e9ecb2095f1b8f7516d45a46b409fe040e4567cae462f6.png" />
 </div>
 </div>
 <p>Since the image is anisotropic, the process will yeild a different result in the perpendicular direction, so repeating the above with <code class="docutils literal notranslate"><span class="pre">axis=1</span></code> instead of the default <code class="docutils literal notranslate"><span class="pre">axis=0</span></code>.</p>
@@ -2929,7 +2935,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/582de0e293bbd82d16a7acb5049188ae75cac9efbce80523c2f8979096afcd57.png" src="../../../_images/582de0e293bbd82d16a7acb5049188ae75cac9efbce80523c2f8979096afcd57.png" />
+<img alt="../../../_images/943a09a08445ef902848b47c8752a318721933433c8bac686e870387a8eb8480.png" src="../../../_images/943a09a08445ef902848b47c8752a318721933433c8bac686e870387a8eb8480.png" />
 </div>
 </div>
 <p>Overlaying this result wit the previous one:</p>
@@ -2942,7 +2948,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/940fcd725917a2e9d61f11079c92f9a8e2f37b0d4895ccb1fa72d1cfc9b0ba10.png" src="../../../_images/940fcd725917a2e9d61f11079c92f9a8e2f37b0d4895ccb1fa72d1cfc9b0ba10.png" />
+<img alt="../../../_images/f5fda5b96ac4133c51ceba9ab3b5203b29840e4092441768ac2d264d6a2bb4aa.png" src="../../../_images/f5fda5b96ac4133c51ceba9ab3b5203b29840e4092441768ac2d264d6a2bb4aa.png" />
 </div>
 </div>
 <p>The anisotropy of the image is clearly visible with the first axis possessing longer lineal-path values.</p>

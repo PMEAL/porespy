@@ -26,7 +26,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
 
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -1238,23 +1238,24 @@
 <span class="sd">            invading fluid configuration. The choice of &#39;dt&#39; or &#39;hybrid&#39;</span>
 <span class="sd">            depends on speed, which is system and installation specific.</span>
 <span class="sd">        &#39;mio&#39;</span>
-<span class="sd">            Uses bindary erosion followed by dilation to obtain the invading</span>
-<span class="sd">            fluid confirguration directly. If ``access_limitations`` is</span>
+<span class="sd">            Uses binary erosion followed by dilation to obtain the invading</span>
+<span class="sd">            fluid configuration directly. If ``access_limitated`` is</span>
 <span class="sd">            ``True`` then disconnected blobs are trimmmed before the dilation.</span>
 <span class="sd">            This is the only method that can be parallelized by chunking (see</span>
 <span class="sd">            ``divs`` and ``cores``).</span>
 
 <span class="sd">    divs : int or array_like</span>
-<span class="sd">        The number of times to divide the image for parallel processing.  If ``1``</span>
-<span class="sd">        then parallel processing does not occur.  ``2`` is equivalent to</span>
-<span class="sd">        ``[2, 2, 2]`` for a 3D image.  The number of cores used is specified in</span>
-<span class="sd">        ``porespy.settings.ncores`` and defaults to all cores.</span>
+<span class="sd">        The number of times to divide the image for parallel processing.</span>
+<span class="sd">        If ``1`` then parallel processing does not occur.  ``2`` is</span>
+<span class="sd">        equivalent to ``[2, 2, 2]`` for a 3D image.  The number of cores</span>
+<span class="sd">        used is specified in ``porespy.settings.ncores`` and defaults to</span>
+<span class="sd">        all cores.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    image : ndarray</span>
 <span class="sd">        A copy of ``im`` with voxel values indicating the sphere radius at</span>
-<span class="sd">        which it becomes accessible from the inlets.  This image can be</span>
+<span class="sd">        which it becomes accessible from the ``inlets``.  This image can be</span>
 <span class="sd">        used to find invading fluid configurations as a function of</span>
 <span class="sd">        applied capillary pressure by applying a boolean comparison:</span>
 <span class="sd">        ``inv_phase = im &gt; r`` where ``r`` is the radius (in voxels) of</span>

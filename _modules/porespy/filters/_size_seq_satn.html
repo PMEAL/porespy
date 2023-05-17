@@ -26,7 +26,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
 
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -203,7 +203,7 @@
 <span class="p">]</span>
 
 
-<div class="viewcode-block" id="size_to_seq"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.size_to_seq.html#porespy.filters.size_to_seq">[docs]</a><span class="k">def</span> <span class="nf">size_to_seq</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">im</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="size_to_seq"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.size_to_seq.html#porespy.filters.size_to_seq">[docs]</a><span class="k">def</span> <span class="nf">size_to_seq</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">im</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts an image of invasion size values into sequence values</span>
 
@@ -223,6 +223,10 @@
 <span class="sd">        is supplied it is interpreted as the number of bins between 0 and the</span>
 <span class="sd">        maximum value in ``size``.  If an array is supplied it is used as</span>
 <span class="sd">        the bins directly.</span>
+<span class="sd">    ascending : bool</span>
+<span class="sd">        Indicates if the sizes are filled from large to small (the default, if</span>
+<span class="sd">        ``ascending=False``, corresponding to drainage), or small to large (if</span>
+<span class="sd">        ``ascending=True``, corresponding to imbibition).</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -243,19 +247,25 @@
         <span class="n">solid</span> <span class="o">=</span> <span class="n">size</span> <span class="o">==</span> <span class="mi">0</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">solid</span> <span class="o">=</span> <span class="n">im</span> <span class="o">==</span> <span class="mi">0</span>
+    <span class="n">uninvaded</span> <span class="o">=</span> <span class="n">size</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span>
     <span class="k">if</span> <span class="n">bins</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
         <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">size</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">bins</span><span class="p">)</span>
     <span class="n">vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">digitize</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="c1"># Invert the vals so smallest size has largest sequence</span>
-    <span class="n">vals</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">vals</span> <span class="o">-</span> <span class="n">vals</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="o">~</span><span class="n">solid</span>
-    <span class="c1"># In case too many bins are given, remove empty ones</span>
-    <span class="n">vals</span> <span class="o">=</span> <span class="n">make_contiguous</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;keep_zeros&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ascending</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">vals</span><span class="p">[</span><span class="n">solid</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">vals</span><span class="p">[</span><span class="n">uninvaded</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">vals</span> <span class="o">=</span> <span class="n">make_contiguous</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;symmetric&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ascending</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="n">vals</span> <span class="o">=</span> <span class="n">make_contiguous</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;symmetric&#39;</span><span class="p">)</span>
+        <span class="n">vals</span> <span class="o">=</span> <span class="n">vals</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">vals</span>
+        <span class="n">vals</span><span class="p">[</span><span class="n">solid</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">vals</span><span class="p">[</span><span class="n">uninvaded</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
     <span class="k">return</span> <span class="n">vals</span></div>
 
 
-<div class="viewcode-block" id="size_to_satn"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.size_to_satn.html#porespy.filters.size_to_satn">[docs]</a><span class="k">def</span> <span class="nf">size_to_satn</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">im</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="size_to_satn"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.size_to_satn.html#porespy.filters.size_to_satn">[docs]</a><span class="k">def</span> <span class="nf">size_to_satn</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">im</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts an image of invasion size values into saturations.</span>
 
@@ -275,12 +285,16 @@
 <span class="sd">        is supplied it is interpreted as the number of bins between 0 and the</span>
 <span class="sd">        maximum value in ``size``.  If an array is supplied it is used as</span>
 <span class="sd">        the bins directly.</span>
+<span class="sd">    ascending : bool</span>
+<span class="sd">        Indicates if the sizes are filled from large to small (the default,</span>
+<span class="sd">        corresponding to drainage), or small to large (if ``ascending=True``,</span>
+<span class="sd">        corresponding to imbibition).</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    satn : ndarray</span>
-<span class="sd">        An ndarray the same size as ``seq`` but with sequence values replaced</span>
-<span class="sd">        by the fraction of void space invaded at or below the sequence number.</span>
+<span class="sd">        An ndarray the same size as ``size`` but with size values replaced</span>
+<span class="sd">        by the fraction of void space invaded at each the size number.</span>
 <span class="sd">        Solid voxels and uninvaded voxels are represented by 0 and -1,</span>
 <span class="sd">        respectively.</span>
 
@@ -291,22 +305,28 @@
 <span class="sd">    to view online example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">bins</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+        <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">size</span><span class="p">[</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">])</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
         <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">size</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">bins</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">im</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">im</span> <span class="o">=</span> <span class="p">(</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="o">~</span><span class="p">(</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
     <span class="n">void_vol</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
     <span class="n">satn</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">bins</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
-        <span class="n">hits</span> <span class="o">=</span> <span class="p">(</span><span class="n">size</span> <span class="o">&gt;=</span> <span class="n">r</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="n">temp</span> <span class="o">=</span> <span class="n">hits</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">/</span><span class="n">void_vol</span>
-        <span class="n">satn</span><span class="p">[</span><span class="n">hits</span> <span class="o">*</span> <span class="p">(</span><span class="n">satn</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)]</span> <span class="o">=</span> <span class="n">temp</span>
+    <span class="k">if</span> <span class="n">ascending</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">bins</span><span class="p">:</span>
+            <span class="n">hits</span> <span class="o">=</span> <span class="p">(</span><span class="n">size</span> <span class="o">&lt;=</span> <span class="n">r</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">temp</span> <span class="o">=</span> <span class="n">hits</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">/</span><span class="n">void_vol</span>
+            <span class="n">satn</span><span class="p">[</span><span class="n">hits</span> <span class="o">*</span> <span class="p">(</span><span class="n">satn</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)]</span> <span class="o">=</span> <span class="n">temp</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">bins</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">hits</span> <span class="o">=</span> <span class="p">(</span><span class="n">size</span> <span class="o">&gt;=</span> <span class="n">r</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">temp</span> <span class="o">=</span> <span class="n">hits</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">/</span><span class="n">void_vol</span>
+            <span class="n">satn</span><span class="p">[</span><span class="n">hits</span> <span class="o">*</span> <span class="p">(</span><span class="n">satn</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)]</span> <span class="o">=</span> <span class="n">temp</span>
     <span class="n">satn</span> <span class="o">*=</span> <span class="p">(</span><span class="n">im</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">satn</span></div>
 
 
-<div class="viewcode-block" id="seq_to_satn"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.seq_to_satn.html#porespy.filters.seq_to_satn">[docs]</a><span class="k">def</span> <span class="nf">seq_to_satn</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span> <span class="n">im</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="seq_to_satn"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.seq_to_satn.html#porespy.filters.seq_to_satn">[docs]</a><span class="k">def</span> <span class="nf">seq_to_satn</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span> <span class="n">im</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts an image of invasion sequence values to saturation values.</span>
 
@@ -319,6 +339,10 @@
 <span class="sd">        A binary image of the porous media, with ``True`` indicating the</span>
 <span class="sd">        void space and ``False`` indicating the solid phase. If not given</span>
 <span class="sd">        then it is assumed that the solid is identified as ``seq == 0``.</span>
+<span class="sd">    ascending : bool</span>
+<span class="sd">        Indicates if the sequence progresses from low saturation to high (the</span>
+<span class="sd">        default, corresponding to drainage), or high saturation to low (if</span>
+<span class="sd">        ``ascending=False``, corresponding to imbibition).</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -341,6 +365,10 @@
         <span class="n">solid_mask</span> <span class="o">=</span> <span class="n">im</span> <span class="o">==</span> <span class="mi">0</span>
     <span class="n">uninvaded_mask</span> <span class="o">=</span> <span class="n">seq</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span>
     <span class="n">seq</span><span class="p">[</span><span class="n">seq</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">ascending</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="n">seq</span> <span class="o">=</span> <span class="n">seq</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">-</span> <span class="n">seq</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">seq</span><span class="p">[</span><span class="n">solid_mask</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">seq</span><span class="p">[</span><span class="n">uninvaded_mask</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">seq</span> <span class="o">=</span> <span class="n">rankdata</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;dense&#39;</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
     <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">solid_mask</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">uninvaded_mask</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
@@ -396,7 +424,7 @@
     <span class="k">return</span> <span class="n">satn</span></div>
 
 
-<div class="viewcode-block" id="satn_to_seq"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.satn_to_seq.html#porespy.filters.satn_to_seq">[docs]</a><span class="k">def</span> <span class="nf">satn_to_seq</span><span class="p">(</span><span class="n">satn</span><span class="p">,</span> <span class="n">im</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="satn_to_seq"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.satn_to_seq.html#porespy.filters.satn_to_seq">[docs]</a><span class="k">def</span> <span class="nf">satn_to_seq</span><span class="p">(</span><span class="n">satn</span><span class="p">,</span> <span class="n">im</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts an image of nonwetting phase saturations to invasion sequence</span>
 <span class="sd">    values</span>
@@ -406,15 +434,19 @@
 <span class="sd">    satn : ndarray</span>
 <span class="sd">        A Numpy array with the value in each voxel indicating the global</span>
 <span class="sd">        saturation at the point it was invaded. -1 indicates a voxel that</span>
-<span class="sd">        not invaded.</span>
+<span class="sd">        not invaded, and 0 indicates solid phase.</span>
 <span class="sd">    im : ndarray</span>
 <span class="sd">        A Numpy array with ``True`` values indicating the void space.</span>
+<span class="sd">    ascending : bool</span>
+<span class="sd">        Indicates if the saturation progresses from low to high (the default,</span>
+<span class="sd">        corresponding to drainage), or high to low (if ``ascending=False``,</span>
+<span class="sd">        corresponding to imbibition).</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    satn : ndarray</span>
-<span class="sd">        A Numpy array with each voxel value indicating the global saturation</span>
-<span class="sd">        at which it was invaded. Solid voxels are indicated by 0 and</span>
+<span class="sd">    seq : ndarray</span>
+<span class="sd">        A Numpy array with each voxel value indicating the sequence</span>
+<span class="sd">        in which it was invaded. Solid voxels are indicated by 0 and</span>
 <span class="sd">        uninvaded by -1.</span>
 
 <span class="sd">    Examples</span>
@@ -426,6 +458,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">im</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">im</span> <span class="o">=</span> <span class="n">satn</span> <span class="o">&gt;</span> <span class="mi">0</span>
+    <span class="n">uninvaded</span> <span class="o">=</span> <span class="n">satn</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span>
     <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">satn</span><span class="p">)</span>
     <span class="n">seq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">digitize</span><span class="p">(</span><span class="n">satn</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">values</span><span class="p">)</span>
     <span class="c1"># Set uninvaded by to -1</span>
@@ -434,6 +467,10 @@
     <span class="n">seq</span><span class="p">[</span><span class="o">~</span><span class="n">im</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="c1"># Ensure values are contiguous while keeping -1 and 0</span>
     <span class="n">seq</span> <span class="o">=</span> <span class="n">make_contiguous</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">seq</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;symmetric&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ascending</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="n">seq</span> <span class="o">=</span> <span class="p">(</span><span class="n">seq</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">seq</span>
+        <span class="n">seq</span><span class="p">[</span><span class="o">~</span><span class="n">im</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">seq</span><span class="p">[</span><span class="n">uninvaded</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
     <span class="k">return</span> <span class="n">seq</span></div>
 </pre></div>
 

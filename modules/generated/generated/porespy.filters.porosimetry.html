@@ -27,7 +27,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
 
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -1088,23 +1088,24 @@ transform, relative to the thresholded mask, to find the
 invading fluid configuration. The choice of ‘dt’ or ‘hybrid’
 depends on speed, which is system and installation specific.</p>
 </dd>
-<dt>’mio’</dt><dd><p>Uses bindary erosion followed by dilation to obtain the invading
-fluid confirguration directly. If <code class="docutils literal notranslate"><span class="pre">access_limitations</span></code> is
+<dt>’mio’</dt><dd><p>Uses binary erosion followed by dilation to obtain the invading
+fluid configuration directly. If <code class="docutils literal notranslate"><span class="pre">access_limitated</span></code> is
 <code class="docutils literal notranslate"><span class="pre">True</span></code> then disconnected blobs are trimmmed before the dilation.
 This is the only method that can be parallelized by chunking (see
 <code class="docutils literal notranslate"><span class="pre">divs</span></code> and <code class="docutils literal notranslate"><span class="pre">cores</span></code>).</p>
 </dd>
 </dl>
 </p></li>
-<li><p><strong>divs</strong> (<em>int</em><em> or </em><em>array_like</em>) – The number of times to divide the image for parallel processing.  If <code class="docutils literal notranslate"><span class="pre">1</span></code>
-then parallel processing does not occur.  <code class="docutils literal notranslate"><span class="pre">2</span></code> is equivalent to
-<code class="docutils literal notranslate"><span class="pre">[2,</span> <span class="pre">2,</span> <span class="pre">2]</span></code> for a 3D image.  The number of cores used is specified in
-<code class="docutils literal notranslate"><span class="pre">porespy.settings.ncores</span></code> and defaults to all cores.</p></li>
+<li><p><strong>divs</strong> (<em>int</em><em> or </em><em>array_like</em>) – The number of times to divide the image for parallel processing.
+If <code class="docutils literal notranslate"><span class="pre">1</span></code> then parallel processing does not occur.  <code class="docutils literal notranslate"><span class="pre">2</span></code> is
+equivalent to <code class="docutils literal notranslate"><span class="pre">[2,</span> <span class="pre">2,</span> <span class="pre">2]</span></code> for a 3D image.  The number of cores
+used is specified in <code class="docutils literal notranslate"><span class="pre">porespy.settings.ncores</span></code> and defaults to
+all cores.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>image</strong> – A copy of <code class="docutils literal notranslate"><span class="pre">im</span></code> with voxel values indicating the sphere radius at
-which it becomes accessible from the inlets.  This image can be
+which it becomes accessible from the <code class="docutils literal notranslate"><span class="pre">inlets</span></code>.  This image can be
 used to find invading fluid configurations as a function of
 applied capillary pressure by applying a boolean comparison:
 <code class="docutils literal notranslate"><span class="pre">inv_phase</span> <span class="pre">=</span> <span class="pre">im</span> <span class="pre">&gt;</span> <span class="pre">r</span></code> where <code class="docutils literal notranslate"><span class="pre">r</span></code> is the radius (in voxels) of
