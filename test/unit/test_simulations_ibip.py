@@ -55,62 +55,6 @@ class IBIPTest():
                                                          return_mask=False)
         assert (inv_w_trapping == -1).sum() == 236
 
-    def test_size_to_seq(self):
-        im = self.im2D
-        sz = ps.filters.porosimetry(im)
-        nsizes = np.size(np.unique(sz))
-        sq = ps.filters.size_to_seq(sz)
-        nsteps = np.size(np.unique(sq))
-        assert nsteps == nsizes
-
-    def test_size_to_seq_int_bins(self):
-        im = self.im2D
-        sz = ps.filters.porosimetry(im)
-        sq = ps.filters.size_to_seq(sz, bins=5)
-        nsteps = np.size(np.unique(sq))
-        assert nsteps == 5
-
-    def test_size_to_seq_too_many_bins(self):
-        im = self.im2D
-        sz = ps.filters.porosimetry(im)
-        sq = ps.filters.size_to_seq(sz, bins=20)
-        nsteps = np.size(np.unique(sq))
-        assert nsteps < 20
-
-    def test_seq_to_satn_fully_filled(self):
-        im = self.im2D
-        sz = ps.filters.porosimetry(im)
-        sq = ps.filters.size_to_seq(sz)
-        sat = ps.filters.seq_to_satn(sq)
-        assert sat.max() == 1
-
-    def test_seq_to_satn_partially_filled(self):
-        im = self.im2D
-        sz = ps.filters.porosimetry(im)
-        sq = ps.filters.size_to_seq(sz)
-        sq[sq == sq.max()] = -1
-        sat = ps.filters.seq_to_satn(sq)
-        assert sat.max() < 1
-
-    def test_size_to_satn(self):
-        im = self.im2D
-        sz = ps.filters.porosimetry(im)
-        satn = ps.filters.size_to_satn(sz)
-        assert satn.max() == 1.0
-        satn = ps.filters.size_to_satn(sz, bins=4)
-        assert satn.max() == 1.0
-
-    def test_compare_size_and_seq_to_satn(self):
-        im = ps.generators.blobs(shape=[250, 250])
-        dt = edt(im)
-        sizes = np.arange(int(dt.max())+1, 0, -1)
-        mio = ps.filters.porosimetry(im, sizes=sizes)
-        mio_satn = ps.filters.size_to_satn(size=mio, im=im)
-        mio_seq = ps.filters.size_to_seq(mio)
-        mio_seq[im*(mio_seq == 0)] = -1  # Adjust to set uninvaded to -1
-        mio_satn_2 = ps.filters.seq_to_satn(mio_seq)
-        assert np.all(mio_satn == mio_satn_2)
-
 
 if __name__ == '__main__':
     t = IBIPTest()

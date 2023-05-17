@@ -1047,23 +1047,24 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
             invading fluid configuration. The choice of 'dt' or 'hybrid'
             depends on speed, which is system and installation specific.
         'mio'
-            Uses bindary erosion followed by dilation to obtain the invading
-            fluid confirguration directly. If ``access_limitations`` is
+            Uses binary erosion followed by dilation to obtain the invading
+            fluid configuration directly. If ``access_limitated`` is
             ``True`` then disconnected blobs are trimmmed before the dilation.
             This is the only method that can be parallelized by chunking (see
             ``divs`` and ``cores``).
 
     divs : int or array_like
-        The number of times to divide the image for parallel processing.  If ``1``
-        then parallel processing does not occur.  ``2`` is equivalent to
-        ``[2, 2, 2]`` for a 3D image.  The number of cores used is specified in
-        ``porespy.settings.ncores`` and defaults to all cores.
+        The number of times to divide the image for parallel processing.
+        If ``1`` then parallel processing does not occur.  ``2`` is
+        equivalent to ``[2, 2, 2]`` for a 3D image.  The number of cores
+        used is specified in ``porespy.settings.ncores`` and defaults to
+        all cores.
 
     Returns
     -------
     image : ndarray
         A copy of ``im`` with voxel values indicating the sphere radius at
-        which it becomes accessible from the inlets.  This image can be
+        which it becomes accessible from the ``inlets``.  This image can be
         used to find invading fluid configurations as a function of
         applied capillary pressure by applying a boolean comparison:
         ``inv_phase = im > r`` where ``r`` is the radius (in voxels) of
