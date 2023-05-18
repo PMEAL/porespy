@@ -5,7 +5,7 @@ import scipy.spatial as sptl
 from scipy import fft as sp_ft
 from skimage.measure import regionprops
 from deprecated import deprecated
-from porespy.tools import extend_slice
+from porespy.tools import extend_slice, extend_slice_2
 from porespy.tools import _check_for_singleton_axes
 from porespy.tools import Results
 from porespy import settings
@@ -107,8 +107,7 @@ def boxcount(im, bins=10):
     data.slope = slope
     return data
 
-
-def representative_elementary_volume(im, npoints=1000):
+def representative_elementary_volume_porosity(im, AR=([1,1,1]), npoints=1000):
     r"""
     Calculates the porosity of an image as a function subdomain size.
 
@@ -119,6 +118,9 @@ def representative_elementary_volume(im, npoints=1000):
     ----------
     im : ndarray
         The image of the porous material
+    AR : (,3) array
+        This is the aspect ratio of the subdomain. Each element is the ratio to the x-axis.
+        AR = ([x:x.y:x,z:x]). The default is 1:1:1 to get a cubic shape.
     npoints : int
         The number of randomly located and sized boxes to sample.  The default
         is 1000.
@@ -132,29 +134,11 @@ def representative_elementary_volume(im, npoints=1000):
             The total volume of each cubic subdomain tested
         'porosity'
             The porosity of each subdomain tested
-
-        These attributes can be conveniently plotted by passing the Results
-        object to matplotlib's ``plot`` function using the
-        \* notation: ``plt.plot(\*result, 'b.')``.  The resulting plot is
-        similar to the sketch given by Bachmat and Bear [1]_
-
-    Notes
-    -----
-    This function is frustratingly slow.  Profiling indicates that all the time
-    is spent on scipy's ``sum`` function which is needed to sum the number of
-    void voxels (1's) in each subdomain.
-
     References
     ----------
     .. [1] Bachmat and Bear. On the Concept and Size of a Representative
        Elementary Volume (Rev), Advances in Transport Phenomena in Porous Media
        (1987)
-
-    Examples
-    --------
-    `Click here
-    <https://porespy.org/examples/metrics/reference/representative_elementary_volume.html>`_
-    to view online example.
 
     """
     # TODO: this function is a prime target for parallelization since the
@@ -170,7 +154,7 @@ def representative_elementary_volume(im, npoints=1000):
     for i in tqdm(np.arange(0, N), **settings.tqdm):
         s = slices[i]
         p = pads[i]
-        new_s = extend_slice(s, shape=im.shape, pad=p)
+        new_s = extend_slice_2(s, AR, shape=im.shape, pad=p)
         temp = im[new_s]
         Vp = np.sum(temp)
         Vt = np.size(temp)
@@ -180,7 +164,6 @@ def representative_elementary_volume(im, npoints=1000):
     profile.volume = volume
     profile.porosity = porosity
     return profile
-
 
 def porosity(im):
     r"""
@@ -740,12 +723,8 @@ def _radial_profile(autocorr, bins, pf=None, voxel_size=1):
     else:
         raise Exception('Image dimensions must be 2 or 3')
     if np.max(bins) > np.max(dt):
-        msg = (
-            'Bins specified distances exceeding maximum radial distance for'
-            ' image size. Radial distance cannot exceed distance from center'
-            ' of image to corner.'
-        )
-        raise Exception(msg)
+        raise Exception('Bins specified distances exceeding maximum radial distance for image size. \n'
+                        'Radial distance cannot exceed distance from center of image to corner.')
 
     bin_size = bins[1:] - bins[:-1]
     radial_sum = _get_radial_sum(dt, bins, bin_size, autocorr)
@@ -764,7 +743,6 @@ def _radial_profile(autocorr, bins, pf=None, voxel_size=1):
     tpcf.relfreq = h.relfreq
     return tpcf
 
-
 @njit(parallel=True)
 def _get_radial_sum(dt, bins, bin_size, autocorr):
     radial_sum = np.zeros_like(bins[:-1])
@@ -772,7 +750,6 @@ def _get_radial_sum(dt, bins, bin_size, autocorr):
         mask = (dt <= r) * (dt > (r - bin_size[i]))
         radial_sum[i] = np.sum(np.ravel(autocorr)[np.ravel(mask)]) / np.sum(mask)
     return radial_sum
-
 
 def two_point_correlation(im, voxel_size=1, bins=100):
     r"""
@@ -784,14 +761,12 @@ def two_point_correlation(im, voxel_size=1, bins=100):
         The image of the void space on which the 2-point correlation is
         desired, in which the phase of interest is labelled as True
     voxel_size : scalar
-        The size of a voxel side in preferred units.  The default is 1, so
-        the user can apply the scaling to the returned results after the
-        fact.
+        The size of a voxel side in preferred units.  The default is 1, so the
+        user can apply the scaling to the returned results after the fact.
     bins : scalar or array_like
-        Either an array of bin sizes to use, or the number of bins that
-        should be automatically generated that span the data range. The
-        maximum value of the bins, if passed as an array, cannot exceed
-        the distance from the center of the image to the corner.
+        Either an array of bin sizes to use, or the number of bins that should
+        be automatically generated that span the data range. The maximum value of the bins,
+        if passed as an array, cannot exceed the distance from the center of the image to the corner
 
     Returns
     -------

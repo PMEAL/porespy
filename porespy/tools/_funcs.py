@@ -20,6 +20,7 @@ __all__ = [
     'align_image_with_openpnm',
     'bbox_to_slices',
     'extend_slice',
+    'extend_slice_2',
     'extract_cylinder',
     'extract_subsection',
     'extract_regions',
@@ -695,6 +696,26 @@ def extend_slice(slices, shape, pad=1):
         stop = min(s.stop + pad[i], shape[i])
         a.append(slice(start, stop, None))
     return tuple(a)
+
+def extend_slice_2(slices, AR,shape, pad=1):
+    shape = np.array(shape)
+    pad = np.array(pad).astype(int)*(shape > 0)
+    a = []
+    for i, s in enumerate(slices):
+        if i!=0:#looking at y & z-coord slice
+            start = 0
+            stop = shape[i]
+            start = max(s.start - round(AR[i]*pad[i]), 0)#reduce the extension by aspect ratio(AR) of y/z
+            stop = min(s.stop + round(AR[i]*pad[i]), shape[i])
+            a.append(slice(start, stop, None))
+        else:
+            start = 0
+            stop = shape[i]
+            start = max(s.start - pad[i], 0)
+            stop = min(s.stop + pad[i], shape[i])
+            a.append(slice(start, stop, None))
+    return tuple(a)
+
 
 
 def randomize_colors(im, keep_vals=[0]):
