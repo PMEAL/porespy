@@ -52,24 +52,37 @@ logger = logging.getLogger(__name__)
 @deprecated("The ibip function will be moved to the"
             + " ``simulations`` module in a future version")
 def ibip(**kwargs):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     This function has been moved to the ``simulations`` module, please use that.
     """
     from porespy.simulations import ibip
+    logger.info("end of" + function_name)
     return ibip(**kwargs)
+    
 
 
 @deprecated("The ibip_gpu function will be moved to the"
             + " ``simulations`` module in a future version")
 def ibip_gpu(**kwargs):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     This function has been moved to the ``simulations`` module, please use that.
     """
     from porespy.simulations import ibip_gpu
+    logger.info("end of" + function_name)
     return ibip_gpu(**kwargs)
 
 
+
 def find_trapped_regions(seq, outlets=None, bins=25, return_mask=True):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Find the trapped regions given an invasion sequence image
 
@@ -138,6 +151,7 @@ def find_trapped_regions(seq, outlets=None, bins=25, return_mask=True):
         # of zero needs to be removed, if it's in keep.
         keep = np.setdiff1d(keep, np.array([0]))
         trapped += temp*np.isin(labels, keep, invert=True)
+    logger.info("end of" + function_name)
     if return_mask:
         return trapped
     else:
@@ -147,6 +161,9 @@ def find_trapped_regions(seq, outlets=None, bins=25, return_mask=True):
 
 
 def apply_padded(im, pad_width, func, pad_val=1, **kwargs):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Applies padding to an image before sending to ``func``, then extracts
     the result corresponding to the original image shape.
@@ -182,10 +199,14 @@ def apply_padded(im, pad_width, func, pad_val=1, **kwargs):
                     mode='constant', constant_values=pad_val)
     temp = func(padded, **kwargs)
     result = unpad(im=temp, pad_width=pad_width)
+    logger.info("end of" + function_name)
     return result
 
 
 def trim_small_clusters(im, size=1):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Remove isolated voxels or clusters of a given size or smaller
 
@@ -217,10 +238,14 @@ def trim_small_clusters(im, size=1):
     id_sizes = np.array(spim.sum(im, labels, range(N + 1)))
     area_mask = id_sizes <= size
     filtered_array[area_mask[labels]] = 0
+    logger.info("end of" + function_name)
     return filtered_array
 
 
 def hold_peaks(im, axis=-1, ascending=True):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Replaces each voxel with the highest value along the given axis.
 
@@ -268,12 +293,16 @@ def hold_peaks(im, axis=-1, ascending=True):
     aux[(*map(op.itemgetter(slice(1, None)), pkidx),)] = np.diff(B[pkidx])
     aux[..., 0] = B[..., 0]
     result = out.cumsum(axis=axis)
+    logger.info("end of" + function_name)
     if ascending is False:  # Flip it back
         result = np.flip(result, axis=-1)
     return result
 
 
 def distance_transform_lin(im, axis=0, mode="both"):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Replaces each void voxel with the linear distance to the nearest solid
     voxel along the specified axis.
@@ -340,10 +369,14 @@ def distance_transform_lin(im, axis=0, mode="both"):
         ]
         e = np.pad(d, pad_width=ax[axis], mode="constant", constant_values=0)
     f = im * (b + e)
+    logger.info("end of" + function_name)
     return f
 
 
 def find_disconnected_voxels(im, conn=None, surface=False):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Identifies all voxels that are not connected to the edge of the image.
 
@@ -406,10 +439,14 @@ def find_disconnected_voxels(im, conn=None, surface=False):
         counts = np.bincount(labels.flatten())[1:]
         keep = np.where(counts == counts.max())[0] + 1
         holes = (labels != keep)*im
+    logger.info("end of" + function_name)
     return holes
 
 
 def fill_blind_pores(im, conn=None, surface=False):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Fills all blind pores that are isolated from the main void space.
 
@@ -449,10 +486,14 @@ def fill_blind_pores(im, conn=None, surface=False):
     im = np.copy(im)
     holes = find_disconnected_voxels(im, conn=conn, surface=surface)
     im[holes] = False
+    logger.info("end of" + function_name)
     return im
 
 
 def trim_floating_solid(im, conn=None, surface=False):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Removes all solid that that is not attached to main solid structure.
 
@@ -492,10 +533,14 @@ def trim_floating_solid(im, conn=None, surface=False):
     im = np.copy(im)
     holes = find_disconnected_voxels(~im, conn=conn, surface=surface)
     im[holes] = True
+    logger.info("end of" + function_name)
     return im
 
 
 def trim_nonpercolating_paths(im, inlets, outlets, strel=None):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Remove all nonpercolating paths between specified locations
 
@@ -543,10 +588,14 @@ def trim_nonpercolating_paths(im, inlets, outlets, strel=None):
     OUT = np.unique(labels * outlets)
     hits = np.array(list(set(IN).intersection(set(OUT))))
     new_im = np.isin(labels, hits[hits > 0])
+    logger.info("end of" + function_name)
     return new_im
 
 
 def trim_extrema(im, h, mode="maxima"):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Trims local extrema in greyscale values by a specified amount.
 
@@ -590,10 +639,14 @@ def trim_extrema(im, h, mode="maxima"):
     elif mode == 'extrema':
         result = reconstruction(seed=im - h, mask=mask, method='dilation')
         result = reconstruction(seed=result + h, mask=result, method='erosion')
+    logger.info('end of' + function_name)
     return result
 
 
 def flood(im, labels, mode="max"):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Floods/fills each region in an image with a single value based on the
     specific values in that region.
@@ -660,10 +713,14 @@ def flood(im, labels, mode="max"):
     vals = f(input=im, labels=labels, index=range(0, N + 1))
     flooded = vals[labels]
     flooded = flooded * mask
+    logger.info("end of" + function_name)
     return flooded
 
 
 def flood_func(im, func, labels=None):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Flood each isolated region in an image with a constant value calculated by
     the given function.
@@ -717,10 +774,14 @@ def flood_func(im, func, labels=None):
         sub_im = labels[s] == (i + 1)
         val = func(im[s][sub_im])
         flooded[s] += sub_im*val
+    logger.info("end of" + function_name)
     return flooded
 
 
 def find_dt_artifacts(dt):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Label points in a distance transform that are closer to image boundary
     than solid
@@ -758,10 +819,14 @@ def find_dt_artifacts(dt):
                                         axis=ax, mode="both")
         temp = np.minimum(temp, dt_lin)
     result = np.clip(dt - temp, a_min=0, a_max=np.inf)
+    logger.info("end of" + function_name)
     return result
 
 
 def region_size(im):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Replace each voxel with the size of the region to which it belongs
 
@@ -800,10 +865,14 @@ def region_size(im):
         im = spim.label(im)[0]
     counts = np.bincount(im.flatten())
     counts[0] = 0
+    logger.info("end of" + function_name)
     return counts[im]
 
 
 def apply_chords(im, spacing=1, axis=0, trim_edges=True, label=False):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Adds chords to the void space in the specified direction.
 
@@ -863,10 +932,15 @@ def apply_chords(im, spacing=1, axis=0, trim_edges=True, label=False):
     result[slices] = chords  # Place chords into empty image created at top
     if label is False:  # Remove label if not requested
         result = result > 0
+    logger.info("end of" + function_name)
     return result
 
 
 def apply_chords_3D(im, spacing=0, trim_edges=True):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
+
     r"""
     Adds chords to the void space in all three principle directions.
 
@@ -921,10 +995,15 @@ def apply_chords_3D(im, spacing=0, trim_edges=True):
     if trim_edges:
         temp = clear_border(spim.label(chords > 0)[0]) > 0
         chords = temp * chords
+    logger.info("end of" + function_name)
     return chords
 
 
 def local_thickness(im, sizes=25, mode="hybrid", divs=1):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
+
     r"""
     For each voxel, this function calculates the radius of the largest
     sphere that both engulfs the voxel and fits entirely within the
@@ -945,7 +1024,7 @@ def local_thickness(im, sizes=25, mode="hybrid", divs=1):
         Controls with method is used to compute the result. Options are:
 
         'hybrid'
-            (default) Performs a distance transform of the void
+                (default) Performs a distance transform of the void
             space, thresholds to find voxels larger than ``sizes[i]``, trims
             the resulting mask if ``access_limitations`` is ``True``, then
             dilates it using the efficient fft-method to obtain the
@@ -1001,11 +1080,15 @@ def local_thickness(im, sizes=25, mode="hybrid", divs=1):
     """
     im_new = porosimetry(im=im, sizes=sizes, access_limited=False, mode=mode,
                          divs=divs)
+    logger.info("end of" + function_name)
     return im_new
 
 
 def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
                 divs=1):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Performs a porosimetry simulution on an image.
 
@@ -1178,10 +1261,15 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
                 imresults[(imresults == 0) * imtemp] = r
     else:
         raise Exception("Unrecognized mode " + mode)
+    logger.info("end of" + function_name)
     return imresults
 
 
 def trim_disconnected_blobs(im, inlets, strel=None):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
+
     r"""
     Removes foreground voxels not connected to specified inlets.
 
@@ -1236,10 +1324,14 @@ def trim_disconnected_blobs(im, inlets, strel=None):
     keep = keep[keep > 0]
     im2 = np.isin(labels, keep)
     im2 = im2 * im
+    logger.info("end of" + function_name)
     return im2
 
 
 def _get_axial_shifts(ndim=2, include_diagonals=False):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Helper function to generate the axial shifts that will be performed on
     the image to identify bordering pixels/voxels
@@ -1253,6 +1345,7 @@ def _get_axial_shifts(ndim=2, include_diagonals=False):
         x, y = np.where(neighbors)
         x -= 1
         y -= 1
+        logger.info("end of" + function_name)
         return np.vstack((x, y)).T
     else:
         if include_diagonals:
@@ -1264,10 +1357,14 @@ def _get_axial_shifts(ndim=2, include_diagonals=False):
         x -= 1
         y -= 1
         z -= 1
+        logger.info("end of" + function_name)
         return np.vstack((x, y, z)).T
 
 
 def _make_stack(im, include_diagonals=False):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Creates a stack of images with one extra dimension to the input image
     with length equal to the number of borders to search + 1.
@@ -1286,6 +1383,7 @@ def _make_stack(im, include_diagonals=False):
             ax0, ax1 = axial_shift[i]
             temp = np.roll(np.roll(im, ax0, 0), ax1, 1)
             stack[:, :, i + 1] = temp
+        logger.info("end of" + function_name)
         return stack
     elif ndim == 3:
         stack = np.zeros(
@@ -1296,10 +1394,14 @@ def _make_stack(im, include_diagonals=False):
             ax0, ax1, ax2 = axial_shift[i]
             temp = np.roll(np.roll(np.roll(im, ax0, 0), ax1, 1), ax2, 2)
             stack[:, :, :, i + 1] = temp
+        logger.info("end of" + function_name)
         return stack
 
 
 def nphase_border(im, include_diagonals=False):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Identifies the voxels in regions that border *N* other regions.
 
@@ -1350,12 +1452,17 @@ def nphase_border(im, include_diagonals=False):
         out += mask
     # Un-pad
     if ndim == 2:
+        logger.info("end of" + function_name)
         return out[1:-1, 1:-1].copy()
     else:
+        logger.info("end of" + function_name)
         return out[1:-1, 1:-1, 1:-1].copy()
 
 
 def prune_branches(skel, branch_points=None, iterations=1):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Remove all dangling ends or tails of a skeleton
 
@@ -1424,6 +1531,7 @@ def prune_branches(skel, branch_points=None, iterations=1):
                                    iterations=iterations)
         if np.all(im_temp == im_result):
             iterations = 0
+    logger.info("end of" + function_name)
     return im_result
 
 
@@ -1434,6 +1542,9 @@ def chunked_func(func,
                  im_arg=["input", "image", "im"],
                  strel_arg=["strel", "structure", "footprint"],
                  **kwargs):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Performs the specfied operation "chunk-wise" in parallel using ``dask``.
 
@@ -1553,4 +1664,5 @@ def chunked_func(func,
     ims = dask.compute(res, num_workers=cores)[0]
     # Finally, put the pieces back together into a single master image, im2
     im2 = recombine(ims=ims, slices=slices, overlap=overlap)
+    logger.info("end of" + function_name)
     return im2

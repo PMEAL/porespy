@@ -4,6 +4,7 @@ import time
 import psutil
 import subprocess
 import numpy as np
+import inspect as insp
 
 
 __all__ = [
@@ -15,6 +16,9 @@ logger = logging.getLogger(__name__)
 
 
 def maximal_ball_wrapper(im, prefix, path_to_exe, voxel_size=1e-6):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Implementing a maximal ball algorithm on an image
 
@@ -62,9 +66,13 @@ def maximal_ball_wrapper(im, prefix, path_to_exe, voxel_size=1e-6):
         logger.info('Maximal ball algorithm running for {time_elapsed} s')
         time.sleep(10)
         time_elapsed += 10
+    logger.info('end of' + function_name)
 
 
 def _is_running(process_name):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Check if there is any running process that contains the given name.
     """
@@ -72,7 +80,9 @@ def _is_running(process_name):
         try:
             # Check if process name contains the given name string.
             if process_name.lower() in proc.name().lower():
+                logger.info("end of" + function_name)
                 return True
         except (psutil.NoSuchProcess, psutil.AccessDenied):
             pass
+    logger.info('end of' + function_name)
     return False

@@ -2,6 +2,7 @@ import logging
 import numpy as np
 import openpnm as op
 import scipy.ndimage as spim
+import inspect as insp
 from skimage.segmentation import find_boundaries
 from skimage.morphology import ball, cube, disk, square
 from porespy.tools import make_contiguous
@@ -26,6 +27,9 @@ logger = logging.getLogger(__name__)
 
 
 def map_to_regions(regions, values):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Maps pore values from a network onto the image from which it was extracted
 
@@ -59,10 +63,14 @@ def map_to_regions(regions, values):
     im = np.zeros_like(regions)
     im = values[regions-1]
     im = im*(regions > 0)
+    logger.info('end of' + function_name)
     return im
 
 
 def add_boundary_regions(regions, pad_width=3):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Add boundary regions on specified faces of an image
 
@@ -120,10 +128,14 @@ def add_boundary_regions(regions, pad_width=3):
     s = tuple([slice(t-ax[0], -(t-ax[1]) or None) for ax in faces])
     new_regions = new_regions[s]
     new_regions = make_contiguous(new_regions)
+    logger.info("end of" + function_name)
     return new_regions
 
 
 def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Generates a 3d numpy array from an OpenPNM network
 
@@ -211,6 +223,7 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200):
     im_throats = (im_throats.astype(bool) * ~im_pores.astype(bool)).astype(np.uint8)
     im = im_pores * 1 + im_throats * 2
 
+    logger.info("end of" + function_name)
     return im[extra_clearance:-extra_clearance,
               extra_clearance:-extra_clearance,
               extra_clearance:-extra_clearance]
@@ -218,6 +231,9 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200):
 
 def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
                          max_dim=None, rtol=0.1):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Generate a voxel image from an OpenPNM network object
 
@@ -259,6 +275,7 @@ def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
     logger.info("Generating voxel image from pore network")
     # If max_dim is provided, generate voxel image using max_dim
     if max_dim is not None:
+        logger.info('end of' + function_name)
         return _generate_voxel_image(
             network, pore_shape, throat_shape, max_dim=max_dim)
     max_dim = 200
@@ -274,12 +291,16 @@ def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
         eps_old = eps
         max_dim = int(max_dim * 1.25)
     logger.debug(f"Converged at max_dim = {max_dim} voxels")
+    logger.info("end of" + function_name)
     return im
 
 
 def label_phases(
         network,
         alias={1: 'void', 2: 'solid'}):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Create pore and throat labels based on 'pore.phase' values
 
@@ -322,6 +343,7 @@ def label_phases(
                 if name not in network.keys():
                     network[name] = np.zeros_like(conns[:, 0], dtype=bool)
                 network[name] += throat_hits
+    logger.info('end of' + function_name)
     return network
 
 
@@ -329,6 +351,9 @@ def label_boundaries(
         network,
         labels=[['left', 'right'], ['front', 'back'], ['top', 'bottom']],
         tol=1e-9):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Create boundary pore labels based on proximity to axis extrema
 
@@ -368,4 +393,5 @@ def label_boundaries(
                 hits = crds[:, i] == extents[i][j]
                 network['pore.boundary'] += hits
                 network['pore.' + labels[i][j]] = hits
+    logger.info('end of' + function_name)
     return network

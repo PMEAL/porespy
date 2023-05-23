@@ -1,6 +1,7 @@
 import logging
 import numpy as np
 from edt import edt
+import inspect as insp
 from porespy.tools import get_tqdm, get_border
 from porespy.tools import Results
 
@@ -15,6 +16,9 @@ logger = logging.getLogger(__name__)
 
 
 def ibip_gpu(im, dt=None, inlets=None, maxiter=10000):  # pragma: no cover
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     """
     Performs invasion percolation on given image using iterative image
     dilation on GPU.
@@ -113,10 +117,15 @@ def ibip_gpu(im, dt=None, inlets=None, maxiter=10000):  # pragma: no cover
     results = Results()
     results.inv_sequence = inv_sequence
     results.inv_size = inv_size
+
+    logger.info('end of' + function_name)
     return results
 
 
 def rankdata_gpu(im_arr):  # pragma: no cover
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     """
     GPU alternative to scipy's rankdata using 'dense' method.
     Assign ranks to data, dealing with ties appropriately.
@@ -141,10 +150,15 @@ def rankdata_gpu(im_arr):  # pragma: no cover
     arr = arr[sorter]
     obs = cp.r_[True, arr[1:] != arr[:-1]]
     dense = obs.cumsum()[inv]
+
+    logger.info("end of" + function_name)
     return dense
 
 
 def make_contiguous_gpu(im):  # pragma: no cover
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     """
     Take an image with arbitrary greyscale values and adjust them to
     ensure all values fall in a contiguous range starting at 0.
@@ -170,10 +184,15 @@ def make_contiguous_gpu(im):  # pragma: no cover
     im_flat[mask_pos] = im_pos
     im_flat[mask_neg] = im_neg
     im_new = np.reshape(im_flat, shape)
+
+    logger.info("end of" + function_name)
     return im_new
 
 
 def ball_gpu(radius, smooth=True):  # pragma: no cover
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     """
     Generates a ball-shaped structuring element.
 
@@ -200,10 +219,14 @@ def ball_gpu(radius, smooth=True):  # pragma: no cover
     s = X ** 2 + Y ** 2 + Z ** 2
     if smooth:
         radius = radius - 0.001
+    logger.info("end of" + function_name)
     return s <= radius * radius
 
 
 def disk_gpu(radius, smooth=True):  # pragma: no cover
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     """
     Generates a flat, disk-shaped structuring element.
 
@@ -227,6 +250,7 @@ def disk_gpu(radius, smooth=True):  # pragma: no cover
     X, Y = cp.meshgrid(L, L)
     if smooth:
         radius = radius - 0.001
+    logger.info("end of" + function_name) 
     return (X ** 2 + Y ** 2) <= radius ** 2
 
 

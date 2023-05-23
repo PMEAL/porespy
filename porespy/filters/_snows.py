@@ -33,6 +33,9 @@ logger = logging.getLogger(__name__)
 
 
 def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, peaks=None):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Partition the void space into pore regions using a marker-based
     watershed algorithm
@@ -133,10 +136,14 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, peaks=None):
     tup.dt = dt
     tup.peaks = peaks
     tup.regions = regions * (im > 0)
+    logger.info("end of" + function_name)
     return tup
 
 
 def snow_partitioning_n(im, r_max=4, sigma=0.4, peaks=None):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     This function partitions an imaging oontain an arbitrary number of
     phases into regions using a marker-based watershed segmentation.
@@ -241,10 +248,14 @@ def snow_partitioning_n(im, r_max=4, sigma=0.4, peaks=None):
     tup.phase_max_label = num[1:]
     tup.regions = combined_region
     tup.peaks = _peaks
+    logger.info("end of" + function_name)
     return tup
 
 
 def find_peaks(dt, r_max=4, strel=None, sigma=None, divs=1):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Finds local maxima in the distance transform
 
@@ -318,10 +329,14 @@ def find_peaks(dt, r_max=4, strel=None, sigma=None, divs=1):
         # at the void/solid interface
         mx = spim.maximum_filter(dt + 2.0 * (~im), footprint=strel)
     peaks = (dt == mx) * im
+    logger.info("end of" + function_name)
     return peaks
 
 
 def reduce_peaks(peaks):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Any peaks that are broad or elongated are replaced with a single voxel
     that is located at the center of mass of the original voxels.
@@ -363,10 +378,14 @@ def reduce_peaks(peaks):
     # Centroid may not be on old pixel, so create a new peaks image
     peaks_new = np.zeros_like(peaks, dtype=bool)
     peaks_new[tuple(inds.T)] = True
+    logger.info("end of" + function_name)
     return peaks_new
 
 
 def trim_saddle_points(peaks, dt, maxiter=20):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Removes peaks that were mistakenly identified because they lied on a
     saddle or ridge in the distance transform that was not actually a true
@@ -430,10 +449,14 @@ def trim_saddle_points(peaks, dt, maxiter=20):
                 "Maximum number of iterations reached, consider "
                 + "running again with a larger value of max_iters"
             )
+    logger.info("end of" + function_name)
     return new_peaks*peaks
 
 
 def trim_saddle_points_legacy(peaks, dt, maxiter=10):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Removes peaks that were mistakenly identified because they lied on a
     saddle or ridge in the distance transform that was not actually a true
@@ -512,10 +535,14 @@ def trim_saddle_points_legacy(peaks, dt, maxiter=10):
                 "Maximum number of iterations reached, consider "
                 + "running again with a larger value of max_iters"
             )
+    logger.info("end of" + function_name)
     return new_peaks*peaks
 
 
 def trim_nearby_peaks(peaks, dt, f=1):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Removes peaks that are nearer to another peak than to solid
 
@@ -589,10 +616,15 @@ def trim_nearby_peaks(peaks, dt, f=1):
     drop_peaks = np.unique(drop_peaks)
 
     new_peaks = ~np.isin(labels, drop_peaks+1)*peaks
+    logger.info("end of" + function_name)
     return new_peaks
 
 
 def _estimate_overlap(im, mode='dt', zoom=0.25):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
+
     logger.info('Calculating overlap thickness')
     if mode == 'watershed':
         rev = spim.interpolation.zoom(im, zoom=zoom, order=0)
@@ -606,6 +638,7 @@ def _estimate_overlap(im, mode='dt', zoom=0.25):
     if mode == 'dt':
         dt = edt((im > 0), parallel=0)
         overlap = dt.max()
+    logger.info("end of" + function_name)
     return overlap
 
 
@@ -616,6 +649,9 @@ def snow_partitioning_parallel(im,
                                overlap=None,
                                cores=None,
                                ):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Performs SNOW algorithm in parallel (or serial) to reduce time
     (or memory usage) by geomertirc domain decomposition of large images.
@@ -709,10 +745,14 @@ def snow_partitioning_parallel(im,
     tup.im = im
     tup.dt = dt
     tup.regions = regions
+    logger.info('end of' + function_name)
     return tup
 
 
 def _pad(im, pad_width=1, constant_value=0):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Pad the image with a constant values and width.
 
@@ -747,10 +787,14 @@ def _pad(im, pad_width=1, constant_value=0):
     else:
         temp[pad_width: -pad_width] = im
 
+    logger.info("end of" + function_name)
     return temp
 
 
 def relabel_chunks(im, chunk_shape):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Assign new labels to each chunk or sub-domain of actual image. This
     prevents from two or more regions to have same label.
@@ -800,10 +844,14 @@ def relabel_chunks(im, chunk_shape):
                 im[y * c[0]: (y + 1) * c[0],
                    x * c[1]: (x + 1) * c[1]] = chunk
 
+    logger.info("end of" + function_name)
     return im
 
 
 def _trim_internal_slice(im, chunk_shape):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Delete extra slices from image that were used to stitch two or more
     chunks together.
@@ -848,11 +896,15 @@ def _trim_internal_slice(im, chunk_shape):
 
                 out[y * c2[0]: (y + 1) * c2[0],
                     x * c2[1]: (x + 1) * c2[1]] = chunk[1:-1, 1:-1]
-
+                
+    logger.info("end of" + function_name)
     return out
 
 
 def _watershed_stitching(im, chunk_shape):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Stitch individual sub-domains of watershed segmentation into one big
     segmentation with all boundary labels of each sub-domain relabeled to
@@ -899,12 +951,15 @@ def _watershed_stitching(im, chunk_shape):
             im = im.swapaxes(axis, 0)
     im = _trim_internal_slice(im=im, chunk_shape=chunk_shape)
     im = _resequence_labels(array=im)
-
+    logger.info('end of' + function_name)
     return im
 
 
 @njit(parallel=True)
 def _copy(im, output):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     The function copy the input array and make output array that is
     allocated in different memory space. This a numba version of copy
@@ -935,12 +990,15 @@ def _copy(im, output):
     else:
         for i in prange(im.shape[0]):
             output[i] = im[i]
-
+    logger.info("end of" + function_name)
     return output
 
 
 @njit(parallel=True)
 def _replace(array, keys, values, ind_sort):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     This function replace keys elements in input array with new value
     elements. This function is used as internal function of
@@ -971,8 +1029,13 @@ def _replace(array, keys, values, ind_sort):
             ind = np.searchsorted(keys_sorted, array[i])
             array[i] = values_sorted[ind]
 
+    logger.info("end of" + function_name)
+
 
 def _replace_labels(array, keys, values):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Replace labels in array provided as keys to values.
 
@@ -997,11 +1060,15 @@ def _replace_labels(array, keys, values):
     ind_sort = np.argsort(keys)
     _replace(array, keys, values, ind_sort)
 
+    logger.info("end of" + function_name)
     return array.reshape(a_shape)
 
 
 @njit()
 def _sequence(array, count):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Internal function of resequnce_labels method. This function resquence
     array elements in an ascending order using numba technique which is
@@ -1038,9 +1105,14 @@ def _sequence(array, count):
         array[i] = count[data]
         i += 1
 
+    logger.info("end of" + function_name)
+
 
 @njit(parallel=True)
 def _amax(array):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Find largest element in an array using fast parallel numba technique.
 
@@ -1055,10 +1127,14 @@ def _amax(array):
         The largest element value in the input array.
 
     """
+    logger.info("end of" + function_name)
     return np.max(array)
 
 
 def _resequence_labels(array):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Resequence the lablels to make them contigious.
 
@@ -1079,10 +1155,14 @@ def _resequence_labels(array):
     count = np.zeros(max_num, dtype=np.uint32)
     _sequence(array, count)
 
+    logger.info("end of" + function_name)
     return array.reshape(a_shape)
 
 
 def _snow_chunked(dt, r_max=5, sigma=0.4):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     This private version of snow is called during snow_parallel.
     """
@@ -1092,4 +1172,5 @@ def _snow_chunked(dt, r_max=5, sigma=0.4):
     peaks = trim_nearby_peaks(peaks=peaks, dt=dt)
     peaks, N = spim.label(peaks > 0)
     regions = watershed(image=-dt, markers=peaks)
+    logger.info("end of" + function_name)
     return regions * (dt > 0)

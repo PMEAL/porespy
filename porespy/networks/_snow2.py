@@ -1,5 +1,6 @@
 import logging
 import numpy as np
+import inspect as insp
 from porespy.networks import regions_to_network
 from porespy.networks import add_boundary_regions
 from porespy.networks import label_phases, label_boundaries
@@ -25,6 +26,9 @@ def snow2(phases,
           r_max=4,
           peaks=None,
           parallelization={},):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Applies the SNOW algorithm to each phase indicated in ``phases``.
 
@@ -210,10 +214,14 @@ def snow2(phases,
     result.network = net
     result.regions = regions
     result.phases = phases
+    logger.info('end of' + function_name)
     return result
 
 
 def _parse_phase_alias(alias, phases):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     """
     if alias is None:
@@ -221,10 +229,14 @@ def _parse_phase_alias(alias, phases):
     for i in range(phases.max()):
         if i+1 not in alias.keys():
             alias[i+1] = 'phase'+str(i+1)
+    logger.info('end of' + function_name)
     return alias
 
 
 def _parse_pad_width(pad_width, shape):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     """
     ndim = len(shape)
@@ -244,4 +256,5 @@ def _parse_pad_width(pad_width, shape):
         else:
             raise Exception("pad_width components can't have 2+ elements")
 
+    logger.info("end of" + function_name)
     return np.array(tmp, dtype=int)

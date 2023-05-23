@@ -2,6 +2,7 @@ import logging
 import numpy as np
 import scipy.ndimage as spim
 import scipy.spatial as sptl
+import inspect as insp
 from scipy import fft as sp_ft
 from skimage.measure import regionprops
 from deprecated import deprecated
@@ -38,6 +39,10 @@ logger = logging.getLogger(__name__)
 
 
 def boxcount(im, bins=10):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
+
     r"""
     Calculates fractal dimension of an image using the tiled box counting
     method [1]_
@@ -105,10 +110,14 @@ def boxcount(im, bins=10):
     data.size = Ds
     data.count = N
     data.slope = slope
+    logger.info("end of" + function_name)
     return data
 
 
 def representative_elementary_volume(im, npoints=1000):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Calculates the porosity of an image as a function subdomain size.
 
@@ -179,10 +188,14 @@ def representative_elementary_volume(im, npoints=1000):
     profile = Results()
     profile.volume = volume
     profile.porosity = porosity
+    logger.info('end of' + function_name)
     return profile
 
 
 def porosity(im):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Calculates the porosity of an image assuming 1's are void space and 0's
     are solid phase.
@@ -229,10 +242,14 @@ def porosity(im):
     Vp = np.sum(im == 1)
     Vs = np.sum(im == 0)
     e = Vp / (Vs + Vp)
+    logger.info("end of"+ function_name)
     return e
 
 
 def porosity_profile(im, axis=0):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Computes the porosity profile along the specified axis
 
@@ -264,10 +281,14 @@ def porosity_profile(im, axis=0):
     a = set(range(im.ndim)).difference(set([axis]))
     a1, a2 = a
     prof = np.sum(np.sum(im == 1, axis=a2), axis=a1) / (im.shape[a2] * im.shape[a1])
+    logger.info('end of' + function_name)
     return prof
 
 
 def radial_density_distribution(dt, bins=10, log=False, voxel_size=1):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Computes radial density function by analyzing the histogram of voxel
     values in the distance transform.  This function is defined by
@@ -364,10 +385,14 @@ def radial_density_distribution(dt, bins=10, log=False, voxel_size=1):
     rdf.bin_centers = h.bin_centers
     rdf.bin_edges = h.bin_edges
     rdf.bin_widths = h.bin_widths
+    logger.info("end of" + function_name)
     return rdf
 
 
 def lineal_path_distribution(im, bins=10, voxel_size=1, log=False):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Determines the probability that a point lies within a certain distance
     of the opposite phase *along a specified direction*
@@ -446,11 +471,15 @@ def lineal_path_distribution(im, bins=10, voxel_size=1, log=False):
     cld.bin_centers = h.bin_centers
     cld.bin_edges = h.bin_edges
     cld.bin_widths = h.bin_widths
+    logger.info("end of" + function_name)
     return cld
 
 
 def chord_length_distribution(im, bins=10, log=False, voxel_size=1,
                               normalization='count'):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Determines the distribution of chord lengths in an image containing chords.
 
@@ -548,10 +577,14 @@ def chord_length_distribution(im, bins=10, log=False, voxel_size=1,
     cld.bin_centers = h.bin_centers
     cld.bin_edges = h.bin_edges
     cld.bin_widths = h.bin_widths
+    logger.info('end of' + function_name)
     return cld
 
 
 def pore_size_distribution(im, bins=10, log=True, voxel_size=1):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Calculate a pore-size distribution based on the image produced by the
     ``porosimetry`` or ``local_thickness`` functions.
@@ -625,10 +658,14 @@ def pore_size_distribution(im, bins=10, log=True, voxel_size=1):
     cld.bin_centers = h.bin_centers
     cld.bin_edges = h.bin_edges
     cld.bin_widths = h.bin_widths
+    logger.info("end of" + function_name)
     return cld
 
 
 def two_point_correlation_bf(im, spacing=10):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Calculates the two-point correlation function using brute-force (see Notes)
 
@@ -693,10 +730,14 @@ def two_point_correlation_bf(im, spacing=10):
     tpcf = Results()
     tpcf.distance = h2[1][:-1]
     tpcf.probability = h2[0] / h1[0]
+    logger.info("end of" + function_name)
     return tpcf
 
 
 def _radial_profile(autocorr, bins, pf=None, voxel_size=1):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Helper functions to calculate the radial profile of the autocorrelation
 
@@ -762,19 +803,27 @@ def _radial_profile(autocorr, bins, pf=None, voxel_size=1):
     tpcf.probability_scaled = norm_autoc_radial * pf
     tpcf.pdf = h.pdf * pf
     tpcf.relfreq = h.relfreq
+    logger.info("end of" + function_name)
     return tpcf
 
 
 @njit(parallel=True)
 def _get_radial_sum(dt, bins, bin_size, autocorr):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     radial_sum = np.zeros_like(bins[:-1])
     for i, r in enumerate(bins[:-1]):
         mask = (dt <= r) * (dt > (r - bin_size[i]))
         radial_sum[i] = np.sum(np.ravel(autocorr)[np.ravel(mask)]) / np.sum(mask)
+    logger.info('end of' + function_name)
     return radial_sum
 
 
 def two_point_correlation(im, voxel_size=1, bins=100):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Calculate the two-point correlation function using Fourier transforms
 
@@ -850,10 +899,14 @@ def two_point_correlation(im, voxel_size=1, bins=100):
         # Auto-correlation is inverse of Power Spectrum
         autoc = np.absolute(sp_ft.ifftshift(sp_ft.irfftn(sp_ft.fftshift(P))))
     tpcf = _radial_profile(autoc, bins, pf=pf, voxel_size=voxel_size)
+    logger.info("end of" + function_name)
     return tpcf
 
 
 def _parse_histogram(h, voxel_size=1, density=True):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     delta_x = h[1]
     P = h[0]
     bin_widths = delta_x[1:] - delta_x[:-1]
@@ -876,10 +929,14 @@ def _parse_histogram(h, voxel_size=1, density=True):
     hist.bin_centers = bin_centers
     hist.bin_edges = bin_edges
     hist.bin_widths = bin_widths
+    logger.info("end of" + function_name)
     return hist
 
 
 def chord_counts(im):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Find the length of each chord in the supplied image
 
@@ -910,10 +967,14 @@ def chord_counts(im):
     labels, N = spim.label(im > 0)
     props = regionprops(labels)
     chord_lens = np.array([i.filled_area for i in props], dtype=int)
+    logger.info("end of" + function_name)
     return chord_lens
 
 
 def phase_fraction(im, normed=True):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Calculate the fraction of each phase in an image
 
@@ -949,30 +1010,42 @@ def phase_fraction(im, normed=True):
     results = {}
     for label in labels:
         results[label] = np.sum(im == label) * (1 / im.size if normed else 1)
+    logger.info("end of" + function_name)
     return results
 
 
 @deprecated("This function is deprecated, use pc_curve instead")
 def pc_curve_from_ibip(*args, **kwargs):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     This function is deprecated.  Use ``pc_curve`` instead.  Note that the
     ``stepped`` argument is no longer supported since this can be done
     directly in matplotlib with ``plt.step(...)``.
 
     """
+    logger.info("end of" + function_name)
     return pc_curve(*args, **kwargs)
 
 
 @deprecated("This function is deprecated, use pc_curve instead")
 def pc_curve_from_mio(*args, **kwargs):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     This function is deprecated.  Use ``pc_curve`` instead.
     """
+    logger.info("end of" + function_name)
     return pc_curve(*args, **kwargs)
 
 
 def pc_curve(im, sizes=None, pc=None, seq=None,
              sigma=0.072, theta=180, voxel_size=1):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Produces a Pc-Snwp curve given a map of meniscus radii or capillary
     pressures at which each voxel was invaded
@@ -1095,10 +1168,14 @@ def pc_curve(im, sizes=None, pc=None, seq=None,
         pc_curve = Results()
         pc_curve.pc = Ps
         pc_curve.snwp = y
+    logger.info("end of" + function_name)
     return pc_curve
 
 
 def satn_profile(satn, s, axis=0, span=10, mode='tile'):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Computes a saturation profile from an image of fluid invasion
 
@@ -1149,6 +1226,10 @@ def satn_profile(satn, s, axis=0, span=10, mode='tile'):
     """
     # @numba.njit()
     def func(satn, s, axis, span, mode):
+        frame = insp.currentframe()
+        function_name = insp.getframeinfo(frame).function
+        logger.info("start of" + function_name)
+
         span = max(1, span)
         satn = np.swapaxes(satn, 0, axis)
         if mode == 'tile':
@@ -1168,6 +1249,7 @@ def satn_profile(satn, s, axis=0, span=10, mode='tile'):
                 nwp = (satn[i:i+span, ...] < s)*(satn[i:i+span, ...] > 0)
                 y[i] = nwp.sum()/void.sum()
                 z[i] = i + (span-1)/2
+        logger.info("end of" + function_name)
         return z, y
 
     z, y = func(satn=satn, s=s, axis=axis, span=span, mode=mode)
@@ -1191,6 +1273,9 @@ def satn_profile(satn, s, axis=0, span=10, mode='tile'):
 
 
 def find_h(saturation, position=None, srange=[0.01, 0.99]):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Given a saturation profile, compute the height between given bounds
 
@@ -1254,4 +1339,5 @@ def find_h(saturation, position=None, srange=[0.01, 0.99]):
     r.smin = min(srange)
     r.h = abs(zmax-zmin)
 
+    logger.info('end of' + function_name)
     return r

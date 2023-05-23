@@ -1,6 +1,7 @@
 import logging
 import numpy as np
 import openpnm as op
+import inspect as insp
 from porespy.filters import trim_nonpercolating_paths
 from porespy.tools import Results
 from porespy.generators import faces
@@ -14,6 +15,9 @@ __all__ = ['tortuosity_fd']
 
 
 def tortuosity_fd(im, axis, solver=None):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Calculates the tortuosity of image in the specified direction.
 
@@ -125,4 +129,5 @@ def tortuosity_fd(im, axis, solver=None):
     # Free memory
     ws.close_project(net.project)
 
+    logger.info("end of" + function_name)
     return result

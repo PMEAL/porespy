@@ -1,6 +1,7 @@
 import logging
 import numpy as np
 import scipy.ndimage as spim
+import inspect as insp
 from porespy.tools import extract_subsection, bbox_to_slices
 from skimage.measure import mesh_surface_area
 try:
@@ -25,6 +26,9 @@ logger = logging.getLogger(__name__)
 
 
 def props_to_DataFrame(regionprops):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Create a ``pandas`` DataFrame containing all the scalar metrics for each
     region, such as volume, sphericity, and so on, calculated by
@@ -79,10 +83,14 @@ def props_to_DataFrame(regionprops):
             logger.error(f'Error encountered evaluating {k} so skipping it')
     # Create pandas data frame an return
     df = DataFrame(d)
+    logger.info("end of" + function_name)
     return df
 
 
 def prop_to_image(regionprops, shape, prop):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Create an image with each region colored according the specified ``prop``,
     as obtained by ``regionprops_3d``.
@@ -127,10 +135,14 @@ def prop_to_image(regionprops, shape, prop):
         temp = mask * r[prop]
         s = bbox_to_slices(r.bbox)
         im[s] += temp
+    logger.info('end of' + function_name)
     return im
 
 
 def regionprops_3D(im):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Calculates various metrics for each labeled region in a 3D image.
 
@@ -223,7 +235,7 @@ def regionprops_3D(im):
                                a._intensity_image,
                                a._cache_active)
         results[i] = b
-
+    logger.info("end of" + function_name)
     return results
 
 

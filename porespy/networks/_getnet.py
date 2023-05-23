@@ -1,6 +1,7 @@
 import logging
 import numpy as np
 import scipy.ndimage as spim
+import inspect as insp
 from skimage.morphology import disk, ball
 from edt import edt
 from porespy.tools import extend_slice
@@ -20,6 +21,9 @@ logger = logging.getLogger(__name__)
 
 
 def regions_to_network(regions, phases=None, voxel_size=1, accuracy='standard'):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Analyzes an image that has been partitioned into pore regions and extracts
     the pore and throat geometry as well as network connectivity.
@@ -260,4 +264,5 @@ def regions_to_network(regions, phases=None, voxel_size=1, accuracy='standard'):
         net['throat.cross_sectional_area'] = A
         net['throat.equivalent_diameter'] = (4*A/np.pi)**(1/2)
 
+    logger.info("end of" + function_name)
     return net

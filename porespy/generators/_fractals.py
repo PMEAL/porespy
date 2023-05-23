@@ -1,6 +1,7 @@
 import logging
 import numpy as np
 import scipy.ndimage as spim
+import inspect as insp
 from porespy.tools import get_tqdm
 from porespy import settings
 
@@ -17,6 +18,9 @@ __all__ = [
 
 
 def random_cantor_dust(shape, n=5, p=2, f=0.8, seed=None):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Generates an image of random cantor dust
 
@@ -69,10 +73,14 @@ def random_cantor_dust(shape, n=5, p=2, f=0.8, seed=None):
         mask = np.random.rand(*sh) < f
         mask = spim.zoom(mask, zoom=i, order=0)
         im = im*mask
+    logger.info("end of" + function_name)
     return im
 
 
 def sierpinski_foam2(shape, n=5):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Generates an image of a Sierpinski carpet or foam with independent control of
     image size and number of iterations
@@ -133,10 +141,14 @@ def sierpinski_foam2(shape, n=5):
         pbar.update()
     pbar.close()
     im = im == 0
+    logger.info("end of" + function_name)
     return im
 
 
 def sierpinski_foam(dmin=1, n=5, ndim=2, max_size=1e9):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Generates an image of a Sierpinski carpet or foam
 
@@ -163,6 +175,9 @@ def sierpinski_foam(dmin=1, n=5, ndim=2, max_size=1e9):
 
     """
     def _insert_cubes(im, n):
+        frame = insp.currentframe()
+        function_name = insp.getframeinfo(frame).function
+        logger.info("start of" + function_name)
         if n > 0:
             n -= 1
             shape = np.asarray(np.shape(im))
@@ -170,9 +185,13 @@ def sierpinski_foam(dmin=1, n=5, ndim=2, max_size=1e9):
             im[shape[0]:2*shape[0], shape[1]:2*shape[1], shape[2]:2*shape[2]] = 0
             if im.size < max_size:
                 im = _insert_cubes(im, n)
+        logger.info("end of" + function_name)
         return im
 
     def _insert_squares(im, n):
+        frame = insp.currentframe()
+        function_name = insp.getframeinfo(frame).function
+        logger.info("start of" + function_name)
         if n > 0:
             n -= 1
             shape = np.asarray(np.shape(im))
@@ -187,4 +206,5 @@ def sierpinski_foam(dmin=1, n=5, ndim=2, max_size=1e9):
         im = _insert_squares(im, n)
     elif ndim == 3:
         im = _insert_cubes(im, n)
+    logger.info("end of" + function_name)
     return im

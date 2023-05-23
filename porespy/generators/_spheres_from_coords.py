@@ -1,4 +1,5 @@
 import logging
+import inspect as insp
 import numpy as np
 from porespy.tools import _insert_disks_at_points, find_bbox
 
@@ -12,6 +13,9 @@ logger = logging.getLogger(__name__)
 
 
 def spheres_from_coords(df, mode='contained', smooth=False):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Generates a sphere packing given a list of centers and radii
 
@@ -136,4 +140,5 @@ def spheres_from_coords(df, mode='contained', smooth=False):
     im = im.squeeze()
     bbox = find_bbox(im)
     im = im[bbox]
+    logger.info("end of" + function_name)
     return im

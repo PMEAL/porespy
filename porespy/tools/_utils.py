@@ -4,7 +4,7 @@ import numpy as np
 import importlib
 from dataclasses import dataclass
 import psutil
-import inspect
+import inspect as insp
 import time
 
 
@@ -20,6 +20,9 @@ __all__ = [
 
 
 def _is_ipython_notebook():  # pragma: no cover
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     try:
         shell = get_ipython().__class__.__name__
         if shell == 'ZMQInteractiveShell':
@@ -29,6 +32,8 @@ def _is_ipython_notebook():  # pragma: no cover
         return False        # Other type (?)
     except NameError:
         return False        # Probably standard Python interpreter
+    finally:
+        logger.info("end of" + function_name)
 
 
 @dataclass

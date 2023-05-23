@@ -2,6 +2,7 @@ import logging
 import numpy as np
 import scipy.ndimage as spim
 from edt import edt
+import inspect as insp
 from skimage.morphology import disk, ball
 from porespy import settings
 from porespy.tools import get_tqdm, ps_round, get_border
@@ -23,7 +24,11 @@ logger = logging.getLogger(__name__)
 
 @njit
 def _set_seed(a):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     np.random.seed(a)
+    logger.info("end of" + function_name)
 
 
 def pseudo_gravity_packing(
@@ -35,6 +40,9 @@ def pseudo_gravity_packing(
     edges='contained',
     seed=None,
 ):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Iteratively inserts spheres at the lowest accessible point in an image,
     mimicking a gravity packing.
@@ -130,6 +138,7 @@ def pseudo_gravity_packing(
         x_min += x.min()
     logger.debug(f'A total of {n} spheres were added')
     im_temp = np.swapaxes(im_temp, 0, axis)
+    logger.info('end of' + function_name)
     return im_temp
 
 
@@ -143,6 +152,9 @@ def pseudo_electrostatic_packing(
     maxiter=1000,
     seed=None,
 ):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Iterativley inserts spheres as close to the given sites as possible.
 
@@ -238,6 +250,7 @@ def pseudo_electrostatic_packing(
                                      radii=np.array([2*r-clearance]),
                                      v=int(dtmax),
                                      overwrite=True)
+    logger.info("end of" + function_name)
     return im_temp
 
 

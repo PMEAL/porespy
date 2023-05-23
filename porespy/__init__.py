@@ -39,10 +39,13 @@ def _setup_logger_rich():
     import logging
     from rich.logging import RichHandler
 
+    logger = logging.getLogger(__name__)
+    logger.info('_start of _setup_logger_rich')
     FORMAT = "%(message)s"
     logging.basicConfig(
         format=FORMAT, datefmt="[%X]", handlers=[RichHandler(rich_tracebacks=True)]
     )
+    logger.info('end of _setup_logger_rich')
 
 
 _setup_logger_rich()

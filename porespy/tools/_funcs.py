@@ -4,6 +4,7 @@ import scipy.ndimage as spim
 from scipy.special import erfc
 from skimage.segmentation import relabel_sequential
 from edt import edt
+import inspect as insp
 from skimage.morphology import ball, disk
 from ._utils import Results
 try:
@@ -48,6 +49,9 @@ __all__ = [
 
 
 def unpad(im, pad_width):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Remove padding from a previously padded image given original pad widths
 
@@ -100,10 +104,14 @@ def unpad(im, pad_width):
             upper_im = shape[dim] + pad_width[dim][0]
             s_im.append(slice(int(lower_im), int(upper_im)))
 
+    logger.info("end of" + function_name)
     return im[tuple(s_im)]
 
 
 def find_bbox(im, order_by='axis'):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Finds the lower and upper corner surrounding the foreground in the image
 
@@ -136,10 +144,14 @@ def find_bbox(im, order_by='axis'):
         bbox = tuple([slice(np.amin(i), np.amax(i)+1, None) for i in inds])
     elif order_by.startswith('corner'):
         bbox = [[np.amin(i) for i in inds], [np.amax(i)+1 for i in inds]]
+    logger.info('end of' + function_name)
     return bbox
 
 
 def isolate_object(region, i, s=None):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Given an image containing labels, removes all labels except the specified
     one.
@@ -172,10 +184,14 @@ def isolate_object(region, i, s=None):
     if s is not None:
         region = region[s]
     im = (region == i)*i
+    logger.info("end of" + function_name)
     return im
 
 
 def marching_map(path, start):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Use the fast marching method to find distance of each voxel from a starting
     point
@@ -214,10 +230,15 @@ def marching_map(path, start):
     phi = start*2.0 - 1.0
     speed = path*1.0
     t = skfmm.travel_time(phi, speed)
+
+    logger.info('end of' + function_name)
     return t.data
 
 
 def align_image_with_openpnm(im):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Rotates an image to agree with the coordinates used in OpenPNM.
 
@@ -249,10 +270,15 @@ def align_image_with_openpnm(im):
     elif im.ndim == 3:
         im = (np.swapaxes(im, 2, 0))
         im = im[:, -1::-1, :]
+    
+    logger.info("end of" + function_name)
     return im
 
 
 def subdivide(im, divs=2, overlap=0):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Returns slices into an image describing the specified number of sub-arrays.
 
@@ -320,10 +346,15 @@ def subdivide(im, divs=2, overlap=0):
     s = s.flatten().tolist()
     for i, item in enumerate(s):
         s[i] = extend_slice(slices=item, shape=im.shape, pad=overlap)
+
+    logger.info("end of" + function_name)
     return s
 
 
 def recombine(ims, slices, overlap):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Recombines image chunks back into full image of original shape
 
@@ -391,10 +422,14 @@ def recombine(ims, slices, overlap):
         except ValueError:
             raise IndexError('The applied filter seems to have returned a '
                              + 'larger image that it was sent.')
+    logger.info('end of' + function_name)
     return im
 
 
 def bbox_to_slices(bbox):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Given a tuple containing bounding box coordinates, return a tuple of slice
     objects.
@@ -431,10 +466,14 @@ def bbox_to_slices(bbox):
         ret = (slice(bbox[0], bbox[3]),
                slice(bbox[1], bbox[4]),
                slice(bbox[2], bbox[5]))
+    logger.info("end of" + function_name)
     return ret
 
 
 def find_outer_region(im, r=None):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Find regions of the image that are outside of the solid matrix.
 
@@ -483,10 +522,14 @@ def find_outer_region(im, r=None):
     dt = edt(~mask)
     outer_region = dt < r
     outer_region = extract_subsection(im=outer_region, shape=im.shape)
+    logger.info("end of" + function_name)
     return outer_region
 
 
 def extract_cylinder(im, r=None, axis=0):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Returns a cylindrical section of the image of specified radius.
 
@@ -528,10 +571,15 @@ def extract_cylinder(im, r=None, axis=0):
     from porespy.generators import cylindrical_plug
     mask = cylindrical_plug(shape=im.shape, r=r, axis=axis)
     im_temp = im * mask
+
+    logger.info("end of" + function_name)
     return im_temp
 
 
 def extract_subsection(im, shape):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Extracts the middle section of a image
 
@@ -584,10 +632,15 @@ def extract_subsection(im, shape):
         lower_im = np.amax((center[dim] - r, 0))
         upper_im = np.amin((center[dim] + r, im.shape[dim]))
         s_im.append(slice(int(lower_im), int(upper_im)))
+
+    logger.info("end of" + function_name)
     return im[tuple(s_im)]
 
 
 def get_planes(im, squeeze=True):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Extracts three planar images from the volumetric image, one for each
     principle axis.  The planes are taken from the middle of the domain.
@@ -622,10 +675,14 @@ def get_planes(im, squeeze=True):
         planes[1] = np.reshape(imy, [imy.shape[0], 1, imy.shape[1]])
         imz = planes[2]
         planes[2] = np.reshape(imz, [imz.shape[0], imz.shape[1], 1])
+    logger.info("end of" + function_name)
     return planes
 
 
 def extend_slice(slices, shape, pad=1):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Adjust slice indices to include additional voxles around the slice.
 
@@ -694,10 +751,14 @@ def extend_slice(slices, shape, pad=1):
         start = max(s.start - pad[i], 0)
         stop = min(s.stop + pad[i], shape[i])
         a.append(slice(start, stop, None))
+    logger.info("end of" + function_name)
     return tuple(a)
 
 
 def randomize_colors(im, keep_vals=[0]):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r'''
     Takes a greyscale image and randomly shuffles the greyscale values, so that
     all voxels labeled X will be labelled Y, and all voxels labeled Y will be
@@ -767,10 +828,14 @@ def randomize_colors(im, keep_vals=[0]):
     im_map[im_vals] = new_vals
     im_new = im_map[im_flat]
     im_new = np.reshape(im_new, newshape=np.shape(im))
+    logger.info('end of' + function_name)
     return im_new
 
 
 def make_contiguous(im, mode='keep_zeros'):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Take an image with arbitrary greyscale values and adjust them to ensure
     all values fall in a contiguous range starting at 0.
@@ -845,10 +910,15 @@ def make_contiguous(im, mode='keep_zeros'):
         mask = im >= 0
         im_pos = relabel_sequential(im*mask)[0]
         im_new = im_pos - im_neg
+
+    logger.info("end of" + function_name)
     return im_new
 
 
 def get_border(shape, thickness=1, mode='edges'):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Create an array with corners, edges or faces labelled as ``True``.
 
@@ -896,10 +966,15 @@ def get_border(shape, thickness=1, mode='edges'):
 
     """
     from porespy.generators import borders
+
+    logger.info("end of" + function_name)
     return borders(shape=shape, thickness=thickness, mode=mode)
 
 
 def in_hull(points, hull):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     """
     Test if a list of coordinates are inside a given convex hull
 
@@ -929,10 +1004,14 @@ def in_hull(points, hull):
     if isinstance(hull, ConvexHull):
         hull = hull.points
     hull = Delaunay(hull)
+    logger.info("end of" + function_name)
     return hull.find_simplex(points) >= 0
 
 
 def norm_to_uniform(im, scale=None):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Take an image with normally distributed greyscale values and convert it to
     a uniform (i.e. flat) distribution.
@@ -966,10 +1045,15 @@ def norm_to_uniform(im, scale=None):
     im = 1 / 2 * erfc(-im / np.sqrt(2))
     im = (im - im.min()) / (im.max() - im.min())
     im = im * (scale[1] - scale[0]) + scale[0]
+
+    logger.info("end of" + function_name)
     return im
 
 
 def _functions_to_table(mod, colwidth=[27, 48]):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Given a module of functions, returns a ReST formatted text string that
     outputs a table when printed.
@@ -1007,10 +1091,14 @@ def _functions_to_table(mod, colwidth=[27, 48]):
         except AttributeError:
             pass
     s = '\n'.join(lines)
+    logger.info('end of' + function_name)
     return s
 
 
 def mesh_region(region: bool, strel=None):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Creates a tri-mesh of the provided region using the marching cubes
     algorithm
@@ -1061,10 +1149,15 @@ def mesh_region(region: bool, strel=None):
     result.faces = faces
     result.norm = norm
     result.val = val
+
+    logger.info('end of' + function_name)
     return result
 
 
 def ps_disk(r, smooth=True):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Creates circular disk structuring element for morphological operations
 
@@ -1089,10 +1182,14 @@ def ps_disk(r, smooth=True):
 
     """
     disk = ps_round(r=r, ndim=2, smooth=smooth)
+    logger.info("end of" + function_name)
     return disk
 
 
 def ps_ball(r, smooth=True):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Creates spherical ball structuring element for morphological operations
 
@@ -1117,10 +1214,15 @@ def ps_ball(r, smooth=True):
 
     """
     ball = ps_round(r=r, ndim=3, smooth=smooth)
+
+    logger.info("end of" + function_name)
     return ball
 
 
 def ps_round(r, ndim, smooth=True):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Creates round structuring element with the given radius and dimensionality
 
@@ -1153,10 +1255,14 @@ def ps_round(r, ndim, smooth=True):
         ball = edt(other) < r
     else:
         ball = edt(other) <= r
+    logger.info("end of" + function_name)
     return ball
 
 
 def ps_rect(w, ndim):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Creates rectilinear structuring element with the given size and
     dimensionality
@@ -1186,10 +1292,15 @@ def ps_rect(w, ndim):
     if ndim == 3:
         from skimage.morphology import cube
         strel = cube(w)
+
+    logger.info("end of" + function_name)
     return strel
 
 
 def overlay(im1, im2, c):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Overlays ``im2`` onto ``im1``, given voxel coords of center of ``im2``
     in ``im1``.
@@ -1226,10 +1337,14 @@ def overlay(im1, im2, c):
 
     im1[cx - nx:cx + nx + 1, cy - ny:cy + ny + 1, cz - nz:cz + nz + 1] += im2
 
+    logger.info("end of" + function_name)
     return im1
 
 
 def insert_sphere(im, c, r, v=True, overwrite=True):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Inserts a sphere of a specified radius into a given image
 
@@ -1288,10 +1403,14 @@ def insert_sphere(im, c, r, v=True, overwrite=True):
     else:  # Clear portions of sphere to prevent overwriting
         sph *= im[s] == 0
     im[s] = im[s] + sph * v
+    logger.info("end of" + function_name)
     return im
 
 
 def insert_cylinder(im, xyz0, xyz1, r):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Inserts a cylinder of given radius onto an image
 
@@ -1360,10 +1479,14 @@ def insert_cylinder(im, xyz0, xyz1, r):
 
     im = unpad(im, r)
 
+    logger.info("end of" + function_name)
     return im
 
 
 def extract_regions(regions, labels: list, trim=True):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Combine given regions into a single boolean mask
 
@@ -1408,10 +1531,15 @@ def extract_regions(regions, labels: list, trim=True):
         else:
             bbox = bbox_to_slices([x_min, y_min, x_max, y_max])
         im_new = im_new[bbox]
+
+    logger.info("end of" + function_name)
     return im_new
 
 
 def _check_for_singleton_axes(im):  # pragma: no cover
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Checks for whether the input image contains singleton axes and logs
     a proper warning in case found.
@@ -1426,3 +1554,4 @@ def _check_for_singleton_axes(im):  # pragma: no cover
         logger.warning("Input image conains a singleton axis. Reduce"
                        " dimensionality with np.squeeze(im) to avoid"
                        " unexpected behavior.")
+    logger.info("end of" + function_name)

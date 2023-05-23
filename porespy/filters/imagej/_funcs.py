@@ -1,11 +1,15 @@
 import logging
 import numpy as np
+import inspect as insp
 
 
 logger = logging.getLogger(__name__)
 
 
 def imagej_wrapper(im, plugin_name, path):  # pragma: no cover
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Apply ImageJ filters on 3D images.
 
@@ -105,10 +109,14 @@ def imagej_wrapper(im, plugin_name, path):  # pragma: no cover
         results = np.moveaxis(results, -1, 0)
     ij.getContext().dispose()
     WindowManager.closeAllWindows()
+    logger.info("end of" + function_name)
     return results
 
 
 def imagej_plugin(im, path, plugin_name, args=None):  # pragma: no cover
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Apply ImageJ filters on 3D images.
 
@@ -158,4 +166,5 @@ def imagej_plugin(im, path, plugin_name, args=None):  # pragma: no cover
     results = np.array(ij.py.from_java(WindowManager.getCurrentImage()))
     ij.getContext().dispose()
     WindowManager.closeAllWindows()
+    logger.info('end of' + function_name)
     return (results)

@@ -1,5 +1,6 @@
 import logging
 import numpy as np
+import inspect as insp
 import scipy.ndimage as spim
 from porespy.tools import extend_slice, ps_round
 from porespy.tools import _check_for_singleton_axes, Results
@@ -23,6 +24,9 @@ logger = logging.getLogger(__name__)
 
 
 def region_volumes(regions, mode='marching_cubes'):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Compute volume of each labelled region in an image
 
@@ -64,10 +68,14 @@ def region_volumes(regions, mode='marching_cubes'):
             vols[i] = mesh_volume(region)
         elif mode.startswith('voxel'):
             vols[i] = region.sum()
+    logger.info("end of" + function_name)
     return vols
 
 
 def mesh_volume(region):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Compute the volume of a single region by meshing it
 
@@ -101,10 +109,14 @@ def mesh_volume(region):
         vol = np.abs(m.volume)
     else:
         vol = np.nan
+    logger.info('end of' + function_name)
     return vol
 
 
 def region_surface_areas(regions, voxel_size=1, strel=None):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Extract the surface area of each region in a labeled image.
 
@@ -160,10 +172,14 @@ def region_surface_areas(regions, voxel_size=1, strel=None):
             mesh = mesh_region(region=mask_im, strel=strel)
             sa[reg] = mesh_surface_area(mesh)
     result = sa * voxel_size**2
+    logger.info("end of" + function_name)
     return result
 
 
 def mesh_surface_area(mesh=None, verts=None, faces=None):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Calculate the surface area of a meshed region
 
@@ -203,10 +219,14 @@ def mesh_surface_area(mesh=None, verts=None, faces=None):
         if (verts is None) or (faces is None):
             raise Exception('Either mesh or verts and faces must be given')
     surface_area = measure.mesh_surface_area(verts, faces)
+    logger.info('end of' + function_name)
     return surface_area
 
 
 def region_interface_areas(regions, areas, voxel_size=1, strel=None):
+    frame = insp.currentframe()
+    function_name = insp.getframeinfo(frame).function
+    logger.info("start of" + function_name)
     r"""
     Calculate the interfacial area between all pairs of adjecent regions
 
@@ -300,4 +320,5 @@ def region_interface_areas(regions, areas, voxel_size=1, strel=None):
     result = Results()
     result.conns = cn
     result.area = ia * voxel_size**2
+    logger.info("end of" + function_name)
     return result
