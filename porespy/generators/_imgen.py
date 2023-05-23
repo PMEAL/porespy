@@ -40,7 +40,7 @@ logger = logging.getLogger(__name__)
 def cylindrical_plug(shape, r=None, axis=2):
     frame = insp.currentframe()
     function_name = insp.getframeinfo(frame).function
-    logger.info("start of" + function_name)
+    logger.info("start of"+function_name)
     r"""
     Generates a cylindrical plug suitable for use as a mask on a tomogram
 
@@ -89,14 +89,14 @@ def cylindrical_plug(shape, r=None, axis=2):
         if r is None:
             r = int(min(shape[axes])/2)
         cyl = dt < r
-    logger.info("end of" + function_name)
+    logger.info("end of"+function_name)
     return cyl
 
 
 def insert_shape(im, element, center=None, corner=None, value=1, mode="overwrite"):
     frame = insp.currentframe()
     function_name = insp.getframeinfo(frame).function
-    logger.info("start of" + function_name)
+    logger.info("start of"+function_name)
     r"""
     Inserts sub-image into a larger image at the specified location.
 
@@ -178,7 +178,7 @@ def insert_shape(im, element, center=None, corner=None, value=1, mode="overwrite
         im[tuple(s_im)] = element[tuple(s_el)] * value
     else:
         raise Exception("Invalid mode " + mode)
-    logger.info("end of" + function_name)
+    logger.info("end of"+function_name)
     return im
 
 
@@ -186,8 +186,8 @@ def insert_shape(im, element, center=None, corner=None, value=1, mode="overwrite
 def RSA(*args, **kwargs):
     frame = insp.currentframe()
     function_name = insp.getframeinfo(frame).function
-    logger.info("start of" + function_name)
-    logger.info("end of" + function_name)
+    logger.info("start of"+function_name)
+    logger.info("end of"+function_name)
     return rsa(*args, **kwargs)
 
 
@@ -205,7 +205,7 @@ def random_spheres(
 ):
     frame = insp.currentframe()
     function_name = insp.getframeinfo(frame).function
-    logger.info("start of" + function_name)
+    logger.info("start of"+function_name)
     r"""
     Generates a sphere or disk packing using Random Sequential Addition
 
@@ -306,7 +306,7 @@ def random_spheres(
         return_spheres=return_spheres,
         smooth=smooth,
         seed=seed)
-    logger.info("end of" + function_name)
+    logger.info("end of"+function_name)
     return im
 
 
@@ -325,7 +325,7 @@ def rsa(
 ):
     frame = insp.currentframe()
     function_name = insp.getframeinfo(frame).function
-    logger.info("start of" + function_name)
+    logger.info("start of"+function_name)
     r"""
     Generates a sphere or disk packing using Random Sequential Addition
 
@@ -477,7 +477,7 @@ def rsa(
     logger.debug("Final volume fraction:", vf)
     if not return_spheres:
         im = im + input_im
-    logger.info("end of" + function_name)
+    logger.info("end of"+function_name)
     return im
 
 
@@ -485,19 +485,19 @@ def rsa(
 def _set_seed(a):
     frame = insp.currentframe()
     function_name = insp.getframeinfo(frame).function
-    logger.info("start of" + function_name)
+    logger.info("start of"+function_name)
 
     np.random.seed(a)
 
-    logger.info('end of' + function_name)
+    logger.info('end of'+function_name)
 
 
 @njit
 def _get_rand_float(*args):
     frame = insp.currentframe()
     function_name = insp.getframeinfo(frame).function
-    logger.info("start of" + function_name)
-    logger.info("end of" + function_name)
+    logger.info("start of"+function_name)
+    logger.info("end of"+function_name)
     return np.random.rand(*args)
 
 
@@ -505,8 +505,8 @@ def _get_rand_float(*args):
 def _get_rand_int(*args):
     frame = insp.currentframe()
     function_name = insp.getframeinfo(frame).function
-    logger.info("start of" + function_name)
-    logger.info("end of" + function_name)
+    logger.info("start of"+function_name)
+    logger.info("end of"+function_name)
     return np.random.randint(*args)
 
 
@@ -514,7 +514,7 @@ def _get_rand_int(*args):
 def _make_choice(options_im, free_sites):
     frame = insp.currentframe()
     function_name = insp.getframeinfo(frame).function
-    logger.info("start of" + function_name)
+    logger.info("start of"+function_name)
     r"""
     This function is called by _begin_inserting to find valid insertion
     points.
@@ -576,7 +576,7 @@ def _make_choice(options_im, free_sites):
             coords[0] = (free_sites[ind] // (Nz * Ny)) % Nx
             choice = options_im[coords[0], coords[1], coords[2]]
             count += 1
-    logger.info("end of" + function_name)
+    logger.info("end of"+function_name)
     return coords, count
 
 
@@ -589,7 +589,7 @@ def bundle_of_tubes(
 ):
     frame = insp.currentframe()
     function_name = insp.getframeinfo(frame).function
-    logger.info("start of" + function_name)
+    logger.info("start of"+function_name)
     r"""
     Create a 3D image of a bundle of tubes, in the form of a rectangular
     plate with randomly sized holes through it.
@@ -648,7 +648,7 @@ def bundle_of_tubes(
         temp = insert_sphere(im=temp, c=c, r=Rs[i])
     # Add 3rd dimension back
     temp = np.tile(np.atleast_3d(temp), [1, 1, shape[2]])
-    logger.info("end of" + function_name)
+    logger.info("end of"+function_name)
     return temp
 
 
@@ -660,7 +660,7 @@ def polydisperse_spheres(shape: List[int],
                          seed=None):
     frame = insp.currentframe()
     function_name = insp.getframeinfo(frame).function
-    logger.info("start of" + function_name)
+    logger.info("start of"+function_name)
     r"""
     Create an image of randomly placed, overlapping spheres with a
     distribution of radii.
@@ -721,7 +721,7 @@ def polydisperse_spheres(shape: List[int],
         phi_corrected = 1 - (1 - phi_desired) / phi_im
         temp = overlapping_spheres(shape=shape, r=r, porosity=phi_corrected)
         im = im * temp
-    logger.info("end of" + function_name)
+    logger.info("end of"+function_name)
     return im
 
 
@@ -734,7 +734,7 @@ def voronoi_edges(
 ):
     frame = insp.currentframe()
     function_name = insp.getframeinfo(frame).function
-    logger.info("start of" + function_name)
+    logger.info("start of"+function_name)
     r"""
     Create an image from the edges of a Voronoi tessellation.
 
@@ -798,14 +798,14 @@ def voronoi_edges(
             im[tuple(line_pts)] = True
     im = extract_subsection(im=im, shape=shape)
     im = edt(~im) > r
-    logger.info("end of" + function_name)
+    logger.info("end of"+function_name)
     return im
 
 
 def _get_Voronoi_edges(vor):
     frame = insp.currentframe()
     function_name = insp.getframeinfo(frame).function
-    logger.info("start of" + function_name)
+    logger.info("start of"+function_name)
     r"""
     Given a Voronoi object as produced by the scipy.spatial.Voronoi class,
     this function calculates the start and end points of eeach edge in the
@@ -838,7 +838,7 @@ def _get_Voronoi_edges(vor):
     edges = np.unique(edges)  # Remove duplicates
     edges = np.vstack((np.real(edges), np.imag(edges))).T  # Back to real
     edges = np.array(edges, dtype=int)
-    logger.info("end of" + function_name)
+    logger.info("end of"+function_name)
     return edges
 
 
@@ -850,7 +850,7 @@ def lattice_spheres(shape: List[int],
                     lattice: str = "sc"):
     frame = insp.currentframe()
     function_name = insp.getframeinfo(frame).function
-    logger.info("start of" + function_name)
+    logger.info("start of"+function_name)
     r"""
     Generate a cubic packing of spheres in a specified lattice arrangement.
 
@@ -980,7 +980,7 @@ def lattice_spheres(shape: List[int],
         im = ~(edt(~im) < r)
     else:
         im = ~(edt(~im) <= r)
-    logger.info("end of" + function_name)
+    logger.info("end of"+function_name)
     return im
 
 
@@ -994,7 +994,7 @@ def overlapping_spheres(
 ):
     frame = insp.currentframe()
     function_name = insp.getframeinfo(frame).function
-    logger.info("start of" + function_name)
+    logger.info("start of"+function_name)
     r"""
     Generate a packing of overlapping mono-disperse spheres
 
@@ -1051,16 +1051,16 @@ def overlapping_spheres(
     def f(N):
         frame = insp.currentframe()
         function_name = insp.getframeinfo(frame).function
-        logger.info("start of" + function_name)
-        logger.info("end of" + function_name)
+        logger.info("start of"+function_name)
+        logger.info("end of"+function_name)
         return edt(im > N / bulk_vol) < r
 
     def g(im):
         frame = insp.currentframe()
         function_name = insp.getframeinfo(frame).function
-        logger.info("start of" + function_name)
+        logger.info("start of"+function_name)
         r"""Returns fraction of 0s, given a binary image"""
-        logger.info("end of" + function_name)
+        logger.info("end of"+function_name)
         return 1 - im.sum() / np.prod(shape)
 
     # # Newton's method for getting image porosity match the given
@@ -1087,7 +1087,7 @@ def overlapping_spheres(
             N_high = N
         if abs(err) <= tol:
             break
-    logger.info("end of" + function_name)
+    logger.info("end of"+function_name)
     return ~f(N)
 
 
@@ -1100,7 +1100,7 @@ def blobs(
 ):
     frame = insp.currentframe()
     function_name = insp.getframeinfo(frame).function
-    logger.info("start of" + function_name)
+    logger.info("start of"+function_name)
     """
     Generates an image containing amorphous blobs
 
@@ -1183,7 +1183,7 @@ def blobs(
     im = norm_to_uniform(im, scale=[0, 1])
     if porosity:
         im = im < porosity
-    logger.info("end of" + function_name)
+    logger.info("end of"+function_name)
     return im
 
 
@@ -1199,7 +1199,7 @@ def _cylinders(
 ):
     frame = insp.currentframe()
     function_name = insp.getframeinfo(frame).function
-    logger.info("start of" + function_name)
+    logger.info("start of"+function_name)
     r"""
     Generates a binary image of overlapping cylinders.
 
@@ -1291,7 +1291,7 @@ def _cylinders(
                 pbar.update()
     im = np.array(im, dtype=bool)
     dt = edt(~im) < r
-    logger.info("end of" + function_name)
+    logger.info("end of"+function_name)
     return ~dt
 
 
@@ -1308,7 +1308,7 @@ def cylinders(
 ):
     frame = insp.currentframe()
     function_name = insp.getframeinfo(frame).function
-    logger.info("start of" + function_name)
+    logger.info("start of"+function_name)
     r"""
     Generates a binary image of overlapping cylinders given porosity OR
     number of cylinders.
@@ -1412,16 +1412,16 @@ def cylinders(
     #     raise Exception("Iterations must be greater than or equal to 3")
 
     vol_total = float(np.prod(shape))
-    logger.info("end of" + function_name)
+    logger.info("end of"+function_name)
 
     def get_num_pixels(porosity):
         frame = insp.currentframe()
         function_name = insp.getframeinfo(frame).function
-        logger.info("start of" + function_name)
+        logger.info("start of"+function_name)
         r"""
         Helper method to calculate number of pixels given a porosity
         """
-        logger.info("end of" + function_name)
+        logger.info("end of"+function_name)
         return -np.log(porosity) * vol_total
 
     # Crudely estimate fiber length as cube root of product of dims
@@ -1454,14 +1454,14 @@ def cylinders(
         vol_fiber = vol_added / n_fibers_added
 
     logger.debug(f"{n_fibers_added} fibers added to reach target porosity.")
-    logger.info("end of" + function_name)
+    logger.info("end of"+function_name)
     return im
 
 
 def line_segment(X0, X1):
     frame = insp.currentframe()
     function_name = insp.getframeinfo(frame).function
-    logger.info("start of" + function_name)
+    logger.info("start of"+function_name)
     r"""
     Calculate the voxel coordinates of a straight line between the two
     given end points
@@ -1495,11 +1495,11 @@ def line_segment(X0, X1):
         x = np.rint(np.linspace(X0[0], X1[0], L)).astype(int)
         y = np.rint(np.linspace(X0[1], X1[1], L)).astype(int)
         z = np.rint(np.linspace(X0[2], X1[2], L)).astype(int)
-        logger.info("end of"  + function_name)
+        logger.info("end of"+function_name)
         return [x, y, z]
     else:
         L = np.amax(np.absolute([[X1[0] - X0[0]], [X1[1] - X0[1]]])) + 1
         x = np.rint(np.linspace(X0[0], X1[0], L)).astype(int)
         y = np.rint(np.linspace(X0[1], X1[1], L)).astype(int)
-        logger.info("end of" + function_name)
+        logger.info("end of"+function_name)
         return [x, y]
