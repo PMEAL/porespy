@@ -5,6 +5,7 @@ from porespy.networks import add_boundary_regions
 from porespy.networks import label_phases, label_boundaries
 from porespy.filters import snow_partitioning, snow_partitioning_parallel
 from porespy.tools import Results
+from porespy.tools import log_entry_exit
 
 
 __all__ = [
@@ -16,6 +17,7 @@ __all__ = [
 logger = logging.getLogger(__name__)
 
 
+@log_entry_exit
 def snow2(phases,
           phase_alias=None,
           boundary_width=3,
@@ -213,6 +215,7 @@ def snow2(phases,
     return result
 
 
+@log_entry_exit
 def _parse_phase_alias(alias, phases):
     r"""
     """
@@ -224,6 +227,7 @@ def _parse_phase_alias(alias, phases):
     return alias
 
 
+@log_entry_exit
 def _parse_pad_width(pad_width, shape):
     r"""
     """

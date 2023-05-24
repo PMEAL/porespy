@@ -2,6 +2,7 @@ import logging
 import numpy as np
 import scipy.ndimage as spim
 from porespy.tools import extract_subsection, bbox_to_slices
+from porespy.tools import log_entry_exit
 from skimage.measure import mesh_surface_area
 try:
     from skimage.measure import marching_cubes
@@ -24,6 +25,7 @@ __all__ = [
 logger = logging.getLogger(__name__)
 
 
+@log_entry_exit
 def props_to_DataFrame(regionprops):
     r"""
     Create a ``pandas`` DataFrame containing all the scalar metrics for each
@@ -82,6 +84,7 @@ def props_to_DataFrame(regionprops):
     return df
 
 
+@log_entry_exit
 def prop_to_image(regionprops, shape, prop):
     r"""
     Create an image with each region colored according the specified ``prop``,
@@ -130,6 +133,7 @@ def prop_to_image(regionprops, shape, prop):
     return im
 
 
+@log_entry_exit
 def regionprops_3D(im):
     r"""
     Calculates various metrics for each labeled region in a 3D image.

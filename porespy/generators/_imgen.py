@@ -12,6 +12,7 @@ from porespy.tools import norm_to_uniform, ps_ball, ps_disk, get_border, ps_roun
 from porespy.tools import extract_subsection
 from porespy.tools import insert_sphere
 from porespy.tools import _insert_disk_at_points
+from porespy.tools import log_entry_exit
 from porespy import settings
 from typing import List
 
@@ -37,6 +38,7 @@ tqdm = ps.tools.get_tqdm()
 logger = logging.getLogger(__name__)
 
 
+@log_entry_exit
 def cylindrical_plug(shape, r=None, axis=2):
     r"""
     Generates a cylindrical plug suitable for use as a mask on a tomogram
@@ -89,6 +91,7 @@ def cylindrical_plug(shape, r=None, axis=2):
     return cyl
 
 
+@log_entry_exit
 def insert_shape(im, element, center=None, corner=None, value=1, mode="overwrite"):
     r"""
     Inserts sub-image into a larger image at the specified location.
@@ -175,10 +178,12 @@ def insert_shape(im, element, center=None, corner=None, value=1, mode="overwrite
 
 
 @deprecated("This function has been renamed to rsa (lowercase to meet pep8)")
+@log_entry_exit
 def RSA(*args, **kwargs):
     return rsa(*args, **kwargs)
 
 
+@log_entry_exit
 def random_spheres(
     im_or_shape: np.array,
     r: int,
@@ -295,6 +300,7 @@ def random_spheres(
 
 
 @deprecated("This function will be renamed random_spheres in a future version")
+@log_entry_exit
 def rsa(
     im_or_shape: np.array,
     r: int,
@@ -462,21 +468,25 @@ def rsa(
 
 
 @njit
+@log_entry_exit
 def _set_seed(a):
     np.random.seed(a)
 
 
 @njit
+@log_entry_exit
 def _get_rand_float(*args):
     return np.random.rand(*args)
 
 
 @njit
+@log_entry_exit
 def _get_rand_int(*args):
     return np.random.randint(*args)
 
 
 @njit
+@log_entry_exit
 def _make_choice(options_im, free_sites):
     r"""
     This function is called by _begin_inserting to find valid insertion
@@ -542,6 +552,7 @@ def _make_choice(options_im, free_sites):
     return coords, count
 
 
+@log_entry_exit
 def bundle_of_tubes(
     shape: List[int],
     spacing: int,
@@ -610,6 +621,7 @@ def bundle_of_tubes(
     return temp
 
 
+@log_entry_exit
 def polydisperse_spheres(shape: List[int],
                          porosity: float,
                          dist,
@@ -679,6 +691,7 @@ def polydisperse_spheres(shape: List[int],
     return im
 
 
+@log_entry_exit
 def voronoi_edges(
     shape: List[int],
     ncells: int,
@@ -752,6 +765,7 @@ def voronoi_edges(
     return im
 
 
+@log_entry_exit
 def _get_Voronoi_edges(vor):
     r"""
     Given a Voronoi object as produced by the scipy.spatial.Voronoi class,
@@ -788,6 +802,7 @@ def _get_Voronoi_edges(vor):
     return edges
 
 
+@log_entry_exit
 def lattice_spheres(shape: List[int],
                     r: int,
                     spacing: int = None,
@@ -926,6 +941,7 @@ def lattice_spheres(shape: List[int],
     return im
 
 
+@log_entry_exit
 def overlapping_spheres(
     shape: List[int],
     r: int,
@@ -987,9 +1003,11 @@ def overlapping_spheres(
     im = np.random.random(size=shape)
 
     # Helper functions for calculating porosity: phi = g(f(N))
+    @log_entry_exit
     def f(N):
         return edt(im > N / bulk_vol) < r
 
+    @log_entry_exit
     def g(im):
         r"""Returns fraction of 0s, given a binary image"""
         return 1 - im.sum() / np.prod(shape)
@@ -1022,6 +1040,7 @@ def overlapping_spheres(
     return ~f(N)
 
 
+@log_entry_exit
 def blobs(
     shape: List[int],
     porosity: float = 0.5,
@@ -1114,6 +1133,7 @@ def blobs(
     return im
 
 
+@log_entry_exit
 def _cylinders(
     shape: List[int],
     r: int,
@@ -1218,6 +1238,7 @@ def _cylinders(
     return ~dt
 
 
+@log_entry_exit
 def cylinders(
     shape: List[int],
     r: int,
@@ -1333,6 +1354,7 @@ def cylinders(
 
     vol_total = float(np.prod(shape))
 
+    @log_entry_exit
     def get_num_pixels(porosity):
         r"""
         Helper method to calculate number of pixels given a porosity
@@ -1373,6 +1395,7 @@ def cylinders(
     return im
 
 
+@log_entry_exit
 def line_segment(X0, X1):
     r"""
     Calculate the voxel coordinates of a straight line between the two

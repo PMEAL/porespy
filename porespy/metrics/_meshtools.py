@@ -6,6 +6,7 @@ from porespy.tools import _check_for_singleton_axes, Results
 from porespy.tools import mesh_region
 from skimage import measure
 from porespy.tools import get_tqdm
+from porespy.tools import log_entry_exit
 from porespy import settings
 
 
@@ -22,6 +23,7 @@ tqdm = get_tqdm()
 logger = logging.getLogger(__name__)
 
 
+@log_entry_exit
 def region_volumes(regions, mode='marching_cubes'):
     r"""
     Compute volume of each labelled region in an image
@@ -67,6 +69,7 @@ def region_volumes(regions, mode='marching_cubes'):
     return vols
 
 
+@log_entry_exit
 def mesh_volume(region):
     r"""
     Compute the volume of a single region by meshing it
@@ -104,6 +107,7 @@ def mesh_volume(region):
     return vol
 
 
+@log_entry_exit
 def region_surface_areas(regions, voxel_size=1, strel=None):
     r"""
     Extract the surface area of each region in a labeled image.
@@ -163,6 +167,7 @@ def region_surface_areas(regions, voxel_size=1, strel=None):
     return result
 
 
+@log_entry_exit
 def mesh_surface_area(mesh=None, verts=None, faces=None):
     r"""
     Calculate the surface area of a meshed region
@@ -206,6 +211,7 @@ def mesh_surface_area(mesh=None, verts=None, faces=None):
     return surface_area
 
 
+@log_entry_exit
 def region_interface_areas(regions, areas, voxel_size=1, strel=None):
     r"""
     Calculate the interfacial area between all pairs of adjecent regions

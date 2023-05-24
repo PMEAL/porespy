@@ -44,7 +44,9 @@ ways that do NOT return a modified version of the original image.
     tools.unpad
 
 """
-
+import sys
+import logging
+import functools
 from ._funcs import *
 from ._utils import *
 from ._sphere_insertions import *
@@ -56,3 +58,18 @@ def _get_version():
     if ver.endswith(suffix):
         ver = ver[:-len(suffix)]
     return ver
+
+logger = logging.getLogger(__name__)
+def log_entry_exit(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        logger.info(f"Entering {func.__name__}")
+        result = func(*args, **kwargs)
+        logger.info(f"Exiting {func.__name__}")
+        return result
+    return wrapper
+
+current_module = sys.modules[__name__]
+for func_name, func in vars(current_module).copy().items():
+    if callable(func):
+        setattr(current_module, func_name, log_entry_exit(func))

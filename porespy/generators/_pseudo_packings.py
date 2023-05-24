@@ -6,6 +6,7 @@ from skimage.morphology import disk, ball
 from porespy import settings
 from porespy.tools import get_tqdm, ps_round, get_border
 from porespy.tools import _insert_disks_at_points
+from porespy.tools import log_entry_exit
 from porespy.filters import trim_disconnected_blobs, fftmorphology
 # import random
 from numba import njit
@@ -22,10 +23,12 @@ logger = logging.getLogger(__name__)
 
 
 @njit
+@log_entry_exit
 def _set_seed(a):
     np.random.seed(a)
 
 
+@log_entry_exit
 def pseudo_gravity_packing(
     im,
     r,
@@ -133,6 +136,7 @@ def pseudo_gravity_packing(
     return im_temp
 
 
+@log_entry_exit
 def pseudo_electrostatic_packing(
     im,
     r,
