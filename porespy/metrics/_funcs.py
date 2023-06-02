@@ -768,7 +768,7 @@ def _radial_profile(autocorr, bins, pf=None, voxel_size=1):
     return tpcf
 
 
-@njit(parallel=True)
+@njit(parallel=False)
 def _get_radial_sum(dt, bins, bin_size, autocorr):
     radial_sum = np.zeros_like(bins[:-1])
     for i, r in enumerate(bins[:-1]):
