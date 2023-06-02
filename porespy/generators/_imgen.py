@@ -30,6 +30,7 @@ __all__ = [
     "rsa",
     "random_spheres",
     "voronoi_edges",
+    "_get_Voronoi_edges",
 ]
 
 
@@ -685,6 +686,7 @@ def voronoi_edges(
     r: int = 0,
     flat_faces: bool = True,
     seed=None,
+    **kwargs,
 ):
     r"""
     Create an image from the edges of a Voronoi tessellation.
@@ -697,7 +699,7 @@ def voronoi_edges(
         is returned.
     ncells : int
         The number of Voronoi cells to include in the tesselation.
-    radius : int, optional
+    r : int, optional
         The radius to which Voronoi edges should be dilated in the final
         image.  If not given then edges are a single pixel/voxel thick.
     flat_faces : bool
@@ -721,6 +723,9 @@ def voronoi_edges(
     to view online example.
 
     """
+    if 'radius' in kwargs.keys():
+        r = kwargs['radius']
+        print('radius keyword is deprecated in favor of just r')
     if seed is not None:
         np.random.seed(seed)
     logger.info(f"Generating {ncells} cells")
@@ -755,7 +760,7 @@ def voronoi_edges(
 def _get_Voronoi_edges(vor):
     r"""
     Given a Voronoi object as produced by the scipy.spatial.Voronoi class,
-    this function calculates the start and end points of eeach edge in the
+    this function calculates the start and end points of each edge in the
     Voronoi diagram, in terms of the vertex indices used by the received
     Voronoi object.
 
