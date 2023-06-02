@@ -1053,7 +1053,7 @@
 <h1>satn_to_seq<a class="headerlink" href="#satn-to-seq" title="Permalink to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="porespy.filters.satn_to_seq">
-<span class="sig-name descname"><span class="pre">satn_to_seq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">satn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">im</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ascending</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/filters/_size_seq_satn.html#satn_to_seq"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.satn_to_seq" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">satn_to_seq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">satn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">im</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'drainage'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/porespy/filters/_size_seq_satn.html#satn_to_seq"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#porespy.filters.satn_to_seq" title="Permalink to this definition">#</a></dt>
 <dd><p>Converts an image of nonwetting phase saturations to invasion sequence
 values</p>
 <dl class="field-list simple">
@@ -1063,15 +1063,31 @@ values</p>
 saturation at the point it was invaded. -1 indicates a voxel that
 not invaded, and 0 indicates solid phase.</p></li>
 <li><p><strong>im</strong> (<em>ndarray</em>) – A Numpy array with <code class="docutils literal notranslate"><span class="pre">True</span></code> values indicating the void space.</p></li>
-<li><p><strong>ascending</strong> (<em>bool</em>) – Indicates if the saturation progresses from low to high (the default,
-corresponding to drainage), or high to low (if <code class="docutils literal notranslate"><span class="pre">ascending=False</span></code>,
-corresponding to imbibition).</p></li>
+<li><p><strong>mode</strong> (<em>str</em>) – <p>Controls how the saturations are converted to sequence. The options are:</p>
+<table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p><cite>mode</cite></p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>’drainage’</p></td>
+<td><p>The pressures are assumed to have been filled from smallest to
+largest, ignoring 0’s and -1’s</p></td>
+</tr>
+<tr class="row-odd"><td><p>’imbibition’</p></td>
+<td><p>The sizes are assumed to have been filled from largest to
+smallest, ignoring 0’s and -1’s</p></td>
+</tr>
+</tbody>
+</table>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>seq</strong> – A Numpy array with each voxel value indicating the sequence
-in which it was invaded. Solid voxels are indicated by 0 and
-uninvaded by -1.</p>
+<dd class="field-even"><p><strong>seq</strong> – A Numpy array the same shape as <cite>satn</cite> with each voxel value indicating
+the sequence in which it was invaded, according to the specified <cite>mode</cite>.
+Solid voxels are indicated by 0 and uninvaded by -1.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>ndarray</p>

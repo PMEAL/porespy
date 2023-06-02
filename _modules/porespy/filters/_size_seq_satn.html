@@ -203,38 +203,45 @@
 <span class="p">]</span>
 
 
-<div class="viewcode-block" id="size_to_seq"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.size_to_seq.html#porespy.filters.size_to_seq">[docs]</a><span class="k">def</span> <span class="nf">size_to_seq</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">im</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="size_to_seq"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.size_to_seq.html#porespy.filters.size_to_seq">[docs]</a><span class="k">def</span> <span class="nf">size_to_seq</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">im</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;drainage&#39;</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Converts an image of invasion size values into sequence values</span>
-
-<span class="sd">    This is meant to accept the output of the ``porosimetry`` function.</span>
+<span class="sd">    Converts an image of invasion size values into invasion sequence values</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    size : ndarray</span>
-<span class="sd">        The image containing invasion size values in each voxel.</span>
+<span class="sd">        The image containing invasion size in each voxel. Values of 0 are</span>
+<span class="sd">        assumed to be solid (if ``im`` is not given) and values of -1 are</span>
+<span class="sd">        assumed to be uninvaded.</span>
 <span class="sd">    im : ndarray, optional</span>
 <span class="sd">        A binary image of the porous media, with ``True`` indicating the</span>
 <span class="sd">        void space and ``False`` indicating the solid phase. If not given</span>
 <span class="sd">        then it is assumed that the solid is identified as ``size == 0``.</span>
 <span class="sd">    bins : array_like or int (optional)</span>
 <span class="sd">        The bins to use when converting sizes to sequence.  The default is</span>
-<span class="sd">        to create 1 bin for each unique value in ``size``.  If an **int**</span>
-<span class="sd">        is supplied it is interpreted as the number of bins between 0 and the</span>
-<span class="sd">        maximum value in ``size``.  If an array is supplied it is used as</span>
+<span class="sd">        to create 1 bin for each unique value in ``size`` (except for -1 and 0).</span>
+<span class="sd">        If an **int** is supplied, it is interpreted as the number of bins between 1</span>
+<span class="sd">        and the maximum value in ``size``.  If an array is supplied it is used as</span>
 <span class="sd">        the bins directly.</span>
-<span class="sd">    ascending : bool</span>
-<span class="sd">        Indicates if the sizes are filled from large to small (the default, if</span>
-<span class="sd">        ``ascending=False``, corresponding to drainage), or small to large (if</span>
-<span class="sd">        ``ascending=True``, corresponding to imbibition).</span>
+<span class="sd">    mode : str</span>
+<span class="sd">        Controls how the sizes are converted to a sequence. The options are:</span>
+
+<span class="sd">        ============= ==============================================================</span>
+<span class="sd">        `mode`        Description</span>
+<span class="sd">        ============= ==============================================================</span>
+<span class="sd">        &#39;drainage&#39;    The sizes are assumed to have been filled from largest to</span>
+<span class="sd">                      smallest, ignoring 0&#39;s and -1&#39;s</span>
+<span class="sd">        &#39;imbibition&#39;  The sizes are assumed to have been filled from smallest to</span>
+<span class="sd">                      largest, ignoring 0&#39;s and -1&#39;s</span>
+<span class="sd">        ============= ==============================================================</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    seq : ndarray</span>
 <span class="sd">        An ndarray the same shape as ``size`` with invasion size values</span>
-<span class="sd">        replaced by the invasion sequence.  This assumes that the invasion</span>
-<span class="sd">        process occurs via largest regions first, such as produced by</span>
-<span class="sd">        the ``porosimetry`` function.</span>
+<span class="sd">        replaced by the invasion sequence, according to the specified `mode`.</span>
+<span class="sd">        Any uninvaded voxels, indicated by -1 in ``size`` will be indicated by</span>
+<span class="sd">        -1 in ``seq``.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -253,11 +260,11 @@
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
         <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">size</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">bins</span><span class="p">)</span>
     <span class="n">vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">digitize</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">ascending</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">mode</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;im&#39;</span><span class="p">):</span>
         <span class="n">vals</span><span class="p">[</span><span class="n">solid</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">vals</span><span class="p">[</span><span class="n">uninvaded</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
         <span class="n">vals</span> <span class="o">=</span> <span class="n">make_contiguous</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;symmetric&#39;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">ascending</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">mode</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;dr&#39;</span><span class="p">):</span>
         <span class="n">vals</span> <span class="o">=</span> <span class="n">make_contiguous</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;symmetric&#39;</span><span class="p">)</span>
         <span class="n">vals</span> <span class="o">=</span> <span class="n">vals</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">vals</span>
         <span class="n">vals</span><span class="p">[</span><span class="n">solid</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
@@ -265,16 +272,15 @@
     <span class="k">return</span> <span class="n">vals</span></div>
 
 
-<div class="viewcode-block" id="size_to_satn"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.size_to_satn.html#porespy.filters.size_to_satn">[docs]</a><span class="k">def</span> <span class="nf">size_to_satn</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">im</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="size_to_satn"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.size_to_satn.html#porespy.filters.size_to_satn">[docs]</a><span class="k">def</span> <span class="nf">size_to_satn</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">im</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;drainage&#39;</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Converts an image of invasion size values into saturations.</span>
-
-<span class="sd">    This is meant to accept the output of the ``porosimetry`` function.</span>
+<span class="sd">    Converts an image of invasion size values into non-wetting phase saturations.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    size : ndarray</span>
-<span class="sd">        The image containing invasion size values in each voxel.</span>
+<span class="sd">        The image containing invasion size values in each voxel. Solid</span>
+<span class="sd">        should be indicated as 0&#39;s and uninvaded voxels as -1.</span>
 <span class="sd">    im : ndarray, optional</span>
 <span class="sd">        A binary image of the porous media, with ``True`` indicating the</span>
 <span class="sd">        void space and ``False`` indicating the solid phase. If not given</span>
@@ -285,18 +291,30 @@
 <span class="sd">        is supplied it is interpreted as the number of bins between 0 and the</span>
 <span class="sd">        maximum value in ``size``.  If an array is supplied it is used as</span>
 <span class="sd">        the bins directly.</span>
-<span class="sd">    ascending : bool</span>
-<span class="sd">        Indicates if the sizes are filled from large to small (the default,</span>
-<span class="sd">        corresponding to drainage), or small to large (if ``ascending=True``,</span>
-<span class="sd">        corresponding to imbibition).</span>
+<span class="sd">    mode : str</span>
+<span class="sd">        Controls how the sizes are converted to saturations. The options are:</span>
+
+<span class="sd">        ============= ==============================================================</span>
+<span class="sd">        `mode`        Description</span>
+<span class="sd">        ============= ==============================================================</span>
+<span class="sd">        &#39;drainage&#39;    The sizes are assumed to have been filled from largest to</span>
+<span class="sd">                      smallest, ignoring 0&#39;s and -1&#39;s</span>
+<span class="sd">        &#39;imbibition&#39;  The sizes are assumed to have been filled from smallest to</span>
+<span class="sd">                      largest, ignoring 0&#39;s and -1&#39;s</span>
+<span class="sd">        ============= ==============================================================</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    satn : ndarray</span>
-<span class="sd">        An ndarray the same size as ``size`` but with size values replaced</span>
-<span class="sd">        by the fraction of void space invaded at each the size number.</span>
-<span class="sd">        Solid voxels and uninvaded voxels are represented by 0 and -1,</span>
-<span class="sd">        respectively.</span>
+<span class="sd">        An ndarray the same shape as ``size`` but with size values replaced</span>
+<span class="sd">        by the fraction of void space invaded at each size, according to the</span>
+<span class="sd">        specified `mode`. Solid voxels and uninvaded voxels are represented by 0</span>
+<span class="sd">        and -1, respectively.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    If any ``-1`` values are present in `size` the maximum saturation will be less</span>
+<span class="sd">    than 1.0 since this means that not all wetting phase was displaced.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -312,12 +330,12 @@
         <span class="n">im</span> <span class="o">=</span> <span class="o">~</span><span class="p">(</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
     <span class="n">void_vol</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
     <span class="n">satn</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">ascending</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">mode</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;im&#39;</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">bins</span><span class="p">:</span>
             <span class="n">hits</span> <span class="o">=</span> <span class="p">(</span><span class="n">size</span> <span class="o">&lt;=</span> <span class="n">r</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
             <span class="n">temp</span> <span class="o">=</span> <span class="n">hits</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">/</span><span class="n">void_vol</span>
             <span class="n">satn</span><span class="p">[</span><span class="n">hits</span> <span class="o">*</span> <span class="p">(</span><span class="n">satn</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)]</span> <span class="o">=</span> <span class="n">temp</span>
-    <span class="k">else</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">mode</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;dr&#39;</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">bins</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
             <span class="n">hits</span> <span class="o">=</span> <span class="p">(</span><span class="n">size</span> <span class="o">&gt;=</span> <span class="n">r</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
             <span class="n">temp</span> <span class="o">=</span> <span class="n">hits</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">/</span><span class="n">void_vol</span>
@@ -326,31 +344,42 @@
     <span class="k">return</span> <span class="n">satn</span></div>
 
 
-<div class="viewcode-block" id="seq_to_satn"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.seq_to_satn.html#porespy.filters.seq_to_satn">[docs]</a><span class="k">def</span> <span class="nf">seq_to_satn</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span> <span class="n">im</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="seq_to_satn"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.seq_to_satn.html#porespy.filters.seq_to_satn">[docs]</a><span class="k">def</span> <span class="nf">seq_to_satn</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span> <span class="n">im</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;drainage&#39;</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Converts an image of invasion sequence values to saturation values.</span>
+<span class="sd">    Converts an image of invasion sequence values to non-wetting phase saturation</span>
+<span class="sd">    values.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    seq : ndarray</span>
-<span class="sd">        The image containing invasion sequence values in each voxel.  Solid</span>
+<span class="sd">        The image containing invasion sequence values in each voxel. Solid</span>
 <span class="sd">        should be indicated as 0&#39;s and uninvaded voxels as -1.</span>
 <span class="sd">    im : ndarray, optional</span>
 <span class="sd">        A binary image of the porous media, with ``True`` indicating the</span>
 <span class="sd">        void space and ``False`` indicating the solid phase. If not given</span>
 <span class="sd">        then it is assumed that the solid is identified as ``seq == 0``.</span>
-<span class="sd">    ascending : bool</span>
-<span class="sd">        Indicates if the sequence progresses from low saturation to high (the</span>
-<span class="sd">        default, corresponding to drainage), or high saturation to low (if</span>
-<span class="sd">        ``ascending=False``, corresponding to imbibition).</span>
+<span class="sd">    mode : str</span>
+<span class="sd">        Controls how the sequences are converted to saturations. The options are:</span>
+
+<span class="sd">        ============= ==============================================================</span>
+<span class="sd">        `mode`        Description</span>
+<span class="sd">        ============= ==============================================================</span>
+<span class="sd">        &#39;drainage&#39;    The saturation is assumed to increase with increasing sequence</span>
+<span class="sd">        &#39;imbibition&#39;  The saturation is assumed to decrease with increasing sequence</span>
+<span class="sd">        ============= ==============================================================</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    satn : ndarray</span>
-<span class="sd">        An ndarray the same size as ``seq`` but with sequence values replaced</span>
-<span class="sd">        by the fraction of void space invaded at or below the sequence number.</span>
-<span class="sd">        Solid voxels and uninvaded voxels are represented by 0 and -1,</span>
-<span class="sd">        respectively.</span>
+<span class="sd">        An ndarray the same shape as ``seq`` but with sequence values replaced</span>
+<span class="sd">        by the fraction of void space invaded at the sequence number, accounting</span>
+<span class="sd">        for the specified `mode`. Solid voxels and uninvaded voxels are represented</span>
+<span class="sd">        by 0 and -1, respectively.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    If any ``-1`` values are present in `seq` the maximum saturation will be less</span>
+<span class="sd">    than 1.0 since this means that not all wetting phase was displaced.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -363,9 +392,9 @@
         <span class="n">solid_mask</span> <span class="o">=</span> <span class="n">seq</span> <span class="o">==</span> <span class="mi">0</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">solid_mask</span> <span class="o">=</span> <span class="n">im</span> <span class="o">==</span> <span class="mi">0</span>
-    <span class="n">uninvaded_mask</span> <span class="o">=</span> <span class="n">seq</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span>
-    <span class="n">seq</span><span class="p">[</span><span class="n">seq</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">if</span> <span class="n">ascending</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+    <span class="n">uninvaded_mask</span> <span class="o">=</span> <span class="n">seq</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span>  <span class="c1"># Store uninvaded locations</span>
+    <span class="n">seq</span><span class="p">[</span><span class="n">seq</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Set uninvaded to solid for next steps</span>
+    <span class="k">if</span> <span class="n">mode</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;im&#39;</span><span class="p">):</span>
         <span class="n">seq</span> <span class="o">=</span> <span class="n">seq</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">-</span> <span class="n">seq</span> <span class="o">+</span> <span class="mi">1</span>
         <span class="n">seq</span><span class="p">[</span><span class="n">solid_mask</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">seq</span><span class="p">[</span><span class="n">uninvaded_mask</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
@@ -375,13 +404,13 @@
         <span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
     <span class="n">seq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span> <span class="n">solid_mask</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-    <span class="n">satn</span> <span class="o">=</span> <span class="n">c</span><span class="p">[</span><span class="n">seq</span><span class="p">]</span><span class="o">/</span><span class="p">(</span><span class="n">seq</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="n">solid_mask</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+    <span class="n">satn</span> <span class="o">=</span> <span class="n">c</span><span class="p">[</span><span class="n">seq</span><span class="p">]</span><span class="o">/</span><span class="p">(</span><span class="o">~</span><span class="n">solid_mask</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
     <span class="n">satn</span><span class="p">[</span><span class="n">solid_mask</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">satn</span><span class="p">[</span><span class="n">uninvaded_mask</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
     <span class="k">return</span> <span class="n">satn</span></div>
 
 
-<div class="viewcode-block" id="pc_to_satn"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.pc_to_satn.html#porespy.filters.pc_to_satn">[docs]</a><span class="k">def</span> <span class="nf">pc_to_satn</span><span class="p">(</span><span class="n">pc</span><span class="p">,</span> <span class="n">im</span><span class="p">):</span>
+<div class="viewcode-block" id="pc_to_satn"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.pc_to_satn.html#porespy.filters.pc_to_satn">[docs]</a><span class="k">def</span> <span class="nf">pc_to_satn</span><span class="p">(</span><span class="n">pc</span><span class="p">,</span> <span class="n">im</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;drainage&#39;</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts an image of capillary entry pressures to saturation values</span>
 
@@ -389,26 +418,36 @@
 <span class="sd">    ----------</span>
 <span class="sd">    pc : ndarray</span>
 <span class="sd">        A Numpy array with the value in each voxel indicating the capillary</span>
-<span class="sd">        pressure at which it was invaded. In order to accomodateh the</span>
-<span class="sd">        possibility of positive and negative capillary pressure values,</span>
+<span class="sd">        pressure at which it was invaded. In order to accommodate the</span>
+<span class="sd">        possibility of both positive and negative capillary pressure values,</span>
 <span class="sd">        uninvaded voxels should be indicated by ``+inf`` and residual phase</span>
 <span class="sd">        by ``-inf``. Solid vs void phase is defined by ``im`` which is</span>
 <span class="sd">        mandatory.</span>
 <span class="sd">    im : ndarray</span>
 <span class="sd">        A Numpy array with ``True`` values indicating the void space</span>
+<span class="sd">    mode : str</span>
+<span class="sd">        Controls how the pressures are converted to sequence. The options are:</span>
+
+<span class="sd">        ============= ==============================================================</span>
+<span class="sd">        `mode`        Description</span>
+<span class="sd">        ============= ==============================================================</span>
+<span class="sd">        &#39;drainage&#39;    The pressures are assumed to have been filled from smallest to</span>
+<span class="sd">                      largest, ignoring +/- infs</span>
+<span class="sd">        &#39;imbibition&#39;  The pressures are assumed to have been filled from largest to</span>
+<span class="sd">                      smallest, ignoring +/- infs</span>
+<span class="sd">        ============= ==============================================================</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    satn : ndarray</span>
-<span class="sd">        A Numpy array with each voxel value indicating the global saturation</span>
-<span class="sd">        at which it was invaded.</span>
+<span class="sd">        A Numpy array the same shape as `pc`, with each voxel value indicating</span>
+<span class="sd">        the global saturation at which it was invaded, according to the specified</span>
+<span class="sd">        `mode`.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    If any ``-inf`` values are present the minimum saturation will start at</span>
-<span class="sd">    a value greater than 0 since residual was present. If any ``+inf`` values</span>
-<span class="sd">    are present the maximum saturation will be less than 1.0 since not all</span>
-<span class="sd">    wetting phase was displaced.</span>
+<span class="sd">    If any ``+inf`` values are present the maximum saturation will be less than</span>
+<span class="sd">    1.0 since not all wetting phase was displaced.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -420,11 +459,11 @@
     <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">digitize</span><span class="p">(</span><span class="n">pc</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">pc</span><span class="p">))</span>
     <span class="n">a</span><span class="p">[</span><span class="o">~</span><span class="n">im</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">a</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">pc</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-    <span class="n">satn</span> <span class="o">=</span> <span class="n">seq_to_satn</span><span class="p">(</span><span class="n">seq</span><span class="o">=</span><span class="n">a</span><span class="p">,</span> <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">)</span>
+    <span class="n">satn</span> <span class="o">=</span> <span class="n">seq_to_satn</span><span class="p">(</span><span class="n">seq</span><span class="o">=</span><span class="n">a</span><span class="p">,</span> <span class="n">im</span><span class="o">=</span><span class="n">im</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">satn</span></div>
 
 
-<div class="viewcode-block" id="satn_to_seq"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.satn_to_seq.html#porespy.filters.satn_to_seq">[docs]</a><span class="k">def</span> <span class="nf">satn_to_seq</span><span class="p">(</span><span class="n">satn</span><span class="p">,</span> <span class="n">im</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="satn_to_seq"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.filters.satn_to_seq.html#porespy.filters.satn_to_seq">[docs]</a><span class="k">def</span> <span class="nf">satn_to_seq</span><span class="p">(</span><span class="n">satn</span><span class="p">,</span> <span class="n">im</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;drainage&#39;</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts an image of nonwetting phase saturations to invasion sequence</span>
 <span class="sd">    values</span>
@@ -437,17 +476,24 @@
 <span class="sd">        not invaded, and 0 indicates solid phase.</span>
 <span class="sd">    im : ndarray</span>
 <span class="sd">        A Numpy array with ``True`` values indicating the void space.</span>
-<span class="sd">    ascending : bool</span>
-<span class="sd">        Indicates if the saturation progresses from low to high (the default,</span>
-<span class="sd">        corresponding to drainage), or high to low (if ``ascending=False``,</span>
-<span class="sd">        corresponding to imbibition).</span>
+<span class="sd">    mode : str</span>
+<span class="sd">        Controls how the saturations are converted to sequence. The options are:</span>
+
+<span class="sd">        ============= ==============================================================</span>
+<span class="sd">        `mode`        Description</span>
+<span class="sd">        ============= ==============================================================</span>
+<span class="sd">        &#39;drainage&#39;    The pressures are assumed to have been filled from smallest to</span>
+<span class="sd">                      largest, ignoring 0&#39;s and -1&#39;s</span>
+<span class="sd">        &#39;imbibition&#39;  The sizes are assumed to have been filled from largest to</span>
+<span class="sd">                      smallest, ignoring 0&#39;s and -1&#39;s</span>
+<span class="sd">        ============= ==============================================================</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    seq : ndarray</span>
-<span class="sd">        A Numpy array with each voxel value indicating the sequence</span>
-<span class="sd">        in which it was invaded. Solid voxels are indicated by 0 and</span>
-<span class="sd">        uninvaded by -1.</span>
+<span class="sd">        A Numpy array the same shape as `satn` with each voxel value indicating</span>
+<span class="sd">        the sequence in which it was invaded, according to the specified `mode`.</span>
+<span class="sd">        Solid voxels are indicated by 0 and uninvaded by -1.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -467,7 +513,7 @@
     <span class="n">seq</span><span class="p">[</span><span class="o">~</span><span class="n">im</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="c1"># Ensure values are contiguous while keeping -1 and 0</span>
     <span class="n">seq</span> <span class="o">=</span> <span class="n">make_contiguous</span><span class="p">(</span><span class="n">im</span><span class="o">=</span><span class="n">seq</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;symmetric&#39;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">ascending</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">mode</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;im&#39;</span><span class="p">):</span>
         <span class="n">seq</span> <span class="o">=</span> <span class="p">(</span><span class="n">seq</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">seq</span>
         <span class="n">seq</span><span class="p">[</span><span class="o">~</span><span class="n">im</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">seq</span><span class="p">[</span><span class="n">uninvaded</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>

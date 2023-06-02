@@ -1115,7 +1115,7 @@ image, but with altered values.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.filters.nphase_border.html#porespy.filters.nphase_border" title="porespy.filters.nphase_border"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.nphase_border</span></code></a>(im[, include_diagonals])</p></td>
 <td><p>Identifies the voxels in regions that border <em>N</em> other regions.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.filters.pc_to_satn.html#porespy.filters.pc_to_satn" title="porespy.filters.pc_to_satn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.pc_to_satn</span></code></a>(pc, im)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.filters.pc_to_satn.html#porespy.filters.pc_to_satn" title="porespy.filters.pc_to_satn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.pc_to_satn</span></code></a>(pc, im[, mode])</p></td>
 <td><p>Converts an image of capillary entry pressures to saturation values</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.filters.porosimetry.html#porespy.filters.porosimetry" title="porespy.filters.porosimetry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.porosimetry</span></code></a>(im[, sizes, inlets, ...])</p></td>
@@ -1130,17 +1130,17 @@ image, but with altered values.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.filters.region_size.html#porespy.filters.region_size" title="porespy.filters.region_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.region_size</span></code></a>(im)</p></td>
 <td><p>Replace each voxel with the size of the region to which it belongs</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.filters.satn_to_seq.html#porespy.filters.satn_to_seq" title="porespy.filters.satn_to_seq"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.satn_to_seq</span></code></a>(satn[, im, ascending])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.filters.satn_to_seq.html#porespy.filters.satn_to_seq" title="porespy.filters.satn_to_seq"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.satn_to_seq</span></code></a>(satn[, im, mode])</p></td>
 <td><p>Converts an image of nonwetting phase saturations to invasion sequence values</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.filters.seq_to_satn.html#porespy.filters.seq_to_satn" title="porespy.filters.seq_to_satn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.seq_to_satn</span></code></a>(seq[, im, ascending])</p></td>
-<td><p>Converts an image of invasion sequence values to saturation values.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.filters.seq_to_satn.html#porespy.filters.seq_to_satn" title="porespy.filters.seq_to_satn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.seq_to_satn</span></code></a>(seq[, im, mode])</p></td>
+<td><p>Converts an image of invasion sequence values to non-wetting phase saturation values.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.filters.size_to_satn.html#porespy.filters.size_to_satn" title="porespy.filters.size_to_satn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.size_to_satn</span></code></a>(size[, im, bins, ascending])</p></td>
-<td><p>Converts an image of invasion size values into saturations.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.filters.size_to_satn.html#porespy.filters.size_to_satn" title="porespy.filters.size_to_satn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.size_to_satn</span></code></a>(size[, im, bins, mode])</p></td>
+<td><p>Converts an image of invasion size values into non-wetting phase saturations.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.filters.size_to_seq.html#porespy.filters.size_to_seq" title="porespy.filters.size_to_seq"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.size_to_seq</span></code></a>(size[, im, bins, ascending])</p></td>
-<td><p>Converts an image of invasion size values into sequence values</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/porespy.filters.size_to_seq.html#porespy.filters.size_to_seq" title="porespy.filters.size_to_seq"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.size_to_seq</span></code></a>(size[, im, bins, mode])</p></td>
+<td><p>Converts an image of invasion size values into invasion sequence values</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/porespy.filters.snow_partitioning.html#porespy.filters.snow_partitioning" title="porespy.filters.snow_partitioning"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filters.snow_partitioning</span></code></a>(im[, dt, r_max, ...])</p></td>
 <td><p>Partition the void space into pore regions using a marker-based watershed algorithm</p></td>
