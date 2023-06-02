@@ -12,7 +12,7 @@ __all__ = [
 ]
 
 
-def size_to_seq(size, im=None, bins=None, ascending=False):
+def size_to_seq(size, im=None, bins=None, mode='drainage'):
     r"""
     Converts an image of invasion size values into sequence values
 
@@ -21,29 +21,37 @@ def size_to_seq(size, im=None, bins=None, ascending=False):
     Parameters
     ----------
     size : ndarray
-        The image containing invasion size values in each voxel.
+        The image containing invasion size values in each voxel. Values of 0 are
+        assumed to be solid (if ``im`` is not given) and values of -1 are assumed
+        to be uninvaded.
     im : ndarray, optional
         A binary image of the porous media, with ``True`` indicating the
         void space and ``False`` indicating the solid phase. If not given
         then it is assumed that the solid is identified as ``size == 0``.
     bins : array_like or int (optional)
         The bins to use when converting sizes to sequence.  The default is
-        to create 1 bin for each unique value in ``size``.  If an **int**
-        is supplied it is interpreted as the number of bins between 0 and the
-        maximum value in ``size``.  If an array is supplied it is used as
+        to create 1 bin for each unique value in ``size`` (except for -1 and 0).
+        If an **int** is supplied it is interpreted as the number of bins between 1
+        and the maximum value in ``size``.  If an array is supplied it is used as
         the bins directly.
-    ascending : bool
-        Indicates if the sizes are filled from large to small (the default, if
-        ``ascending=False``, corresponding to drainage), or small to large (if
-        ``ascending=True``, corresponding to imbibition).
+    mode : str
+        Controls how the sizes are converted to sequence. The options are:
+
+        ============= ==============================================================
+        mode          description
+        ============= ==============================================================
+        'drainage'    The sizes are assumed to have been filled from largest to
+                      smallest.
+        'imbibition'  The sizes are assumed to have been filled from smallest to
+                      largest.
+        ============ ===============================================================
 
     Returns
     -------
     seq : ndarray
         An ndarray the same shape as ``size`` with invasion size values
-        replaced by the invasion sequence.  This assumes that the invasion
-        process occurs via largest regions first, such as produced by
-        the ``porosimetry`` function.
+        replaced by the invasion sequence.  Any uninvaded voxels, indicated by -1
+        in ``size`` will be indicated by -1 in ``seq``.
 
     Examples
     --------
@@ -62,11 +70,11 @@ def size_to_seq(size, im=None, bins=None, ascending=False):
     elif isinstance(bins, int):
         bins = np.linspace(0, size.max(), bins)
     vals = np.digitize(size, bins=bins, right=True)
-    if ascending is True:
+    if mode.startswith('im'):
         vals[solid] = 0
         vals[uninvaded] = -1
         vals = make_contiguous(vals, mode='symmetric')
-    if ascending is False:
+    if mode.startswith('dr'):
         vals = make_contiguous(vals, mode='symmetric')
         vals = vals.max() + 1 - vals
         vals[solid] = 0
@@ -74,7 +82,7 @@ def size_to_seq(size, im=None, bins=None, ascending=False):
     return vals
 
 
-def size_to_satn(size, im=None, bins=None, ascending=False):
+def size_to_satn(size, im=None, residual=None, bins=None, mode='drainage'):
     r"""
     Converts an image of invasion size values into saturations.
 
@@ -88,16 +96,25 @@ def size_to_satn(size, im=None, bins=None, ascending=False):
         A binary image of the porous media, with ``True`` indicating the
         void space and ``False`` indicating the solid phase. If not given
         then it is assumed that the solid is identified as ``size == 0``.
+    residual : ndarray, optional
+        A boolean image indicating the locations of any residual non-wetting phase.
     bins : array_like or int (optional)
         The bins to use when converting sizes to saturation.  The default is
         to create 1 bin for each unique value in ``size``.  If an **int**
         is supplied it is interpreted as the number of bins between 0 and the
         maximum value in ``size``.  If an array is supplied it is used as
         the bins directly.
-    ascending : bool
-        Indicates if the sizes are filled from large to small (the default,
-        corresponding to drainage), or small to large (if ``ascending=True``,
-        corresponding to imbibition).
+    mode : str
+        Controls how the sizes are converted to sequence. The options are:
+
+        ============= ==============================================================
+        mode          description
+        ============= ==============================================================
+        'drainage'    The sizes are assumed to have been filled from largest to
+                      smallest.
+        'imbibition'  The sizes are assumed to have been filled from smallest to
+                      largest.
+        ============ ===============================================================
 
     Returns
     -------
@@ -121,12 +138,12 @@ def size_to_satn(size, im=None, bins=None, ascending=False):
         im = ~(size == 0)
     void_vol = im.sum()
     satn = -np.ones_like(size, dtype=float)
-    if ascending:
+    if mode.startswith('im'):
         for r in bins:
             hits = (size <= r) * (size > 0)
             temp = hits.sum()/void_vol
             satn[hits * (satn == -1)] = temp
-    else:
+    elif mode.startswith('dr'):
         for r in bins[-1::-1]:
             hits = (size >= r) * (size > 0)
             temp = hits.sum()/void_vol
@@ -135,7 +152,7 @@ def size_to_satn(size, im=None, bins=None, ascending=False):
     return satn
 
 
-def seq_to_satn(seq, im=None, ascending=True):
+def seq_to_satn(seq, im=None, residual=None, mode='drainage'):
     r"""
     Converts an image of invasion sequence values to saturation values.
 
@@ -148,10 +165,19 @@ def seq_to_satn(seq, im=None, ascending=True):
         A binary image of the porous media, with ``True`` indicating the
         void space and ``False`` indicating the solid phase. If not given
         then it is assumed that the solid is identified as ``seq == 0``.
-    ascending : bool
-        Indicates if the sequence progresses from low saturation to high (the
-        default, corresponding to drainage), or high saturation to low (if
-        ``ascending=False``, corresponding to imbibition).
+    residual : ndarray, optional
+        A boolean image indicating the locations of any residual non-wetting phase.
+    mode : str
+        Controls how the sizes are converted to sequence. The options are:
+
+        ============= ==============================================================
+        mode          description
+        ============= ==============================================================
+        'drainage'    The sizes are assumed to have been filled from largest to
+                      smallest.
+        'imbibition'  The sizes are assumed to have been filled from smallest to
+                      largest.
+        ============ ===============================================================
 
     Returns
     -------
@@ -172,9 +198,9 @@ def seq_to_satn(seq, im=None, ascending=True):
         solid_mask = seq == 0
     else:
         solid_mask = im == 0
-    uninvaded_mask = seq == -1
-    seq[seq <= 0] = 0
-    if ascending is False:
+    uninvaded_mask = seq == -1  # Store uninvaded locations
+    seq[seq <= 0] = 0  # Set uninvaded to solid for next steps
+    if mode.startswith('im'):
         seq = seq.max() - seq + 1
         seq[solid_mask] = 0
         seq[uninvaded_mask] = 0
@@ -184,13 +210,13 @@ def seq_to_satn(seq, im=None, ascending=True):
         b[0] = 0
     c = np.cumsum(b)
     seq = np.reshape(seq, solid_mask.shape)
-    satn = c[seq]/(seq.size - solid_mask.sum())
+    satn = c[seq]/(~solid_mask).sum()
     satn[solid_mask] = 0
     satn[uninvaded_mask] = -1
     return satn
 
 
-def pc_to_satn(pc, im):
+def pc_to_satn(pc, im, mode='drainage'):
     r"""
     Converts an image of capillary entry pressures to saturation values
 
@@ -203,8 +229,21 @@ def pc_to_satn(pc, im):
         uninvaded voxels should be indicated by ``+inf`` and residual phase
         by ``-inf``. Solid vs void phase is defined by ``im`` which is
         mandatory.
+    residual : ndarray, optional
+        A boolean image indicating the locations of any residual non-wetting phase.
     im : ndarray
         A Numpy array with ``True`` values indicating the void space
+    mode : str
+        Controls how the pressures are converted to sequence. The options are:
+
+        ============= ==============================================================
+        mode          description
+        ============= ==============================================================
+        'drainage'    The pressures are assumed to have been filled from smallest to
+                      largest.
+        'imbibition'  The sizes are assumed to have been filled from largest to
+                      smallest.
+        ============ ===============================================================
 
     Returns
     -------
@@ -233,7 +272,7 @@ def pc_to_satn(pc, im):
     return satn
 
 
-def satn_to_seq(satn, im=None, ascending=True):
+def satn_to_seq(satn, im=None, residual=None, mode='drainage'):
     r"""
     Converts an image of nonwetting phase saturations to invasion sequence
     values
@@ -246,10 +285,19 @@ def satn_to_seq(satn, im=None, ascending=True):
         not invaded, and 0 indicates solid phase.
     im : ndarray
         A Numpy array with ``True`` values indicating the void space.
-    ascending : bool
-        Indicates if the saturation progresses from low to high (the default,
-        corresponding to drainage), or high to low (if ``ascending=False``,
-        corresponding to imbibition).
+    residual : ndarray, optional
+        A boolean image indicating the locations of any residual non-wetting phase.
+    mode : str
+        Controls how the sizes are converted to sequence. The options are:
+
+        ============= ==============================================================
+        mode          description
+        ============= ==============================================================
+        'drainage'    The sizes are assumed to have been filled from largest to
+                      smallest.
+        'imbibition'  The sizes are assumed to have been filled from smallest to
+                      largest.
+        ============ ===============================================================
 
     Returns
     -------
@@ -276,7 +324,7 @@ def satn_to_seq(satn, im=None, ascending=True):
     seq[~im] = 0
     # Ensure values are contiguous while keeping -1 and 0
     seq = make_contiguous(im=seq, mode='symmetric')
-    if ascending is False:
+    if mode.startswith('im'):
         seq = (seq.max() + 1) - seq
         seq[~im] = 0
     seq[uninvaded] = -1
