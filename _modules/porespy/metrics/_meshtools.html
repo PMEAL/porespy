@@ -254,7 +254,7 @@
         <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;marching_cubes&#39;</span><span class="p">:</span>
             <span class="n">vols</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">mesh_volume</span><span class="p">(</span><span class="n">region</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">mode</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;voxel&#39;</span><span class="p">):</span>
-            <span class="n">vols</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">region</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+            <span class="n">vols</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">region</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">vols</span></div>
 
 
