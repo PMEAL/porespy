@@ -177,9 +177,9 @@ def seq_to_satn(seq, im=None, mode='drainage'):
     -------
     satn : ndarray
         An ndarray the same shape as ``seq`` but with sequence values replaced
-        by the fraction of void space invaded at or below the sequence number.
-        Solid voxels and uninvaded voxels are represented by 0 and -1,
-        respectively.
+        by the fraction of void space invaded at the sequence number, accounting
+        for the specified `mode`. Solid voxels and uninvaded voxels are represented
+        by 0 and -1, respectively.
 
     Examples
     --------
