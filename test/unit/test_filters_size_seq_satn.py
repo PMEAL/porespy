@@ -192,6 +192,63 @@ class SeqTest():
         mio_satn_2 = ps.filters.seq_to_satn(mio_seq, mode='drainage')
         assert np.all(mio_satn == mio_satn_2)
 
+    def test_pc_to_satn_uninvaded_drainage(self):
+        pc = 10.0*np.tile(np.atleast_2d(np.arange(0, 21)), [21, 1])
+        pc[:, 0] = 0
+        im = pc > 0
+        satn = ps.filters.pc_to_satn(pc=pc, im=im, mode='drainage')
+        assert satn.max() == 1.0
+        assert satn.min() == 0
+        assert satn[0, -1] == 1.0
+        assert satn[0, 1] == 0.05
+        # set some to uninvaded
+        pc[:, -1] = np.inf
+        satn = ps.filters.pc_to_satn(pc=pc, im=im, mode='drainage')
+        assert satn.max() == 0.95
+        assert satn.min() == -1.0
+        assert satn[0, -1] == -1.0
+        assert satn[0, 1] == 0.05
+        assert satn[0, -2] == satn.max()
+
+    def test_pc_to_satn_uninvaded_imbibition(self):
+        pc = 10.0*np.tile(np.atleast_2d(np.arange(0, 21)), [21, 1])
+        pc[:, 0] = 0
+        im = pc > 0
+        satn = ps.filters.pc_to_satn(pc=pc, im=im, mode='imbibition')
+        assert satn.max() == 1.0
+        assert satn.min() == 0
+        assert satn[0, -1] == 0.05
+        assert satn[0, 1] == 1.0
+        # set some to uninvaded
+        pc[:, -1] = np.inf
+        satn = ps.filters.pc_to_satn(pc=pc, im=im, mode='imbibition')
+        assert satn.max() == 0.95
+        assert satn.min() == -1.0
+        assert satn[0, -1] == -1.0
+        assert satn[0, 1] == 0.95
+        assert satn[0, 1] == satn.max()
+
+    def test_pc_to_satn_positive_and_negative_pressures(self):
+        pc = 10.0*np.tile(np.atleast_2d(np.arange(0, 12)), [12, 1]) - 100
+        im = np.ones_like(pc, dtype=bool)
+        im[:, -1] = False
+        im[:, 0] = False
+        pc[:, -5] = np.inf
+        satn = ps.filters.pc_to_satn(pc=pc, im=im, mode='drainage')
+        assert satn.max() == 0.9
+        assert satn.min() == -1.0
+        assert satn[0, -1] == 0.0
+        assert satn[0, -2] == 0.9
+        assert satn[0, 0] == 0.0
+        assert satn[0, 1] == 0.1
+        satn = ps.filters.pc_to_satn(pc=pc, im=im, mode='imbibition')
+        assert satn.max() == 0.9
+        assert satn.min() == -1
+        assert satn[0, -1] == 0.0
+        assert satn[0, -2] == 0.1
+        assert satn[0, 0] == 0.0
+        assert satn[0, 1] == 0.9
+
 
 if __name__ == '__main__':
     t = SeqTest()
