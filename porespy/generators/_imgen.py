@@ -1178,7 +1178,7 @@ def _cylinders(
     elif np.size(shape) == 2:
         raise Exception("2D cylinders don't make sense")
     # Find hypotenuse of domain from [0,0,0] to [Nx,Ny,Nz]
-    H = np.sqrt(np.sum(np.square(shape)), dtype=np.int64).astype(int)
+    H = np.sqrt(np.sum(np.square(shape), dtype=np.int64)).astype(int)
     if length is None:  # Assume cylinders span domain if length not given
         length = 2 * H
     R = min(int(length / 2), 2 * H)  # Trim given length to 2H if too long
