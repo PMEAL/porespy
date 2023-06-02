@@ -209,11 +209,12 @@ def seq_to_satn(seq, im=None, mode='drainage'):
         seq[uninvaded_mask] = 0
     seq = rankdata(seq, method='dense') - 1
     b = np.bincount(seq)
-    if (solid_mask.sum() > 0) or (uninvaded_mask.sum() > 0):
+    if (solid_mask.sum(dtype=np.int64) > 0) or \
+            (uninvaded_mask.sum(dtype=np.int64) > 0):
         b[0] = 0
     c = np.cumsum(b)
     seq = np.reshape(seq, solid_mask.shape)
-    satn = c[seq]/(~solid_mask).sum()
+    satn = c[seq]/(seq.size - solid_mask.sum(dtype=np.int64))
     satn[solid_mask] = 0
     satn[uninvaded_mask] = -1
     return satn

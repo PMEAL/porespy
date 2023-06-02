@@ -422,7 +422,7 @@ def trim_saddle_points(peaks, dt, maxiter=20):
             if np.all(peaks_extended == peaks_i):
                 new_peaks[sx] += peaks_i
                 break  # Found a true peak
-            elif np.sum(peaks_extended * peaks_i) == 0:
+            elif np.sum(peaks_extended * peaks_i, dtype=np.int64) == 0:
                 break  # Found a saddle point
             peaks_i = peaks_extended
         if iters >= maxiter:
@@ -495,7 +495,7 @@ def trim_saddle_points_legacy(peaks, dt, maxiter=10):
             peaks_extended = (peaks_max == dt_i) * im_i
             if np.all(peaks_extended == peaks_i):
                 break  # Found a true peak
-            elif np.sum(peaks_extended * peaks_i) == 0:
+            elif np.sum(peaks_extended * peaks_i, dtype=np.int64) == 0:
                 peaks_i = False
                 break  # Found a saddle point
             # The following line was also missing from the original.  It has

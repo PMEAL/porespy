@@ -409,8 +409,8 @@ def rsa(
         n_max = np.inf
     # Compute volume fraction info
     vf_final = volume_fraction
-    vf_start = im.sum() / im.size
-    vf_template = ps_round(r, ndim=im.ndim, smooth=smooth).sum() / im.size
+    vf_start = im.sum(dtype=np.int64) / im.size
+    vf_template = ps_round(r, ndim=im.ndim, smooth=smooth).sum(dtype=np.int64) / im.size
     logger.debug(f"Initial volume fraction: {vf_start}")
     # Dilate existing objects by strel to remove pixels near them
     # from consideration for sphere placement
@@ -592,7 +592,7 @@ def bundle_of_tubes(
                           offset=0.5*spacing,
                           spacing=spacing,
                           lattice='sc')
-    N = im.sum()
+    N = im.sum(dtype=np.int64)
     if distribution is None:
         # +1 below is because randint 4.X gives a max of 3
         distribution = spst.randint(low=3, high=int(spacing/2 + 1))
@@ -672,7 +672,7 @@ def polydisperse_spheres(shape: List[int],
     phi_desired = 1 - (1 - porosity) / (len(Rs))
     im = np.ones(shape, dtype=bool)
     for r in Rs:
-        phi_im = im.sum() / np.prod(shape)
+        phi_im = im.sum(dtype=np.int64) / np.prod(shape)
         phi_corrected = 1 - (1 - phi_desired) / phi_im
         temp = overlapping_spheres(shape=shape, r=r, porosity=phi_corrected)
         im = im * temp
@@ -979,8 +979,9 @@ def overlapping_spheres(
     shape = np.array(shape)
     if np.size(shape) == 1:
         shape = np.full((3, ), int(shape))
-    ndim = (shape != 1).sum()
-    s_vol = ps_disk(r).sum() if ndim == 2 else ps_ball(r).sum()
+    ndim = (shape != 1).sum(dtype=np.int64)
+    s_vol = ps_disk(r).sum(dtype=np.int64) if ndim == 2 \
+        else ps_ball(r).sum(dtype=np.int64)
 
     bulk_vol = np.prod(shape)
     N = int(np.ceil((1 - porosity) * bulk_vol / s_vol))
@@ -992,7 +993,7 @@ def overlapping_spheres(
 
     def g(im):
         r"""Returns fraction of 0s, given a binary image"""
-        return 1 - im.sum() / np.prod(shape)
+        return 1 - im.sum(dtype=np.int64) / np.prod(shape)
 
     # # Newton's method for getting image porosity match the given
     # w = 1.0                         # Damping factor
@@ -1177,7 +1178,7 @@ def _cylinders(
     elif np.size(shape) == 2:
         raise Exception("2D cylinders don't make sense")
     # Find hypotenuse of domain from [0,0,0] to [Nx,Ny,Nz]
-    H = np.sqrt(np.sum(np.square(shape))).astype(int)
+    H = np.sqrt(np.sum(np.square(shape), dtype=np.int64)).astype(int)
     if length is None:  # Assume cylinders span domain if length not given
         length = 2 * H
     R = min(int(length / 2), 2 * H)  # Trim given length to 2H if too long
@@ -1349,7 +1350,7 @@ def cylinders(
     # Rough estimate of n_fibers
     n_fibers_added = 0
     # Calculate fraction of fibers to be added in each iteration.
-    subdif = 0.8 / np.sum(np.arange(1, maxiter) ** 2)
+    subdif = 0.8 / np.sum(np.arange(1, maxiter) ** 2, dtype=np.int64)
     fractions = [0.2]
     for i in range(1, maxiter):
         fractions.append(fractions[i - 1] + (maxiter - i) ** 2 * subdif)
