@@ -453,25 +453,28 @@ class GeneratorTest():
             ps.generators.faces(shape=[10, 10, 10])
 
     def test_fractal_noise_2d(self):
-        s = [100, 100]
-        # Ensure identical images are returned if seed is same
-        im1 = ps.generators.fractal_noise(shape=s, seed=0, cores=1)
-        im2 = ps.generators.fractal_noise(shape=s, seed=0, cores=1)
-        assert np.linalg.norm(im1) == np.linalg.norm(im2)
-        # Ensure different images are returned even if seed is same
-        im1 = ps.generators.fractal_noise(shape=s, mode='perlin',
-                                          seed=0, octaves=2, cores=1)
-        im2 = ps.generators.fractal_noise(shape=s, mode='perlin',
-                                          seed=0, octaves=4, cores=1)
-        assert np.linalg.norm(im1) != np.linalg.norm(im2)
-        # Check uniformization
-        im1 = ps.generators.fractal_noise(shape=s, mode='cubic',
-                                          uniform=True, cores=1)
-        assert im1.min() >= 0
-        assert im1.max() <= 1
-        im2 = ps.generators.fractal_noise(shape=s, mode='cubic',
-                                          uniform=False, cores=1)
-        assert im2.min() < 0
+        try:
+            s = [100, 100]
+            # Ensure identical images are returned if seed is same
+            im1 = ps.generators.fractal_noise(shape=s, seed=0, cores=1)
+            im2 = ps.generators.fractal_noise(shape=s, seed=0, cores=1)
+            assert np.linalg.norm(im1) == np.linalg.norm(im2)
+            # Ensure different images are returned even if seed is same
+            im1 = ps.generators.fractal_noise(shape=s, mode='perlin',
+                                              seed=0, octaves=2, cores=1)
+            im2 = ps.generators.fractal_noise(shape=s, mode='perlin',
+                                              seed=0, octaves=4, cores=1)
+            assert np.linalg.norm(im1) != np.linalg.norm(im2)
+            # Check uniformization
+            im1 = ps.generators.fractal_noise(shape=s, mode='cubic',
+                                              uniform=True, cores=1)
+            assert im1.min() >= 0
+            assert im1.max() <= 1
+            im2 = ps.generators.fractal_noise(shape=s, mode='cubic',
+                                              uniform=False, cores=1)
+            assert im2.min() < 0
+        except ModuleNotFoundError:
+            pass
 
     def test_cantor_dust(self):
         np.random.seed(0)
