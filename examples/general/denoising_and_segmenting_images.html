@@ -2923,7 +2923,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/dee51320eebacb44130220e474ad756e4bbca54244e2e2a360da3bc0ee61c74f.png" src="../../_images/dee51320eebacb44130220e474ad756e4bbca54244e2e2a360da3bc0ee61c74f.png" />
+<img alt="../../_images/a360de815c3ef35366e400ba051c692b30b2c4f2bece09d0917b49d5b8f1f701.png" src="../../_images/a360de815c3ef35366e400ba051c692b30b2c4f2bece09d0917b49d5b8f1f701.png" />
 </div>
 </div>
 <p>The above image now contains some noise in each phase, which is more realistic, though as we will see it not close to reality.  Let’s look at a histogram of this image:</p>
@@ -2935,7 +2935,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/f3aba6e501f2542a461bbe89cecc54d5997fb55e8b3a59e8a3d9091f450ac0d5.png" src="../../_images/f3aba6e501f2542a461bbe89cecc54d5997fb55e8b3a59e8a3d9091f450ac0d5.png" />
+<img alt="../../_images/8cdec087384896604084b5611ac96a701a337a407e75785efb58750782439a3c.png" src="../../_images/8cdec087384896604084b5611ac96a701a337a407e75785efb58750782439a3c.png" />
 </div>
 </div>
 <p>We can see above that all pixels with a value less than 0.5 belong to the dark phase, while the other pixels belong to the light phase.  A simple global threshold can reproduce the original image perfectly:</p>
@@ -2947,7 +2947,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/db88a0dd9d6dfcdc84898711f0c426b613ec1984a4af0a7cbd4591de607ba510.png" src="../../_images/db88a0dd9d6dfcdc84898711f0c426b613ec1984a4af0a7cbd4591de607ba510.png" />
+<img alt="../../_images/244a016d9f342097de8a82508a4c54efc1b66982797b7087f53ffd0ed3d3ead3.png" src="../../_images/244a016d9f342097de8a82508a4c54efc1b66982797b7087f53ffd0ed3d3ead3.png" />
 </div>
 </div>
 <p>Now let’s look at a more realistic noise distribution, though still artificially generated:</p>
@@ -2962,7 +2962,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/840f5d78ebab8a162f2e81aea78dbbf9552066a49c9d21522229c5af47489583.png" src="../../_images/840f5d78ebab8a162f2e81aea78dbbf9552066a49c9d21522229c5af47489583.png" />
+<img alt="../../_images/bfb03375af261dbe824f089348c427919051fa373fad2c0f0034a9078939429c.png" src="../../_images/bfb03375af261dbe824f089348c427919051fa373fad2c0f0034a9078939429c.png" />
 </div>
 </div>
 <p>Now we can see that the noise is much less separated, and in fact the tails of the distributions just touch each other in the middle.  Let’s see how the simple threshold we used above would work now:</p>
@@ -2974,7 +2974,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/18de1e5802f32883a3e8ba12bfc2947ccee10bf393365bbc7e66f4c0960adb8d.png" src="../../_images/18de1e5802f32883a3e8ba12bfc2947ccee10bf393365bbc7e66f4c0960adb8d.png" />
+<img alt="../../_images/f24fb16c43830e92de566239b09bde2818d7471168f1e41c6d71afd6afad078d.png" src="../../_images/f24fb16c43830e92de566239b09bde2818d7471168f1e41c6d71afd6afad078d.png" />
 </div>
 </div>
 <p>Now there are a few pixels in the dark phase which have been identified as bright and vice-versa. Let’s take this further but putting more extreme, but more realistic noise:</p>
@@ -2990,7 +2990,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/b312c4bbea63b5930f80894f72df9c6c5361dab2b433866f6e17691bf19c8ef1.png" src="../../_images/b312c4bbea63b5930f80894f72df9c6c5361dab2b433866f6e17691bf19c8ef1.png" />
+<img alt="../../_images/f99616e4c09b1ff108602e623530382bbf42dfb3f26a8144f9d8604c461e3c5f.png" src="../../_images/f99616e4c09b1ff108602e623530382bbf42dfb3f26a8144f9d8604c461e3c5f.png" />
 </div>
 </div>
 <p>In the above case our eyes can differentiate the light and dark phases pretty well, but the histogram is fully merged into one, and the global threshold produces a very problematic result. Just to show this is not an exageration, below is an actual slice of a tomogram taken of an electrospun flow-battery electrode:</p>
@@ -3013,11 +3013,11 @@
 <span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">im</span> <span class="o">=</span> <span class="p">(</span><span class="n">im</span> <span class="o">-</span> <span class="n">im</span><span class="o">.</span><span class="n">min</span><span class="p">())</span><span class="o">/</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">-</span> <span class="n">im</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
 <span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">[</span><span class="mi">15</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
 
-<span class="nn">File /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/imageio/v2.py:511,</span> in <span class="ni">volread</span><span class="nt">(uri, format, **kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">509</span> <span class="n">imopen_args</span> <span class="o">=</span> <span class="n">decypher_format_arg</span><span class="p">(</span><span class="nb">format</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">510</span> <span class="n">imopen_args</span><span class="p">[</span><span class="s2">&quot;legacy_mode&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="ne">--&gt; </span><span class="mi">511</span> <span class="k">with</span> <span class="n">imopen</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="s2">&quot;rv&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">imopen_args</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">512</span>     <span class="k">return</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="nn">File /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/imageio/v2.py:522,</span> in <span class="ni">volread</span><span class="nt">(uri, format, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">520</span> <span class="n">imopen_args</span> <span class="o">=</span> <span class="n">decypher_format_arg</span><span class="p">(</span><span class="nb">format</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">521</span> <span class="n">imopen_args</span><span class="p">[</span><span class="s2">&quot;legacy_mode&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="ne">--&gt; </span><span class="mi">522</span> <span class="k">with</span> <span class="n">imopen</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="s2">&quot;rv&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">imopen_args</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">523</span>     <span class="k">return</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 <span class="nn">File /opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/imageio/core/imopen.py:113,</span> in <span class="ni">imopen</span><span class="nt">(uri, io_mode, plugin, extension, format_hint, legacy_mode, **kwargs)</span>
 <span class="g g-Whitespace">    </span><span class="mi">111</span>     <span class="n">request</span><span class="o">.</span><span class="n">format_hint</span> <span class="o">=</span> <span class="n">format_hint</span>
