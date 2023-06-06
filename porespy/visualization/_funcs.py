@@ -201,8 +201,9 @@ def satn_to_panels(satn, im, bins=None, axis=0, slice=None, **kwargs):
         im_data.pop('vmax')
         [im_data.pop(i) for i in kwargs]
         ax[i // n][i % n].imshow(**im_data, vmax=2, **kwargs)
-        ax[i // n][i % n].set_title(str(np.around(temp.sum()/im.sum(),
-                                                  decimals=5)))
+        ax[i // n][i % n].set_title(
+            str(np.around(temp.sum(dtype=np.int64)/im.sum(dtype=np.int64),
+                          decimals=5)))
         temp_old = np.copy(temp)
     return fig, ax
 

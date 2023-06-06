@@ -1,5 +1,5 @@
 import numpy as np
-import numba
+from numba import njit
 
 
 __all__ = [
@@ -12,7 +12,7 @@ __all__ = [
 ]
 
 
-@numba.jit(nopython=True, parallel=False)
+@njit(parallel=False)
 def _make_disks(r, smooth=True):  # pragma: no cover
     r"""
     Returns a list of disks from size 0 to ``r``
@@ -39,7 +39,7 @@ def _make_disks(r, smooth=True):  # pragma: no cover
     return disks
 
 
-@numba.jit(nopython=True, parallel=False)
+@njit(parallel=False)
 def _make_balls(r, smooth=True):  # pragma: no cover
     r"""
     Returns a list of balls from size 0 to ``r``
@@ -66,7 +66,7 @@ def _make_balls(r, smooth=True):  # pragma: no cover
     return balls
 
 
-@numba.jit(nopython=True, parallel=False)
+@njit(parallel=False)
 def _insert_disk_at_points(im, coords, r, v,
                            smooth=True, overwrite=False):  # pragma: no cover
     r"""
@@ -124,7 +124,7 @@ def _insert_disk_at_points(im, coords, r, v,
     return im
 
 
-@numba.jit(nopython=True, parallel=False)
+@njit(parallel=False)
 def _insert_disks_at_points(im, coords, radii, v, smooth=True,
                             overwrite=False):  # pragma: no cover
     r"""
@@ -185,7 +185,7 @@ def _insert_disks_at_points(im, coords, radii, v, smooth=True,
     return im
 
 
-@numba.jit(nopython=True, parallel=False)
+@njit(parallel=False)
 def _make_disk(r, smooth=True):  # pragma: no cover
     r"""
     Generate a circular structuring element of the given radius
@@ -215,7 +215,7 @@ def _make_disk(r, smooth=True):  # pragma: no cover
     return s
 
 
-@numba.jit(nopython=True, parallel=False)
+@njit(parallel=False)
 def _make_ball(r, smooth=True):  # pragma: no cover
     r"""
     Generate a spherical structuring element of the given radius
