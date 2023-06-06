@@ -21,7 +21,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - uses: FedericoCarboni/setup-ffmpeg@v1
+      - uses: FedericoCarboni/setup-ffmpeg@v2
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
         with:
@@ -42,6 +42,7 @@ jobs:
         run: |
           pip install -r requirements.txt
           pip install -r requirements/tests.txt
+          pip install -r requirements/examples.txt
 
       - name: Running tests
         # Make sure to pass max-parallel to --splits

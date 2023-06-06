@@ -4,7 +4,11 @@ import time
 import psutil
 import subprocess
 import numpy as np
-import imageio
+
+
+__all__ = [
+    "maximal_ball_wrapper",
+]
 
 
 logger = logging.getLogger(__name__)
@@ -35,6 +39,11 @@ def maximal_ball_wrapper(im, prefix, path_to_exe, voxel_size=1e-6):
     provided by the Imperial College team.
 
     """
+    try:
+        import imageio
+    except ModuleNotFoundError:
+        msg = "The imageio package can be installed with pip install imageio"
+        raise ModuleNotFoundError(msg)
     file = os.path.splitext(prefix)[0]
     imageio.volsave(file + ".tif", np.array(im.astype("uint8")))
     with open(f"{file}.mhd", "w") as f:

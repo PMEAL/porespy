@@ -1,3 +1,4 @@
+import pytest
 import numpy as np
 import openpnm as op
 import porespy as ps
@@ -21,6 +22,11 @@ class DNSTest():
         solver = op.solvers.PardisoSpsolve()
         t = ps.simulations.tortuosity_fd(im=im, axis=1)
         np.testing.assert_allclose(t.tortuosity, 1.35995, rtol=1e-4)
+
+    def test_exception_if_no_pores_remain_after_trimming_floating_pores(self):
+        im = ps.generators.blobs(shape=[200, 200], porosity=0.05)
+        with pytest.raises(Exception):
+            _ = ps.simulations.tortuosity_fd(im=im, axis=1)
 
 
 if __name__ == '__main__':

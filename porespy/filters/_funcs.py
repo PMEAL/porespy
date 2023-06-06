@@ -5,19 +5,145 @@ import numpy as np
 from edt import edt
 import operator as op
 import scipy.ndimage as spim
+from deprecated import deprecated
 from skimage.morphology import reconstruction
 from skimage.segmentation import clear_border
 from skimage.morphology import ball, disk, square, cube, diamond, octahedron
 from porespy.tools import _check_for_singleton_axes
-from porespy.tools import get_border, subdivide, recombine
+from porespy.tools import get_border, subdivide, recombine, make_contiguous
 from porespy.tools import unpad, extract_subsection
-from porespy.tools import ps_disk, ps_ball
+from porespy.tools import ps_disk, ps_ball, ps_round
 from porespy import settings
 from porespy.tools import get_tqdm
 
 
+__all__ = [
+    "apply_chords",
+    "apply_chords_3D",
+    "apply_padded",
+    "chunked_func",
+    "distance_transform_lin",
+    "fill_blind_pores",
+    "find_disconnected_voxels",
+    "find_trapped_regions",
+    "find_dt_artifacts",
+    "flood",
+    "flood_func",
+    "hold_peaks",
+    "ibip",
+    "ibip_gpu",
+    "local_thickness",
+    "nphase_border",
+    "porosimetry",
+    "prune_branches",
+    "region_size",
+    "trim_disconnected_blobs",
+    "trim_extrema",
+    "trim_floating_solid",
+    "trim_nonpercolating_paths",
+    "trim_small_clusters",
+]
+
+
 tqdm = get_tqdm()
 logger = logging.getLogger(__name__)
+
+
+@deprecated("The ibip function will be moved to the"
+            + " ``simulations`` module in a future version")
+def ibip(**kwargs):
+    r"""
+    This function has been moved to the ``simulations`` module, please use that.
+    """
+    from porespy.simulations import ibip
+    return ibip(**kwargs)
+
+
+@deprecated("The ibip_gpu function will be moved to the"
+            + " ``simulations`` module in a future version")
+def ibip_gpu(**kwargs):
+    r"""
+    This function has been moved to the ``simulations`` module, please use that.
+    """
+    from porespy.simulations import ibip_gpu
+    return ibip_gpu(**kwargs)
+
+
+def find_trapped_regions(seq, outlets=None, bins=25, return_mask=True):
+    r"""
+    Find the trapped regions given an invasion sequence image
+
+    Parameters
+    ----------
+    seq : ndarray
+        An image with invasion sequence values in each voxel.  Regions
+        labelled -1 are considered uninvaded, and regions labelled 0 are
+        considered solid.
+    outlets : ndarray, optional
+        An image the same size as ``seq`` with ``True`` indicating outlets
+        and ``False`` elsewhere.  If not given then all image boundaries
+        are considered outlets.
+    bins : int
+        The resolution to use when thresholding the ``seq`` image.  By default
+        the invasion sequence will be broken into 25 discrete steps and
+        trapping will be identified at each step. A higher value of ``bins``
+        will provide a more accurate trapping analysis, but is more time
+        consuming. If ``None`` is specified, then *all* the steps will
+        analyzed, providing the highest accuracy.
+    return_mask : bool
+        If ``True`` (default) then the returned image is a boolean mask
+        indicating which voxels are trapped.  If ``False``, then a copy of
+        ``seq`` is returned with the trapped voxels set to uninvaded and
+        the invasion sequence values adjusted accordingly.
+
+    Returns
+    -------
+    trapped : ND-image
+        An image, the same size as ``seq``.  If ``return_mask`` is ``True``,
+        then the image has ``True`` values indicating the trapped voxels.  If
+        ``return_mask`` is ``False``, then a copy of ``seq`` is returned with
+        trapped voxels set to 0.
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/filters/reference/find_trapped_regions.html>`_
+    to view online example.
+
+    """
+    seq = np.copy(seq)
+    if outlets is None:
+        outlets = get_border(seq.shape, mode='faces')
+    trapped = np.zeros_like(outlets)
+    if bins is None:
+        bins = np.unique(seq)[-1::-1]
+        bins = bins[bins > 0]
+    elif isinstance(bins, int):
+        # starting the max_bin at: minimum sequence at outlets
+        # This means soon as the fluid reaches the outlets
+        # outlet_seq = np.setdiff1d(seq[outlets], np.array([0]))
+        # bins_start = outlet_seq.min()
+        # starting the max_bin at: maximum sequence available
+        # in the image. No matter if it's after percolation
+        # threshold (reaching the outlets):
+        bins_start = seq.max()
+        bins = np.linspace(bins_start, 1, bins)
+    for i in tqdm(bins, **settings.tqdm):
+        temp = seq >= i
+        labels = spim.label(temp)[0]
+        keep = np.unique(labels[outlets])
+        # In cases where entire outlet is filled, the
+        # first indice is not necessarily the
+        # void space. Only the element with value
+        # of zero needs to be removed, if it's in keep.
+        keep = np.setdiff1d(keep, np.array([0]))
+        trapped += temp*np.isin(labels, keep, invert=True)
+    if return_mask:
+        return trapped
+    else:
+        seq[trapped] = -1
+        seq = make_contiguous(seq, mode='symmetric')
+        return seq
 
 
 def apply_padded(im, pad_width, func, pad_val=1, **kwargs):
@@ -85,12 +211,7 @@ def trim_small_clusters(im, size=1):
     to view online example.
 
     """
-    if im.ndim == 2:
-        strel = disk(1)
-    elif im.ndim == 3:
-        strel = ball(1)
-    else:
-        raise Exception("Only 2D or 3D images are accepted")
+    strel = ps_round(r=1, ndim=im.ndim, smooth=False)
     filtered_array = np.copy(im)
     labels, N = spim.label(filtered_array, structure=strel)
     id_sizes = np.array(spim.sum(im, labels, range(N + 1)))
@@ -926,23 +1047,24 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
             invading fluid configuration. The choice of 'dt' or 'hybrid'
             depends on speed, which is system and installation specific.
         'mio'
-            Uses bindary erosion followed by dilation to obtain the invading
-            fluid confirguration directly. If ``access_limitations`` is
+            Uses binary erosion followed by dilation to obtain the invading
+            fluid configuration directly. If ``access_limitated`` is
             ``True`` then disconnected blobs are trimmmed before the dilation.
             This is the only method that can be parallelized by chunking (see
             ``divs`` and ``cores``).
 
     divs : int or array_like
-        The number of times to divide the image for parallel processing.  If ``1``
-        then parallel processing does not occur.  ``2`` is equivalent to
-        ``[2, 2, 2]`` for a 3D image.  The number of cores used is specified in
-        ``porespy.settings.ncores`` and defaults to all cores.
+        The number of times to divide the image for parallel processing.
+        If ``1`` then parallel processing does not occur.  ``2`` is
+        equivalent to ``[2, 2, 2]`` for a 3D image.  The number of cores
+        used is specified in ``porespy.settings.ncores`` and defaults to
+        all cores.
 
     Returns
     -------
     image : ndarray
         A copy of ``im`` with voxel values indicating the sphere radius at
-        which it becomes accessible from the inlets.  This image can be
+        which it becomes accessible from the ``inlets``.  This image can be
         used to find invading fluid configurations as a function of
         applied capillary pressure by applying a boolean comparison:
         ``inv_phase = im > r`` where ``r`` is the radius (in voxels) of

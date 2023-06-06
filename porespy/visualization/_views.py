@@ -183,5 +183,5 @@ def xray(im, axis=0):  # pragma: no cover
         im = np.transpose(im, axes=[1, 0, 2])
     if axis == 2:
         im = np.transpose(im, axes=[2, 1, 0])
-    im = np.sum(im, axis=0)
+    im = np.sum(im, axis=0, dtype=np.int64)
     return im

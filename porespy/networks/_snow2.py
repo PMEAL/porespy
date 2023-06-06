@@ -7,6 +7,12 @@ from porespy.filters import snow_partitioning, snow_partitioning_parallel
 from porespy.tools import Results
 
 
+__all__ = [
+    "snow2",
+    "_parse_pad_width",
+]
+
+
 logger = logging.getLogger(__name__)
 
 
@@ -238,4 +244,4 @@ def _parse_pad_width(pad_width, shape):
         else:
             raise Exception("pad_width components can't have 2+ elements")
 
-    return np.array(tmp)
+    return np.array(tmp, dtype=int)
