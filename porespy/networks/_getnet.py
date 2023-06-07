@@ -6,6 +6,7 @@ from edt import edt
 from porespy.tools import extend_slice
 from porespy import settings
 from porespy.tools import get_tqdm, make_contiguous
+from porespy.tools import log_entry_exit
 from porespy.metrics import region_surface_areas, region_interface_areas
 from porespy.metrics import region_volumes
 
@@ -19,6 +20,7 @@ tqdm = get_tqdm()
 logger = logging.getLogger(__name__)
 
 
+@log_entry_exit
 def regions_to_network(regions, phases=None, voxel_size=1, accuracy='standard'):
     r"""
     Analyzes an image that has been partitioned into pore regions and extracts

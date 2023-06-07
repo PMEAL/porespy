@@ -10,6 +10,7 @@ from porespy.tools import insert_cylinder
 from porespy.generators import borders
 from porespy import settings
 from porespy.tools import get_tqdm
+from porespy.tools import log_entry_exit
 
 
 __all__ = [
@@ -25,6 +26,7 @@ tqdm = get_tqdm()
 logger = logging.getLogger(__name__)
 
 
+@log_entry_exit
 def map_to_regions(regions, values):
     r"""
     Maps pore values from a network onto the image from which it was extracted
@@ -62,6 +64,7 @@ def map_to_regions(regions, values):
     return im
 
 
+@log_entry_exit
 def add_boundary_regions(regions, pad_width=3):
     r"""
     Add boundary regions on specified faces of an image
@@ -123,6 +126,7 @@ def add_boundary_regions(regions, pad_width=3):
     return new_regions
 
 
+@log_entry_exit
 def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200):
     r"""
     Generates a 3d numpy array from an OpenPNM network
@@ -216,6 +220,7 @@ def _generate_voxel_image(network, pore_shape, throat_shape, max_dim=200):
               extra_clearance:-extra_clearance]
 
 
+@log_entry_exit
 def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
                          max_dim=None, rtol=0.1):
     r"""
@@ -277,6 +282,7 @@ def generate_voxel_image(network, pore_shape="sphere", throat_shape="cylinder",
     return im
 
 
+@log_entry_exit
 def label_phases(
         network,
         alias={1: 'void', 2: 'solid'}):
@@ -325,6 +331,7 @@ def label_phases(
     return network
 
 
+@log_entry_exit
 def label_boundaries(
         network,
         labels=[['left', 'right'], ['front', 'back'], ['top', 'bottom']],

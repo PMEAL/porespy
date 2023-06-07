@@ -1,6 +1,7 @@
 import logging
 import numpy as np
 from porespy.tools import _insert_disks_at_points, find_bbox
+from porespy.tools import log_entry_exit
 
 
 __all__ = [
@@ -11,6 +12,7 @@ __all__ = [
 logger = logging.getLogger(__name__)
 
 
+@log_entry_exit
 def spheres_from_coords(df, mode='contained', smooth=False):
     r"""
     Generates a sphere packing given a list of centers and radii

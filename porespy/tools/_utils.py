@@ -6,7 +6,7 @@ from dataclasses import dataclass
 import psutil
 import inspect
 import time
-
+from porespy.tools import log_entry_exit
 
 logger = logging.getLogger("porespy")
 
@@ -19,6 +19,7 @@ __all__ = [
 ]
 
 
+@log_entry_exit
 def _is_ipython_notebook():  # pragma: no cover
     try:
         shell = get_ipython().__class__.__name__
@@ -69,6 +70,7 @@ class Settings:  # pragma: no cover
             'leave': False,
             'file': sys.stdout}
     _loglevel = 40 if _is_ipython_notebook() else 30
+
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -143,6 +145,7 @@ class Settings:  # pragma: no cover
     notebook = property(fget=_get_notebook, fset=_set_notebook)
 
 
+@log_entry_exit
 def get_tqdm():  # pragma: no cover
     r"""
     Fetches a version of ``tqdm`` function that depends on the environment.
@@ -163,6 +166,7 @@ def get_tqdm():  # pragma: no cover
     return tqdm.tqdm
 
 
+@log_entry_exit
 def show_docstring(func):  # pragma: no cover
     r"""
     Fetches the docstring for a function and returns it in markdown format.
@@ -191,6 +195,7 @@ def show_docstring(func):  # pragma: no cover
     return title + txt + '\n---'
 
 
+@log_entry_exit
 def sanitize_filename(filename, ext, exclude_ext=False):
     r"""
     Returns a sanitized string in the form of name.extension

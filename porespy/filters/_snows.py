@@ -12,6 +12,7 @@ from porespy.tools import _check_for_singleton_axes
 from porespy.tools import extend_slice, ps_rect, ps_round
 from porespy.tools import Results
 from porespy.tools import get_tqdm
+from porespy.tools import log_entry_exit
 from porespy.filters import chunked_func
 from porespy import settings
 
@@ -32,6 +33,7 @@ tqdm = get_tqdm()
 logger = logging.getLogger(__name__)
 
 
+@log_entry_exit
 def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, peaks=None):
     r"""
     Partition the void space into pore regions using a marker-based
@@ -136,6 +138,7 @@ def snow_partitioning(im, dt=None, r_max=4, sigma=0.4, peaks=None):
     return tup
 
 
+@log_entry_exit
 def snow_partitioning_n(im, r_max=4, sigma=0.4, peaks=None):
     r"""
     This function partitions an imaging oontain an arbitrary number of
@@ -244,6 +247,7 @@ def snow_partitioning_n(im, r_max=4, sigma=0.4, peaks=None):
     return tup
 
 
+@log_entry_exit
 def find_peaks(dt, r_max=4, strel=None, sigma=None, divs=1):
     r"""
     Finds local maxima in the distance transform
@@ -321,6 +325,7 @@ def find_peaks(dt, r_max=4, strel=None, sigma=None, divs=1):
     return peaks
 
 
+@log_entry_exit
 def reduce_peaks(peaks):
     r"""
     Any peaks that are broad or elongated are replaced with a single voxel
@@ -366,6 +371,7 @@ def reduce_peaks(peaks):
     return peaks_new
 
 
+@log_entry_exit
 def trim_saddle_points(peaks, dt, maxiter=20):
     r"""
     Removes peaks that were mistakenly identified because they lied on a
@@ -433,6 +439,7 @@ def trim_saddle_points(peaks, dt, maxiter=20):
     return new_peaks*peaks
 
 
+@log_entry_exit
 def trim_saddle_points_legacy(peaks, dt, maxiter=10):
     r"""
     Removes peaks that were mistakenly identified because they lied on a
@@ -515,6 +522,7 @@ def trim_saddle_points_legacy(peaks, dt, maxiter=10):
     return new_peaks*peaks
 
 
+@log_entry_exit
 def trim_nearby_peaks(peaks, dt, f=1):
     r"""
     Removes peaks that are nearer to another peak than to solid
@@ -592,6 +600,7 @@ def trim_nearby_peaks(peaks, dt, f=1):
     return new_peaks
 
 
+@log_entry_exit
 def _estimate_overlap(im, mode='dt', zoom=0.25):
     logger.info('Calculating overlap thickness')
     if mode == 'watershed':
@@ -609,6 +618,7 @@ def _estimate_overlap(im, mode='dt', zoom=0.25):
     return overlap
 
 
+@log_entry_exit
 def snow_partitioning_parallel(im,
                                r_max=4,
                                sigma=0.4,
@@ -712,6 +722,7 @@ def snow_partitioning_parallel(im,
     return tup
 
 
+@log_entry_exit
 def _pad(im, pad_width=1, constant_value=0):
     r"""
     Pad the image with a constant values and width.
@@ -750,6 +761,7 @@ def _pad(im, pad_width=1, constant_value=0):
     return temp
 
 
+@log_entry_exit
 def relabel_chunks(im, chunk_shape):
     r"""
     Assign new labels to each chunk or sub-domain of actual image. This
@@ -803,6 +815,7 @@ def relabel_chunks(im, chunk_shape):
     return im
 
 
+@log_entry_exit
 def _trim_internal_slice(im, chunk_shape):
     r"""
     Delete extra slices from image that were used to stitch two or more
@@ -852,6 +865,7 @@ def _trim_internal_slice(im, chunk_shape):
     return out
 
 
+@log_entry_exit
 def _watershed_stitching(im, chunk_shape):
     r"""
     Stitch individual sub-domains of watershed segmentation into one big
@@ -904,6 +918,7 @@ def _watershed_stitching(im, chunk_shape):
 
 
 @njit(parallel=True)
+@log_entry_exit
 def _copy(im, output):
     r"""
     The function copy the input array and make output array that is
@@ -940,6 +955,7 @@ def _copy(im, output):
 
 
 @njit(parallel=True)
+@log_entry_exit
 def _replace(array, keys, values, ind_sort):
     r"""
     This function replace keys elements in input array with new value
@@ -972,6 +988,7 @@ def _replace(array, keys, values, ind_sort):
             array[i] = values_sorted[ind]
 
 
+@log_entry_exit
 def _replace_labels(array, keys, values):
     r"""
     Replace labels in array provided as keys to values.
@@ -1001,6 +1018,7 @@ def _replace_labels(array, keys, values):
 
 
 @njit()
+@log_entry_exit
 def _sequence(array, count):
     r"""
     Internal function of resequnce_labels method. This function resquence
@@ -1040,6 +1058,7 @@ def _sequence(array, count):
 
 
 @njit(parallel=True)
+@log_entry_exit
 def _amax(array):
     r"""
     Find largest element in an array using fast parallel numba technique.
@@ -1058,6 +1077,7 @@ def _amax(array):
     return np.max(array)
 
 
+@log_entry_exit
 def _resequence_labels(array):
     r"""
     Resequence the lablels to make them contigious.
@@ -1082,6 +1102,7 @@ def _resequence_labels(array):
     return array.reshape(a_shape)
 
 
+@log_entry_exit
 def _snow_chunked(dt, r_max=5, sigma=0.4):
     r"""
     This private version of snow is called during snow_parallel.

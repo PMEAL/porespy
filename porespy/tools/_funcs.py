@@ -6,6 +6,7 @@ from skimage.segmentation import relabel_sequential
 from edt import edt
 from skimage.morphology import ball, disk
 from ._utils import Results
+from porespy.tools import log_entry_exit
 try:
     from skimage.measure import marching_cubes
 except ImportError:
@@ -47,6 +48,7 @@ __all__ = [
 ]
 
 
+@log_entry_exit
 def unpad(im, pad_width):
     r"""
     Remove padding from a previously padded image given original pad widths
@@ -103,6 +105,7 @@ def unpad(im, pad_width):
     return im[tuple(s_im)]
 
 
+@log_entry_exit
 def find_bbox(im, order_by='axis'):
     r"""
     Finds the lower and upper corner surrounding the foreground in the image
@@ -139,6 +142,7 @@ def find_bbox(im, order_by='axis'):
     return bbox
 
 
+@log_entry_exit
 def isolate_object(region, i, s=None):
     r"""
     Given an image containing labels, removes all labels except the specified
@@ -175,6 +179,7 @@ def isolate_object(region, i, s=None):
     return im
 
 
+@log_entry_exit
 def marching_map(path, start):
     r"""
     Use the fast marching method to find distance of each voxel from a starting
@@ -217,6 +222,7 @@ def marching_map(path, start):
     return t.data
 
 
+@log_entry_exit
 def align_image_with_openpnm(im):
     r"""
     Rotates an image to agree with the coordinates used in OpenPNM.
@@ -252,6 +258,7 @@ def align_image_with_openpnm(im):
     return im
 
 
+@log_entry_exit
 def subdivide(im, divs=2, overlap=0):
     r"""
     Returns slices into an image describing the specified number of sub-arrays.
@@ -323,6 +330,7 @@ def subdivide(im, divs=2, overlap=0):
     return s
 
 
+@log_entry_exit
 def recombine(ims, slices, overlap):
     r"""
     Recombines image chunks back into full image of original shape
@@ -394,6 +402,7 @@ def recombine(ims, slices, overlap):
     return im
 
 
+@log_entry_exit
 def bbox_to_slices(bbox):
     r"""
     Given a tuple containing bounding box coordinates, return a tuple of slice
@@ -434,6 +443,7 @@ def bbox_to_slices(bbox):
     return ret
 
 
+@log_entry_exit
 def find_outer_region(im, r=None):
     r"""
     Find regions of the image that are outside of the solid matrix.
@@ -486,6 +496,7 @@ def find_outer_region(im, r=None):
     return outer_region
 
 
+@log_entry_exit
 def extract_cylinder(im, r=None, axis=0):
     r"""
     Returns a cylindrical section of the image of specified radius.
@@ -531,6 +542,7 @@ def extract_cylinder(im, r=None, axis=0):
     return im_temp
 
 
+@log_entry_exit
 def extract_subsection(im, shape):
     r"""
     Extracts the middle section of a image
@@ -587,6 +599,7 @@ def extract_subsection(im, shape):
     return im[tuple(s_im)]
 
 
+@log_entry_exit
 def get_planes(im, squeeze=True):
     r"""
     Extracts three planar images from the volumetric image, one for each
@@ -625,6 +638,7 @@ def get_planes(im, squeeze=True):
     return planes
 
 
+@log_entry_exit
 def extend_slice(slices, shape, pad=1):
     r"""
     Adjust slice indices to include additional voxles around the slice.
@@ -697,6 +711,7 @@ def extend_slice(slices, shape, pad=1):
     return tuple(a)
 
 
+@log_entry_exit
 def randomize_colors(im, keep_vals=[0]):
     r'''
     Takes a greyscale image and randomly shuffles the greyscale values, so that
@@ -770,6 +785,7 @@ def randomize_colors(im, keep_vals=[0]):
     return im_new
 
 
+@log_entry_exit
 def make_contiguous(im, mode='keep_zeros'):
     r"""
     Take an image with arbitrary greyscale values and adjust them to ensure
@@ -848,6 +864,7 @@ def make_contiguous(im, mode='keep_zeros'):
     return im_new
 
 
+@log_entry_exit
 def get_border(shape, thickness=1, mode='edges'):
     r"""
     Create an array with corners, edges or faces labelled as ``True``.
@@ -899,6 +916,7 @@ def get_border(shape, thickness=1, mode='edges'):
     return borders(shape=shape, thickness=thickness, mode=mode)
 
 
+@log_entry_exit
 def in_hull(points, hull):
     """
     Test if a list of coordinates are inside a given convex hull
@@ -932,6 +950,7 @@ def in_hull(points, hull):
     return hull.find_simplex(points) >= 0
 
 
+@log_entry_exit
 def norm_to_uniform(im, scale=None):
     r"""
     Take an image with normally distributed greyscale values and convert it to
@@ -969,6 +988,7 @@ def norm_to_uniform(im, scale=None):
     return im
 
 
+@log_entry_exit
 def _functions_to_table(mod, colwidth=[27, 48]):
     r"""
     Given a module of functions, returns a ReST formatted text string that
@@ -1010,6 +1030,7 @@ def _functions_to_table(mod, colwidth=[27, 48]):
     return s
 
 
+@log_entry_exit
 def mesh_region(region: bool, strel=None):
     r"""
     Creates a tri-mesh of the provided region using the marching cubes
@@ -1064,6 +1085,7 @@ def mesh_region(region: bool, strel=None):
     return result
 
 
+@log_entry_exit
 def ps_disk(r, smooth=True):
     r"""
     Creates circular disk structuring element for morphological operations
@@ -1092,6 +1114,7 @@ def ps_disk(r, smooth=True):
     return disk
 
 
+@log_entry_exit
 def ps_ball(r, smooth=True):
     r"""
     Creates spherical ball structuring element for morphological operations
@@ -1120,6 +1143,7 @@ def ps_ball(r, smooth=True):
     return ball
 
 
+@log_entry_exit
 def ps_round(r, ndim, smooth=True):
     r"""
     Creates round structuring element with the given radius and dimensionality
@@ -1156,6 +1180,7 @@ def ps_round(r, ndim, smooth=True):
     return ball
 
 
+@log_entry_exit
 def ps_rect(w, ndim):
     r"""
     Creates rectilinear structuring element with the given size and
@@ -1189,6 +1214,7 @@ def ps_rect(w, ndim):
     return strel
 
 
+@log_entry_exit
 def overlay(im1, im2, c):
     r"""
     Overlays ``im2`` onto ``im1``, given voxel coords of center of ``im2``
@@ -1229,6 +1255,7 @@ def overlay(im1, im2, c):
     return im1
 
 
+@log_entry_exit
 def insert_sphere(im, c, r, v=True, overwrite=True):
     r"""
     Inserts a sphere of a specified radius into a given image
@@ -1291,6 +1318,7 @@ def insert_sphere(im, c, r, v=True, overwrite=True):
     return im
 
 
+@log_entry_exit
 def insert_cylinder(im, xyz0, xyz1, r):
     r"""
     Inserts a cylinder of given radius onto an image
@@ -1363,6 +1391,7 @@ def insert_cylinder(im, xyz0, xyz1, r):
     return im
 
 
+@log_entry_exit
 def extract_regions(regions, labels: list, trim=True):
     r"""
     Combine given regions into a single boolean mask
@@ -1411,6 +1440,7 @@ def extract_regions(regions, labels: list, trim=True):
     return im_new
 
 
+@log_entry_exit
 def _check_for_singleton_axes(im):  # pragma: no cover
     r"""
     Checks for whether the input image contains singleton axes and logs

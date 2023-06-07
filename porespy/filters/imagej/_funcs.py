@@ -1,10 +1,11 @@
 import logging
 import numpy as np
-
+from porespy.tools import log_entry_exit
 
 logger = logging.getLogger(__name__)
 
 
+@log_entry_exit
 def imagej_wrapper(im, plugin_name, path):  # pragma: no cover
     r"""
     Apply ImageJ filters on 3D images.
@@ -108,6 +109,7 @@ def imagej_wrapper(im, plugin_name, path):  # pragma: no cover
     return results
 
 
+@log_entry_exit
 def imagej_plugin(im, path, plugin_name, args=None):  # pragma: no cover
     r"""
     Apply ImageJ filters on 3D images.

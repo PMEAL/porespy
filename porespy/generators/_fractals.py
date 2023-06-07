@@ -2,6 +2,7 @@ import logging
 import numpy as np
 import scipy.ndimage as spim
 from porespy.tools import get_tqdm
+from porespy.tools import log_entry_exit
 from porespy import settings
 
 
@@ -16,6 +17,7 @@ __all__ = [
 ]
 
 
+@log_entry_exit
 def random_cantor_dust(shape, n=5, p=2, f=0.8, seed=None):
     r"""
     Generates an image of random cantor dust
@@ -72,6 +74,7 @@ def random_cantor_dust(shape, n=5, p=2, f=0.8, seed=None):
     return im
 
 
+@log_entry_exit
 def sierpinski_foam2(shape, n=5):
     r"""
     Generates an image of a Sierpinski carpet or foam with independent control of
@@ -136,6 +139,7 @@ def sierpinski_foam2(shape, n=5):
     return im
 
 
+@log_entry_exit
 def sierpinski_foam(dmin=1, n=5, ndim=2, max_size=1e9):
     r"""
     Generates an image of a Sierpinski carpet or foam
@@ -162,6 +166,7 @@ def sierpinski_foam(dmin=1, n=5, ndim=2, max_size=1e9):
     to view online example.
 
     """
+    @log_entry_exit
     def _insert_cubes(im, n):
         if n > 0:
             n -= 1
@@ -172,6 +177,7 @@ def sierpinski_foam(dmin=1, n=5, ndim=2, max_size=1e9):
                 im = _insert_cubes(im, n)
         return im
 
+    @log_entry_exit
     def _insert_squares(im, n):
         if n > 0:
             n -= 1

@@ -24,6 +24,7 @@ from . import generators
 from . import simulations
 from . import visualization
 from . import io
+from porespy.tools import log_entry_exit
 # The dns module will be deprecated in V3, in favor of simulations
 from . import dns
 

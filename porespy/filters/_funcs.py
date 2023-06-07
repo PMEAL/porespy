@@ -13,6 +13,7 @@ from porespy.tools import _check_for_singleton_axes
 from porespy.tools import get_border, subdivide, recombine, make_contiguous
 from porespy.tools import unpad, extract_subsection
 from porespy.tools import ps_disk, ps_ball, ps_round
+from porespy.tools import log_entry_exit
 from porespy import settings
 from porespy.tools import get_tqdm
 
@@ -51,6 +52,8 @@ logger = logging.getLogger(__name__)
 
 @deprecated("The ibip function will be moved to the"
             + " ``simulations`` module in a future version")
+
+@log_entry_exit
 def ibip(**kwargs):
     r"""
     This function has been moved to the ``simulations`` module, please use that.
@@ -61,6 +64,8 @@ def ibip(**kwargs):
 
 @deprecated("The ibip_gpu function will be moved to the"
             + " ``simulations`` module in a future version")
+
+@log_entry_exit
 def ibip_gpu(**kwargs):
     r"""
     This function has been moved to the ``simulations`` module, please use that.
@@ -69,6 +74,7 @@ def ibip_gpu(**kwargs):
     return ibip_gpu(**kwargs)
 
 
+@log_entry_exit
 def find_trapped_regions(seq, outlets=None, bins=25, return_mask=True):
     r"""
     Find the trapped regions given an invasion sequence image
@@ -146,6 +152,7 @@ def find_trapped_regions(seq, outlets=None, bins=25, return_mask=True):
         return seq
 
 
+@log_entry_exit
 def apply_padded(im, pad_width, func, pad_val=1, **kwargs):
     r"""
     Applies padding to an image before sending to ``func``, then extracts
@@ -185,6 +192,7 @@ def apply_padded(im, pad_width, func, pad_val=1, **kwargs):
     return result
 
 
+@log_entry_exit
 def trim_small_clusters(im, size=1):
     r"""
     Remove isolated voxels or clusters of a given size or smaller
@@ -220,6 +228,7 @@ def trim_small_clusters(im, size=1):
     return filtered_array
 
 
+@log_entry_exit
 def hold_peaks(im, axis=-1, ascending=True):
     r"""
     Replaces each voxel with the highest value along the given axis.
@@ -273,6 +282,7 @@ def hold_peaks(im, axis=-1, ascending=True):
     return result
 
 
+@log_entry_exit
 def distance_transform_lin(im, axis=0, mode="both"):
     r"""
     Replaces each void voxel with the linear distance to the nearest solid
@@ -343,6 +353,7 @@ def distance_transform_lin(im, axis=0, mode="both"):
     return f
 
 
+@log_entry_exit
 def find_disconnected_voxels(im, conn=None, surface=False):
     r"""
     Identifies all voxels that are not connected to the edge of the image.
@@ -409,6 +420,8 @@ def find_disconnected_voxels(im, conn=None, surface=False):
     return holes
 
 
+
+@log_entry_exit
 def fill_blind_pores(im, conn=None, surface=False):
     r"""
     Fills all blind pores that are isolated from the main void space.
@@ -452,6 +465,8 @@ def fill_blind_pores(im, conn=None, surface=False):
     return im
 
 
+
+@log_entry_exit
 def trim_floating_solid(im, conn=None, surface=False):
     r"""
     Removes all solid that that is not attached to main solid structure.
@@ -495,6 +510,7 @@ def trim_floating_solid(im, conn=None, surface=False):
     return im
 
 
+@log_entry_exit
 def trim_nonpercolating_paths(im, inlets, outlets, strel=None):
     r"""
     Remove all nonpercolating paths between specified locations
@@ -546,6 +562,7 @@ def trim_nonpercolating_paths(im, inlets, outlets, strel=None):
     return new_im
 
 
+@log_entry_exit
 def trim_extrema(im, h, mode="maxima"):
     r"""
     Trims local extrema in greyscale values by a specified amount.
@@ -593,6 +610,7 @@ def trim_extrema(im, h, mode="maxima"):
     return result
 
 
+@log_entry_exit
 def flood(im, labels, mode="max"):
     r"""
     Floods/fills each region in an image with a single value based on the
@@ -663,6 +681,7 @@ def flood(im, labels, mode="max"):
     return flooded
 
 
+@log_entry_exit
 def flood_func(im, func, labels=None):
     r"""
     Flood each isolated region in an image with a constant value calculated by
@@ -720,6 +739,7 @@ def flood_func(im, func, labels=None):
     return flooded
 
 
+@log_entry_exit
 def find_dt_artifacts(dt):
     r"""
     Label points in a distance transform that are closer to image boundary
@@ -761,6 +781,7 @@ def find_dt_artifacts(dt):
     return result
 
 
+@log_entry_exit
 def region_size(im):
     r"""
     Replace each voxel with the size of the region to which it belongs
@@ -803,6 +824,7 @@ def region_size(im):
     return counts[im]
 
 
+@log_entry_exit
 def apply_chords(im, spacing=1, axis=0, trim_edges=True, label=False):
     r"""
     Adds chords to the void space in the specified direction.
@@ -865,7 +887,7 @@ def apply_chords(im, spacing=1, axis=0, trim_edges=True, label=False):
         result = result > 0
     return result
 
-
+@log_entry_exit
 def apply_chords_3D(im, spacing=0, trim_edges=True):
     r"""
     Adds chords to the void space in all three principle directions.
@@ -924,6 +946,7 @@ def apply_chords_3D(im, spacing=0, trim_edges=True):
     return chords
 
 
+@log_entry_exit
 def local_thickness(im, sizes=25, mode="hybrid", divs=1):
     r"""
     For each voxel, this function calculates the radius of the largest
@@ -1003,7 +1026,7 @@ def local_thickness(im, sizes=25, mode="hybrid", divs=1):
                          divs=divs)
     return im_new
 
-
+@log_entry_exit
 def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
                 divs=1):
     r"""
@@ -1180,7 +1203,7 @@ def porosimetry(im, sizes=25, inlets=None, access_limited=True, mode='hybrid',
         raise Exception("Unrecognized mode " + mode)
     return imresults
 
-
+@log_entry_exit
 def trim_disconnected_blobs(im, inlets, strel=None):
     r"""
     Removes foreground voxels not connected to specified inlets.
@@ -1238,7 +1261,7 @@ def trim_disconnected_blobs(im, inlets, strel=None):
     im2 = im2 * im
     return im2
 
-
+@log_entry_exit
 def _get_axial_shifts(ndim=2, include_diagonals=False):
     r"""
     Helper function to generate the axial shifts that will be performed on
@@ -1267,6 +1290,7 @@ def _get_axial_shifts(ndim=2, include_diagonals=False):
         return np.vstack((x, y, z)).T
 
 
+@log_entry_exit
 def _make_stack(im, include_diagonals=False):
     r"""
     Creates a stack of images with one extra dimension to the input image
@@ -1299,6 +1323,7 @@ def _make_stack(im, include_diagonals=False):
         return stack
 
 
+@log_entry_exit
 def nphase_border(im, include_diagonals=False):
     r"""
     Identifies the voxels in regions that border *N* other regions.
@@ -1355,6 +1380,7 @@ def nphase_border(im, include_diagonals=False):
         return out[1:-1, 1:-1, 1:-1].copy()
 
 
+@log_entry_exit
 def prune_branches(skel, branch_points=None, iterations=1):
     r"""
     Remove all dangling ends or tails of a skeleton
@@ -1427,6 +1453,7 @@ def prune_branches(skel, branch_points=None, iterations=1):
     return im_result
 
 
+@log_entry_exit
 def chunked_func(func,
                  overlap=None,
                  divs=2,
@@ -1511,6 +1538,7 @@ def chunked_func(func,
     """
 
     @dask.delayed
+    @log_entry_exit
     def apply_func(func, **kwargs):
         # Apply function on sub-slice of overall image
         return func(**kwargs)

@@ -3,6 +3,7 @@ import numpy as np
 import openpnm as op
 from porespy.filters import trim_nonpercolating_paths
 from porespy.tools import Results
+from porespy.tools import log_entry_exit
 from porespy.generators import faces
 
 
@@ -13,6 +14,7 @@ ws = op.Workspace()
 __all__ = ['tortuosity_fd']
 
 
+@log_entry_exit
 def tortuosity_fd(im, axis, solver=None):
     r"""
     Calculates the tortuosity of image in the specified direction.

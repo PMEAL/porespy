@@ -4,6 +4,7 @@ import time
 import psutil
 import subprocess
 import numpy as np
+from porespy.tools import log_entry_exit
 
 
 __all__ = [
@@ -14,6 +15,7 @@ __all__ = [
 logger = logging.getLogger(__name__)
 
 
+@log_entry_exit
 def maximal_ball_wrapper(im, prefix, path_to_exe, voxel_size=1e-6):
     r"""
     Implementing a maximal ball algorithm on an image
@@ -64,6 +66,7 @@ def maximal_ball_wrapper(im, prefix, path_to_exe, voxel_size=1e-6):
         time_elapsed += 10
 
 
+@log_entry_exit
 def _is_running(process_name):
     r"""
     Check if there is any running process that contains the given name.

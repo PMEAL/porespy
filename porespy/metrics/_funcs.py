@@ -10,6 +10,7 @@ from porespy.tools import _check_for_singleton_axes
 from porespy.tools import Results
 from porespy import settings
 from porespy.tools import get_tqdm
+from porespy.tools import log_entry_exit
 from numba import njit
 
 
@@ -37,6 +38,7 @@ tqdm = get_tqdm()
 logger = logging.getLogger(__name__)
 
 
+@log_entry_exit
 def boxcount(im, bins=10):
     r"""
     Calculates fractal dimension of an image using the tiled box counting
@@ -108,6 +110,7 @@ def boxcount(im, bins=10):
     return data
 
 
+@log_entry_exit
 def representative_elementary_volume(im, npoints=1000):
     r"""
     Calculates the porosity of an image as a function subdomain size.
@@ -182,6 +185,7 @@ def representative_elementary_volume(im, npoints=1000):
     return profile
 
 
+@log_entry_exit
 def porosity(im):
     r"""
     Calculates the porosity of an image assuming 1's are void space and 0's
@@ -232,6 +236,7 @@ def porosity(im):
     return e
 
 
+@log_entry_exit
 def porosity_profile(im, axis=0):
     r"""
     Computes the porosity profile along the specified axis
@@ -268,6 +273,7 @@ def porosity_profile(im, axis=0):
     return prof
 
 
+@log_entry_exit
 def radial_density_distribution(dt, bins=10, log=False, voxel_size=1):
     r"""
     Computes radial density function by analyzing the histogram of voxel
@@ -368,6 +374,7 @@ def radial_density_distribution(dt, bins=10, log=False, voxel_size=1):
     return rdf
 
 
+@log_entry_exit
 def lineal_path_distribution(im, bins=10, voxel_size=1, log=False):
     r"""
     Determines the probability that a point lies within a certain distance
@@ -450,6 +457,7 @@ def lineal_path_distribution(im, bins=10, voxel_size=1, log=False):
     return cld
 
 
+@log_entry_exit
 def chord_length_distribution(im, bins=10, log=False, voxel_size=1,
                               normalization='count'):
     r"""
@@ -554,6 +562,7 @@ def chord_length_distribution(im, bins=10, log=False, voxel_size=1,
     return cld
 
 
+@log_entry_exit
 def pore_size_distribution(im, bins=10, log=True, voxel_size=1):
     r"""
     Calculate a pore-size distribution based on the image produced by the
@@ -631,6 +640,7 @@ def pore_size_distribution(im, bins=10, log=True, voxel_size=1):
     return cld
 
 
+@log_entry_exit
 def two_point_correlation_bf(im, spacing=10):
     r"""
     Calculates the two-point correlation function using brute-force (see Notes)
@@ -699,6 +709,7 @@ def two_point_correlation_bf(im, spacing=10):
     return tpcf
 
 
+@log_entry_exit
 def _radial_profile(autocorr, bins, pf=None, voxel_size=1):
     r"""
     Helper functions to calculate the radial profile of the autocorrelation
@@ -768,7 +779,9 @@ def _radial_profile(autocorr, bins, pf=None, voxel_size=1):
     return tpcf
 
 
-@njit(parallel=False)
+
+@njit(parallel=True)
+@log_entry_exit
 def _get_radial_sum(dt, bins, bin_size, autocorr):
     radial_sum = np.zeros_like(bins[:-1])
     for i, r in enumerate(bins[:-1]):
@@ -778,6 +791,7 @@ def _get_radial_sum(dt, bins, bin_size, autocorr):
     return radial_sum
 
 
+@log_entry_exit
 def two_point_correlation(im, voxel_size=1, bins=100):
     r"""
     Calculate the two-point correlation function using Fourier transforms
@@ -857,6 +871,7 @@ def two_point_correlation(im, voxel_size=1, bins=100):
     return tpcf
 
 
+@log_entry_exit
 def _parse_histogram(h, voxel_size=1, density=True):
     delta_x = h[1]
     P = h[0]
@@ -883,6 +898,7 @@ def _parse_histogram(h, voxel_size=1, density=True):
     return hist
 
 
+@log_entry_exit
 def chord_counts(im):
     r"""
     Find the length of each chord in the supplied image
@@ -917,6 +933,7 @@ def chord_counts(im):
     return chord_lens
 
 
+@log_entry_exit
 def phase_fraction(im, normed=True):
     r"""
     Calculate the fraction of each phase in an image
@@ -958,6 +975,7 @@ def phase_fraction(im, normed=True):
 
 
 @deprecated("This function is deprecated, use pc_curve instead")
+@log_entry_exit
 def pc_curve_from_ibip(*args, **kwargs):
     r"""
     This function is deprecated.  Use ``pc_curve`` instead.  Note that the
@@ -969,6 +987,7 @@ def pc_curve_from_ibip(*args, **kwargs):
 
 
 @deprecated("This function is deprecated, use pc_curve instead")
+@log_entry_exit
 def pc_curve_from_mio(*args, **kwargs):
     r"""
     This function is deprecated.  Use ``pc_curve`` instead.
@@ -976,6 +995,7 @@ def pc_curve_from_mio(*args, **kwargs):
     return pc_curve(*args, **kwargs)
 
 
+@log_entry_exit
 def pc_curve(im, sizes=None, pc=None, seq=None,
              sigma=0.072, theta=180, voxel_size=1):
     r"""
@@ -1104,6 +1124,7 @@ def pc_curve(im, sizes=None, pc=None, seq=None,
     return pc_curve
 
 
+@log_entry_exit
 def satn_profile(satn, s, axis=0, span=10, mode='tile'):
     r"""
     Computes a saturation profile from an image of fluid invasion
@@ -1154,6 +1175,7 @@ def satn_profile(satn, s, axis=0, span=10, mode='tile'):
     to view online example.
     """
     # @numba.njit()
+    @log_entry_exit
     def func(satn, s, axis, span, mode):
         span = max(1, span)
         satn = np.swapaxes(satn, 0, axis)
@@ -1196,6 +1218,7 @@ def satn_profile(satn, s, axis=0, span=10, mode='tile'):
     return results
 
 
+@log_entry_exit
 def find_h(saturation, position=None, srange=[0.01, 0.99]):
     r"""
     Given a saturation profile, compute the height between given bounds

@@ -3,6 +3,7 @@ import numpy as np
 from edt import edt
 from porespy.tools import get_tqdm, get_border
 from porespy.tools import Results
+from porespy.tools import log_entry_exit
 
 
 __all__ = [
@@ -14,6 +15,7 @@ tqdm = get_tqdm()
 logger = logging.getLogger(__name__)
 
 
+@log_entry_exit
 def ibip_gpu(im, dt=None, inlets=None, maxiter=10000):  # pragma: no cover
     """
     Performs invasion percolation on given image using iterative image
@@ -116,6 +118,7 @@ def ibip_gpu(im, dt=None, inlets=None, maxiter=10000):  # pragma: no cover
     return results
 
 
+@log_entry_exit
 def rankdata_gpu(im_arr):  # pragma: no cover
     """
     GPU alternative to scipy's rankdata using 'dense' method.
@@ -144,6 +147,7 @@ def rankdata_gpu(im_arr):  # pragma: no cover
     return dense
 
 
+@log_entry_exit
 def make_contiguous_gpu(im):  # pragma: no cover
     """
     Take an image with arbitrary greyscale values and adjust them to
@@ -173,6 +177,7 @@ def make_contiguous_gpu(im):  # pragma: no cover
     return im_new
 
 
+@log_entry_exit
 def ball_gpu(radius, smooth=True):  # pragma: no cover
     """
     Generates a ball-shaped structuring element.
@@ -203,6 +208,7 @@ def ball_gpu(radius, smooth=True):  # pragma: no cover
     return s <= radius * radius
 
 
+@log_entry_exit
 def disk_gpu(radius, smooth=True):  # pragma: no cover
     """
     Generates a flat, disk-shaped structuring element.
