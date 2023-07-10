@@ -308,7 +308,8 @@ class MetricsTest():
         satn = np.tile(np.atleast_2d(np.linspace(0.4, 0.01, 100)), (100, 1))
         satn[:25, :] = 0
         satn[-25:, :] = -1
-        prof1 = ps.metrics.satn_profile(satn=satn, s=0.5, axis=1, span=1, mode='tile')
+        with pytest.raises(Exception):
+            prof1 = ps.metrics.satn_profile(satn=satn, s=0.5)
 
 
 if __name__ == '__main__':
