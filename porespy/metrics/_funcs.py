@@ -30,6 +30,7 @@ __all__ = [
     "pc_curve",
     "pc_curve_from_ibip",
     "pc_curve_from_mio",
+    "pc_map_to_pc_curve",
 ]
 
 
@@ -1106,6 +1107,68 @@ def pc_curve(im, sizes=None, pc=None, seq=None,
         pc_curve.pc = Ps
         pc_curve.snwp = y
     return pc_curve
+
+
+def pc_map_to_pc_curve(pc, seq):
+    r"""
+    Converts a pc map into a capillary pressure curve
+
+    Parameters
+    ----------
+    pc : ndarray
+        A numpy array with each voxel containing the capillary pressure at which
+        it was invaded.
+    seq : ndarray
+        A numpy array with each voxel containing the sequence at which it was
+        invaded. See `Notes` for additional details about this array.
+
+    Returns
+    -------
+    results : dataclass-like
+        A dataclass like object with the following attributes:
+
+        ================== =========================================================
+        Attribute          Description
+        ================== =========================================================
+        pc                 The capillary pressure
+        snwp               The fraction of void space filled by non-wetting
+                           phase at each pressure in ``pc``
+        ================== =========================================================
+
+    Notes
+    -----
+    If the `pc` map was obtained from the `invasion` or `drainage` algorithms then
+    the `seq` array is attached to the returned object. The `pc_to_seq` function
+    can also be used, provided the data corresponds to a drainage or imbibition
+    process (i.e. not invasion).
+    """
+    bins = np.unique(seq)
+    bins = bins[bins >= 0]
+    count = np.zeros(max(bins)+1)
+    pmax = np.zeros_like(count, dtype=float)
+    count, pmax = _do_ibip_curve(pc, seq, count, pmax)
+    results = Results()
+    results.pc = pmax
+    results.snwp = np.cumsum(count)/(seq > 0).sum()
+    return results
+
+
+@njit
+def _do_ibip_curve(pc, seq, count, pmax):
+    if pc.ndim == 2:
+        for i in range(pc.shape[0]):
+            for j in range(pc.shape[1]):
+                if seq[i, j] > 0:
+                    count[seq[i, j]] += 1
+                    pmax[seq[i, j]] = max(pmax[seq[i, j]], pc[i, j])
+    else:
+        for i in range(pc.shape[0]):
+            for j in range(pc.shape[1]):
+                for k in range(pc.shape[2]):
+                    if seq[i, j, k] > 0:
+                        count[seq[i, j, k]] += 1
+                        pmax[seq[i, j, k]] = max(pmax[seq[i, j, k]], pc[i, j, k])
+    return count, pmax
 
 
 def satn_profile(satn, s, axis=0, span=10, mode='tile'):
