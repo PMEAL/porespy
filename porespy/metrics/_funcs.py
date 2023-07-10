@@ -1055,10 +1055,14 @@ def pc_curve(im, sizes=None, pc=None, seq=None,
             for n in seqs:
                 pbar.update()
                 mask = seq == n
-                # The following assumes only one size found, which was confirmed
-                r = sizes[mask][0]*voxel_size
-                pc = -2*sigma*np.cos(np.deg2rad(theta))/r
-                x.append(pc)
+                if (pc is not None) and (sizes is not None):
+                    raise Exception("Only one of pc or sizes can be specified")
+                elif pc is not None:
+                    pressure = pc[mask][0]
+                elif sizes is not None:
+                    r = sizes[mask][0]*voxel_size
+                    pressure = -2*sigma*np.cos(np.deg2rad(theta))/r
+                x.append(pressure)
                 snwp = ((seq <= n)*(seq > 0) *
                         (im == 1)).sum(dtype=np.int64)/im.sum(dtype=np.int64)
                 y.append(snwp)

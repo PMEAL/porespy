@@ -8,6 +8,7 @@ __all__ = [
     'size_to_satn',
     'seq_to_satn',
     'pc_to_satn',
+    'pc_to_seq',
     'satn_to_seq',
 ]
 
@@ -220,6 +221,64 @@ def seq_to_satn(seq, im=None, mode='drainage'):
     return satn
 
 
+def pc_to_seq(pc, im, mode='drainage'):
+    r"""
+    Converts an image of capillary entry pressures to invasion sequence values
+
+    Parameters
+    ----------
+    pc : ndarray
+        A Numpy array with the value in each voxel indicating the capillary
+        pressure at which it was invaded. In order to accommodate the
+        possibility of both positive and negative capillary pressure values,
+        uninvaded voxels should be indicated by ``+inf`` and residual phase
+        by ``-inf``. Solid vs void phase is defined by ``im`` which is
+        mandatory.
+    im : ndarray
+        A Numpy array with ``True`` values indicating the void space
+    mode : str
+        Controls how the pressures are converted to sequence. The options are:
+
+        ============= ==============================================================
+        `mode`        Description
+        ============= ==============================================================
+        'drainage'    The pressures are assumed to have been filled from smallest to
+                      largest, ignoring +/- infs
+        'imbibition'  The pressures are assumed to have been filled from largest to
+                      smallest, ignoring +/- infs
+        ============= ==============================================================
+
+    Returns
+    -------
+    seq : ndarray
+        A Numpy array the same shape as `pc`, with each voxel value indicating
+        the sequence at which it was invaded, according to the specified `mode`.
+
+    Notes
+    -----
+    Voxels with `+inf` are treated as though they were never invaded so are given a
+    sequence value of -1. Voxels with  `-inf` are not implemented yet so will
+    raise an error.  Eventually these should represent residual non-wetting phase.
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/filters/reference/pc_to_seq.html>`_
+    to view online example.
+    """
+    if pc.min() == -np.inf:
+        msg = 'Indicating residual nonwetting with -inf is not implement yet'
+        raise NotImplementedError(msg)
+    if mode == 'drainage':
+        bins = np.unique(pc)
+    elif mode == 'imbibitin':
+        bins = np.unique(pc)[-1::-1]
+    a = np.digitize(pc, bins=bins)
+    a[~im] = 0
+    a[np.where(pc == np.inf)] = -1
+    return a
+
+
 def pc_to_satn(pc, im, mode='drainage'):
     r"""
     Converts an image of capillary entry pressures to saturation values
@@ -266,6 +325,9 @@ def pc_to_satn(pc, im, mode='drainage'):
     to view online example.
 
     """
+    if pc.min() == -np.inf:
+        msg = 'Indicating residual nonwetting with -inf is not implement yet'
+        raise NotImplementedError(msg)
     a = np.digitize(pc, bins=np.unique(pc))
     a[~im] = 0
     a[np.where(pc == np.inf)] = -1
