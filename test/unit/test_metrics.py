@@ -256,6 +256,60 @@ class MetricsTest():
         assert hasattr(pc, 'pc')
         assert hasattr(pc, 'snwp')
 
+    def test_satn_profile_axis(self):
+        satn = np.tile(np.atleast_2d(np.linspace(1, 0.01, 100)), (100, 1))
+        satn[:25, :] = 0
+        satn[-25:, :] = -1
+        prof1 = ps.metrics.satn_profile(satn=satn, s=0.5, axis=1, span=1, mode='tile')
+        assert len(prof1.saturation) == 100
+        assert prof1.saturation[0] == 0
+        assert prof1.saturation[-1] == 2/3
+        assert prof1.saturation[49] == 0
+        assert prof1.saturation[50] == 2/3
+        prof1 = ps.metrics.satn_profile(satn=satn, s=0.5, axis=0, span=1, mode='tile')
+        assert len(prof1.saturation) == 100
+        assert np.isnan(prof1.saturation[0])
+        assert prof1.saturation[-1] == 0
+        assert prof1.saturation[50] == 0.5
+
+    def test_satn_profile_span(self):
+        satn = np.tile(np.atleast_2d(np.linspace(1, 0.01, 100)), (100, 1))
+        satn[:25, :] = 0
+        satn[-25:, :] = -1
+        prof1 = ps.metrics.satn_profile(satn=satn, s=0.5, axis=1, span=20, mode='tile')
+        assert len(prof1.saturation) == 5
+        assert prof1.saturation[0] == 0
+        assert prof1.saturation[-1] == 2/3
+        assert prof1.saturation[2] == 1/3
+        prof1 = ps.metrics.satn_profile(satn=satn, s=0.5, axis=1, span=20, mode='slide')
+        assert len(prof1.saturation) == 80
+        assert prof1.saturation[31] == 1/30
+        assert prof1.saturation[48] == 0.6
+
+    def test_satn_profile_threshold(self):
+        satn = np.tile(np.atleast_2d(np.linspace(1, 0.01, 100)), (100, 1))
+        satn[:25, :] = 0
+        satn[-25:, :] = -1
+        prof1 = ps.metrics.satn_profile(satn=satn, s=0.5, axis=1, span=1, mode='tile')
+        t = (satn <= 0.5)*(satn > 0)
+        im = satn != 0
+        prof2 = ps.metrics.satn_profile(satn=t, im=im, axis=1, span=1, mode='tile')
+        assert len(prof1.saturation) == 100
+        assert len(prof2.saturation) == 100
+        assert np.all(prof1.saturation == prof2.saturation)
+        prof1 = ps.metrics.satn_profile(satn=satn, s=0.5, axis=1, span=10, mode='tile')
+        prof2 = ps.metrics.satn_profile(satn=t, im=im, axis=1, span=10, mode='tile')
+        assert np.all(prof1.saturation == prof2.saturation)
+        prof1 = ps.metrics.satn_profile(satn=satn, s=0.5, axis=1, span=20, mode='slide')
+        prof2 = ps.metrics.satn_profile(satn=t, im=im, axis=1, span=20, mode='slide')
+        assert np.all(prof1.saturation == prof2.saturation)
+
+    def test_satn_profile_exception(self):
+        satn = np.tile(np.atleast_2d(np.linspace(0.4, 0.01, 100)), (100, 1))
+        satn[:25, :] = 0
+        satn[-25:, :] = -1
+        prof1 = ps.metrics.satn_profile(satn=satn, s=0.5, axis=1, span=1, mode='tile')
+
 
 if __name__ == '__main__':
     t = MetricsTest()
