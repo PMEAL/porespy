@@ -249,6 +249,17 @@ class SeqTest():
         assert satn[0, 0] == 0.0
         assert satn[0, 1] == 0.9
 
+    def test_pc_to_seq(self):
+        pc = 10.0*np.tile(np.atleast_2d(np.arange(0, 21)), [21, 1])
+        pc[:, 0] = 0
+        pc[:, -5] = np.inf
+        im = pc > 0
+        seq = ps.filters.pc_to_seq(pc=pc, im=im, mode='drainage')
+        assert seq[0, 0] == 0
+        assert seq[0, 1] == 1
+        assert seq[0, -1] == 19
+        assert seq[0, -5] == -1
+
 
 if __name__ == '__main__':
     t = SeqTest()

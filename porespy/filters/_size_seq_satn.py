@@ -253,6 +253,7 @@ def pc_to_seq(pc, im, mode='drainage'):
     seq : ndarray
         A Numpy array the same shape as `pc`, with each voxel value indicating
         the sequence at which it was invaded, according to the specified `mode`.
+        Uninvaded voxels are set to -1.
 
     Notes
     -----
@@ -276,6 +277,7 @@ def pc_to_seq(pc, im, mode='drainage'):
     a = np.digitize(pc, bins=bins)
     a[~im] = 0
     a[np.where(pc == np.inf)] = -1
+    a = make_contiguous(a, mode='symmetric')
     return a
 
 
