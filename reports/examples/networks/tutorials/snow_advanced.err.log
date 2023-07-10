@@ -1,17 +1,17 @@
 Traceback (most recent call last):
-  File "/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/jupyter_cache/executors/utils.py", line 58, in single_nb_execution
+  File "/opt/hostedtoolcache/Python/3.8.17/x64/lib/python3.8/site-packages/jupyter_cache/executors/utils.py", line 58, in single_nb_execution
     executenb(
-  File "/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/nbclient/client.py", line 1305, in execute
+  File "/opt/hostedtoolcache/Python/3.8.17/x64/lib/python3.8/site-packages/nbclient/client.py", line 1305, in execute
     return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
-  File "/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/jupyter_core/utils/__init__.py", line 166, in wrapped
+  File "/opt/hostedtoolcache/Python/3.8.17/x64/lib/python3.8/site-packages/jupyter_core/utils/__init__.py", line 166, in wrapped
     return loop.run_until_complete(inner)
-  File "/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/asyncio/base_events.py", line 616, in run_until_complete
+  File "/opt/hostedtoolcache/Python/3.8.17/x64/lib/python3.8/asyncio/base_events.py", line 616, in run_until_complete
     return future.result()
-  File "/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/nbclient/client.py", line 705, in async_execute
+  File "/opt/hostedtoolcache/Python/3.8.17/x64/lib/python3.8/site-packages/nbclient/client.py", line 705, in async_execute
     await self.async_execute_cell(
-  File "/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/nbclient/client.py", line 1058, in async_execute_cell
+  File "/opt/hostedtoolcache/Python/3.8.17/x64/lib/python3.8/site-packages/nbclient/client.py", line 1058, in async_execute_cell
     await self._check_raise_for_error(cell, cell_index, exec_reply)
-  File "/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/nbclient/client.py", line 914, in _check_raise_for_error
+  File "/opt/hostedtoolcache/Python/3.8.17/x64/lib/python3.8/site-packages/nbclient/client.py", line 914, in _check_raise_for_error
     raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
 nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
 ------------------
@@ -19,7 +19,7 @@ op.io.project_to_vtk(project=pn.project)
 ------------------
 
 ----- stderr -----
-/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/openpnm/io/_vtk.py:104: FutureWarning: In the future `np.bool` will be defined as the corresponding NumPy scalar.
+/opt/hostedtoolcache/Python/3.8.17/x64/lib/python3.8/site-packages/openpnm/io/_vtk.py:104: FutureWarning: In the future `np.bool` will be defined as the corresponding NumPy scalar.
   if array.dtype == np.bool:
 ------------------
 
@@ -28,14 +28,14 @@ op.io.project_to_vtk(project=pn.project)
 Cell [0;32mIn[11], line 1[0m
 [0;32m----> 1[0m [43mop[49m[38;5;241;43m.[39;49m[43mio[49m[38;5;241;43m.[39;49m[43mproject_to_vtk[49m[43m([49m[43mproject[49m[38;5;241;43m=[39;49m[43mpn[49m[38;5;241;43m.[39;49m[43mproject[49m[43m)[49m
 
-File [0;32m/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/openpnm/io/_vtk.py:104[0m, in [0;36mproject_to_vtk[0;34m(project, filename, fill_nans, fill_infs)[0m
+File [0;32m/opt/hostedtoolcache/Python/3.8.17/x64/lib/python3.8/site-packages/openpnm/io/_vtk.py:104[0m, in [0;36mproject_to_vtk[0;34m(project, filename, fill_nans, fill_infs)[0m
 [1;32m    102[0m     logger[38;5;241m.[39mwarning(key [38;5;241m+[39m [38;5;124m"[39m[38;5;124m has dtype object,[39m[38;5;124m"[39m [38;5;241m+[39m [38;5;124m"[39m[38;5;124m will not write to file[39m[38;5;124m"[39m)
 [1;32m    103[0m [38;5;28;01melse[39;00m:
 [0;32m--> 104[0m     [38;5;28;01mif[39;00m array[38;5;241m.[39mdtype [38;5;241m==[39m [43mnp[49m[38;5;241;43m.[39;49m[43mbool[49m:
 [1;32m    105[0m         array [38;5;241m=[39m array[38;5;241m.[39mastype([38;5;28mint[39m)
 [1;32m    106[0m     [38;5;28;01mif[39;00m np[38;5;241m.[39many(np[38;5;241m.[39misnan(array)):
 
-File [0;32m/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/numpy/__init__.py:305[0m, in [0;36m__getattr__[0;34m(attr)[0m
+File [0;32m/opt/hostedtoolcache/Python/3.8.17/x64/lib/python3.8/site-packages/numpy/__init__.py:305[0m, in [0;36m__getattr__[0;34m(attr)[0m
 [1;32m    300[0m     warnings[38;5;241m.[39mwarn(
 [1;32m    301[0m         [38;5;124mf[39m[38;5;124m"[39m[38;5;124mIn the future `np.[39m[38;5;132;01m{[39;00mattr[38;5;132;01m}[39;00m[38;5;124m` will be defined as the [39m[38;5;124m"[39m
 [1;32m    302[0m         [38;5;124m"[39m[38;5;124mcorresponding NumPy scalar.[39m[38;5;124m"[39m, [38;5;167;01mFutureWarning[39;00m, stacklevel[38;5;241m=[39m[38;5;241m2[39m)

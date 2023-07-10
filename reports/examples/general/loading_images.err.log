@@ -1,17 +1,17 @@
 Traceback (most recent call last):
-  File "/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/jupyter_cache/executors/utils.py", line 58, in single_nb_execution
+  File "/opt/hostedtoolcache/Python/3.8.17/x64/lib/python3.8/site-packages/jupyter_cache/executors/utils.py", line 58, in single_nb_execution
     executenb(
-  File "/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/nbclient/client.py", line 1305, in execute
+  File "/opt/hostedtoolcache/Python/3.8.17/x64/lib/python3.8/site-packages/nbclient/client.py", line 1305, in execute
     return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
-  File "/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/jupyter_core/utils/__init__.py", line 166, in wrapped
+  File "/opt/hostedtoolcache/Python/3.8.17/x64/lib/python3.8/site-packages/jupyter_core/utils/__init__.py", line 166, in wrapped
     return loop.run_until_complete(inner)
-  File "/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/asyncio/base_events.py", line 616, in run_until_complete
+  File "/opt/hostedtoolcache/Python/3.8.17/x64/lib/python3.8/asyncio/base_events.py", line 616, in run_until_complete
     return future.result()
-  File "/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/nbclient/client.py", line 705, in async_execute
+  File "/opt/hostedtoolcache/Python/3.8.17/x64/lib/python3.8/site-packages/nbclient/client.py", line 705, in async_execute
     await self.async_execute_cell(
-  File "/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/nbclient/client.py", line 1058, in async_execute_cell
+  File "/opt/hostedtoolcache/Python/3.8.17/x64/lib/python3.8/site-packages/nbclient/client.py", line 1058, in async_execute_cell
     await self._check_raise_for_error(cell, cell_index, exec_reply)
-  File "/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/nbclient/client.py", line 914, in _check_raise_for_error
+  File "/opt/hostedtoolcache/Python/3.8.17/x64/lib/python3.8/site-packages/nbclient/client.py", line 914, in _check_raise_for_error
     raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
 nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
 ------------------
@@ -26,7 +26,7 @@ Cell [0;32mIn[4], line 2[0m
 [1;32m      1[0m fig, ax [38;5;241m=[39m subplots(figsize[38;5;241m=[39m[[38;5;241m5[39m, [38;5;241m5[39m])
 [0;32m----> 2[0m ax[38;5;241m.[39mimshow([43mseq[49m[43m[[49m[38;5;241;43m0[39;49m[43m][49m);
 
-File [0;32m/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/skimage/io/collection.py:301[0m, in [0;36mImageCollection.__getitem__[0;34m(self, n)[0m
+File [0;32m/opt/hostedtoolcache/Python/3.8.17/x64/lib/python3.8/site-packages/skimage/io/collection.py:301[0m, in [0;36mImageCollection.__getitem__[0;34m(self, n)[0m
 [1;32m    298[0m     [38;5;28;01mraise[39;00m [38;5;167;01mTypeError[39;00m([38;5;124m'[39m[38;5;124mslicing must be with an int or slice object[39m[38;5;124m'[39m)
 [1;32m    300[0m [38;5;28;01mif[39;00m [38;5;28mtype[39m(n) [38;5;129;01mis[39;00m [38;5;28mint[39m:
 [0;32m--> 301[0m     n [38;5;241m=[39m [38;5;28;43mself[39;49m[38;5;241;43m.[39;49m[43m_check_imgnum[49m[43m([49m[43mn[49m[43m)[49m
@@ -34,7 +34,7 @@ File [0;32m/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/s
 [1;32m    304[0m     [38;5;28;01mif[39;00m (([38;5;28mself[39m[38;5;241m.[39mconserve_memory [38;5;129;01mand[39;00m n [38;5;241m!=[39m [38;5;28mself[39m[38;5;241m.[39m_cached) [38;5;129;01mor[39;00m
 [1;32m    305[0m             ([38;5;28mself[39m[38;5;241m.[39mdata[idx] [38;5;129;01mis[39;00m [38;5;28;01mNone[39;00m)):
 
-File [0;32m/opt/hostedtoolcache/Python/3.8.16/x64/lib/python3.8/site-packages/skimage/io/collection.py:357[0m, in [0;36mImageCollection._check_imgnum[0;34m(self, n)[0m
+File [0;32m/opt/hostedtoolcache/Python/3.8.17/x64/lib/python3.8/site-packages/skimage/io/collection.py:357[0m, in [0;36mImageCollection._check_imgnum[0;34m(self, n)[0m
 [1;32m    355[0m     n [38;5;241m=[39m n [38;5;241m%[39m num
 [1;32m    356[0m [38;5;28;01melse[39;00m:
 [0;32m--> 357[0m     [38;5;28;01mraise[39;00m [38;5;167;01mIndexError[39;00m([38;5;124mf[39m[38;5;124m"[39m[38;5;124mThere are only [39m[38;5;132;01m{[39;00mnum[38;5;132;01m}[39;00m[38;5;124m images in the collection[39m[38;5;124m"[39m)
