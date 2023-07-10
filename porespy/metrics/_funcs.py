@@ -1159,7 +1159,6 @@ def satn_profile(satn, s=None, im=None, axis=0, span=10, mode='tile'):
     to view online example.
     """
     span = max(1, span)
-    satn = np.swapaxes(satn, 0, axis)
     if s is None:
         if satn.dtype != bool:
             msg = 'Must specify a target saturation if saturation map is provided'
@@ -1168,12 +1167,18 @@ def satn_profile(satn, s=None, im=None, axis=0, span=10, mode='tile'):
         satn = satn.astype(int)
         satn[satn == 0] = -1
         satn[~im] = 0
+    else:
+        msg = 'The maximum saturation in the image is less than the given threshold'
+        if satn.max() < s:
+            raise Exception(msg)
+
+    satn = np.swapaxes(satn, 0, axis)
     if mode == 'tile':
         y = np.zeros(int(satn.shape[0]/span))
         z = np.zeros_like(y)
         for i in range(int(satn.shape[0]/span)):
             void = satn[i*span:(i+1)*span, ...] != 0
-            nwp = (satn[i*span:(i+1)*span, ...] < s) \
+            nwp = (satn[i*span:(i+1)*span, ...] <= s) \
                 *(satn[i*span:(i+1)*span, ...] > 0)
             y[i] = nwp.sum(dtype=np.int64)/void.sum(dtype=np.int64)
             z[i] = i*span + (span-1)/2
@@ -1182,12 +1187,12 @@ def satn_profile(satn, s=None, im=None, axis=0, span=10, mode='tile'):
         z = np.zeros_like(y)
         for i in range(int(satn.shape[0]-span)):
             void = satn[i:i+span, ...] != 0
-            nwp = (satn[i:i+span, ...] < s)*(satn[i:i+span, ...] > 0)
+            nwp = (satn[i:i+span, ...] <= s)*(satn[i:i+span, ...] > 0)
             y[i] = nwp.sum(dtype=np.int64)/void.sum(dtype=np.int64)
             z[i] = i + (span-1)/2
     results = Results()
-    results.saturation = y
     results.position = z
+    results.saturation = y
     return results
 
 
