@@ -49,7 +49,7 @@ def _format_time(timespan, precision=3):
         try:
             u'\xb5'.encode(sys.stdout.encoding)
             units = [u"s", u"ms", u'\xb5s', "ns"]
-        except:
+        except UnicodeEncodeError:
             pass
     scaling = [1, 1e3, 1e6, 1e9]
 
