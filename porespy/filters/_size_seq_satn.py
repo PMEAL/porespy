@@ -243,9 +243,15 @@ def pc_to_seq(pc, im, mode='drainage'):
         `mode`        Description
         ============= ==============================================================
         'drainage'    The pressures are assumed to have been filled from smallest to
-                      largest, ignoring +/- infs
+                      largest. Voxels with -np.inf are treated as though they are
+                      invaded by non-wetting fluid at the start of the process, and
+                      voxels with +np.inf are treated as though they are never
+                      invaded.
         'imbibition'  The pressures are assumed to have been filled from largest to
-                      smallest, ignoring +/- infs
+                      smallest. Voxels with -np.inf are treated as though they are
+                      already occupied by non-wetting fluid at the start of the
+                      process, and voxels with +np.inf are treated as though they
+                      are filled with wetting phase.
         ============= ==============================================================
 
     Returns
@@ -258,8 +264,9 @@ def pc_to_seq(pc, im, mode='drainage'):
     Notes
     -----
     Voxels with `+inf` are treated as though they were never invaded so are given a
-    sequence value of -1. Voxels with  `-inf` are not implemented yet so will
-    raise an error.  Eventually these should represent residual non-wetting phase.
+    sequence value of -1. Voxels with  `-inf` are treated as though they were
+    invaded by non-wetting phase at the start of the simulation so are given a
+    sequence number of 1 for both mode `drainage` and `imbibition`.
 
     Examples
     --------
@@ -267,16 +274,15 @@ def pc_to_seq(pc, im, mode='drainage'):
     <https://porespy.org/examples/filters/reference/pc_to_seq.html>`_
     to view online example.
     """
-    if pc.min() == -np.inf:
-        msg = 'Indicating residual nonwetting with -inf is not implement yet'
-        raise NotImplementedError(msg)
+    inf = pc == np.inf  # save for later
     if mode == 'drainage':
         bins = np.unique(pc)
-    elif mode == 'imbibitin':
+    elif mode == 'imbibition':
+        pc[pc == -np.inf] = np.inf
         bins = np.unique(pc)[-1::-1]
     a = np.digitize(pc, bins=bins)
     a[~im] = 0
-    a[np.where(pc == np.inf)] = -1
+    a[np.where(inf)] = -1
     a = make_contiguous(a, mode='symmetric')
     return a
 
@@ -303,9 +309,9 @@ def pc_to_satn(pc, im, mode='drainage'):
         `mode`        Description
         ============= ==============================================================
         'drainage'    The pressures are assumed to have been filled from smallest to
-                      largest, ignoring +/- infs
+                      largest.
         'imbibition'  The pressures are assumed to have been filled from largest to
-                      smallest, ignoring +/- infs
+                      smallest
         ============= ==============================================================
 
     Returns
@@ -313,7 +319,9 @@ def pc_to_satn(pc, im, mode='drainage'):
     satn : ndarray
         A Numpy array the same shape as `pc`, with each voxel value indicating
         the global saturation at which it was invaded, according to the specified
-        `mode`.
+        `mode`. Voxels with  `-inf` are treated as though they were invaded
+        at the start of the simulation so are given a sequence number of 1 for both
+        mode `drainage` and `imbibition`.
 
     Notes
     -----
@@ -327,9 +335,6 @@ def pc_to_satn(pc, im, mode='drainage'):
     to view online example.
 
     """
-    if pc.min() == -np.inf:
-        msg = 'Indicating residual nonwetting with -inf is not implement yet'
-        raise NotImplementedError(msg)
     a = np.digitize(pc, bins=np.unique(pc))
     a[~im] = 0
     a[np.where(pc == np.inf)] = -1
