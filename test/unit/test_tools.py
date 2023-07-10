@@ -420,6 +420,14 @@ class ToolsTest():
         bbox = ps.tools.find_bbox(im2D, order_by='corners')
         assert bbox == [[15, 15, 15], [36, 36, 36]]
 
+    def test_tic_toc(self):
+        from porespy.tools import tic, toc
+        from time import sleep
+        tic()
+        sleep(1)
+        t = toc(quiet=True)
+        assert t > 1
+
 
 if __name__ == '__main__':
     t = ToolsTest()
