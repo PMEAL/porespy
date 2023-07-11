@@ -221,6 +221,7 @@
     <span class="s2">&quot;pc_curve&quot;</span><span class="p">,</span>
     <span class="s2">&quot;pc_curve_from_ibip&quot;</span><span class="p">,</span>
     <span class="s2">&quot;pc_curve_from_mio&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;pc_map_to_pc_curve&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 
 
@@ -1246,10 +1247,14 @@
             <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">seqs</span><span class="p">:</span>
                 <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
                 <span class="n">mask</span> <span class="o">=</span> <span class="n">seq</span> <span class="o">==</span> <span class="n">n</span>
-                <span class="c1"># The following assumes only one size found, which was confirmed</span>
-                <span class="n">r</span> <span class="o">=</span> <span class="n">sizes</span><span class="p">[</span><span class="n">mask</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">voxel_size</span>
-                <span class="n">pc</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">sigma</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">theta</span><span class="p">))</span><span class="o">/</span><span class="n">r</span>
-                <span class="n">x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pc</span><span class="p">)</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">pc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">sizes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Only one of pc or sizes can be specified&quot;</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">pc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">pressure</span> <span class="o">=</span> <span class="n">pc</span><span class="p">[</span><span class="n">mask</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">elif</span> <span class="n">sizes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">r</span> <span class="o">=</span> <span class="n">sizes</span><span class="p">[</span><span class="n">mask</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">voxel_size</span>
+                    <span class="n">pressure</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">sigma</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">theta</span><span class="p">))</span><span class="o">/</span><span class="n">r</span>
+                <span class="n">x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pressure</span><span class="p">)</span>
                 <span class="n">snwp</span> <span class="o">=</span> <span class="p">((</span><span class="n">seq</span> <span class="o">&lt;=</span> <span class="n">n</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">seq</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">*</span>
                         <span class="p">(</span><span class="n">im</span> <span class="o">==</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span><span class="o">/</span><span class="n">im</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
                 <span class="n">y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">snwp</span><span class="p">)</span>
@@ -1293,6 +1298,62 @@
         <span class="n">pc_curve</span><span class="o">.</span><span class="n">pc</span> <span class="o">=</span> <span class="n">Ps</span>
         <span class="n">pc_curve</span><span class="o">.</span><span class="n">snwp</span> <span class="o">=</span> <span class="n">y</span>
     <span class="k">return</span> <span class="n">pc_curve</span></div>
+
+
+<span class="k">def</span> <span class="nf">pc_map_to_pc_curve</span><span class="p">(</span><span class="n">pc</span><span class="p">,</span> <span class="n">im</span><span class="p">,</span> <span class="n">seq</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Converts a pc map into a capillary pressure curve</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    pc : ndarray</span>
+<span class="sd">        A numpy array with each voxel containing the capillary pressure at which</span>
+<span class="sd">        it was invaded. `-inf` indicates voxels which are already filled with</span>
+<span class="sd">        non-wetting fluid, and `+inf` indicates voxels that are not invaded by</span>
+<span class="sd">        non-wetting fluid (e.g., trapped wetting phase). Solids should be</span>
+<span class="sd">        noted by `+inf` but this is also enforced inside the function using `im`.</span>
+<span class="sd">    im : ndarray</span>
+<span class="sd">        A numpy array with `True` values indicating the void space and `False`</span>
+<span class="sd">        elsewhere. This is necessary to define the total void volume of the domain</span>
+<span class="sd">        for computing the saturation.</span>
+<span class="sd">    seq : ndarray, optional</span>
+<span class="sd">        A numpy array with each voxel containing the sequence at which it was</span>
+<span class="sd">        invaded. This is required when analyzing results from invasion percolation</span>
+<span class="sd">        since the pressures in `pc` do not correspond to the sequence in which</span>
+<span class="sd">        they were filled.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    results : dataclass-like</span>
+<span class="sd">        A dataclass like object with the following attributes:</span>
+
+<span class="sd">        ================== =========================================================</span>
+<span class="sd">        Attribute          Description</span>
+<span class="sd">        ================== =========================================================</span>
+<span class="sd">        pc                 The capillary pressure</span>
+<span class="sd">        snwp               The fraction of void space filled by non-wetting</span>
+<span class="sd">                           phase at each pressure in ``pc``</span>
+<span class="sd">        ================== =========================================================</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    To use this function with the results of `porosimetry` or `ibip` the sizes map</span>
+<span class="sd">    must be converted to a capillary pressure map first.  `drainage` and `invasion`</span>
+<span class="sd">    both return capillary pressure maps which can be passed directly as `pc`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pc</span><span class="p">[</span><span class="o">~</span><span class="n">im</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>  <span class="c1"># Ensure solid voxels are set to inf invasion pressure</span>
+    <span class="k">if</span> <span class="n">seq</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">pcs</span><span class="p">,</span> <span class="n">counts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">pc</span><span class="p">,</span> <span class="n">return_counts</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">vals</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">counts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span> <span class="n">return_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">return_counts</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">pcs</span> <span class="o">=</span> <span class="n">pc</span><span class="o">.</span><span class="n">flatten</span><span class="p">()[</span><span class="n">index</span><span class="p">]</span>
+    <span class="n">snwp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">counts</span><span class="p">[</span><span class="n">pcs</span> <span class="o">&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">])</span><span class="o">/</span><span class="n">im</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">pcs</span> <span class="o">=</span> <span class="n">pcs</span><span class="p">[</span><span class="n">pcs</span> <span class="o">&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">]</span>
+
+    <span class="n">results</span> <span class="o">=</span> <span class="n">Results</span><span class="p">()</span>
+    <span class="n">results</span><span class="o">.</span><span class="n">pc</span> <span class="o">=</span> <span class="n">pcs</span>
+    <span class="n">results</span><span class="o">.</span><span class="n">snwp</span> <span class="o">=</span> <span class="n">snwp</span>
+    <span class="k">return</span> <span class="n">results</span>
 
 
 <div class="viewcode-block" id="satn_profile"><a class="viewcode-back" href="../../../modules/generated/generated/porespy.metrics.satn_profile.html#porespy.metrics.satn_profile">[docs]</a><span class="k">def</span> <span class="nf">satn_profile</span><span class="p">(</span><span class="n">satn</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">im</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">span</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;tile&#39;</span><span class="p">):</span>

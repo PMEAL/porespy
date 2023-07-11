@@ -2971,39 +2971,6 @@
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">KeyboardInterrupt</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">7</span><span class="p">],</span> <span class="n">line</span> <span class="mi">9</span>
-<span class="g g-Whitespace">      </span><span class="mi">7</span> <span class="k">for</span> <span class="n">eps</span> <span class="ow">in</span> <span class="n">porosity_target</span><span class="p">:</span>
-<span class="g g-Whitespace">      </span><span class="mi">8</span>     <span class="n">temp</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-<span class="ne">----&gt; </span><span class="mi">9</span>     <span class="n">im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">cylinders</span><span class="p">(</span><span class="o">**</span><span class="n">params_generic</span><span class="p">,</span> <span class="n">porosity</span><span class="o">=</span><span class="n">eps</span><span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">10</span>     <span class="n">runtime_porosity</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">temp</span><span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">11</span>     <span class="n">porosity_actual</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ps</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">porosity</span><span class="p">(</span><span class="n">im</span><span class="p">))</span>
-
-<span class="nn">File ~/work/porespy/porespy/porespy/generators/_imgen.py:1373,</span> in <span class="ni">cylinders</span><span class="nt">(shape, r, ncylinders, porosity, phi_max, theta_max, length, maxiter, seed)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1371</span> <span class="n">n_fibers_added</span> <span class="o">+=</span> <span class="n">n_fibers</span>
-<span class="g g-Whitespace">   </span><span class="mi">1372</span> <span class="c1"># Update parameters for next iteration</span>
-<span class="ne">-&gt; </span><span class="mi">1373</span> <span class="n">porosity</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">porosity</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1374</span> <span class="n">vol_added</span> <span class="o">=</span> <span class="n">get_num_pixels</span><span class="p">(</span><span class="n">porosity</span><span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1375</span> <span class="n">vol_fiber</span> <span class="o">=</span> <span class="n">vol_added</span> <span class="o">/</span> <span class="n">n_fibers_added</span>
-
-<span class="nn">File ~/work/porespy/porespy/porespy/metrics/_funcs.py:228,</span> in <span class="ni">porosity</span><span class="nt">(im)</span>
-<span class="g g-Whitespace">    </span><span class="mi">185</span> <span class="k">def</span> <span class="nf">porosity</span><span class="p">(</span><span class="n">im</span><span class="p">):</span>
-<span class="g g-Whitespace">    </span><span class="mi">186</span><span class="w">     </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="g g-Whitespace">    </span><span class="mi">187</span><span class="sd">     Calculates the porosity of an image assuming 1&#39;s are void space and 0&#39;s</span>
-<span class="g g-Whitespace">    </span><span class="mi">188</span><span class="sd">     are solid phase.</span>
-<span class="sd">   (...)</span>
-<span class="g g-Whitespace">    </span><span class="mi">226</span><span class="sd"> </span>
-<span class="g g-Whitespace">    </span><span class="mi">227</span><span class="sd">     &quot;&quot;&quot;</span>
-<span class="ne">--&gt; </span><span class="mi">228</span>     <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">229</span>     <span class="n">Vp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">im</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">230</span>     <span class="n">Vs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">im</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
-
-<span class="ne">KeyboardInterrupt</span>: 
-</pre></div>
-</div>
-</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -3038,7 +3005,8 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../../_images/eec59370d0a1441dc815bb5d5e9a0207887e865a168c6eb491d605d05b41739d.svg" src="../../../_images/eec59370d0a1441dc815bb5d5e9a0207887e865a168c6eb491d605d05b41739d.svg" /></div>
+<img alt="../../../_images/9ff6d5c84a96c8803aaf0ca654e06ee2862a80812d40d29bf9470188cb340bcd.png" src="../../../_images/9ff6d5c84a96c8803aaf0ca654e06ee2862a80812d40d29bf9470188cb340bcd.png" />
+</div>
 </div>
 <p>Lastly, this block shows that more iterations improves proximity to goal porosity.</p>
 <div class="cell docutils container">
@@ -3052,6 +3020,39 @@
     <span class="n">params_generic</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;maxiter&quot;</span><span class="p">:</span> <span class="n">m</span><span class="p">})</span>
     <span class="n">im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">cylinders</span><span class="p">(</span><span class="o">**</span><span class="n">params_generic</span><span class="p">,</span> <span class="n">porosity</span><span class="o">=</span><span class="n">porosity_target</span><span class="p">)</span>
     <span class="n">porosity_actual</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ps</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">porosity</span><span class="p">(</span><span class="n">im</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">KeyboardInterrupt</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">10</span><span class="p">],</span> <span class="n">line</span> <span class="mi">8</span>
+<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">maxiter</span><span class="p">:</span>
+<span class="g g-Whitespace">      </span><span class="mi">6</span>     <span class="c1"># Update maxiter in params_generic</span>
+<span class="g g-Whitespace">      </span><span class="mi">7</span>     <span class="n">params_generic</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;maxiter&quot;</span><span class="p">:</span> <span class="n">m</span><span class="p">})</span>
+<span class="ne">----&gt; </span><span class="mi">8</span>     <span class="n">im</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">generators</span><span class="o">.</span><span class="n">cylinders</span><span class="p">(</span><span class="o">**</span><span class="n">params_generic</span><span class="p">,</span> <span class="n">porosity</span><span class="o">=</span><span class="n">porosity_target</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">9</span>     <span class="n">porosity_actual</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ps</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">porosity</span><span class="p">(</span><span class="n">im</span><span class="p">))</span>
+
+<span class="nn">File ~/work/porespy/porespy/porespy/generators/_imgen.py:1373,</span> in <span class="ni">cylinders</span><span class="nt">(shape, r, ncylinders, porosity, phi_max, theta_max, length, maxiter, seed)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1371</span> <span class="n">n_fibers_added</span> <span class="o">+=</span> <span class="n">n_fibers</span>
+<span class="g g-Whitespace">   </span><span class="mi">1372</span> <span class="c1"># Update parameters for next iteration</span>
+<span class="ne">-&gt; </span><span class="mi">1373</span> <span class="n">porosity</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">porosity</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1374</span> <span class="n">vol_added</span> <span class="o">=</span> <span class="n">get_num_pixels</span><span class="p">(</span><span class="n">porosity</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1375</span> <span class="n">vol_fiber</span> <span class="o">=</span> <span class="n">vol_added</span> <span class="o">/</span> <span class="n">n_fibers_added</span>
+
+<span class="nn">File ~/work/porespy/porespy/porespy/metrics/_funcs.py:229,</span> in <span class="ni">porosity</span><span class="nt">(im)</span>
+<span class="g g-Whitespace">    </span><span class="mi">186</span> <span class="k">def</span> <span class="nf">porosity</span><span class="p">(</span><span class="n">im</span><span class="p">):</span>
+<span class="g g-Whitespace">    </span><span class="mi">187</span><span class="w">     </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="g g-Whitespace">    </span><span class="mi">188</span><span class="sd">     Calculates the porosity of an image assuming 1&#39;s are void space and 0&#39;s</span>
+<span class="g g-Whitespace">    </span><span class="mi">189</span><span class="sd">     are solid phase.</span>
+<span class="sd">   (...)</span>
+<span class="g g-Whitespace">    </span><span class="mi">227</span><span class="sd"> </span>
+<span class="g g-Whitespace">    </span><span class="mi">228</span><span class="sd">     &quot;&quot;&quot;</span>
+<span class="ne">--&gt; </span><span class="mi">229</span>     <span class="n">im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">230</span>     <span class="n">Vp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">im</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">231</span>     <span class="n">Vs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">im</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+
+<span class="ne">KeyboardInterrupt</span>: 
 </pre></div>
 </div>
 </div>

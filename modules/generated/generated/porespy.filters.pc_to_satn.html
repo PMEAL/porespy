@@ -1075,11 +1075,11 @@ mandatory.</p></li>
 <tbody>
 <tr class="row-even"><td><p>’drainage’</p></td>
 <td><p>The pressures are assumed to have been filled from smallest to
-largest, ignoring +/- infs</p></td>
+largest.</p></td>
 </tr>
 <tr class="row-odd"><td><p>’imbibition’</p></td>
 <td><p>The pressures are assumed to have been filled from largest to
-smallest, ignoring +/- infs</p></td>
+smallest</p></td>
 </tr>
 </tbody>
 </table>
@@ -1089,7 +1089,9 @@ smallest, ignoring +/- infs</p></td>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>satn</strong> – A Numpy array the same shape as <cite>pc</cite>, with each voxel value indicating
 the global saturation at which it was invaded, according to the specified
-<cite>mode</cite>.</p>
+<cite>mode</cite>. Voxels with  <cite>-inf</cite> are treated as though they were invaded
+at the start of the simulation so are given a sequence number of 1 for both
+mode <cite>drainage</cite> and <cite>imbibition</cite>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>ndarray</p>
