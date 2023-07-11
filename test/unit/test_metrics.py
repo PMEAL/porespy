@@ -309,7 +309,72 @@ class MetricsTest():
         satn[:25, :] = 0
         satn[-25:, :] = -1
         with pytest.raises(Exception):
-            prof1 = ps.metrics.satn_profile(satn=satn, s=0.5)
+            _ = ps.metrics.satn_profile(satn=satn, s=0.5)
+
+    def test_pc_map_to_pc_curve_drainage_with_trapping_and_residual(self):
+        vx = 50e-6
+        im = ps.generators.blobs(shape=[200, 200], porosity=0.5, blobiness=2, seed=0)
+        mio = ps.filters.porosimetry(im)
+        trapped = im*(~ps.filters.fill_blind_pores(im))
+        residual = im*(~trapped)*(mio < mio.mean())
+        pc = -2*0.072*np.cos(np.radians(110))/(mio*vx)
+        pc[trapped] = np.inf
+        pc[residual] = -np.inf
+        d = ps.metrics.pc_map_to_pc_curve(pc, im)
+        assert d.snwp[0] == residual.sum()/im.sum()
+        assert d.snwp[-1] == (im.sum() - trapped.sum())/im.sum()
+
+    def test_pc_map_to_pc_curve_invasion_with_trapping(self):
+        vx = 50e-6
+        im = ps.generators.blobs(shape=[200, 200], porosity=0.5, blobiness=2, seed=0)
+        ibip = ps.simulations.ibip(im=im)
+        pc = -2*0.072*np.cos(np.radians(110))/(ibip.inv_sizes*vx)
+        trapped = ibip.inv_sequence == -1
+        # residual = pc*im > 500
+        pc[trapped] = np.inf
+        seq = ibip.inv_sequence
+        d = ps.metrics.pc_map_to_pc_curve(pc=pc, im=im, seq=seq)
+        # assert d.snwp[0] == residual.sum()/im.sum()
+        assert d.snwp[-1] == (im.sum() - trapped.sum())/im.sum()
+
+    def test_pc_map_to_pc_curve_compare_invasion_to_drainage(self):
+        vx = 50e-6
+        im = ps.generators.blobs(shape=[200, 200], porosity=0.6, blobiness=1, seed=0)
+        im = ps.filters.fill_blind_pores(im, conn=8, surface=True)
+
+        # Do drainage without sequence
+        dt = edt(im)
+        mio = ps.filters.porosimetry(im, sizes=np.unique(dt)[1:].astype(int))
+        pc1 = -2*0.072*np.cos(np.radians(110))/(mio*vx)
+        d1 = ps.metrics.pc_map_to_pc_curve(pc=pc1, im=im)
+
+        # Ensure drainage works with sequence
+        seq = ps.filters.pc_to_seq(pc1, im)
+        d3 = ps.metrics.pc_map_to_pc_curve(pc=pc1, im=im, seq=seq)
+
+        # Using the original ibip, which requires that sequence be supplied
+        ibip = ps.simulations.ibip(im=im)
+        pc2 = -2*0.072*np.cos(np.radians(110))/(ibip.inv_sizes*vx)
+        pc2[ibip.inv_sequence < 0] = np.inf
+        seq = ibip.inv_sequence
+        d2 = ps.metrics.pc_map_to_pc_curve(pc=pc2, im=im, seq=seq)
+
+        # Ensure they all return the same Pc values
+        assert_allclose(np.unique(d1.pc), np.unique(d2.pc), rtol=1e-10)
+        assert_allclose(np.unique(d2.pc), np.unique(d3.pc), rtol=1e-10)
+        assert_allclose(np.unique(d1.pc), np.unique(d3.pc), rtol=1e-10)
+
+        # Ensure the high and low saturations are all the same
+        assert d1.snwp[0] == d2.snwp[0]
+        assert d1.snwp[-1] == d2.snwp[-1]
+        assert d2.snwp[0] == d3.snwp[0]
+        assert d2.snwp[-1] == d3.snwp[-1]
+
+        # These graphs should lie perfectly on top of each other
+        # import matplotlib.pyplot as plt
+        # plt.step(d1.pc, d1.snwp, 'r-o', where='post')
+        # plt.step(d3.pc, d3.snwp, 'b--', where='post')
+        # plt.step(d2.pc, d2.snwp, 'g.-', where='post')
 
 
 if __name__ == '__main__':

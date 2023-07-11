@@ -30,6 +30,7 @@ __all__ = [
     "pc_curve",
     "pc_curve_from_ibip",
     "pc_curve_from_mio",
+    "pc_map_to_pc_curve",
 ]
 
 
@@ -1055,10 +1056,14 @@ def pc_curve(im, sizes=None, pc=None, seq=None,
             for n in seqs:
                 pbar.update()
                 mask = seq == n
-                # The following assumes only one size found, which was confirmed
-                r = sizes[mask][0]*voxel_size
-                pc = -2*sigma*np.cos(np.deg2rad(theta))/r
-                x.append(pc)
+                if (pc is not None) and (sizes is not None):
+                    raise Exception("Only one of pc or sizes can be specified")
+                elif pc is not None:
+                    pressure = pc[mask][0]
+                elif sizes is not None:
+                    r = sizes[mask][0]*voxel_size
+                    pressure = -2*sigma*np.cos(np.deg2rad(theta))/r
+                x.append(pressure)
                 snwp = ((seq <= n)*(seq > 0) *
                         (im == 1)).sum(dtype=np.int64)/im.sum(dtype=np.int64)
                 y.append(snwp)
@@ -1102,6 +1107,62 @@ def pc_curve(im, sizes=None, pc=None, seq=None,
         pc_curve.pc = Ps
         pc_curve.snwp = y
     return pc_curve
+
+
+def pc_map_to_pc_curve(pc, im, seq=None):
+    r"""
+    Converts a pc map into a capillary pressure curve
+
+    Parameters
+    ----------
+    pc : ndarray
+        A numpy array with each voxel containing the capillary pressure at which
+        it was invaded. `-inf` indicates voxels which are already filled with
+        non-wetting fluid, and `+inf` indicates voxels that are not invaded by
+        non-wetting fluid (e.g., trapped wetting phase). Solids should be
+        noted by `+inf` but this is also enforced inside the function using `im`.
+    im : ndarray
+        A numpy array with `True` values indicating the void space and `False`
+        elsewhere. This is necessary to define the total void volume of the domain
+        for computing the saturation.
+    seq : ndarray, optional
+        A numpy array with each voxel containing the sequence at which it was
+        invaded. This is required when analyzing results from invasion percolation
+        since the pressures in `pc` do not correspond to the sequence in which
+        they were filled.
+
+    Returns
+    -------
+    results : dataclass-like
+        A dataclass like object with the following attributes:
+
+        ================== =========================================================
+        Attribute          Description
+        ================== =========================================================
+        pc                 The capillary pressure
+        snwp               The fraction of void space filled by non-wetting
+                           phase at each pressure in ``pc``
+        ================== =========================================================
+
+    Notes
+    -----
+    To use this function with the results of `porosimetry` or `ibip` the sizes map
+    must be converted to a capillary pressure map first.  `drainage` and `invasion`
+    both return capillary pressure maps which can be passed directly as `pc`.
+    """
+    pc[~im] = np.inf  # Ensure solid voxels are set to inf invasion pressure
+    if seq is None:
+        pcs, counts = np.unique(pc, return_counts=True)
+    else:
+        vals, index, counts = np.unique(seq, return_index=True, return_counts=True)
+        pcs = pc.flatten()[index]
+    snwp = np.cumsum(counts[pcs < np.inf])/im.sum()
+    pcs = pcs[pcs < np.inf]
+
+    results = Results()
+    results.pc = pcs
+    results.snwp = snwp
+    return results
 
 
 def satn_profile(satn, s=None, im=None, axis=0, span=10, mode='tile'):

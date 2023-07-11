@@ -8,6 +8,7 @@ __all__ = [
     'size_to_satn',
     'seq_to_satn',
     'pc_to_satn',
+    'pc_to_seq',
     'satn_to_seq',
 ]
 
@@ -220,6 +221,72 @@ def seq_to_satn(seq, im=None, mode='drainage'):
     return satn
 
 
+def pc_to_seq(pc, im, mode='drainage'):
+    r"""
+    Converts an image of capillary entry pressures to invasion sequence values
+
+    Parameters
+    ----------
+    pc : ndarray
+        A Numpy array with the value in each voxel indicating the capillary
+        pressure at which it was invaded. In order to accommodate the
+        possibility of both positive and negative capillary pressure values,
+        uninvaded voxels should be indicated by ``+inf`` and residual phase
+        by ``-inf``. Solid vs void phase is defined by ``im`` which is
+        mandatory.
+    im : ndarray
+        A Numpy array with ``True`` values indicating the void space
+    mode : str
+        Controls how the pressures are converted to sequence. The options are:
+
+        ============= ==============================================================
+        `mode`        Description
+        ============= ==============================================================
+        'drainage'    The pressures are assumed to have been filled from smallest to
+                      largest. Voxels with -np.inf are treated as though they are
+                      invaded by non-wetting fluid at the start of the process, and
+                      voxels with +np.inf are treated as though they are never
+                      invaded.
+        'imbibition'  The pressures are assumed to have been filled from largest to
+                      smallest. Voxels with -np.inf are treated as though they are
+                      already occupied by non-wetting fluid at the start of the
+                      process, and voxels with +np.inf are treated as though they
+                      are filled with wetting phase.
+        ============= ==============================================================
+
+    Returns
+    -------
+    seq : ndarray
+        A Numpy array the same shape as `pc`, with each voxel value indicating
+        the sequence at which it was invaded, according to the specified `mode`.
+        Uninvaded voxels are set to -1.
+
+    Notes
+    -----
+    Voxels with `+inf` are treated as though they were never invaded so are given a
+    sequence value of -1. Voxels with  `-inf` are treated as though they were
+    invaded by non-wetting phase at the start of the simulation so are given a
+    sequence number of 1 for both mode `drainage` and `imbibition`.
+
+    Examples
+    --------
+    `Click here
+    <https://porespy.org/examples/filters/reference/pc_to_seq.html>`_
+    to view online example.
+    """
+    inf = pc == np.inf  # save for later
+    if mode == 'drainage':
+        bins = np.unique(pc)
+    elif mode == 'imbibition':
+        pc[pc == -np.inf] = np.inf
+        bins = np.unique(pc)[-1::-1]
+    a = np.digitize(pc, bins=bins)
+    a[~im] = 0
+    a[np.where(inf)] = -1
+    a = make_contiguous(a, mode='symmetric')
+    return a
+
+
 def pc_to_satn(pc, im, mode='drainage'):
     r"""
     Converts an image of capillary entry pressures to saturation values
@@ -242,9 +309,9 @@ def pc_to_satn(pc, im, mode='drainage'):
         `mode`        Description
         ============= ==============================================================
         'drainage'    The pressures are assumed to have been filled from smallest to
-                      largest, ignoring +/- infs
+                      largest.
         'imbibition'  The pressures are assumed to have been filled from largest to
-                      smallest, ignoring +/- infs
+                      smallest
         ============= ==============================================================
 
     Returns
@@ -252,7 +319,9 @@ def pc_to_satn(pc, im, mode='drainage'):
     satn : ndarray
         A Numpy array the same shape as `pc`, with each voxel value indicating
         the global saturation at which it was invaded, according to the specified
-        `mode`.
+        `mode`. Voxels with  `-inf` are treated as though they were invaded
+        at the start of the simulation so are given a sequence number of 1 for both
+        mode `drainage` and `imbibition`.
 
     Notes
     -----
