@@ -1109,7 +1109,7 @@ def pc_curve(im, sizes=None, pc=None, seq=None,
     return pc_curve
 
 
-def pc_map_to_pc_curve(pc, seq):
+def pc_map_to_pc_curve(pc, im, seq=None):
     r"""
     Converts a pc map into a capillary pressure curve
 
@@ -1117,10 +1117,19 @@ def pc_map_to_pc_curve(pc, seq):
     ----------
     pc : ndarray
         A numpy array with each voxel containing the capillary pressure at which
-        it was invaded.
-    seq : ndarray
+        it was invaded. `-inf` indicates voxels which are already filled with
+        non-wetting fluid, and `+inf` indicates voxels that are not invaded by
+        non-wetting fluid (e.g., trapped wetting phase). Solids should be
+        noted by `+inf` but this is also enforced inside the function using `im`.
+    im : ndarray
+        A numpy array with `True` values indicating the void space and `False`
+        elsewhere. This is necessary to define the total void volume of the domain
+        for computing the saturation.
+    seq : ndarray, optional
         A numpy array with each voxel containing the sequence at which it was
-        invaded. See `Notes` for additional details about this array.
+        invaded. This is required when analyzing results from invasion percolation
+        since the pressures in `pc` do not correspond to the sequence in which
+        they were filled.
 
     Returns
     -------
@@ -1137,41 +1146,26 @@ def pc_map_to_pc_curve(pc, seq):
 
     Notes
     -----
-    If the `pc` map was obtained from the `invasion` or `drainage` algorithms then
-    the `seq` array is attached to the returned object. The `pc_to_seq` function
-    can also be used, provided the data corresponds to a drainage or imbibition
-    process (i.e. not invasion).
+    To use this function with the results of `porosimetry` or `ibip` the sizes map
+    must be converted to a capillary pressure map first.  `drainage` and `invasion`
+    both return capillary pressure maps which can be passed directly as `pc`.
     """
-    bins = np.unique(seq)
-    bins = bins[bins >= 0]
-    count = np.zeros(max(bins)+1)
-    pmax = np.zeros_like(count, dtype=float)
-    count, pmax = _do_ibip_curve(pc, seq, count, pmax)
+    pc[~im] = np.inf  # Ensure solid voxels are set to inf invasion pressure
+    if seq is None:
+        pcs, counts = np.unique(pc, return_counts=True)
+    else:
+        vals, index, counts = np.unique(seq, return_index=True, return_counts=True)
+        pcs = pc.flatten()[index]
+    snwp = np.cumsum(counts[pcs < np.inf])/im.sum()
+    pcs = pcs[pcs < np.inf]
+
     results = Results()
-    results.pc = pmax
-    results.snwp = np.cumsum(count)/(seq > 0).sum()
+    results.pc = pcs
+    results.snwp = snwp
     return results
 
 
-@njit
-def _do_ibip_curve(pc, seq, count, pmax):
-    if pc.ndim == 2:
-        for i in range(pc.shape[0]):
-            for j in range(pc.shape[1]):
-                if seq[i, j] > 0:
-                    count[seq[i, j]] += 1
-                    pmax[seq[i, j]] = max(pmax[seq[i, j]], pc[i, j])
-    else:
-        for i in range(pc.shape[0]):
-            for j in range(pc.shape[1]):
-                for k in range(pc.shape[2]):
-                    if seq[i, j, k] > 0:
-                        count[seq[i, j, k]] += 1
-                        pmax[seq[i, j, k]] = max(pmax[seq[i, j, k]], pc[i, j, k])
-    return count, pmax
-
-
-def satn_profile(satn, s, axis=0, span=10, mode='tile'):
+def satn_profile(satn, s=None, im=None, axis=0, span=10, mode='tile'):
     r"""
     Computes a saturation profile from an image of fluid invasion
 
